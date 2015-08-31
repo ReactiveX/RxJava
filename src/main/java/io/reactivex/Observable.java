@@ -1041,7 +1041,7 @@ public class Observable<T> implements Publisher<T> {
         return flatMap(mapper, combiner, delayError, maxConcurrency, bufferSize());
     }
 
-    public <U, R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayError, int maxConcurrency, int bufferSize) {
+    public final <U, R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayError, int maxConcurrency, int bufferSize) {
         return flatMap(t -> {
             Observable<U> u = fromPublisher(mapper.apply(t));
             return u.map(w -> combiner.apply(t, w));

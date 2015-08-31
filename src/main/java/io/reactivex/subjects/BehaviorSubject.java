@@ -1,0 +1,471 @@
+/**
+ * Copyright 2015 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
+ * the License for the specific language governing permissions and limitations under the License.
+ */
+
+package io.reactivex.subjects;
+
+import java.util.Objects;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.*;
+
+import org.reactivestreams.*;
+
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.*;
+import io.reactivex.plugins.RxJavaPlugins;
+
+public final class BehaviorSubject<T> extends Subject<T, T> {
+
+    public static <T> BehaviorSubject<T> create() {
+        State<T> state = new State<>();
+        return new BehaviorSubject<>(state);
+    }
+    
+    // TODO a plain create() would create a method ambiguity with Observable.create with javac
+    public static <T> BehaviorSubject<T> createDefault(T defaultValue) {
+        Objects.requireNonNull(defaultValue);
+        State<T> state = new State<>();
+        state.lazySet(defaultValue);
+        return new BehaviorSubject<>(state);
+    }
+    
+    final State<T> state;
+    protected BehaviorSubject(State<T> state) {
+        super(state);
+        this.state = state;
+    }
+    
+    @Override
+    public void onSubscribe(Subscription s) {
+        state.onSubscribe(s);
+    }
+
+    @Override
+    public void onNext(T t) {
+        state.onNext(t);
+    }
+
+    @Override
+    public void onError(Throwable t) {
+        state.onError(t);
+    }
+
+    @Override
+    public void onComplete() {
+        state.onComplete();
+    }
+
+    @Override
+    public boolean hasSubscribers() {
+        return state.subscribers.length != 0;
+    }
+
+    @Override
+    public Throwable getThrowable() {
+        Object o = state.get();
+        if (NotificationLite.isComplete(o)) {
+            return NotificationLite.getError(o);
+        }
+        return null;
+    }
+    
+    @Override
+    public T getValue() {
+        Object o = state.get();
+        if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
+            return null;
+        }
+        return NotificationLite.getValue(o);
+    }
+    
+    @Override
+    public T[] getValues(T[] array) {
+        Object o = state.get();
+        if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
+            if (array.length != 0) {
+                array[0] = null;
+            }
+            return array;
+        }
+        T v = NotificationLite.getValue(o);
+        if (array.length != 0) {
+            array[0] = v;
+            if (array.length != 1) {
+                array[1] = null;
+            }
+        }
+        return array;
+    }
+    
+    @Override
+    public boolean hasComplete() {
+        Object o = state.get();
+        return NotificationLite.isComplete(o);
+    }
+    
+    @Override
+    public boolean hasThrowable() {
+        Object o = state.get();
+        return NotificationLite.isError(o);
+    }
+    
+    @Override
+    public boolean hasValue() {
+        Object o = state.get();
+        return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
+    }
+    
+    static final class State<T> extends AtomicReference<Object> implements Publisher<T>, Subscriber<T> {
+        /** */
+        private static final long serialVersionUID = -4311717003288339429L;
+
+        boolean done;
+        
+        volatile BehaviorSubscription<T>[] subscribers;
+        
+        @SuppressWarnings("rawtypes")
+        static final AtomicReferenceFieldUpdater<State, BehaviorSubscription[]> SUBSCRIBERS =
+                AtomicReferenceFieldUpdater.newUpdater(State.class, BehaviorSubscription[].class, "subscribers");
+        
+        @SuppressWarnings("rawtypes")
+        static final BehaviorSubscription[] EMPTY = new BehaviorSubscription[0];
+
+        @SuppressWarnings("rawtypes")
+        static final BehaviorSubscription[] TERMINATED = new BehaviorSubscription[0];
+
+        long index;
+        
+        public State() {
+            SUBSCRIBERS.lazySet(this, EMPTY);
+        }
+        
+        public boolean add(BehaviorSubscription<T> rs) {
+            for (;;) {
+                BehaviorSubscription<T>[] a = subscribers;
+                if (a == TERMINATED) {
+                    return false;
+                }
+                int len = a.length;
+                @SuppressWarnings("unchecked")
+                BehaviorSubscription<T>[] b = new BehaviorSubscription[len + 1];
+                System.arraycopy(a, 0, b, 0, len);
+                b[len] = rs;
+                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                    return true;
+                }
+            }
+        }
+        
+        @SuppressWarnings("unchecked")
+        public void remove(BehaviorSubscription<T> rs) {
+            for (;;) {
+                BehaviorSubscription<T>[] a = subscribers;
+                if (a == TERMINATED || a == EMPTY) {
+                    return;
+                }
+                int len = a.length;
+                int j = -1;
+                for (int i = 0; i < len; i++) {
+                    if (a[i] == rs) {
+                        j = i;
+                        break;
+                    }
+                }
+                
+                if (j < 0) {
+                    return;
+                }
+                BehaviorSubscription<T>[] b;
+                if (len == 1) {
+                    b = EMPTY;
+                } else {
+                    b = new BehaviorSubscription[len - 1];
+                    System.arraycopy(a, 0, b, 0, j);
+                    System.arraycopy(a, j + 1, b, j, len - j - 1);
+                }
+                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                    return;
+                }
+            }
+        }
+        
+        @SuppressWarnings("unchecked")
+        public BehaviorSubscription<T>[] terminate(Object terminalValue) {
+            
+            BehaviorSubscription<T>[] a = subscribers;
+            if (a != TERMINATED) {
+                a = SUBSCRIBERS.getAndSet(this, TERMINATED);
+                if (a != TERMINATED) {
+                    // either this or atomics with lots of allocation
+                    setCurrent(terminalValue);
+                }
+            }
+            
+            return a;
+        }
+        
+        @Override
+        public void subscribe(Subscriber<? super T> s) {
+            BehaviorSubscription<T> bs = new BehaviorSubscription<>(s, this);
+            s.onSubscribe(bs);
+            if (!bs.cancelled) {
+                if (add(bs)) {
+                    if (bs.cancelled) {
+                        remove(bs);
+                    } else {
+                        bs.emitFirst();
+                    }
+                } else {
+                    Object o = get();
+                    if (NotificationLite.isComplete(o)) {
+                        s.onComplete();
+                    } else {
+                        s.onError(NotificationLite.getError(o));
+                    }
+                }
+            }
+        }
+        
+        @Override
+        public void onSubscribe(Subscription s) {
+            if (done) {
+                s.cancel();
+                return;
+            }
+            s.request(Long.MAX_VALUE);
+        }
+        
+        void setCurrent(Object o) {
+            // either this or lots of pair-allocations
+            synchronized (this) {
+                lazySet(o);
+                index++;
+            }
+        }
+        
+        @Override
+        public void onNext(T t) {
+            if (done) {
+                return;
+            }
+            Object o = NotificationLite.next(t);
+            setCurrent(o);
+            for (BehaviorSubscription<T> bs : subscribers) {
+                bs.emitNext(o, index); // relaxed read okay since this is the only mutator thread
+            }
+        }
+        
+        @Override
+        public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            done = true;
+            Object o = NotificationLite.error(t);
+            for (BehaviorSubscription<T> bs : terminate(o)) {
+                bs.emitNext(o, index);  // relaxed read okay since this is the only mutator thread
+            }
+        }
+        
+        @Override
+        public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
+            Object o = NotificationLite.complete();
+            for (BehaviorSubscription<T> bs : terminate(o)) {
+                bs.emitNext(o, index);  // relaxed read okay since this is the only mutator thread
+            }
+        }
+    }
+    
+    static final class BehaviorSubscription<T> extends AtomicLong implements Subscription {
+        /** */
+        private static final long serialVersionUID = 3293175281126227086L;
+        
+        final Subscriber<? super T> actual;
+        final State<T> state;
+        
+        boolean next;
+        boolean emitting;
+        AppendOnlyLinkedArrayList<Object> queue;
+        
+        boolean fastPath;
+        
+        volatile boolean cancelled;
+        
+        long index;
+
+        public BehaviorSubscription(Subscriber<? super T> actual, State<T> state) {
+            this.actual = actual;
+            this.state = state;
+        }
+        
+        @Override
+        public void request(long n) {
+            if (SubscriptionHelper.validateRequest(n)) {
+                return;
+            }
+            
+            BackpressureHelper.add(this, n);
+        }
+        
+        @Override
+        public void cancel() {
+            if (!cancelled) {
+                cancelled = true;
+                
+                state.remove(this);
+            }
+        }
+
+        void emitFirst() {
+            if (cancelled) {
+                return;
+            }
+            Object o;
+            synchronized (this) {
+                if (cancelled) {
+                    return;
+                }
+                if (next) {
+                    return;
+                }
+                /*
+                 * FIXME this allows double delivery of the current value
+                 * i.e.,
+                 * 
+                 * state.lazySet(o);
+                 *                       lock
+                 *                       o = state.get();
+                 *                       unlock
+                 *                       
+                 *                       emit(o)
+                 *                       
+                 * state.emitNext(o)
+                 *     lock
+                 *     queue <- o
+                 *     unlock
+                 *     
+                 *                       emitLoop
+                 *                            o <- queue
+                 *                            emit(o)
+                 *                            
+                 * To solve it, o needs an associated index value
+                 * and both have to be read atomically
+                 */
+                synchronized (state) {
+                    index = state.index;
+                    o = state.get();
+                }
+                emitting = o != null;
+                next = true;
+            }
+            
+            if (o != null) {
+                if (emit(o)) {
+                    return;
+                }
+            
+                emitLoop();
+            }
+        }
+        
+        void emitNext(Object value, long stateIndex) {
+            if (cancelled) {
+                return;
+            }
+            if (!fastPath) {
+                synchronized (this) {
+                    if (cancelled) {
+                        return;
+                    }
+                    if (emitting) {
+                        if (index != stateIndex) {
+                            AppendOnlyLinkedArrayList<Object> q = queue;
+                            if (q == null) {
+                                q = new AppendOnlyLinkedArrayList<>(4);
+                                queue = q;
+                            }
+                            q.add(value);
+                        }
+                        return;
+                    }
+                    next = true;
+                }
+                fastPath = true;
+            }
+
+            emit(value);
+        }
+
+        boolean emit(Object o) {
+            if (cancelled) {
+                return true;
+            }
+            
+            if (NotificationLite.isComplete(o)) {
+                cancel();
+                actual.onComplete();
+                return true;
+            } else
+            if (NotificationLite.isError(o)) {
+                cancel();
+                actual.onError(NotificationLite.getError(o));
+                return true;
+            }
+            
+            long r = get();
+            if (r != 0L) {
+                actual.onNext(NotificationLite.getValue(o));
+                if (r != Long.MAX_VALUE) {
+                    decrementAndGet();
+                }
+                return false;
+            }
+            cancel();
+            actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
+            return true;
+        }
+        
+        void emitLoop() {
+            for (;;) {
+                if (cancelled) {
+                    return;
+                }
+                AppendOnlyLinkedArrayList<Object> q;
+                synchronized (this) {
+                    q = queue;
+                    if (q == null) {
+                        emitting = false;
+                        return;
+                    }
+                    queue = null;
+                }
+                
+                q.forEachWhile(this::emit);
+            }
+        }
+    }
+    
+    public static void main(String[] args) {
+        BehaviorSubject<Object> bs = BehaviorSubject.createDefault(1);
+        
+        ForkJoinPool.commonPool().submit(() -> {
+            bs.onNext(2);
+        });
+        
+        bs.subscribe(System.out::println);
+    }
+}
