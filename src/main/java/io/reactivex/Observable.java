@@ -1974,4 +1974,24 @@ public class Observable<T> implements Publisher<T> {
         return lift(new OperatorWindowTimed<>(timespan, timeskip, unit, scheduler, Long.MAX_VALUE, bufferSize, false));
     }
 
+    public final <U> Observable<T> debounce(Function<? super T, ? extends Publisher<U>> debounceSelector) {
+        return lift(new OperatorDebounce<>(debounceSelector));
+    }
+
+    public final Observable<T> debounce(long timeout, TimeUnit unit) {
+        return debounce(timeout, unit, Schedulers.computation());
+    }
+
+    public final Observable<T> debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
+        return lift(new OperatorDebounceTimed<>(timeout, unit, scheduler));
+    }
+    
+    public final Observable<T> throttleWithTimeout(long timeout, TimeUnit unit) {
+        return debounce(timeout, unit);
+    }
+    
+    public final Observable<T> throttleWithTimeout(long timeout, TimeUnit unit, Scheduler scheduler) {
+        return debounce(timeout, unit, scheduler);
+    }
+
 }
