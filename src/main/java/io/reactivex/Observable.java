@@ -1994,4 +1994,114 @@ public class Observable<T> implements Publisher<T> {
         return debounce(timeout, unit, scheduler);
     }
 
+    public final Observable<T> just(T v1, T v2) {
+        Objects.requireNonNull(v1);
+        Objects.requireNonNull(v2);
+        
+        return fromArray(v1, v2);
+    }
+    
+    public final Observable<T> just(T v1, T v2, T v3) {
+        Objects.requireNonNull(v1);
+        Objects.requireNonNull(v2);
+        Objects.requireNonNull(v3);
+        
+        return fromArray(v1, v2, v3);
+    }
+    
+    public final Observable<T> just(T v1, T v2, T v3, T v4) {
+        Objects.requireNonNull(v1);
+        Objects.requireNonNull(v2);
+        Objects.requireNonNull(v3);
+        Objects.requireNonNull(v4);
+        
+        return fromArray(v1, v2, v3, v4);
+    }
+    
+    public final Observable<T> just(T v1, T v2, T v3, T v4, T v5) {
+        Objects.requireNonNull(v1);
+        Objects.requireNonNull(v2);
+        Objects.requireNonNull(v3);
+        Objects.requireNonNull(v4);
+        Objects.requireNonNull(v5);
+        
+        return fromArray(v1, v2, v3, v4, v5);
+    }
+    
+    public final Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6) {
+        Objects.requireNonNull(v1);
+        Objects.requireNonNull(v2);
+        Objects.requireNonNull(v3);
+        Objects.requireNonNull(v4);
+        Objects.requireNonNull(v5);
+        Objects.requireNonNull(v6);
+        
+        return fromArray(v1, v2, v3, v4, v5, v6);
+    }
+
+    public final Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7) {
+        Objects.requireNonNull(v1);
+        Objects.requireNonNull(v2);
+        Objects.requireNonNull(v3);
+        Objects.requireNonNull(v4);
+        Objects.requireNonNull(v5);
+        Objects.requireNonNull(v6);
+        Objects.requireNonNull(v7);
+        
+        return fromArray(v1, v2, v3, v4, v5, v6, v7);
+    }
+
+    public final Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8) {
+        Objects.requireNonNull(v1);
+        Objects.requireNonNull(v2);
+        Objects.requireNonNull(v3);
+        Objects.requireNonNull(v4);
+        Objects.requireNonNull(v5);
+        Objects.requireNonNull(v6);
+        Objects.requireNonNull(v7);
+        Objects.requireNonNull(v8);
+        
+        return fromArray(v1, v2, v3, v4, v5, v6, v7, v8);
+    }
+
+    public final Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9) {
+        Objects.requireNonNull(v1);
+        Objects.requireNonNull(v2);
+        Objects.requireNonNull(v3);
+        Objects.requireNonNull(v4);
+        Objects.requireNonNull(v5);
+        Objects.requireNonNull(v6);
+        Objects.requireNonNull(v7);
+        Objects.requireNonNull(v8);
+        Objects.requireNonNull(v9);
+        
+        return fromArray(v1, v2, v3, v4, v5, v6, v7, v8, v9);
+    }
+
+    public final Observable<T> scan(BiFunction<T, T, T> accumulator) {
+        Objects.requireNonNull(accumulator);
+        return lift(new OperatorScan<>(accumulator));
+    }
+    
+    public final <R> Observable<R> scan(R seed, BiFunction<R, ? super T, R> accumulator) {
+        return scanWith(() -> seed, accumulator);
+    }
+    
+    // Naming note, a plain scan would cause ambiguity with the value-seeded version
+    public final <R> Observable<R> scanWith(Supplier<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+        return lift(new OperatorScanSeed<>(seedSupplier, accumulator));
+    }
+    
+    public final Observable<T> reduce(BiFunction<T, T, T> reducer) {
+        return scan(reducer).last();
+    }
+    
+    public final <R> Observable<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
+        return scan(seed, reducer).last();
+    }
+    
+    // Naming note, a plain scan would cause ambiguity with the value-seeded version
+    public final <R> Observable<R> reduceWith(Supplier<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
+        return scanWith(seedSupplier, reducer).last();
+    }
 }

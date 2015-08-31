@@ -14,11 +14,13 @@ package io.reactivex.subscribers;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscribers.EmptySubscriber;
+import io.reactivex.internal.util.BackpressureHelper;
 
 /**
  * A subscriber that records events and allows making assertions about them.
@@ -40,9 +42,6 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     private final Long initialRequest;
     /** The latch that indicates an onError or onCompleted has been called. */
     private final CountDownLatch done;
-
-    /** The deque of subscriptions. For getLast(). */
-    private final Deque<Subscription> subscriptions;
     /** The list of values received. */
     private final List<T> values;
     /** The list of errors received. */
@@ -54,6 +53,34 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     /** Makes sure the incoming Subscriptions get cancelled immediately. */
     private volatile boolean cancelled;
+
+    /** Holds the current subscription if any. */
+    private volatile Subscription subscription;
+    /** Updater for subscription. */
+    @SuppressWarnings("rawtypes")
+    private static final AtomicReferenceFieldUpdater<TestSubscriber, Subscription> SUBSCRIPTION =
+            AtomicReferenceFieldUpdater.newUpdater(TestSubscriber.class, Subscription.class, "subscription");
+    
+    /** Holds the requested amount until a subscription arrives. */
+    @SuppressWarnings("unused")
+    private volatile long missedRequested;
+    /** Updater for subscription. */
+    @SuppressWarnings("rawtypes")
+    private static final AtomicLongFieldUpdater<TestSubscriber> MISSED_REQUESTED =
+            AtomicLongFieldUpdater.newUpdater(TestSubscriber.class, "missedRequested");
+    
+    /** Indicates a cancelled subscription. */
+    private static final Subscription CANCELLED = new Subscription() {
+        @Override
+        public void request(long n) {
+            
+        }
+        
+        @Override
+        public void cancel() {
+            
+        }
+    };
     /**
      * Constructs a non-forwarding TestSubscriber with an initial request value of Long.MAX_VALUE.
      */
@@ -89,7 +116,6 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public TestSubscriber(Subscriber<? super T> actual, Long initialRequest) {
         this.actual = actual;
         this.initialRequest = initialRequest;
-        this.subscriptions = new LinkedList<>();
         this.values = new ArrayList<>();
         this.errors = new ArrayList<>();
         this.done = new CountDownLatch(1);
@@ -101,8 +127,14 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         
         if (s == null) {
             errors.add(new NullPointerException("onSubscribe received a null Subscription"));
-        } else {
-            subscriptions.addLast(s);
+            return;
+        }
+        if (!SUBSCRIPTION.compareAndSet(this, null, s)) {
+            s.cancel();
+            if (subscription != CANCELLED) {
+                errors.add(new NullPointerException("onSubscribe received multiple subscriptions: " + s));
+            }
+            return;
         }
         
         if (cancelled) {
@@ -111,8 +143,17 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         
         actual.onSubscribe(s);
         
+        if (cancelled) {
+            return;
+        }
+        
         if (initialRequest != null) {
             s.request(initialRequest);
+        }
+        
+        long mr = MISSED_REQUESTED.getAndSet(this, 0L);
+        if (mr != 0L) {
+            s.request(mr);
         }
     }
     
@@ -158,13 +199,45 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     @Override
     public void request(long n) {
-        subscriptions.getLast().request(n);
+        if (n <= 0) {
+            errors.add(new IllegalArgumentException("n > 0 required but it was " + n));
+            return;
+        }
+        Subscription s = subscription;
+        if (s != null) {
+            s.request(n);
+        } else {
+            BackpressureHelper.add(MISSED_REQUESTED, this, n);
+            s = subscription;
+            if (s != null) {
+                long mr = MISSED_REQUESTED.getAndSet(this, 0L);
+                if (mr != 0L) {
+                    s.request(mr);
+                }
+            }
+        }
     }
     
     @Override
     public void cancel() {
-        cancelled = true;
-        subscriptions.forEach(Subscription::cancel);
+        if (!cancelled) {
+            cancelled = true;
+            Subscription s = subscription;
+            if (s != CANCELLED) {
+                s = SUBSCRIPTION.getAndSet(this, CANCELLED);
+                if (s != CANCELLED && s != null) {
+                    s.cancel();
+                }
+            }
+        }
+    }
+    
+    /**
+     * Returns true if this TestSubscriber has been cancelled.
+     * @return true if this TestSubscriber has been cancelled
+     */
+    public final boolean isCancelled() {
+        return cancelled;
     }
     
     @Override
@@ -207,14 +280,6 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     }
 
     /**
-     * Returns a shared collection of received onSubscribe subscriptions.
-     * @return a collection of received onSubscribe subscriptions
-     */
-    public final Deque<Subscription> subscriptions() {
-        return subscriptions;
-    }
-    
-    /**
      * Returns true if TestSubscriber received any onError or onComplete events.
      * @return true if TestSubscriber received any onError or onComplete events
      */
@@ -237,13 +302,13 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public final int errorCount() {
         return errors.size();
     }
-    
+
     /**
-     * Returns the number of onSubscribe subscriptions received.
-     * @return the number of onSubscribe subscriptions received
+     * Returns true if this TestSubscriber received a subscription.
+     * @return true if this TestSubscriber received a subscription
      */
-    public final int subscriptionCount() {
-        return subscriptions.size();
+    public final boolean hasSubscription() {
+        return subscription != null;
     }
     
     /**
@@ -555,12 +620,8 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
         }
-        int s = subscriptions.size();
-        if (s == 0) {
+        if (subscription == null) {
             fail(prefix, "Not subscribed!", errors);
-        } else
-        if (s != 1) {
-            fail(prefix, "Multiple subscriptions (" + s + ")", errors);
         }
     }
     
@@ -572,12 +633,8 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
         }
-        int s = subscriptions.size();
-        if (s == 1) {
+        if (subscription != null) {
             fail(prefix, "Subscribed!", errors);
-        } else
-        if (s > 1) {
-            fail(prefix, "Multiple subscriptions (" + s + ")", errors);
         } else
         if (!errors.isEmpty()) {
             fail(prefix, "Not subscribed but errors found", errors);
