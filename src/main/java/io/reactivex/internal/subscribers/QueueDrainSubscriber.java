@@ -211,6 +211,12 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
         }
         REQUESTED.addAndGet(this, n);
     }
+    
+    public void drain(boolean delayError) {
+        if (enter()) {
+            drainLoop(queue, actual, delayError);
+        }
+    }
 }
 
 // -------------------------------------------------------------------
