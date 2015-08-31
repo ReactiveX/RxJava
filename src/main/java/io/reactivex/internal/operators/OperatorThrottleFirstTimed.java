@@ -27,12 +27,12 @@ import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class OperatorDebounceTimed<T> implements Operator<T, T> {
+public final class OperatorThrottleFirstTimed<T> implements Operator<T, T> {
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
 
-    public OperatorDebounceTimed(long timeout, TimeUnit unit, Scheduler scheduler) {
+    public OperatorThrottleFirstTimed(long timeout, TimeUnit unit, Scheduler scheduler) {
         this.timeout = timeout;
         this.unit = unit;
         this.scheduler = scheduler;
@@ -46,7 +46,7 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
     }
     
     static final class DebounceTimedSubscriber<T> extends AtomicInteger 
-    implements Subscriber<T>, Subscription {
+    implements Subscriber<T>, Subscription, Runnable {
         /** */
         private static final long serialVersionUID = -9102637559663639004L;
         final Subscriber<? super T> actual;
@@ -64,8 +64,8 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
         static final Disposable CANCELLED = () -> { };
 
         static final Disposable NEW_TIMER = () -> { };
-        
-        volatile long index;
+
+        volatile boolean gate;
         
         volatile long requested;
         @SuppressWarnings("rawtypes")
@@ -73,6 +73,8 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
                 AtomicLongFieldUpdater.newUpdater(DebounceTimedSubscriber.class, "requested");
 
         boolean done;
+        
+        T value;
         
         public DebounceTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
             this.actual = actual;
@@ -107,44 +109,50 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
             if (done) {
                 return;
             }
-            long idx = index + 1;
-            index = idx;
+            
+            if (gate) {
+                value = t;
+                gate = false;
+            }
             
             Disposable d = timer;
             if (d != null) {
                 d.dispose();
             }
             
-            if (TIMER.compareAndSet(this, d, NEW_TIMER)) {
-                getAndIncrement();
-                d = worker.schedule(() -> {
-                    if (idx == index) {
-                        long r = requested;
-                        if (r != 0L) {
-                            actual.onNext(t);
-                            if (r != Long.MAX_VALUE) {
-                                REQUESTED.decrementAndGet(this);
-                            }
-                            
-                            if (decrementAndGet() == 0) {
-                                disposeTimer();
-                                worker.dispose();
-                                actual.onComplete();
-                            }
-                        } else {
-                            cancel();
-                            actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
-                        }
-                    }
-                }, timeout, unit);
-                
-                if (TIMER.compareAndSet(this, NEW_TIMER, d)) {
-                    if (timer == CANCELLED) {
-                        d.dispose();
-                    }
+            if (TIMER.compareAndSet(this, null, NEW_TIMER)) {
+                d = worker.schedule(this, timeout, unit);
+                if (!TIMER.compareAndSet(this, NEW_TIMER, d)) {
+                    d.dispose();
+                    value = null;
                 }
             }
-            
+        }
+        
+        @Override
+        public void run() {
+            if (!gate) {
+                T v = value;
+                value = null;
+                
+                long r = requested;
+                if (r != 0L) {
+                    actual.onNext(v);
+                    if (r != Long.MAX_VALUE) {
+                        REQUESTED.decrementAndGet(this);
+                    }
+                    if (decrementAndGet() == 0) {
+                        disposeTimer();
+                        worker.dispose();
+                        actual.onComplete();
+                        return;
+                    }
+                    gate = true;
+                } else {
+                    cancel();
+                    actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
+                }
+            }
         }
         
         @Override

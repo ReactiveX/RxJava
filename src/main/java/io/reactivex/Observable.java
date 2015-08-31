@@ -1975,6 +1975,7 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final <U> Observable<T> debounce(Function<? super T, ? extends Publisher<U>> debounceSelector) {
+        Objects.requireNonNull(debounceSelector);
         return lift(new OperatorDebounce<>(debounceSelector));
     }
 
@@ -1983,6 +1984,8 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final Observable<T> debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
+        Objects.requireNonNull(unit);
+        Objects.requireNonNull(scheduler);
         return lift(new OperatorDebounceTimed<>(timeout, unit, scheduler));
     }
     
@@ -2084,11 +2087,14 @@ public class Observable<T> implements Publisher<T> {
     }
     
     public final <R> Observable<R> scan(R seed, BiFunction<R, ? super T, R> accumulator) {
+        Objects.requireNonNull(seed);
         return scanWith(() -> seed, accumulator);
     }
     
     // Naming note, a plain scan would cause ambiguity with the value-seeded version
     public final <R> Observable<R> scanWith(Supplier<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+        Objects.requireNonNull(seedSupplier);
+        Objects.requireNonNull(accumulator);
         return lift(new OperatorScanSeed<>(seedSupplier, accumulator));
     }
     
@@ -2103,5 +2109,21 @@ public class Observable<T> implements Publisher<T> {
     // Naming note, a plain scan would cause ambiguity with the value-seeded version
     public final <R> Observable<R> reduceWith(Supplier<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
         return scanWith(seedSupplier, reducer).last();
+    }
+    
+    public final Observable<T> throttleFirst(long windowDuration, TimeUnit unit) {
+        return throttleFirst(windowDuration, unit, Schedulers.computation());
+    }
+
+    public final Observable<T> throttleFirst(long skipDuration, TimeUnit unit, Scheduler scheduler) {
+        return lift(new OperatorThrottleFirstTimed<T>(skipDuration, unit, scheduler));
+    }
+    
+    public final Observable<T> throttleLast(long intervalDuration, TimeUnit unit) {
+        return sample(intervalDuration, unit);
+    }
+    
+    public final Observable<T> throttleLast(long intervalDuration, TimeUnit unit, Scheduler scheduler) {
+        return sample(intervalDuration, unit, scheduler);
     }
 }
