@@ -27,16 +27,18 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
     final int bufferSize;
     final boolean unbounded;
     final boolean delayError;
+    final Runnable onOverflow;
     
-    public OperatorOnBackpressureBuffer(int bufferSize, boolean unbounded, boolean delayError) {
+    public OperatorOnBackpressureBuffer(int bufferSize, boolean unbounded, boolean delayError, Runnable onOverflow) {
         this.bufferSize = bufferSize;
         this.unbounded = unbounded;
         this.delayError = delayError;
+        this.onOverflow = onOverflow;
     }
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new BackpressureBufferSubscriber<>(t, bufferSize, unbounded, delayError);
+        return new BackpressureBufferSubscriber<>(t, bufferSize, unbounded, delayError, onOverflow);
     }
     
     static final class BackpressureBufferSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
@@ -45,6 +47,7 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         final Subscriber<? super T> actual;
         final Queue<T> queue;
         final boolean delayError;
+        final Runnable onOverflow;
         
         Subscription s;
         
@@ -58,8 +61,10 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         static final AtomicLongFieldUpdater<BackpressureBufferSubscriber> REQUESTED =
                 AtomicLongFieldUpdater.newUpdater(BackpressureBufferSubscriber.class, "requested");
         
-        public BackpressureBufferSubscriber(Subscriber<? super T> actual, int bufferSize, boolean unbounded, boolean delayError) {
+        public BackpressureBufferSubscriber(Subscriber<? super T> actual, int bufferSize, 
+                boolean unbounded, boolean delayError, Runnable onOverflow) {
             this.actual = actual;
+            this.onOverflow = onOverflow;
             this.delayError = delayError;
             
             Queue<T> q;
@@ -93,7 +98,13 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         public void onNext(T t) {
             if (!queue.offer(t)) {
                 s.cancel();
-                onError(new IllegalStateException("Buffer is full?!"));
+                IllegalStateException ex = new IllegalStateException("Buffer is full?!");
+                try {
+                    onOverflow.run();
+                } catch (Throwable e) {
+                    ex.addSuppressed(e);
+                }
+                onError(ex);
             }
         }
         

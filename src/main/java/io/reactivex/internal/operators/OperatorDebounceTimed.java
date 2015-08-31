@@ -59,7 +59,7 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
         volatile Disposable timer;
         @SuppressWarnings("rawtypes")
         static final AtomicReferenceFieldUpdater<DebounceTimedSubscriber, Disposable> TIMER =
-                AtomicReferenceFieldUpdater.newUpdater(DebounceTimedSubscriber.class, Disposable.class, "debouncer");
+                AtomicReferenceFieldUpdater.newUpdater(DebounceTimedSubscriber.class, Disposable.class, "timer");
 
         static final Disposable CANCELLED = () -> { };
 
@@ -91,6 +91,7 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
                 }
             }
         }
+        
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
