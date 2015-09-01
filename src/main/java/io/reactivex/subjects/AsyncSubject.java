@@ -71,13 +71,21 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         if (done) {
             return;
         }
+        if (t == null) {
+            onError(new NullPointerException());
+            return;
+        }
         state.lazySet(t);
     }
     
     @Override
     public void onError(Throwable t) {
         if (done) {
+            RxJavaPlugins.onError(t);
             return;
+        }
+        if (t == null) {
+            t = new NullPointerException();
         }
         done = true;
         state.lazySet(NotificationLite.error(t));
