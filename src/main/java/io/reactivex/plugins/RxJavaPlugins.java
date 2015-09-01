@@ -36,13 +36,17 @@ public final class RxJavaPlugins {
     static volatile Function<Scheduler, Scheduler> onInitSingleHandler;
     
     static volatile Function<Scheduler, Scheduler> onInitIOHandler;
+
+    static volatile Function<Scheduler, Scheduler> onInitNewThreadHandler;
     
     static volatile Function<Scheduler, Scheduler> onComputationHandler;
     
     static volatile Function<Scheduler, Scheduler> onSingleHandler;
     
     static volatile Function<Scheduler, Scheduler> onIOHandler;
-    
+
+    static volatile Function<Scheduler, Scheduler> onNewThreadHandler;
+
     /** Prevents changing the plugins. */
     private static volatile boolean lockdown;
     
@@ -83,7 +87,11 @@ public final class RxJavaPlugins {
     public static Function<Scheduler, Scheduler> getInitIOSchedulerHandler() {
         return onInitIOHandler;
     }
-    
+
+    public static Function<Scheduler, Scheduler> getInitNewThreadSchedulerHandler() {
+        return onInitNewThreadHandler;
+    }
+
     public static Function<Scheduler, Scheduler> getInitSingleSchedulerHandler() {
         return onInitSingleHandler;
     }
@@ -91,7 +99,11 @@ public final class RxJavaPlugins {
     public static Function<Scheduler, Scheduler> getIOSchedulerHandler() {
         return onIOHandler;
     }
-    
+
+    public static Function<Scheduler, Scheduler> getNewThreadSchedulerHandler() {
+        return onNewThreadHandler;
+    }
+
     public static Function<Runnable, Runnable> getScheduleHandler() {
         return onScheduleHandler;
     }
@@ -113,6 +125,14 @@ public final class RxJavaPlugins {
 
     public static Scheduler initIOScheduler(Scheduler defaultScheduler) {
         Function<Scheduler, Scheduler> f = onInitIOHandler;
+        if (f == null) {
+            return defaultScheduler;
+        }
+        return f.apply(defaultScheduler);
+    }
+
+    public static Scheduler initNewThreadScheduler(Scheduler defaultScheduler) {
+        Function<Scheduler, Scheduler> f = onInitNewThreadHandler;
         if (f == null) {
             return defaultScheduler;
         }
@@ -179,6 +199,14 @@ public final class RxJavaPlugins {
         return f.apply(defaultScheduler);
     }
 
+    public static Scheduler onNewThreadScheduler(Scheduler defaultScheduler) {
+        Function<Scheduler, Scheduler> f = onNewThreadHandler;
+        if (f == null) {
+            return defaultScheduler;
+        }
+        return f.apply(defaultScheduler);
+    }
+
     /**
      * Called when a task is scheduled.
      * @param run
@@ -225,10 +253,15 @@ public final class RxJavaPlugins {
         
         setComputationSchedulerHandler(null);
         setInitComputationSchedulerHandler(null);
-        setInitIOSchedulerHandler(null);
+        
         setIOSchedulerHandler(null);
-        setInitSingleSchedulerHandler(null);
+        setInitIOSchedulerHandler(null);
+
         setSingleSchedulerHandler(null);
+        setInitSingleSchedulerHandler(null);
+
+        setNewThreadSchedulerHandler(null);
+        setInitNewThreadSchedulerHandler(null);
     }
 
     public static void setComputationSchedulerHandler(Function<Scheduler, Scheduler> handler) {
@@ -267,6 +300,14 @@ public final class RxJavaPlugins {
         onInitIOHandler = handler;
     }
 
+    public static void setInitNewThreadSchedulerHandler(Function<Scheduler, Scheduler> handler) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        onInitNewThreadHandler = handler;
+    }
+
+    
     public static void setInitSingleSchedulerHandler(Function<Scheduler, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -279,6 +320,13 @@ public final class RxJavaPlugins {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
         onIOHandler = handler;
+    }
+
+    public static void setNewThreadSchedulerHandler(Function<Scheduler, Scheduler> handler) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        onNewThreadHandler = handler;
     }
 
     public static void setScheduleHandler(Function<Runnable, Runnable> handler) {

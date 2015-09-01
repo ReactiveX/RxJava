@@ -50,7 +50,7 @@ public final class Schedulers {
         
         TRAMPOLINE = TrampolineScheduler.instance();
         
-        NEW_THREAD = NewThreadScheduler.instance();
+        NEW_THREAD = RxJavaPlugins.initNewThreadScheduler(NewThreadScheduler.instance());
     }
     
     public static Scheduler computation() {
@@ -70,7 +70,7 @@ public final class Schedulers {
     }
 
     public static Scheduler newThread() {
-        return NEW_THREAD;
+        return RxJavaPlugins.onNewThreadScheduler(NEW_THREAD);
     }
     
     /*
