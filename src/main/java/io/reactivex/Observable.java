@@ -310,6 +310,38 @@ public class Observable<T> implements Publisher<T> {
         return create(new PublisherStreamSource<>(stream));
     }
     
+    public static <T> Observable<T> generate(Consumer<Subscriber<T>> generator) {
+        return generate(() -> null, (s, o) -> {
+            generator.accept(o);
+            return s;
+        }, s -> { });
+    }
+
+    public static <T, S> Observable<T> generate(Supplier<S> initialState, BiConsumer<S, Subscriber<T>> generator) {
+        return generate(initialState, (s, o) -> {
+            generator.accept(s, o);
+            return s;
+        }, s -> { });
+    }
+
+    public static <T, S> Observable<T> generate(Supplier<S> initialState, BiConsumer<S, Subscriber<T>> generator, Consumer<? super S> disposeState) {
+        return generate(initialState, (s, o) -> {
+            generator.accept(s, o);
+            return s;
+        }, disposeState);
+    }
+
+    public static <T, S> Observable<T> generate(Supplier<S> initialState, BiFunction<S, Subscriber<T>, S> generator) {
+        return generate(initialState, generator, s -> { });
+    }
+
+    public static <T, S> Observable<T> generate(Supplier<S> initialState, BiFunction<S, Subscriber<T>, S> generator, Consumer<? super S> disposeState) {
+        Objects.requireNonNull(initialState);
+        Objects.requireNonNull(generator);
+        Objects.requireNonNull(disposeState);
+        return create(new PublisherGenerate<>(initialState, generator, disposeState));
+    }
+
     public static Observable<Long> interval(long initialDelay, long period, TimeUnit unit) {
         return interval(initialDelay, period, unit, Schedulers.computation());
     }
