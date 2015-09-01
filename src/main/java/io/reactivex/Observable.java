@@ -311,6 +311,7 @@ public class Observable<T> implements Publisher<T> {
     }
     
     public static <T> Observable<T> generate(Consumer<Subscriber<T>> generator) {
+        Objects.requireNonNull(generator);
         return generate(() -> null, (s, o) -> {
             generator.accept(o);
             return s;
@@ -318,6 +319,7 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public static <T, S> Observable<T> generate(Supplier<S> initialState, BiConsumer<S, Subscriber<T>> generator) {
+        Objects.requireNonNull(generator);
         return generate(initialState, (s, o) -> {
             generator.accept(s, o);
             return s;
@@ -325,6 +327,7 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public static <T, S> Observable<T> generate(Supplier<S> initialState, BiConsumer<S, Subscriber<T>> generator, Consumer<? super S> disposeState) {
+        Objects.requireNonNull(generator);
         return generate(initialState, (s, o) -> {
             generator.accept(s, o);
             return s;
