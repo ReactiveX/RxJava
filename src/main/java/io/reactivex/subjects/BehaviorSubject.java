@@ -14,8 +14,8 @@
 package io.reactivex.subjects;
 
 import java.util.Objects;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.*;
+import java.util.concurrent.locks.StampedLock;
 
 import org.reactivestreams.*;
 
@@ -144,7 +144,10 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
         long index;
         
+        final StampedLock lock;
+        
         public State() {
+            this.lock = new StampedLock();
             SUBSCRIBERS.lazySet(this, EMPTY);
         }
         
@@ -245,10 +248,12 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         }
         
         void setCurrent(Object o) {
-            // either this or lots of pair-allocations
-            synchronized (this) {
-                lazySet(o);
+            long stamp = lock.writeLock();
+            try {
                 index++;
+                lazySet(o);
+            } finally {
+                lock.unlockWrite(stamp);
             }
         }
         
@@ -260,7 +265,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             Object o = NotificationLite.next(t);
             setCurrent(o);
             for (BehaviorSubscription<T> bs : subscribers) {
-                bs.emitNext(o, index); // relaxed read okay since this is the only mutator thread
+                bs.emitNext(o, index);
             }
         }
         
@@ -273,7 +278,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             done = true;
             Object o = NotificationLite.error(t);
             for (BehaviorSubscription<T> bs : terminate(o)) {
-                bs.emitNext(o, index);  // relaxed read okay since this is the only mutator thread
+                bs.emitNext(o, index);
             }
         }
         
@@ -342,33 +347,23 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                 if (next) {
                     return;
                 }
-                /*
-                 * FIXME this allows double delivery of the current value
-                 * i.e.,
-                 * 
-                 * state.lazySet(o);
-                 *                       lock
-                 *                       o = state.get();
-                 *                       unlock
-                 *                       
-                 *                       emit(o)
-                 *                       
-                 * state.emitNext(o)
-                 *     lock
-                 *     queue <- o
-                 *     unlock
-                 *     
-                 *                       emitLoop
-                 *                            o <- queue
-                 *                            emit(o)
-                 *                            
-                 * To solve it, o needs an associated index value
-                 * and both have to be read atomically
-                 */
-                synchronized (state) {
-                    index = state.index;
-                    o = state.get();
+                
+                State<T> s = state;
+                StampedLock lock = s.lock;
+                
+                long stamp = lock.tryOptimisticRead();
+                index = s.index;
+                o = s.get();
+                if (!lock.validate(stamp)) {
+                    stamp = lock.readLock();
+                    try {
+                        index = s.index;
+                        o = s.get();
+                    } finally {
+                        lock.unlockRead(stamp);
+                    }
                 }
+                
                 emitting = o != null;
                 next = true;
             }
@@ -391,15 +386,16 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                     if (cancelled) {
                         return;
                     }
+                    if (index == stateIndex) {
+                        return;
+                    }
                     if (emitting) {
-                        if (index != stateIndex) {
-                            AppendOnlyLinkedArrayList<Object> q = queue;
-                            if (q == null) {
-                                q = new AppendOnlyLinkedArrayList<>(4);
-                                queue = q;
-                            }
-                            q.add(value);
+                        AppendOnlyLinkedArrayList<Object> q = queue;
+                        if (q == null) {
+                            q = new AppendOnlyLinkedArrayList<>(4);
+                            queue = q;
                         }
+                        q.add(value);
                         return;
                     }
                     next = true;
@@ -457,15 +453,5 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                 q.forEachWhile(this::emit);
             }
         }
-    }
-    
-    public static void main(String[] args) {
-        BehaviorSubject<Object> bs = BehaviorSubject.createDefault(1);
-        
-        ForkJoinPool.commonPool().submit(() -> {
-            bs.onNext(2);
-        });
-        
-        bs.subscribe(System.out::println);
     }
 }
