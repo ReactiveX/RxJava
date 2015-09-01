@@ -539,7 +539,21 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
     }
     
-    abstract static class BoundedReplayBuffer<T> implements ReplayBuffer<T> {
+    static final class TimedNode<T> extends AtomicReference<TimedNode<T>> {
+        /** */
+        private static final long serialVersionUID = 6404226426336033100L;
+        
+        final T value;
+        final long time;
+        
+        public TimedNode(T value, long time) {
+            this.value = value;
+            this.time = time;
+        }
+    }
+    
+    static final class SizeBoundReplayBuffer<T> implements ReplayBuffer<T> {
+        final int maxSize;
         int size;
         
         volatile Node<Object> head;
@@ -548,14 +562,23 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         volatile boolean done;
         
-        public BoundedReplayBuffer() {
+        public SizeBoundReplayBuffer(int maxSize) {
+            this.maxSize = maxSize;
             Node<Object> h = new Node<>(null);
             this.tail = h;
             this.head = h;
         }
+
+        void trim() {
+            if (size > maxSize) {
+                Node<Object> h = head;
+                head = h.get();
+            }
+        }
+        
         @Override
         public void add(T value) {
-            Object o = enter(value);
+            Object o = value;
             Node<Object> n = new Node<>(o);
             Node<Object> t = tail;
 
@@ -568,26 +591,17 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         @Override
         public void addFinal(Object notificationLite) {
-            Object o = enter(notificationLite);
+            Object o = notificationLite;
             Node<Object> n = new Node<>(o);
             Node<Object> t = tail;
 
             tail = n;
             size++;
             t.lazySet(n); // releases both the tail and size
-            trimFinal();
             
             done = true;
         }
         
-        abstract Object enter(Object value);
-        
-        abstract Object leave(Object value);
-        
-        abstract void trim();
-
-        abstract void trimFinal();
-
         @Override
         @SuppressWarnings("unchecked")
         public T getValue() {
@@ -607,9 +621,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             if (v == null) {
                 return null;
             }
-            v = leave(v);
             if (NotificationLite.isComplete(v) || NotificationLite.isError(v)) {
-                return (T)leave(prev.value);
+                return (T)prev.value;
             }
             
             return (T)v;
@@ -633,7 +646,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 int i = 0;
                 while (i != s) {
                     Node<Object> next = h.get();
-                    array[i] = (T)leave(next.value);
+                    array[i] = (T)next.value;
                     i++;
                     h = next;
                 }
@@ -680,7 +693,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                         break;
                     }
                     
-                    Object o = leave(n.value);
+                    Object o = n.value;
                     
                     if (done) {
                         if (n.get() == null) {
@@ -743,42 +756,18 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
     }
     
-    static final class SizeBoundReplayBuffer<T> extends BoundedReplayBuffer<T> {
-        final int maxSize;
-        
-        public SizeBoundReplayBuffer(int maxSize) {
-            this.maxSize = maxSize;
-        }
-
-        @Override
-        Object enter(Object value) {
-            return value;
-        }
-        
-        @Override
-        Object leave(Object value) {
-            return value;
-        }
-        
-        @Override
-        void trim() {
-            if (size > maxSize) {
-                Node<Object> h = head;
-                head = h.get();
-            }
-        }
-        
-        @Override
-        void trimFinal() {
-            // do nothing
-        }
-    }
-    
-    static final class SizeAndTimeBoundReplayBuffer<T> extends BoundedReplayBuffer<T> {
+    static final class SizeAndTimeBoundReplayBuffer<T> implements ReplayBuffer<T> {
         final int maxSize;
         final long maxAge;
         final TimeUnit unit;
         final Scheduler scheduler;
+        int size;
+        
+        volatile TimedNode<Object> head;
+        
+        TimedNode<Object> tail;
+        
+        volatile boolean done;
         
         
         public SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
@@ -786,49 +775,236 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             this.maxAge = maxAge;
             this.unit = unit;
             this.scheduler = scheduler;
+            TimedNode<Object> h = new TimedNode<>(null, 0L);
+            this.tail = h;
+            this.head = h;
         }
 
-        @Override
-        Object enter(Object value) {
-            return new Timed<>(value, scheduler.now(unit), unit);
-        }
-        
-        @Override
-        Object leave(Object value) {
-            return ((Timed<?>)value).value();
-        }
-        
-        @Override
         void trim() {
             if (size > maxSize) {
-                Node<Object> h = head;
+                TimedNode<Object> h = head;
                 head = h.get();
             }
-            
-            trimFinal();
-        }
-        
-        @Override
-        void trimFinal() {
             long limit = scheduler.now(unit) - maxAge;
             
-            Node<Object> h = head;
+            TimedNode<Object> h = head;
             
             for (;;) {
-                Node<Object> next = h.get();
+                TimedNode<Object> next = h.get();
                 if (next == null) {
                     head = h;
                     break;
                 }
-                Timed<?> t = (Timed<?>)next.value;
                 
-                if (t.time() > limit) {
-                    head = next;
+                if (next.time > limit) {
+                    head = h;
                     break;
                 }
                 
                 h = next;
             }
+            
+        }
+        
+        void trimFinal() {
+            long limit = scheduler.now(unit) - maxAge;
+            
+            TimedNode<Object> h = head;
+            
+            for (;;) {
+                TimedNode<Object> next = h.get();
+                if (next.get() == null) {
+                    head = h;
+                    break;
+                }
+                
+                if (next.time > limit) {
+                    head = h;
+                    break;
+                }
+                
+                h = next;
+            }
+        }
+        
+        @Override
+        public void add(T value) {
+            Object o = value;
+            TimedNode<Object> n = new TimedNode<>(o, scheduler.now(unit));
+            TimedNode<Object> t = tail;
+
+            tail = n;
+            size++;
+            t.lazySet(n); // releases both the tail and size
+            
+            trim();
+        }
+        
+        @Override
+        public void addFinal(Object notificationLite) {
+            Object o = notificationLite;
+            TimedNode<Object> n = new TimedNode<>(o, Long.MAX_VALUE);
+            TimedNode<Object> t = tail;
+
+            tail = n;
+            size++;
+            t.lazySet(n); // releases both the tail and size
+            trimFinal();
+            
+            done = true;
+        }
+        
+        @Override
+        @SuppressWarnings("unchecked")
+        public T getValue() {
+            TimedNode<Object> prev = null;
+            TimedNode<Object> h = head;
+
+            for (;;) {
+                TimedNode<Object> next = h.get();
+                if (next == null) {
+                    break;
+                }
+                prev = h;
+                h = next;
+            }
+            
+            Object v = h.value;
+            if (v == null) {
+                return null;
+            }
+            if (NotificationLite.isComplete(v) || NotificationLite.isError(v)) {
+                return (T)prev.value;
+            }
+            
+            return (T)v;
+        }
+        
+        @Override
+        @SuppressWarnings("unchecked")
+        public T[] getValues(T[] array) {
+            TimedNode<Object> h = head;
+            int s = size();
+            
+            if (s == 0) {
+                if (array.length != 0) {
+                    array[0] = null;
+                }
+            } else {
+                if (array.length < s) {
+                    array = (T[])Array.newInstance(array.getClass().getComponentType(), s);
+                }
+
+                int i = 0;
+                while (i != s) {
+                    TimedNode<Object> next = h.get();
+                    array[i] = (T)next.value;
+                    i++;
+                    h = next;
+                }
+            }
+            
+            return array;
+        }
+        
+        @Override
+        @SuppressWarnings("unchecked")
+        public void replay(ReplaySubscription<T> rs) {
+            if (rs.getAndIncrement() != 0) {
+                return;
+            }
+            
+            int missed = 1;
+            final Subscriber<? super T> a = rs.actual;
+
+            TimedNode<Object> index = (TimedNode<Object>)rs.index;
+            if (index == null) {
+                index = head;
+            }
+
+            for (;;) {
+
+                if (rs.cancelled) {
+                    rs.index = null;
+                    return;
+                }
+
+                long r = rs.requested;
+                boolean unbounded = r == Long.MAX_VALUE;
+                long e = 0;
+                
+                for (;;) {
+                    if (rs.cancelled) {
+                        rs.index = null;
+                        return;
+                    }
+                    
+                    TimedNode<Object> n = index.get();
+                    
+                    if (n == null) {
+                        break;
+                    }
+                    
+                    Object o = n.value;
+                    
+                    if (done) {
+                        if (n.get() == null) {
+                            
+                            if (NotificationLite.isComplete(o)) {
+                                a.onComplete();
+                            } else {
+                                a.onError(NotificationLite.getError(o));
+                            }
+                            rs.index = null;
+                            rs.cancelled = true;
+                            return;
+                        }
+                    }
+                    
+                    if (r == 0) {
+                        r = rs.requested;
+                        if (r == 0) {
+                            break;
+                        }
+                    }
+
+                    a.onNext((T)o);
+                    r--;
+                    e--;
+                    
+                    index = n;
+                }
+                
+                if (!unbounded) {
+                    r = ReplaySubscription.REQUESTED.addAndGet(rs, e);
+                }
+                if (index.get() != null && r != 0L) {
+                    continue;
+                }
+                
+                rs.index = index;
+                
+                missed = rs.addAndGet(-missed);
+                if (missed == 0) {
+                    break;
+                }
+            }
+        }
+        
+        @Override
+        public int size() {
+            int s = 0;
+            TimedNode<Object> h = head;
+            while (s != Integer.MAX_VALUE) {
+                TimedNode<Object> next = h.get();
+                if (next == null) {
+                    break;
+                }
+                s++;
+                h = next;
+            }
+            
+            return s;
         }
     }
 }
