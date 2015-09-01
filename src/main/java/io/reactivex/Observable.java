@@ -2163,6 +2163,34 @@ public class Observable<T> implements Publisher<T> {
         }
         return lift(new OperatorWindowTimed<>(timespan, timespan, unit, scheduler, count, bufferSize, restart));
     }
+    
+    public final <B> Observable<Observable<T>> window(Publisher<B> boundary) {
+        return window(boundary, bufferSize());
+    }
+
+    public final <B> Observable<Observable<T>> window(Publisher<B> boundary, int bufferSize) {
+        return lift(new OperatorWindowBoundary<>(boundary, bufferSize));
+    }
+
+    public final <B> Observable<Observable<T>> window(Supplier<? extends Publisher<B>> boundary) {
+        return window(boundary, bufferSize());
+    }
+
+    public final <B> Observable<Observable<T>> window(Supplier<? extends Publisher<B>> boundary, int bufferSize) {
+        return lift(new OperatorWindowBoundarySupplier<>(boundary, bufferSize));
+    }
+    
+    public final <U, V> Observable<Observable<T>> window(
+            Publisher<U> windowOpen, 
+            Function<? super U, ? extends Publisher<V>> windowClose) {
+        return window(windowOpen, windowClose, bufferSize());
+    }
+
+    public final <U, V> Observable<Observable<T>> window(
+            Publisher<U> windowOpen, 
+            Function<? super U, ? extends Publisher<V>> windowClose, int bufferSize) {
+        return lift(new OperatorWindowBoundarySelector<>(windowOpen, windowClose, bufferSize));
+    }
 
     public final <U, R> Observable<R> withLatestFrom(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> combiner) {
         Objects.requireNonNull(other);
