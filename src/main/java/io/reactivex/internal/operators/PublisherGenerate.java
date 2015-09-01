@@ -155,7 +155,7 @@ public final class PublisherGenerate<T, S> implements Publisher<T> {
                 cancelled = true;
 
                 // if there are no running requests, just dispose the state
-                if (getAndIncrement() == 0) {
+                if (BackpressureHelper.add(this, 1) == 0) {
                     dispose(state);
                 }
             }
