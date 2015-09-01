@@ -306,7 +306,7 @@ public final class RxJavaPlugins {
     /**
      * Rewokes the lockdown, only for testing purposes.
      */
-    /* test. */void unlock() {
+    /* test. */static void unlock() {
         lockdown = false;
     }
     
