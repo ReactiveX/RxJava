@@ -22,33 +22,46 @@ import io.reactivex.Scheduler;
  * Utility class to inject handlers to certain standard RxJava operations.
  */
 public final class RxJavaPlugins {
-    static final Consumer<Throwable> DEFAULT_ERROR_HANDLER = error -> {
-        if (error != null) {
-            error.printStackTrace();
-        } else {
-            new NullPointerException().printStackTrace();
-        }
-    };
     
-    static volatile Consumer<Throwable> errorHandler = DEFAULT_ERROR_HANDLER;
+    static volatile Consumer<Throwable> errorHandler;
     
-    static volatile Function<Subscriber<Object>, Subscriber<Object>> onSubscribeHandler = e -> e;
+    static volatile Function<Subscriber<Object>, Subscriber<Object>> onSubscribeHandler;
     
-    static volatile Function<Publisher<Object>, Publisher<Object>> onCreateHandler = e -> e;
+    static volatile Function<Publisher<Object>, Publisher<Object>> onCreateHandler;
 
-    static volatile Function<Runnable, Runnable> onScheduleHandler = r -> r;
+    static volatile Function<Runnable, Runnable> onScheduleHandler;
 
-    static volatile Function<Scheduler, Scheduler> onInitComputationHandler = s -> s;
+    static volatile Function<Scheduler, Scheduler> onInitComputationHandler;
     
-    static volatile Function<Scheduler, Scheduler> onInitSingleHandler = s -> s;
+    static volatile Function<Scheduler, Scheduler> onInitSingleHandler;
     
-    static volatile Function<Scheduler, Scheduler> onInitIOHandler = s -> s;
+    static volatile Function<Scheduler, Scheduler> onInitIOHandler;
     
-    static volatile Function<Scheduler, Scheduler> onComputationHandler = s -> s;
+    static volatile Function<Scheduler, Scheduler> onComputationHandler;
     
-    static volatile Function<Scheduler, Scheduler> onSingleHandler = s -> s;
+    static volatile Function<Scheduler, Scheduler> onSingleHandler;
     
-    static volatile Function<Scheduler, Scheduler> onIOHandler = s -> s;
+    static volatile Function<Scheduler, Scheduler> onIOHandler;
+    
+    /** Prevents changing the plugins. */
+    private static volatile boolean lockdown;
+    
+    /**
+     * Prevents changing the plugins from then on.
+     * <p>This allows container-like environments to prevent clients
+     * messing with plugins. 
+     */
+    public static void lockdown() {
+        lockdown = true;
+    }
+    
+    /**
+     * Returns true if the plugins were locked down.
+     * @return true if the plugins were locked down
+     */
+    public static boolean isLockdown() {
+        return lockdown;
+    }
     
     public static Function<Scheduler, Scheduler> getComputationSchedulerHandler() {
         return onComputationHandler;
@@ -91,19 +104,35 @@ public final class RxJavaPlugins {
     }
     
     public static Scheduler initComputationScheduler(Scheduler defaultScheduler) {
-        return onInitComputationHandler.apply(defaultScheduler);
+        Function<Scheduler, Scheduler> f = onInitComputationHandler;
+        if (f == null) {
+            return defaultScheduler;
+        }
+        return f.apply(defaultScheduler); // JIT will skip this
     }
 
     public static Scheduler initIOScheduler(Scheduler defaultScheduler) {
-        return onInitIOHandler.apply(defaultScheduler);
+        Function<Scheduler, Scheduler> f = onInitIOHandler;
+        if (f == null) {
+            return defaultScheduler;
+        }
+        return f.apply(defaultScheduler);
     }
 
     public static Scheduler initSingleScheduler(Scheduler defaultScheduler) {
-        return onInitSingleHandler.apply(defaultScheduler);
+        Function<Scheduler, Scheduler> f = onInitSingleHandler;
+        if (f == null) {
+            return defaultScheduler;
+        }
+        return f.apply(defaultScheduler);
     }
 
     public static Scheduler onComputationScheduler(Scheduler defaultScheduler) {
-        return onComputationHandler.apply(defaultScheduler);
+        Function<Scheduler, Scheduler> f = onComputationHandler;
+        if (f == null) {
+            return defaultScheduler;
+        }
+        return f.apply(defaultScheduler);
     }
     /**
      * Called when an Observable is created.
@@ -112,23 +141,42 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "unchecked", "rawtypes"})
     public static <T> Publisher<T> onCreate(Publisher<T> publisher) {
-        return (Publisher)((Function)onCreateHandler).apply(publisher);
+        Function<Publisher<Object>, Publisher<Object>> f = onCreateHandler;
+        if (f == null) {
+            return publisher;
+        }
+        return (Publisher)((Function)f).apply(publisher);
     }
     /**
      * Called when an undeliverable error occurs.
      * @param error the error to report
      */
     public static void onError(Throwable error) {
-        try {
-            errorHandler.accept(error);
-        } catch (Throwable e) {
-            error.addSuppressed(e);
-            DEFAULT_ERROR_HANDLER.accept(e);
+        Consumer<Throwable> f = errorHandler;
+        if (f != null) {
+            try {
+                f.accept(error);
+                return;
+            } catch (Throwable e) {
+                if (error == null) {
+                    error = new NullPointerException();
+                }
+                error.addSuppressed(e);
+            }
+        } else {
+            if (error == null) {
+                error = new NullPointerException();
+            }
         }
+        error.printStackTrace();
     }
     
     public static Scheduler onIOScheduler(Scheduler defaultScheduler) {
-        return onIOHandler.apply(defaultScheduler);
+        Function<Scheduler, Scheduler> f = onIOHandler;
+        if (f == null) {
+            return defaultScheduler;
+        }
+        return f.apply(defaultScheduler);
     }
 
     /**
@@ -137,11 +185,19 @@ public final class RxJavaPlugins {
      * @return
      */
     public static Runnable onSchedule(Runnable run) {
-        return onScheduleHandler.apply(run);
+        Function<Runnable, Runnable> f = onScheduleHandler;
+        if (f == null) {
+            return run;
+        }
+        return f.apply(run);
     }
 
     public static Scheduler onSingleScheduler(Scheduler defaultScheduler) {
-        return onSingleHandler.apply(defaultScheduler);
+        Function<Scheduler, Scheduler> f = onSingleHandler;
+        if (f == null) {
+            return defaultScheduler;
+        }
+        return f.apply(defaultScheduler);
     }
 
     /**
@@ -151,7 +207,11 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "unchecked", "rawtypes"})
     public static <T> Subscriber<T> onSubscribe(Subscriber<T> subscriber) {
-        return (Subscriber)((Function)onSubscribeHandler).apply(subscriber);
+        Function<Subscriber<Object>, Subscriber<Object>> f = onSubscribeHandler;
+        if (f == null) {
+            return subscriber;
+        }
+        return (Subscriber)((Function)f).apply(subscriber);
     }
 
     /**
@@ -172,87 +232,84 @@ public final class RxJavaPlugins {
     }
 
     public static void setComputationSchedulerHandler(Function<Scheduler, Scheduler> handler) {
-        if (handler == null) {
-            onComputationHandler = s -> s;
-        } else {
-            onComputationHandler = handler;
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
         }
+        onComputationHandler = handler;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> void setCreateHandler(Function<Publisher<T>, Publisher<T>> handler) {
-        if (handler == null) {
-            onCreateHandler = p -> p;
-        } else {
-            onCreateHandler = (Function)handler;
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
         }
+        onCreateHandler = (Function)handler;
     }
 
     public static void setErrorHandler(Consumer<Throwable> handler) {
-        if (handler == null) {
-            errorHandler = DEFAULT_ERROR_HANDLER;
-        } else {
-            errorHandler = handler;
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
         }
+        errorHandler = handler;
     }
 
     public static void setInitComputationSchedulerHandler(Function<Scheduler, Scheduler> handler) {
-        if (handler == null) {
-            onInitComputationHandler = s -> s;
-        } else {
-            onInitComputationHandler = handler;
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
         }
+        onInitComputationHandler = handler;
     }
 
     public static void setInitIOSchedulerHandler(Function<Scheduler, Scheduler> handler) {
-        if (handler == null) {
-            onInitIOHandler = s -> s;
-        } else {
-            onInitIOHandler = handler;
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
         }
+        onInitIOHandler = handler;
     }
 
     public static void setInitSingleSchedulerHandler(Function<Scheduler, Scheduler> handler) {
-        if (handler == null) {
-            onInitSingleHandler = s -> s;
-        } else {
-            onInitSingleHandler = handler;
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
         }
+        onInitSingleHandler = handler;
     }
 
     public static void setIOSchedulerHandler(Function<Scheduler, Scheduler> handler) {
-        if (handler == null) {
-            onIOHandler = s -> s;
-        } else {
-            onIOHandler = handler;
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
         }
+        onIOHandler = handler;
     }
 
     public static void setScheduleHandler(Function<Runnable, Runnable> handler) {
-        if (handler == null) {
-            onScheduleHandler = r -> r;
-        } else {
-            onScheduleHandler = handler;
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
         }
+        onScheduleHandler = handler;
     }
 
     public static void setSingleSchedulerHandler(Function<Scheduler, Scheduler> handler) {
-        if (handler == null) {
-            onSingleHandler = s -> s;
-        } else {
-            onSingleHandler = handler;
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
         }
+        onSingleHandler = handler;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> void setSubscribeHandler(Function<Subscriber<T>, Subscriber<T>> handler) {
-        if (handler == null) {
-            onSubscribeHandler = e -> e;
-        } else {
-            onSubscribeHandler = (Function)handler;
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
         }
+        onSubscribeHandler = (Function)handler;
     }
 
+    /**
+     * Rewokes the lockdown, only for testing purposes.
+     */
+    /* test. */void unlock() {
+        lockdown = false;
+    }
+    
     private RxJavaPlugins() {
         throw new IllegalStateException("No instances!");
     }
