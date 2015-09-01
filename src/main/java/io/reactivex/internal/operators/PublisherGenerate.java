@@ -123,6 +123,10 @@ public final class PublisherGenerate<T, S> implements Publisher<T> {
             
                 if (!unbounded) {
                     n = get();
+                    if (n == Long.MAX_VALUE) {
+                        continue;
+                    }
+                    n += e;
                     if (n != 0L) {
                         continue; // keep draining and delay the addAndGet as much as possible
                     }
