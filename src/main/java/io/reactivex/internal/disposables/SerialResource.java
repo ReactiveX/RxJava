@@ -73,4 +73,26 @@ public final class SerialResource<T> extends AtomicReference<Object> implements 
     public void dispose() {
         TerminalAtomicsHelper.terminate(this, DISPOSED, (Consumer<Object>)disposer);
     }
+    
+    /**
+     * Returns the current held resource or null if no resource
+     * is set or the container has been disposed.
+     * @return the currently held resource
+     */
+    @SuppressWarnings("unchecked")
+    public T getResource() {
+        Object d = get();
+        if (d == DISPOSED) {
+            return null;
+        }
+        return (T)d;
+    }
+    
+    /**
+     * Returns true if this resource has been disposed.
+     * @return true if this resource has been disposed
+     */
+    public boolean isDisposed() {
+        return get() == DISPOSED;
+    }
 }

@@ -139,4 +139,20 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
     public boolean isDisposed() {
         return disposed;
     }
+    
+    public void clear() {
+        if (!disposed) {
+            OpenHashSet<T> s;
+            synchronized (this) {
+                if (disposed) {
+                    return;
+                }
+                s = set;
+                set = null;
+            }
+            if (s != null) {
+                s.forEach(disposer);
+            }
+        }
+    }
 }
