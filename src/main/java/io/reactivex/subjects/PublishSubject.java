@@ -76,6 +76,10 @@ public final class PublishSubject<T> extends Subject<T, T> {
         if (done) {
             return;
         }
+        if (t == null) {
+            onError(new NullPointerException());
+            return;
+        }
         for (PublishSubscriber<T> s : state.subscribers()) {
             s.onNext(t);
         }
@@ -84,9 +88,13 @@ public final class PublishSubject<T> extends Subject<T, T> {
     @Override
     public void onError(Throwable t) {
         if (done) {
+            RxJavaPlugins.onError(t);
             return;
         }
         done = true;
+        if (t == null) {
+            t = new NullPointerException();
+        }
         for (PublishSubscriber<T> s : state.terminate(t)) {
             s.onError(t);
         }
