@@ -36,7 +36,7 @@ public final class Notification {
     }
     
     public static <T> Try<Optional<T>> next(T value) {
-        Objects.requireNonNull(value);
+        Objects.requireNonNull(value); // TODO this coud instead return an error of NPE
         return Try.ofValue(Optional.of(value));
     }
 }
