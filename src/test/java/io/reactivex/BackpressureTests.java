@@ -51,9 +51,12 @@ public class BackpressureTests {
             }
             if (compareAndSet(false, true)) {
                 int i = 0;
+                final Subscriber<? super Integer> a = s;
+                final AtomicInteger c = counter;
+                
                 while (!cancelled) {
-                    s.onNext(i++);
-                    counter.incrementAndGet();
+                    a.onNext(i++);
+                    c.incrementAndGet();
                 }
                 System.out.println("unsubscribed after: " + i);
             }
@@ -463,6 +466,13 @@ public class BackpressureTests {
         assertTrue("10 < " + vc, vc <= 10);
         
         ts.assertError(MissingBackpressureException.class);
+    }
+    
+    @Test
+    public void testFirehoseFailsAsExpectedLoop() {
+        for (int i = 0; i < 1000; i++) {
+            testFirehoseFailsAsExpected();
+        }
     }
 
     @Test(timeout = 10000)
