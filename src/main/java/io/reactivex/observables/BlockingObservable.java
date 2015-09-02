@@ -63,15 +63,38 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
     }
     
     static final class BlockingIterator<T> implements Iterator<T>, AutoCloseable, Disposable {
-        final Queue<Object> queue;
+        final BlockingQueue<Object> queue;
         final Disposable resource;
-        public BlockingIterator(Queue<Object> queue, Disposable resource) {
+        
+        Object last;
+        
+        public BlockingIterator(BlockingQueue<Object> queue, Disposable resource) {
             this.queue = queue;
             this.resource = resource;
         }
         @Override
         public boolean hasNext() {
-            Object o = queue.peek();
+            if (last == null) { 
+                Object o = queue.poll();
+                if (o == null) {
+                    try {
+                        o = queue.take();
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        Exceptions.propagate(ex);
+                    }
+                }
+                last = o;
+                if (NotificationLite.isError(o)) {
+                    Throwable e = NotificationLite.getError(o);
+                    Exceptions.propagate(e);
+                }
+                if (NotificationLite.isComplete(o)) {
+                    return false;
+                }
+                return true;
+            }
+            Object o = last;
             if (NotificationLite.isError(o)) {
                 Throwable e = NotificationLite.getError(o);
                 Exceptions.propagate(e);
@@ -82,7 +105,8 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
         @Override
         public T next() {
             if (hasNext()) {
-                Object o = queue.poll();
+                Object o = last;
+                last = null;
                 return NotificationLite.getValue(o);
             }
             throw new NoSuchElementException();

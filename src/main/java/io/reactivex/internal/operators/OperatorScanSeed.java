@@ -60,6 +60,7 @@ public final class OperatorScanSeed<T, R> implements Operator<R, T> {
             super(actual, new SpscArrayQueue<>(2));
             this.accumulator = accumulator;
             this.value = value;
+            queue.offer(value);
         }
 
         @Override

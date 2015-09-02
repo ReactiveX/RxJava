@@ -107,7 +107,7 @@ public final class PublisherAmb<T> implements Publisher<T> {
             } else
             if (w == 0) {
                 for (AmbInnerSubscriber<T> a : subscribers) {
-                    a.cancel();
+                    a.request(n);
                 }
             }
         }

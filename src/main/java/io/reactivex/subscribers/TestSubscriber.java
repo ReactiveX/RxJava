@@ -481,12 +481,20 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         }
         int s = values.size();
         if (s != 1) {
-            fail(prefix, "Expected: " + value + ", Actual: " + values, errors);
+            fail(prefix, "Expected: " + valueAndClass(value) + ", Actual: " + values, errors);
         }
         T v = values.get(0);
-        if (Objects.equals(value, v)) {
-            fail(prefix, "Expected: " + value + ", Actual: " + v, errors);
+        if (!Objects.equals(value, v)) {
+            fail(prefix, "Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v), errors);
         }
+    }
+    
+    /** Appends the class name to a non-null value. */
+    static String valueAndClass(Object o) {
+        if (o != null) {
+            return o + " (class: " + o.getClass().getSimpleName() + ")";
+        }
+        return "null";
     }
     
     /**
@@ -531,7 +539,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
             T v = this.values.get(i);
             T u = values[i];
             if (!Objects.equals(u, v)) {
-                fail(prefix, "Values at position " + i + " differ; Expected: " + u + ", Actual: " + v, errors);
+                fail(prefix, "Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v), errors);
             }
         }
     }
@@ -557,7 +565,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
             T v = this.values.get(i);
             
             if (!values.contains(v)) {
-                fail(prefix, "Value not in the expected collection: " + v, errors);
+                fail(prefix, "Value not in the expected collection: " + valueAndClass(v), errors);
             }
         }
     }
@@ -581,7 +589,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
             T u = vit.next();
             
             if (!Objects.equals(u, v)) {
-                fail(prefix, "Values at position " + i + " differ; Expected: " + u + ", Actual: " + v, errors);
+                fail(prefix, "Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v), errors);
             }
             i++;
         }

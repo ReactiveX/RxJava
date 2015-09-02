@@ -18,6 +18,7 @@ import java.util.Optional;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.Try;
 
@@ -38,6 +39,8 @@ public enum OperatorDematerialize implements Operator<Object, Try<Optional<Objec
         final Subscriber<? super T> actual;
         
         boolean done;
+
+        Subscription s;
         
         public DematerializeSubscriber(Subscriber<? super T> actual) {
             this.actual = actual;
@@ -45,6 +48,12 @@ public enum OperatorDematerialize implements Operator<Object, Try<Optional<Objec
         
         @Override
         public void onSubscribe(Subscription s) {
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+                return;
+            }
+            
+            this.s = s;
+            
             actual.onSubscribe(s);
         }
         
@@ -54,12 +63,14 @@ public enum OperatorDematerialize implements Operator<Object, Try<Optional<Objec
                 return;
             }
             if (t.hasError()) {
+                s.cancel();
                 onError(t.error());
             } else {
                 Optional<T> o = t.value();
                 if (o.isPresent()) {
                     actual.onNext(o.get());
                 } else {
+                    s.cancel();
                     onComplete();
                 }
             }
@@ -72,6 +83,8 @@ public enum OperatorDematerialize implements Operator<Object, Try<Optional<Objec
                 return;
             }
             done = true;
+            
+            actual.onError(t);
         }
         @Override
         public void onComplete() {
@@ -79,6 +92,7 @@ public enum OperatorDematerialize implements Operator<Object, Try<Optional<Objec
                 return;
             }
             done = true;
+            
             actual.onComplete();
         }
     }
