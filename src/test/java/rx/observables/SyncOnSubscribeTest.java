@@ -17,9 +17,9 @@
 package rx.observables;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.inOrder;
@@ -33,8 +33,15 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -65,6 +72,7 @@ import rx.schedulers.TestScheduler;
  * Test if SyncOnSubscribe adheres to the usual unsubscription and backpressure contracts.
  */
 public class SyncOnSubscribeTest {
+    
     @Test
     public void testObservableJustEquivalent() {
         OnSubscribe<Integer> os = SyncOnSubscribe.createStateless(new Action1<Observer<? super Integer>>() {
@@ -91,13 +99,14 @@ public class SyncOnSubscribeTest {
             public Integer call() {
                 return 1;
             }}, 
-                new Func2<Integer, Observer<? super Integer>, Integer>() {
-            @Override
-            public Integer call(Integer state, Observer<? super Integer> subscriber) {
-                subscriber.onNext(state);
-                subscriber.onCompleted();
-                return state + 1;
-            }}, new Action1<Integer>() {
+            new Func2<Integer, Observer<? super Integer>, Integer>() {
+                @Override
+                public Integer call(Integer state, Observer<? super Integer> subscriber) {
+                    subscriber.onNext(state);
+                    subscriber.onCompleted();
+                    return state + 1;
+                }}, 
+            new Action1<Integer>() {
                 @Override
                 public void call(Integer t) {
                     finalStateValue.set(t);
@@ -438,25 +447,14 @@ public class SyncOnSubscribeTest {
                     }},
                 onUnSubscribe);
 
-        @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
-        InOrder inOrder = inOrder(o);
-
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(o) {
-            @Override
-            public void onStart() {
-                requestMore(0); // don't start right away
-            }
-        };
-
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(0);
         Observable.create(os).subscribe(ts);
 
         ts.requestMore(finalCount);
 
-        verify(o, never()).onError(any(Throwable.class));
-        verify(o, never()).onCompleted();
-        inOrder.verify(o, times(finalCount)).onNext(any());
-        inOrder.verifyNoMoreInteractions();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        ts.assertValueCount(finalCount);
         // unsubscribe does not take place because subscriber is still in process of requesting
         verify(onUnSubscribe, never()).call(any(Integer.class));
     }
@@ -485,31 +483,7 @@ public class SyncOnSubscribeTest {
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
 
-        Observable.create(os).lift(new Operator<Object, Object>(){
-            @Override
-            public Subscriber<? super Object> call(final Subscriber<? super Object> subscriber) {
-                return new Subscriber<Object>(){
-                    @Override
-                    public void setProducer(Producer p) {
-                        p.request(Long.MAX_VALUE);
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        subscriber.onCompleted();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        subscriber.onError(e);
-                    }
-
-                    @Override
-                    public void onNext(Object t) {
-                        subscriber.onNext(t);
-                        unsubscribe();
-                    }};
-            }}).take(1).subscribe(ts);
+        Observable.create(os).take(1).subscribe(ts);
 
         verify(o, never()).onError(any(Throwable.class));
         verify(onUnSubscribe, times(1)).call(any(Integer.class));
@@ -577,27 +551,21 @@ public class SyncOnSubscribeTest {
     }
 
     @Test
-    public void testUnsubscribeOutsideOfLoop() {
+    public void testUnsubscribeOutsideOfLoop() throws InterruptedException {
         final AtomicInteger calledUnsubscribe = new AtomicInteger(0);
         final AtomicBoolean currentlyEvaluating = new AtomicBoolean(false);
         
-        OnSubscribe<Void> os = SyncOnSubscribe.createStateful(
-                new Func0<Void>() {
+        OnSubscribe<Void> os = SyncOnSubscribe.createStateless(
+                new Action1<Observer<? super Void>>() {
                     @Override
-                    public Void call() {
-                        return null;
-                    }}, 
-                new Func2<Void, Observer<? super Void>, Void>() {
-                    @Override
-                    public Void call(Void state, Observer<? super Void> observer) {
+                    public void call(Observer<? super Void> observer) {
                         currentlyEvaluating.set(true);
                         observer.onNext(null);
                         currentlyEvaluating.set(false);
-                        return null;
                     }},
-                new Action1<Void>(){
+                new Action0(){
                     @Override
-                    public void call(Void t) {
+                    public void call() {
                         calledUnsubscribe.incrementAndGet();
                         assertFalse(currentlyEvaluating.get());                        
                     }});
@@ -605,16 +573,12 @@ public class SyncOnSubscribeTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        final TestSubscriber<Object> ts = new TestSubscriber<Object>(o) {
-            @Override
-            public void onStart() {
-                requestMore(1);
-            }
-        };
+        final CountDownLatch latch = new CountDownLatch(1);
+        final TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
         Observable.create(os).lift(new Operator<Void, Void>(){
             @Override
             public Subscriber<? super Void> call(final Subscriber<? super Void> subscriber) {
-                return new Subscriber<Void>(){
+                return new Subscriber<Void>(subscriber){
                     @Override
                     public void setProducer(Producer p) {
                         p.request(1);
@@ -631,16 +595,23 @@ public class SyncOnSubscribeTest {
 
                     @Override
                     public void onNext(final Void t) {
+                        subscriber.onNext(t);
                         new Thread(new Runnable(){
                             @Override
                             public void run() {
-                                subscriber.onNext(t);
+                                try {
+                                    latch.await(1, TimeUnit.SECONDS);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                                 unsubscribe();
                                 subscriber.onCompleted();
+                                latch.countDown();
                             }}).start();
                     }};
             }}).subscribe(ts);
-        ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        latch.countDown();
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(1, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertUnsubscribed();
         assertEquals(1, calledUnsubscribe.get());
@@ -708,29 +679,23 @@ public class SyncOnSubscribeTest {
                     }});
 
         List<TestSubscriber<Object>> subs = new ArrayList<TestSubscriber<Object>>(numSubscribers);
-        List<Observer<Object>> mocks = new ArrayList<Observer<Object>>(numSubscribers);
         for (int i = 0; i < numSubscribers; i++) {
-            @SuppressWarnings("unchecked")
-            Observer<Object> o = mock(Observer.class);
-            TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
+            TestSubscriber<Object> ts = new TestSubscriber<Object>();
             subs.add(ts);
-            mocks.add(o);
         }
-        
-        Observable<Integer> o2 = Observable.create(os).subscribeOn(Schedulers.newThread());
+        TestScheduler scheduler = new TestScheduler();
+        Observable<Integer> o2 = Observable.create(os).subscribeOn(scheduler);
         for (Subscriber<Object> ts : subs) {
             o2.subscribe(ts);
         }
-        
+        scheduler.triggerActions();
         for (TestSubscriber<Object> ts : subs) {
-            ts.awaitTerminalEventAndUnsubscribeOnTimeout(1, TimeUnit.SECONDS);
+            ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+            ts.assertNoErrors();
+            ts.assertValueCount(count);
+            ts.assertCompleted();
         }
         
-        for (Observer<Object> o : mocks) {
-            verify(o, never()).onError(any(Throwable.class));
-            verify(o, times(count)).onNext(any());
-            verify(o, times(1)).onCompleted();
-        }
         assertEquals(numSubscribers, countUnsubscribe.get());
     }
 
@@ -756,20 +721,16 @@ public class SyncOnSubscribeTest {
                     }},
                 onUnSubscribe);
 
-        @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
-
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
 
         TestScheduler scheduler = new TestScheduler();
         Observable.create(os).observeOn(scheduler).subscribe(ts);
 
         scheduler.triggerActions();
         ts.awaitTerminalEvent();
-
-        verify(o, never()).onError(any(Throwable.class));
-        verify(o, times(count)).onNext(any(Integer.class));
-        verify(o).onCompleted();
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        ts.assertValueCount(count);
         verify(generator, times(1)).call();
 
         List<Object> events = ts.getOnNextEvents();
@@ -969,14 +930,69 @@ public class SyncOnSubscribeTest {
     }
 
     private void assertJustBehavior(OnSubscribe<FooQux> os) {
-        @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
-
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
-
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
         os.call(ts);
-        verify(o, times(1)).onNext(any());
-        verify(o, times(1)).onCompleted();
-        verify(o, never()).onError(any(Throwable.class));
+        ts.assertCompleted();
+        ts.assertNoErrors();
+        ts.assertValueCount(1);
+    }
+    
+    @Test
+    public void testConcurrentUnsubscribe3000Iterations() throws InterruptedException, BrokenBarrierException, ExecutionException{
+        ExecutorService exec = null;
+        try {
+            exec = Executors.newSingleThreadExecutor(); 
+            for (int i = 0; i < 3000; i++) {
+                final AtomicInteger wip = new AtomicInteger();
+                
+                Func0<AtomicInteger> func0 = new Func0<AtomicInteger>() {
+                    @Override
+                    public AtomicInteger call() {
+                        return wip;
+                    }
+                };
+                Func2<AtomicInteger, Observer<? super Integer>, AtomicInteger> func2 = 
+                        new Func2<AtomicInteger, Observer<? super Integer>, AtomicInteger>() {
+                    @Override
+                    public AtomicInteger call(AtomicInteger s, Observer<? super Integer> o) { 
+                        o.onNext(1);
+                        return s;
+                    }
+                };
+                Action1<? super AtomicInteger> action1 = new Action1<AtomicInteger>() {
+                    @Override
+                    public void call(AtomicInteger s) {
+                        s.getAndIncrement();
+                    }
+                };
+                Observable<Integer> source = Observable.create(
+                        SyncOnSubscribe.createStateful( 
+                        func0, 
+                        func2, action1
+                ));
+            
+            
+                final TestSubscriber<Integer> ts = TestSubscriber.create(0);
+                source.subscribe(ts);
+            
+                final CyclicBarrier cb = new CyclicBarrier(2);
+            
+                Future<?> f = exec.submit(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        cb.await();
+                        ts.requestMore(1);
+                        return null;
+                    }
+                });
+            
+                cb.await();
+                ts.unsubscribe();
+                f.get();
+                assertEquals("Unsubscribe supposed to be called once", 1, wip.get());
+            }
+        } finally {
+            if (exec != null) exec.shutdownNow();
+        }
     }
 }

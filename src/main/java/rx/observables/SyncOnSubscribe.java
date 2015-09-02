@@ -16,7 +16,6 @@
 
 package rx.observables;
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.OnSubscribe;
@@ -321,14 +320,9 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
         private final SyncOnSubscribe<S, T> parent;
         private boolean onNextCalled;
         private boolean hasTerminated;
-
+        
         private S state;
         
-        volatile int isUnsubscribed;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<SubscriptionProducer> IS_UNSUBSCRIBED =
-            AtomicIntegerFieldUpdater.newUpdater(SubscriptionProducer.class, "isUnsubscribed");
-
         private SubscriptionProducer(final Subscriber<? super T> subscriber, SyncOnSubscribe<S, T> parent, S state) {
             this.actualSubscriber = subscriber;
             this.parent = parent;
@@ -337,14 +331,39 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
 
         @Override
         public boolean isUnsubscribed() {
-            return isUnsubscribed != 0;
+            return get() < 0L;
         }
         
         @Override
         public void unsubscribe() {
-            IS_UNSUBSCRIBED.compareAndSet(this, 0, 1);
-            if (get() == 0L)
-                parent.onUnsubscribe(state);
+            while(true) {
+                long requestCount = get();
+                if (compareAndSet(0L, -1L)) {
+                    doUnsubscribe();
+                    return;
+                }
+                else if (compareAndSet(requestCount, -2L))
+                    // the loop is iterating concurrently
+                    // need to check if requestCount == -1
+                    // and unsub if so after loop iteration
+                    return;
+            }
+        }
+        
+        private boolean tryUnsubscribe() {
+            // only one thread at a time can iterate over request count
+            // therefore the requestCount atomic cannot be decrement concurrently here
+            // safe to set to -1 atomically (since this check can only be done by 1 thread)
+            if (hasTerminated || get() < -1) {
+                set(-1);
+                doUnsubscribe();
+                return true;
+            }
+            return false;
+        }
+
+        private void doUnsubscribe() {
+            parent.onUnsubscribe(state);
         }
 
         @Override
@@ -358,71 +377,60 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
             }
         }
 
-        void fastpath() {
+        private void fastpath() {
             final SyncOnSubscribe<S, T> p = parent;
             Subscriber<? super T> a = actualSubscriber;
-            
-            if (isUnsubscribed()) {
-                p.onUnsubscribe(state);
-                return;
-            }
             
             for (;;) {
                 try {
                     onNextCalled = false;
                     nextIteration(p);
                 } catch (Throwable ex) {
-                    handleThrownError(p, a, state, ex);
+                    handleThrownError(a, ex);
                     return;
                 }
-                if (hasTerminated || isUnsubscribed()) {
-                    p.onUnsubscribe(state);
+                if (tryUnsubscribe()) {
                     return;
                 }
             }
         }
 
-        private void handleThrownError(final SyncOnSubscribe<S, T> p, Subscriber<? super T> a, S st, Throwable ex) {
+        private void handleThrownError(Subscriber<? super T> a, Throwable ex) {
             if (hasTerminated) {
                 RxJavaPlugins.getInstance().getErrorHandler().handleError(ex);
             } else {
                 hasTerminated = true;
                 a.onError(ex);
-                p.onUnsubscribe(st);
+                unsubscribe();
             }
         }
 
-        void slowPath(long n) {
+        private void slowPath(long n) {
             final SyncOnSubscribe<S, T> p = parent;
             Subscriber<? super T> a = actualSubscriber;
             long numRequested = n;
             for (;;) {
-                if (isUnsubscribed()) {
-                    p.onUnsubscribe(state);
-                    return;
-                }
                 long numRemaining = numRequested;
                 do {
                     try {
                         onNextCalled = false;
                         nextIteration(p);
                     } catch (Throwable ex) {
-                        handleThrownError(p, a, state, ex);
+                        handleThrownError(a, ex);
                         return;
                     }
-                    if (hasTerminated || isUnsubscribed()) {
-                        p.onUnsubscribe(state);
+                    if (tryUnsubscribe()) {
                         return;
                     }
                     if (onNextCalled)
                         numRemaining--;
                 } while (numRemaining != 0L);
-                
                 numRequested = addAndGet(-numRequested);
-                if (numRequested == 0L) {
+                if (numRequested <= 0L)
                     break;
-                }
             }
+            // catches cases where unsubscribe is called before decrementing atomic request count
+            tryUnsubscribe();
         }
 
         private void nextIteration(final SyncOnSubscribe<S, T> parent) {
