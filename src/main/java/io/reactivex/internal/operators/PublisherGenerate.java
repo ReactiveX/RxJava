@@ -174,6 +174,7 @@ public final class PublisherGenerate<T, S> implements Publisher<T> {
         public void onNext(T t) {
             if (t == null) {
                 onError(new NullPointerException());
+                return;
             }
             actual.onNext(t);
         }
