@@ -42,6 +42,18 @@ public class Observable<T> implements Publisher<T> {
     public interface Operator<Downstream, Upstream> extends Function<Subscriber<? super Downstream>, Subscriber<? super Upstream>> {
 
     }
+    
+    /**
+     * Interface to compose observables.
+     *
+     * @param <T> the upstream value type
+     * @param <R> the downstream value type
+     */
+    @FunctionalInterface
+    public interface Transformer<T, R> extends Function<Observable<T>, Publisher<? extends R>> {
+        
+    }
+
 
     static final int BUFFER_SIZE;
     static {
@@ -794,7 +806,7 @@ public class Observable<T> implements Publisher<T> {
     }
 
     // TODO generics
-    public final <R> Observable<R> compose(Function<? super Observable<T>, ? extends Publisher<? extends R>> composer) {
+    public final <R> Observable<R> compose(Transformer<T, R> composer) {
         return fromPublisher(to(composer));
     }
 
@@ -1163,14 +1175,14 @@ public class Observable<T> implements Publisher<T> {
         return any(v -> true);
     }
 
-    public final Observable<T> just(T v1, T v2) {
+    public static final <T> Observable<T> just(T v1, T v2) {
         Objects.requireNonNull(v1);
         Objects.requireNonNull(v2);
         
         return fromArray(v1, v2);
     }
 
-    public final Observable<T> just(T v1, T v2, T v3) {
+    public static final <T> Observable<T> just(T v1, T v2, T v3) {
         Objects.requireNonNull(v1);
         Objects.requireNonNull(v2);
         Objects.requireNonNull(v3);
@@ -1178,7 +1190,7 @@ public class Observable<T> implements Publisher<T> {
         return fromArray(v1, v2, v3);
     }
 
-    public final Observable<T> just(T v1, T v2, T v3, T v4) {
+    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4) {
         Objects.requireNonNull(v1);
         Objects.requireNonNull(v2);
         Objects.requireNonNull(v3);
@@ -1187,7 +1199,7 @@ public class Observable<T> implements Publisher<T> {
         return fromArray(v1, v2, v3, v4);
     }
 
-    public final Observable<T> just(T v1, T v2, T v3, T v4, T v5) {
+    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5) {
         Objects.requireNonNull(v1);
         Objects.requireNonNull(v2);
         Objects.requireNonNull(v3);
@@ -1197,7 +1209,7 @@ public class Observable<T> implements Publisher<T> {
         return fromArray(v1, v2, v3, v4, v5);
     }
 
-    public final Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6) {
+    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6) {
         Objects.requireNonNull(v1);
         Objects.requireNonNull(v2);
         Objects.requireNonNull(v3);
@@ -1208,7 +1220,7 @@ public class Observable<T> implements Publisher<T> {
         return fromArray(v1, v2, v3, v4, v5, v6);
     }
 
-    public final Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7) {
+    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7) {
         Objects.requireNonNull(v1);
         Objects.requireNonNull(v2);
         Objects.requireNonNull(v3);
@@ -1220,7 +1232,7 @@ public class Observable<T> implements Publisher<T> {
         return fromArray(v1, v2, v3, v4, v5, v6, v7);
     }
 
-    public final Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8) {
+    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8) {
         Objects.requireNonNull(v1);
         Objects.requireNonNull(v2);
         Objects.requireNonNull(v3);
@@ -1233,7 +1245,7 @@ public class Observable<T> implements Publisher<T> {
         return fromArray(v1, v2, v3, v4, v5, v6, v7, v8);
     }
 
-    public final Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9) {
+    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9) {
         Objects.requireNonNull(v1);
         Objects.requireNonNull(v2);
         Objects.requireNonNull(v3);
