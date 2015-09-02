@@ -20,7 +20,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.QueueDrain;
+import io.reactivex.internal.util.*;
 
 /**
  * Abstract base class for subscribers that hold another subscriber, a queue
@@ -209,7 +209,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
         if (SubscriptionHelper.validateRequest(n)) {
             return;
         }
-        REQUESTED.addAndGet(this, n);
+        BackpressureHelper.add(REQUESTED, this, n);
     }
     
     public void drain(boolean delayError) {

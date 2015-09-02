@@ -117,6 +117,7 @@ public final class OperatorScanSeed<T, R> implements Operator<R, T> {
         @Override
         public void request(long n) {
             requested(n);
+            s.request(n);
         }
         
         @Override
