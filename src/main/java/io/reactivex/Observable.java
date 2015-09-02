@@ -1080,8 +1080,18 @@ public class Observable<T> implements Publisher<T> {
         return concatArray(this, fromIterable(values));
     }
 
+    public final Observable<T> endWith(Publisher<? extends T> other) {
+        Objects.requireNonNull(other);
+        return concatArray(this, other);
+    }
+
+    public final Observable<T> endWith(T value) {
+        Objects.requireNonNull(value);
+        return concatArray(this, just(value));
+    }
+
     @SafeVarargs
-    public final Observable<T> endWith(T... values) {
+    public final Observable<T> endWithArray(T... values) {
         Observable<T> fromArray = fromArray(values);
         if (fromArray == empty()) {
             return this;
@@ -1759,8 +1769,18 @@ public class Observable<T> implements Publisher<T> {
         return concatArray(fromIterable(values), this);
     }
 
+    public final Observable<T> startWith(Publisher<? extends T> other) {
+        Objects.requireNonNull(other);
+        return concatArray(other, this);
+    }
+
+    public final Observable<T> startWith(T value) {
+        Objects.requireNonNull(value);
+        return concatArray(just(value), this);
+    }
+
     @SafeVarargs
-    public final Observable<T> startWith(T... values) {
+    public final Observable<T> startWithArray(T... values) {
         Observable<T> fromArray = fromArray(values);
         if (fromArray == empty()) {
             return this;

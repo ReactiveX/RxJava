@@ -41,26 +41,9 @@ public class ObservableTests {
 
     @Before
     public void before() {
-        w = mockSubscriber();
+        w = TestHelper.mockSubscriber();
     }
 
-    /**
-     * Mocks a subscriber and prepares it to request Long.MAX_VALUE.
-     * @return the mocked subscriber
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Subscriber<T> mockSubscriber() {
-        Subscriber<T> w = mock(Subscriber.class);
-        
-        Mockito.doAnswer(a -> {
-            Subscription s = a.getArgumentAt(0, Subscription.class);
-            s.request(Long.MAX_VALUE);
-            return null;
-        }).when(w).onSubscribe(any());
-        
-        return w;
-    }
-    
     @Test
     public void fromArray() {
         String[] items = new String[] { "one", "two", "three" };
@@ -103,7 +86,7 @@ public class ObservableTests {
 
         Observable<String> observable = Observable.just("one", "two", "three");
 
-        Subscriber<String> observer = mockSubscriber();
+        Subscriber<String> observer = TestHelper.mockSubscriber();
         
         observable.subscribe(observer);
         
@@ -254,7 +237,7 @@ public class ObservableTests {
     @Ignore // FIXME throwing is not allowed from the create?!
     @Test
     public void testOnSubscribeFails() {
-        Subscriber<String> observer = mockSubscriber();
+        Subscriber<String> observer = TestHelper.mockSubscriber();
 
         final RuntimeException re = new RuntimeException("bad impl");
         Observable<String> o = Observable.create(s -> { throw re; });
@@ -270,7 +253,7 @@ public class ObservableTests {
         Observable<Integer> obs = Observable.just(1);
         Observable<Integer> chained = obs.materialize().dematerialize();
 
-        Subscriber<Integer> observer = mockSubscriber();
+        Subscriber<Integer> observer = TestHelper.mockSubscriber();
 
         chained.subscribe(observer);
 
@@ -644,7 +627,7 @@ public class ObservableTests {
     public void testOfType() {
         Observable<String> observable = Observable.just(1, "abc", false, 2L).ofType(String.class);
 
-        Subscriber<Object> observer = mockSubscriber();
+        Subscriber<Object> observer = TestHelper.mockSubscriber();
         
         observable.subscribe(observer);
         
@@ -667,7 +650,7 @@ public class ObservableTests {
         @SuppressWarnings("rawtypes")
         Observable<List> observable = Observable.<Object> just(l1, l2, "123").ofType(List.class);
 
-        Subscriber<Object> observer = mockSubscriber();
+        Subscriber<Object> observer = TestHelper.mockSubscriber();
         
         observable.subscribe(observer);
         
@@ -683,7 +666,7 @@ public class ObservableTests {
     public void testContains() {
         Observable<Boolean> observable = Observable.just("a", "b", "c").contains("b"); // FIXME nulls not allowed, changed to "c"
 
-        Subscriber<Boolean> observer = mockSubscriber();
+        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
         
@@ -698,7 +681,7 @@ public class ObservableTests {
     public void testContainsWithInexistence() {
         Observable<Boolean> observable = Observable.just("a", "b").contains("c"); // FIXME null values are not allowed, removed
 
-        Subscriber<Object> observer = mockSubscriber();
+        Subscriber<Object> observer = TestHelper.mockSubscriber();
         
         observable.subscribe(observer);
         
@@ -755,7 +738,7 @@ public class ObservableTests {
         TestScheduler scheduler = new TestScheduler();
         Observable<Integer> observable = Observable.fromArray(1, 2).subscribeOn(scheduler);
 
-        Subscriber<Integer> observer = mockSubscriber();
+        Subscriber<Integer> observer = TestHelper.mockSubscriber();
         
         observable.subscribe(observer);
 
@@ -773,7 +756,7 @@ public class ObservableTests {
         TestScheduler scheduler = new TestScheduler();
         Observable<Integer> observable = Observable.just(3, 4).startWith(Arrays.asList(1, 2)).subscribeOn(scheduler);
 
-        Subscriber<Integer> observer = mockSubscriber();
+        Subscriber<Integer> observer = TestHelper.mockSubscriber();
         
         observable.subscribe(observer);
 
@@ -793,7 +776,7 @@ public class ObservableTests {
         TestScheduler scheduler = new TestScheduler();
         Observable<Integer> observable = Observable.range(3, 4).subscribeOn(scheduler);
 
-        Subscriber<Integer> observer = mockSubscriber();
+        Subscriber<Integer> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
 
