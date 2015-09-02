@@ -21,7 +21,16 @@ import io.reactivex.plugins.RxJavaPlugins;
  * A subscriber that ignores all events (onError is forwarded to RxJavaPlugins though).
  */
 public enum EmptySubscriber implements Subscriber<Object> {
-    INSTANCE;
+    /** Empty instance that reports error to the plugins. */
+    INSTANCE(true),
+    /** Empty instance that doesn't report to the plugins to avoid flooding the test output. */
+    INSTANCE_NOERROR(false);
+    
+    final boolean reportError;
+    
+    EmptySubscriber(boolean reportError) {
+        this.reportError = reportError;
+    }
     
     @Override
     public void onSubscribe(Subscription s) {
@@ -35,7 +44,9 @@ public enum EmptySubscriber implements Subscriber<Object> {
     
     @Override
     public void onError(Throwable t) {
-        RxJavaPlugins.onError(t);
+        if (reportError) {
+            RxJavaPlugins.onError(t);
+        }
     }
     
     @Override

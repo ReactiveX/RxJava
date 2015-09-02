@@ -85,7 +85,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * Constructs a non-forwarding TestSubscriber with an initial request value of Long.MAX_VALUE.
      */
     public TestSubscriber() {
-        this(EmptySubscriber.INSTANCE, Long.MAX_VALUE);
+        this(EmptySubscriber.INSTANCE_NOERROR, Long.MAX_VALUE);
     }
 
     /**
@@ -95,7 +95,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @param initialRequest the initial request value if not null
      */
     public TestSubscriber(Long initialRequest) {
-        this(EmptySubscriber.INSTANCE, initialRequest);
+        this(EmptySubscriber.INSTANCE_NOERROR, initialRequest);
     }
 
     /**

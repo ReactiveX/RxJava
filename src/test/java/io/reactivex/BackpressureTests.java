@@ -51,9 +51,12 @@ public class BackpressureTests {
             }
             if (compareAndSet(false, true)) {
                 int i = 0;
+                final Subscriber<? super Integer> a = s;
+                final AtomicInteger c = counter;
+                
                 while (!cancelled) {
-                    s.onNext(i++);
-                    counter.incrementAndGet();
+                    a.onNext(i++);
+                    c.incrementAndGet();
                 }
                 System.out.println("unsubscribed after: " + i);
             }
@@ -453,7 +456,16 @@ public class BackpressureTests {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         
-        firehose(c).observeOn(Schedulers.computation()).map(SLOW_PASS_THRU).subscribe(ts);
+        firehose(c).observeOn(Schedulers.computation())
+        .map(v -> {
+            try {
+                Thread.sleep(10);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return v;
+        })
+        .subscribe(ts);
         
         ts.awaitTerminalEvent();
         System.out.println("testFirehoseFailsAsExpected => Received: " + ts.valueCount() + "  Emitted: " + c.get());
@@ -463,6 +475,13 @@ public class BackpressureTests {
         assertTrue("10 < " + vc, vc <= 10);
         
         ts.assertError(MissingBackpressureException.class);
+    }
+    
+    @Test
+    public void testFirehoseFailsAsExpectedLoop() {
+        for (int i = 0; i < 100; i++) {
+            testFirehoseFailsAsExpected();
+        }
     }
 
     @Test(timeout = 10000)
@@ -666,7 +685,7 @@ public class BackpressureTests {
             // be slow ... but faster than Thread.sleep(1)
             String t = "";
             int s = sink;
-            for (int i = 5000; i >= 0; i--) {
+            for (int i = 2000; i >= 0; i--) {
                 t = String.valueOf(i + t.hashCode() + s);
             }
             sink = t.hashCode();
