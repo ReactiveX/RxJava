@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public enum OperatorTakeLastOne implements Operator<Object, Object> {
@@ -52,9 +53,7 @@ public enum OperatorTakeLastOne implements Operator<Object, Object> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             this.s = s;

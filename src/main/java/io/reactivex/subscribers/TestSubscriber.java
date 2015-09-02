@@ -99,11 +99,11 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     }
 
     /**
-     * Constructs a forwarding TestSubscriber with an initial request value of Long.MAX_VALUE.
+     * Constructs a forwarding TestSubscriber but leaves the requesting to the wrapped subscriber.
      * @param actual the actual Subscriber to forward events to
      */
     public TestSubscriber(Subscriber<? super T> actual) {
-        this(actual, Long.MAX_VALUE);
+        this(actual, null);
     }
 
     /**
