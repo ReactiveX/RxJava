@@ -116,36 +116,16 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
                 d.dispose();
             }
             
-            if (TIMER.compareAndSet(this, d, NEW_TIMER)) {
-                getAndIncrement();
-                d = worker.schedule(() -> {
-                    if (idx == index) {
-                        long r = requested;
-                        if (r != 0L) {
-                            actual.onNext(t);
-                            if (r != Long.MAX_VALUE) {
-                                REQUESTED.decrementAndGet(this);
-                            }
-                            
-                            if (decrementAndGet() == 0) {
-                                disposeTimer();
-                                worker.dispose();
-                                actual.onComplete();
-                            }
-                        } else {
-                            cancel();
-                            actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
-                        }
-                    }
-                }, timeout, unit);
-                
-                if (TIMER.compareAndSet(this, NEW_TIMER, d)) {
-                    if (timer == CANCELLED) {
-                        d.dispose();
-                    }
-                }
-            }
+            getAndIncrement();
             
+            DebounceEmitter<T> de = new DebounceEmitter<>(t, idx, this);
+            if (!TIMER.compareAndSet(this, d, de)) {
+                return;
+            }
+                
+            d = worker.schedule(de, timeout, unit);
+            
+            de.setResource(d);
         }
         
         @Override
@@ -165,11 +145,8 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
                 return;
             }
             done = true;
-            if (decrementAndGet() == 0) {
-                disposeTimer();
-                worker.dispose();
-                actual.onComplete();
-            }
+            // TODO may want to trigger early delivery of the very last value? depends on further tests
+            done();
         }
         
         @Override
@@ -185,6 +162,78 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
             disposeTimer();
             worker.dispose();
             s.cancel();
+        }
+        
+        void emit(long idx, T t, DebounceEmitter<T> emitter) {
+            if (idx == index) {
+                long r = requested;
+                if (r != 0L) {
+                    actual.onNext(t);
+                    if (r != Long.MAX_VALUE) {
+                        REQUESTED.decrementAndGet(this);
+                    }
+                    
+                    emitter.dispose();
+                } else {
+                    cancel();
+                    actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
+                }
+            }
+        }
+        
+        void done() {
+            if (decrementAndGet() == 0) {
+                disposeTimer();
+                worker.dispose();
+                actual.onComplete();
+            }
+        }
+    }
+    
+    static final class DebounceEmitter<T> extends AtomicReference<Disposable> implements Runnable, Disposable {
+        /** */
+        private static final long serialVersionUID = 6812032969491025141L;
+
+        static final Disposable DISPOSED = () -> { };
+        
+        final T value;
+        final long idx;
+        final DebounceTimedSubscriber<T> parent;
+        
+        public DebounceEmitter(T value, long idx, DebounceTimedSubscriber<T> parent) {
+            this.value = value;
+            this.idx = idx;
+            this.parent = parent;
+        }
+
+        @Override
+        public void run() {
+            parent.emit(idx, value, this);
+        }
+        
+        @Override
+        public void dispose() {
+            Disposable d = get();
+            if (d != DISPOSED) {
+                d = getAndSet(DISPOSED);
+                if (d != DISPOSED && d != null) {
+                    d.dispose();
+                    parent.done();
+                }
+            }
+        }
+        
+        public void setResource(Disposable d) {
+            for (;;) {
+                Disposable a = get();
+                if (a == DISPOSED) {
+                    d.dispose();
+                    return;
+                }
+                if (compareAndSet(a, d)) {
+                    return;
+                }
+            }
         }
     }
 }

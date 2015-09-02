@@ -737,6 +737,13 @@ public class Observable<T> implements Publisher<T> {
         return create(new PublisherZip<>(null, sources, zipper, bufferSize, delayError));
     }
 
+    public static <T, R> Observable<R> zip(Iterable<? extends Publisher<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
+        Objects.requireNonNull(zipper);
+        Objects.requireNonNull(sources);
+        return create(new PublisherZip<>(null, sources, zipper, bufferSize(), false));
+    }
+
+    
     final Publisher<T> onSubscribe;
 
     protected Observable(Publisher<T> onSubscribe) {
