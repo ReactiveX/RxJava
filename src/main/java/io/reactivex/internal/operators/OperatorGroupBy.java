@@ -135,7 +135,9 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             List<GroupedUnicast<V, K>> list = new ArrayList<>(groups.values());
             groups.clear();
             
-            list.forEach(g -> g.onError(t));
+            for (GroupedUnicast<V, K> e : list) {
+                e.onError(t);
+            }
             
             actual.onError(t);
         }
@@ -145,7 +147,9 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             List<GroupedUnicast<V, K>> list = new ArrayList<>(groups.values());
             groups.clear();
             
-            list.forEach(GroupedUnicast::onComplete);
+            for (GroupedUnicast<V, K> e : list) {
+                e.onComplete();
+            }
             
             actual.onComplete();
         }
@@ -265,7 +269,6 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
 
         public void onNext(T t) {
             if (t == null) {
-                parent.cancel(key);
                 error = new NullPointerException();
                 done = true;
             } else {
@@ -317,6 +320,8 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                             break;
                         }
                         
+                        a.onNext(v);
+                        
                         r--;
                         e--;
                     }
@@ -340,6 +345,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         
         boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a, boolean delayError) {
             if (cancelled != 0) {
+                queue.clear();
                 parent.cancel(key);
                 return true;
             }
