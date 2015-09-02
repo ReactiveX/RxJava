@@ -453,7 +453,14 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             final List<Object> b = buffer;
             final Subscriber<? super T> a = rs.actual;
 
-            int index = (Integer)rs.index;
+            Integer indexObject = (Integer)rs.index;
+            int index = 0;
+            if (indexObject != null) {
+                index = indexObject;
+            } else {
+                index = 0;
+                rs.index = 0;
+            }
 
             for (;;) {
 

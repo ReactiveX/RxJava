@@ -28,8 +28,7 @@ public final class OperatorScan<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        // TODO Auto-generated method stub
-        return null;
+        return new ScanSubscriber<>(t, accumulator);
     }
     
     static final class ScanSubscriber<T> implements Subscriber<T> {

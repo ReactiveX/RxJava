@@ -33,10 +33,10 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
     
     @Override
     public Subscriber<? super Object> apply(Subscriber<? super Try<Optional<Object>>> t) {
-        return new OnErrorReturnSubscriber<>(t);
+        return new MaterializeSubscriber<>(t);
     }
     
-    static final class OnErrorReturnSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
+    static final class MaterializeSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = -3740826063558713822L;
         final Subscriber<? super Try<Optional<T>>> actual;
@@ -45,8 +45,8 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
         
         volatile int state;
         @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<OnErrorReturnSubscriber> STATE =
-                AtomicIntegerFieldUpdater.newUpdater(OnErrorReturnSubscriber.class, "state");
+        static final AtomicIntegerFieldUpdater<MaterializeSubscriber> STATE =
+                AtomicIntegerFieldUpdater.newUpdater(MaterializeSubscriber.class, "state");
         Try<Optional<T>> value;
         
         volatile boolean done;
@@ -56,7 +56,7 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
         static final int HAS_REQUEST_NO_VALUE = 2;
         static final int HAS_REQUEST_HAS_VALUE = 3;
         
-        public OnErrorReturnSubscriber(Subscriber<? super Try<Optional<T>>> actual) {
+        public MaterializeSubscriber(Subscriber<? super Try<Optional<T>>> actual) {
             this.actual = actual;
         }
         
@@ -132,6 +132,7 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
+            s.request(n);
             if (BackpressureHelper.add(this, n) == 0) {
                 if (done) {
                     for (;;) {

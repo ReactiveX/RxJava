@@ -55,7 +55,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
      * {@link Observable} to its {@link Subscriber}s.
      * <p>
-     * To disconnect from a synchronous source, use the {@link #connect(rx.functions.Action1)} method.
+     * To disconnect from a synchronous source, use the {@link #connect(java.util.function.Consumer)} method.
      *
      * @return the subscription representing the connection
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>

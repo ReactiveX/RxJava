@@ -908,6 +908,7 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final Observable<Boolean> contains(Object o) {
+        Objects.requireNonNull(o);
         return any(v -> Objects.equals(v, o));
     }
 
@@ -981,9 +982,9 @@ public class Observable<T> implements Publisher<T> {
         return fromCallable(delaySupplier::get).take(1).flatMap(v -> this);
     }
 
-    public final Observable<T> dematerialize() {
+    public final <T2> Observable<T2> dematerialize() {
         @SuppressWarnings("unchecked")
-        Observable<Try<Optional<T>>> m = (Observable<Try<Optional<T>>>)this;
+        Observable<Try<Optional<T2>>> m = (Observable<Try<Optional<T2>>>)this;
         return m.lift(OperatorDematerialize.instance());
     }
     public final Observable<T> distinct() {
@@ -1240,85 +1241,84 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public static final <T> Observable<T> just(T v1, T v2) {
-        Objects.requireNonNull(v1);
-        Objects.requireNonNull(v2);
+        Objects.requireNonNull(v1, "The first value is null");
+        Objects.requireNonNull(v2, "The second value is null");
         
         return fromArray(v1, v2);
     }
 
     public static final <T> Observable<T> just(T v1, T v2, T v3) {
-        Objects.requireNonNull(v1);
-        Objects.requireNonNull(v2);
-        Objects.requireNonNull(v3);
+        Objects.requireNonNull(v1, "The first value is null");
+        Objects.requireNonNull(v2, "The second value is null");
+        Objects.requireNonNull(v3, "The third value is null");
         
         return fromArray(v1, v2, v3);
     }
 
     public static final <T> Observable<T> just(T v1, T v2, T v3, T v4) {
-        Objects.requireNonNull(v1);
-        Objects.requireNonNull(v2);
-        Objects.requireNonNull(v3);
-        Objects.requireNonNull(v4);
+        Objects.requireNonNull(v1, "The first value is null");
+        Objects.requireNonNull(v2, "The second value is null");
+        Objects.requireNonNull(v3, "The third value is null");
+        Objects.requireNonNull(v4, "The fourth value is null");
         
         return fromArray(v1, v2, v3, v4);
     }
 
     public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5) {
-        Objects.requireNonNull(v1);
-        Objects.requireNonNull(v2);
-        Objects.requireNonNull(v3);
-        Objects.requireNonNull(v4);
-        Objects.requireNonNull(v5);
+        Objects.requireNonNull(v1, "The first value is null");
+        Objects.requireNonNull(v2, "The second value is null");
+        Objects.requireNonNull(v3, "The third value is null");
+        Objects.requireNonNull(v4, "The fourth value is null");
+        Objects.requireNonNull(v5, "The fifth value is null");
         
         return fromArray(v1, v2, v3, v4, v5);
     }
 
     public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6) {
-        Objects.requireNonNull(v1);
-        Objects.requireNonNull(v2);
-        Objects.requireNonNull(v3);
-        Objects.requireNonNull(v4);
-        Objects.requireNonNull(v5);
-        Objects.requireNonNull(v6);
+        Objects.requireNonNull(v1, "The first value is null");
+        Objects.requireNonNull(v2, "The second value is null");
+        Objects.requireNonNull(v3, "The third value is null");
+        Objects.requireNonNull(v4, "The fourth value is null");
+        Objects.requireNonNull(v5, "The fifth value is null");
         
         return fromArray(v1, v2, v3, v4, v5, v6);
     }
 
     public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7) {
-        Objects.requireNonNull(v1);
-        Objects.requireNonNull(v2);
-        Objects.requireNonNull(v3);
-        Objects.requireNonNull(v4);
-        Objects.requireNonNull(v5);
-        Objects.requireNonNull(v6);
-        Objects.requireNonNull(v7);
+        Objects.requireNonNull(v1, "The first value is null");
+        Objects.requireNonNull(v2, "The second value is null");
+        Objects.requireNonNull(v3, "The third value is null");
+        Objects.requireNonNull(v4, "The fourth value is null");
+        Objects.requireNonNull(v5, "The fifth value is null");
+        Objects.requireNonNull(v6, "The sixth value is null");
+        Objects.requireNonNull(v7, "The seventh value is null");
         
         return fromArray(v1, v2, v3, v4, v5, v6, v7);
     }
 
     public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8) {
-        Objects.requireNonNull(v1);
-        Objects.requireNonNull(v2);
-        Objects.requireNonNull(v3);
-        Objects.requireNonNull(v4);
-        Objects.requireNonNull(v5);
-        Objects.requireNonNull(v6);
-        Objects.requireNonNull(v7);
-        Objects.requireNonNull(v8);
+        Objects.requireNonNull(v1, "The first value is null");
+        Objects.requireNonNull(v2, "The second value is null");
+        Objects.requireNonNull(v3, "The third value is null");
+        Objects.requireNonNull(v4, "The fourth value is null");
+        Objects.requireNonNull(v5, "The fifth value is null");
+        Objects.requireNonNull(v6, "The sixth value is null");
+        Objects.requireNonNull(v7, "The seventh value is null");
+        Objects.requireNonNull(v8, "The eigth value is null");
         
         return fromArray(v1, v2, v3, v4, v5, v6, v7, v8);
     }
 
     public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9) {
-        Objects.requireNonNull(v1);
-        Objects.requireNonNull(v2);
-        Objects.requireNonNull(v3);
-        Objects.requireNonNull(v4);
-        Objects.requireNonNull(v5);
-        Objects.requireNonNull(v6);
-        Objects.requireNonNull(v7);
-        Objects.requireNonNull(v8);
-        Objects.requireNonNull(v9);
+        Objects.requireNonNull(v1, "The first value is null");
+        Objects.requireNonNull(v2, "The second value is null");
+        Objects.requireNonNull(v3, "The third value is null");
+        Objects.requireNonNull(v4, "The fourth value is null");
+        Objects.requireNonNull(v5, "The fifth value is null");
+        Objects.requireNonNull(v6, "The sixth value is null");
+        Objects.requireNonNull(v7, "The seventh value is null");
+        Objects.requireNonNull(v8, "The eigth value is null");
+        Objects.requireNonNull(v9, "The ninth is null");
         
         return fromArray(v1, v2, v3, v4, v5, v6, v7, v8, v9);
     }
@@ -1862,6 +1862,10 @@ public class Observable<T> implements Publisher<T> {
     public final Observable<T> take(long time, TimeUnit unit, Scheduler scheduler) {
         // TODO consider inlining this behavior
         return takeUntil(timer(time, unit, scheduler));
+    }
+    
+    public final Observable<T> takeFirst(Predicate<? super T> predicate) {
+        return filter(predicate).take(1);
     }
 
     public final Observable<T> takeLast(int n) {
