@@ -404,7 +404,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     /**
      * Assert that this TestSubscriber has not received any onError event.
      */
-    public void assertNoError() {
+    public void assertNoErrors() {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";

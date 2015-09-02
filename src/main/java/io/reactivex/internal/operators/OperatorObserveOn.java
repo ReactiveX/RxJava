@@ -20,6 +20,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler;
+import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.schedulers.TrampolineScheduler;
 import io.reactivex.internal.util.*;
@@ -122,8 +123,12 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             if (!queue.offer(t)) {
-                onError(new IllegalStateException("Queue full?!"));
+                s.cancel();
+                onError(new MissingBackpressureException("Queue full?!"));
                 return;
             }
             schedule();
@@ -131,6 +136,10 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         
         @Override
         public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
             error = t;
             done = true;
             schedule();
@@ -138,6 +147,9 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
             done = true;
             schedule();
         }
@@ -156,8 +168,10 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
-                s.cancel();
-                worker.dispose();
+                if (getAndIncrement() == 0) {
+                    s.cancel();
+                    worker.dispose();
+                }
             }
         }
         
@@ -218,6 +232,8 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         
         boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a) {
             if (cancelled) {
+                s.cancel();
+                worker.dispose();
                 return true;
             }
             if (d) {

@@ -115,7 +115,7 @@ public abstract class AsyncObserver<T> implements Subscriber<T>, Disposable {
     
     @Override
     public final void onSubscribe(Subscription s) {
-        if (S.compareAndSet(this, null, s)) {
+        if (!S.compareAndSet(this, null, s)) {
             s.cancel();
             if (s != CANCELLED) {
                 SubscriptionHelper.reportSubscriptionSet();
@@ -137,7 +137,7 @@ public abstract class AsyncObserver<T> implements Subscriber<T>, Disposable {
      * implementation requests Long.MAX_VALUE from upstream.
      */
     protected void onStart() {
-        s.request(Long.MAX_VALUE);
+        request(Long.MAX_VALUE);
     }
     
     /**
@@ -162,6 +162,8 @@ public abstract class AsyncObserver<T> implements Subscriber<T>, Disposable {
                     a.request(mr);
                 }
             }
+        } else {
+            a.request(n);
         }
     }
     

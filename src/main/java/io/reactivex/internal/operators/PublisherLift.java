@@ -57,10 +57,21 @@ public final class PublisherLift<R, T> implements Publisher<R> {
     @Override
     public void subscribe(Subscriber<? super R> s) {
         try {
+            if (s == null) {
+                throw new NullPointerException("Operator " + operator + " received a null Subscriber");
+            }
             Subscriber<? super T> st = operator.apply(s);
-            
+
+            if (st == null) {
+                throw new NullPointerException("Operator " + operator + " returned a null Subscriber");
+            }
+
             st = RxJavaPlugins.onSubscribe(st);
-            
+
+            if (st == null) {
+                throw new NullPointerException("Plugin call for operator " + operator + " returned a null Subscriber");
+            }
+
             source.subscribe(st);
         } catch (NullPointerException e) {
             throw e;
