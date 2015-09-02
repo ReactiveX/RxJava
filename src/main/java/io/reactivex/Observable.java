@@ -198,8 +198,68 @@ public class Observable<T> implements Publisher<T> {
         return fromIterable(sources).concatMap(v -> v, prefetch);
     }
 
+    public static <T> Observable<T> concat(Publisher<? extends T> p1, Publisher<? extends T> p2) {
+        return concatArray(p1, p2);
+    }
+
+    public static <T> Observable<T> concat(
+            Publisher<? extends T> p1, Publisher<? extends T> p2,
+            Publisher<? extends T> p3) {
+        return concatArray(p1, p2, p3);
+    }
+
+    public static <T> Observable<T> concat(
+            Publisher<? extends T> p1, Publisher<? extends T> p2,
+            Publisher<? extends T> p3, Publisher<? extends T> p4) {
+        return concatArray(p1, p2, p3, p4);
+    }
+
+    public static <T> Observable<T> concat(
+            Publisher<? extends T> p1, Publisher<? extends T> p2, 
+            Publisher<? extends T> p3, Publisher<? extends T> p4,
+            Publisher<? extends T> p5
+    ) {
+        return concatArray(p1, p2, p3, p4, p5);
+    }
+
+    public static <T> Observable<T> concat(
+            Publisher<? extends T> p1, Publisher<? extends T> p2, 
+            Publisher<? extends T> p3, Publisher<? extends T> p4,
+            Publisher<? extends T> p5, Publisher<? extends T> p6
+    ) {
+        return concatArray(p1, p2, p3, p4, p5, p6);
+    }
+
+    public static <T> Observable<T> concat(
+            Publisher<? extends T> p1, Publisher<? extends T> p2,
+            Publisher<? extends T> p3, Publisher<? extends T> p4,
+            Publisher<? extends T> p5, Publisher<? extends T> p6,
+            Publisher<? extends T> p7
+    ) {
+        return concatArray(p1, p2, p3, p4, p5, p6, p7);
+    }
+
+    public static <T> Observable<T> concat(
+            Publisher<? extends T> p1, Publisher<? extends T> p2, 
+            Publisher<? extends T> p3, Publisher<? extends T> p4,
+            Publisher<? extends T> p5, Publisher<? extends T> p6,
+            Publisher<? extends T> p7, Publisher<? extends T> p8
+    ) {
+        return concatArray(p1, p2, p3, p4, p5, p6, p7, p8);
+    }
+
+    public static <T> Observable<T> concat(
+            Publisher<? extends T> p1, Publisher<? extends T> p2, 
+            Publisher<? extends T> p3, Publisher<? extends T> p4,
+            Publisher<? extends T> p5, Publisher<? extends T> p6,
+            Publisher<? extends T> p7, Publisher<? extends T> p8,
+            Publisher<? extends T> p9
+    ) {
+        return concatArray(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+    }
+
     @SafeVarargs
-    public static <T> Observable<T> concat(int prefetch, Publisher<? extends T>... sources) {
+    public static <T> Observable<T> concatArray(int prefetch, Publisher<? extends T>... sources) {
         Objects.requireNonNull(sources);
         return fromArray(sources).concatMap(v -> v, prefetch);
     }
@@ -209,8 +269,12 @@ public class Observable<T> implements Publisher<T> {
         return fromIterable(sources).concatMap(v -> v);
     }
 
+    /**
+     *
+     * TODO named this way because of overload conflict with concat(Publisher&lt;Publisher&gt)
+     */
     @SafeVarargs
-    public static <T> Observable<T> concat(Publisher<? extends T>... sources) {
+    public static <T> Observable<T> concatArray(Publisher<? extends T>... sources) {
         if (sources.length == 0) {
             return empty();
         } else
@@ -810,11 +874,11 @@ public class Observable<T> implements Publisher<T> {
         return fromPublisher(to(composer));
     }
 
-    public final Observable<T> concat(Publisher<? extends Publisher<? extends T>> sources) {
+    public static final <T> Observable<T> concat(Publisher<? extends Publisher<? extends T>> sources) {
         return concat(sources, bufferSize());
     }
 
-    public final Observable<T> concat(Publisher<? extends Publisher<? extends T>> sources, int bufferSize) {
+    public static final <T> Observable<T> concat(Publisher<? extends Publisher<? extends T>> sources, int bufferSize) {
         return fromPublisher(sources).concatMap(v -> v);
     }
 
@@ -1012,7 +1076,7 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final Observable<T> endWith(Iterable<? extends T> values) {
-        return concat(this, fromIterable(values));
+        return concatArray(this, fromIterable(values));
     }
 
     @SafeVarargs
@@ -1021,7 +1085,7 @@ public class Observable<T> implements Publisher<T> {
         if (fromArray == empty()) {
             return this;
         }
-        return concat(this, fromArray);
+        return concatArray(this, fromArray);
     }
 
     /**
@@ -1692,7 +1756,7 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final Observable<T> startWith(Iterable<? extends T> values) {
-        return concat(fromIterable(values), this);
+        return concatArray(fromIterable(values), this);
     }
 
     @SafeVarargs
@@ -1701,7 +1765,7 @@ public class Observable<T> implements Publisher<T> {
         if (fromArray == empty()) {
             return this;
         }
-        return concat(fromArray, this);
+        return concatArray(fromArray, this);
     }
 
     public final Disposable subscribe() {
@@ -1746,6 +1810,10 @@ public class Observable<T> implements Publisher<T> {
         try {
             s = RxJavaPlugins.onSubscribe(s);
 
+            if (s == null) {
+                throw new NullPointerException("Plugin returned null Subscriber");
+            }
+            
             onSubscribe.subscribe(s);
         } catch (NullPointerException e) {
             throw e;
