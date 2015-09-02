@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.reactivestreams.*;
 
 import io.reactivex.Scheduler;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class PublisherSubscribeOn<T> implements Publisher<T> {
@@ -95,8 +96,7 @@ public final class PublisherSubscribeOn<T> implements Publisher<T> {
         
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > required but it was " + n));
+            if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             if (Thread.currentThread() == get()) {

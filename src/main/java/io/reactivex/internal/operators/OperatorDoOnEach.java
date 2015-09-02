@@ -38,8 +38,7 @@ public final class OperatorDoOnEach<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        // TODO Auto-generated method stub
-        return null;
+        return new DoOnEachSubscriber<>(t, onNext, onError, onComplete, onAfterTerminate);
     }
     
     static final class DoOnEachSubscriber<T> implements Subscriber<T> {

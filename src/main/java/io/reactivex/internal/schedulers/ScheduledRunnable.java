@@ -29,6 +29,9 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
     
     static final Object DONE = new Object();
     
+    static final int PARENT_INDEX = 0;
+    static final int FUTURE_INDEX = 1;
+    
     /**
      * Creates a ScheduledRunnable by wrapping the given action and setting
      * up the optional parent.
@@ -49,19 +52,19 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
         } catch (Throwable e) {
             RxJavaPlugins.onError(e);
         } finally {
-            Object o = get(0);
+            Object o = get(PARENT_INDEX);
             if (o != DISPOSED && o != null) {
                 // done races with dispose here
-                if (compareAndSet(0, o, DONE)) {
+                if (compareAndSet(PARENT_INDEX, o, DONE)) {
                     ((CompositeResource<Disposable>)o).delete(this);
                 }
             }
             
             for (;;) {
-                o = get(1);
+                o = get(FUTURE_INDEX);
                 if (o != DISPOSED) {
                     // o is either null or a future
-                    if (compareAndSet(1, o, DONE)) {
+                    if (compareAndSet(FUTURE_INDEX, o, DONE)) {
                         break;
                     }
                 }
@@ -71,7 +74,7 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
     
     public void setFuture(Future<?> f) {
         for (;;) {
-            Object o = get(1);
+            Object o = get(FUTURE_INDEX);
             if (o == DONE) {
                 return;
             }
@@ -79,7 +82,7 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
                 f.cancel(true);
                 return;
             }
-            if (compareAndSet(1, o, f)) {
+            if (compareAndSet(FUTURE_INDEX, o, f)) {
                 return;
             }
         }
@@ -90,18 +93,18 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
      * @return true if this ScheduledRunnable has been scheduled.
      */
     public boolean wasScheduled() {
-        return get(1) != null;
+        return get(FUTURE_INDEX) != null;
     }
     
     @Override
     @SuppressWarnings("unchecked")
     public void dispose() {
         for (;;) {
-            Object o = get(1);
+            Object o = get(FUTURE_INDEX);
             if (o == DONE || o == DISPOSED) {
                 break;
             }
-            if (compareAndSet(1, o, DISPOSED)) {
+            if (compareAndSet(FUTURE_INDEX, o, DISPOSED)) {
                 if (o != null) {
                     ((Future<?>)o).cancel(true);
                 }
@@ -110,12 +113,13 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
         }
         
         for (;;) {
-            Object o = get(0);
+            Object o = get(PARENT_INDEX);
             if (o == DONE || o == DISPOSED || o == null) {
                 break;
             }
-            if (compareAndSet(1, o, DISPOSED)) {
+            if (compareAndSet(PARENT_INDEX, o, DISPOSED)) {
                 ((CompositeResource<Disposable>)o).delete(this);
+                return;
             }
         }
     }
