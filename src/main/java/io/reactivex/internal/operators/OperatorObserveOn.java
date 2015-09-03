@@ -23,6 +23,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.schedulers.TrampolineScheduler;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -111,9 +112,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             this.s = s;
@@ -126,6 +125,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             if (done) {
                 return;
             }
+            
             if (!queue.offer(t)) {
                 s.cancel();
                 onError(new MissingBackpressureException("Queue full?!"));
@@ -201,7 +201,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                     boolean d = done;
                     T v = q.poll();
                     boolean empty = v == null;
-                    
+
                     if (checkTerminated(d, empty, a)) {
                         return;
                     }

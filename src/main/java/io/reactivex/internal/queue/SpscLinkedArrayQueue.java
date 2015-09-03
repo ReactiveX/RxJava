@@ -324,24 +324,26 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
         final long p = producerIndex;
         final int m = producerMask;
         
-        int pi = calcWrappedOffset(p + 1, m);
+        int pi = calcWrappedOffset(p + 2, m);
         
         if (null == lvElement(buffer, pi)) {
-            soElement(buffer, pi, second);
+            pi = calcWrappedOffset(p, m);
+            soElement(buffer, pi + 1, second);
             soProducerIndex(p + 2);
-            soElement(buffer, pi - 1, first);
+            soElement(buffer, pi, first);
         } else {
             final int capacity = buffer.length();
             final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<>(capacity);
             producerBuffer = newBuffer;
             
-            soElement(newBuffer, pi, second);// StoreStore
-            soElement(newBuffer, pi - 1, first);
+            pi = calcWrappedOffset(p, m);
+            soElement(newBuffer, pi + 1, second);// StoreStore
+            soElement(newBuffer, pi, first);
             soNext(buffer, newBuffer);
             
             soProducerIndex(p + 2);// this ensures correctness on 32bit platforms
             
-            soElement(buffer, pi - 1, HAS_NEXT); // new buffer is visible after element is
+            soElement(buffer, pi, HAS_NEXT); // new buffer is visible after element is
         }
 
         return true;

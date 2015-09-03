@@ -53,7 +53,7 @@ public final class PublisherZip<T, R> implements Publisher<R> {
             sources = new Publisher[8];
             for (Publisher<? extends T> p : sourcesIterable) {
                 if (count == sources.length) {
-                    Publisher<? extends T>[] b = new Publisher[count + count >> 2];
+                    Publisher<? extends T>[] b = new Publisher[count + (count >> 2)];
                     System.arraycopy(sources, 0, b, 0, count);
                     sources = b;
                 }
