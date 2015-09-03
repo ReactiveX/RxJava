@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators;
 
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.Function;
 
@@ -52,7 +52,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
             sources = new Publisher[8];
             for (Publisher<? extends T> p : sourcesIterable) {
                 if (count == sources.length) {
-                    Publisher<? extends T>[] b = new Publisher[count + count >> 2];
+                    Publisher<? extends T>[] b = new Publisher[count + (count >> 2)];
                     System.arraycopy(sources, 0, b, 0, count);
                     sources = b;
                 }
@@ -158,8 +158,9 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
             }
         }
         
+        Object last = "1";
+        
         void combine(T value, int index) {
-            
             CombinerSubscriber<T, R> cs = subscribers[index];
             
             int a;
@@ -181,9 +182,13 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
                     latest[index] = value;
                 }
                 f = a == len;
-                empty = c == len;
+                // see if either all sources completed
+                empty = c == len 
+                        || (value == null && o == null); // or this source completed without any value
                 if (!empty) {
-                    queue.offer(cs, latest.clone());
+                    if (value != null && f) {
+                        queue.offer(cs, latest.clone());
+                    }
                 } else {
                     done = true;
                 }
@@ -194,7 +199,6 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
             }
             drain();
         }
-        
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
@@ -258,7 +262,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
                     e--;
                 }
                 
-                if (e != 0) {
+                if (e != 0L) {
                     if (!unbounded) {
                         REQUESTED.addAndGet(this, e);
                     }
