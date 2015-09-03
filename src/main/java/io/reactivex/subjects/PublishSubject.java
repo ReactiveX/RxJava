@@ -17,6 +17,7 @@ import java.util.function.IntFunction;
 
 import org.reactivestreams.*;
 
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -247,7 +248,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
          * @param ps the subject to remove
          */
         void remove(PublishSubscriber<T> ps) {
-            TerminalAtomicsHelper.remove(SUBSCRIBERS, this, ps, EMPTY, TERMINATED, this);
+            TerminalAtomicsHelper.remove(SUBSCRIBERS, this, ps, TERMINATED, EMPTY, this);
         }
         
         @Override
@@ -318,9 +319,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
         
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                // can't really call onError here because request could be async in respect to other onXXX calls
-                RxJavaPlugins.onError(new IllegalStateException("n > 0 required but it was " + n));
+            if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             BackpressureHelper.add(this, n);
