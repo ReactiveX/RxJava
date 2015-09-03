@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 import io.reactivex.internal.disposables.ArrayCompositeResource;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.subscribers.SerializedSubscriber;
 
 /**
@@ -50,6 +50,8 @@ public final class OperatorTakeUntil<T, U> implements Operator<T, T> {
                 frc.dispose();
                 if (tus.compareAndSet(false, true)) {
                     EmptySubscription.complete(serial);
+                } else {
+                    serial.onComplete();
                 }
             }
             @Override
@@ -57,6 +59,8 @@ public final class OperatorTakeUntil<T, U> implements Operator<T, T> {
                 frc.dispose();
                 if (tus.compareAndSet(false, true)) {
                     EmptySubscription.error(t, serial);
+                } else {
+                    serial.onError(t);
                 }
             }
             @Override
@@ -64,6 +68,8 @@ public final class OperatorTakeUntil<T, U> implements Operator<T, T> {
                 frc.dispose();
                 if (tus.compareAndSet(false, true)) {
                     EmptySubscription.complete(serial);
+                } else {
+                    serial.onComplete();
                 }
             }
         });
@@ -86,9 +92,7 @@ public final class OperatorTakeUntil<T, U> implements Operator<T, T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                onError(new IllegalStateException("Subscription already set!"));
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             this.s = s;
