@@ -28,6 +28,10 @@ public enum NotificationLite {
      */
     private enum Complete {
         INSTANCE;
+        @Override
+        public String toString() {
+            return "NotificationLite.Complete";
+        };
     }
     
     /**
@@ -40,6 +44,11 @@ public enum NotificationLite {
         ErrorNotification(Throwable e) {
             this.e = e;
         }
+        
+        @Override
+        public String toString() {
+            return "NotificationLite.Error[" + e + "]";
+        }
     }
     
     /**
@@ -51,6 +60,11 @@ public enum NotificationLite {
         final Subscription s;
         SubscriptionNotification(Subscription s) {
             this.s = s;
+        }
+        
+        @Override
+        public String toString() {
+            return "NotificationLite.Subscription[" + s + "]";
         }
     }
     

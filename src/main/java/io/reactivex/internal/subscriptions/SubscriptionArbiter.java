@@ -68,8 +68,7 @@ public final class SubscriptionArbiter extends AtomicInteger implements Subscrip
     
     @Override
     public void request(long n) {
-        if (n <= 0) {
-            RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
+        if (SubscriptionHelper.validateRequest(n)) {
             return;
         }
         if (cancelled) {

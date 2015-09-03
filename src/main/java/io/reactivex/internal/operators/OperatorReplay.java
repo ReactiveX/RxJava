@@ -23,8 +23,8 @@ import org.reactivestreams.*;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.EmptySubscription;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.util.*;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Timed;
@@ -555,8 +555,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         @Override
         public void request(long n) {
             // ignore negative requests
-            if (n < 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
+            if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             // In general, RxJava doesn't prevent concurrent requests (with each other or with
@@ -574,16 +573,12 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     return;
                 }
                 // otherwise, increase the request count
-                long u = r + n;
-                // and check for long overflow
-                if (u < 0) {
-                    // cap at max value, which is essentially unlimited
-                    u = Long.MAX_VALUE;
-                }
+                long u = BackpressureHelper.addCap(r, n);
+                
                 // try setting the new request value
                 if (compareAndSet(r, u)) {
                     // increment the total request counter
-                    addTotalRequested(n);
+                    BackpressureHelper.add(totalRequested, n);
                     // if successful, notify the parent dispacher this child can receive more
                     // elements
                     parent.manageRequests();
@@ -593,23 +588,6 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 }
                 // otherwise, someone else changed the state (perhaps a concurrent 
                 // request or unsubscription so retry
-            }
-        }
-        
-        /**
-         * Increments the total requested amount.
-         * @param n the additional request amount
-         */
-        void addTotalRequested(long n) {
-            for (;;) {
-                long r = totalRequested.get();
-                long u = r + n;
-                if (u < 0) {
-                    u = Long.MAX_VALUE;
-                }
-                if (totalRequested.compareAndSet(r, u)) {
-                    return;
-                }
             }
         }
         
@@ -756,6 +734,8 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 }
                 output.emitting = true;
             }
+            final Subscriber<? super T> child = output.child;
+            
             for (;;) {
                 if (output.isDisposed()) {
                     return;
@@ -772,13 +752,13 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 while (r != 0L && destIndex < sourceIndex) {
                     Object o = get(destIndex);
                     try {
-                        if (NotificationLite.accept(o, output.child)) {
+                        if (NotificationLite.accept(o, child)) {
                             return;
                         }
                     } catch (Throwable err) {
                         output.dispose();
                         if (!NotificationLite.isError(o) && !NotificationLite.isComplete(o)) {
-                            output.child.onError(err);
+                            child.onError(err);
                         }
                         return;
                     }

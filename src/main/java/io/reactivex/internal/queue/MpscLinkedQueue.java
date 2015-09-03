@@ -47,7 +47,7 @@ public final class MpscLinkedQueue<T> extends BaseLinkedQueue<T> {
      */
     @Override
     public final boolean offer(final T nextValue) {
-        final LinkedQueueNode<T> nextNode = new LinkedQueueNode<>();
+        final LinkedQueueNode<T> nextNode = new LinkedQueueNode<>(nextValue);
         final LinkedQueueNode<T> prevProducerNode = xchgProducerNode(nextNode);
         // Should a producer thread get interrupted here the chain WILL be broken until that thread is resumed
         // and completes the store in prev.next.
