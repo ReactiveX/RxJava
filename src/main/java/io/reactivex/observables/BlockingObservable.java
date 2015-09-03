@@ -27,6 +27,7 @@ import io.reactivex.internal.operators.*;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subscribers.AsyncObserver;
 
 public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
     final Publisher<? extends T> o;
@@ -216,7 +217,7 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
         CompletableFuture<T> f = new CompletableFuture<>();
         Observable<T> source = Observable.fromPublisher(o);
         
-        Observer<T> s = new Observer<T>() {
+        AsyncObserver<T> s = new AsyncObserver<T>() {
             @Override
             protected void onStart() {
                 f.whenComplete((v, e) -> {
