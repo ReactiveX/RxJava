@@ -20,8 +20,8 @@ import org.reactivestreams.*;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.SerialResource;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
-import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * An observable which auto-connects to another observable, caches the elements
@@ -291,8 +291,7 @@ public final class CachedObservable<T> extends Observable<T> {
         }
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
+            if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             for (;;) {
@@ -321,7 +320,7 @@ public final class CachedObservable<T> extends Observable<T> {
         }
         @Override
         public void dispose() {
-            if (cancelled) {
+            if (!cancelled) {
                 cancelled = true;
                 long r = get();
                 if (r >= 0) {

@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 import io.reactivex.internal.disposables.ArrayCompositeResource;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.subscribers.SerializedSubscriber;
 
 public final class OperatorSkipUntil<T, U> implements Operator<T, T> {
@@ -41,9 +41,7 @@ public final class OperatorSkipUntil<T, U> implements Operator<T, T> {
             Subscription s;
             @Override
             public void onSubscribe(Subscription s) {
-                if (this.s != null) {
-                    s.cancel();
-                    onError(new IllegalStateException("Subscription already set!"));
+                if (SubscriptionHelper.validateSubscription(this.s, s)) {
                     return;
                 }
                 this.s = s;
@@ -64,6 +62,8 @@ public final class OperatorSkipUntil<T, U> implements Operator<T, T> {
                 // in case the other emits an onError before the main even sets a subscription
                 if (sus.compareAndSet(false, true)) {
                     EmptySubscription.error(t, serial);
+                } else {
+                    serial.onError(t);
                 }
             }
             
@@ -94,9 +94,7 @@ public final class OperatorSkipUntil<T, U> implements Operator<T, T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                onError(new IllegalStateException("Subscription already set!"));
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             this.s = s;
