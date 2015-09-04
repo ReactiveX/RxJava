@@ -126,13 +126,15 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
                 return;
             }
             
+            buffer = b;
+            
             actual.onSubscribe(this);
             
             if (!cancelled) {
                 s.request(Long.MAX_VALUE);
                 
                 Disposable d = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
-                if (TIMER.compareAndSet(this, null, d)) {
+                if (!TIMER.compareAndSet(this, null, d)) {
                     d.dispose();
                 }
             }
@@ -315,6 +317,14 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
             s.request(Long.MAX_VALUE);
 
             w.schedulePeriodically(this, timeskip, timeskip, unit);
+            
+            w.schedule(() -> {
+                synchronized (this) {
+                    buffers.remove(b);
+                }
+                
+                fastpathOrderedEmitMax(b, false, w);
+            }, timespan, unit);
         }
         
         @Override
@@ -385,7 +395,6 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
                 actual.onError(new NullPointerException("The supplied buffer is null"));
                 return;
             }
-            
             synchronized (this) {
                 if (cancelled) {
                     return;
@@ -487,17 +496,18 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
                 
                 b.add(t);
                 
-                if (b.size() >= maxSize && restartTimerOnMaxSize) {
-                    buffer = null;
-                    producerIndex++;
-                } else {
+                if (b.size() < maxSize) {
                     return;
                 }
             }
+
+            if (restartTimerOnMaxSize) {
+                buffer = null;
+                producerIndex++;
+                
+                timer.dispose();
+            }
             
-            timer.dispose();
-            
-            actual.onNext(b);
             fastpathOrderedEmitMax(b, false, this);
             
             try {
@@ -513,14 +523,21 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
                 actual.onError(new NullPointerException("The buffer supplied is null"));
                 return;
             }
-            
 
-            synchronized (this) {
-                buffer = b;
-                consumerIndex++;
-            }
+
             
-            timer = w.schedulePeriodically(this, timespan, timespan, unit);
+            if (restartTimerOnMaxSize) {
+                synchronized (this) {
+                    buffer = b;
+                    consumerIndex++;
+                }
+                
+                timer = w.schedulePeriodically(this, timespan, timespan, unit);
+            } else {
+                synchronized (this) {
+                    buffer = b;
+                }
+            }
         }
         
         @Override

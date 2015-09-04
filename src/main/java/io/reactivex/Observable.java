@@ -787,6 +787,14 @@ public class Observable<T> implements Publisher<T> {
         return buffer(count, count, bufferSupplier);
     }
 
+    public final Observable<List<T>> buffer(long timespan, long timeskip, TimeUnit unit) {
+        return buffer(timespan, timeskip, unit, Schedulers.computation(), ArrayList::new);
+    }
+    
+    public final Observable<List<T>> buffer(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler) {
+        return buffer(timespan, timeskip, unit, scheduler, ArrayList::new);
+    }
+    
     public final <U extends Collection<? super T>> Observable<U> buffer(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Supplier<U> bufferSupplier) {
         Objects.requireNonNull(unit);
         Objects.requireNonNull(scheduler);
@@ -855,6 +863,12 @@ public class Observable<T> implements Publisher<T> {
         Objects.requireNonNull(boundary);
         Objects.requireNonNull(bufferSupplier);
         return lift(new OperatorBufferExactBoundary<>(boundary, bufferSupplier));
+    }
+    
+    public final <B> Observable<List<T>> buffer(Supplier<? extends Observable<B>> boundarySupplier) {
+        Objects.requireNonNull(boundarySupplier);
+        // TODO implement
+        throw new UnsupportedOperationException();
     }
 
     public final Observable<T> cache() {
