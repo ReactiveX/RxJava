@@ -27,7 +27,7 @@ import rx.exceptions.Exceptions;
  */
 public final class SubscriptionList implements Subscription {
 
-    private LinkedList<Subscription> subscriptions;
+    private List<Subscription> subscriptions;
     private volatile boolean unsubscribed;
 
     public SubscriptionList() {
@@ -62,7 +62,7 @@ public final class SubscriptionList implements Subscription {
         if (!unsubscribed) {
             synchronized (this) {
                 if (!unsubscribed) {
-                    LinkedList<Subscription> subs = subscriptions;
+                    List<Subscription> subs = subscriptions;
                     if (subs == null) {
                         subs = new LinkedList<Subscription>();
                         subscriptions = subs;
@@ -80,7 +80,7 @@ public final class SubscriptionList implements Subscription {
         if (!unsubscribed) {
             boolean unsubscribe = false;
             synchronized (this) {
-                LinkedList<Subscription> subs = subscriptions;
+                List<Subscription> subs = subscriptions;
                 if (unsubscribed || subs == null) {
                     return;
                 }
@@ -114,7 +114,7 @@ public final class SubscriptionList implements Subscription {
         }
     }
 
-    private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {
+    private void unsubscribeFromAll(Collection<Subscription> subscriptions) {
         if (subscriptions == null) {
             return;
         }
@@ -124,7 +124,7 @@ public final class SubscriptionList implements Subscription {
                 s.unsubscribe();
             } catch (Throwable e) {
                 if (es == null) {
-                    es = new ArrayList<Throwable>();
+                    es = new LinkedList<Throwable>();
                 }
                 es.add(e);
             }

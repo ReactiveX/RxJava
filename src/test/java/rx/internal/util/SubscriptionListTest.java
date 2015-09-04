@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import rx.Subscription;
@@ -34,34 +35,10 @@ public class SubscriptionListTest {
     @Test
     public void testSuccess() {
         final AtomicInteger counter = new AtomicInteger();
-        SubscriptionList s = new SubscriptionList();
-        s.add(new Subscription() {
+        final int numberOfSubscriptions = 2;
+        SubscriptionList subscriptions = createSubscriptions(counter, numberOfSubscriptions);
 
-            @Override
-            public void unsubscribe() {
-                counter.incrementAndGet();
-            }
-
-            @Override
-            public boolean isUnsubscribed() {
-                return false;
-            }
-        });
-
-        s.add(new Subscription() {
-
-            @Override
-            public void unsubscribe() {
-                counter.incrementAndGet();
-            }
-
-            @Override
-            public boolean isUnsubscribed() {
-                return false;
-            }
-        });
-
-        s.unsubscribe();
+        subscriptions.unsubscribe();
 
         assertEquals(2, counter.get());
     }
@@ -69,82 +46,32 @@ public class SubscriptionListTest {
     @Test(timeout = 1000)
     public void shouldUnsubscribeAll() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        final SubscriptionList s = new SubscriptionList();
-
-        final int count = 10;
+        final int numberOfSubscriptions = 10;
+        
+        SubscriptionList subscriptions = createSubscriptions(counter, numberOfSubscriptions);
+        
         final CountDownLatch start = new CountDownLatch(1);
-        for (int i = 0; i < count; i++) {
-            s.add(new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-                    counter.incrementAndGet();
-                }
-
-                @Override
-                public boolean isUnsubscribed() {
-                    return false;
-                }
-            });
-        }
-
-        final List<Thread> threads = new ArrayList<Thread>();
-        for (int i = 0; i < count; i++) {
-            final Thread t = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        start.await();
-                        s.unsubscribe();
-                    } catch (final InterruptedException e) {
-                        fail(e.getMessage());
-                    }
-                }
-            };
-            t.start();
-            threads.add(t);
-        }
-
+        
+        final List<Thread> threads = createUnsubscribeThreads(start, subscriptions, numberOfSubscriptions);
+        
         start.countDown();
-        for (final Thread t : threads) {
-            t.join();
-        }
+        
+        joinThreads(threads);
 
-        assertEquals(count, counter.get());
+        assertEquals(numberOfSubscriptions, counter.get());
     }
 
     @Test
-    public void testException() {
+    public void testRuntimeException() {
+        
         final AtomicInteger counter = new AtomicInteger();
-        SubscriptionList s = new SubscriptionList();
-        s.add(new Subscription() {
-
-            @Override
-            public void unsubscribe() {
-                throw new RuntimeException("failed on first one");
-            }
-
-            @Override
-            public boolean isUnsubscribed() {
-                return false;
-            }
-        });
-
-        s.add(new Subscription() {
-
-            @Override
-            public void unsubscribe() {
-                counter.incrementAndGet();
-            }
-
-            @Override
-            public boolean isUnsubscribed() {
-                return false;
-            }
-        });
-
+        final int numberOfSubscriptions = 1;
+        
+        SubscriptionList subscriptions = createSubscriptions(counter, numberOfSubscriptions);
+        addThrowableSubscriptions(subscriptions, new RuntimeException("failed on first one"), numberOfSubscriptions);
+        
         try {
-            s.unsubscribe();
+        	subscriptions.unsubscribe();
             fail("Expecting an exception");
         } catch (RuntimeException e) {
             // we expect this
@@ -157,49 +84,15 @@ public class SubscriptionListTest {
 
     @Test
     public void testCompositeException() {
-        final AtomicInteger counter = new AtomicInteger();
-        SubscriptionList s = new SubscriptionList();
-        s.add(new Subscription() {
-
-            @Override
-            public void unsubscribe() {
-                throw new RuntimeException("failed on first one");
-            }
-
-            @Override
-            public boolean isUnsubscribed() {
-                return false;
-            }
-        });
-
-        s.add(new Subscription() {
-
-            @Override
-            public void unsubscribe() {
-                throw new RuntimeException("failed on second one too");
-            }
-
-            @Override
-            public boolean isUnsubscribed() {
-                return false;
-            }
-        });
-
-        s.add(new Subscription() {
-
-            @Override
-            public void unsubscribe() {
-                counter.incrementAndGet();
-            }
-
-            @Override
-            public boolean isUnsubscribed() {
-                return false;
-            }
-        });
+    	final AtomicInteger counter = new AtomicInteger();
+        final int numberOfSubscriptions = 1;
+        
+        SubscriptionList subscriptions = createSubscriptions(counter, numberOfSubscriptions);
+        addThrowableSubscriptions(subscriptions, new RuntimeException("failed on first one"), numberOfSubscriptions);
+        addThrowableSubscriptions(subscriptions, new RuntimeException("failed on second one too"), numberOfSubscriptions);
 
         try {
-            s.unsubscribe();
+        	subscriptions.unsubscribe();
             fail("Expecting an exception");
         } catch (CompositeException e) {
             // we expect this
@@ -213,24 +106,14 @@ public class SubscriptionListTest {
 
     @Test
     public void testUnsubscribeIdempotence() {
-        final AtomicInteger counter = new AtomicInteger();
-        SubscriptionList s = new SubscriptionList();
-        s.add(new Subscription() {
+    	final AtomicInteger counter = new AtomicInteger();
+        final int numberOfSubscriptions = 1;
+        
+        SubscriptionList subscriptions = createSubscriptions(counter, numberOfSubscriptions);
 
-            @Override
-            public void unsubscribe() {
-                counter.incrementAndGet();
-            }
-
-            @Override
-            public boolean isUnsubscribed() {
-                return false;
-            }
-        });
-
-        s.unsubscribe();
-        s.unsubscribe();
-        s.unsubscribe();
+        subscriptions.unsubscribe();
+        subscriptions.unsubscribe();
+        subscriptions.unsubscribe();
 
         // we should have only unsubscribed once
         assertEquals(1, counter.get());
@@ -239,32 +122,125 @@ public class SubscriptionListTest {
     @Test(timeout = 1000)
     public void testUnsubscribeIdempotenceConcurrently()
             throws InterruptedException {
-        final AtomicInteger counter = new AtomicInteger();
-        final SubscriptionList s = new SubscriptionList();
+    	final AtomicInteger counter = new AtomicInteger();
+        final int numberOfSubscriptions = 1;
 
-        final int count = 10;
+        SubscriptionList subscriptions = createSubscriptions(counter, numberOfSubscriptions);
+
+       
         final CountDownLatch start = new CountDownLatch(1);
-        s.add(new Subscription() {
+        final int numberOfThreads = 10;
+        final List<Thread> threads = createUnsubscribeThreads(start, subscriptions, numberOfThreads);
+        
+        start.countDown();
+        
+        joinThreads(threads);
+        
 
-            @Override
-            public void unsubscribe() {
-                counter.incrementAndGet();
-            }
+        start.countDown();
 
-            @Override
-            public boolean isUnsubscribed() {
-                return false;
-            }
-        });
+        // we should have only unsubscribed once
+        assertEquals(1, counter.get());
+    }
+    
+    @Test
+    public void testRemoveSuccess(){
+    	SubscriptionList subscriptions = new SubscriptionList();
+    	Subscription subscription = createSubscribedSubscription();
+    	
+    	subscriptions.add(subscription);
+    	Assert.assertFalse(subscription.isUnsubscribed());
+    	
+    	subscriptions.remove(subscription);
+    	Assert.assertTrue(subscription.isUnsubscribed());
+    }
+    
+    @Test
+    public void testHasSubscriptionsAfterRemove(){
+    	SubscriptionList subscriptions = new SubscriptionList();
+    	Subscription subscription = createSubscribedSubscription();
+    	
+    	subscriptions.add(subscription);
+    	Assert.assertTrue(subscriptions.hasSubscriptions());
+    	
+    	subscriptions.remove(subscription);
+    	Assert.assertFalse(subscriptions.hasSubscriptions());
+    }
+    
+    @Test
+    public void testHasSubscriptionsAfterUnsubscribe(){
+    	SubscriptionList subscriptions = new SubscriptionList();
+    	Subscription subscription = createSubscribedSubscription();
+    	
+    	subscriptions.add(subscription);
+    	Assert.assertTrue(subscriptions.hasSubscriptions());
+    	
+    	subscriptions.unsubscribe();
+    	Assert.assertFalse(subscriptions.hasSubscriptions());
+    }
+    
+    @Test
+    public void testClearSuccess(){
+    	SubscriptionList subscriptions = new SubscriptionList();
+    	Subscription subscription = createSubscribedSubscription();
+    	subscriptions.add(subscription);
+    	
+    	Assert.assertFalse(subscription.isUnsubscribed());
+    	
+    	subscriptions.clear();
+    	
+    	Assert.assertTrue(subscription.isUnsubscribed());
+    	Assert.assertFalse(subscriptions.hasSubscriptions());
+    }
+    
+    private SubscriptionList createSubscriptions(final AtomicInteger counter, final int numberOfSubscriptions){
+    	SubscriptionList subscriptions = new SubscriptionList();
+    	for(int i = 0; i < numberOfSubscriptions; ++i){
+    		subscriptions.add(new Subscription() {
 
-        final List<Thread> threads = new ArrayList<Thread>();
-        for (int i = 0; i < count; i++) {
+    			@Override
+    			public void unsubscribe() {
+    				counter.incrementAndGet();
+    			}
+
+    			@Override
+    			public boolean isUnsubscribed() {
+    				return false;
+    			}
+    		});
+    	}
+    	
+        return subscriptions;
+    }
+    
+	private SubscriptionList addThrowableSubscriptions(final SubscriptionList subscriptions, final RuntimeException runtimeException, final int numberOfSubscriptions){
+    	for(int i = 0; i < numberOfSubscriptions; ++i){
+    		subscriptions.add(new Subscription() {
+
+    			@Override
+    			public void unsubscribe() {
+    				throw runtimeException;
+    			}
+
+    			@Override
+    			public boolean isUnsubscribed() {
+    				return false;
+    			}
+    		});
+    	}
+    	
+        return subscriptions;
+    }
+	
+	private List<Thread> createUnsubscribeThreads(final CountDownLatch start, final SubscriptionList subscriptions, final int numberOfThreads){
+		final List<Thread> threads = new ArrayList<Thread>();
+        for (int i = 0; i < numberOfThreads; i++) {
             final Thread t = new Thread() {
                 @Override
                 public void run() {
                     try {
                         start.await();
-                        s.unsubscribe();
+                        subscriptions.unsubscribe();
                     } catch (final InterruptedException e) {
                         fail(e.getMessage());
                     }
@@ -273,13 +249,30 @@ public class SubscriptionListTest {
             t.start();
             threads.add(t);
         }
-
-        start.countDown();
-        for (final Thread t : threads) {
+        return threads;
+	}
+	
+	private void joinThreads(List<Thread> threads) throws InterruptedException{
+		for (final Thread t : threads) {
             t.join();
         }
-
-        // we should have only unsubscribed once
-        assertEquals(1, counter.get());
-    }
+	}
+	
+	private Subscription createSubscribedSubscription(){
+		return new Subscription() {
+			
+    		private boolean unsubscribed = false;
+    		
+			@Override
+			public void unsubscribe() {
+				unsubscribed = true;
+			}
+			
+			@Override
+			public boolean isUnsubscribed() {
+				return unsubscribed;
+			}
+		};
+	}
+    
 }
