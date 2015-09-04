@@ -551,6 +551,9 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public static Observable<Integer> range(int start, int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= required but it was " + count);
+        } else
         if (count == 0) {
             return empty();
         } else

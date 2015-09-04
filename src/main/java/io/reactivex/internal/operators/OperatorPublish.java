@@ -22,6 +22,7 @@ import org.reactivestreams.*;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.queue.SpscArrayQueue;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -209,7 +210,21 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         /** Guarded by this. */
         boolean missed;
         
-        Subscription s;
+        volatile Subscription s;
+        static final AtomicReferenceFieldUpdater<PublishSubscriber, Subscription> S =
+                AtomicReferenceFieldUpdater.newUpdater(PublishSubscriber.class, Subscription.class, "s");
+        
+        static final Subscription CANCELLED = new Subscription() {
+            @Override
+            public void request(long n) {
+                
+            }
+            
+            @Override
+            public void cancel() {
+                
+            }
+        };
         
         public PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
             this.queue = new SpscArrayQueue<>(bufferSize);
@@ -222,8 +237,20 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         
         @Override
         public void dispose() {
-            producers.getAndSet(TERMINATED);
-            current.compareAndSet(PublishSubscriber.this, null);
+            if (producers.get() != TERMINATED) {
+                InnerProducer[] ps = producers.getAndSet(TERMINATED);
+                if (ps != TERMINATED) {
+                    current.compareAndSet(PublishSubscriber.this, null);
+                    
+                    Subscription a = s;
+                    if (a != CANCELLED) {
+                        a = S.getAndSet(this, CANCELLED);
+                        if (a != CANCELLED && a != null) {
+                            a.cancel();
+                        }
+                    }
+                }
+            }
         }
         
         public boolean isDisposed() {
@@ -232,12 +259,13 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
+            if (!S.compareAndSet(this, null, s)) {
                 s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+                if (this.s != CANCELLED) {
+                    SubscriptionHelper.reportSubscriptionSet();
+                }
                 return;
             }
-            this.s = s;
             s.request(bufferSize);
         }
         
