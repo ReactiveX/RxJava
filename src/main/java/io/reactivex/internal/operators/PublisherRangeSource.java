@@ -28,10 +28,10 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public final class PublisherRangeSource implements Publisher<Integer> {
     final int start;
-    final int end;
+    final long end;
     public PublisherRangeSource(int start, int count) {
         this.start = start;
-        this.end = start + (count - 1);
+        this.end = (long)start + (count - 1);
     }
     @Override
     public void subscribe(Subscriber<? super Integer> s) {
@@ -41,13 +41,13 @@ public final class PublisherRangeSource implements Publisher<Integer> {
     static final class RangeSubscription extends AtomicLong implements Subscription {
         /** */
         private static final long serialVersionUID = 7600071995978874818L;
-        final int end;
+        final long end;
         final Subscriber<? super Integer> actual;
 
         long index;
         volatile boolean cancelled;
         
-        public RangeSubscription(Subscriber<? super Integer> actual, int start, int end) {
+        public RangeSubscription(Subscriber<? super Integer> actual, int start, long end) {
             this.actual = actual;
             this.index = start;
             this.end = end;

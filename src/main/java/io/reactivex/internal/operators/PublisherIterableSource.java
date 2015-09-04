@@ -35,6 +35,7 @@ public final class PublisherIterableSource<T> extends AtomicBoolean implements P
     public PublisherIterableSource(Iterable<? extends T> source) {
         this.source = source;
     }
+    
     @Override
     public void subscribe(Subscriber<? super T> s) {
         Iterator<? extends T> it;
@@ -42,6 +43,10 @@ public final class PublisherIterableSource<T> extends AtomicBoolean implements P
             it = source.iterator();
         } catch (Throwable e) {
             EmptySubscription.error(e, s);
+            return;
+        }
+        if (!it.hasNext()) {
+            EmptySubscription.complete(s);
             return;
         }
         s.onSubscribe(new IteratorSourceSubscription<>(it, s));
