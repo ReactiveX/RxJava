@@ -518,23 +518,13 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
             while ((t = q.poll()) != null) {
                 if (count == 0) {
                     ex = t;
-                } else
-                if (count == 1) {
-                    Throwable e = ex;
-                    ex = new RuntimeException("Multiple exceptions");
-                    ex.addSuppressed(e);
-                    ex.addSuppressed(t);
                 } else {
                     ex.addSuppressed(t);
                 }
                 
                 count++;
             }
-            if (count > 1) {
-                actual.onError(ex);
-            } else {
-                actual.onError(ex.getSuppressed()[0]);
-            }
+            actual.onError(ex);
         }
         
         void unsubscribe() {

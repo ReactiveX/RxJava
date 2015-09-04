@@ -24,6 +24,11 @@ import io.reactivex.plugins.RxJavaPlugins;
 public enum CancelledSubscriber implements Subscriber<Object> {
     INSTANCE;
     
+    @SuppressWarnings("unchecked")
+    public static <T> Subscriber<T> instance() {
+        return (Subscriber<T>)INSTANCE;
+    }
+    
     @Override
     public void onSubscribe(Subscription s) {
         s.cancel();
