@@ -38,9 +38,19 @@ public final class PublisherFutureSource<T> implements Publisher<T> {
             T v;
             try {
                 v = unit != null ? future.get(timeout, unit) : future.get();
-            } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+            } catch (ExecutionException ex) {
+                Throwable cause = ex.getCause();
+                if (cause != null) {
+                    s.onError(cause);
+                } else {
+                    s.onError(ex);
+                }
+                return;
+            } catch (Throwable ex) {
                 s.onError(ex);
                 return;
+            } finally {
+                future.cancel(true); // TODO ?? not sure about this
             }
             sas.setValue(v);
         }
