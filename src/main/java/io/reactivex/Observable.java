@@ -554,10 +554,10 @@ public class Observable<T> implements Publisher<T> {
         if (count == 0) {
             return empty();
         } else
-            if (count == 1) {
-                return just(start);
-            }
-        if (start + (long)count > Integer.MAX_VALUE) {
+        if (count == 1) {
+            return just(start);
+        } else
+        if ((long)start + (count - 1) > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Integer overflow");
         }
         return create(new PublisherRangeSource(start, count));
