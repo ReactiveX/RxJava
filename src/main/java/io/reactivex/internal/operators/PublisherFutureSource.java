@@ -38,6 +38,8 @@ public final class PublisherFutureSource<T> implements Publisher<T> {
             T v;
             try {
                 v = unit != null ? future.get(timeout, unit) : future.get();
+            } catch (CancellationException ex) {
+                return; // FIXME not sure about this either
             } catch (ExecutionException ex) {
                 Throwable cause = ex.getCause();
                 if (cause != null) {

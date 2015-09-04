@@ -114,7 +114,12 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
         
         @Override
         public void onComplete() {
-            cancel();
+            if (WINDOWS.decrementAndGet(this) == 0) {
+                complete();
+            }
+        }
+        
+        void complete() {
             List<U> list;
             synchronized (this) {
                 list = new ArrayList<>(buffers);
@@ -209,8 +214,8 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
         
         void openFinished(Disposable d) {
             if (resources.remove(d)) {
-                if (leave(-1) == 0) {
-                    onComplete();
+                if (WINDOWS.decrementAndGet(this) == 0) {
+                    complete();
                 }
             }
         }
@@ -227,8 +232,8 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
             }
             
             if (resources.remove(d)) {
-                if (leave(-1) == 0) {
-                    onComplete();
+                if (WINDOWS.decrementAndGet(this) == 0) {
+                    complete();
                 }
             }
         }

@@ -411,7 +411,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         }
         int s = errors.size();
         if (s != 0) {
-            fail(prefix, "Error(s) present", errors);
+            fail(prefix, "Error(s) present: " + errors, errors);
         }
     }
     

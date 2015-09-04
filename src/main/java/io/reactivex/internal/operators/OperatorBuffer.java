@@ -44,8 +44,7 @@ public final class OperatorBuffer<T, U extends Collection<? super T>> implements
             }
             return EmptySubscriber.INSTANCE;
         }
-        // TODO Auto-generated method stub
-        return null;
+        return new BufferSkipSubscriber<>(t, count, skip, bufferSupplier);
     }
     
     static final class BufferExactSubscriber<T, U extends Collection<? super T>> implements Subscriber<T>, Subscription {
@@ -130,7 +129,7 @@ public final class OperatorBuffer<T, U extends Collection<? super T>> implements
         public void onComplete() {
             U b = buffer;
             buffer = null;
-            if (b != null) {
+            if (b != null && !b.isEmpty()) {
                 actual.onNext(b);
             }
             actual.onComplete();
@@ -210,7 +209,7 @@ public final class OperatorBuffer<T, U extends Collection<? super T>> implements
             while (it.hasNext()) {
                 U b = it.next();
                 b.add(t);
-                if (count >= b.size()) {
+                if (count <= b.size()) {
                     it.remove();
                     
                     actual.onNext(b);

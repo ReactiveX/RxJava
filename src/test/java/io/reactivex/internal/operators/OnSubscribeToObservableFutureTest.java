@@ -130,6 +130,8 @@ public class OnSubscribeToObservableFutureTest {
         
         futureObservable.subscribeOn(Schedulers.computation()).subscribe(ts);
         
+        Thread.sleep(100);
+        
         ts.dispose();
         
         ts.assertNoErrors();
