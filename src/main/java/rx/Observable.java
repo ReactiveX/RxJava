@@ -1251,6 +1251,29 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that invokes passed function and emits its result for each new Observer that subscribes.
+     * <p>
+     * Allows you to defer execution of passed function until Observer subscribes to the Observable.
+     * It makes passed function "lazy".
+     * Result of the function invocation will be emitted by the Observable.
+     * <dl>
+     *   <dt><b>Scheduler:</b></dt>
+     *   <dd>{@code fromCallable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param func
+     *         function which execution should be deferred, it will be invoked when Observer will subscribe to the Observable
+     * @param <T>
+     *         the type of the item emitted by the Observable
+     * @return an Observable whose {@link Observer}s' subscriptions trigger an invocation of the given function
+     * @see #defer(Func0)
+     */
+    @Experimental
+    public static <T> Observable<T> fromCallable(Callable<? extends T> func) {
+        return create(new OnSubscribeFromCallable<T>(func));
+    }
+
+    /**
      * Returns an Observable that emits a sequential number every specified interval of time.
      * <p>
      * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/interval.png" alt="">
