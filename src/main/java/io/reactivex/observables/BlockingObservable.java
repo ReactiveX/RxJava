@@ -81,16 +81,19 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
                     try {
                         o = queue.take();
                     } catch (InterruptedException ex) {
+                        resource.dispose();
                         Thread.currentThread().interrupt();
                         Exceptions.propagate(ex);
                     }
                 }
                 last = o;
                 if (NotificationLite.isError(o)) {
+                    resource.dispose();
                     Throwable e = NotificationLite.getError(o);
                     Exceptions.propagate(e);
                 }
                 if (NotificationLite.isComplete(o)) {
+                    resource.dispose();
                     return false;
                 }
                 return true;

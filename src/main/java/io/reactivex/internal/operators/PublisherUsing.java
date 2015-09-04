@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.*;
 
 import org.reactivestreams.*;
@@ -51,6 +52,11 @@ public final class PublisherUsing<T, D> implements Publisher<T> {
         try {
             source = sourceSupplier.apply(resource);
         } catch (Throwable e) {
+            try {
+                disposer.accept(resource);
+            } catch (Throwable ex) {
+                e.addSuppressed(ex);
+            }
             EmptySubscription.error(e, s);
             return;
         }
@@ -60,7 +66,10 @@ public final class PublisherUsing<T, D> implements Publisher<T> {
         source.subscribe(us);
     }
     
-    static final class UsingSubscriber<T, D> implements Subscriber<T>, Subscription {
+    static final class UsingSubscriber<T, D> extends AtomicBoolean implements Subscriber<T>, Subscription {
+        /** */
+        private static final long serialVersionUID = 5904473792286235046L;
+        
         final Subscriber<? super T> actual;
         final D resource;
         final Consumer<? super D> disposer;
@@ -92,14 +101,19 @@ public final class PublisherUsing<T, D> implements Publisher<T> {
         @Override
         public void onError(Throwable t) {
             if (eager) {
-                try {
-                    disposer.accept(resource);
-                } catch (Throwable e) {
-                    t.addSuppressed(e);
+                if (compareAndSet(false, true)) {
+                    try {
+                        disposer.accept(resource);
+                    } catch (Throwable e) {
+                        t.addSuppressed(e);
+                    }
                 }
+                
+                s.cancel();
                 actual.onError(t);
             } else {
                 actual.onError(t);
+                s.cancel();
                 disposeAfter();
             }
         }
@@ -107,15 +121,20 @@ public final class PublisherUsing<T, D> implements Publisher<T> {
         @Override
         public void onComplete() {
             if (eager) {
-                try {
-                    disposer.accept(resource);
-                } catch (Throwable e) {
-                    actual.onError(e);
-                    return;
+                if (compareAndSet(false, true)) {
+                    try {
+                        disposer.accept(resource);
+                    } catch (Throwable e) {
+                        actual.onError(e);
+                        return;
+                    }
                 }
+                
+                s.cancel();
                 actual.onComplete();
             } else {
                 actual.onComplete();
+                s.cancel();
                 disposeAfter();
             }
         }
@@ -127,16 +146,18 @@ public final class PublisherUsing<T, D> implements Publisher<T> {
         
         @Override
         public void cancel() {
-            s.cancel();
             disposeAfter();
+            s.cancel();
         }
         
         void disposeAfter() {
-            try {
-                disposer.accept(resource);
-            } catch (Throwable e) {
-                // can't call actual.onError unless it is serialized, which is expensive
-                RxJavaPlugins.onError(e);
+            if (compareAndSet(false, true)) {
+                try {
+                    disposer.accept(resource);
+                } catch (Throwable e) {
+                    // can't call actual.onError unless it is serialized, which is expensive
+                    RxJavaPlugins.onError(e);
+                }
             }
         }
     }
