@@ -697,9 +697,10 @@ public class ObservableTests {
     public void testContainsWithNull() {
         Observable<Boolean> observable = Observable.just("a", "b", null).contains(null);
 
-        @SuppressWarnings("unchecked")
-        Observer<Object> observer = mock(Observer.class);
+        Subscriber<Object> observer = TestHelper.mockSubscriber();
+
         observable.subscribe(observer);
+        
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
         verify(observer, never()).onError(
@@ -711,9 +712,10 @@ public class ObservableTests {
     public void testContainsWithEmptyObservable() {
         Observable<Boolean> observable = Observable.<String> empty().contains("a");
 
-        @SuppressWarnings("unchecked")
-        Observer<Object> observer = mock(Observer.class);
+        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        
         observable.subscribe(observer);
+        
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(
@@ -725,9 +727,10 @@ public class ObservableTests {
     public void testIgnoreElements() {
         Observable<Integer> observable = Observable.just(1, 2, 3).ignoreElements();
 
-        @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
+        Subscriber<Object> observer = TestHelper.mockSubscriber();
+
         observable.subscribe(observer);
+        
         verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();

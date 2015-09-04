@@ -12,11 +12,13 @@
  */
 package io.reactivex.internal.operators;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class OperatorAll<T> implements Operator<Boolean, T> {
@@ -27,10 +29,12 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super Boolean> t) {
-        return new AnySubscriber<>(t, predicate);
+        return new AllSubscriber<>(t, predicate);
     }
     
-    static final class AnySubscriber<T> implements Subscriber<T>, Subscription {
+    static final class AllSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
+        /** */
+        private static final long serialVersionUID = -3521127104134758517L;
         final Subscriber<? super Boolean> actual;
         final Predicate<? super T> predicate;
         
@@ -38,15 +42,18 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
         
         boolean done;
         
-        public AnySubscriber(Subscriber<? super Boolean> actual, Predicate<? super T> predicate) {
+        static final int NO_REQUEST_NO_VALUE = 0;
+        static final int NO_REQUEST_HAS_VALUE = 1;
+        static final int HAS_REQUEST_NO_VALUE = 2;
+        static final int HAS_REQUEST_HAS_VALUE = 3;
+        
+        public AllSubscriber(Subscriber<? super Boolean> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             this.s = s;
@@ -62,12 +69,14 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
             try {
                 b = predicate.test(t);
             } catch (Throwable e) {
+                lazySet(HAS_REQUEST_HAS_VALUE);
                 done = true;
                 s.cancel();
                 actual.onError(e);
                 return;
             }
             if (!b) {
+                lazySet(HAS_REQUEST_HAS_VALUE);
                 done = true;
                 s.cancel();
                 actual.onNext(false);
@@ -77,28 +86,67 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
         
         @Override
         public void onError(Throwable t) {
-            if (!done) {
-                done = true;
-                actual.onError(t);
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
             }
+            done = true;
+            actual.onError(t);
         }
         
         @Override
         public void onComplete() {
-            if (!done) {
-                done = true;
-                actual.onNext(true);
-                actual.onComplete();
+            if (done) {
+                return;
+            }
+            done = true;
+
+            for (;;) {
+                int state = get();
+                if (state == NO_REQUEST_HAS_VALUE || state == HAS_REQUEST_HAS_VALUE) {
+                    break;
+                }
+                if (state == HAS_REQUEST_NO_VALUE) {
+                    if (compareAndSet(HAS_REQUEST_NO_VALUE, HAS_REQUEST_HAS_VALUE)) {
+                        actual.onNext(true);
+                        actual.onComplete();
+                    }
+                    break;
+                }
+                if (compareAndSet(NO_REQUEST_NO_VALUE, NO_REQUEST_HAS_VALUE)) {
+                    break;
+                }
             }
         }
         
         @Override
         public void request(long n) {
-            s.request(n);
+            if (SubscriptionHelper.validateRequest(n)) {
+                return;
+            }
+            
+            for (;;) {
+                int state = get();
+                if (state == HAS_REQUEST_NO_VALUE || state == HAS_REQUEST_HAS_VALUE) {
+                    break;
+                }
+                if (state == NO_REQUEST_HAS_VALUE) {
+                    if (compareAndSet(state, HAS_REQUEST_HAS_VALUE)) {
+                        actual.onNext(true);
+                        actual.onComplete();
+                    }
+                    break;
+                }
+                if (compareAndSet(NO_REQUEST_NO_VALUE, HAS_REQUEST_NO_VALUE)) {
+                    s.request(Long.MAX_VALUE);
+                    break;
+                }
+            }
         }
         
         @Override
         public void cancel() {
+            lazySet(HAS_REQUEST_HAS_VALUE);
             s.cancel();
         }
     }
