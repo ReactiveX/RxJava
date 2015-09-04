@@ -755,7 +755,7 @@ public class Observable<T> implements Publisher<T> {
 
     public final Observable<Boolean> all(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate);
-        return lift(new OperatorAny<>(predicate));
+        return lift(new OperatorAll<>(predicate));
     }
 
     public final Observable<T> ambWith(Publisher<? extends T> other) {
@@ -1257,7 +1257,7 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final Observable<Boolean> isEmpty() {
-        return any(v -> true);
+        return all(v -> false);
     }
 
     public static final <T> Observable<T> just(T v1, T v2) {
