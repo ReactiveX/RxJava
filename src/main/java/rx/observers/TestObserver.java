@@ -111,7 +111,7 @@ public class TestObserver<T> implements Observer<T> {
      * @throws AssertionError
      *          if the sequence of items observed does not exactly match {@code items}
      */
-    public void assertReceivedOnNext(List<T> items) {
+    public TestObserver assertReceivedOnNext(List<T> items) {
         if (onNextEvents.size() != items.size()) {
             throw new AssertionError("Number of items does not match. Provided: " + items.size() + "  Actual: " + onNextEvents.size());
         }
@@ -132,6 +132,7 @@ public class TestObserver<T> implements Observer<T> {
             }
         }
 
+        return this;
     }
 
     /**
@@ -140,7 +141,7 @@ public class TestObserver<T> implements Observer<T> {
      * @throws AssertionError
      *          if not exactly one terminal event notification was received
      */
-    public void assertTerminalEvent() {
+    public TestObserver assertTerminalEvent() {
         if (onErrorEvents.size() > 1) {
             throw new AssertionError("Too many onError events: " + onErrorEvents.size());
         }
@@ -156,6 +157,7 @@ public class TestObserver<T> implements Observer<T> {
         if (onCompletedEvents.size() == 0 && onErrorEvents.size() == 0) {
             throw new AssertionError("No terminal events received.");
         }
+        return this;
     }
 
     // do nothing ... including swallowing errors

@@ -225,8 +225,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @throws AssertionError
      *          if the sequence of items observed does not exactly match {@code items}
      */
-    public void assertReceivedOnNext(List<T> items) {
+    public TestSubscriber assertReceivedOnNext(List<T> items) {
         testObserver.assertReceivedOnNext(items);
+        return this;
     }
 
     /**
@@ -235,8 +236,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @throws AssertionError
      *          if not exactly one terminal event notification was received
      */
-    public void assertTerminalEvent() {
+    public TestSubscriber assertTerminalEvent() {
         testObserver.assertTerminalEvent();
+        return this;
     }
 
     /**
@@ -245,10 +247,11 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @throws AssertionError
      *          if this {@code Subscriber} is not unsubscribed
      */
-    public void assertUnsubscribed() {
+    public TestSubscriber assertUnsubscribed() {
         if (!isUnsubscribed()) {
             throw new AssertionError("Not unsubscribed.");
         }
+        return this;
     }
 
     /**
@@ -257,7 +260,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @throws AssertionError
      *          if this {@code Subscriber} has received one or more {@code onError} notifications
      */
-    public void assertNoErrors() {
+    public TestSubscriber assertNoErrors() {
         List<Throwable> onErrorEvents = getOnErrorEvents();
         if (onErrorEvents.size() > 0) {
             AssertionError ae = new AssertionError("Unexpected onError events: " + getOnErrorEvents().size());
@@ -268,6 +271,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
             }
             throw ae;
         }
+        return this;
     }
 
     
@@ -278,12 +282,13 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @throws RuntimeException
      *          if the Subscriber is interrupted before the Observable is able to complete
      */
-    public void awaitTerminalEvent() {
+    public TestSubscriber awaitTerminalEvent() {
         try {
             latch.await();
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted", e);
         }
+        return this;
     }
 
     /**
@@ -297,12 +302,13 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @throws RuntimeException
      *          if the Subscriber is interrupted before the Observable is able to complete
      */
-    public void awaitTerminalEvent(long timeout, TimeUnit unit) {
+    public TestSubscriber awaitTerminalEvent(long timeout, TimeUnit unit) {
         try {
             latch.await(timeout, unit);
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted", e);
         }
+        return this;
     }
 
     /**
@@ -316,7 +322,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @param unit
      *          the units in which {@code timeout} is expressed
      */
-    public void awaitTerminalEventAndUnsubscribeOnTimeout(long timeout, TimeUnit unit) {
+    public TestSubscriber awaitTerminalEventAndUnsubscribeOnTimeout(long timeout, TimeUnit unit) {
         try {
             boolean result = latch.await(timeout, unit);
             if (!result) {
@@ -326,6 +332,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         } catch (InterruptedException e) {
             unsubscribe();
         }
+        return this;
     }
 
     /**
@@ -346,7 +353,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
-    public void assertCompleted() {
+    public TestSubscriber assertCompleted() {
         int s = testObserver.getOnCompletedEvents().size();
         if (s == 0) {
             throw new AssertionError("Not completed!");
@@ -354,6 +361,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         if (s > 1) {
             throw new AssertionError("Completed multiple times: " + s);
         }
+        return this;
     }
 
     /**
@@ -363,7 +371,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
-    public void assertNotCompleted() {
+    public TestSubscriber assertNotCompleted() {
         int s = testObserver.getOnCompletedEvents().size();
         if (s == 1) {
             throw new AssertionError("Completed!");
@@ -371,6 +379,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         if (s > 1) {
             throw new AssertionError("Completed multiple times: " + s);
         }
+        return this;
     }
 
     /**
@@ -382,7 +391,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
-    public void assertError(Class<? extends Throwable> clazz) {
+    public TestSubscriber assertError(Class<? extends Throwable> clazz) {
         List<Throwable> err = testObserver.getOnErrorEvents();
         if (err.size() == 0) {
             throw new AssertionError("No errors");
@@ -397,6 +406,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
             ae.initCause(err.get(0));
             throw ae;
         }
+        return this;
     }
 
     /**
@@ -408,7 +418,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
-    public void assertError(Throwable throwable) {
+    public TestSubscriber assertError(Throwable throwable) {
         List<Throwable> err = testObserver.getOnErrorEvents();
         if (err.size() == 0) {
             throw new AssertionError("No errors");
@@ -423,6 +433,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
             ae.initCause(err.get(0));
             throw ae;
         }
+        return this;
     }
 
     /**
@@ -432,7 +443,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
-    public void assertNoTerminalEvent() {
+    public TestSubscriber assertNoTerminalEvent() {
         List<Throwable> err = testObserver.getOnErrorEvents();
         int s = testObserver.getOnCompletedEvents().size();
         if (err.size() > 0 || s > 0) {
@@ -449,6 +460,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
                 throw ae;
             }
         }
+        return this;
     }
 
     /**
@@ -458,11 +470,12 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
-    public void assertNoValues() {
+    public TestSubscriber assertNoValues() {
         int s = testObserver.getOnNextEvents().size();
         if (s > 0) {
             throw new AssertionError("No onNext events expected yet some received: " + s);
         }
+        return this;
     }
 
     /**
@@ -473,11 +486,12 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
-    public void assertValueCount(int count) {
+    public TestSubscriber assertValueCount(int count) {
         int s = testObserver.getOnNextEvents().size();
         if (s != count) {
             throw new AssertionError("Number of onNext events differ; expected: " + count + ", actual: " + s);
         }
+        return this;
     }
     
     /**
@@ -488,8 +502,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
-    public void assertValues(T... values) {
+    public TestSubscriber assertValues(T... values) {
         assertReceivedOnNext(Arrays.asList(values));
+        return this;
     }
 
     /**
@@ -500,7 +515,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
-    public void assertValue(T value) {
+    public TestSubscriber assertValue(T value) {
         assertReceivedOnNext(Collections.singletonList(value));
+        return this;
     }
 }
