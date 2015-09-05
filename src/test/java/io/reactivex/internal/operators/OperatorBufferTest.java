@@ -221,7 +221,6 @@ public class OperatorBufferTest {
     }
 
     @Test
-    @Ignore("Until this buffer variant gets implemented")
     public void testObservableBasedCloser() {
         Observable<String> source = Observable.create(new Publisher<String>() {
             @Override

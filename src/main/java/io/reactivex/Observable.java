@@ -866,9 +866,14 @@ public class Observable<T> implements Publisher<T> {
     }
     
     public final <B> Observable<List<T>> buffer(Supplier<? extends Observable<B>> boundarySupplier) {
+        return buffer(boundarySupplier, ArrayList::new);
+        
+    }
+
+    public final <B, U extends Collection<? super T>> Observable<U> buffer(Supplier<? extends Observable<B>> boundarySupplier, Supplier<U> bufferSupplier) {
         Objects.requireNonNull(boundarySupplier);
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(bufferSupplier);
+        return lift(new OperatorBufferBoundarySupplier<>(boundarySupplier, bufferSupplier));
     }
 
     public final Observable<T> cache() {
