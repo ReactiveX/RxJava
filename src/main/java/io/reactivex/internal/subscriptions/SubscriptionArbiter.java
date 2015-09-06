@@ -118,7 +118,10 @@ public final class SubscriptionArbiter extends AtomicInteger implements Subscrip
                 a.cancel();
             }
             actual = s;
-            s.request(requested);
+            long r = requested;
+            if (r != 0L) {
+                s.request(r);
+            }
         }, () -> {
             missedSubscription.offer(s);
         }, this::drain);
