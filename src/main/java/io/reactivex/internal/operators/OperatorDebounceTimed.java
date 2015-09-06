@@ -45,7 +45,7 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
                 timeout, unit, scheduler.createWorker());
     }
     
-    static final class DebounceTimedSubscriber<T> extends AtomicInteger 
+    static final class DebounceTimedSubscriber<T> extends AtomicLong 
     implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = -9102637559663639004L;
@@ -67,11 +67,6 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
         
         volatile long index;
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<DebounceTimedSubscriber> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(DebounceTimedSubscriber.class, "requested");
-
         boolean done;
         
         public DebounceTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
@@ -79,7 +74,6 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
             this.timeout = timeout;
             this.unit = unit;
             this.worker = worker;
-            lazySet(1);
         }
         
         public void disposeTimer() {
@@ -116,8 +110,6 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
                 d.dispose();
             }
             
-            getAndIncrement();
-            
             DebounceEmitter<T> de = new DebounceEmitter<>(t, idx, this);
             if (!TIMER.compareAndSet(this, d, de)) {
                 return;
@@ -145,8 +137,16 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
                 return;
             }
             done = true;
-            // TODO may want to trigger early delivery of the very last value? depends on further tests
-            done();
+            
+            Disposable d = timer;
+            if (d != CANCELLED) {
+                @SuppressWarnings("unchecked")
+                DebounceEmitter<T> de = (DebounceEmitter<T>)d;
+                de.emit();
+                disposeTimer();
+                worker.dispose();
+                actual.onComplete();
+            }
         }
         
         @Override
@@ -154,7 +154,7 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(this, n);
         }
         
         @Override
@@ -166,11 +166,11 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
         
         void emit(long idx, T t, DebounceEmitter<T> emitter) {
             if (idx == index) {
-                long r = requested;
+                long r = get();
                 if (r != 0L) {
                     actual.onNext(t);
                     if (r != Long.MAX_VALUE) {
-                        REQUESTED.decrementAndGet(this);
+                        decrementAndGet();
                     }
                     
                     emitter.dispose();
@@ -178,14 +178,6 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
                     cancel();
                     actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
                 }
-            }
-        }
-        
-        void done() {
-            if (decrementAndGet() == 0) {
-                disposeTimer();
-                worker.dispose();
-                actual.onComplete();
             }
         }
     }
@@ -200,6 +192,12 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
         final long idx;
         final DebounceTimedSubscriber<T> parent;
         
+        volatile int once;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<DebounceEmitter> ONCE =
+                AtomicIntegerFieldUpdater.newUpdater(DebounceEmitter.class, "once");
+
+        
         public DebounceEmitter(T value, long idx, DebounceTimedSubscriber<T> parent) {
             this.value = value;
             this.idx = idx;
@@ -208,7 +206,13 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
 
         @Override
         public void run() {
-            parent.emit(idx, value, this);
+            emit();
+        }
+        
+        void emit() {
+            if (ONCE.compareAndSet(this, 0, 1)) {
+                parent.emit(idx, value, this);
+            }
         }
         
         @Override
@@ -218,7 +222,6 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
                 d = getAndSet(DISPOSED);
                 if (d != DISPOSED && d != null) {
                     d.dispose();
-                    parent.done();
                 }
             }
         }
