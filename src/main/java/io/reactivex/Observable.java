@@ -1017,15 +1017,23 @@ public class Observable<T> implements Publisher<T> {
         return m.lift(OperatorDematerialize.instance());
     }
     public final Observable<T> distinct() {
-        return distinct(HashSet::new);
+        return distinct(v -> v, HashSet::new);
+    }
+    
+    public final <K> Observable<T> distinct(Function<? super T, K> keySelector) {
+        return distinct(keySelector, HashSet::new);
     }
 
-    public final Observable<T> distinct(Supplier<? extends Collection<? super T>> collectionSupplier) {
-        return lift(OperatorDistinct.withCollection(collectionSupplier));
+    public final <K> Observable<T> distinct(Function<? super T, K> keySelector, Supplier<? extends Collection<? super K>> collectionSupplier) {
+        return lift(OperatorDistinct.withCollection(keySelector, collectionSupplier));
     }
 
     public final Observable<T> distinctUntilChanged() {
         return lift(OperatorDistinct.untilChanged());
+    }
+
+    public final <K> Observable<T> distinctUntilChanged(Function<? super T, K> keySelector) {
+        return lift(OperatorDistinct.untilChanged(keySelector));
     }
 
     public final Observable<T> doOnCancel(Runnable onCancel) {
@@ -1053,7 +1061,7 @@ public class Observable<T> implements Publisher<T> {
                 );
     }
 
-    public final Observable<T> doOnEach(Observer<? super T> observer) {
+    public final Observable<T> doOnEach(Subscriber<? super T> observer) {
         return doOnEach(observer::onNext, observer::onError, observer::onComplete, () -> { });
     }
 
