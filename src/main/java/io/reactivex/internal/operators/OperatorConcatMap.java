@@ -54,6 +54,8 @@ public final class OperatorConcatMap<T, U> implements Operator<U, T> {
         
         volatile boolean done;
         
+        volatile long index;
+        
         public SourceSubscriber(Subscriber<? super U> actual, SubscriptionArbiter sa,
                 Function<? super T, ? extends Publisher<? extends U>> mapper, int bufferSize) {
             this.actual = actual;
@@ -81,6 +83,9 @@ public final class OperatorConcatMap<T, U> implements Operator<U, T> {
         }
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             if (!queue.offer(t)) {
                 cancel();
                 actual.onError(new IllegalStateException("More values received than requested!"));
@@ -92,11 +97,19 @@ public final class OperatorConcatMap<T, U> implements Operator<U, T> {
         }
         @Override
         public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            done = true;
             cancel();
             actual.onError(t);
         }
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
             done = true;
             if (getAndIncrement() == 0) {
                 drain();
@@ -137,6 +150,7 @@ public final class OperatorConcatMap<T, U> implements Operator<U, T> {
                 actual.onError(e);
                 return;
             }
+            index++;
             // this is not RS but since our Subscriber doesn't hold state by itself,
             // subscribing it to each source is safe and saves allocation
             p.subscribe(inner);
@@ -147,31 +161,54 @@ public final class OperatorConcatMap<T, U> implements Operator<U, T> {
         final Subscriber<? super U> actual;
         final SubscriptionArbiter sa;
         final SourceSubscriber<?, ?> parent;
+
+        /*
+         * FIXME this is a workaround for now, but doesn't work 
+         * for async non-conforming sources.
+         * Such sources require individual instances of InnerSubscriber and a
+         * done field.
+         */
+         
+        long index;
+        
         public InnerSubscriber(Subscriber<? super U> actual, 
                 SubscriptionArbiter sa, SourceSubscriber<?, ?> parent) {
             this.actual = actual;
             this.sa = sa;
             this.parent = parent;
+            this.index = 1;
         }
         
         @Override
         public void onSubscribe(Subscription s) {
-            sa.setSubscription(s);
+            if (index == parent.index) {
+                sa.setSubscription(s);
+            }
         }
         
         @Override
         public void onNext(U t) {
-            actual.onNext(t);
-            sa.produced(1L);
+            if (index == parent.index) {
+                actual.onNext(t);
+                sa.produced(1L);
+            }
         }
         @Override
         public void onError(Throwable t) {
-            parent.cancel();
-            actual.onError(t);
+            if (index == parent.index) {
+                index++;
+                parent.cancel();
+                actual.onError(t);
+            } else {
+                RxJavaPlugins.onError(t);
+            }
         }
         @Override
         public void onComplete() {
-            parent.innerComplete();
+            if (index == parent.index) {
+                index++;
+                parent.innerComplete();
+            }
         }
     }
 }
