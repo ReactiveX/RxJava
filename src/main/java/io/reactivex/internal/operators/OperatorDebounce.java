@@ -38,7 +38,8 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
         return new DebounceSubscriber<>(new SerializedSubscriber<>(t), debounceSelector);
     }
     
-    static final class DebounceSubscriber<T, U> extends AtomicInteger implements Subscriber<T>, Subscription {
+    static final class DebounceSubscriber<T, U> extends AtomicLong 
+    implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = 6725975399620862591L;
         final Subscriber<? super T> actual;
@@ -57,18 +58,12 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
 
         volatile long index;
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<DebounceSubscriber> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(DebounceSubscriber.class, "requested");
-
         boolean done;
 
         public DebounceSubscriber(Subscriber<? super T> actual,
                 Function<? super T, ? extends Publisher<U>> debounceSelector) {
             this.actual = actual;
             this.debounceSelector = debounceSelector;
-            lazySet(1);
         }
         
         @Override
@@ -115,7 +110,6 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
             DebounceInnerSubscriber<T, U> dis = new DebounceInnerSubscriber<>(this, idx, t);
             
             if (DEBOUNCER.compareAndSet(this, d, dis)) {
-                getAndIncrement();
                 p.subscribe(dis);
             }
         }
@@ -132,7 +126,11 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
                 return;
             }
             done = true;
-            if (decrementAndGet() == 0) {
+            Disposable d = debouncer;
+            if (d != CANCELLED) {
+                @SuppressWarnings("unchecked")
+                DebounceInnerSubscriber<T, U> dis = (DebounceInnerSubscriber<T, U>)d;
+                dis.emit();
                 disposeDebouncer();
                 actual.onComplete();
             }
@@ -144,7 +142,7 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
                 return;
             }
             
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(this, n);
         }
         
         @Override
@@ -165,11 +163,11 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
         
         void emit(long idx, T value) {
             if (idx == index) {
-                long r = requested;
+                long r = get();
                 if (r != 0L) {
                     actual.onNext(value);
                     if (r != Long.MAX_VALUE) {
-                        REQUESTED.decrementAndGet(this);
+                        decrementAndGet();
                     }
                 } else {
                     cancel();
@@ -185,6 +183,11 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
             
             boolean done;
             
+            volatile int once;
+            @SuppressWarnings("rawtypes")
+            static final AtomicIntegerFieldUpdater<DebounceInnerSubscriber> ONCE =
+                    AtomicIntegerFieldUpdater.newUpdater(DebounceInnerSubscriber.class, "once");
+            
             public DebounceInnerSubscriber(DebounceSubscriber<T, U> parent, long index, T value) {
                 this.parent = parent;
                 this.index = index;
@@ -198,7 +201,13 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
                 }
                 done = true;
                 cancel();
-                parent.emit(index, value);
+                emit();
+            }
+            
+            void emit() {
+                if (ONCE.compareAndSet(this, 0, 1)) {
+                    parent.emit(index, value);
+                }
             }
             
             @Override
@@ -217,7 +226,7 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
                     return;
                 }
                 done = true;
-                parent.emit(index, value);
+                emit();
             }
         }
     }
