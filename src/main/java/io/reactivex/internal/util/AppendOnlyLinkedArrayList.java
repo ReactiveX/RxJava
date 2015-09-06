@@ -104,4 +104,22 @@ public class AppendOnlyLinkedArrayList<T> {
             a = (Object[])a[c];
         }
     }
+    
+    @SuppressWarnings("unchecked")
+    public <S> void forEachWhile(S state, BiPredicate<? super S, ? super T> consumer) {
+        Object[] a = head;
+        final int c = capacity;
+        while (a != null) {
+            for (int i = 0; i < c; i++) {
+                Object o = a[i];
+                if (o == null) {
+                    return;
+                }
+                if (consumer.test(state, (T)o)) {
+                    return;
+                }
+            }
+            a = (Object[])a[c];
+        }
+    }
 }
