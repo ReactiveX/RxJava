@@ -13,8 +13,6 @@
 
 package io.reactivex.internal.operators;
 
-import java.util.NoSuchElementException;
-
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
@@ -87,11 +85,11 @@ public final class OperatorElementAt<T> implements Operator<T, T> {
         
         @Override
         public void onComplete() {
-            if (index != count && !done) {
+            if (index <= count && !done) {
                 done = true;
                 T v = defaultValue;
                 if (v == null) {
-                    actual.onError(new NoSuchElementException());
+                    actual.onError(new IndexOutOfBoundsException());
                 } else {
                     actual.onNext(v);
                     actual.onComplete();

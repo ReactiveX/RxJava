@@ -1100,14 +1100,14 @@ public class Observable<T> implements Publisher<T> {
 
     public final Observable<T> elementAt(long index) {
         if (index < 0) {
-            throw new IllegalArgumentException("index >= 0 required but it was " + index);
+            throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
         return lift(new OperatorElementAt<>(index, null));
     }
 
     public final Observable<T> elementAt(long index, T defaultValue) {
         if (index < 0) {
-            throw new IllegalArgumentException("index >= 0 required but it was " + index);
+            throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
         Objects.requireNonNull(defaultValue);
         return lift(new OperatorElementAt<>(index, defaultValue));
