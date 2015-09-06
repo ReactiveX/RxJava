@@ -18,6 +18,7 @@ import java.util.function.Consumer;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class OperatorDoOnEach<T> implements Operator<T, T> {
@@ -48,6 +49,8 @@ public final class OperatorDoOnEach<T> implements Operator<T, T> {
         final Runnable onComplete;
         final Runnable onAfterTerminate;
         
+        Subscription s;
+        
         public DoOnEachSubscriber(
                 Subscriber<? super T> actual,
                 Consumer<? super T> onNext, 
@@ -63,6 +66,10 @@ public final class OperatorDoOnEach<T> implements Operator<T, T> {
         
         @Override
         public void onSubscribe(Subscription s) {
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+                return;
+            }
+            this.s = s;
             actual.onSubscribe(s);
         }
         
@@ -71,6 +78,7 @@ public final class OperatorDoOnEach<T> implements Operator<T, T> {
             try {
                 onNext.accept(t);
             } catch (Throwable e) {
+                s.cancel();
                 onError(e);
                 return;
             }

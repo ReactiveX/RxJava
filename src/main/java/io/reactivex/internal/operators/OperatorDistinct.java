@@ -22,17 +22,18 @@ import io.reactivex.Observable.Operator;
 import io.reactivex.internal.subscribers.CancelledSubscriber;
 import io.reactivex.internal.subscriptions.*;
 
-public final class OperatorDistinct<T> implements Operator<T, T> {
+public final class OperatorDistinct<T, K> implements Operator<T, T> {
+    final Function<? super T, K> keySelector;
+    final Supplier<? extends Predicate<? super K>> predicateSupplier;
     
-    final Supplier<? extends Predicate<? super T>> predicateSupplier;
-    
-    public OperatorDistinct(Supplier<? extends Predicate<? super T>> predicateSupplier) {
+    public OperatorDistinct(Function<? super T, K> keySelector, Supplier<? extends Predicate<? super K>> predicateSupplier) {
         this.predicateSupplier = predicateSupplier;
+        this.keySelector = keySelector;
     }
     
-    public static <T> OperatorDistinct<T> withCollection(Supplier<? extends Collection<? super T>> collectionSupplier) {
-        Supplier<? extends Predicate<? super T>> p = () -> {
-            Collection<? super T> coll = collectionSupplier.get();
+    public static <T, K> OperatorDistinct<T, K> withCollection(Function<? super T, K> keySelector, Supplier<? extends Collection<? super K>> collectionSupplier) {
+        Supplier<? extends Predicate<? super K>> p = () -> {
+            Collection<? super K> coll = collectionSupplier.get();
             
             return t -> {
                 if (t == null) {
@@ -43,10 +44,10 @@ public final class OperatorDistinct<T> implements Operator<T, T> {
             };
         };
         
-        return new OperatorDistinct<>(p);
+        return new OperatorDistinct<>(keySelector, p);
     }
     
-    static final OperatorDistinct<Object> UNTIL_CHANGED;
+    static final OperatorDistinct<Object, Object> UNTIL_CHANGED;
     static {
         Supplier<? extends Predicate<? super Object>> p = () -> {
             Object[] last = { null };
@@ -61,17 +62,35 @@ public final class OperatorDistinct<T> implements Operator<T, T> {
                 return !Objects.equals(o, t);
             };
         };
-        UNTIL_CHANGED = new OperatorDistinct<>(p);
+        UNTIL_CHANGED = new OperatorDistinct<>(v -> v, p);
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> OperatorDistinct<T> untilChanged() {
-        return (OperatorDistinct<T>)UNTIL_CHANGED;
+    public static <T> OperatorDistinct<T, T> untilChanged() {
+        return (OperatorDistinct<T, T>)UNTIL_CHANGED;
     }
+
+    public static <T, K> OperatorDistinct<T, K> untilChanged(Function<? super T, K> keySelector) {
+        Supplier<? extends Predicate<? super K>> p = () -> {
+            Object[] last = { null };
+            
+            return t -> {
+                if (t == null) {
+                    last[0] = null;
+                    return true;
+                }
+                Object o = last[0];
+                last[0] = t;
+                return !Objects.equals(o, t);
+            };
+        };
+        return new OperatorDistinct<>(keySelector, p);
+    }
+
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        Predicate<? super T> coll;
+        Predicate<? super K> coll;
         try {
             coll = predicateSupplier.get();
         } catch (Throwable e) {
@@ -84,17 +103,19 @@ public final class OperatorDistinct<T> implements Operator<T, T> {
             return CancelledSubscriber.INSTANCE;
         }
         
-        return null;
+        return new DistinctSubscriber<>(t, keySelector, coll);
     }
     
-    static final class DistinctSubscriber<T> implements Subscriber<T> {
+    static final class DistinctSubscriber<T, K> implements Subscriber<T> {
         final Subscriber<? super T> actual;
-        final Predicate<? super T> predicate;
+        final Predicate<? super K> predicate;
+        final Function<? super T, K> keySelector;
         
         Subscription s;
 
-        public DistinctSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate) {
+        public DistinctSubscriber(Subscriber<? super T> actual, Function<? super T, K> keySelector, Predicate<? super K> predicate) {
             this.actual = actual;
+            this.keySelector = keySelector;
             this.predicate = predicate;
         }
 
@@ -109,9 +130,26 @@ public final class OperatorDistinct<T> implements Operator<T, T> {
         
         @Override
         public void onNext(T t) {
+            K key;
+            
+            try {
+                key = keySelector.apply(t);
+            } catch (Throwable e) {
+                s.cancel();
+                actual.onError(e);
+                return;
+            }
+            
+            if (key == null) {
+                s.cancel();
+                actual.onError(new NullPointerException("Null key supplied"));
+                return;
+            }
+            
+            
             boolean b;
             try {
-                b = predicate.test(t);
+                b = predicate.test(key);
             } catch (Throwable e) {
                 s.cancel();
                 actual.onError(e);
