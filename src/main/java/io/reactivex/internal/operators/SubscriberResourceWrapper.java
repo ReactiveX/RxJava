@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SubscriberResourceWrapper<T, R> extends AtomicReference<Object> implements Subscriber<T>, Disposable, Subscription {
@@ -62,7 +63,7 @@ public final class SubscriberResourceWrapper<T, R> extends AtomicReference<Objec
             }
             if (current != null) {
                 s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+                SubscriptionHelper.reportSubscriptionSet();
                 return;
             }
             if (SUBSCRIPTION.compareAndSet(this, null, s)) {
@@ -91,8 +92,7 @@ public final class SubscriberResourceWrapper<T, R> extends AtomicReference<Objec
     
     @Override
     public void request(long n) {
-        if (n <= 0) {
-            RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
+        if (SubscriptionHelper.validateRequest(n)) {
             return;
         }
         subscription.request(n);
