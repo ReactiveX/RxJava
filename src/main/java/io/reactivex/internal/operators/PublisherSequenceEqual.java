@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators;
 
-import java.util.*;
+import java.util.Queue;
 import java.util.concurrent.atomic.*;
 import java.util.function.BiPredicate;
 
@@ -40,8 +40,8 @@ public final class PublisherSequenceEqual<T> implements Publisher<Boolean> {
     
     @Override
     public void subscribe(Subscriber<? super Boolean> s) {
-        // TODO Auto-generated method stub
-        
+        EqualCoordinator<T> ec = new EqualCoordinator<>(s, bufferSize, first, second, comparer);
+        ec.subscribe();
     }
     
     static final class EqualCoordinator<T> extends AtomicInteger implements Subscription {
@@ -78,6 +78,12 @@ public final class PublisherSequenceEqual<T> implements Publisher<Boolean> {
         
         boolean setSubscription(Subscription s, int index) {
             return resources.setResource(index, s);
+        }
+        
+        void subscribe() {
+            EqualSubscriber<T>[] as = subscribers;
+            first.subscribe(as[0]);
+            second.subscribe(as[1]);
         }
 
         @Override
@@ -117,14 +123,12 @@ public final class PublisherSequenceEqual<T> implements Publisher<Boolean> {
                 return;
             }
             
-            
-            
             int missed = 1;
             EqualSubscriber<T>[] as = subscribers;
             
             final EqualSubscriber<T> s1 = as[0];
             final Queue<T> q1 = s1.queue;
-            final EqualSubscriber<T> s2 = as[0];
+            final EqualSubscriber<T> s2 = as[1];
             final Queue<T> q2 = s2.queue;
             
             for (;;) {
@@ -170,7 +174,7 @@ public final class PublisherSequenceEqual<T> implements Publisher<Boolean> {
                         actual.onComplete();
                         return;
                     }
-                    if ((d1 && e1) != (d2 && e2)) {
+                    if ((d1 && d2) && (e1 != e2)) {
                         cancel(q1, q2);
                         
                         actual.onNext(false);
@@ -248,6 +252,7 @@ public final class PublisherSequenceEqual<T> implements Publisher<Boolean> {
         @Override
         public void onSubscribe(Subscription s) {
             if (parent.setSubscription(s, index)) {
+                this.s = s;
                 s.request(bufferSize);
             }
         }

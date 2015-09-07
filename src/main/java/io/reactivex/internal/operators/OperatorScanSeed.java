@@ -20,6 +20,7 @@ import io.reactivex.Observable.Operator;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class OperatorScanSeed<T, R> implements Operator<R, T> {
     final BiFunction<R, ? super T, R> accumulator;
@@ -104,6 +105,10 @@ public final class OperatorScanSeed<T, R> implements Operator<R, T> {
         
         @Override
         public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
             error = t;
             done = true;
             drain(false);
@@ -111,6 +116,9 @@ public final class OperatorScanSeed<T, R> implements Operator<R, T> {
         
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
             done = true;
             drain(false);
         }
@@ -119,6 +127,7 @@ public final class OperatorScanSeed<T, R> implements Operator<R, T> {
         public void request(long n) {
             requested(n);
             s.request(n);
+            drain(false);
         }
         
         @Override
