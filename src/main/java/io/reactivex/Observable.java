@@ -1274,25 +1274,25 @@ public class Observable<T> implements Publisher<T> {
         });
     }
 
-    public final <K> Observable<GroupedObservable<T, K>> groupBy(Function<? super T, ? extends K> keySelector) {
+    public final <K> Observable<GroupedObservable<K, T>> groupBy(Function<? super T, ? extends K> keySelector) {
         return groupBy(keySelector, v -> v, false, bufferSize());
     }
 
-    public final <K> Observable<GroupedObservable<T, K>> groupBy(Function<? super T, ? extends K> keySelector, boolean delayError) {
+    public final <K> Observable<GroupedObservable<K, T>> groupBy(Function<? super T, ? extends K> keySelector, boolean delayError) {
         return groupBy(keySelector, v -> v, delayError, bufferSize());
     }
 
-    public final <K, V> Observable<GroupedObservable<V, K>> groupBy(Function<? super T, ? extends K> keySelector, 
+    public final <K, V> Observable<GroupedObservable<K, V>> groupBy(Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector) {
         return groupBy(keySelector, valueSelector, false, bufferSize());
     }
 
-    public final <K, V> Observable<GroupedObservable<V, K>> groupBy(Function<? super T, ? extends K> keySelector, 
+    public final <K, V> Observable<GroupedObservable<K, V>> groupBy(Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector, boolean delayError) {
         return groupBy(keySelector, valueSelector, false, bufferSize());
     }
 
-    public final <K, V> Observable<GroupedObservable<V, K>> groupBy(Function<? super T, ? extends K> keySelector, 
+    public final <K, V> Observable<GroupedObservable<K, V>> groupBy(Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector, 
             boolean delayError, int bufferSize) {
         Objects.requireNonNull(keySelector);

@@ -22,12 +22,11 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.observables.GroupedObservable;
-import io.reactivex.plugins.RxJavaPlugins;
 
-public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservable<V, K>, T>{
+public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservable<K, V>, T>{
     final Function<? super T, ? extends K> keySelector;
     final Function<? super T, ? extends V> valueSelector;
     final int bufferSize;
@@ -41,7 +40,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
     }
     
     @Override
-    public Subscriber<? super T> apply(Subscriber<? super GroupedObservable<V, K>> t) {
+    public Subscriber<? super T> apply(Subscriber<? super GroupedObservable<K, V>> t) {
         return new GroupBySubscriber<>(t, keySelector, valueSelector, bufferSize, delayError);
     }
     
@@ -49,12 +48,14 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         /** */
         private static final long serialVersionUID = -3688291656102519502L;
         
-        final Subscriber<? super GroupedObservable<V, K>> actual;
+        final Subscriber<? super GroupedObservable<K, V>> actual;
         final Function<? super T, ? extends K> keySelector;
         final Function<? super T, ? extends V> valueSelector;
         final int bufferSize;
         final boolean delayError;
-        final Map<K, GroupedUnicast<V, K>> groups;
+        final Map<Object, GroupedUnicast<K, V>> groups;
+        
+        static final Object NULL_KEY = new Object();
         
         Subscription s;
         
@@ -63,20 +64,19 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         static final AtomicIntegerFieldUpdater<GroupBySubscriber> CANCELLED =
                 AtomicIntegerFieldUpdater.newUpdater(GroupBySubscriber.class, "cancelled");
 
-        public GroupBySubscriber(Subscriber<? super GroupedObservable<V, K>> actual, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
+        public GroupBySubscriber(Subscriber<? super GroupedObservable<K, V>> actual, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
             this.actual = actual;
             this.keySelector = keySelector;
             this.valueSelector = valueSelector;
             this.bufferSize = bufferSize;
             this.delayError = delayError;
             this.groups = new ConcurrentHashMap<>();
+            this.lazySet(1);
         }
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             
@@ -96,7 +96,8 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             }
             
             boolean notNew = true;
-            GroupedUnicast<V, K> group = groups.get(key);
+            Object mapKey = key != null ? key : NULL_KEY;
+            GroupedUnicast<K, V> group = groups.get(mapKey);
             if (group == null) {
                 // if the main has been cancelled, stop creating groups
                 // and skip this value
@@ -107,7 +108,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                 notNew = true;
                 
                 group = GroupedUnicast.createWith(key, bufferSize, this, delayError);
-                groups.put(key, group);
+                groups.put(mapKey, group);
                 
                 getAndIncrement();
                 
@@ -132,10 +133,10 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         
         @Override
         public void onError(Throwable t) {
-            List<GroupedUnicast<V, K>> list = new ArrayList<>(groups.values());
+            List<GroupedUnicast<K, V>> list = new ArrayList<>(groups.values());
             groups.clear();
             
-            for (GroupedUnicast<V, K> e : list) {
+            for (GroupedUnicast<K, V> e : list) {
                 e.onError(t);
             }
             
@@ -144,10 +145,10 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         
         @Override
         public void onComplete() {
-            List<GroupedUnicast<V, K>> list = new ArrayList<>(groups.values());
+            List<GroupedUnicast<K, V>> list = new ArrayList<>(groups.values());
             groups.clear();
             
-            for (GroupedUnicast<V, K> e : list) {
+            for (GroupedUnicast<K, V> e : list) {
                 e.onComplete();
             }
             
@@ -171,16 +172,17 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         }
         
         public void cancel(K key) {
-            groups.remove(key);
+            Object mapKey = key != null ? key : NULL_KEY;
+            groups.remove(mapKey);
             if (decrementAndGet() == 0) {
                 s.cancel();
             }
         }
     }
     
-    static final class GroupedUnicast<T, K> extends GroupedObservable<T, K> {
+    static final class GroupedUnicast<K, T> extends GroupedObservable<K, T> {
         
-        public static <T, K> GroupedUnicast<T, K> createWith(K key, int bufferSize, GroupBySubscriber<?, K, T> parent, boolean delayError) {
+        public static <T, K> GroupedUnicast<K, T> createWith(K key, int bufferSize, GroupBySubscriber<?, K, T> parent, boolean delayError) {
             State<T, K> state = new State<>(bufferSize, parent, key, delayError);
             return new GroupedUnicast<>(key, state);
         }
@@ -241,11 +243,11 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > required but it was " + n));
+            if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             BackpressureHelper.add(REQUESTED, this, n);
+            parent.request(n);
             drain();
         }
         
