@@ -177,6 +177,10 @@ public final class IOScheduler extends Scheduler implements SchedulerLifecycle {
     public Worker createWorker() {
         return new EventLoopWorker(pool.get());
     }
+    
+    public int size() {
+        return pool.get().allWorkers.size();
+    }
 
     private static final class EventLoopWorker extends Scheduler.Worker {
         private final SetCompositeResource<Disposable> tasks;
@@ -201,9 +205,11 @@ public final class IOScheduler extends Scheduler implements SchedulerLifecycle {
                 // releasing the pool should be the last action
                 // should prevent pool reuse in case there is a blocking
                 // action not responding to cancellation
-                threadWorker.scheduleDirect(() -> {
-                    pool.release(threadWorker);
-                }, 0, TimeUnit.MILLISECONDS);
+//                threadWorker.scheduleDirect(() -> {
+//                    pool.release(threadWorker);
+//                }, 0, TimeUnit.MILLISECONDS);
+
+                pool.release(threadWorker);
             }
         }
 

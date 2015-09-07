@@ -19,7 +19,6 @@ import org.reactivestreams.*;
 
 import io.reactivex.Scheduler;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.plugins.RxJavaPlugins;
 
 public final class PublisherSubscribeOn<T> implements Publisher<T> {
     final Publisher<? extends T> source;
@@ -67,9 +66,7 @@ public final class PublisherSubscribeOn<T> implements Publisher<T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             this.s = s;

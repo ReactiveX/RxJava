@@ -32,7 +32,7 @@ public final class PublisherRepeat<T> implements Publisher<T> {
         SubscriptionArbiter sa = new SubscriptionArbiter();
         s.onSubscribe(sa);
         
-        RepeatSubscriber<T> rs = new RepeatSubscriber<>(s, count, sa, source);
+        RepeatSubscriber<T> rs = new RepeatSubscriber<>(s, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sa, source);
         rs.subscribeNext();
     }
     
@@ -86,6 +86,9 @@ public final class PublisherRepeat<T> implements Publisher<T> {
             if (getAndIncrement() == 0) {
                 int missed = 1;
                 for (;;) {
+                    if (sa.isCancelled()) {
+                        return;
+                    }
                     source.subscribe(this);
                     
                     missed = addAndGet(-missed);

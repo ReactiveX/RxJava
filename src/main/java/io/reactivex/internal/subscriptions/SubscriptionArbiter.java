@@ -144,6 +144,10 @@ public final class SubscriptionArbiter extends AtomicInteger implements Subscrip
         }, this::drain);
     }
     
+    public boolean isCancelled() {
+        return cancelled;
+    }
+    
     void drain() {
         long mr = MISSED_REQUESTED.getAndSet(this, 0L);
         long mp = MISSED_PRODUCED.getAndSet(this, 0L);

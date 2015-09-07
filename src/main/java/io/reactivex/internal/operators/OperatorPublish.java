@@ -657,19 +657,10 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
          * will prevent the dispatch() to emit (too many) values to a terminated child subscriber.
          */
         static final long UNSUBSCRIBED = Long.MIN_VALUE;
-        /**
-         * Indicates this child has not yet requested any value. We pretend we don't
-         * see such child subscribers in dispatch() to allow other child subscribers who
-         * have requested to make progress. In a concurrent subscription scennario,
-         * one can't be sure when a subscription happens exactly so this virtual shift
-         * should not cause any problems.
-         */
-        static final long NOT_REQUESTED = Long.MIN_VALUE / 2;
         
         public InnerProducer(PublishSubscriber<T> parent, Subscriber<? super T> child) {
             this.parent = parent;
             this.child = child;
-            this.lazySet(NOT_REQUESTED);
         }
         
         @Override
@@ -694,7 +685,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 }
                 long u;
                 // if this child has not requested yet
-                if (r == NOT_REQUESTED) {
+                if (r == 0L) {
                     // let the new request value this (no overflow check needed)
                     u = n;
                 } else {
@@ -733,7 +724,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 long r = get();
                 // if no request has been made yet, we shouldn't have emitted to this child
                 // subscriber so there is a bug in this operator
-                if (r == NOT_REQUESTED) {
+                if (r == 0L) {
                     throw new IllegalStateException("Produced without request");
                 }
                 // if the child has unsubscribed, simply return and indicate this
