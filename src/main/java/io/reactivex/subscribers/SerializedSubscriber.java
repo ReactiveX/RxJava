@@ -98,6 +98,7 @@ public final class SerializedSubscriber<T> implements Subscriber<T> {
                 reportError = true;
             } else
             if (emitting) {
+                done = true;
                 AppendOnlyLinkedArrayList<Object> q = queue;
                 if (q == null) {
                     q = new AppendOnlyLinkedArrayList<>(QUEUE_LINK_SIZE);
