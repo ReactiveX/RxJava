@@ -128,7 +128,7 @@ public enum OperatorOnBackpressureLatest implements Operator<Object, Object> {
                 
                 long r = requested;
                 
-                if (r != 0L) {
+                while (r != 0L) {
                     boolean d = done;
                     Object v = CURRENT.getAndSet(this, null);
                     boolean empty = v == null;
@@ -137,12 +137,14 @@ public enum OperatorOnBackpressureLatest implements Operator<Object, Object> {
                         return;
                     }
                     
-                    if (!empty) {
-                        a.onNext(v);
-                        
-                        if (r != Long.MAX_VALUE) {
-                            REQUESTED.decrementAndGet(this);
-                        }
+                    if (empty) {
+                        break;
+                    }
+                    
+                    a.onNext(v);
+                    
+                    if (r != Long.MAX_VALUE) {
+                        REQUESTED.decrementAndGet(this);
                     }
                 }
                 

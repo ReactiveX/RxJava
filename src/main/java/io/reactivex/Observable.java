@@ -1467,6 +1467,7 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final Observable<T> onBackpressureBuffer(int bufferSize, boolean delayError, boolean unbounded) {
+        validateBufferSize(bufferSize);
         return lift(new OperatorOnBackpressureBuffer<>(bufferSize, unbounded, delayError, () -> { }));
     }
 
