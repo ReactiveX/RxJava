@@ -48,6 +48,19 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
         return iterate(o);
     }
     
+    @Override
+    public void forEach(Consumer<? super T> action) {
+        BlockingIterator<T> it = iterate(o);
+        while (it.hasNext()) {
+            try {
+                action.accept(it.next());
+            } catch (Throwable e) {
+                it.dispose();
+                throw e;
+            }
+        }
+    }
+    
     static final <T> BlockingIterator<T> iterate(Publisher<? extends T> p) {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
 

@@ -156,8 +156,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > required but it was " + n));
+            if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             BackpressureHelper.add(REQUESTED, this, n);
@@ -216,6 +215,9 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                     e++;
                 }
                 
+                if (cancelled) {
+                    return;
+                }
                 if (e != 0L) {
                     if (!unbounded) {
                         REQUESTED.addAndGet(this, -e);
