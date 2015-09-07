@@ -296,6 +296,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             // current.compareAndSet(ReplaySubscriber.this, null);
             // we don't care if it fails because it means the current has 
             // been replaced in the meantime
+            subscription.cancel();
         }
 
         /**
