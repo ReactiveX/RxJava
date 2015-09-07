@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
@@ -96,13 +97,14 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         public void onNext(T t) {
             if (!queue.offer(t)) {
                 s.cancel();
-                IllegalStateException ex = new IllegalStateException("Buffer is full?!");
+                MissingBackpressureException ex = new MissingBackpressureException("Buffer is full");
                 try {
                     onOverflow.run();
                 } catch (Throwable e) {
                     ex.addSuppressed(e);
                 }
                 onError(ex);
+                return;
             }
             drain();
         }

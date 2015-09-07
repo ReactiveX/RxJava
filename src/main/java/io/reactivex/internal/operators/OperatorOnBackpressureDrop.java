@@ -19,8 +19,8 @@ import java.util.function.Consumer;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
-import io.reactivex.plugins.RxJavaPlugins;
 
 public final class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
     
@@ -61,9 +61,7 @@ public final class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             this.s = s;
@@ -113,8 +111,7 @@ public final class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
         
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > required but it was " + n));
+            if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             BackpressureHelper.add(this, n);
