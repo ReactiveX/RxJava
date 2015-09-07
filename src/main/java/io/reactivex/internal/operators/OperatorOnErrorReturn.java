@@ -138,27 +138,28 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            if (BackpressureHelper.add(this, n) == 0) {
-                if (done) {
-                    for (;;) {
-                        int s = state;
-                        if (s == NO_REQUEST_HAS_VALUE) {
-                            if (STATE.compareAndSet(this, s, HAS_REQUEST_HAS_VALUE)) {
-                                T v = value;
-                                value = null;
-                                actual.onNext(v);
-                                actual.onComplete();
-                                return;
-                            }
-                        } else
-                        if (s == HAS_REQUEST_NO_VALUE || s == HAS_REQUEST_HAS_VALUE) {
-                            return;
-                        } else
-                        if (STATE.compareAndSet(this, s, HAS_REQUEST_NO_VALUE)) {
+            BackpressureHelper.add(this, n);
+            if (done) {
+                for (;;) {
+                    int s = state;
+                    if (s == NO_REQUEST_HAS_VALUE) {
+                        if (STATE.compareAndSet(this, s, HAS_REQUEST_HAS_VALUE)) {
+                            T v = value;
+                            value = null;
+                            actual.onNext(v);
+                            actual.onComplete();
                             return;
                         }
+                    } else
+                    if (s == HAS_REQUEST_NO_VALUE || s == HAS_REQUEST_HAS_VALUE) {
+                        return;
+                    } else
+                    if (STATE.compareAndSet(this, s, HAS_REQUEST_NO_VALUE)) {
+                        return;
                     }
                 }
+            } else {
+                s.request(n);
             }
         }
         
