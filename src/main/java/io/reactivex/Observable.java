@@ -1776,13 +1776,14 @@ public class Observable<T> implements Publisher<T> {
     }
     
     public final Observable<T> skip(long n) {
-        if (n < 0) {
-            throw new IllegalArgumentException("n >= 0 required but it was " + n);
-        } else
-            if (n == 0) {
-                return this;
-            }
-        return lift(new OperatorSkip<>(n));
+//        if (n < 0) {
+//            throw new IllegalArgumentException("n >= 0 required but it was " + n);
+//        } else
+        // FIXME negative skip allowed?!
+        if (n <= 0) {
+            return this;
+        }
+    return lift(new OperatorSkip<>(n));
     }
     
     public final Observable<T> skip(long time, TimeUnit unit, Scheduler scheduler) {
@@ -1792,7 +1793,7 @@ public class Observable<T> implements Publisher<T> {
     
     public final Observable<T> skipLast(int n) {
         if (n < 0) {
-            throw new IllegalArgumentException("n >= 0 required but it was " + n);
+            throw new IndexOutOfBoundsException("n >= 0 required but it was " + n);
         } else
             if (n == 0) {
                 return this;

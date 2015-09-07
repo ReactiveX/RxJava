@@ -160,6 +160,12 @@ public final class OperatorSkipLastTimed<T> implements Operator<T, T> {
                     Long ts = (Long)q.peek();
                     
                     boolean empty = ts == null;
+
+                    long now = scheduler.now(unit);
+                    
+                    if (!empty && ts > now - time) {
+                        empty = true;
+                    }
                     
                     if (checkTerminated(d, empty, a, delayError)) {
                         return;
@@ -169,9 +175,8 @@ public final class OperatorSkipLastTimed<T> implements Operator<T, T> {
                         break;
                     }
                     
-                    long now = scheduler.now(unit);
                     
-                    if (ts >= now - time) {
+                    if (ts > now - time) {
                         // not old enough
                         break;
                     }
@@ -198,7 +203,7 @@ public final class OperatorSkipLastTimed<T> implements Operator<T, T> {
                     }
                 }
                 
-                missed = getAndSet(-missed);
+                missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
