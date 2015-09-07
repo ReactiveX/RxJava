@@ -1689,6 +1689,12 @@ public class Observable<T> implements Publisher<T> {
         return create(new PublisherRetryPredicate<>(this, times, predicate));
     }
     
+    public final Observable<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
+        Objects.requireNonNull(predicate);
+        
+        return create(new PublisherRetryBiPredicate<>(this, predicate));
+    }
+    
     public final Observable<T> retry(Predicate<? super Throwable> predicate) {
         return retry(Long.MAX_VALUE, predicate);
     }
@@ -1697,11 +1703,14 @@ public class Observable<T> implements Publisher<T> {
         return retry(Long.MAX_VALUE, e -> !stop.getAsBoolean());
     }
     
-    public final Observable<T> retryWhen(Function<? super Observable<? extends Throwable>, ? extends Publisher<?>> handler) {
+    public final Observable<T> retryWhen(
+            Function<? super Observable<? extends Throwable>, ? extends Publisher<?>> handler) {
         Objects.requireNonNull(handler);
         
         Function<Observable<Try<Optional<Object>>>, Publisher<?>> f = no -> 
-            handler.apply(no.map(Try::error))
+            handler.apply(no.takeWhile(Try::hasError).map(t -> {
+                return t.error();
+            }))
         ;
         
         return create(new PublisherRedo<>(this, f));
@@ -1903,6 +1912,10 @@ public class Observable<T> implements Publisher<T> {
             // can't call onError because no way to know if a Subscription has been set or not
             // can't call onSubscribe because the call might have set a Subscription already
             RxJavaPlugins.onError(e);
+            
+            NullPointerException npe = new NullPointerException("Actually not, but can't throw other exceptions due to RS");
+            npe.initCause(e);
+            throw npe;
         }
     }
     

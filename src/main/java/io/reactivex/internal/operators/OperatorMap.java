@@ -72,6 +72,12 @@ public final class OperatorMap<T, U> implements Operator<U, T> {
                 actual.onError(e);
                 return;
             }
+            if (u == null) {
+                done = true;
+                subscription.cancel();
+                actual.onError(new NullPointerException("Value returned by the function is null"));
+                return;
+            }
             actual.onNext(u);
         }
         @Override

@@ -22,8 +22,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.internal.subscribers.ToNotificationSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
-import io.reactivex.observables.ConnectableObservable;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.*;
 
 public final class PublisherRedo<T> implements Publisher<T> {
     final Publisher<? extends T> source;
@@ -39,28 +38,25 @@ public final class PublisherRedo<T> implements Publisher<T> {
     public void subscribe(Subscriber<? super T> s) {
         
         // FIXE use BehaviorSubject? (once available)
-        PublishSubject<Try<Optional<Object>>> subject = PublishSubject.create();
+        BehaviorSubject<Try<Optional<Object>>> subject = BehaviorSubject.create();
         
         RedoSubscriber<T> parent = new RedoSubscriber<>(s, subject, source);
-        
-        ConnectableObservable<Try<Optional<Object>>> connection = subject.replay(1);
-        connection.connect();
-        
-        Publisher<?> action = manager.apply(connection);
+
+        s.onSubscribe(parent.arbiter);
+
+        Publisher<?> action = manager.apply(subject);
         
         action.subscribe(new ToNotificationSubscriber<>(parent::handle));
         
-        s.onSubscribe(parent.arbiter);
-
         // trigger first subscription
-        parent.handle(Notification.complete());
+        parent.handle(Notification.next(0));
     }
     
     static final class RedoSubscriber<T> extends AtomicBoolean implements Subscriber<T> {
         /** */
         private static final long serialVersionUID = -1151903143112844287L;
         final Subscriber<? super T> actual;
-        final PublishSubject<Try<Optional<Object>>> subject;
+        final BehaviorSubject<Try<Optional<Object>>> subject;
         final Publisher<? extends T> source;
         final SubscriptionArbiter arbiter;
         
@@ -69,7 +65,7 @@ public final class PublisherRedo<T> implements Publisher<T> {
         static final AtomicIntegerFieldUpdater<RedoSubscriber> WIP =
                 AtomicIntegerFieldUpdater.newUpdater(RedoSubscriber.class, "wip");
         
-        public RedoSubscriber(Subscriber<? super T> actual, PublishSubject<Try<Optional<Object>>> subject, Publisher<? extends T> source) {
+        public RedoSubscriber(Subscriber<? super T> actual, BehaviorSubject<Try<Optional<Object>>> subject, Publisher<? extends T> source) {
             this.actual = actual;
             this.subject = subject;
             this.source = source;

@@ -108,7 +108,7 @@ public final class Try<T> {
     @Override
     public String toString() {
         if (error != null) {
-            return "Try[" + error + "]";
+            return "Try[ " + error + " ]";
         }
         return "Try[" + value + "]";
     }
