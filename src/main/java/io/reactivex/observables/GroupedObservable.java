@@ -16,14 +16,19 @@ import org.reactivestreams.Publisher;
 
 import io.reactivex.Observable;
 
-public class GroupedObservable<T, K> extends Observable<T> {
+public class GroupedObservable<K, T> extends Observable<T> {
     final K key;
     protected GroupedObservable(Publisher<T> onSubscribe, K key) {
         super(onSubscribe);
         this.key = key;
     }
     
+    // FIXME short one or long one?
     public K key() {
+        return key;
+    }
+    
+    public K getKey() {
         return key;
     }
 }
