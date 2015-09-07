@@ -38,9 +38,35 @@ public class OperatorMergeTest {
 
     Subscriber<String> stringObserver;
 
+    int count;
+    
     @Before
     public void before() {
         stringObserver = TestHelper.mockSubscriber();
+        
+        for (Thread t : Thread.getAllStackTraces().keySet()) {
+            if (t.getName().startsWith("RxNewThread")) {
+                count++;
+            }
+        }
+    }
+    
+    @After
+    public void after() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        for (Thread t : Thread.getAllStackTraces().keySet()) {
+            if (t.getName().startsWith("RxNewThread")) {
+                --count;
+            }
+        }
+        if (count != 0) {
+            throw new IllegalStateException("NewThread leak!");
+        }
     }
 
     @Test
@@ -555,6 +581,7 @@ public class OperatorMergeTest {
                         } catch (Exception e) {
                             s.onError(e);
                         }
+                        as.dispose();
                         s.onComplete();
                     }
 
@@ -599,6 +626,7 @@ public class OperatorMergeTest {
                         } catch (Exception e) {
                             s.onError(e);
                         }
+                        as.dispose();
                         s.onComplete();
                         s.onComplete();
                         s.onComplete();

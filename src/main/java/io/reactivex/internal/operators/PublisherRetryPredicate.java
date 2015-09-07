@@ -106,6 +106,9 @@ public final class PublisherRetryPredicate<T> implements Publisher<T> {
             if (getAndIncrement() == 0) {
                 int missed = 1;
                 for (;;) {
+                    if (sa.isCancelled()) {
+                        return;
+                    }
                     source.subscribe(this);
                     
                     missed = addAndGet(-missed);

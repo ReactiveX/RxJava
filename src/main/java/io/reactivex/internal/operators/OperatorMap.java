@@ -21,6 +21,7 @@ import java.util.function.Function;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -40,16 +41,18 @@ public final class OperatorMap<T, U> implements Operator<U, T> {
     static final class MapperSubscriber<T, U> implements Subscriber<T> {
         final Subscriber<? super U> actual;
         final Function<? super T, ? extends U> function;
+        
         Subscription subscription;
+        
+        boolean done;
+        
         public MapperSubscriber(Subscriber<? super U> actual, Function<? super T, ? extends U> function) {
             this.actual = actual;
             this.function = function;
         }
         @Override
         public void onSubscribe(Subscription s) {
-            if (subscription != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+            if (SubscriptionHelper.validateSubscription(this.subscription, s)) {
                 return;
             }
             subscription = s;
@@ -57,10 +60,14 @@ public final class OperatorMap<T, U> implements Operator<U, T> {
         }
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             U u;
             try {
                 u = function.apply(t);
             } catch (Throwable e) {
+                done = true;
                 subscription.cancel();
                 actual.onError(e);
                 return;
@@ -69,10 +76,19 @@ public final class OperatorMap<T, U> implements Operator<U, T> {
         }
         @Override
         public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            done = true;
             actual.onError(t);
         }
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
             actual.onComplete();
         }
     }

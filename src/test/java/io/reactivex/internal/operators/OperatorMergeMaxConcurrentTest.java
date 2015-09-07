@@ -24,6 +24,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observable;
 import io.reactivex.TestHelper;
+import io.reactivex.internal.schedulers.IOScheduler;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -188,10 +189,16 @@ public class OperatorMergeMaxConcurrentTest {
             ts.assertValueSequence(result);
         }
     }
-    @Test(timeout = 20000)
+    @Test//(timeout = 20000)
     public void testSimpleAsyncLoop() {
+        IOScheduler ios = (IOScheduler)Schedulers.io();
+        int c = ios.size();
         for (int i = 0; i < 200; i++) {
             testSimpleAsync();
+            int c1 = ios.size();
+            if (c + 60 < c1) {
+                throw new AssertionError("Worker leak: " + c + " - " + c1);
+            }
         }
     }
     @Test(timeout = 10000)

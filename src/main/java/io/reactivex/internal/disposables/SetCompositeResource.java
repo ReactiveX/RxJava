@@ -118,6 +118,18 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
         }
     }
     
+    public int size() {
+        synchronized (this) {
+            OpenHashSet<T> a = set;
+            if (a == null) {
+                return 0;
+            }
+            int[] c = new int[1];
+            a.forEach(v -> c[0]++);
+            return c[0];
+        }
+    }
+    
     @Override
     public void dispose() {
         if (!disposed) {

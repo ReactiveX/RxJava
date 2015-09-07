@@ -115,6 +115,9 @@ public final class PublisherRedo<T> implements Publisher<T> {
                         if (WIP.getAndIncrement(this) == 0) {
                             int missed = 1;
                             for (;;) {
+                                if (arbiter.isCancelled()) {
+                                    return;
+                                }
                                 source.subscribe(this);
                             
                                 missed = WIP.addAndGet(this, -missed);

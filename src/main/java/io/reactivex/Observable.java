@@ -1953,12 +1953,12 @@ public class Observable<T> implements Publisher<T> {
         if (n < 0) {
             throw new IllegalArgumentException("n >= required but it was " + n);
         } else
-            if (n == 0) {
-                return ignoreElements();
-            } else
-                if (n == 1) {
-                    return lift(OperatorTakeLastOne.instance());
-                }
+        if (n == 0) {
+            return ignoreElements();
+        } else
+        if (n == 1) {
+            return lift(OperatorTakeLastOne.instance());
+        }
         return lift(new OperatorTakeLast<>(n));
     }
 
@@ -2252,6 +2252,14 @@ public class Observable<T> implements Publisher<T> {
 
             coll.add(value);
         });
+    }
+    
+    public final Single<T> toSingle() {
+        return Single.fromPublisher(this);
+    }
+    
+    public final NbpObservable<T> toNbpObservable() {
+        return NbpObservable.fromPublisher(this);
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes"})
