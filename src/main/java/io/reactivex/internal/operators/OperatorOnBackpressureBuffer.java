@@ -20,8 +20,8 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 import io.reactivex.internal.queue.*;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
-import io.reactivex.plugins.RxJavaPlugins;
 
 public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
     final int bufferSize;
@@ -84,9 +84,7 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             this.s = s;
@@ -106,6 +104,7 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                 }
                 onError(ex);
             }
+            drain();
         }
         
         @Override
@@ -123,8 +122,7 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > required but it was " + n));
+            if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             BackpressureHelper.add(REQUESTED, this, n);
@@ -157,7 +155,7 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                     long r = requested;
                     boolean unbounded = r == Long.MAX_VALUE;
                     
-                    long e = 0;
+                    long e = 0L;
                     
                     while (r != 0L) {
                         boolean d = done;
@@ -203,9 +201,9 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                     if (empty) {
                         Throwable e = error;
                         if (e != null) {
-                            actual.onError(e);
+                            a.onError(e);
                         } else {
-                            actual.onComplete();
+                            a.onComplete();
                         }
                         return true;
                     }
@@ -213,11 +211,11 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                     Throwable e = error;
                     if (e != null) {
                         queue.clear();
-                        actual.onError(e);
+                        a.onError(e);
                         return true;
                     } else
                     if (empty) {
-                        actual.onComplete();
+                        a.onComplete();
                         return true;
                     }
                 }

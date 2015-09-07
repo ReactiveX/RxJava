@@ -17,6 +17,7 @@ import java.util.function.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SubscriptionLambdaSubscriber<T> implements Subscriber<T>, Subscription {
@@ -43,11 +44,12 @@ public final class SubscriptionLambdaSubscriber<T> implements Subscriber<T>, Sub
         try {
             onSubscribe.accept(s);
         } catch (Throwable e) {
-            RxJavaPlugins.onError(e);
-        }
-        if (this.s != null) {
             s.cancel();
-            RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+            RxJavaPlugins.onError(e);
+            EmptySubscription.error(e, actual);
+            return;
+        }
+        if (SubscriptionHelper.validateSubscription(this.s, s)) {
             return;
         }
         this.s = s;
