@@ -18,7 +18,6 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.plugins.RxJavaPlugins;
 
 public enum OperatorTakeLastOne implements Operator<Object, Object> {
     INSTANCE
@@ -93,8 +92,7 @@ public enum OperatorTakeLastOne implements Operator<Object, Object> {
         
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
+            if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             for (;;) {

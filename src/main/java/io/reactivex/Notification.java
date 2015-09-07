@@ -39,4 +39,29 @@ public final class Notification {
         Objects.requireNonNull(value); // TODO this coud instead return an error of NPE
         return Try.ofValue(Optional.of(value));
     }
+    
+    public static <T> boolean isNext(Try<Optional<T>> notification) {
+        if (notification.hasValue()) {
+            return notification.value().isPresent();
+        }
+        return false;
+    }
+    
+    public static <T> boolean isComplete(Try<Optional<T>> notification) {
+        if (notification.hasValue()) {
+            return !notification.value().isPresent();
+        }
+        return false;
+    }
+    
+    public static <T> boolean isError(Try<Optional<T>> notification) {
+        return notification.hasError();
+    }
+    
+    public static <T> T getValue(Try<Optional<T>> notification) {
+        if (notification.hasValue()) {
+            return notification.value.get();
+        }
+        return null;
+    }
 }

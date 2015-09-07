@@ -194,7 +194,7 @@ public class OnSubscribeRefCountTest {
 
     @Test
     public void testConnectUnsubscribeRaceConditionLoop() throws InterruptedException {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             testConnectUnsubscribeRaceCondition();
         }
     }
@@ -221,7 +221,7 @@ public class OnSubscribeRefCountTest {
         s.dispose();
         // this generally will mean it won't even subscribe as it is already unsubscribed by the time connect() gets scheduled
         // give time to the counter to update
-        Thread.sleep(5);
+        Thread.sleep(10);
         // either we subscribed and then unsubscribed, or we didn't ever even subscribe
         assertEquals(0, subUnsubCount.get());
 

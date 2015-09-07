@@ -226,6 +226,7 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
                 f.whenComplete((v, e) -> {
                     cancel();
                 });
+                request(Long.MAX_VALUE);
             }
             
             @Override

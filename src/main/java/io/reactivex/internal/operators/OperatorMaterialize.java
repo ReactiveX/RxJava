@@ -101,6 +101,7 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
                         return;
                     } else {
                         value = v;
+                        done = true;
                         if (STATE.compareAndSet(this, s, NO_REQUEST_HAS_VALUE)) {
                             return;
                         }
@@ -111,8 +112,6 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
         
         @Override
         public void onError(Throwable t) {
-            done = true;
-
             Try<Optional<T>> v = Notification.error(t);
             
             tryEmit(v);
@@ -120,8 +119,6 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
         
         @Override
         public void onComplete() {
-            done = true;
-            
             Try<Optional<T>> v = Notification.complete();
             
             tryEmit(v);
@@ -132,28 +129,28 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            s.request(n);
-            if (BackpressureHelper.add(this, n) == 0) {
-                if (done) {
-                    for (;;) {
-                        int s = state;
-                        if (s == NO_REQUEST_HAS_VALUE) {
-                            if (STATE.compareAndSet(this, s, HAS_REQUEST_HAS_VALUE)) {
-                                Try<Optional<T>> v = value;
-                                value = null;
-                                actual.onNext(v);
-                                actual.onComplete();
-                                return;
-                            }
-                        } else
-                        if (s == HAS_REQUEST_NO_VALUE || s == HAS_REQUEST_HAS_VALUE) {
-                            return;
-                        } else
-                        if (STATE.compareAndSet(this, s, HAS_REQUEST_NO_VALUE)) {
+            BackpressureHelper.add(this, n);
+            if (done) {
+                for (;;) {
+                    int s = state;
+                    if (s == NO_REQUEST_HAS_VALUE) {
+                        if (STATE.compareAndSet(this, s, HAS_REQUEST_HAS_VALUE)) {
+                            Try<Optional<T>> v = value;
+                            value = null;
+                            actual.onNext(v);
+                            actual.onComplete();
                             return;
                         }
+                    } else
+                    if (s == HAS_REQUEST_NO_VALUE || s == HAS_REQUEST_HAS_VALUE) {
+                        return;
+                    } else
+                    if (STATE.compareAndSet(this, s, HAS_REQUEST_NO_VALUE)) {
+                        return;
                     }
                 }
+            } else {
+                s.request(n);
             }
         }
         
