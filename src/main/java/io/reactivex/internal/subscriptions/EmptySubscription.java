@@ -34,6 +34,11 @@ public enum EmptySubscription implements Subscription {
         // no-op
     }
     
+    @Override
+    public String toString() {
+        return "EmptySubscription";
+    }
+    
     /**
      * Sets the empty subscription instance on the subscriber and then
      * calls onError with the supplied error.

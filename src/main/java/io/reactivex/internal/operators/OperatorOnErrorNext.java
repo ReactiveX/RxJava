@@ -19,6 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class OperatorOnErrorNext<T> implements Operator<T, T> {
     final Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
@@ -44,6 +45,8 @@ public final class OperatorOnErrorNext<T> implements Operator<T, T> {
         
         boolean once;
         
+        boolean done;
+        
         public OnErrorNextSubscriber(Subscriber<? super T> actual, Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier, boolean allowFatal) {
             this.actual = actual;
             this.nextSupplier = nextSupplier;
@@ -58,6 +61,9 @@ public final class OperatorOnErrorNext<T> implements Operator<T, T> {
         
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             actual.onNext(t);
             if (!once) {
                 arbiter.produced(1L);
@@ -67,6 +73,10 @@ public final class OperatorOnErrorNext<T> implements Operator<T, T> {
         @Override
         public void onError(Throwable t) {
             if (once) {
+                if (done) {
+                    RxJavaPlugins.onError(t);
+                    return;
+                }
                 actual.onError(t);
                 return;
             }
@@ -99,6 +109,10 @@ public final class OperatorOnErrorNext<T> implements Operator<T, T> {
         
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
             once = true;
             actual.onComplete();
         }
