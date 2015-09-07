@@ -17,6 +17,7 @@ import java.util.function.IntFunction;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -303,7 +304,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
                 }
             } else {
                 cancel();
-                actual.onError(new IllegalStateException("Could not emit value due to lack of requests"));
+                actual.onError(new MissingBackpressureException("Could not emit value due to lack of requests"));
             }
         }
         

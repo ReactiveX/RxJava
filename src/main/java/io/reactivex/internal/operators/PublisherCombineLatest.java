@@ -188,6 +188,9 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
                 if (!empty) {
                     if (value != null && f) {
                         queue.offer(cs, latest.clone());
+                    } else
+                    if (value == null && error != null) {
+                        done = true; // if this source completed without a value
                     }
                 } else {
                     done = true;
