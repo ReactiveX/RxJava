@@ -483,7 +483,7 @@ public class Observable<T> implements Publisher<T> {
         return fromArray(sources).flatMap(v -> v, false, maxConcurrency, bufferSize);
     }
 
-    public static <T> Observable<T> merge(int maxConcurrency, Iterable<? extends Publisher<? extends T>> sources) {
+    public static <T> Observable<T> merge(Iterable<? extends Publisher<? extends T>> sources, int maxConcurrency) {
         return fromIterable(sources).flatMap(v -> v, maxConcurrency);
     }
 
@@ -1170,8 +1170,27 @@ public class Observable<T> implements Publisher<T> {
         return flatMap(mapper, delayErrors, bufferSize(), bufferSize());
     }
 
+    public final <U, R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends R> resultSelector) {
+        return flatMap(mapper, resultSelector, false, bufferSize(), bufferSize());
+    }
+
     public final <R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
         return flatMap(mapper, delayErrors, maxConcurrency, bufferSize());
+    }
+
+    public final <R> Observable<R> flatMap(
+            Function<? super T, ? extends Publisher<? extends R>> onNextMapper, 
+            Function<? super Throwable, ? extends Publisher<? extends R>> onErrorMapper, 
+            Supplier<? extends Publisher<? extends R>> onCompleteSupplier) {
+        return merge(lift(new OperatorMapNotification<>(onNextMapper, onErrorMapper, onCompleteSupplier)));
+    }
+
+    public final <R> Observable<R> flatMap(
+            Function<? super T, ? extends Publisher<? extends R>> onNextMapper, 
+            Function<Throwable, ? extends Publisher<? extends R>> onErrorMapper, 
+            Supplier<? extends Publisher<? extends R>> onCompleteSupplier, 
+            int maxConcurrency) {
+        return merge(lift(new OperatorMapNotification<>(onNextMapper, onErrorMapper, onCompleteSupplier)), maxConcurrency);
     }
 
     public final <R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, 
@@ -1215,6 +1234,10 @@ public class Observable<T> implements Publisher<T> {
 
     public final <U> Observable<U> flatMapIterable(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return flatMap(v -> new PublisherIterableSource<>(mapper.apply(v)));
+    }
+
+    public final <U, V> Observable<V> flatMapIterable(Function<? super T, ? extends Iterable<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends V> resultSelector) {
+        return flatMap(t -> new PublisherIterableSource<>(mapper.apply(t)), resultSelector, false, bufferSize(), bufferSize());
     }
 
     public final <U> Observable<U> flatMapIterable(Function<? super T, ? extends Iterable<? extends U>> mapper, int bufferSize) {
