@@ -46,13 +46,6 @@ public final class OperatorSwitchMap<T, R> implements Operator<R, T> {
         final Function<? super T, ? extends Publisher<? extends R>> mapper;
         final int bufferSize;
         
-        long requested;
-
-        volatile long missedRequested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<SwitchMapSubscriber> MISSED_REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(SwitchMapSubscriber.class, "missedRequested");
-
         
         volatile boolean done;
         Throwable error;
@@ -61,12 +54,21 @@ public final class OperatorSwitchMap<T, R> implements Operator<R, T> {
         
         Subscription s;
         
-        volatile Publisher<? extends R> publisher;
+        volatile SwitchMapInnerSubscriber<T, R> active;
         @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<SwitchMapSubscriber, Publisher> PUBLISHER =
-                AtomicReferenceFieldUpdater.newUpdater(SwitchMapSubscriber.class, Publisher.class, "publisher");
+        static final AtomicReferenceFieldUpdater<SwitchMapSubscriber, SwitchMapInnerSubscriber> ACTIVE =
+                AtomicReferenceFieldUpdater.newUpdater(SwitchMapSubscriber.class, SwitchMapInnerSubscriber.class, "active");
         
-        SwitchMapInnerSubscriber<T, R> active;
+        volatile long requested;
+        @SuppressWarnings("rawtypes")
+        static final AtomicLongFieldUpdater<SwitchMapSubscriber> REQUESTED =
+                AtomicLongFieldUpdater.newUpdater(SwitchMapSubscriber.class, "requested");
+        
+        static final SwitchMapInnerSubscriber<Object, Object> CANCELLED;
+        static {
+            CANCELLED = new SwitchMapInnerSubscriber<>(null, -1L, 1);
+            CANCELLED.cancel();
+        }
         
         volatile long unique;
         
@@ -87,6 +89,14 @@ public final class OperatorSwitchMap<T, R> implements Operator<R, T> {
         
         @Override
         public void onNext(T t) {
+            long c = unique + 1;
+            unique = c;
+            
+            SwitchMapInnerSubscriber<T, R> inner = active;
+            if (inner != null) {
+                inner.cancel();
+            }
+            
             Publisher<? extends R> p;
             try {
                 p = mapper.apply(t);
@@ -95,13 +105,33 @@ public final class OperatorSwitchMap<T, R> implements Operator<R, T> {
                 onError(e);
                 return;
             }
+
+            if (p == null) {
+                s.cancel();
+                onError(new NullPointerException("The publisher returned is null"));
+                return;
+            }
             
-            PUBLISHER.lazySet(this, p);
-            drain();
+            SwitchMapInnerSubscriber<T, R> nextInner = new SwitchMapInnerSubscriber<>(this, c, bufferSize);
+            
+            for (;;) {
+                inner = active;
+                if (inner == CANCELLED) {
+                    break;
+                }
+                if (ACTIVE.compareAndSet(this, inner, nextInner)) {
+                    p.subscribe(nextInner);
+                    break;
+                }
+            }
         }
         
         @Override
         public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
             error = t;
             done = true;
             drain();
@@ -109,6 +139,9 @@ public final class OperatorSwitchMap<T, R> implements Operator<R, T> {
         
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
             done = true;
             drain();
         }
@@ -118,7 +151,7 @@ public final class OperatorSwitchMap<T, R> implements Operator<R, T> {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            BackpressureHelper.add(MISSED_REQUESTED, this, n);
+            BackpressureHelper.add(REQUESTED, this, n);
             if (unique == 0L) {
                 s.request(Long.MAX_VALUE);
             } else {
@@ -130,22 +163,22 @@ public final class OperatorSwitchMap<T, R> implements Operator<R, T> {
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
-
-                if (getAndIncrement() == 0) {
-                    clear(active);
+                
+                disposeInner();
+            }
+        }
+        
+        @SuppressWarnings("unchecked")
+        void disposeInner() {
+            SwitchMapInnerSubscriber<T, R> a = active;
+            if (a != CANCELLED) {
+                a = ACTIVE.getAndSet(this, CANCELLED);
+                if (a != CANCELLED && a != null) {
+                    s.cancel();
                 }
             }
         }
         
-        void clear(SwitchMapInnerSubscriber<T, R> inner) {
-            if (inner != null) {
-                inner.cancel();
-            }
-            publisher = null;
-            s.cancel();
-        }
-        
-        @SuppressWarnings("unchecked")
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
@@ -154,73 +187,76 @@ public final class OperatorSwitchMap<T, R> implements Operator<R, T> {
             final Subscriber<? super R> a = actual;
             
             int missing = 1;
-            
+
             for (;;) {
-                boolean d = done;
-                Publisher<? extends R> p = publisher;
-                SwitchMapInnerSubscriber<T, R> inner = active;
-                boolean empty = p == null && inner == null;
-                
-                if (checkTerminated(d, empty, a, inner)) {
+
+                if (cancelled) {
                     return;
                 }
-
-                // get the latest publisher
-                if (p != null) {
-                    p = PUBLISHER.getAndSet(this, null);
+                
+                if (done) {
+                    Throwable err = error;
+                    if (err != null) {
+                        disposeInner();
+                        s.cancel();
+                        a.onError(err);
+                        return;
+                    } else
+                    if (active == null) {
+                        a.onComplete();
+                        return;
+                    }
                 }
                 
-                long c = unique;
-                if (p != null) {
-                    if (inner != null) {
-                        inner.cancel();
-                        inner = null;
-                    }
-                    unique = ++c;
-                    inner = new SwitchMapInnerSubscriber<>(this, c, bufferSize);
-                    active = inner;
-                    
-                    p.subscribe(inner);
-                }
+                SwitchMapInnerSubscriber<T, R> inner = active;
 
                 if (inner != null) {
-                    long r = requested;
-                    
-                    long mr = MISSED_REQUESTED.getAndSet(this, 0L);
-                    if (mr != 0L) {
-                        r = BackpressureHelper.addCap(r, mr);
-                        requested = r;
+                    Queue<R> q = inner.queue;
+
+                    if (inner.done) {
+                        Throwable err = inner.error;
+                        if (err != null) {
+                            s.cancel();
+                            disposeInner();
+                            a.onError(err);
+                            return;
+                        } else
+                        if (q.isEmpty()) {
+                            ACTIVE.compareAndSet(this, inner, null);
+                            continue;
+                        }
                     }
                     
+                    long r = requested;
                     boolean unbounded = r == Long.MAX_VALUE;
-    
-                    Queue<R> q = inner.queue;
-                    long e = 0;
+                    long e = 0L;
+                    boolean retry = false;
                     
                     while (r != 0L) {
-                        d = inner.done;
+                        boolean d = inner.done;
                         R v = q.poll();
-                        empty = v == null;
+                        boolean empty = v == null;
 
                         if (cancelled) {
-                            clear(active);
                             return;
                         }
+                        if (inner != active) {
+                            retry = true;
+                            break;
+                        }
+                        
                         if (d) {
                             Throwable err = inner.error;
                             if (err != null) {
-                                clear(active);
+                                s.cancel();
                                 a.onError(err);
                                 return;
                             } else
                             if (empty) {
-                                active = null;
+                                ACTIVE.compareAndSet(this, inner, null);
+                                retry = true;
                                 break;
                             }
-                        }
-                        
-                        if (publisher != null) {
-                            break;
                         }
                         
                         if (empty) {
@@ -230,18 +266,23 @@ public final class OperatorSwitchMap<T, R> implements Operator<R, T> {
                         a.onNext(v);
                         
                         r--;
-                        e++;
+                        e--;
                     }
                     
                     if (e != 0L) {
-                        if (!unbounded) {
-                            requested -= e;
-                            inner.get().request(e);
+                        if (!cancelled) {
+                            if (!unbounded) {
+                                REQUESTED.addAndGet(this, e);
+                            }
+                            inner.get().request(-e);
                         }
-                        
+                    }
+                    
+                    if (retry) {
+                        continue;
                     }
                 }
-
+                
                 missing = addAndGet(-missing);
                 if (missing == 0) {
                     break;
@@ -249,16 +290,16 @@ public final class OperatorSwitchMap<T, R> implements Operator<R, T> {
             }
         }
         
-        boolean checkTerminated(boolean d, boolean empty, Subscriber<? super R> a, SwitchMapInnerSubscriber<T, R> inner) {
+        boolean checkTerminated(boolean d, boolean empty, Subscriber<? super R> a) {
             if (cancelled) {
-                clear(inner);
+                s.cancel();
                 return true;
             }
             if (d) {
                 Throwable e = error;
                 if (e != null) {
                     cancelled = true;
-                    clear(inner);
+                    s.cancel();
                     a.onError(e);
                     return true;
                 } else
