@@ -97,8 +97,8 @@ public final class ExecutorScheduler extends Scheduler {
         }
         return super.schedulePeriodicallyDirect(run, initialDelay, period, unit);
     }
-    
-    static final class ExecutorWorker extends Scheduler.Worker implements Runnable {
+    /* public: test support. */
+    public static final class ExecutorWorker extends Scheduler.Worker implements Runnable {
         final Executor executor;
         
         final MpscLinkedQueue<Runnable> queue;
@@ -108,6 +108,8 @@ public final class ExecutorScheduler extends Scheduler {
         volatile int wip;
         static final AtomicIntegerFieldUpdater<ExecutorWorker> WIP =
                 AtomicIntegerFieldUpdater.newUpdater(ExecutorWorker.class, "wip");
+        
+        final SetCompositeResource<Disposable> tasks = new SetCompositeResource<>(Disposable::dispose);
         
         public ExecutorWorker(Executor executor) {
             this.executor = executor;
@@ -153,26 +155,56 @@ public final class ExecutorScheduler extends Scheduler {
 
             MultipleAssignmentResource<Disposable> mar = new MultipleAssignmentResource<>(Disposable::dispose, first);
             
-            Disposable delayed;
-
             Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             
-            Runnable r = () -> mar.setResource(schedule(decoratedRun));
+            ScheduledRunnable sr = new ScheduledRunnable(() -> {
+                mar.setResource(schedule(decoratedRun));
+            }, tasks);
+            tasks.add(sr);
             
             if (executor instanceof ScheduledExecutorService) {
                 try {
-                    Future<?> f = ((ScheduledExecutorService)executor).schedule(r, delay, unit);
-                    delayed = () -> f.cancel(true);
+                    Future<?> f = ((ScheduledExecutorService)executor).schedule(sr, delay, unit);
+                    sr.setFuture(f);
                 } catch (RejectedExecutionException ex) {
                     disposed = true;
                     RxJavaPlugins.onError(ex);
                     return EmptyDisposable.INSTANCE;
                 }
             } else {
-                delayed = HELPER.scheduleDirect(r, delay, unit);
+                Disposable d = HELPER.scheduleDirect(sr, delay, unit);
+                sr.setFuture(new Future<Object>() {
+                    @Override
+                    public boolean cancel(boolean mayInterruptIfRunning) {
+                        d.dispose();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isCancelled() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isDone() {
+                        return false;
+                    }
+
+                    @Override
+                    public Object get() throws InterruptedException, ExecutionException {
+                        return null;
+                    }
+
+                    @Override
+                    public Object get(long timeout, TimeUnit unit)
+                            throws InterruptedException, ExecutionException, TimeoutException {
+                        return null;
+                    }
+                    
+                });
             }
             
-            first.setResource(delayed);
+            first.setResource(sr);
             
             return mar;
         }
@@ -181,6 +213,7 @@ public final class ExecutorScheduler extends Scheduler {
         public void dispose() {
             if (!disposed) {
                 disposed = true;
+                tasks.dispose();
                 if (WIP.getAndIncrement(this) == 0) {
                     queue.clear();
                 }

@@ -93,4 +93,20 @@ public final class Schedulers {
     public static Scheduler from(Executor executor) {
         return new ExecutorScheduler(executor);
     }
+    
+    public static void shutdown() {
+        computation().shutdown();
+        io().shutdown();
+        newThread().shutdown();
+        single().shutdown();
+        trampoline().shutdown();
+    }
+    
+    public static void start() {
+        computation().start();
+        io().start();
+        newThread().start();
+        single().start();
+        trampoline().start();
+    }
 }
