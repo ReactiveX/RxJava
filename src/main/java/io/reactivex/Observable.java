@@ -2212,11 +2212,16 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final <K> Observable<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
-        return toMultimap(keySelector, v -> v, HashMap::new, k -> new ArrayList<>());
+        Function<? super T, ? extends T> valueSelector = v -> v;
+        Supplier<Map<K, Collection<T>>> mapSupplier = HashMap::new;
+        Function<K, Collection<T>> collectionFactory = k -> new ArrayList<>();
+        return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
     }
     
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
-        return toMultimap(keySelector, valueSelector, HashMap::new, k -> new ArrayList<>());
+        Supplier<Map<K, Collection<V>>> mapSupplier = HashMap::new;
+        Function<K, Collection<V>> collectionFactory = k -> new ArrayList<>();
+        return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
     }
     
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(

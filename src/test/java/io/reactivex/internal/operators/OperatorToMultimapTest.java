@@ -227,9 +227,10 @@ public class OperatorToMultimapTest {
         };
 
         Function<String, String> identity = v -> v;
+        Supplier<Map<Integer, Collection<String>>> mapSupplier = HashMap::new;
         
         Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, 
-                identity, HashMap::new, collectionFactory);
+                identity, mapSupplier, collectionFactory);
 
         Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
