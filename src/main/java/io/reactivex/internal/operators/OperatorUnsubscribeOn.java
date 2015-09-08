@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class OperatorUnsubscribeOn<T> implements Operator<T, T> {
     final Scheduler scheduler;
@@ -48,9 +48,7 @@ public final class OperatorUnsubscribeOn<T> implements Operator<T, T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             this.s = s;
@@ -64,20 +62,12 @@ public final class OperatorUnsubscribeOn<T> implements Operator<T, T> {
         
         @Override
         public void onError(Throwable t) {
-            try {
-                actual.onError(t);
-            } finally {
-                cancel();
-            }
+            actual.onError(t);
         }
         
         @Override
         public void onComplete() {
-            try {
-                actual.onComplete();
-            } finally {
-                cancel();
-            }
+            actual.onComplete();
         }
         
         @Override
@@ -88,7 +78,9 @@ public final class OperatorUnsubscribeOn<T> implements Operator<T, T> {
         @Override
         public void cancel() {
             if (compareAndSet(false, true)) {
-                scheduler.scheduleDirect(s::cancel);
+                scheduler.scheduleDirect(() -> {
+                    s.cancel();
+                });
             }
         }
     }

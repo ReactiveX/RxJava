@@ -81,14 +81,20 @@ public final class PublisherSubscribeOn<T> implements Publisher<T> {
         
         @Override
         public void onError(Throwable t) {
-            cancel();
-            actual.onError(t);
+            try {
+                actual.onError(t);
+            } finally {
+                worker.dispose();
+            }
         }
         
         @Override
         public void onComplete() {
-            cancel();
-            actual.onComplete();
+            try {
+                actual.onComplete();
+            } finally {
+                worker.dispose();
+            }
         }
         
         @Override

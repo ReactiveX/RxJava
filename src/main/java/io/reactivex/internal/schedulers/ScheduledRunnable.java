@@ -67,6 +67,8 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
                     if (compareAndSet(FUTURE_INDEX, o, DONE)) {
                         break;
                     }
+                } else {
+                    break;
                 }
             }
         }
