@@ -191,6 +191,10 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
                             return;
                         }
                         
+                        if ((Long)ts < scheduler.now(unit) - time) {
+                            continue;
+                        }
+                        
                         a.onNext(o);
                         
                         r--;
@@ -204,7 +208,7 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
                     }
                 }
                 
-                missed = getAndSet(-missed);
+                missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }

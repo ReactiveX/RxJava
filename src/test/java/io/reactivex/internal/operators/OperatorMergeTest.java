@@ -209,6 +209,14 @@ public class OperatorMergeTest {
     }
 
     @Test
+    public void testSynchronizationOfMultipleSequencesLoop() throws Throwable {
+        for (int i = 0; i < 100; i++) {
+            System.out.println("testSynchronizationOfMultipleSequencesLoop > " + i);
+            testSynchronizationOfMultipleSequences();
+        }
+    }
+    
+    @Test
     public void testSynchronizationOfMultipleSequences() throws Throwable {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
@@ -237,8 +245,11 @@ public class OperatorMergeTest {
                 totalCounter.incrementAndGet();
                 concurrentCounter.incrementAndGet();
                 try {
-                    // wait here until we're done asserting
-                    endLatch.await();
+                    // avoid deadlocking the main thread
+                    if (Thread.currentThread().getName().equals("TestASynchronousObservable")) {
+                        // wait here until we're done asserting
+                        endLatch.await();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     throw new RuntimeException("failed", e);
@@ -380,7 +391,7 @@ public class OperatorMergeTest {
                     }
                 }
 
-            });
+            }, "TestASynchronousObservable");
             t.start();
         }
     }
