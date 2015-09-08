@@ -45,7 +45,8 @@ public final class OperatorThrottleFirstTimed<T> implements Operator<T, T> {
                 timeout, unit, scheduler.createWorker());
     }
     
-    static final class DebounceTimedSubscriber<T> extends AtomicInteger 
+    static final class DebounceTimedSubscriber<T>
+    extends AtomicLong
     implements Subscriber<T>, Subscription, Runnable {
         /** */
         private static final long serialVersionUID = -9102637559663639004L;
@@ -59,7 +60,7 @@ public final class OperatorThrottleFirstTimed<T> implements Operator<T, T> {
         volatile Disposable timer;
         @SuppressWarnings("rawtypes")
         static final AtomicReferenceFieldUpdater<DebounceTimedSubscriber, Disposable> TIMER =
-                AtomicReferenceFieldUpdater.newUpdater(DebounceTimedSubscriber.class, Disposable.class, "debouncer");
+                AtomicReferenceFieldUpdater.newUpdater(DebounceTimedSubscriber.class, Disposable.class, "timer");
 
         static final Disposable CANCELLED = () -> { };
 
@@ -67,21 +68,13 @@ public final class OperatorThrottleFirstTimed<T> implements Operator<T, T> {
 
         volatile boolean gate;
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<DebounceTimedSubscriber> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(DebounceTimedSubscriber.class, "requested");
-
         boolean done;
-        
-        T value;
         
         public DebounceTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
             this.actual = actual;
             this.timeout = timeout;
             this.unit = unit;
             this.worker = worker;
-            lazySet(1);
         }
         
         public void disposeTimer() {
@@ -109,50 +102,42 @@ public final class OperatorThrottleFirstTimed<T> implements Operator<T, T> {
             if (done) {
                 return;
             }
-            
-            if (gate) {
-                value = t;
-                gate = false;
-            }
-            
-            Disposable d = timer;
-            if (d != null) {
-                d.dispose();
-            }
-            
-            if (TIMER.compareAndSet(this, null, NEW_TIMER)) {
-                d = worker.schedule(this, timeout, unit);
-                if (!TIMER.compareAndSet(this, NEW_TIMER, d)) {
+
+            if (!gate) {
+                gate = true;
+                long r = get();
+                if (r != 0L) {
+                    actual.onNext(t);
+                    if (r != Long.MAX_VALUE) {
+                        decrementAndGet();
+                    }
+                } else {
+                    done = true;
+                    cancel();
+                    actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
+                    return;
+                }
+                
+                // FIXME should this be a periodic blocking or a value-relative blocking?
+                Disposable d = timer;
+                if (d != null) {
                     d.dispose();
-                    value = null;
+                }
+                
+                if (TIMER.compareAndSet(this, d, NEW_TIMER)) {
+                    d = worker.schedule(this, timeout, unit);
+                    if (!TIMER.compareAndSet(this, NEW_TIMER, d)) {
+                        d.dispose();
+                    }
                 }
             }
+            
+            
         }
         
         @Override
         public void run() {
-            if (!gate) {
-                T v = value;
-                value = null;
-                
-                long r = requested;
-                if (r != 0L) {
-                    actual.onNext(v);
-                    if (r != Long.MAX_VALUE) {
-                        REQUESTED.decrementAndGet(this);
-                    }
-                    if (decrementAndGet() == 0) {
-                        disposeTimer();
-                        worker.dispose();
-                        actual.onComplete();
-                        return;
-                    }
-                    gate = true;
-                } else {
-                    cancel();
-                    actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
-                }
-            }
+            gate = false;
         }
         
         @Override
@@ -172,11 +157,9 @@ public final class OperatorThrottleFirstTimed<T> implements Operator<T, T> {
                 return;
             }
             done = true;
-            if (decrementAndGet() == 0) {
-                disposeTimer();
-                worker.dispose();
-                actual.onComplete();
-            }
+            disposeTimer();
+            worker.dispose();
+            actual.onComplete();
         }
         
         @Override
@@ -184,7 +167,7 @@ public final class OperatorThrottleFirstTimed<T> implements Operator<T, T> {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(this, n);
         }
         
         @Override

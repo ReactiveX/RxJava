@@ -33,7 +33,20 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
     final SpscLinkedArrayQueue<Object> queue;
 
     long requested;
-    Subscription s;
+    
+    volatile Subscription s;
+    static final Subscription INITIAL = new Subscription() {
+        @Override
+        public void request(long n) {
+            
+        }
+        @Override
+        public void cancel() {
+            // TODO Auto-generated method stub
+            
+        }
+    };
+    
     
     Disposable resource;
 
@@ -45,6 +58,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
         this.actual = actual;
         this.resource = resource;
         this.queue = new SpscLinkedArrayQueue<>(capacity);
+        this.s = INITIAL;
     }
 
     @Override
@@ -78,7 +92,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
             return false;
         }
 
-        queue.offer(s, NotificationLite.subscription(s));
+        queue.offer(this.s, NotificationLite.subscription(s));
         drain();
         return true;
     }

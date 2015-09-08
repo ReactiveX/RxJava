@@ -89,25 +89,29 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
             
             Publisher<U> p;
             
-            try {
-                p = firstTimeoutSelector.get();
-            } catch (Exception ex) {
-                cancel();
-                EmptySubscription.error(ex, a);
-                return;
-            }
-            
-            if (p == null) {
-                cancel();
-                EmptySubscription.error(new NullPointerException("The first timeout publisher is null"), a);
-                return;
-            }
-            
-            TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<>(this, 0);
-            
-            if (TIMEOUT.compareAndSet(this, null, tis)) {
+            if (firstTimeoutSelector != null) {
+                try {
+                    p = firstTimeoutSelector.get();
+                } catch (Exception ex) {
+                    cancel();
+                    EmptySubscription.error(ex, a);
+                    return;
+                }
+                
+                if (p == null) {
+                    cancel();
+                    EmptySubscription.error(new NullPointerException("The first timeout publisher is null"), a);
+                    return;
+                }
+                
+                TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<>(this, 0);
+                
+                if (TIMEOUT.compareAndSet(this, null, tis)) {
+                    a.onSubscribe(s);
+                    p.subscribe(tis);
+                }
+            } else {
                 a.onSubscribe(s);
-                p.subscribe(tis);
             }
         }
         
@@ -272,27 +276,31 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
             }
             Subscriber<? super T> a = actual;
             
-            Publisher<U> p;
-            
-            try {
-                p = firstTimeoutSelector.get();
-            } catch (Exception ex) {
-                dispose();
-                EmptySubscription.error(ex, a);
-                return;
-            }
-            
-            if (p == null) {
-                dispose();
-                EmptySubscription.error(new NullPointerException("The first timeout publisher is null"), a);
-                return;
-            }
-            
-            TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<>(this, 0);
-            
-            if (TIMEOUT.compareAndSet(this, null, tis)) {
+            if (firstTimeoutSelector != null) {
+                Publisher<U> p;
+                
+                try {
+                    p = firstTimeoutSelector.get();
+                } catch (Exception ex) {
+                    dispose();
+                    EmptySubscription.error(ex, a);
+                    return;
+                }
+                
+                if (p == null) {
+                    dispose();
+                    EmptySubscription.error(new NullPointerException("The first timeout publisher is null"), a);
+                    return;
+                }
+                
+                TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<>(this, 0);
+                
+                if (TIMEOUT.compareAndSet(this, null, tis)) {
+                    a.onSubscribe(arbiter);
+                    p.subscribe(tis);
+                }
+            } else {
                 a.onSubscribe(arbiter);
-                p.subscribe(tis);
             }
         }
         
