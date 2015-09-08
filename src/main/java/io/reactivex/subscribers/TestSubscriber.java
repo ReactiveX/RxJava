@@ -20,6 +20,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscribers.EmptySubscriber;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
 /**
@@ -199,8 +200,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     @Override
     public void request(long n) {
-        if (n <= 0) {
-            errors.add(new IllegalArgumentException("n > 0 required but it was " + n));
+        if (SubscriptionHelper.validateRequest(n)) {
             return;
         }
         Subscription s = subscription;

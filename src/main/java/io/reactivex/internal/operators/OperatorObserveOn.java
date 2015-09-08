@@ -167,10 +167,8 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
-                if (getAndIncrement() == 0) {
-                    s.cancel();
-                    worker.dispose();
-                }
+                s.cancel();
+                worker.dispose();
             }
         }
         

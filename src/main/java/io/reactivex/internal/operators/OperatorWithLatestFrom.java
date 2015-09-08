@@ -121,8 +121,6 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T> {
                     return;
                 }
                 actual.onNext(r);
-            } else {
-                s.request(1);
             }
         }
         

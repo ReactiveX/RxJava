@@ -602,7 +602,7 @@ public class OperatorReplayTest {
 //        verify(spiedWorker, times(1)).isUnsubscribed();
         // FIXME publish calls cancel too
         verify(spiedWorker, times(2)).dispose();
-        verify(sourceUnsubscribed, times(2)).run();
+        verify(sourceUnsubscribed, times(1)).run();
 
         verifyNoMoreInteractions(sourceNext);
         verifyNoMoreInteractions(sourceCompleted);
@@ -668,7 +668,7 @@ public class OperatorReplayTest {
 //        verify(spiedWorker, times(1)).isUnsubscribed();
         // FIXME publish also calls cancel
         verify(spiedWorker, times(2)).dispose();
-        verify(sourceUnsubscribed, times(2)).run();
+        verify(sourceUnsubscribed, times(1)).run();
 
         verifyNoMoreInteractions(sourceNext);
         verifyNoMoreInteractions(sourceCompleted);

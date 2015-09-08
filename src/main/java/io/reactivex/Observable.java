@@ -2407,11 +2407,7 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final <U, R> Observable<R> zipWith(Iterable<? extends U> other,  BiFunction<? super T, ? super U, ? extends R> zipper) {
-        return zip(this, new PublisherIterableSource<>(other), zipper);
-    }
-
-    public final <U, R> Observable<R> zipWith(Iterable<? extends U> other,  BiFunction<? super T, ? super U, ? extends R> zipper, int bufferSize) {
-        return zip(this, new PublisherIterableSource<>(other), zipper, false, bufferSize);
+        return create(new PublisherZipIterable<>(this, other, zipper));
     }
 
     public final <U, R> Observable<R> zipWith(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {

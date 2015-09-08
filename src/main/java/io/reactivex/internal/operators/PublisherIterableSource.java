@@ -20,9 +20,8 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
-import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  *
@@ -45,7 +44,14 @@ public final class PublisherIterableSource<T> extends AtomicBoolean implements P
             EmptySubscription.error(e, s);
             return;
         }
-        if (!it.hasNext()) {
+        boolean hasNext;
+        try {
+            hasNext = it.hasNext();
+        } catch (Throwable e) {
+            EmptySubscription.error(e, s);
+            return;
+        }
+        if (!hasNext) {
             EmptySubscription.complete(s);
             return;
         }
@@ -66,8 +72,7 @@ public final class PublisherIterableSource<T> extends AtomicBoolean implements P
         }
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
+            if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             if (BackpressureHelper.add(this, n) != 0L) {
@@ -81,21 +86,40 @@ public final class PublisherIterableSource<T> extends AtomicBoolean implements P
                 if (cancelled) {
                     return;
                 }
-                if (!it.hasNext()) {
-                    subscriber.onComplete();
-                    return;
-                }
-                long e = 0;
+
+                long e = 0L;
                 while (r != 0L) {
-                    T v = it.next();
+                    T v;
+                    try {
+                        v = it.next();
+                    } catch (Throwable ex) {
+                        subscriber.onError(ex);
+                        return;
+                    }
+                    
+                    if (v == null) {
+                        subscriber.onError(new NullPointerException("Iterator returned a null element"));
+                        return;
+                    }
+                    
                     subscriber.onNext(v);
+                    
                     if (cancelled) {
                         return;
                     }
-                    if (!it.hasNext()) {
+                    
+                    boolean hasNext;
+                    try {
+                        hasNext = it.hasNext();
+                    } catch (Throwable ex) {
+                        subscriber.onError(ex);
+                        return;
+                    }
+                    if (!hasNext) {
                         subscriber.onComplete();
                         return;
                     }
+                    
                     r--;
                     e--;
                 }

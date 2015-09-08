@@ -78,6 +78,7 @@ public class OperatorToObservableListTest {
     }
 
     @Test
+    @Ignore("Null values are not allowed")
     public void testListWithNullValue() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", null, "three"));
         Observable<List<String>> observable = w.toList();

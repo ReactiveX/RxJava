@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators;
 
-import java.util.*;
+import java.util.Queue;
 import java.util.concurrent.atomic.*;
 import java.util.function.Function;
 
@@ -161,9 +161,9 @@ public final class PublisherZip<T, R> implements Publisher<R> {
                 boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0;
                 
-                outer:
                 while (r != 0) {
                     int i = 0;
+                    int emptyCount = 0;
                     for (ZipSubscriber<T, R> z : zs) {
                         boolean d = z.done;
                         T v = z.queue.peek();
@@ -174,13 +174,17 @@ public final class PublisherZip<T, R> implements Publisher<R> {
                         }
                         
                         if (empty) {
-                            break outer;
+                            emptyCount++;
+                            continue;
                         }
                         
                         os[i] = v;
                         i++;
                     }
                     
+                    if (emptyCount != 0) {
+                        break;
+                    }
                     // consume the row
                     for (ZipSubscriber<T, R> z : zs) {
                         z.queue.poll();
