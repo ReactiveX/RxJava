@@ -1948,9 +1948,9 @@ public class Observable<T> implements Publisher<T> {
         if (n < 0) {
             throw new IllegalArgumentException("n >= required but it was " + n);
         } else
-            if (n == 0) {
-                return empty();
-            }
+        if (n == 0) {
+            return empty();
+        }
         return lift(new OperatorTake<>(n));
     }
 
@@ -1965,7 +1965,7 @@ public class Observable<T> implements Publisher<T> {
 
     public final Observable<T> takeLast(int n) {
         if (n < 0) {
-            throw new IllegalArgumentException("n >= required but it was " + n);
+            throw new IndexOutOfBoundsException("n >= required but it was " + n);
         } else
         if (n == 0) {
             return ignoreElements();
@@ -1989,7 +1989,7 @@ public class Observable<T> implements Publisher<T> {
         Objects.requireNonNull(scheduler);
         validateBufferSize(bufferSize);
         if (count < 0) {
-            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
         }
         return lift(new OperatorTakeLastTimed<>(count, time, unit, scheduler, bufferSize, delayError));
     }
