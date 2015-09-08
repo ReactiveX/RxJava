@@ -2186,11 +2186,6 @@ public class Observable<T> implements Publisher<T> {
         return lift(new OperatorToList<>(collectionSupplier));
     }
 
-    /**
-     *
-     * @deprecated is this in use?
-     */
-    @Deprecated
     public final <K> Observable<Map<K, T>> toMap(Function<? super T, ? extends K> keySelector) {
         return collect(HashMap::new, (m, t) -> {
             K key = keySelector.apply(t);
@@ -2198,11 +2193,6 @@ public class Observable<T> implements Publisher<T> {
         });
     }
     
-    /**
-     *
-     * @deprecated is this in use?
-     */
-    @Deprecated
     public final <K, V> Observable<Map<K, V>> toMap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
         return collect(HashMap::new, (m, t) -> {
             K key = keySelector.apply(t);
@@ -2211,11 +2201,6 @@ public class Observable<T> implements Publisher<T> {
         });
     }
     
-    /**
-     *
-     * @deprecated is this in use?
-     */
-    @Deprecated
     public final <K, V> Observable<Map<K, V>> toMap(Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector,
             Supplier<? extends Map<K, V>> mapSupplier) {
@@ -2226,39 +2211,34 @@ public class Observable<T> implements Publisher<T> {
         });
     }
 
-    /**
-     *
-     * @deprecated is this in use?
-     */
-    @Deprecated
     public final <K> Observable<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
-        return toMultimap(keySelector, v -> v, ArrayList::new);
+        return toMultimap(keySelector, v -> v, HashMap::new, k -> new ArrayList<>());
     }
     
-    /**
-     *
-     * @deprecated is this in use?
-     */
-    @Deprecated
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
-        return toMultimap(keySelector, valueSelector, ArrayList::new);
+        return toMultimap(keySelector, valueSelector, HashMap::new, k -> new ArrayList<>());
     }
     
-    /**
-     *
-     * @deprecated is this in use?
-     */
-    @Deprecated
+    public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(
+            Function<? super T, ? extends K> keySelector, 
+            Function<? super T, ? extends V> valueSelector,
+            Supplier<Map<K, Collection<V>>> mapSupplier
+            ) {
+        return toMultimap(keySelector, valueSelector, mapSupplier, k -> new ArrayList<>());
+    }
+    
     @SuppressWarnings("unchecked")
-    public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, 
+    public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(
+            Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector, 
-            Supplier<? extends Collection<? super V>> collectionSupplier) {
-        return collect(HashMap::new, (m, t) -> {
+            Supplier<? extends Map<K, Collection<V>>> mapSupplier,
+            Function<? super K, ? extends Collection<? super V>> collectionFactory) {
+        return collect(mapSupplier, (m, t) -> {
             K key = keySelector.apply(t);
 
             Collection<V> coll = m.get(key);
             if (coll == null) {
-                coll = (Collection<V>)collectionSupplier.get();
+                coll = (Collection<V>)collectionFactory.apply(key);
                 m.put(key, coll);
             }
 
