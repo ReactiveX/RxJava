@@ -119,7 +119,7 @@ public final class OperatorConcatMap<T, U> implements Operator<U, T> {
         void innerComplete() {
             if (decrementAndGet() != 0) {
                 drain();
-            } else
+            }
             if (!done) {
                 s.request(1);
             }

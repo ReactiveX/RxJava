@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators;
 
 import java.util.ArrayDeque;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
@@ -43,7 +43,11 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
         return new WindowSkipSubscriber<>(t, count, skip, capacityHint);
     }
     
-    static final class WindowExactSubscriber<T> implements Subscriber<T>, Subscription {
+    static final class WindowExactSubscriber<T>
+    extends AtomicInteger
+    implements Subscriber<T>, Subscription, Runnable {
+        /** */
+        private static final long serialVersionUID = -7481782523886138128L;
         final Subscriber<? super Observable<T>> actual;
         final long count;
         final int capacityHint;
@@ -53,6 +57,8 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
         Subscription s;
         
         UnicastSubject<T> window;
+        
+        volatile boolean cancelled;
         
         public WindowExactSubscriber(Subscriber<? super Observable<T>> actual, long count, int capacityHint) {
             this.actual = actual;
@@ -74,8 +80,8 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
         @Override
         public void onNext(T t) {
             UnicastSubject<T> w = window;
-            if (w == null) {
-                w = UnicastSubject.create(capacityHint);
+            if (w == null && !cancelled) {
+                w = UnicastSubject.create(capacityHint, this);
                 window = w;
                 actual.onNext(w);
             }
@@ -85,6 +91,9 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
                 size = 0;
                 window = null;
                 w.onComplete();
+                if (cancelled) {
+                    s.cancel();
+                }
             }
         }
         
@@ -120,11 +129,19 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
         
         @Override
         public void cancel() {
-            s.cancel();
+            cancelled = true;
+        }
+        
+        @Override
+        public void run() {
+            if (cancelled) {
+                s.cancel();
+            }
         }
     }
     
-    static final class WindowSkipSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
+    static final class WindowSkipSubscriber<T> extends AtomicBoolean 
+    implements Subscriber<T>, Subscription, Runnable {
         /** */
         private static final long serialVersionUID = 3366976432059579510L;
         final Subscriber<? super Observable<T>> actual;
@@ -135,10 +152,17 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
         
         long index;
         
+        volatile boolean cancelled;
+        
         /** Counts how many elements were emitted to the very first window in windows. */
         long firstEmission;
         
         Subscription s;
+        
+        volatile int wip;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<WindowSkipSubscriber> WIP =
+                AtomicIntegerFieldUpdater.newUpdater(WindowSkipSubscriber.class, "wip");
         
         public WindowSkipSubscriber(Subscriber<? super Observable<T>> actual, long count, long skip, int capacityHint) {
             this.actual = actual;
@@ -167,8 +191,9 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
             
             long s = skip;
             
-            if (i % s == 0) {
-                UnicastSubject<T> w = UnicastSubject.create(capacityHint);
+            if (i % s == 0 && !cancelled) {
+                WIP.getAndIncrement(this);
+                UnicastSubject<T> w = UnicastSubject.create(capacityHint, this);
                 ws.offer(w);
                 actual.onNext(w);
             }
@@ -181,6 +206,10 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
             
             if (c >= count) {
                 ws.poll().onComplete();
+                if (ws.isEmpty() && cancelled) {
+                    this.s.cancel();
+                    return;
+                }
                 firstEmission = c - s;
             } else {
                 firstEmission = c;
@@ -242,7 +271,16 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
         
         @Override
         public void cancel() {
-            s.cancel();
+            cancelled = true;
+        }
+        
+        @Override
+        public void run() {
+            if (WIP.decrementAndGet(this) == 0) {
+                if (cancelled) {
+                    s.cancel();
+                }
+            }
         }
     }
 }

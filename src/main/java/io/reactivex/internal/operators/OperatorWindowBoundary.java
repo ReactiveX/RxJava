@@ -103,9 +103,12 @@ public final class OperatorWindowBoundary<T, B> implements Operator<Observable<T
                 return;
             }
             
+            window = w;
+            
             WindowBoundaryInnerSubscriber<T, B> inner = new WindowBoundaryInnerSubscriber<>(this);
             
             if (BOUNDARY.compareAndSet(this, null, inner)) {
+                WINDOWS.getAndIncrement(this);
                 s.request(Long.MAX_VALUE);
                 other.subscribe(inner);
             }

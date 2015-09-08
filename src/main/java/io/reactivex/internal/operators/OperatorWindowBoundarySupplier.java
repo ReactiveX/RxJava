@@ -68,7 +68,7 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<WindowBoundaryMainSubscriber> WINDOWS =
                 AtomicLongFieldUpdater.newUpdater(WindowBoundaryMainSubscriber.class, "windows");
-        
+
         public WindowBoundaryMainSubscriber(Subscriber<? super Observable<T>> actual, Supplier<? extends Publisher<B>> other,
                 int bufferSize) {
             super(actual, new MpscLinkedQueue<>());
@@ -96,11 +96,13 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
             try {
                 p = other.get();
             } catch (Throwable e) {
+                s.cancel();
                 a.onError(e);
                 return;
             }
             
             if (p == null) {
+                s.cancel();
                 a.onError(new NullPointerException("The first window publisher supplied is null"));
                 return;
             }
@@ -114,15 +116,20 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
                     produced(1);
                 }
             } else {
+                s.cancel();
                 a.onError(new IllegalStateException("Could not deliver first window due to lack of requests"));
                 return;
             }
             
+            window = w;
+            
             WindowBoundaryInnerSubscriber<T, B> inner = new WindowBoundaryInnerSubscriber<>(this);
             
             if (BOUNDARY.compareAndSet(this, null, inner)) {
+                WINDOWS.getAndIncrement(this);
                 s.request(Long.MAX_VALUE);
                 p.subscribe(inner);
+                return;
             }
         }
         
@@ -348,6 +355,7 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
             }
             done = true;
             parent.onComplete();
+//            parent.next();
         }
     }
 }
