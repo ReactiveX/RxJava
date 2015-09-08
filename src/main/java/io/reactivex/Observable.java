@@ -2358,10 +2358,12 @@ public class Observable<T> implements Publisher<T> {
 
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit, 
             Scheduler scheduler, long count, boolean restart) {
-        return window(timespan, unit, scheduler, count, restart);
+        return window(timespan, unit, scheduler, count, restart, bufferSize());
     }
 
-    public final Observable<Observable<T>> window(long timespan, TimeUnit unit, Scheduler scheduler, long count, boolean restart, int bufferSize) {
+    public final Observable<Observable<T>> window(
+            long timespan, TimeUnit unit, Scheduler scheduler, 
+            long count, boolean restart, int bufferSize) {
         validateBufferSize(bufferSize);
         Objects.requireNonNull(scheduler);
         Objects.requireNonNull(unit);

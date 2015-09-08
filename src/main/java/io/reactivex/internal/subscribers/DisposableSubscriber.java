@@ -47,7 +47,7 @@ public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposab
     public final void onSubscribe(Subscription s) {
         if (!S.compareAndSet(this, null, s)) {
             s.cancel();
-            if (s != CANCELLED) {
+            if (this.s != CANCELLED) {
                 SubscriptionHelper.reportSubscriptionSet();
             }
             return;

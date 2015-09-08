@@ -212,12 +212,11 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
                 throw new CancelledKeyException();
             }
 
-            if (!cancelled) {
-                queue.offer(NEXT);
-            } else {
+            if (cancelled) {
                 terminated = true;
                 dispose();
             }
+            queue.offer(NEXT);
             if (enter()) {
                 drainLoop();
             }
@@ -234,11 +233,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
             for (;;) {
                 
                 for (;;) {
-                    if (terminated) {
-                        s.cancel();
-                        q.clear();
-                        return;
-                    }
+                    boolean term = terminated;
                     
                     boolean d = done;
                     
@@ -262,24 +257,28 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
                     }
                     
                     if (o == NEXT) {
-                        w = UnicastSubject.create(bufferSize);
-                        window = w;
-                        
-                        long r = requested();
-                        if (r != 0L) {
-                            a.onNext(w);
-                            if (r != Long.MAX_VALUE) {
-                                produced(1);
+                        w.onComplete();
+                        if (!term) {
+                            w = UnicastSubject.create(bufferSize);
+                            window = w;
+                            
+                            long r = requested();
+                            if (r != 0L) {
+                                a.onNext(w);
+                                if (r != Long.MAX_VALUE) {
+                                    produced(1);
+                                }
+                            } else {
+                                window = null;
+                                queue.clear();
+                                s.cancel();
+                                dispose();
+                                a.onError(new IllegalStateException("Could not deliver first window due to lack of requests."));
+                                return;
                             }
                         } else {
-                            window = null;
-                            queue.clear();
                             s.cancel();
-                            dispose();
-                            a.onError(new IllegalStateException("Could not deliver first window due to lack of requests."));
-                            return;
                         }
-                        
                         continue;
                     }
                     
@@ -390,6 +389,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
                 d.dispose();
                 return;
             }
+            s.request(Long.MAX_VALUE);
         }
         
         @Override
