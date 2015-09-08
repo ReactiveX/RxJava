@@ -129,6 +129,14 @@ public class OperatorConcatTest {
         inOrder.verify(observer, times(1)).onNext("six");
     }
 
+    @Test
+    public void testNestedAsyncConcatLoop() throws Throwable {
+        for (int i = 0; i < 100; i++) {
+            System.out.println("testNestedAsyncConcat >> " + i);
+            testNestedAsyncConcat();
+        }
+    }
+    
     /**
      * Test an async Observable that emits more async Observables
      */
@@ -242,8 +250,8 @@ public class OperatorConcatTest {
         inOrder.verify(observer, times(1)).onNext("eight");
         inOrder.verify(observer, times(1)).onNext("nine");
 
-        inOrder.verify(observer, times(1)).onComplete();
         verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, times(1)).onComplete();
     }
 
     @Test
@@ -469,7 +477,7 @@ public class OperatorConcatTest {
         private final List<T> values;
         private Thread t = null;
         private int count = 0;
-        private boolean subscribed = true;
+        private volatile boolean subscribed = true;
         private final CountDownLatch once;
         private final CountDownLatch okToContinue;
         private final CountDownLatch threadHasStarted = new CountDownLatch(1);

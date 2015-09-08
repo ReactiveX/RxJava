@@ -27,7 +27,10 @@ public class GroupByTests {
         .groupBy(event -> event.type)
         .take(1)
         .toBlocking()
-        .forEach(System.out::println);
+        .forEach(v -> {
+            System.out.println(v);
+            v.take(1).subscribe();  // FIXME groups need consumption to a certain degree to cancel upstream
+        });
 
         System.out.println("**** finished");
     }

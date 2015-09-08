@@ -100,7 +100,7 @@ public class OperatorOnErrorResumeNextViaObservableTest {
     
     @Test
     @Ignore("Publishers should not throw")
-    public void testResumeNextWithFailedOnSubscribe() {
+    public void testResumeNextWithFailureOnSubscribe() {
         Observable<String> testObservable = Observable.create(new Publisher<String>() {
 
             @Override
@@ -122,7 +122,7 @@ public class OperatorOnErrorResumeNextViaObservableTest {
     
     @Test
     @Ignore("Publishers should not throw")
-    public void testResumeNextWithFailedOnSubscribeAsync() {
+    public void testResumeNextWithFailureOnSubscribeAsync() {
         Observable<String> testObservable = Observable.create(new Publisher<String>() {
 
             @Override
