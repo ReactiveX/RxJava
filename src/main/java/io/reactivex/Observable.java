@@ -596,7 +596,7 @@ public class Observable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerKind.NONE)
     public static <T> Observable<T> just(T value) {
         Objects.requireNonNull(value);
-        return create(new PublisherScalarSource<>(value));
+        return new ObservableScalarSource<>(value);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1648,9 +1648,9 @@ public class Observable<T> implements Publisher<T> {
             throw new IllegalArgumentException("maxConcurrency > 0 required but it was " + maxConcurrency);
         }
         validateBufferSize(bufferSize);
-        if (onSubscribe instanceof PublisherScalarSource) {
-            PublisherScalarSource<T> scalar = (PublisherScalarSource<T>) onSubscribe;
-            return create(scalar.flatMap(mapper));
+        if (this instanceof ObservableScalarSource) {
+            ObservableScalarSource<T> scalar = (ObservableScalarSource<T>) this;
+            return create(scalar.scalarFlatMap(mapper));
         }
         return lift(new OperatorFlatMap<>(mapper, delayErrors, maxConcurrency, bufferSize));
     }
