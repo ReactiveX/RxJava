@@ -120,7 +120,8 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     
     @Override
     public boolean hasComplete() {
-        return state.subscribers() == State.TERMINATED;
+        Object o = state.get();
+        return state.subscribers() == State.TERMINATED && !NotificationLite.isError(o);
     }
     
     @Override
@@ -132,7 +133,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     public Throwable getThrowable() {
         Object o = state.get();
         if (NotificationLite.isError(o)) {
-            return (Throwable)o;
+            return NotificationLite.getError(o);
         }
         return null;
     }
@@ -151,7 +152,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     @SuppressWarnings("unchecked")
     public T[] getValues(T[] array) {
         Object o = state.get();
-        if (o != null && !NotificationLite.isError(o)) {
+        if (o != null && !NotificationLite.isError(o) && !NotificationLite.isComplete(o)) {
             int n = array.length;
             if (n == 0) {
                 array = Arrays.copyOf(array, 1);
@@ -159,6 +160,10 @@ public final class AsyncSubject<T> extends Subject<T, T> {
             array[0] = (T)o;
             if (array.length > 1) {
                 array[1] = null;
+            }
+        } else {
+            if (array.length != 0) {
+                array[0] = null;
             }
         }
         return array;
@@ -292,7 +297,9 @@ public final class AsyncSubject<T> extends Subject<T, T> {
                 } else
                 if (s == HAS_REQUEST_NO_VALUE) {
                     lazySet(HAS_REQUEST_HAS_VALUE); // setValue is called once, no need for CAS
-                    actual.onNext(value);
+                    if (value != null) {
+                        actual.onNext(value);
+                    }
                     actual.onComplete();
                 }
             }
@@ -332,7 +339,9 @@ public final class AsyncSubject<T> extends Subject<T, T> {
                     if (compareAndSet(NO_REQUEST_HAS_VALUE, HAS_REQUEST_HAS_VALUE)) {
                         @SuppressWarnings("unchecked")
                         T v = (T)state.get();
-                        actual.onNext(v);
+                        if (v != null) {
+                            actual.onNext(v);
+                        }
                         actual.onComplete();
                         return;
                     }

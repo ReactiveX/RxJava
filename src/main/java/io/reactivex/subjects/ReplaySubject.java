@@ -55,6 +55,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         return createWithBuffer(buffer);
     }
 
+    /* test */ static <T> ReplaySubject<T> createUnbounded() {
+        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<>(Integer.MAX_VALUE);
+        return createWithBuffer(buffer);
+    }
+
     public static <T> ReplaySubject<T> createWithTime(long maxAge, TimeUnit unit) {
         return createWithTime(maxAge, unit, Schedulers.trampoline());
     }
@@ -118,6 +123,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         return state.subscribers.length != 0;
     }
 
+    /* test */ int subscriberCount() {
+        return state.subscribers.length;
+    }
+
     @Override
     public Throwable getThrowable() {
         Object o = state.get();
@@ -154,6 +163,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         return state.buffer.size() != 0;
     }
     
+    /* test*/ int size() {
+        return state.buffer.size();
+    }
+    
     static final class State<T> extends AtomicReference<Object> implements Publisher<T>, Subscriber<T> {
         /** */
         private static final long serialVersionUID = -4673197222000219014L;
@@ -187,8 +200,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 if (add(rs)) {
                     if (rs.cancelled) {
                         remove(rs);
+                        return;
                     }
                 }
+                buffer.replay(rs);
             }
         }
         
@@ -585,6 +600,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
         void trim() {
             if (size > maxSize) {
+                size--;
                 Node<Object> h = head;
                 head = h.get();
             }
@@ -598,7 +614,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             tail = n;
             size++;
-            t.lazySet(n); // releases both the tail and size
+            /*
+             *  FIXME not sure why lazySet doesn't work here
+             *  (testReplaySubjectEmissionSubscriptionRace hangs) 
+             *  must be the lack of StoreLoad barrier?
+             */
+            t.set(n); // releases both the tail and size
             
             trim();
         }
@@ -663,6 +684,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     array[i] = (T)next.value;
                     i++;
                     h = next;
+                }
+                if (array.length > s) {
+                    array[s] = null;
                 }
             }
             
@@ -737,9 +761,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     index = n;
                 }
                 
-                if (!unbounded) {
-                    r = ReplaySubscription.REQUESTED.addAndGet(rs, e);
+                if (e != 0L) {
+                    if (!unbounded) {
+                        r = ReplaySubscription.REQUESTED.addAndGet(rs, e);
+                    }
                 }
+                
                 if (index.get() != null && r != 0L) {
                     continue;
                 }
@@ -760,6 +787,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             while (s != Integer.MAX_VALUE) {
                 Node<Object> next = h.get();
                 if (next == null) {
+                    Object o = h.value;
+                    if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
+                        s--;
+                    }
                     break;
                 }
                 s++;
@@ -796,6 +827,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
         void trim() {
             if (size > maxSize) {
+                size--;
                 TimedNode<Object> h = head;
                 head = h.get();
             }
@@ -849,7 +881,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             tail = n;
             size++;
-            t.lazySet(n); // releases both the tail and size
+            /*
+             *  FIXME not sure why lazySet doesn't work here
+             *  (testReplaySubjectEmissionSubscriptionRace hangs) 
+             *  must be the lack of StoreLoad barrier?
+             */
+            t.set(n); // releases both the tail and size
             
             trim();
         }
@@ -916,6 +953,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     i++;
                     h = next;
                 }
+                if (array.length > s) {
+                    array[s] = null;
+                }
             }
             
             return array;
@@ -934,6 +974,19 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             TimedNode<Object> index = (TimedNode<Object>)rs.index;
             if (index == null) {
                 index = head;
+                if (!done) {
+                    // skip old entries
+                    long limit = scheduler.now(unit) - maxAge;
+                    TimedNode<Object> next = index.get();
+                    while (next != null) {
+                        long ts = next.time;
+                        if (ts > limit) {
+                            break;
+                        }
+                        index = next;
+                        next = index.get();
+                    }
+                }
             }
 
             for (;;) {
@@ -989,9 +1042,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     index = n;
                 }
                 
-                if (!unbounded) {
-                    r = ReplaySubscription.REQUESTED.addAndGet(rs, e);
+                if (e != 0L) {
+                    if (!unbounded) {
+                        r = ReplaySubscription.REQUESTED.addAndGet(rs, e);
+                    }
                 }
+                
                 if (index.get() != null && r != 0L) {
                     continue;
                 }
@@ -1012,6 +1068,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             while (s != Integer.MAX_VALUE) {
                 TimedNode<Object> next = h.get();
                 if (next == null) {
+                    Object o = h.value;
+                    if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
+                        s--;
+                    }
                     break;
                 }
                 s++;
