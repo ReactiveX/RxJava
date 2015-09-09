@@ -16,7 +16,7 @@ package io.reactivex.internal.disposables;
 import java.util.function.Consumer;
 
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.util.OpenHashSet;
+import io.reactivex.internal.util.*;
 
 /**
  * A set-based composite resource with custom disposer callback.
@@ -143,7 +143,7 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
                 set = null;
             }
             if (s != null) {
-                s.forEach(disposer);
+                disposeAll(s);
             }
         }
     }
@@ -163,8 +163,14 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
                 set = null;
             }
             if (s != null) {
-                s.forEach(disposer);
+                disposeAll(s);
             }
+        }
+    }
+    void disposeAll(OpenHashSet<T> s) {
+        Throwable ex = s.forEachSuppress(disposer);
+        if (ex != null) {
+            Exceptions.propagate(ex);
         }
     }
 }

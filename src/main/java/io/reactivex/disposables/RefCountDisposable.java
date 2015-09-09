@@ -27,14 +27,27 @@ public final class RefCountDisposable implements Disposable {
     volatile int count;
     static final AtomicIntegerFieldUpdater<RefCountDisposable> COUNT =
             AtomicIntegerFieldUpdater.newUpdater(RefCountDisposable.class, "count");
-    
+
+    volatile int once;
+    static final AtomicIntegerFieldUpdater<RefCountDisposable> ONCE =
+            AtomicIntegerFieldUpdater.newUpdater(RefCountDisposable.class, "once");
+
     public RefCountDisposable(Disposable resource) {
         Objects.requireNonNull(resource);
         RESOURCE.lazySet(this, resource);
+        COUNT.lazySet(this, 1);
     }
     
     @Override
     public void dispose() {
+        if (ONCE.compareAndSet(this, 0, 1)) {
+            if (COUNT.decrementAndGet(this) == 0) {
+                disposeActual();
+            }
+        }
+    }
+    
+    void disposeActual() {
         Disposable d = resource;
         if (d != DISPOSED) {
             d = RESOURCE.getAndSet(this, DISPOSED);
@@ -51,7 +64,7 @@ public final class RefCountDisposable implements Disposable {
     
     void release() {
         if (COUNT.decrementAndGet(this) == 0) {
-            dispose();
+            disposeActual();
         }
     }
     
