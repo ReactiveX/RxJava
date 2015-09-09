@@ -131,8 +131,10 @@ public class OperatorConcatTest {
 
     @Test
     public void testNestedAsyncConcatLoop() throws Throwable {
-        for (int i = 0; i < 100; i++) {
-            System.out.println("testNestedAsyncConcat >> " + i);
+        for (int i = 0; i < 500; i++) {
+            if (i % 10 == 0) {
+                System.out.println("testNestedAsyncConcat >> " + i);
+            }
             testNestedAsyncConcat();
         }
     }
@@ -151,6 +153,9 @@ public class OperatorConcatTest {
 
         final AtomicReference<Thread> parent = new AtomicReference<>();
         final CountDownLatch parentHasStarted = new CountDownLatch(1);
+        final CountDownLatch parentHasFinished = new CountDownLatch(1);
+        
+        
         Observable<Observable<String>> observableOfObservables = Observable.create(new Publisher<Observable<String>>() {
 
             @Override
@@ -198,6 +203,7 @@ public class OperatorConcatTest {
                         } finally {
                             System.out.println("Done parent Observable");
                             observer.onComplete();
+                            parentHasFinished.countDown();
                         }
                     }
                 }));
@@ -246,6 +252,15 @@ public class OperatorConcatTest {
             throw new RuntimeException("failed waiting on threads", e);
         }
 
+        try {
+            // wait for the parent to complete
+            if (!parentHasFinished.await(5, TimeUnit.SECONDS)) {
+                fail("Parent didn't finish within the time limit");
+            }
+        } catch (Throwable e) {
+            throw new RuntimeException("failed waiting on threads", e);
+        }
+        
         inOrder.verify(observer, times(1)).onNext("seven");
         inOrder.verify(observer, times(1)).onNext("eight");
         inOrder.verify(observer, times(1)).onNext("nine");
