@@ -65,6 +65,11 @@ public final class SerializedSubscriber<T> implements Subscriber<T> {
         if (done) {
             return;
         }
+        if (t == null) {
+            subscription.cancel();
+            onError(new NullPointerException());
+            return;
+        }
         synchronized (this) {
             if (done) {
                 return;
