@@ -51,6 +51,8 @@ public final class OperatorDoOnEach<T> implements Operator<T, T> {
         
         Subscription s;
         
+        boolean done;
+        
         public DoOnEachSubscriber(
                 Subscriber<? super T> actual,
                 Consumer<? super T> onNext, 
@@ -75,6 +77,9 @@ public final class OperatorDoOnEach<T> implements Operator<T, T> {
         
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             try {
                 onNext.accept(t);
             } catch (Throwable e) {
@@ -88,6 +93,11 @@ public final class OperatorDoOnEach<T> implements Operator<T, T> {
         
         @Override
         public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            done = true;
             try {
                 onError.accept(t);
             } catch (Throwable e) {
@@ -104,6 +114,10 @@ public final class OperatorDoOnEach<T> implements Operator<T, T> {
         
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
             try {
                 onComplete.run();
             } catch (Throwable e) {

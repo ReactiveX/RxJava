@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.Notification;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscribers.EmptySubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -609,6 +610,18 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (done.getCount() != 0) {
             fail("", "Subscriber still running!", errors);
         }
+        long c = completions;
+        if (c > 1) {
+            fail("", "Terminated with multiple completions: " + c, errors);
+        }
+        int s = errors.size();
+        if (s > 1) {
+            fail("", "Terminated with multiple errors: " + s, errors);
+        }
+        
+        if (c != 0 && s != 0) {
+            fail("", "Terminated with multiple completions and errors: " + c, errors);
+        }
     }
     
     /**
@@ -701,5 +714,29 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         } else {
             fail(prefix, "Multiple errors", errors);
         }
+    }
+    
+    /**
+     * Returns a list of 3 other lists: the first inner list contains the plain
+     * values received; the second list contains the potential errors
+     * and the final list contains the potential completions as Notifications.
+     * 
+     * @return a list of (values, errors, completion-notifications)
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public List<List<Object>> getEvents() {
+        List<List<Object>> result = new ArrayList<>();
+        
+        result.add((List)values());
+        
+        result.add((List)errors());
+        
+        List<Object> completeList = new ArrayList<>();
+        for (long i = 0; i < completions; i++) {
+            completeList.add(Notification.complete());
+        }
+        result.add(completeList);
+        
+        return result;
     }
 }

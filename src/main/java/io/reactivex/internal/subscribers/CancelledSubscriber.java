@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * A subscriber cancels the subscription sent to it 
+ * A subscriber that cancels the subscription sent to it 
  * and ignores all events (onError is forwarded to RxJavaPlugins though).
  */
 public enum CancelledSubscriber implements Subscriber<Object> {
