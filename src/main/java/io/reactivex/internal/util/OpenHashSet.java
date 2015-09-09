@@ -21,6 +21,8 @@ package io.reactivex.internal.util;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import io.reactivex.exceptions.CompositeException;
+
 /**
  * A simple open hash set with add, remove and clear capabilities only.
  * <p>Doesn't support nor checks for {@code null}s.
@@ -190,6 +192,34 @@ public final class OpenHashSet<T> {
                 consumer.accept(k);
             }
         }
+    }
+
+    /**
+     * Loops through all values in the set and collects any exceptions from the consumer
+     * into a Throwable.
+     * @param consumer the consumer to call
+     * @return if not null, contains a CompositeException with all the suppressed exceptions
+     */
+    public Throwable forEachSuppress(Consumer<? super T> consumer) {
+        CompositeException ex = null;
+        int count = 0;
+        for (T k : keys) {
+            if (k != null) {
+                try {
+                    consumer.accept(k);
+                } catch (Throwable e) {
+                    if (ex == null) {
+                        ex = new CompositeException();
+                    }
+                    count++;
+                    ex.addSuppressed(e);
+                }
+            }
+        }
+        if (count == 1) {
+            return ex.getSuppressed()[0];
+        }
+        return ex;
     }
     
     public boolean isEmpty() {
