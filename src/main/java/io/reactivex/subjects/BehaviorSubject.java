@@ -13,6 +13,7 @@
 
 package io.reactivex.subjects;
 
+import java.lang.reflect.Array;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.StampedLock;
@@ -75,11 +76,16 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     public boolean hasSubscribers() {
         return state.subscribers.length != 0;
     }
+    
+    
+    /* test support*/ int subscriberCount() {
+        return state.subscribers.length;
+    }
 
     @Override
     public Throwable getThrowable() {
         Object o = state.get();
-        if (NotificationLite.isComplete(o)) {
+        if (NotificationLite.isError(o)) {
             return NotificationLite.getError(o);
         }
         return null;
@@ -95,9 +101,10 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     }
     
     @Override
+    @SuppressWarnings("unchecked")
     public T[] getValues(T[] array) {
         Object o = state.get();
-        if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
+        if (o == null || NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
             if (array.length != 0) {
                 array[0] = null;
             }
@@ -109,6 +116,9 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             if (array.length != 1) {
                 array[1] = null;
             }
+        } else {
+            array = (T[])Array.newInstance(array.getClass().getComponentType(), 1);
+            array[0] = v;
         }
         return array;
     }
