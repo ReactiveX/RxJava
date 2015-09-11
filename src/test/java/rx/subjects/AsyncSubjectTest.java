@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 
 import rx.Observer;
 import rx.Subscription;
@@ -59,9 +58,9 @@ public class AsyncSubjectTest {
         subject.onNext("two");
         subject.onNext("three");
 
-        verify(observer, Mockito.never()).onNext(anyString());
-        verify(observer, Mockito.never()).onError(testException);
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onNext(anyString());
+        verify(observer, never()).onError(testException);
+        verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -78,7 +77,7 @@ public class AsyncSubjectTest {
         subject.onCompleted();
 
         verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -94,7 +93,7 @@ public class AsyncSubjectTest {
         subject.onCompleted();
 
         verify(observer, times(1)).onNext(null);
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -113,7 +112,7 @@ public class AsyncSubjectTest {
         subject.subscribe(observer);
 
         verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -134,8 +133,8 @@ public class AsyncSubjectTest {
         subject.subscribe(observer);
 
         verify(observer, times(1)).onError(re);
-        verify(observer, Mockito.never()).onNext(any(String.class));
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onNext(any(String.class));
+        verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -154,9 +153,9 @@ public class AsyncSubjectTest {
         subject.onError(new Throwable());
         subject.onCompleted();
 
-        verify(observer, Mockito.never()).onNext(anyString());
+        verify(observer, never()).onNext(anyString());
         verify(observer, times(1)).onError(testException);
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -172,16 +171,16 @@ public class AsyncSubjectTest {
 
         subscription.unsubscribe();
 
-        verify(observer, Mockito.never()).onNext(anyString());
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onNext(anyString());
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
 
         subject.onNext("three");
         subject.onCompleted();
 
-        verify(observer, Mockito.never()).onNext(anyString());
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onNext(anyString());
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
     }
 
     @Test
