@@ -1405,10 +1405,19 @@ public class Observable<T> implements Publisher<T> {
         return timer(delay, unit, scheduler).flatMap(v -> this);
     }
 
+    
+    static final Object OBJECT = new Object();
+    
+    // TODO a more efficient implementation if necessary
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerKind.NONE)
     public final <U> Observable<T> delaySubscription(Supplier<? extends Publisher<U>> delaySupplier) {
-        return fromCallable(delaySupplier::get).take(1).flatMap(v -> this);
+        return fromCallable(delaySupplier::get)
+                .flatMap(v -> v)
+                .take(1)
+                .cast(Object.class) // need a common supertype, the value is not relevant
+                .defaultIfEmpty(OBJECT) // in case the publisher is empty
+                .flatMap(v -> this);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
