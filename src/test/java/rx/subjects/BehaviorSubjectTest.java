@@ -274,22 +274,8 @@ public class BehaviorSubjectTest {
                         return Observable.just(t1 + ", " + t1);
                     }
                 })
-                .subscribe(new Observer<String>() {
-                    @Override
-                    public void onNext(String t) {
-                        o.onNext(t);
-                    }
+                .subscribe(o);
 
-                    @Override
-                    public void onError(Throwable e) {
-                        o.onError(e);
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        o.onCompleted();
-                    }
-                });
             inOrder.verify(o).onNext(v + ", " + v);
             inOrder.verify(o).onCompleted();
             verify(o, never()).onError(any(Throwable.class));
