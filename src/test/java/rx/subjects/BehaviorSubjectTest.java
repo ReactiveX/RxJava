@@ -253,7 +253,7 @@ public class BehaviorSubjectTest {
         subject.subscribe(o2);
         verify(o2, times(1)).onCompleted();
         verify(o2, never()).onNext(any());
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(o2, never()).onError(any(Throwable.class));
     }
     @Test(timeout = 1000)
     public void testUnsubscriptionCase() {
