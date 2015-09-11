@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 
 import rx.*;
 import rx.exceptions.CompositeException;
@@ -62,8 +61,8 @@ public class BehaviorSubjectTest {
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(testException);
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onError(testException);
+        verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -79,12 +78,12 @@ public class BehaviorSubjectTest {
         subject.onNext("two");
         subject.onNext("three");
 
-        verify(observer, Mockito.never()).onNext("default");
+        verify(observer, never()).onNext("default");
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(testException);
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onError(testException);
+        verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -100,7 +99,7 @@ public class BehaviorSubjectTest {
 
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -116,7 +115,7 @@ public class BehaviorSubjectTest {
 
         verify(observer, never()).onNext("default");
         verify(observer, never()).onNext("one");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -254,7 +253,7 @@ public class BehaviorSubjectTest {
         subject.subscribe(o2);
         verify(o2, times(1)).onCompleted();
         verify(o2, never()).onNext(any());
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(o2, never()).onError(any(Throwable.class));
     }
     @Test(timeout = 1000)
     public void testUnsubscriptionCase() {
@@ -275,22 +274,8 @@ public class BehaviorSubjectTest {
                         return Observable.just(t1 + ", " + t1);
                     }
                 })
-                .subscribe(new Observer<String>() {
-                    @Override
-                    public void onNext(String t) {
-                        o.onNext(t);
-                    }
+                .subscribe(o);
 
-                    @Override
-                    public void onError(Throwable e) {
-                        o.onError(e);
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        o.onCompleted();
-                    }
-                });
             inOrder.verify(o).onNext(v + ", " + v);
             inOrder.verify(o).onCompleted();
             verify(o, never()).onError(any(Throwable.class));

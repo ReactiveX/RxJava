@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
@@ -118,7 +117,7 @@ public class PublishSubjectTest {
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -152,7 +151,7 @@ public class PublishSubjectTest {
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
         verify(observer, times(1)).onError(testException);
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -180,10 +179,10 @@ public class PublishSubjectTest {
     }
 
     private void assertCompletedStartingWithThreeObserver(Observer<String> observer) {
-        verify(observer, Mockito.never()).onNext("one");
-        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, never()).onNext("one");
+        verify(observer, never()).onNext("two");
         verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -215,9 +214,9 @@ public class PublishSubjectTest {
     private void assertObservedUntilTwo(Observer<String> observer) {
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
     }
 
     @Test

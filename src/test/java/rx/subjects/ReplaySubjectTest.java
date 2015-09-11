@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
@@ -140,11 +139,10 @@ public class ReplaySubjectTest {
         inOrderD.verify(observerD).onNext(4711);
         inOrderD.verify(observerD).onCompleted();
 
-        Mockito.verifyNoMoreInteractions(observerA);
-        Mockito.verifyNoMoreInteractions(observerB);
-        Mockito.verifyNoMoreInteractions(observerC);
-        Mockito.verifyNoMoreInteractions(observerD);
-
+        verifyNoMoreInteractions(observerA);
+        verifyNoMoreInteractions(observerB);
+        verifyNoMoreInteractions(observerC);
+        verifyNoMoreInteractions(observerD);
     }
 
     @Test
@@ -172,7 +170,7 @@ public class ReplaySubjectTest {
         inOrder.verify(observer, times(1)).onNext("one");
         inOrder.verify(observer, times(1)).onNext("two");
         inOrder.verify(observer, times(1)).onNext("three");
-        inOrder.verify(observer, Mockito.never()).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
@@ -206,7 +204,7 @@ public class ReplaySubjectTest {
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
         verify(observer, times(1)).onError(testException);
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onCompleted();
     }
 
     @SuppressWarnings("unchecked")
@@ -261,9 +259,9 @@ public class ReplaySubjectTest {
     private void assertObservedUntilTwo(Observer<String> observer) {
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
     }
 
     @Test(timeout = 2000)
