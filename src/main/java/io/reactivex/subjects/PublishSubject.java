@@ -183,26 +183,29 @@ public final class PublishSubject<T> extends Subject<T, T> {
                 AtomicReferenceFieldUpdater.newUpdater(State.class, PublishSubscriber[].class, "subscribers");
         
         @Override
-        public void subscribe(Subscriber<? super T> t) {
-            PublishSubscriber<T> ps = new PublishSubscriber<>(t, this);
-            t.onSubscribe(ps);
-            if (ps.cancelled == 0) {
-                if (add(ps)) {
-                    // if cancellation happened while a successful add, the remove() didn't work
-                    // so we need to do it again
-                    if (ps.cancelled != 0) {
-                        remove(ps);
-                    }
-                } else {
-                    Object o = get();
-                    if (o == COMPLETE) {
-                        ps.onComplete();
-                    } else {
-                        ps.onError((Throwable)o);
-                    }
-                }
-            }
-        }
+		public void subscribe(Subscriber<? super T> t) {
+			PublishSubscriber<T> ps = new PublishSubscriber<>(t, this);
+			if (ps.cancelled == 0) {
+				boolean added = add(ps);
+				if (added) {
+					// if cancellation happened while a successful add, the remove() didn't work
+					// so we need to do it again
+					if (ps.cancelled != 0) {
+						remove(ps);
+					}
+				}
+				t.onSubscribe(ps);
+				if (!added) {
+					Object o = get();
+					if (o == COMPLETE) {
+						ps.onComplete();
+					} else {
+						ps.onError((Throwable) o);
+					}
+					return;
+				}
+			}
+		}
         
         /**
          * @return the array of currently subscribed subscribers

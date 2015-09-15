@@ -18,7 +18,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 
 import org.junit.Test;
@@ -425,5 +428,50 @@ public class PublishSubjectTest {
         assertTrue(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertTrue(as.getThrowable() instanceof TestException);
+    }
+    
+    @Test
+    public void testRegisteredBeforeOnSubscribe() throws InterruptedException {
+    	PublishSubject<Object> as = PublishSubject.create();
+    	
+    	Runnable sideEffect = () -> {
+    		as.onNext(1);
+    		as.onComplete();
+    	};
+    	
+    	final AtomicReference<Object> next = new AtomicReference<Object>();
+    	final CountDownLatch latch = new CountDownLatch(1);
+    	
+    	as.subscribe(new Subscriber<Object>() {
+
+			@Override
+			public void onSubscribe(Subscription s) {
+				s.request(Long.MAX_VALUE);
+				// we are subscribed, so expect that we can now trigger side-effects that cause data to flow
+				sideEffect.run();
+			}
+
+			@Override
+			public void onNext(Object t) {
+				next.set(t);
+			}
+
+			@Override
+			public void onError(Throwable t) {
+				latch.countDown();
+			}
+
+			@Override
+			public void onComplete() {
+				latch.countDown();
+			}
+    		
+    	});
+    	
+    	if(!latch.await(500, TimeUnit.MILLISECONDS)) {
+    		fail("Did not receive events");
+    	} 
+    	
+    	assertEquals(1, next.get());
     }
 }
