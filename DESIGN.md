@@ -66,9 +66,18 @@ Consumer of events without flow control.
 
 ##### Subject
 
-A "hot" data source that allows a producer to emit events and consumers to receive events in a multicast manner.
+A "hot", push-based data source that allows a producer to emit events to it and consumers to subscribe to events in a multicast manner. It is "hot" because consumers subscribing to it does not cause side-effects, or affect the data flow in any way. It is push-based and reactive because the producer is fully in charge. 
 
-It is "hot" because consumers subscribing to it does not cause side-effects, or affect the data flow in any way. It is push and reactive because the producer is fully in charge.
+Relation to Reactive Streams
+
+- It can not implement Reactive Streams `Publisher` unless it is created with a default flow control strategy. 
+- It can not implement `Processor` since a `Processor` must compose `request(n)` which can not be done with multicasting or pure push. 
+
+Flow control support:
+
+- buffering, sampling, throttling, windowing, dropping, etc
+- temporal and count-based strategies
+- It does not support pull-based consumer-driven flow control.
 
 ##### Disposable
 
