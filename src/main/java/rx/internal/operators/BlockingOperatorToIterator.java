@@ -24,6 +24,7 @@ import rx.Notification;
 import rx.Observable;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
+import rx.internal.util.RxRingBuffer;
 
 /**
  * Returns an Iterator that iterates over all items emitted by a specified Observable.
@@ -56,17 +57,19 @@ public final class BlockingOperatorToIterator {
     public static final class SubscriberIterator<T>
         extends Subscriber<Notification<? extends T>> implements Iterator<T> {
 
+        static final int LIMIT = 3 * RxRingBuffer.SIZE / 4;
+
         private final BlockingQueue<Notification<? extends T>> notifications;
         private Notification<? extends T> buf;
+        private int received;
 
         public SubscriberIterator() {
             this.notifications = new LinkedBlockingQueue<Notification<? extends T>>();
-            this.buf = null;
         }
 
         @Override
         public void onStart() {
-            request(0);
+            request(RxRingBuffer.SIZE);
         }
 
         @Override
@@ -87,8 +90,12 @@ public final class BlockingOperatorToIterator {
         @Override
         public boolean hasNext() {
             if (buf == null) {
-                request(1);
                 buf = take();
+                received++;
+                if (received >= LIMIT) {
+                    request(received);
+                    received = 0;
+                }
             }
             if (buf.isOnError()) {
                 throw Exceptions.propagate(buf.getThrowable());
