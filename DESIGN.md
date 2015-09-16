@@ -42,7 +42,39 @@ Consumer requests data when it wishes, and the data is then pushed when the prod
 
 ##### Observable
 
-... under discussion ... (related to Observable/Flowable debate)
+Stream that supports async and synchronous push. It does not support interactive flow control (`request(n)`).
+
+Usable for:
+
+- hot and cold sources
+- sync or async
+- push
+- 0, 1, many or infinite items
+
+Flow control support:
+
+- buffering, sampling, throttling, windowing, dropping, etc
+- temporal and count-based strategies
+
+##### Flowable
+
+Stream that supports async and synchronous push and pull. It supports interactive flow control (`request(n)`).
+
+Usable for:
+
+- hot and cold sources
+- sync or async
+- push
+- pull
+- 0, 1, many or infinite items
+
+Flow control support:
+
+- buffering, sampling, throttling, windowing, dropping, etc
+- temporal and count-based strategies
+- `request(n)` consumer demand signal
+  - for pull-based sources, this allows batched "async pull"
+  - for push-based sources, this allows backpressure signals to conditionally apply strategies (i.e. drop, buffer, sample, fail, etc)
 
 ##### Observer
 
