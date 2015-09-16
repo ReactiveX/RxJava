@@ -81,4 +81,46 @@ public class BlockingOperatorToIteratorTest {
             System.out.println(string);
         }
     }
+
+    @Test
+    public void testIteratorExertBackpressure() {
+        final Counter src = new Counter();
+
+        Observable<Integer> obs = Observable.from(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return src;
+            }
+        });
+
+        Iterator<Integer> it = toIterator(obs);
+        while (it.hasNext()) {
+            // Correct backpressure should cause this interleaved behavior.
+            int i = it.next();
+            assertEquals(i + 1, src.count);
+        }
+    }
+
+    public static final class Counter implements Iterator<Integer> {
+        public int count;
+
+        public Counter() {
+            this.count = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return count < 5;
+        }
+
+        @Override
+        public Integer next() {
+            return count++;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
 }

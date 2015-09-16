@@ -23,7 +23,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import rx.Notification;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.exceptions.Exceptions;
 
 /**
@@ -47,68 +46,82 @@ public final class BlockingOperatorToIterator {
      * @return the iterator that could be used to iterate over the elements of the observable.
      */
     public static <T> Iterator<T> toIterator(Observable<? extends T> source) {
-        final BlockingQueue<Notification<? extends T>> notifications = new LinkedBlockingQueue<Notification<? extends T>>();
+        SubscriberIterator<T> subscriber = new SubscriberIterator<T>();
 
         // using subscribe instead of unsafeSubscribe since this is a BlockingObservable "final subscribe"
-        final Subscription subscription = source.materialize().subscribe(new Subscriber<Notification<? extends T>>() {
-            @Override
-            public void onCompleted() {
-                // ignore
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                notifications.offer(Notification.<T>createOnError(e));
-            }
-
-            @Override
-            public void onNext(Notification<? extends T> args) {
-                notifications.offer(args);
-            }
-        });
-
-        return new Iterator<T>() {
-            private Notification<? extends T> buf;
-
-            @Override
-            public boolean hasNext() {
-                if (buf == null) {
-                    buf = take();
-                }
-                if (buf.isOnError()) {
-                    throw Exceptions.propagate(buf.getThrowable());
-                }
-                return !buf.isOnCompleted();
-            }
-
-            @Override
-            public T next() {
-                if (hasNext()) {
-                    T result = buf.getValue();
-                    buf = null;
-                    return result;
-                }
-                throw new NoSuchElementException();
-            }
-
-            private Notification<? extends T> take() {
-                try {
-                    Notification<? extends T> poll = notifications.poll();
-                    if (poll != null) {
-                        return poll;
-                    }
-                    return notifications.take();
-                } catch (InterruptedException e) {
-                    subscription.unsubscribe();
-                    throw Exceptions.propagate(e);
-                }
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("Read-only iterator");
-            }
-        };
+        source.materialize().subscribe(subscriber);
+        return subscriber;
     }
 
+    public static final class SubscriberIterator<T>
+        extends Subscriber<Notification<? extends T>> implements Iterator<T> {
+
+        private final BlockingQueue<Notification<? extends T>> notifications;
+        private Notification<? extends T> buf;
+
+        public SubscriberIterator() {
+            this.notifications = new LinkedBlockingQueue<Notification<? extends T>>();
+            this.buf = null;
+        }
+
+        @Override
+        public void onStart() {
+            request(0);
+        }
+
+        @Override
+        public void onCompleted() {
+            // ignore
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            notifications.offer(Notification.<T>createOnError(e));
+        }
+
+        @Override
+        public void onNext(Notification<? extends T> args) {
+            notifications.offer(args);
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (buf == null) {
+                request(1);
+                buf = take();
+            }
+            if (buf.isOnError()) {
+                throw Exceptions.propagate(buf.getThrowable());
+            }
+            return !buf.isOnCompleted();
+        }
+
+        @Override
+        public T next() {
+            if (hasNext()) {
+                T result = buf.getValue();
+                buf = null;
+                return result;
+            }
+            throw new NoSuchElementException();
+        }
+
+        private Notification<? extends T> take() {
+            try {
+                Notification<? extends T> poll = notifications.poll();
+                if (poll != null) {
+                    return poll;
+                }
+                return notifications.take();
+            } catch (InterruptedException e) {
+                unsubscribe();
+                throw Exceptions.propagate(e);
+            }
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Read-only iterator");
+        }
+    }
 }
