@@ -74,4 +74,35 @@ It is "hot" because consumers subscribing to it does not cause side-effects, or 
 
 A type representing work that can be cancelled or disposed.
 
+### Behavior
+
+##### Creation
+
+Creation of a stream falls into the following use cases, all of which should be catered to in API design.
+
+- async, hot, push (ie. system or user events)
+- async, cold, push (ie. events resulting from remote system via network connection)
+- sync, cold, pull (ie. iterable, file, range)
+- async, cold, pull (ie. RPC/REST network call, cross-thread queue draining)
+ 
+Unknown:
+
+- hot, pull (what is an example of this?)
+
+Flow control support:
+
+- If `request(n)` behavior is supported in the stream implementation, then:
+ - pull-based creation must support `request(n)` semantics
+ - push-based creation must provide a default *onBackpressure* strategy
+- If `request(n)` behavior is not supported in the stream implementation, then:
+ - push-based creation can push without consideration of a backpressure strategy
+ - pull-based creation should be discouraged
+
+##### Destruction
+
+A producer can terminate a stream by emitting `onComplete` or `onError`. A consumer can terminate a stream by calling `cancel`.
+
+Any resource cleanup of the source or operators must account for any of these three termination events. In other words, if an operator needs cleanup, then it should register the cleanup callback with `cancel`, `onError` and `onComplete`. 
+
+The final `subscribe` will *not* invoke `cancel` after receiving an `onComplete` or `onError`.
 
