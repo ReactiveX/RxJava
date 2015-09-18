@@ -30,7 +30,7 @@ public class EachTypeFlatMapPerf {
     
     Observable<Integer> bpRange;
     NbpObservable<Integer> nbpRange;
-    Single<Integer> singleJust;
+    Single<Integer> singleRange;
 
     Observable<Integer> bpRangeMapJust;
     NbpObservable<Integer> nbpRangeMapJust;
@@ -50,8 +50,8 @@ public class EachTypeFlatMapPerf {
         bpRangeMapRange = bpRange.flatMap(v -> Observable.range(v, 2));
         nbpRangeMapRange = nbpRange.flatMap(v -> NbpObservable.range(v, 2));
 
-        singleJust = Single.just(1);
-        singleJustMapJust = singleJust.flatMap(Single::just);
+        singleRange = Single.just(1);
+        singleJustMapJust = singleRange.flatMap(Single::just);
     }
     
     @Benchmark
@@ -82,7 +82,7 @@ public class EachTypeFlatMapPerf {
 
     @Benchmark
     public void singleJust(Blackhole bh) {
-        singleJust.subscribe(new LatchedSingleObserver<>(bh));
+        singleRange.subscribe(new LatchedSingleObserver<>(bh));
     }
     @Benchmark
     public void singleJustMapJust(Blackhole bh) {
