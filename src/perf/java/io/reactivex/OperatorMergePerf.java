@@ -31,7 +31,12 @@ public class OperatorMergePerf {
         Observable<Observable<Integer>> os = Observable.range(1, input.size).map(Observable::just);
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.merge(os).subscribe(o);
-        o.latch.await();
+
+        if (input.size == 1) {
+            while (o.latch.getCount() != 0);
+        } else {
+            o.latch.await();
+        }
     }
 
     // flatMap
@@ -42,7 +47,12 @@ public class OperatorMergePerf {
         });
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.merge(os).subscribe(o);
-        o.latch.await();
+        
+        if (input.size == 1) {
+            while (o.latch.getCount() != 0);
+        } else {
+            o.latch.await();
+        }
     }
 
     @Benchmark
@@ -52,7 +62,11 @@ public class OperatorMergePerf {
         });
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.merge(os).subscribe(o);
-        o.latch.await();
+        if (input.size == 1) {
+            while (o.latch.getCount() != 0);
+        } else {
+            o.latch.await();
+        }
     }
 
     @Benchmark
@@ -62,7 +76,11 @@ public class OperatorMergePerf {
         });
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.merge(os).subscribe(o);
-        o.latch.await();
+        if (input.size == 1) {
+            while (o.latch.getCount() != 0);
+        } else {
+            o.latch.await();
+        }
     }
 
     @Benchmark
@@ -70,14 +88,22 @@ public class OperatorMergePerf {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable<Integer> ob = Observable.range(0, input.size).subscribeOn(Schedulers.computation());
         Observable.merge(ob, ob).subscribe(o);
-        o.latch.await();
+        if (input.size == 1) {
+            while (o.latch.getCount() != 0);
+        } else {
+            o.latch.await();
+        }
     }
 
     @Benchmark
     public void mergeNSyncStreamsOf1(final InputForMergeN input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.merge(input.observables).subscribe(o);
-        o.latch.await();
+        if (input.size == 1) {
+            while (o.latch.getCount() != 0);
+        } else {
+            o.latch.await();
+        }
     }
 
     @State(Scope.Thread)

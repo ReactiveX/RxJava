@@ -47,7 +47,11 @@ public class OperatorFlatMapPerf {
         input.observable.flatMap(i -> {
                 return Observable.just(i).subscribeOn(Schedulers.computation());
         }).subscribe(latchedObserver);
-        latchedObserver.latch.await();
+        if (input.size == 1) {
+            while (latchedObserver.latch.getCount() != 0);
+        } else {
+            latchedObserver.latch.await();
+        }
     }
 
     @Benchmark
