@@ -61,7 +61,11 @@ public class RangePerf {
         
         rangeAsync.subscribe(lo);
         
-        lo.latch.await();
+        if (times == 1) {
+            while (lo.latch.getCount() != 0);
+        } else {
+            lo.latch.await();
+        }
     }
 
     @Benchmark
@@ -70,7 +74,11 @@ public class RangePerf {
         
         rangeAsyncPipeline.subscribe(lo);
         
-        lo.latch.await();
+        if (times == 1) {
+            while (lo.latch.getCount() != 0);
+        } else {
+            lo.latch.await();
+        }
     }
 
 }
