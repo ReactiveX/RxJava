@@ -16,30 +16,19 @@
 
 package rx.observables;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicReference;
 
+import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Producer;
-import rx.Subscriber;
-import rx.Subscription;
 import rx.annotations.Experimental;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Action2;
-import rx.functions.Action3;
-import rx.functions.Func0;
-import rx.functions.Func3;
-import rx.internal.operators.BufferUntilSubscriber;
-import rx.observers.SerializedObserver;
-import rx.observers.Subscribers;
+import rx.functions.*;
+import rx.internal.operators.*;
+import rx.observers.*;
 import rx.plugins.RxJavaPlugins;
-import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.CompositeSubscription;
 ;
 /**
  * A utility class to create {@code OnSubscribe<T>} functions that respond correctly to back
@@ -311,35 +300,77 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
     }
 
     @Override
-    public final void call(Subscriber<? super T> actualSubscriber) {
-        S state = generateState();
+    public final void call(final Subscriber<? super T> actualSubscriber) {
+        S state;
+        try {
+            state = generateState();
+        } catch (Throwable ex) {
+            actualSubscriber.onError(ex);
+            return;
+        }
         UnicastSubject<Observable<T>> subject = UnicastSubject.<Observable<T>> create();
-        AsyncOuterSubscriber<S, T> outerSubscriberProducer = new AsyncOuterSubscriber<S, T>(this, state, subject);
-        actualSubscriber.add(outerSubscriberProducer);
-        Observable.concat(subject).unsafeSubscribe(Subscribers.wrap(actualSubscriber));
-        actualSubscriber.setProducer(outerSubscriberProducer);
+        
+        final AsyncOuterManager<S, T> outerProducer = new AsyncOuterManager<S, T>(this, state, subject);
+        
+        Subscriber<T> concatSubscriber = new Subscriber<T>() {
+            @Override
+            public void onNext(T t) {
+                actualSubscriber.onNext(t);
+            }
+            
+            @Override
+            public void onError(Throwable e) {
+                actualSubscriber.onError(e);
+            }
+            
+            @Override
+            public void onCompleted() {
+                actualSubscriber.onCompleted();
+            }
+            
+            @Override
+            public void setProducer(Producer p) {
+                outerProducer.setConcatProducer(p);
+            }
+        };
+        
+        subject.onBackpressureBuffer().concatMap(new Func1<Observable<T>, Observable<T>>() {
+            @Override
+            public Observable<T> call(Observable<T> v) {
+                return v.onBackpressureBuffer();
+            }
+        }).unsafeSubscribe(concatSubscriber);
+        
+        actualSubscriber.add(concatSubscriber);
+        actualSubscriber.add(outerProducer);
+        actualSubscriber.setProducer(outerProducer);
+
     }
 
-    private static class AsyncOuterSubscriber<S, T> extends ConcurrentLinkedQueue<Long>implements Producer, Subscription, Observer<Observable<? extends T>> {
-        /** */
-        private static final long serialVersionUID = -7884904861928856832L;
+    static final class AsyncOuterManager<S, T> implements Producer, Subscription, Observer<Observable<? extends T>> {
 
         private volatile int isUnsubscribed;
         @SuppressWarnings("rawtypes")
-        private static final AtomicIntegerFieldUpdater<AsyncOuterSubscriber> IS_UNSUBSCRIBED = AtomicIntegerFieldUpdater.newUpdater(AsyncOuterSubscriber.class, "isUnsubscribed");
+        private static final AtomicIntegerFieldUpdater<AsyncOuterManager> IS_UNSUBSCRIBED = AtomicIntegerFieldUpdater.newUpdater(AsyncOuterManager.class, "isUnsubscribed");
 
         private final AsyncOnSubscribe<S, T> parent;
         private final SerializedObserver<Observable<? extends T>> serializedSubscriber;
-        private final Set<Subscription> subscriptions = new HashSet<Subscription>();
+        private final CompositeSubscription subscriptions = new CompositeSubscription();
 
-        private boolean hasTerminated = false;
-        private boolean onNextCalled = false;
+        private boolean hasTerminated;
+        private boolean onNextCalled;
 
         private S state;
 
         private final UnicastSubject<Observable<T>> merger;
+        
+        boolean emitting;
+        List<Long> requests;
+        Producer concatProducer;
+        
+        long expectedDelivery;
 
-        public AsyncOuterSubscriber(AsyncOnSubscribe<S, T> parent, S initialState, UnicastSubject<Observable<T>> merger) {
+        public AsyncOuterManager(AsyncOnSubscribe<S, T> parent, S initialState, UnicastSubject<Observable<T>> merger) {
             this.parent = parent;
             this.serializedSubscriber = new SerializedObserver<Observable<? extends T>>(this);
             this.state = initialState;
@@ -349,18 +380,25 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
         @Override
         public void unsubscribe() {
             if (IS_UNSUBSCRIBED.compareAndSet(this, 0, 1)) {
-                // it's safe to process terminal behavior
-                if (isEmpty()) {
-                    parent.onUnsubscribe(state);
-                }
-                for (Subscription s : subscriptions) {
-                    if (!s.isUnsubscribed()) {
-                        s.unsubscribe();
+                synchronized (this) {
+                    if (emitting) {
+                        requests = new ArrayList<Long>();
+                        requests.add(0L);
+                        return;
                     }
+                    emitting = true;
                 }
+                cleanup();
             }
         }
 
+        void setConcatProducer(Producer p) {
+            if (concatProducer != null) {
+                throw new IllegalStateException("setConcatProducer may be called at most once!");
+            }
+            concatProducer = p;
+        }
+        
         @Override
         public boolean isUnsubscribed() {
             return isUnsubscribed != 0;
@@ -369,47 +407,149 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
         public void nextIteration(long requestCount) {
             state = parent.next(state, requestCount, serializedSubscriber);
         }
-
-        @Override
-        public void request(long n) {
-            int size = 0;
-            Long r;
-            synchronized (this) {
-                size = size();
-                add(n);
-                r = n;
-            }
-            if (size == 0) {
-                do {
-                    // check if unsubscribed before doing any work
-                    if (isUnsubscribed()) {
-                        unsubscribe();
-                        return;
-                    }
-                    // otherwise try one iteration for a request of `numRequested` elements
-                    try {
-                        onNextCalled = false;
-                        nextIteration(r);
-                        if (onNextCalled)
-                            r = poll();
-                        if (hasTerminated || isUnsubscribed()) {
-                            parent.onUnsubscribe(state);
-                        }
-                    } catch (Throwable ex) {
-                        handleThrownError(parent, state, ex);
-                        return;
-                    }
-                } while (r != null && !hasTerminated);
+        
+        void cleanup() {
+            subscriptions.unsubscribe();
+            try {
+                parent.onUnsubscribe(state);
+            } catch (Throwable ex) {
+                handleThrownError(ex);
             }
         }
 
-        private void handleThrownError(final AsyncOnSubscribe<S, T> p, S st, Throwable ex) {
+        @Override
+        public void request(long n) {
+            if (n == 0) {
+                return;
+            }
+            if (n < 0) {
+                throw new IllegalStateException("Request can't be negative! " + n);
+            }
+            boolean quit = false;
+            synchronized (this) {
+                if (emitting) {
+                    List<Long> q = requests;
+                    if (q == null) {
+                        q = new ArrayList<Long>();
+                        requests = q;
+                    }
+                    q.add(n);
+                    
+                    quit = true; 
+                } else {
+                    emitting = true;
+                }
+            }
+            
+            concatProducer.request(n);
+            
+            if (quit) {
+                return;
+            }
+            
+            if (tryEmit(n)) {
+                return;
+            }
+            for (;;) {
+                List<Long> q;
+                synchronized (this) {
+                    q = requests;
+                    if (q == null) {
+                        emitting = false;
+                        return;
+                    }
+                    requests = null;
+                }
+                
+                for (long r : q) {
+                    if (tryEmit(r)) {
+                        return;
+                    }
+                }
+            }
+        }
+
+        /**
+         * Called when a source has produced less than its provision (completed prematurely); this will trigger the generation of another
+         * source that will hopefully emit the missing amount.
+         * @param n the missing amount to produce via a new source.
+         */
+        public void requestRemaining(long n) {
+            if (n == 0) {
+                return;
+            }
+            if (n < 0) {
+                throw new IllegalStateException("Request can't be negative! " + n);
+            }
+            synchronized (this) {
+                if (emitting) {
+                    List<Long> q = requests;
+                    if (q == null) {
+                        q = new ArrayList<Long>();
+                        requests = q;
+                    }
+                    q.add(n);
+                    
+                    return;
+                }
+                emitting = true;
+            }
+            
+            if (tryEmit(n)) {
+                return;
+            }
+            for (;;) {
+                List<Long> q;
+                synchronized (this) {
+                    q = requests;
+                    if (q == null) {
+                        emitting = false;
+                        return;
+                    }
+                    requests = null;
+                }
+                
+                for (long r : q) {
+                    if (tryEmit(r)) {
+                        return;
+                    }
+                }
+            }
+        }
+
+        boolean tryEmit(long n) {
+            if (isUnsubscribed()) {
+                cleanup();
+                return true;
+            }
+            
+            try {
+                onNextCalled = false;
+                expectedDelivery = n;
+                nextIteration(n);
+                
+                if (hasTerminated || isUnsubscribed()) {
+                    cleanup();
+                    return true;
+                }
+                if (!onNextCalled) {
+                    handleThrownError(new IllegalStateException("No events emitted!"));
+                    return true;
+                }
+            } catch (Throwable ex) {
+                handleThrownError(ex);
+                return true;
+            }
+            return false;
+        }
+
+        private void handleThrownError(Throwable ex) {
             if (hasTerminated) {
                 RxJavaPlugins.getInstance().getErrorHandler().handleError(ex);
             } else {
                 hasTerminated = true;
                 merger.onError(ex);
-                unsubscribe();
+                cleanup();
             }
         }
 
@@ -431,10 +571,6 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
             merger.onError(e);
         }
 
-        // This exists simply to check if the subscription has already been
-        // terminated before getting access to the subscription
-        private static Subscription SUBSCRIPTION_SENTINEL = new BooleanSubscription();
-
         @Override
         public void onNext(final Observable<? extends T> t) {
             if (onNextCalled) {
@@ -447,27 +583,43 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
         }
 
         private void subscribeBufferToObservable(final Observable<? extends T> t) {
-            BufferUntilSubscriber<T> buffer = BufferUntilSubscriber.<T> create();
-            final AtomicReference<Subscription> holder = new AtomicReference<Subscription>(null);
-            Subscription innerSubscription = t
-                .doOnTerminate(new Action0() {
+            final BufferUntilSubscriber<T> buffer = BufferUntilSubscriber.<T> create();
+
+            final long expected = expectedDelivery;
+            final Subscriber<T> s = new Subscriber<T>() {
+                long remaining = expected;
+                @Override
+                public void onNext(T t) {
+                    remaining--;
+                    buffer.onNext(t);
+                }
+                @Override
+                public void onError(Throwable e) {
+                    buffer.onError(e);
+                }
+                @Override
+                public void onCompleted() {
+                    buffer.onCompleted();
+                    long r = remaining;
+                    if (r > 0) {
+                        requestRemaining(r);
+                    }
+                }
+            };
+            subscriptions.add(s);
+
+            t.doOnTerminate(new Action0() {
                     @Override
                     public void call() {
-                        if (!holder.compareAndSet(null, SUBSCRIPTION_SENTINEL)) {
-                            Subscription h = holder.get();
-                            subscriptions.remove(h);
-                        }
+                        subscriptions.remove(s);
                     }})
-                .subscribe(buffer);
+                .subscribe(s);
 
-            if (holder.compareAndSet(null, innerSubscription)) {
-                subscriptions.add(innerSubscription);
-            }
             merger.onNext(buffer);
         }
     }
 
-    private static final class UnicastSubject<T> extends Observable<T>implements Observer<T> {
+    static final class UnicastSubject<T> extends Observable<T>implements Observer<T> {
         public static <T> UnicastSubject<T> create() {
             return new UnicastSubject<T>(new State<T>());
         }
@@ -475,16 +627,7 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
         private State<T> state;
 
         protected UnicastSubject(final State<T> state) {
-            super(new OnSubscribe<T>() {
-                @Override
-                public void call(Subscriber<? super T> s) {
-                    if (state.subscriber != null) {
-                        s.onError(new IllegalStateException("There can be only one subscriber"));
-                    } else {
-                        state.subscriber = s;
-                    }
-                }
-            });
+            super(state);
             this.state = state;
         }
 
@@ -503,8 +646,18 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
             state.subscriber.onNext(t);
         }
 
-        private static class State<T> {
+        static final class State<T> implements OnSubscribe<T> {
             private Subscriber<? super T> subscriber;
+            @Override
+            public void call(Subscriber<? super T> s) {
+                synchronized (this) {
+                    if (subscriber == null) {
+                        subscriber = s;
+                        return;
+                    }
+                }
+                s.onError(new IllegalStateException("There can be only one subscriber"));
+            }
         }
     }
 }

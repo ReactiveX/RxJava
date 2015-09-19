@@ -38,7 +38,7 @@ public class AsyncOnSubscribeTest {
     
     @Before
     public void setup() {
-        subscriber = new TestSubscriber<Integer>(o);
+        subscriber = new TestSubscriber<Integer>(o, 0L);
     }
     
     @Test
@@ -68,14 +68,20 @@ public class AsyncOnSubscribeTest {
         // initial request emits [[1, 2, 3, 4]] on delay
         Observable.create(os).subscribe(subscriber);
         // next request emits [[5, 6, 7, 8]] firing immediately
-        subscriber.requestMore(2); 
+        subscriber.requestMore(2);
         // triggers delayed observable
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+        subscriber.assertNoErrors();
+        subscriber.assertValues(1, 2);
         // final request completes
         subscriber.requestMore(3); 
-        subscriber.awaitTerminalEventAndUnsubscribeOnTimeout(100, TimeUnit.MILLISECONDS);
         subscriber.assertNoErrors();
-        subscriber.assertReceivedOnNext(Arrays.asList(new Integer[] {1, 2, 3, 4, 5, 6, 7, 8}));
+        subscriber.assertValues(1, 2, 3, 4, 5);
+        
+        subscriber.requestMore(3);
+        
+        subscriber.assertNoErrors();
+        subscriber.assertValues(1, 2, 3, 4, 5, 6, 7, 8);
         subscriber.assertCompleted();
     }
     
@@ -89,6 +95,7 @@ public class AsyncOnSubscribeTest {
                 observer.onNext(Observable.range(1, requested.intValue()));
             }});
         Observable.create(os).observeOn(scheduler).subscribe(subscriber);
+        subscriber.requestMore(RxRingBuffer.SIZE);
         scheduler.advanceTimeBy(10, TimeUnit.DAYS);
         subscriber.assertNoErrors();
         subscriber.assertValueCount(RxRingBuffer.SIZE);
@@ -118,7 +125,8 @@ public class AsyncOnSubscribeTest {
             public void call(Integer t) {
                 lastState.set(t);
             }});
-        Observable.create(os).subscribe(subscriber); // [[1]], state = 1
+        Observable.create(os).subscribe(subscriber); 
+        subscriber.requestMore(1); // [[1]], state = 1
         subscriber.requestMore(2); // [[1]], state = 2
         subscriber.requestMore(3); // onComplete, state = 3
         subscriber.assertNoErrors();
@@ -135,6 +143,7 @@ public class AsyncOnSubscribeTest {
                 observer.onCompleted();
             }});
         Observable.create(os).subscribe(subscriber);
+        subscriber.requestMore(1);
         subscriber.assertNoErrors();
         subscriber.assertCompleted();
         subscriber.assertNoValues();
@@ -150,6 +159,7 @@ public class AsyncOnSubscribeTest {
             }
         });
         Observable.create(os).subscribe(subscriber);
+        subscriber.requestMore(1);
         subscriber.assertError(IllegalStateException.class);
         subscriber.assertNotCompleted();
         subscriber.assertReceivedOnNext(Arrays.asList(new Integer[] {1}));
@@ -164,6 +174,7 @@ public class AsyncOnSubscribeTest {
                 throw new TestException();
             }});
         Observable.create(os).subscribe(subscriber);
+        subscriber.requestMore(1);
         subscriber.assertError(TestException.class);
         subscriber.assertNotCompleted();
         subscriber.assertNoValues();
@@ -183,6 +194,7 @@ public class AsyncOnSubscribeTest {
                 throw new TestException();
             }});
         Observable.create(os).subscribe(subscriber);
+        subscriber.requestMore(1);
         subscriber.assertNoErrors();
         subscriber.assertCompleted();
         subscriber.assertNoValues();
@@ -203,6 +215,7 @@ public class AsyncOnSubscribeTest {
                 return 1;
             }});
         Observable.create(os).subscribe(subscriber);
+        subscriber.requestMore(1);
         subscriber.assertNoErrors();
         subscriber.assertCompleted();
         subscriber.assertNoValues();
@@ -223,6 +236,7 @@ public class AsyncOnSubscribeTest {
                 return 1;
             }});
         Observable.create(os).subscribe(subscriber);
+        subscriber.requestMore(1);
         subscriber.assertError(TestException.class);
         subscriber.assertNotCompleted();
         subscriber.assertNoValues();
@@ -243,6 +257,7 @@ public class AsyncOnSubscribeTest {
                 return state;
             }});
         Observable.create(os).subscribe(subscriber);
+        subscriber.requestMore(1);
         subscriber.assertNoErrors();
         subscriber.assertCompleted();
         subscriber.assertNoValues();
@@ -263,6 +278,7 @@ public class AsyncOnSubscribeTest {
             }
         });
         Observable.create(os).subscribe(subscriber);
+        subscriber.requestMore(1);
         subscriber.assertError(TestException.class);
         subscriber.assertNotCompleted();
         subscriber.assertNoValues();
@@ -284,6 +300,7 @@ public class AsyncOnSubscribeTest {
             }
         });
         Observable.create(os).subscribe(subscriber);
+        subscriber.requestMore(1);
         subscriber.assertCompleted();
         subscriber.assertNoErrors();
         subscriber.assertNoValues();
@@ -326,7 +343,8 @@ public class AsyncOnSubscribeTest {
                 observer.onNext(o1);
                 return state + 1;
             }});
-        Observable.create(os).subscribe(subscriber); // [[1]]
+        Observable.create(os).subscribe(subscriber); 
+        subscriber.requestMore(1); // [[1]]
         subscriber.requestMore(2); // [[2]]
         subscriber.requestMore(2); // onCompleted
         subscriber.awaitTerminalEventAndUnsubscribeOnTimeout(100, TimeUnit.MILLISECONDS);
@@ -356,7 +374,7 @@ public class AsyncOnSubscribeTest {
                 public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
                     switch (state) {
                     case 1:
-                        observer.onNext(Observable.just(1)
+                        observer.onNext(Observable.range(1, requested.intValue())
                                 .subscribeOn(scheduler)
                                 .doOnUnsubscribe(new Action0(){
                                     @Override
@@ -383,8 +401,11 @@ public class AsyncOnSubscribeTest {
             .subscribe(subscriber);
         sub.set(subscription);
         subscriber.assertNoValues();
+        subscriber.requestMore(1);
         scheduler.triggerActions();
-        subscriber.assertValue(1);
+        subscriber.requestMore(1);
+        scheduler.triggerActions();
+        subscriber.assertValueCount(2);
         subscriber.assertNotCompleted();
         subscriber.assertNoErrors();
         assertEquals("did not unsub from 1st observable after terminal", 1, l1.get());
@@ -404,5 +425,44 @@ public class AsyncOnSubscribeTest {
                 else
                     observer.onNext(Observable.just(new Bar()));
             }});
+    }
+    
+    @Test
+    public void testUnderdeliveryCorrection() {
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+            @Override
+            public Integer call() {
+                return 1;
+            }}, 
+        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>(){
+            @Override
+            public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
+                switch (state) {
+                case 1:
+                    observer.onNext(Observable.just(1));
+                    break;
+                default:
+                    observer.onNext(Observable.range(1, requested.intValue()));
+                    break;
+                }
+                return state + 1;
+            }});
+        Observable.create(os).subscribe(subscriber);
+        
+        subscriber.assertNoErrors();
+        subscriber.assertNotCompleted();
+        subscriber.assertNoValues();
+        
+        subscriber.requestMore(2);
+        
+        subscriber.assertNoErrors();
+        subscriber.assertValueCount(2);
+        
+        subscriber.requestMore(5);
+
+        subscriber.assertNoErrors();
+        subscriber.assertValueCount(7);
+        
+        subscriber.assertNotCompleted();
     }
 }
