@@ -11,27 +11,31 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.disposables;
+package io.reactivex;
 
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public enum EmptyDisposable implements Disposable {
-    INSTANCE
-    ;
-    
+public abstract class NbpObserver<T> implements NbpSubscriber<T> {
+    private Disposable s;
     @Override
-    public void dispose() {
-        // no-op
+    public final void onSubscribe(Disposable s) {
+        if (SubscriptionHelper.validateDisposable(this.s, s)) {
+            return;
+        }
+        this.s = s;
+        onStart();
     }
     
-    public static void complete(NbpSubscriber<?> s) {
-        s.onSubscribe(INSTANCE);
-        s.onComplete();
+    protected final void cancel() {
+        s.dispose();
+    }
+    /**
+     * Called once the subscription has been set on this observer; override this
+     * to perform initialization.
+     */
+    protected void onStart() {
     }
     
-    public static void error(Throwable e, NbpSubscriber<?> s) {
-        s.onSubscribe(INSTANCE);
-        s.onError(e);
-    }
 }
