@@ -70,7 +70,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
             return OBSERVER_UPDATER.compareAndSet(this, expected, next);
         }
 
-        Object guard = new Object();
+        final Object guard = new Object();
         /* protected by guard */
         boolean emitting = false;
 
