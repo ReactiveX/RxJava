@@ -98,7 +98,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     }
 
     public static final class RetryWithPredicate implements Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>> {
-        private Func2<Integer, Throwable, Boolean> predicate;
+        private final Func2<Integer, Throwable, Boolean> predicate;
 
         public RetryWithPredicate(Func2<Integer, Throwable, Boolean> predicate) {
             this.predicate = predicate;
