@@ -118,8 +118,10 @@ public final class BlockingOperatorToFuture {
             }
 
             private T getValue() throws ExecutionException {
-                if (error.get() != null) {
-                    throw new ExecutionException("Observable onError", error.get());
+                final Throwable throwable = error.get();
+
+                if (throwable != null) {
+                    throw new ExecutionException("Observable onError", throwable);
                 } else if (cancelled) {
                     // Contract of Future.get() requires us to throw this:
                     throw new CancellationException("Subscription unsubscribed");
