@@ -29,8 +29,9 @@ import rx.subscriptions.SerialSubscription;
  * @param <T> the source element type
  */
 public final class CachedObservable<T> extends Observable<T> {
+
     /** The cache and replay state. */
-    private CacheState<T> state;
+    private final CacheState<T> state;
 
     /**
      * Creates a cached Observable with a default capacity hint of 16.
@@ -82,15 +83,7 @@ public final class CachedObservable<T> extends Observable<T> {
     /* public */ boolean hasObservers() {
         return state.producers.length != 0;
     }
-    
-    /**
-     * Returns the number of events currently cached.
-     * @return
-     */
-    /* public */ int cachedEventCount() {
-        return state.size();
-    }
-    
+
     /**
      * Contains the active child producers and the values to replay.
      *
