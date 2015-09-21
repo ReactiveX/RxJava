@@ -805,7 +805,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 int sourceIndex = size;
                 
                 Integer destIndexObject = output.index();
-                int destIndex = destIndexObject != null ? destIndexObject.intValue() : 0;
+                int destIndex = destIndexObject != null ? destIndexObject : 0;
                 
                 long r = output.get();
                 long r0 = r;

@@ -111,7 +111,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 @Override
                 public Notification<Integer> call(Notification<Integer> n, Notification<?> term) {
                     final int value = n.getValue();
-                    if (predicate.call(value, term.getThrowable()).booleanValue())
+                    if (predicate.call(value, term.getThrowable()))
                         return Notification.createOnNext(value + 1);
                     else
                         return (Notification<Integer>) term;
