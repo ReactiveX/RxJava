@@ -16,6 +16,8 @@ import java.io.Serializable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.NbpObservable.NbpSubscriber;
+
 /**
  * Lightweight notification handling utility class.
  */
@@ -168,6 +170,27 @@ public enum NotificationLite {
      */
     @SuppressWarnings("unchecked")
     public static <T> boolean accept(Object o, Subscriber<? super T> s) {
+        if (o == Complete.INSTANCE) {
+            s.onComplete();
+            return true;
+        } else
+        if (o instanceof ErrorNotification) {
+            s.onError(((ErrorNotification)o).e);
+            return true;
+        }
+        s.onNext((T)o);
+        return false;
+    }
+
+    /**
+     * Calls the appropriate NbpSubscriber method based on the type of the notification.
+     * <p>Does not check for a subscription notification.
+     * @param o the notification object
+     * @param s the NbpSubscriber to call methods on
+     * @return true if the notification was a terminal event (i.e., complete or error)
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> boolean accept(Object o, NbpSubscriber<? super T> s) {
         if (o == Complete.INSTANCE) {
             s.onComplete();
             return true;
