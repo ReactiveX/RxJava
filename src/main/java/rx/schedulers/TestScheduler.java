@@ -57,9 +57,9 @@ public class TestScheduler extends Scheduler {
         @Override
         public int compare(TimedAction action1, TimedAction action2) {
             if (action1.time == action2.time) {
-                return Long.valueOf(action1.count).compareTo(action2.count);
+                return action1.count < action2.count ? -1 : ((action1.count > action2.count) ? 1 : 0);
             } else {
-                return Long.valueOf(action1.time).compareTo(action2.time);
+                return action1.time < action2.time ? -1 : ((action1.time > action2.time) ? 1 : 0);
             }
         }
     }
