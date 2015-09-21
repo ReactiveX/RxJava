@@ -11,27 +11,41 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.disposables;
+package io.reactivex.internal.subscribers.nbp;
 
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.plugins.RxJavaPlugins;
 
-public enum EmptyDisposable implements Disposable {
-    INSTANCE
-    ;
+/**
+ * A subscriber that cancels the subscription sent to it 
+ * and ignores all events (onError is forwarded to RxJavaPlugins though).
+ */
+public enum NbpCancelledSubscriber implements NbpSubscriber<Object> {
+    INSTANCE;
+    
+    @SuppressWarnings("unchecked")
+    public static <T> NbpSubscriber<T> instance() {
+        return (NbpSubscriber<T>)INSTANCE;
+    }
     
     @Override
-    public void dispose() {
-        // no-op
+    public void onSubscribe(Disposable s) {
+        s.dispose();
     }
     
-    public static void complete(NbpSubscriber<?> s) {
-        s.onSubscribe(INSTANCE);
-        s.onComplete();
+    @Override
+    public void onNext(Object t) {
+        
     }
     
-    public static void error(Throwable e, NbpSubscriber<?> s) {
-        s.onSubscribe(INSTANCE);
-        s.onError(e);
+    @Override
+    public void onError(Throwable t) {
+        RxJavaPlugins.onError(t);
+    }
+    
+    @Override
+    public void onComplete() {
+        
     }
 }

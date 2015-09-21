@@ -11,27 +11,25 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.disposables;
+package io.reactivex.internal.subscribers.nbp;
 
 import io.reactivex.NbpObservable.NbpSubscriber;
-import io.reactivex.disposables.Disposable;
 
-public enum EmptyDisposable implements Disposable {
-    INSTANCE
-    ;
-    
-    @Override
-    public void dispose() {
-        // no-op
-    }
-    
-    public static void complete(NbpSubscriber<?> s) {
-        s.onSubscribe(INSTANCE);
-        s.onComplete();
-    }
-    
-    public static void error(Throwable e, NbpSubscriber<?> s) {
-        s.onSubscribe(INSTANCE);
-        s.onError(e);
-    }
+/**
+ * An Subscriber with an additional onNextIf(T) method that
+ * tells the caller the specified value has been accepted or
+ * not.
+ * 
+ * <p>This allows certain queue-drain or source-drain operators
+ * to avoid requesting 1 on behalf of a dropped value.
+ * 
+ * @param <T> the value type
+ */
+public interface NbpConditionalSubscriber<T> extends NbpSubscriber<T> {
+    /**
+     * Conditionally takes the value.
+     * @param t the value to deliver
+     * @return true if the value has been accepted, false if the value has been rejected
+     */
+    boolean onNextIf(T t);
 }
