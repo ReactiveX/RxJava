@@ -40,8 +40,6 @@ import rx.subscriptions.Subscriptions;
             = AtomicReferenceFieldUpdater.newUpdater(SubjectSubscriptionManager.class, State.class, "state");
     /** Stores the latest value or the terminal value for some Subjects. */
     volatile Object latest;
-    static final AtomicReferenceFieldUpdater<SubjectSubscriptionManager, Object> LATEST_UPDATER
-            = AtomicReferenceFieldUpdater.newUpdater(SubjectSubscriptionManager.class, Object.class, "latest");
     /** Indicates that the subject is active (cheaper than checking the state).*/
     boolean active = true;
     /** Action called when a new subscriber subscribes but before it is added to the state. */
