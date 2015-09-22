@@ -16,6 +16,9 @@ import java.io.Serializable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.disposables.Disposable;
+
 /**
  * Lightweight notification handling utility class.
  */
@@ -69,6 +72,24 @@ public enum NotificationLite {
     }
     
     /**
+     * Wraps a Disposable.
+     */
+    private static final class DisposableNotification implements Serializable {
+        /** */
+        private static final long serialVersionUID = -7482590109178395495L;
+        final Disposable d;
+        
+        DisposableNotification(Disposable d) {
+            this.d = d;
+        }
+        
+        @Override
+        public String toString() {
+            return "NotificationLite.Disposable[" + d + "]";
+        }
+    }
+    
+    /**
      * Converts a value into a notification value.
      * @param value the value to convert
      * @return the notification representing the value
@@ -103,6 +124,10 @@ public enum NotificationLite {
         return new SubscriptionNotification(s);
     }
     
+    public static Object disposable(Disposable d) {
+        return new DisposableNotification(d);
+    }
+    
     /**
      * Checks if the given object represents a complete notification.
      * @param o the object to check
@@ -128,6 +153,10 @@ public enum NotificationLite {
      */
     public static boolean isSubscription(Object o) {
         return o instanceof SubscriptionNotification;
+    }
+    
+    public static boolean isDisposable(Object o) {
+        return o instanceof DisposableNotification;
     }
     
     /**
@@ -158,6 +187,10 @@ public enum NotificationLite {
         return ((SubscriptionNotification)o).s;
     }
     
+    public static Disposable getDisposable(Object o) {
+        return ((DisposableNotification)o).d;
+    }
+    
     /**
      * Calls the appropriate Subscriber method based on the type of the notification.
      * <p>Does not check for a subscription notification, see {@link #acceptFull(Object, Subscriber)}.
@@ -168,6 +201,27 @@ public enum NotificationLite {
      */
     @SuppressWarnings("unchecked")
     public static <T> boolean accept(Object o, Subscriber<? super T> s) {
+        if (o == Complete.INSTANCE) {
+            s.onComplete();
+            return true;
+        } else
+        if (o instanceof ErrorNotification) {
+            s.onError(((ErrorNotification)o).e);
+            return true;
+        }
+        s.onNext((T)o);
+        return false;
+    }
+
+    /**
+     * Calls the appropriate NbpSubscriber method based on the type of the notification.
+     * <p>Does not check for a subscription notification.
+     * @param o the notification object
+     * @param s the NbpSubscriber to call methods on
+     * @return true if the notification was a terminal event (i.e., complete or error)
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> boolean accept(Object o, NbpSubscriber<? super T> s) {
         if (o == Complete.INSTANCE) {
             s.onComplete();
             return true;
@@ -199,6 +253,31 @@ public enum NotificationLite {
         } else
         if (o instanceof SubscriptionNotification) {
             s.onSubscribe(((SubscriptionNotification)o).s);
+            return false;
+        }
+        s.onNext((T)o);
+        return false;
+    }
+    
+    /**
+     * Calls the appropriate NbpSubscriber method based on the type of the notification.
+     * @param o the notification object
+     * @param s the subscriber to call methods on
+     * @return true if the notification was a terminal event (i.e., complete or error)
+     * @see #accept(Object, NbpSubscriber)
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> boolean acceptFull(Object o, NbpSubscriber<? super T> s) {
+        if (o == Complete.INSTANCE) {
+            s.onComplete();
+            return true;
+        } else
+        if (o instanceof ErrorNotification) {
+            s.onError(((ErrorNotification)o).e);
+            return true;
+        } else
+        if (o instanceof DisposableNotification) {
+            s.onSubscribe(((DisposableNotification)o).d);
             return false;
         }
         s.onNext((T)o);

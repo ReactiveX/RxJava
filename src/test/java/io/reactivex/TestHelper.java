@@ -19,6 +19,8 @@ import static org.mockito.Mockito.mock;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
 
+import io.reactivex.NbpObservable.NbpSubscriber;
+
 /**
  * Common methods for helping with tests from 1.x mostly.
  */
@@ -39,5 +41,10 @@ public enum TestHelper {
         }).when(w).onSubscribe(any());
         
         return w;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> NbpSubscriber<T> mockNbpSubscriber() {
+        return mock(NbpSubscriber.class);
     }
 }

@@ -15,6 +15,7 @@ package io.reactivex.internal.subscriptions;
 
 import org.reactivestreams.*;
 
+import io.reactivex.disposables.Disposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public enum SubscriptionHelper {
@@ -35,6 +36,23 @@ public enum SubscriptionHelper {
     
     public static void reportSubscriptionSet() {
         RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+    }
+
+    public static boolean validateDisposable(Disposable current, Disposable next) {
+        if (next == null) {
+            RxJavaPlugins.onError(new NullPointerException("next is null"));
+            return true;
+        }
+        if (current != null) {
+            next.dispose();
+            reportDisposableSet();
+            return true;
+        }
+        return false;
+    }
+    
+    public static void reportDisposableSet() {
+        RxJavaPlugins.onError(new IllegalStateException("Disposable already set!"));
     }
 
     /**

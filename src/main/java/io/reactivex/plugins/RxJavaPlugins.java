@@ -16,6 +16,7 @@ import java.util.function.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.Scheduler;
 
 /**
@@ -26,7 +27,9 @@ public final class RxJavaPlugins {
     static volatile Consumer<Throwable> errorHandler;
     
     static volatile Function<Subscriber<Object>, Subscriber<Object>> onSubscribeHandler;
-    
+
+    static volatile Function<NbpSubscriber<Object>, NbpSubscriber<Object>> onNbpSubscribeHandler;
+
     static volatile Function<Publisher<Object>, Publisher<Object>> onCreateHandler;
 
     static volatile Function<Runnable, Runnable> onScheduleHandler;
@@ -114,7 +117,12 @@ public final class RxJavaPlugins {
     public static <T> Function<Subscriber<T>, Subscriber<T>> getSubscribeHandler() {
         return (Function)onSubscribeHandler;
     }
-    
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Function<NbpSubscriber<T>, NbpSubscriber<T>> getNbpSubscribeHandler() {
+        return (Function)onNbpSubscribeHandler;
+    }
+
     public static Scheduler initComputationScheduler(Scheduler defaultScheduler) {
         Function<Scheduler, Scheduler> f = onInitComputationHandler;
         if (f == null) {
@@ -243,6 +251,34 @@ public final class RxJavaPlugins {
     }
 
     /**
+     * Called when a subscriber subscribes to an observable.
+     * @param subscriber
+     * @return
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes"})
+    public static <T> NbpSubscriber<T> onNbpSubscribe(NbpSubscriber<T> subscriber) {
+        Function<NbpSubscriber<Object>, NbpSubscriber<Object>> f = onNbpSubscribeHandler;
+        if (f == null) {
+            return subscriber;
+        }
+        return (NbpSubscriber)((Function)f).apply(subscriber);
+    }
+
+    /**
+     * Called when a subscriber subscribes to an observable.
+     * @param subscriber
+     * @return
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes"})
+    public static <T> NbpSubscriber<T> onSubscribe(NbpSubscriber<T> subscriber) {
+        Function<NbpSubscriber<Object>, NbpSubscriber<Object>> f = onNbpSubscribeHandler;
+        if (f == null) {
+            return subscriber;
+        }
+        return (NbpSubscriber)((Function)f).apply(subscriber);
+    }
+
+    /**
      * Removes all handlers and resets the default behavior.
      */
     public static void reset() {
@@ -349,6 +385,14 @@ public final class RxJavaPlugins {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
         onSubscribeHandler = (Function)handler;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> void setNbpSubscribeHandler(Function<NbpSubscriber<T>, NbpSubscriber<T>> handler) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        onNbpSubscribeHandler = (Function)handler;
     }
 
     /**

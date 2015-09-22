@@ -11,59 +11,88 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
+
 package io.reactivex.internal.operators.nbp;
 
 import java.util.function.Function;
 
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpOperatorMap<T, R> implements NbpOperator<R, T> {
-    final Function<? super T, ? extends R> mapper;
+/**
+ * 
+ */
+public final class NbpOperatorMap<T, U> implements NbpOperator<U, T> {
+    final Function<? super T, ? extends U> function;
     
-    public NbpOperatorMap(Function<? super T, ? extends R> mapper) {
-        this.mapper = mapper;
+    public NbpOperatorMap(Function<? super T, ? extends U> function) {
+        this.function = function;
     }
-
+    
     @Override
-    public NbpSubscriber<? super T> apply(NbpSubscriber<? super R> t) {
-        return new NbpMapSubscriber<>(t, mapper);
+    public NbpSubscriber<? super T> apply(NbpSubscriber<? super U> t) {
+        return new MapperSubscriber<>(t, function);
     }
     
-    static final class NbpMapSubscriber<T, R> implements NbpSubscriber<T> {
-        final NbpSubscriber<? super R> actual;
-        final Function<? super T, ? extends R> mapper;
-
-        public NbpMapSubscriber(NbpSubscriber<? super R> actual, Function<? super T, ? extends R> mapper) {
-            this.actual = actual;
-            this.mapper = mapper;
-        }
-
-        @Override
-        public void onSubscribe(Disposable d) {
-            actual.onSubscribe(d);
-        }
+    static final class MapperSubscriber<T, U> implements NbpSubscriber<T> {
+        final NbpSubscriber<? super U> actual;
+        final Function<? super T, ? extends U> function;
         
+        Disposable subscription;
+        
+        boolean done;
+        
+        public MapperSubscriber(NbpSubscriber<? super U> actual, Function<? super T, ? extends U> function) {
+            this.actual = actual;
+            this.function = function;
+        }
         @Override
-        public void onNext(T value) {
-            R v;
-            try {
-                v = mapper.apply(value);
-            } catch (Throwable e) {
-                onError(e);
+        public void onSubscribe(Disposable s) {
+            if (SubscriptionHelper.validateDisposable(this.subscription, s)) {
                 return;
             }
-            
-            actual.onNext(v);
+            subscription = s;
+            actual.onSubscribe(s);
         }
-        
         @Override
-        public void onError(Throwable e) {
-            actual.onError(e);
+        public void onNext(T t) {
+            if (done) {
+                return;
+            }
+            U u;
+            try {
+                u = function.apply(t);
+            } catch (Throwable e) {
+                done = true;
+                subscription.dispose();
+                actual.onError(e);
+                return;
+            }
+            if (u == null) {
+                done = true;
+                subscription.dispose();
+                actual.onError(new NullPointerException("Value returned by the function is null"));
+                return;
+            }
+            actual.onNext(u);
         }
-        
+        @Override
+        public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            done = true;
+            actual.onError(t);
+        }
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
             actual.onComplete();
         }
     }
