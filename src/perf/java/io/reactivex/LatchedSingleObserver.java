@@ -17,10 +17,10 @@ import java.util.concurrent.CountDownLatch;
 
 import org.openjdk.jmh.infra.Blackhole;
 
-import io.reactivex.Single.SingleCallback;
+import io.reactivex.Single.SingleSubscriber;
 import io.reactivex.disposables.Disposable;
 
-public final class LatchedSingleObserver<T> implements SingleCallback<T> {
+public final class LatchedSingleObserver<T> implements SingleSubscriber<T> {
     final CountDownLatch cdl;
     final Blackhole bh;
     public LatchedSingleObserver(Blackhole bh) {
@@ -37,7 +37,7 @@ public final class LatchedSingleObserver<T> implements SingleCallback<T> {
         cdl.countDown();
     }
     @Override
-    public void onFailure(Throwable e) {
+    public void onError(Throwable e) {
         e.printStackTrace();
         cdl.countDown();
     }

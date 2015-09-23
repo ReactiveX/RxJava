@@ -26,8 +26,8 @@ public final class SingleOperatorMap<T, R> implements SingleOperator<R, T> {
     }
 
     @Override
-    public SingleCallback<? super T> apply(SingleCallback<? super R> t) {
-        return new SingleCallback<T>() {
+    public SingleSubscriber<? super T> apply(SingleSubscriber<? super R> t) {
+        return new SingleSubscriber<T>() {
             @Override
             public void onSubscribe(Disposable d) {
                 t.onSubscribe(d);
@@ -39,7 +39,7 @@ public final class SingleOperatorMap<T, R> implements SingleOperator<R, T> {
                 try {
                     v = mapper.apply(value);
                 } catch (Throwable e) {
-                    onFailure(e);
+                    onError(e);
                     return;
                 }
                 
@@ -47,8 +47,8 @@ public final class SingleOperatorMap<T, R> implements SingleOperator<R, T> {
             }
 
             @Override
-            public void onFailure(Throwable e) {
-                t.onFailure(e);
+            public void onError(Throwable e) {
+                t.onError(e);
             }
         };
     }

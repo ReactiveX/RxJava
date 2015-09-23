@@ -2676,7 +2676,7 @@ public class NbpObservable<T> {
                 }
                 @Override
                 public void onError(Throwable e) {
-                    s.onFailure(e);
+                    s.onError(e);
                 }
                 @Override
                 public void onComplete() {
@@ -2685,7 +2685,7 @@ public class NbpObservable<T> {
                     if (v != null) {
                         s.onSuccess(v);
                     } else {
-                        s.onFailure(new NoSuchElementException());
+                        s.onError(new NoSuchElementException());
                     }
                 }
                 
