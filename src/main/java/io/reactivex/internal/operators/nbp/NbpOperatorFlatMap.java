@@ -13,387 +13,575 @@
 
 package io.reactivex.internal.operators.nbp;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
+import java.util.function.Function;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.util.Pow2;
 
-public final class NbpOperatorFlatMap<T, R> implements NbpOperator<R, T> {
-    final Function<? super T, ? extends NbpObservable<? extends R>> mapper;
-    final boolean delayError;
-    public NbpOperatorFlatMap(Function<? super T, ? extends NbpObservable<? extends R>> mapper, boolean delayError) {
+/**
+ * FIXME handle maxConcurrency case
+ */
+public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
+    final Function<? super T, ? extends NbpObservable<? extends U>> mapper;
+    final boolean delayErrors;
+    final int maxConcurrency;
+    final int bufferSize;
+    
+    public NbpOperatorFlatMap( 
+            Function<? super T, ? extends NbpObservable<? extends U>> mapper,
+            boolean delayErrors, int maxConcurrency, int bufferSize) {
         this.mapper = mapper;
-        this.delayError = delayError;
+        this.delayErrors = delayErrors;
+        this.maxConcurrency = maxConcurrency;
+        this.bufferSize = bufferSize;
     }
     
     @Override
-    public NbpSubscriber<? super T> apply(NbpSubscriber<? super R> t) {
-        return new NbpFlatMapSubscriber<>(t, mapper, delayError);
+    public NbpSubscriber<? super T> apply(NbpSubscriber<? super U> t) {
+        return new MergeSubscriber<>(t, mapper, delayErrors, maxConcurrency, bufferSize);
     }
     
-    static final class NbpFlatMapSubscriber<T, R> extends AtomicInteger implements NbpSubscriber<T>, Disposable, BiPredicate<NbpSubscriber<? super R>, R> {
+    static final class MergeSubscriber<T, U> extends AtomicInteger implements Disposable, NbpSubscriber<T> {
         /** */
+        private static final long serialVersionUID = -2117620485640801370L;
         
-        private static final long serialVersionUID = -5429656673391159123L;
+        final NbpSubscriber<? super U> actual;
+        final Function<? super T, ? extends NbpObservable<? extends U>> mapper;
+        final boolean delayErrors;
+        final int maxConcurrency;
+        final int bufferSize;
         
-        final NbpSubscriber<? super R> actual;
-        final Function<? super T, ? extends NbpObservable<? extends R>> mapper;
-        final boolean delayError;
-        
-        boolean emitting;
-        AppendOnlyLinkedArrayList<R> queue;
-        
-        volatile Queue<Throwable> errors;
-        
-        OpenHashSet<Disposable> innerSubscribers;
+        volatile Queue<U> queue;
         
         volatile boolean done;
         
+        volatile Queue<Throwable> errors;
+        @SuppressWarnings("rawtypes")
+        static final AtomicReferenceFieldUpdater<MergeSubscriber, Queue> ERRORS =
+                AtomicReferenceFieldUpdater.newUpdater(MergeSubscriber.class, Queue.class, "errors");
+        
+        static final Queue<Throwable> ERRORS_CLOSED = new RejectingQueue<>();
+        
         volatile boolean cancelled;
         
-        Disposable d;
-
-        public NbpFlatMapSubscriber(NbpSubscriber<? super R> actual,
-                Function<? super T, ? extends NbpObservable<? extends R>> mapper, boolean delayError) {
+        volatile InnerSubscriber<?, ?>[] subscribers;
+        @SuppressWarnings("rawtypes")
+        static final AtomicReferenceFieldUpdater<MergeSubscriber, InnerSubscriber[]> SUBSCRIBERS =
+                AtomicReferenceFieldUpdater.newUpdater(MergeSubscriber.class, InnerSubscriber[].class, "subscribers");
+        
+        static final InnerSubscriber<?, ?>[] EMPTY = new InnerSubscriber<?, ?>[0];
+        
+        static final InnerSubscriber<?, ?>[] CANCELLED = new InnerSubscriber<?, ?>[0];
+        
+        Disposable s;
+        
+        long uniqueId;
+        long lastId;
+        int lastIndex;
+        
+        Queue<NbpObservable<? extends U>> sources;
+        
+        int wip;
+        
+        public MergeSubscriber(NbpSubscriber<? super U> actual, Function<? super T, ? extends NbpObservable<? extends U>> mapper,
+                boolean delayErrors, int maxConcurrency, int bufferSize) {
             this.actual = actual;
             this.mapper = mapper;
-            this.delayError = delayError;
+            this.delayErrors = delayErrors;
+            this.maxConcurrency = maxConcurrency;
+            this.bufferSize = bufferSize;
+            if (maxConcurrency != Integer.MAX_VALUE) {
+                sources = new ArrayDeque<>(maxConcurrency);
+            }
+            SUBSCRIBERS.lazySet(this, EMPTY);
         }
         
         @Override
-        public void onSubscribe(Disposable d) {
-            this.d = d;
+        public void onSubscribe(Disposable s) {
+            if (SubscriptionHelper.validateDisposable(this.s, s)) {
+                return;
+            }
+            this.s = s;
             actual.onSubscribe(this);
         }
         
         @Override
-        public void onNext(T value) {
-            if (done || cancelled) {
+        public void onNext(T t) {
+            // safeguard against misbehaving sources
+            if (done) {
                 return;
             }
-            NbpObservable<? extends R> o;
-            
+            NbpObservable<? extends U> p;
             try {
-                o = mapper.apply(value);
+                p = mapper.apply(t);
             } catch (Throwable e) {
                 onError(e);
                 return;
             }
-            
-            if (o == null) {
-                onError(new NullPointerException("The observable supplied is null"));
-                return;
-            }
-            
-            // TODO Scalar optimization
-            
-            getAndIncrement();
-            
-            NbpFlatMapInnerSubscriber<R> inner = new NbpFlatMapInnerSubscriber<>(this);
-            add(inner);
-            if (!cancelled) {
-                o.subscribe(inner);
+            if (p instanceof NbpObservableScalarSource) {
+                tryEmitScalar(((NbpObservableScalarSource<? extends U>)p).value());
+            } else {
+                if (maxConcurrency == Integer.MAX_VALUE) {
+                    subscribeInner(p);
+                } else {
+                    synchronized (this) {
+                        if (wip == maxConcurrency) {
+                            sources.offer(p);
+                            return;
+                        }
+                        wip++;
+                    }
+                    subscribeInner(p);
+                }
             }
         }
         
+        void subscribeInner(NbpObservable<? extends U> p) {
+            InnerSubscriber<T, U> inner = new InnerSubscriber<>(this, uniqueId++);
+            addInner(inner);
+            p.subscribe(inner);
+        }
+        
+        void addInner(InnerSubscriber<T, U> inner) {
+            for (;;) {
+                InnerSubscriber<?, ?>[] a = subscribers;
+                if (a == CANCELLED) {
+                    inner.dispose();
+                    return;
+                }
+                int n = a.length;
+                InnerSubscriber<?, ?>[] b = new InnerSubscriber[n + 1];
+                System.arraycopy(a, 0, b, 0, n);
+                b[n] = inner;
+                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                    return;
+                }
+            }
+        }
+        
+        void removeInner(InnerSubscriber<T, U> inner) {
+            for (;;) {
+                InnerSubscriber<?, ?>[] a = subscribers;
+                if (a == CANCELLED || a == EMPTY) {
+                    return;
+                }
+                int n = a.length;
+                int j = -1;
+                for (int i = 0; i < n; i++) {
+                    if (a[i] == inner) {
+                        j = i;
+                        break;
+                    }
+                }
+                if (j < 0) {
+                    return;
+                }
+                InnerSubscriber<?, ?>[] b;
+                if (n == 1) {
+                    b = EMPTY;
+                } else {
+                    b = new InnerSubscriber<?, ?>[n - 1];
+                    System.arraycopy(a, 0, b, 0, j);
+                    System.arraycopy(a, j + 1, b, j, n - j - 1);
+                }
+                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                    return;
+                }
+            }
+        }
+        
+        Queue<U> getMainQueue() {
+            Queue<U> q = queue;
+            if (q == null) {
+                if (maxConcurrency == Integer.MAX_VALUE) {
+                    q = new SpscLinkedArrayQueue<>(bufferSize);
+                } else {
+                    if (Pow2.isPowerOfTwo(maxConcurrency)) {
+                        q = new SpscArrayQueue<>(maxConcurrency);
+                    } else {
+                        q = new SpscExactArrayQueue<>(maxConcurrency);
+                    }
+                }
+                queue = q;
+            }
+            return q;
+        }
+        
+        void tryEmitScalar(U value) {
+            if (get() == 0 && compareAndSet(0, 1)) {
+                actual.onNext(value);
+                if (decrementAndGet() == 0) {
+                    return;
+                }
+            } else {
+                Queue<U> q = getMainQueue();
+                if (!q.offer(value)) {
+                    onError(new IllegalStateException("Scalar queue full?!"));
+                    return;
+                }
+                if (getAndIncrement() != 0) {
+                    return;
+                }
+            }
+            drainLoop();
+        }
+        
+        Queue<U> getInnerQueue(InnerSubscriber<T, U> inner) {
+            Queue<U> q = inner.queue;
+            if (q == null) {
+                q = new SpscArrayQueue<>(bufferSize);
+                inner.queue = q;
+            }
+            return q;
+        }
+        
+        void tryEmit(U value, InnerSubscriber<T, U> inner) {
+            if (get() == 0 && compareAndSet(0, 1)) {
+                actual.onNext(value);
+                if (decrementAndGet() == 0) {
+                    return;
+                }
+            } else {
+                Queue<U> q = inner.queue;
+                if (q == null) {
+                    q = new SpscLinkedArrayQueue<>(bufferSize);
+                    inner.queue = q;
+                }
+                if (!q.offer(value)) {
+                    onError(new MissingBackpressureException("Inner queue full?!"));
+                    return;
+                }
+                if (getAndIncrement() != 0) {
+                    return;
+                }
+            }
+            drainLoop();
+        }
+        
         @Override
-        public void onError(Throwable e) {
-            if (done || cancelled) {
-                RxJavaPlugins.onError(e);
+        public void onError(Throwable t) {
+            // safeguard against misbehaving sources
+            if (done) {
                 return;
             }
+            getErrorQueue().offer(t);
             done = true;
-            
-            tryError(e);
+            drain();
         }
         
         @Override
         public void onComplete() {
-            if (done || cancelled) {
+            // safeguard against misbehaving sources
+            if (done) {
                 return;
             }
             done = true;
-            
-            tryTerminate();
+            drain();
         }
-        
-        void innerDone() {
-            decrementAndGet();
-            
-            tryTerminate();
-        }
-        
-        void innerError(Throwable e) {
-            decrementAndGet();
-            
-            tryError(e);
-        }
-        
-        void tryError(Throwable e) {
-            Queue<Throwable> q = errors;
-            if (q == null) {
-                synchronized (this) {
-                    if (cancelled) {
-                        return;
-                    }
-                    q = errors;
-                    if (q == null) {
-                        q = new ConcurrentLinkedQueue<>();
-                        errors = q;
-                    }
-                }
-            }
-            q.offer(e);
-            
-            synchronized (this) {
-                if (emitting) {
-                    return;
-                }
-                emitting = true;
-            }
-            if (delayError) {
-                emitLoop(actual);
-            } else {
-                dispose();
-                actual.onError(getError(q));
-            }
-        }
-        
-        void tryTerminate() {
-            synchronized (this) {
-                if (emitting) {
-                    return;
-                }
-                emitting = true;
-            }
-            if (done && get() == 0) {
-                this.d = null;
-                Queue<Throwable> e  = errors;
-                if (e != null && !e.isEmpty()) {
-                    actual.onError(getError(e));
-                } else {
-                    actual.onComplete();
-                }
-                return;
-            }
-            
-            emitLoop(actual);
-        }
-        
         
         @Override
         public void dispose() {
             if (!cancelled) {
-                OpenHashSet<Disposable> ds;
-                synchronized (this) {
-                    if (cancelled) {
-                        return;
-                    }
-                    ds = innerSubscribers;
-                    innerSubscribers = null;
-                    cancelled = true;
-                }
-                Disposable d = this.d;
-                this.d = null;
-                d.dispose();
-                if (ds != null) {
-                    ds.forEach(Disposable::dispose);
+                cancelled = true;
+                if (getAndIncrement() == 0) {
+                    s.dispose();
+                    unsubscribe();
                 }
             }
         }
         
-        void add(NbpFlatMapInnerSubscriber<R> inner) {
-            if (!cancelled) {
-                synchronized (this) {
-                    if (!cancelled) {
-                        OpenHashSet<Disposable> ds = innerSubscribers;
-                        if (ds == null) {
-                            ds = new OpenHashSet<>();
-                            innerSubscribers = ds;
-                        }
-                        ds.add(inner);
-                    }
-                }
-            }
-        }
-        void remove(NbpFlatMapInnerSubscriber<R> inner) {
-            if (!cancelled) {
-                synchronized (this) {
-                    if (!cancelled) {
-                        OpenHashSet<Disposable> ds = innerSubscribers;
-                        if (ds != null) {
-                            ds.remove(inner);
-                        }
-                    }
-                }
+        void drain() {
+            if (getAndIncrement() == 0) {
+                drainLoop();
             }
         }
         
-        void emit(R value) {
-            synchronized (this) {
-                if (emitting) {
-                    AppendOnlyLinkedArrayList<R> q = queue;
-                    if (q == null) {
-                        q = new AppendOnlyLinkedArrayList<>(16);
-                        queue = q;
-                    }
-                    q.add(value);
-                    return;
-                }
-                emitting = true;
-            }
-            
-            NbpSubscriber<? super R> a = actual;
-            
-            a.onNext(value);
-            
-            emitLoop(a);
-        }
-        
-        void emitLoop(NbpSubscriber<? super R> a) {
+        void drainLoop() {
+            final NbpSubscriber<? super U> child = this.actual;
+            int missed = 1;
             for (;;) {
-                if (cancelled) {
+                if (checkTerminate()) {
                     return;
                 }
+                Queue<U> svq = queue;
                 
-                boolean d;
-                
-                AppendOnlyLinkedArrayList<R> q;
-                synchronized (this) {
-                    q = queue;
-                    d = done && get() == 0;
-                    if (q == null && !d) {
-                        emitting = false;
-                        return;
-                    }
-                    queue = null;
-                }
-                
-                if (cancelled) {
-                    return;
-                }
-                
-                if (d) {
-                    if (delayError) {
-                        if (q == null) {
-                            this.d = null;
-                            Queue<Throwable> e = errors;
-                            if (e == null || e.isEmpty()) {
-                                a.onError(getError(e));
-                            } else {
-                                a.onComplete();
+                if (svq != null) {
+                    for (;;) {
+                        U o = null;
+                        for (;;) {
+                            o = svq.poll();
+                            if (checkTerminate()) {
+                                return;
                             }
-                            return;
+                            if (o == null) {
+                                break;
+                            }
+                            
+                            child.onNext(o);
                         }
-                    } else {
-                        Queue<Throwable> e = errors;
-                        if (e == null || e.isEmpty()) {
-                            dispose();
-                            a.onError(getError(e));
-                            return;
-                        } else
-                        if (q == null) {
-                            this.d = null;
-                            a.onComplete();
-                            return;
+                        if (o == null) {
+                            break;
                         }
                     }
                 }
+
+                boolean d = done;
+                svq = queue;
+                InnerSubscriber<?, ?>[] inner = subscribers;
+                int n = inner.length;
                 
-                if (q != null) {
-                    q.forEachWhile(a, this);
+                if (d && (svq == null || svq.isEmpty()) && n == 0) {
+                    Queue<Throwable> e = errors;
+                    if (e == null || e.isEmpty()) {
+                        child.onComplete();
+                    } else {
+                        reportError(e);
+                    }
+                    return;
+                }
+                
+                boolean innerCompleted = false;
+                if (n != 0) {
+                    long startId = lastId;
+                    int index = lastIndex;
+                    
+                    if (n <= index || inner[index].id != startId) {
+                        if (n <= index) {
+                            index = 0;
+                        }
+                        int j = index;
+                        for (int i = 0; i < n; i++) {
+                            if (inner[j].id == startId) {
+                                break;
+                            }
+                            j++;
+                            if (j == n) {
+                                j = 0;
+                            }
+                        }
+                        index = j;
+                        lastIndex = j;
+                        lastId = inner[j].id;
+                    }
+                    
+                    int j = index;
+                    for (int i = 0; i < n; i++) {
+                        if (checkTerminate()) {
+                            return;
+                        }
+                        @SuppressWarnings("unchecked")
+                        InnerSubscriber<T, U> is = (InnerSubscriber<T, U>)inner[j];
+                        
+                        U o = null;
+                        for (;;) {
+                            for (;;) {
+                                if (checkTerminate()) {
+                                    return;
+                                }
+                                Queue<U> q = is.queue;
+                                if (q == null) {
+                                    break;
+                                }
+                                o = q.poll();
+                                if (o == null) {
+                                    break;
+                                }
+
+                                child.onNext(o);
+                            }
+                            if (o == null) {
+                                break;
+                            }
+                        }
+                        boolean innerDone = is.done;
+                        Queue<U> innerQueue = is.queue;
+                        if (innerDone && (innerQueue == null || innerQueue.isEmpty())) {
+                            removeInner(is);
+                            if (checkTerminate()) {
+                                return;
+                            }
+                            innerCompleted = true;
+                        }
+                        
+                        j++;
+                        if (j == n) {
+                            j = 0;
+                        }
+                    }
+                    lastIndex = j;
+                    lastId = inner[j].id;
+                }
+                
+                if (innerCompleted) {
+                    // TODO
+                    if (maxConcurrency != Integer.MAX_VALUE) {
+                        NbpObservable<? extends U> p;
+                        synchronized (this) {
+                            p = sources.poll();
+                            if (p == null) {
+                                wip--;
+                                continue;
+                            }
+                        }
+                        subscribeInner(p);
+                    }
+                    continue;
+                }
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
                 }
             }
         }
         
-        Throwable getError(Queue<Throwable> e) {
+        boolean checkTerminate() {
+            if (cancelled) {
+                s.dispose();
+                unsubscribe();
+                return true;
+            }
+            Queue<Throwable> e = errors;
+            if (!delayErrors && (e != null && !e.isEmpty())) {
+                try {
+                    reportError(e);
+                } finally {
+                    unsubscribe();
+                }
+                return true;
+            }
+            return false;
+        }
+        
+        void reportError(Queue<Throwable> q) {
             Throwable ex = null;
-            while (!e.isEmpty()) {
-                if (ex == null) {
-                    ex = e.poll();
+            
+            Throwable t;
+            int count = 0;
+            while ((t = q.poll()) != null) {
+                if (count == 0) {
+                    ex = t;
                 } else {
-                    ex.addSuppressed(e.poll());
+                    ex.addSuppressed(t);
                 }
+                
+                count++;
             }
-            return ex;
+            actual.onError(ex);
         }
         
-        @Override
-        public boolean test(NbpSubscriber<? super R> t, R u) {
-            t.onNext(u);
-            return cancelled;
+        void unsubscribe() {
+            InnerSubscriber<?, ?>[] a = subscribers;
+            if (a != CANCELLED) {
+                a = SUBSCRIBERS.getAndSet(this, CANCELLED);
+                if (a != CANCELLED) {
+                    ERRORS.getAndSet(this, ERRORS_CLOSED);
+                    for (InnerSubscriber<?, ?> inner : a) {
+                        inner.dispose();
+                    }
+                }
+            }
+        }
+        
+        Queue<Throwable> getErrorQueue() {
+            for (;;) {
+                Queue<Throwable> q = errors;
+                if (q != null) {
+                    return q;
+                }
+                q = new MpscLinkedQueue<>();
+                if (ERRORS.compareAndSet(this, null, q)) {
+                    return q;
+                }
+            }
         }
     }
     
-    static final Disposable DISPOSED = () -> { };
-    
-    static final class NbpFlatMapInnerSubscriber<R> extends AtomicReference<Disposable> implements NbpSubscriber<R>, Disposable {
+    static final class InnerSubscriber<T, U> extends AtomicReference<Disposable> 
+    implements NbpSubscriber<U>, Disposable {
         /** */
-        private static final long serialVersionUID = 1911556127363824975L;
+        private static final long serialVersionUID = -4606175640614850599L;
+        final long id;
+        final MergeSubscriber<T, U> parent;
         
-        final NbpFlatMapSubscriber<?, R> parent;
+        volatile boolean done;
+        volatile Queue<U> queue;
         
-        boolean done;
-
-        public NbpFlatMapInnerSubscriber(NbpFlatMapSubscriber<?, R> parent) {
+        static final Disposable CANCELLED = () -> { };
+        
+        public InnerSubscriber(MergeSubscriber<T, U> parent, long id) {
+            this.id = id;
             this.parent = parent;
         }
-        
         @Override
-        public void onSubscribe(Disposable d) {
-            if (!compareAndSet(null, d)) {
-                d.dispose();
-                if (d != DISPOSED) {
-                    SubscriptionHelper.reportSubscriptionSet();
+        public void onSubscribe(Disposable s) {
+            if (!compareAndSet(null, s)) {
+                s.dispose();
+                if (get() != CANCELLED) {
+                    SubscriptionHelper.reportDisposableSet();
                 }
-            }
-        }
-        
-        @Override
-        public void onNext(R value) {
-            if (done) {
                 return;
             }
-            parent.emit(value);
         }
-        
         @Override
-        public void onError(Throwable e) {
-            if (done) {
-                RxJavaPlugins.onError(e);
-                return;
-            }
+        public void onNext(U t) {
+            parent.tryEmit(t, this);
+        }
+        @Override
+        public void onError(Throwable t) {
+            parent.getErrorQueue().offer(t);
             done = true;
-            parent.remove(this);
-            parent.innerError(e);
+            parent.drain();
         }
-        
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
             done = true;
-            parent.remove(this);
-            parent.innerDone();
+            parent.drain();
         }
         
         @Override
         public void dispose() {
-            Disposable d = get();
-            if (d != DISPOSED) {
-                d = getAndSet(DISPOSED);
-                if (d != DISPOSED && d != null) {
-                    d.dispose();
+            Disposable s = get();
+            if (s != CANCELLED) {
+                s = getAndSet(CANCELLED);
+                if (s != CANCELLED && s != null) {
+                    s.dispose();
                 }
             }
         }
+    }
+    
+    static final class RejectingQueue<T> extends AbstractQueue<T> {
+        @Override
+        public boolean offer(T e) {
+            return false;
+        }
+
+        @Override
+        public T poll() {
+            return null;
+        }
+
+        @Override
+        public T peek() {
+            return null;
+        }
+
+        @Override
+        public Iterator<T> iterator() {
+            return Collections.emptyIterator();
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+        
     }
 }

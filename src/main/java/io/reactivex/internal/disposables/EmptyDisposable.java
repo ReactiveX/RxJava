@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.disposables;
 
+import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
 
 public enum EmptyDisposable implements Disposable {
@@ -22,5 +23,15 @@ public enum EmptyDisposable implements Disposable {
     @Override
     public void dispose() {
         // no-op
+    }
+    
+    public static void complete(NbpSubscriber<?> s) {
+        s.onSubscribe(INSTANCE);
+        s.onComplete();
+    }
+    
+    public static void error(Throwable e, NbpSubscriber<?> s) {
+        s.onSubscribe(INSTANCE);
+        s.onError(e);
     }
 }
