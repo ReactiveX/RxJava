@@ -73,25 +73,28 @@ public final class Exceptions {
      * @see <a href="https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495">RxJava: StackOverflowError is swallowed (Issue #748)</a>
      */
     public static void throwIfFatal(Throwable t) {
-        if (t instanceof OnErrorNotImplementedException) {
-            throw (OnErrorNotImplementedException) t;
-        } else if (t instanceof OnErrorFailedException) {
-            Throwable cause = t.getCause();
-            if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
-            } else {
-                throw (OnErrorFailedException) t;
+        if (t instanceof RuntimeException) {
+            if (t instanceof OnErrorNotImplementedException) {
+                throw (OnErrorNotImplementedException) t;
+            } else if (t instanceof OnErrorFailedException) {
+                Throwable cause = t.getCause();
+                if (cause instanceof RuntimeException) {
+                    throw (RuntimeException) cause;
+                } else {
+                    throw (OnErrorFailedException) t;
+                }
             }
-        }
-        // values here derived from https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495
-        else if (t instanceof StackOverflowError) {
-            throw (StackOverflowError) t;
-        } else if (t instanceof VirtualMachineError) {
-            throw (VirtualMachineError) t;
-        } else if (t instanceof ThreadDeath) {
-            throw (ThreadDeath) t;
-        } else if (t instanceof LinkageError) {
-            throw (LinkageError) t;
+        } else if (t instanceof Error) {
+            // values here derived from https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495
+            if (t instanceof StackOverflowError) {
+                throw (StackOverflowError) t;
+            } else if (t instanceof VirtualMachineError) {
+                throw (VirtualMachineError) t;
+            } else if (t instanceof ThreadDeath) {
+                throw (ThreadDeath) t;
+            } else if (t instanceof LinkageError) {
+                throw (LinkageError) t;
+            }
         }
     }
 
@@ -194,7 +197,6 @@ public final class Exceptions {
      * Forwards a fatal exception or reports it to the given Observer.
      * @param t the exception
      * @param o the observer to report to
-     * @param value the value that caused the exception
      */
     @Experimental
     public static void throwOrReport(Throwable t, Observer<?> o) {
