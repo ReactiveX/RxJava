@@ -27,17 +27,17 @@ public final class SingleOperatorFlatMap<T, R> implements SingleOperator<R, T> {
     }
     
     @Override
-    public SingleCallback<? super T> apply(SingleCallback<? super R> t) {
+    public SingleSubscriber<? super T> apply(SingleSubscriber<? super R> t) {
         return new SingleFlatMapCallback<>(t, mapper);
     }
     
-    static final class SingleFlatMapCallback<T, R> implements SingleCallback<T> {
-        final SingleCallback<? super R> actual;
+    static final class SingleFlatMapCallback<T, R> implements SingleSubscriber<T> {
+        final SingleSubscriber<? super R> actual;
         final Function<? super T, ? extends Single<? extends R>> mapper;
         
         final MultipleAssignmentDisposable mad;
 
-        public SingleFlatMapCallback(SingleCallback<? super R> actual,
+        public SingleFlatMapCallback(SingleSubscriber<? super R> actual,
                 Function<? super T, ? extends Single<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
@@ -56,12 +56,12 @@ public final class SingleOperatorFlatMap<T, R> implements SingleOperator<R, T> {
             try {
                 o = mapper.apply(value);
             } catch (Throwable e) {
-                actual.onFailure(e);
+                actual.onError(e);
                 return;
             }
             
             if (o == null) {
-                actual.onFailure(new NullPointerException("The single returned by the mapper is null"));
+                actual.onError(new NullPointerException("The single returned by the mapper is null"));
                 return;
             }
             
@@ -69,7 +69,7 @@ public final class SingleOperatorFlatMap<T, R> implements SingleOperator<R, T> {
                 return;
             }
             
-            o.subscribe(new SingleCallback<R>() {
+            o.subscribe(new SingleSubscriber<R>() {
                 @Override
                 public void onSubscribe(Disposable d) {
                     mad.set(d);
@@ -81,15 +81,15 @@ public final class SingleOperatorFlatMap<T, R> implements SingleOperator<R, T> {
                 }
                 
                 @Override
-                public void onFailure(Throwable e) {
-                    actual.onFailure(e);
+                public void onError(Throwable e) {
+                    actual.onError(e);
                 }
             });
         }
         
         @Override
-        public void onFailure(Throwable e) {
-            actual.onFailure(e);
+        public void onError(Throwable e) {
+            actual.onError(e);
         }
     }
 }
