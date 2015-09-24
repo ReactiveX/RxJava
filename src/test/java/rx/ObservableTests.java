@@ -1021,6 +1021,27 @@ public class ObservableTests {
     }
     
     @Test
+    public void testCollectEmpty() {
+        List<Integer> list = Observable.<Integer> empty()
+                .collect(new Func0<List<Integer>>() {
+
+                    @Override
+                    public List<Integer> call() {
+                        return new ArrayList<Integer>();
+                    }
+
+                }, new Action2<List<Integer>, Integer>() {
+
+                    @Override
+                    public void call(List<Integer> list, Integer v) {
+                        list.add(v);
+                    }
+                }).toBlocking().single();
+
+        assertTrue(list.isEmpty());
+    }
+    
+    @Test
     public void testMergeWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.just(1).mergeWith(Observable.just(2)).subscribe(ts);

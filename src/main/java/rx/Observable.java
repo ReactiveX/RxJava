@@ -3731,14 +3731,7 @@ public class Observable<T> {
             }
 
         };
-        
-        /*
-         * Discussion and confirmation of implementation at
-         * https://github.com/ReactiveX/RxJava/issues/423#issuecomment-27642532
-         * 
-         * It should use last() not takeLast(1) since it needs to emit an error if the sequence is empty.
-         */
-        return lift(new OperatorScan<R, T>(stateFactory, accumulator)).last();
+        return lift(new OperatorScan<R, T>(stateFactory, accumulator)).takeLast(1);
     }
 
     /**
