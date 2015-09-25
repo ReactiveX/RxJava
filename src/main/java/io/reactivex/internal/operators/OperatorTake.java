@@ -62,9 +62,10 @@ public final class OperatorTake<T> implements Operator<T, T> {
         }
         @Override
         public void onNext(T t) {
-            if (!done) {
+            if (!done && remaining-- > 0) {
+                boolean stop = remaining == 0;
                 actual.onNext(t);
-                if (--remaining == 0L) {
+                if (stop) {
                     onComplete();
                 }
             }
