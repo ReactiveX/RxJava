@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.nbp;
 
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.Function;
 
@@ -139,13 +139,18 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
         }
         
         void cancel(Queue<?> q) {
-            q.clear();
+            clear(q);
             for (CombinerSubscriber<T, R> s : subscribers) {
                 s.dispose();
             }
         }
         
-        Object last = "1";
+        void clear(Queue<?> q) {
+            synchronized (this) {
+                Arrays.fill(latest, null);
+            }
+            q.clear();
+        }
         
         void combine(T value, int index) {
             CombinerSubscriber<T, R> cs = subscribers[index];
@@ -156,6 +161,9 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
             boolean empty;
             boolean f;
             synchronized (this) {
+                if (cancelled) {
+                    return;
+                }
                 len = latest.length;
                 Object o = latest[index];
                 a = active;
@@ -258,6 +266,7 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
             if (d) {
                 if (delayError) {
                     if (empty) {
+                        clear(queue);
                         Throwable e = error;
                         if (e != null) {
                             a.onError(e);
@@ -274,6 +283,7 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
                         return true;
                     } else
                     if (empty) {
+                        clear(queue);
                         a.onComplete();
                         return true;
                     }
