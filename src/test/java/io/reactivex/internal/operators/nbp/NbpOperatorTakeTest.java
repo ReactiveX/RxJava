@@ -31,6 +31,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.nbp.NbpPublishSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
 public class NbpOperatorTakeTest {
@@ -337,5 +338,20 @@ public class NbpOperatorTakeTest {
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotComplete();
+    }
+    
+    @Test
+    public void testReentrantTake() {
+        NbpPublishSubject<Integer> source = NbpPublishSubject.create();
+        
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        
+        source.take(1).doOnNext(v -> source.onNext(2)).subscribe(ts);
+        
+        source.onNext(1);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertComplete();
     }
 }

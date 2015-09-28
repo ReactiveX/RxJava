@@ -30,6 +30,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorTakeTest {
@@ -419,5 +420,20 @@ public class OperatorTakeTest {
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotComplete();
+    }
+    
+    @Test
+    public void testReentrantTake() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        
+        source.take(1).doOnNext(v -> source.onNext(2)).subscribe(ts);
+        
+        source.onNext(1);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertComplete();
     }
 }
