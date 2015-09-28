@@ -167,8 +167,9 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         @Override
         public void subscribe(Subscriber<? super T> s) {
             if (once == 0 && ONCE.compareAndSet(this, 0, 1)) {
-                SUBSCRIBER.lazySet(this, s);
                 s.onSubscribe(this);
+                SUBSCRIBER.lazySet(this, s); // full barrier in drain
+                drain();
             } else {
                 if (done) {
                     Throwable e = error;
