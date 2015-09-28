@@ -7821,7 +7821,8 @@ public class Observable<T> {
             subscriber = new SafeSubscriber<T>(subscriber);
         }
 
-        // The code below is exactly the same an unsafeSubscribe but not used because it would add a sigificent depth to alreay huge call stacks.
+        // The code below is exactly the same an unsafeSubscribe but not used because it would 
+        // add a significant depth to already huge call stacks.
         try {
             // allow the hook to intercept and/or decorate
             hook.onSubscribeStart(observable, observable.onSubscribe).call(subscriber);
