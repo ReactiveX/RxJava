@@ -32,6 +32,7 @@ import rx.exceptions.TestException;
 import rx.functions.*;
 import rx.observers.*;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class OperatorTakeTest {
 
@@ -416,5 +417,25 @@ public class OperatorTakeTest {
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testReentrantTake() {
+        final PublishSubject<Integer> source = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.take(1).doOnNext(new Action1<Integer>() {
+            @Override
+            public void call(Integer v) {
+                source.onNext(2);
+            }
+        }).subscribe(ts);
+        
+        source.onNext(1);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 }

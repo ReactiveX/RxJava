@@ -68,8 +68,8 @@ public final class OperatorTake<T> implements Operator<T, T> {
 
             @Override
             public void onNext(T i) {
-                if (!isUnsubscribed()) {
-                    boolean stop = ++count >= limit;
+                if (!isUnsubscribed() && count++ < limit) {
+                    boolean stop = count == limit;
                     child.onNext(i);
                     if (stop && !completed) {
                         completed = true;
