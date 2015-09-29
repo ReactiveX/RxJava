@@ -4444,20 +4444,26 @@ public class Observable<T> {
 
         return lift(new OperatorDoOnEach<T>(observer));
     }
-    
+
     /**
-     * Modifies the source {@code Observable} so that it invokes the given action when it receives a request for
-     * more items. 
+     * Modifies the source {@code Observable} so that it invokes the given action when it receives a
+     * request for more items.
+     * <p>
+     * <b>Note:</b> This operator is for tracing the internal behavior of back-pressure request
+     * patterns and generally intended for debugging use.
      * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code doOnRequest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code doOnRequest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param onRequest
-     *            the action that gets called when an observer requests items from this {@code Observable}
+     *            the action that gets called when an observer requests items from this
+     *            {@code Observable}
      * @return the source {@code Observable} modified so as to call this Action when appropriate
-     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators
+     *      documentation: Do</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
+     *        with the release number)
      */
     @Beta
     public final Observable<T> doOnRequest(final Action1<Long> onRequest) {
