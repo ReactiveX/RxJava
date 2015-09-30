@@ -1,4 +1,4 @@
-package rx.internal.schedulers;
+package rx.schedulers;
 
 import static org.junit.Assert.*;
 
@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import rx.Scheduler.Worker;
 import rx.functions.Action0;
+import rx.internal.schedulers.GenericScheduledExecutorService;
 import rx.internal.util.RxRingBuffer;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
