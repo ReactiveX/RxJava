@@ -143,7 +143,7 @@ public final class Schedulers {
      * Starts those standard Schedulers which support the SchedulerLifecycle interface.
      * <p>The operation is idempotent and threadsafe.
      */
-    public static void start() {
+    /* public testonly */ static void start() {
         Schedulers s = INSTANCE;
         synchronized (s) {
             if (s.computationScheduler instanceof SchedulerLifecycle) {
