@@ -16,7 +16,6 @@
 package rx.subjects;
 
 import rx.Subscriber;
-import rx.annotations.Experimental;
 import rx.observers.SerializedObserver;
 
 /**
@@ -68,40 +67,5 @@ public class SerializedSubject<T, R> extends Subject<T, R> {
     @Override
     public boolean hasObservers() {
         return actual.hasObservers();
-    }
-    @Override
-    @Experimental
-    public boolean hasCompleted() {
-        return actual.hasCompleted();
-    }
-    @Override
-    @Experimental
-    public boolean hasThrowable() {
-        return actual.hasThrowable();
-    }
-    @Override
-    @Experimental
-    public boolean hasValue() {
-        return actual.hasValue();
-    }
-    @Override
-    @Experimental
-    public Throwable getThrowable() {
-        return actual.getThrowable();
-    }
-    @Override
-    @Experimental
-    public T getValue() {
-        return actual.getValue();
-    }
-    @Override
-    @Experimental
-    public Object[] getValues() {
-        return actual.getValues();
-    }
-    @Override
-    @Experimental
-    public T[] getValues(T[] a) {
-        return actual.getValues(a);
     }
 }
