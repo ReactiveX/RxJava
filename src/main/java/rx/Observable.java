@@ -231,7 +231,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/single.html">ReactiveX documentation: Single</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public Single<T> toSingle() {
         return new Single<T>(OnSubscribeSingle.create(this));
     }
