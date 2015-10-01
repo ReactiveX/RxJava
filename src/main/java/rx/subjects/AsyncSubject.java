@@ -203,6 +203,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     }
     @Override
     @Experimental
+    @Deprecated
     @SuppressWarnings("unchecked")
     public T[] getValues(T[] a) {
         Object v = lastValue;
