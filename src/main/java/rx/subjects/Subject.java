@@ -15,10 +15,7 @@
  */
 package rx.subjects;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.annotations.Experimental;
+import rx.*;
 
 /**
  * Represents an object that is both an Observable and an Observer.
@@ -64,8 +61,9 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
      *
      * @return {@code true} if the subject has received a throwable through {@code onError}.
      * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
+     * @deprecated this method will be moved to each Subject class individually in the next release
      */
-    @Experimental
+    @Deprecated
     public boolean hasThrowable() {
         throw new UnsupportedOperationException();
     }
@@ -75,8 +73,9 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
      *
      * @return {@code true} if the subject completed normally via {@code onCompleted}
      * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
+     * @deprecated this method will be moved to each Subject class individually in the next release
      */
-    @Experimental
+    @Deprecated
     public boolean hasCompleted() {
         throw new UnsupportedOperationException();
     }
@@ -87,8 +86,9 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
      * @return the Throwable that terminated the Subject or {@code null} if the subject hasn't terminated yet or
      *         if it terminated normally.
      * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
+     * @deprecated this method will be moved to each Subject class individually in the next release
      */
-    @Experimental
+    @Deprecated
     public Throwable getThrowable() {
         throw new UnsupportedOperationException();
     }
@@ -101,8 +101,9 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
      *
      * @return {@code true} if and only if the subject has some value but not an error
      * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
+     * @deprecated this method will be moved to each Subject class individually in the next release
      */
-    @Experimental
+    @Deprecated
     public boolean hasValue() {
         throw new UnsupportedOperationException();
     }
@@ -117,8 +118,9 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
      * @return the current value or {@code null} if the Subject doesn't have a value, has terminated with an
      *         exception or has an actual {@code null} as a value.
      * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
+     * @deprecated this method will be moved to each Subject class individually in the next release
      */
-    @Experimental
+    @Deprecated
     public T getValue() {
         throw new UnsupportedOperationException();
     }
@@ -130,9 +132,10 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
      *
      * @return a snapshot of the currently buffered non-terminal events.
      * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
+     * @deprecated this method will be moved to each Subject class individually in the next release
      */
     @SuppressWarnings("unchecked")
-    @Experimental
+    @Deprecated
     public Object[] getValues() {
         T[] r = getValues((T[])EMPTY_ARRAY);
         if (r == EMPTY_ARRAY) {
@@ -152,8 +155,9 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
      * @param a the array to fill in
      * @return the array {@code a} if it had enough capacity or a new array containing the available values 
      * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
+     * @deprecated this method will be moved to each Subject class individually in the next release
      */
-    @Experimental
+    @Deprecated
     public T[] getValues(T[] a) {
         throw new UnsupportedOperationException();
     }
