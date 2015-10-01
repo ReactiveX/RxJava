@@ -1162,7 +1162,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     public T[] getValues(T[] a) {
         return state.toArray(a);
     }
+    
     @Override
+    @Experimental
     public T getValue() {
         return state.latest();
     }
