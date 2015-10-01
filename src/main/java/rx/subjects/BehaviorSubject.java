@@ -20,7 +20,7 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 import rx.Observer;
-import rx.annotations.Experimental;
+import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.internal.operators.NotificationLite;
@@ -177,7 +177,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * retrieved by {@code getValue()} may get outdated.
      * @return true if and only if the subject has some value and hasn't terminated yet.
      */
-    @Experimental
+    @Beta
     @Override
     public boolean hasValue() {
         Object o = state.get();
@@ -187,7 +187,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * Check if the Subject has terminated with an exception.
      * @return true if the subject has received a throwable through {@code onError}.
      */
-    @Experimental
+    @Beta
     @Override
     public boolean hasThrowable() {
         Object o = state.get();
@@ -197,7 +197,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * Check if the Subject has terminated normally.
      * @return true if the subject completed normally via {@code onCompleted()}
      */
-    @Experimental
+    @Beta
     @Override
     public boolean hasCompleted() {
         Object o = state.get();
@@ -212,7 +212,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * @return the current value or {@code null} if the Subject doesn't have a value,
      * has terminated or has an actual {@code null} as a valid value.
      */
-    @Experimental
+    @Beta
     @Override
     public T getValue() {
         Object o = state.get();
@@ -226,7 +226,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * @return the Throwable that terminated the Subject or {@code null} if the
      * subject hasn't terminated yet or it terminated normally.
      */
-    @Experimental
+    @Beta
     @Override
     public Throwable getThrowable() {
         Object o = state.get();
@@ -236,7 +236,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         return null;
     }
     @Override
-    @Experimental
+    @Beta
     @SuppressWarnings("unchecked")
     public T[] getValues(T[] a) {
         Object o = state.get();
