@@ -23,9 +23,10 @@ import rx.annotations.Experimental;
 /**
  * Manages the producer-backpressure-consumer interplay by
  * matching up available elements with requested elements and/or
- * terminal events. 
+ * terminal events.
+ * 
+ * @since 1.0.15
  */
-@Experimental
 public final class BackpressureDrainManager implements Producer {
     /**
      * Interface representing the minimal callbacks required
