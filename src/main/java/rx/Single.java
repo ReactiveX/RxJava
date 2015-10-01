@@ -40,11 +40,12 @@ import rx.internal.operators.OperatorOnErrorReturn;
 import rx.internal.operators.OperatorSubscribeOn;
 import rx.internal.operators.OperatorTimeout;
 import rx.internal.operators.OperatorZip;
+
+import rx.annotations.Beta;
 import rx.internal.producers.SingleDelayedProducer;
 import rx.singles.BlockingSingle;
 import rx.observers.SafeSubscriber;
-import rx.plugins.RxJavaObservableExecutionHook;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.*;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
@@ -69,7 +70,7 @@ import rx.subscriptions.Subscriptions;
  *            the type of the item emitted by the Single
  * @since (If this class graduates from "Experimental" replace this parenthetical with the release number)
  */
-@Experimental
+@Beta
 public class Single<T> {
 
     final Observable.OnSubscribe<T> onSubscribe;
