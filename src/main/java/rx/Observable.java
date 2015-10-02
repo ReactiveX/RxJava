@@ -4362,6 +4362,10 @@ public class Observable<T> {
     /**
      * Modifies the source Observable so that it notifies an Observer for each item it emits.
      * <p>
+     * In case the onError of the supplied observer throws, the downstream will receive a composite exception containing
+     * the original exception and the exception thrown by onError. If the onNext or the onCompleted methods
+     * of the supplied observer throws, the downstream will be terminated and wil receive this thrown exception.
+     * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -4379,6 +4383,9 @@ public class Observable<T> {
 
     /**
      * Modifies the source Observable so that it invokes an action if it calls {@code onError}.
+     * <p>
+     * In case the onError action throws, the downstream will receive a composite exception containing
+     * the original exception and the exception thrown by onError.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.png" alt="">
      * <dl>
