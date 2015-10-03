@@ -791,4 +791,68 @@ public class OperatorDelayTest {
         ts.assertError(TestException.class);
         ts.assertNotComplete();
     }
+    
+
+    public void testDelaySupplierSimple() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        Observable<Integer> source = Observable.range(1, 5);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        
+        source.delaySubscription(() -> ps).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ps.onNext(1);
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testDelaySupplierCompletes() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        Observable<Integer> source = Observable.range(1, 5);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        
+        source.delaySubscription(() -> ps).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        // FIXME should this complete the source instead of consuming it?
+        ps.onComplete();
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testDelaySupplierErrors() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        Observable<Integer> source = Observable.range(1, 5);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        
+        source.delaySubscription(() -> ps).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ps.onError(new TestException());
+        
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(TestException.class);
+    }
 }
