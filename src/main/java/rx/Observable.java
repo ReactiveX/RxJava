@@ -4547,6 +4547,412 @@ public class Observable<T> {
     }
 
     /**
+     * Concatenates up to 2 sources eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type 
+     * @param o1 the first source
+     * @param o2 the second source
+     * @return
+     */
+    @Experimental
+    @SuppressWarnings("unchecked")
+    public static <T> Observable<T> concatEager(Observable<? extends T> o1, Observable<? extends T> o2) {
+        return concatEager(Arrays.asList(o1, o2));
+    }
+    
+    /**
+     * Concatenates up to 3 sources eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param o1 the first source
+     * @param o2 the second source
+     * @param o3 the third source
+     * @return
+     */
+    @Experimental
+    @SuppressWarnings("unchecked")
+    public static <T> Observable<T> concatEager(
+            Observable<? extends T> o1, Observable<? extends T> o2,
+            Observable<? extends T> o3
+        ) {
+        return concatEager(Arrays.asList(o1, o2, o3));
+    }
+    
+    /**
+     * Concatenates up to 4 sources eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param o1 the first source
+     * @param o2 the second source
+     * @param o3 the third source
+     * @param o4 the fourth source
+     * @return
+     */
+    @Experimental
+    @SuppressWarnings("unchecked")
+    public static <T> Observable<T> concatEager(
+            Observable<? extends T> o1, Observable<? extends T> o2,
+            Observable<? extends T> o3, Observable<? extends T> o4
+        ) {
+        return concatEager(Arrays.asList(o1, o2, o3, o4));
+    }
+    
+    /**
+     * Concatenates up to 5 sources eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param o1 the first source
+     * @param o2 the second source
+     * @param o3 the third source
+     * @param o4 the fourth source
+     * @param o5 the fifth source
+     * @return
+     */
+    @Experimental
+    @SuppressWarnings("unchecked")
+    public static <T> Observable<T> concatEager(
+            Observable<? extends T> o1, Observable<? extends T> o2,
+            Observable<? extends T> o3, Observable<? extends T> o4,
+            Observable<? extends T> o5
+        ) {
+        return concatEager(Arrays.asList(o1, o2, o3, o4, o5));
+    }
+
+    /**
+     * Concatenates up to 6 sources eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param o1 the first source
+     * @param o2 the second source
+     * @param o3 the third source
+     * @param o4 the fourth source
+     * @param o5 the fifth source
+     * @param o6 the sixth source
+     * @return
+     */
+    @Experimental
+    @SuppressWarnings("unchecked")
+    public static <T> Observable<T> concatEager(
+            Observable<? extends T> o1, Observable<? extends T> o2,
+            Observable<? extends T> o3, Observable<? extends T> o4,
+            Observable<? extends T> o5, Observable<? extends T> o6
+        ) {
+        return concatEager(Arrays.asList(o1, o2, o3, o4, o5, o6));
+    }
+
+    /**
+     * Concatenates up to 7 sources eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param o1 the first source
+     * @param o2 the second source
+     * @param o3 the third source
+     * @param o4 the fourth source
+     * @param o5 the fifth source
+     * @param o6 the sixth source
+     * @param o7 the seventh source
+     * @return
+     */
+    @Experimental
+    @SuppressWarnings("unchecked")
+    public static <T> Observable<T> concatEager(
+            Observable<? extends T> o1, Observable<? extends T> o2,
+            Observable<? extends T> o3, Observable<? extends T> o4,
+            Observable<? extends T> o5, Observable<? extends T> o6,
+            Observable<? extends T> o7
+        ) {
+        return concatEager(Arrays.asList(o1, o2, o3, o4, o5, o6, o7));
+    }
+    
+    /**
+     * Concatenates up to 8 sources eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param o1 the first source
+     * @param o2 the second source
+     * @param o3 the third source
+     * @param o4 the fourth source
+     * @param o5 the fifth source
+     * @param o6 the sixth source
+     * @param o7 the seventh source
+     * @param o8 the eight source
+     * @return
+     */
+    @Experimental
+    @SuppressWarnings("unchecked")
+    public static <T> Observable<T> concatEager(
+            Observable<? extends T> o1, Observable<? extends T> o2,
+            Observable<? extends T> o3, Observable<? extends T> o4,
+            Observable<? extends T> o5, Observable<? extends T> o6,
+            Observable<? extends T> o7, Observable<? extends T> o8
+        ) {
+        return concatEager(Arrays.asList(o1, o2, o3, o4, o5, o6, o7, o8));
+    }
+
+    /**
+     * Concatenates up to 9 sources eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param o1 the first source
+     * @param o2 the second source
+     * @param o3 the third source
+     * @param o4 the fourth source
+     * @param o5 the fifth source
+     * @param o6 the sixth source
+     * @param o7 the seventh source
+     * @param o8 the eight source
+     * @param o9 the nine source
+     * @return
+     */
+    @Experimental
+    @SuppressWarnings("unchecked")
+    public static <T> Observable<T> concatEager(
+            Observable<? extends T> o1, Observable<? extends T> o2,
+            Observable<? extends T> o3, Observable<? extends T> o4,
+            Observable<? extends T> o5, Observable<? extends T> o6,
+            Observable<? extends T> o7, Observable<? extends T> o8,
+            Observable<? extends T> o9
+        ) {
+        return concatEager(Arrays.asList(o1, o2, o3, o4, o5, o6, o7, o8, o9));
+    }
+
+    /**
+     * Concatenates a sequence of Observables eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of Observables that need to be eagerly concatenated
+     * @return
+     */
+    @Experimental
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> Observable<T> concatEager(Iterable<? extends Observable<? extends T>> sources) {
+        return Observable.from(sources).concatMapEager((Func1)UtilityFunctions.identity());
+    }
+
+    /**
+     * Concatenates a sequence of Observables eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of Observables that need to be eagerly concatenated
+     * @param capacityHint hints about the number of expected source sequence values
+     * @return
+     */
+    @Experimental
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> Observable<T> concatEager(Iterable<? extends Observable<? extends T>> sources, int capacityHint) {
+        return Observable.from(sources).concatMapEager((Func1)UtilityFunctions.identity(), capacityHint);
+    }
+    
+    /**
+     * Concatenates an Observable sequence of Observables eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of Observables that need to be eagerly concatenated
+     * @return
+     */
+    @Experimental
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> Observable<T> concatEager(Observable<? extends Observable<? extends T>> sources) {
+        return sources.concatMapEager((Func1)UtilityFunctions.identity());
+    }
+
+    /**
+     * Concatenates an Observable sequence of Observables eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of Observables that need to be eagerly concatenated
+     * @param capacityHint hints about the number of expected source sequence values
+     * @return
+     */
+    @Experimental
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> Observable<T> concatEager(Observable<? extends Observable<? extends T>> sources, int capacityHint) {
+        return sources.concatMapEager((Func1)UtilityFunctions.identity(), capacityHint);
+    }
+    
+    /**
+     * Maps a sequence of values into Observables and concatenates these Observables eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param mapper the function that maps a sequence of values into a sequence of Observables that will bec eagerly concatenated
+     * @return
+     */
+    @Experimental
+    public final <R> Observable<R> concatMapEager(Func1<? super T, ? extends Observable<? extends R>> mapper) {
+        return concatMapEager(mapper, RxRingBuffer.SIZE);
+    }
+
+    /**
+     * Maps a sequence of values into Observables and concatenates these Observables eagerly into a single stream of values.
+     * 
+     * <p>
+     * Eager concatenation means that once a Subscriber subscribes, all sources are subscribed to, their values fully buffered and
+     * they are drained in order, one after the previous completes.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources are subscribed to
+     *  in unbounded mode and values queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param mapper the function that maps a sequence of values into a sequence of Observables that will bec eagerly concatenated
+     * @param capacityHint hints about the number of expected source sequence values
+     * @return 
+     */
+    @Experimental
+    public final <R> Observable<R> concatMapEager(Func1<? super T, ? extends Observable<? extends R>> mapper, int capacityHint) {
+        if (capacityHint < 1) {
+            throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
+        }
+        return lift(new OperatorEagerConcatMap<T, R>(mapper, capacityHint));
+    }
+    
+    /**
      * Returns an Observable that emits the single item at a specified index in a sequence of emissions from a
      * source Observbable.
      * <p>
