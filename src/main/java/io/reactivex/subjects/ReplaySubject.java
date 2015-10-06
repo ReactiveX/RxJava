@@ -487,7 +487,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 int s = size;
                 long r = rs.requested;
                 boolean unbounded = r == Long.MAX_VALUE;
-                long e = 0;
+                long e = 0L;
                 
                 while (s != index) {
                     
@@ -515,7 +515,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     }
                     
                     if (r == 0) {
-                        r = rs.requested;
+                        r = rs.requested + e;
                         if (r == 0) {
                             break;
                         }
@@ -527,8 +527,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     index++;
                 }
                 
-                if (!unbounded) {
-                    r = ReplaySubscription.REQUESTED.addAndGet(rs, e);
+                if (e != 0L) {
+                    if (!unbounded) {
+                        r = ReplaySubscription.REQUESTED.addAndGet(rs, e);
+                    }
                 }
                 if (index != size && r != 0L) {
                     continue;
@@ -748,7 +750,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     }
                     
                     if (r == 0) {
-                        r = rs.requested;
+                        r = rs.requested + e;
                         if (r == 0) {
                             break;
                         }
@@ -1029,7 +1031,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     }
                     
                     if (r == 0) {
-                        r = rs.requested;
+                        r = rs.requested + e;
                         if (r == 0) {
                             break;
                         }
