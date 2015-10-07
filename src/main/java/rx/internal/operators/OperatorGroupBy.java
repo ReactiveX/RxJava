@@ -260,9 +260,6 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
 
                     }).unsafeSubscribe(new Subscriber<T>(o) {
                         @Override
-                        public void onStart() {
-                        }
-                        @Override
                         public void onCompleted() {
                             o.onCompleted();
                             // eagerly cleanup instead of waiting for unsubscribe
