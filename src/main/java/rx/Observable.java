@@ -4457,9 +4457,8 @@ public class Observable<T> {
      *            the action that gets called when an observer requests items from this {@code Observable}
      * @return the source {@code Observable} modified so as to call this Action when appropriate
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.0.15
      */
-    @Beta
     public final Observable<T> doOnRequest(final Action1<Long> onRequest) {
         return lift(new OperatorDoOnRequest<T>(onRequest));
     }
