@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.nbp;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -28,6 +28,7 @@ import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.schedulers.*;
+import io.reactivex.subjects.nbp.NbpPublishSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
 public class NbpOnSubscribeAmbTest {
@@ -178,5 +179,26 @@ public class NbpOnSubscribeAmbTest {
         }).ambWith(NbpObservable.just(2)).toBlocking().single();
         assertEquals(1, result);
     }
-    
+
+    @Test
+    public void testAmbCancelsOthers() {
+        NbpPublishSubject<Integer> source1 = NbpPublishSubject.create();
+        NbpPublishSubject<Integer> source2 = NbpPublishSubject.create();
+        NbpPublishSubject<Integer> source3 = NbpPublishSubject.create();
+        
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        
+        NbpObservable.amb(source1, source2, source3).subscribe(ts);
+        
+        assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
+        assertTrue("Source 2 doesn't have subscribers!", source2.hasSubscribers());
+        assertTrue("Source 3 doesn't have subscribers!", source3.hasSubscribers());
+        
+        source1.onNext(1);
+
+        assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
+        assertFalse("Source 2 still has subscribers!", source2.hasSubscribers());
+        assertFalse("Source 2 still has subscribers!", source3.hasSubscribers());
+        
+    }
 }

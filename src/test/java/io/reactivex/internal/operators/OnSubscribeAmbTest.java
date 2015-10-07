@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -28,6 +28,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.*;
+import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OnSubscribeAmbTest {
@@ -277,5 +278,26 @@ public class OnSubscribeAmbTest {
         }).ambWith(Observable.just(2)).toBlocking().single();
         assertEquals(1, result);
     }
-    
+ 
+    @Test
+    public void testAmbCancelsOthers() {
+        PublishSubject<Integer> source1 = PublishSubject.create();
+        PublishSubject<Integer> source2 = PublishSubject.create();
+        PublishSubject<Integer> source3 = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        
+        Observable.amb(source1, source2, source3).subscribe(ts);
+        
+        assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
+        assertTrue("Source 2 doesn't have subscribers!", source2.hasSubscribers());
+        assertTrue("Source 3 doesn't have subscribers!", source3.hasSubscribers());
+        
+        source1.onNext(1);
+
+        assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
+        assertFalse("Source 2 still has subscribers!", source2.hasSubscribers());
+        assertFalse("Source 2 still has subscribers!", source3.hasSubscribers());
+        
+    }
 }
