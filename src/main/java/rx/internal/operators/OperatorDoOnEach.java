@@ -15,9 +15,11 @@
  */
 package rx.internal.operators;
 
+import java.util.Arrays;
+
 import rx.*;
 import rx.Observable.Operator;
-import rx.exceptions.Exceptions;
+import rx.exceptions.*;
 
 /**
  * Converts the elements of an observable sequence to the specified type.
@@ -62,7 +64,8 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                 try {
                     doOnEachObserver.onError(e);
                 } catch (Throwable e2) {
-                    Exceptions.throwOrReport(e2, observer);
+                    Exceptions.throwIfFatal(e2);
+                    observer.onError(new CompositeException(Arrays.asList(e, e2)));
                     return;
                 }
                 observer.onError(e);
