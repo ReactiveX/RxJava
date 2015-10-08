@@ -12,6 +12,7 @@
  */
 package rx.internal.util;
 
+import rx.Subscription;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -23,6 +24,8 @@ import rx.functions.Func7;
 import rx.functions.Func8;
 import rx.functions.Func9;
 import rx.functions.FuncN;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Utility functions for internal use that we don't want part of the public API. 
@@ -59,6 +62,56 @@ public final class UtilityFunctions {
                 return o;
             }
         };
+    }
+
+    /**
+     * Waits for completion of the Observable/Single and stops the subscription in case of error.
+     *
+     * @param latch
+     *         latch that waits for completion of the Observable/Single.
+     * @param subscription
+     *         subscription that needs to be unsubscribed in case of error.
+     */
+    public static void awaitForCompletion(CountDownLatch latch, Subscription subscription) {
+        if (latch.getCount() == 0) {
+            // Synchronous observable completes before awaiting for it.
+            // Skip await so InterruptedException will never be thrown.
+            return;
+        }
+        // block until the subscription completes and then return
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            subscription.unsubscribe();
+            // set the interrupted flag again so callers can still get it
+            // for more information see https://github.com/ReactiveX/RxJava/pull/147#issuecomment-13624780
+            Thread.currentThread().interrupt();
+            // using Runtime so it is not checked
+            throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
+        }
+    }
+
+    /**
+     * Throws the error if it's not {@code null}, or returns the value even if it's {@code null}.
+     *
+     * @param value
+     *         value to return, can be {@code null}.
+     * @param error
+     *         error to throw, {@code null} means that there is no error.
+     * @param <T>
+     *         type of the value.
+     * @return value if and only if error is {@code null}.
+     */
+    public static <T> T throwErrorOrReturnValue(T value, Throwable error) {
+        if (error != null) {
+            if (error instanceof RuntimeException) {
+                throw (RuntimeException) error;
+            } else {
+                throw new RuntimeException(error);
+            }
+        } else {
+            return value;
+        }
     }
 
     private enum AlwaysTrue implements Func1<Object, Boolean> {

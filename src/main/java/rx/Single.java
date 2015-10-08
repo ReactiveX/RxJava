@@ -42,6 +42,7 @@ import rx.observers.SafeSubscriber;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.schedulers.Schedulers;
+import rx.singles.BlockingSingle;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -1787,6 +1788,20 @@ public class Single<T> {
      */
     public final <T2, R> Single<R> zipWith(Single<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
         return zip(this, other, zipFunction);
+    }
+
+    /**
+     * Converts a Single into a {@link BlockingSingle} (a Single with blocking operators).
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toBlocking} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a {@code BlockingSingle} version of this Single.
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
+     */
+    public final BlockingSingle<T> toBlocking() {
+        return BlockingSingle.from(this);
     }
 
 }
