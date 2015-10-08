@@ -36,15 +36,15 @@ Patch 1.x.y increments (such as 1.0.0 -> 1.0.1, 1.3.1 -> 1.3.2, etc) will occur 
 
 #### @Beta
 
-APIs marked with the `@Beta` annotation at the class or method level are subject to change. They can be modified in any way, or even removed, at any time. If your code is a library itself (i.e. it is used on the CLASSPATH of users outside your own control), you should not use beta APIs, unless you repackage them (e.g. using ProGuard, shading, etc).
+APIs marked with the `@Beta` annotation at the class or method level are subject to change. They can be modified in any way, or even removed in any major or minor release but not in a patch release. If your code is a library itself (i.e. it is used on the CLASSPATH of users outside your own control), you should not use beta APIs, unless you repackage them (e.g. using ProGuard, shading, etc).
 
 #### @Experimental
 
-APIs marked with the `@Experimental` annotation at the class or method level will almost certainly change. They can be modified in any way, or even removed, at any time. You should not use or rely on them in any production code. They are purely to allow broad testing and feedback. 
+APIs marked with the `@Experimental` annotation at the class or method level will almost certainly change. They can be modified in any way, or even removed in any major, minor or, patch release. You should not use or rely on them in any production code. They are purely to allow broad testing and feedback. 
 
 #### @Deprecated
 
-APIs marked with the `@Deprecated` annotation at the class or method level will remain supported until the next major release but it is recommended to stop using them. 
+APIs marked with the `@Deprecated` annotation at the class or method level will remain supported until the next major release but it is recommended to stop using them. APIs marked with `@Beta` and `@Experimental` will be marked as deprecated for at least one minor release before they removed in a minor or patch release respectively.
 
 #### rx.internal.*
 
