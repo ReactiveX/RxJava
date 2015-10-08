@@ -16,7 +16,8 @@
 package rx.schedulers;
 
 import rx.Scheduler;
-import rx.internal.schedulers.EventLoopsScheduler;
+import rx.internal.schedulers.*;
+import rx.internal.util.RxRingBuffer;
 import rx.plugins.RxJavaPlugins;
 
 import java.util.concurrent.Executor;
@@ -136,5 +137,53 @@ public final class Schedulers {
      */
     public static Scheduler from(Executor executor) {
         return new ExecutorScheduler(executor);
+    }
+    
+    /**
+     * Starts those standard Schedulers which support the SchedulerLifecycle interface.
+     * <p>The operation is idempotent and threadsafe.
+     */
+    /* public testonly */ static void start() {
+        Schedulers s = INSTANCE;
+        synchronized (s) {
+            if (s.computationScheduler instanceof SchedulerLifecycle) {
+                ((SchedulerLifecycle) s.computationScheduler).start();
+            }
+            if (s.ioScheduler instanceof SchedulerLifecycle) {
+                ((SchedulerLifecycle) s.ioScheduler).start();
+            }
+            if (s.newThreadScheduler instanceof SchedulerLifecycle) {
+                ((SchedulerLifecycle) s.newThreadScheduler).start();
+            }
+            GenericScheduledExecutorService.INSTANCE.start();
+            
+            RxRingBuffer.SPSC_POOL.start();
+            
+            RxRingBuffer.SPMC_POOL.start();
+        }
+    }
+    /**
+     * Shuts down those standard Schedulers which support the SchedulerLifecycle interface.
+     * <p>The operation is idempotent and threadsafe.
+     */
+    public static void shutdown() {
+        Schedulers s = INSTANCE;
+        synchronized (s) {
+            if (s.computationScheduler instanceof SchedulerLifecycle) {
+                ((SchedulerLifecycle) s.computationScheduler).shutdown();
+            }
+            if (s.ioScheduler instanceof SchedulerLifecycle) {
+                ((SchedulerLifecycle) s.ioScheduler).shutdown();
+            }
+            if (s.newThreadScheduler instanceof SchedulerLifecycle) {
+                ((SchedulerLifecycle) s.newThreadScheduler).shutdown();
+            }
+            
+            GenericScheduledExecutorService.INSTANCE.shutdown();
+            
+            RxRingBuffer.SPSC_POOL.shutdown();
+            
+            RxRingBuffer.SPMC_POOL.shutdown();
+        }
     }
 }

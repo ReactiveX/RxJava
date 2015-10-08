@@ -4362,6 +4362,10 @@ public class Observable<T> {
     /**
      * Modifies the source Observable so that it notifies an Observer for each item it emits.
      * <p>
+     * In case the onError of the supplied observer throws, the downstream will receive a composite exception containing
+     * the original exception and the exception thrown by onError. If the onNext or the onCompleted methods
+     * of the supplied observer throws, the downstream will be terminated and wil receive this thrown exception.
+     * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -4379,6 +4383,9 @@ public class Observable<T> {
 
     /**
      * Modifies the source Observable so that it invokes an action if it calls {@code onError}.
+     * <p>
+     * In case the onError action throws, the downstream will receive a composite exception containing
+     * the original exception and the exception thrown by onError.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.png" alt="">
      * <dl>
@@ -4444,20 +4451,26 @@ public class Observable<T> {
 
         return lift(new OperatorDoOnEach<T>(observer));
     }
-    
+
     /**
-     * Modifies the source {@code Observable} so that it invokes the given action when it receives a request for
-     * more items. 
+     * Modifies the source {@code Observable} so that it invokes the given action when it receives a
+     * request for more items.
+     * <p>
+     * <b>Note:</b> This operator is for tracing the internal behavior of back-pressure request
+     * patterns and generally intended for debugging use.
      * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code doOnRequest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code doOnRequest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param onRequest
-     *            the action that gets called when an observer requests items from this {@code Observable}
+     *            the action that gets called when an observer requests items from this
+     *            {@code Observable}
      * @return the source {@code Observable} modified so as to call this Action when appropriate
-     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators
+     *      documentation: Do</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
+     *        with the release number)
      */
     @Beta
     public final Observable<T> doOnRequest(final Action1<Long> onRequest) {
