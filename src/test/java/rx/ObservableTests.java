@@ -1161,7 +1161,7 @@ public class ObservableTests {
     public void testExtend() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
         final Object value = new Object();
-        Observable.just(value).x(new Func1<OnSubscribe<Object>,Object>(){
+        Observable.just(value).extend(new Func1<OnSubscribe<Object>,Object>(){
             @Override
             public Object call(OnSubscribe<Object> onSubscribe) {
                 onSubscribe.call(subscriber);

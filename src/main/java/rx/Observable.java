@@ -119,7 +119,7 @@ public class Observable<T> {
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
-    public <R> R x(Func1<? super OnSubscribe<T>, ? extends R> conversion) {
+    public <R> R extend(Func1<? super OnSubscribe<T>, ? extends R> conversion) {
         return conversion.call(new OnSubscribe<T>() {
             @Override
             public void call(Subscriber<? super T> subscriber) {
