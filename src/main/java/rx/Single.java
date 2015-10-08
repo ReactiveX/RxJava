@@ -1864,4 +1864,38 @@ public class Single<T> {
 
         return lift(new OperatorDoOnEach<T>(observer));
     }
+    
+    /**
+     * Modifies the source {@link Single} so that it invokes an action when it calls {@code onSuccess}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnSuccess} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onSuccess
+     *            the action to invoke when the source {@link Single} calls {@code onSuccess}
+     * @return the source {@link Single} with the side-effecting behavior applied
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     */
+    @Experimental
+    public final Single<T> doOnSuccess(final Action1<? super T> onSuccess) {
+        Observer<T> observer = new Observer<T>() {
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(T t) {
+                onSuccess.call(t);
+            }
+        };
+
+        return lift(new OperatorDoOnEach<T>(observer));
+    }
 }
