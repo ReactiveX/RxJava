@@ -123,7 +123,7 @@ public final class BlockingObservable<T> {
                 onNext.call(args);
             }
         });
-        awaitForComplete(latch, subscription);
+        UtilityFunctions.awaitForCompletion(latch, subscription);
 
         if (exceptionFromOnError.get() != null) {
             if (exceptionFromOnError.get() instanceof RuntimeException) {
@@ -446,35 +446,10 @@ public final class BlockingObservable<T> {
                 returnItem.set(item);
             }
         });
-        awaitForComplete(latch, subscription);
 
-        if (returnException.get() != null) {
-            if (returnException.get() instanceof RuntimeException) {
-                throw (RuntimeException) returnException.get();
-            } else {
-                throw new RuntimeException(returnException.get());
-            }
-        }
+        UtilityFunctions.awaitForCompletion(latch, subscription);
 
-        return returnItem.get();
+        return UtilityFunctions.throwErrorOrReturnValue(returnItem.get(), returnException.get());
     }
 
-    private void awaitForComplete(CountDownLatch latch, Subscription subscription) {
-        if (latch.getCount() == 0) {
-            // Synchronous observable completes before awaiting for it.
-            // Skip await so InterruptedException will never be thrown.
-            return;
-        }
-        // block until the subscription completes and then return
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            subscription.unsubscribe();
-            // set the interrupted flag again so callers can still get it
-            // for more information see https://github.com/ReactiveX/RxJava/pull/147#issuecomment-13624780
-            Thread.currentThread().interrupt();
-            // using Runtime so it is not checked
-            throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
-        }
-    }
 }
