@@ -12,6 +12,7 @@
  */
 package rx;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -603,6 +604,43 @@ public class Single<T> {
      */
     public final static <T> Single<T> from(Future<? extends T> future, Scheduler scheduler) {
         return new Single<T>(OnSubscribeToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
+    }
+
+    /**
+     * Returns a {@link Single} that invokes passed function and emits its result for each new Observer that subscribes.
+     * <p>
+     * Allows you to defer execution of passed function until Observer subscribes to the {@link Single}.
+     * It makes passed function "lazy".
+     * Result of the function invocation will be emitted by the {@link Single}.
+     * <dl>
+     *   <dt><b>Scheduler:</b></dt>
+     *   <dd>{@code fromCallable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param func
+     *         function which execution should be deferred, it will be invoked when Observer will subscribe to the {@link Single}.
+     * @param <T>
+     *         the type of the item emitted by the {@link Single}.
+     * @return a {@link Single} whose {@link Observer}s' subscriptions trigger an invocation of the given function.
+     */
+    @Experimental
+    public static <T> Single<T> fromCallable(final Callable<? extends T> func) {
+        return create(new OnSubscribe<T>() {
+            @Override
+            public void call(SingleSubscriber<? super T> singleSubscriber) {
+                final T value;
+
+                try {
+                    value = func.call();
+                } catch (Throwable t) {
+                    Exceptions.throwIfFatal(t);
+                    singleSubscriber.onError(t);
+                    return;
+                }
+
+                singleSubscriber.onSuccess(value);
+            }
+        });
     }
 
     /**
