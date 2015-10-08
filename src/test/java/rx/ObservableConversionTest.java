@@ -155,7 +155,7 @@ public class ObservableConversionTest {
             }});
         List<Object> crewOfBattlestarGalactica = Arrays.asList(new Object[] {"William Adama", "Laura Roslin", "Lee Adama", new Cylon()});
         Observable.from(crewOfBattlestarGalactica)
-            .x(new ConvertToCylonDetector<Object>())
+            .extend(new ConvertToCylonDetector<Object>())
             .beep(new Func1<Object, Boolean>(){
                 @Override
                 public Boolean call(Object t) {
@@ -199,7 +199,7 @@ public class ObservableConversionTest {
                                         return i + k;
                                     }});
                     }})
-                    .x(new Func1<OnSubscribe<Integer>, ConcurrentLinkedQueue<Integer>>() {
+                    .extend(new Func1<OnSubscribe<Integer>, ConcurrentLinkedQueue<Integer>>() {
                         @Override
                         public ConcurrentLinkedQueue<Integer> call(OnSubscribe<Integer> onSubscribe) {
                             final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<Integer>();
