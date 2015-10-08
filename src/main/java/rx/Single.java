@@ -12,35 +12,16 @@
  */
 package rx;
 
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 import rx.Observable.Operator;
-import rx.annotations.Experimental;
-import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.functions.Func3;
-import rx.functions.Func4;
-import rx.functions.Func5;
-import rx.functions.Func6;
-import rx.functions.Func7;
-import rx.functions.Func8;
-import rx.functions.Func9;
-import rx.internal.operators.OnSubscribeToObservableFuture;
-import rx.internal.operators.OperatorMap;
-import rx.internal.operators.OperatorObserveOn;
-import rx.internal.operators.OperatorOnErrorReturn;
-import rx.internal.operators.OperatorSubscribeOn;
-import rx.internal.operators.OperatorTimeout;
-import rx.internal.operators.OperatorZip;
+import rx.annotations.Beta;
+import rx.exceptions.*;
+import rx.functions.*;
+import rx.internal.operators.*;
 import rx.internal.producers.SingleDelayedProducer;
 import rx.observers.SafeSubscriber;
-import rx.plugins.RxJavaObservableExecutionHook;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.*;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
@@ -65,7 +46,7 @@ import rx.subscriptions.Subscriptions;
  *            the type of the item emitted by the Single
  * @since (If this class graduates from "Experimental" replace this parenthetical with the release number)
  */
-@Experimental
+@Beta
 public class Single<T> {
 
     final Observable.OnSubscribe<T> onSubscribe;
