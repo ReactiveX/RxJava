@@ -13,8 +13,13 @@
 package rx;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -26,7 +31,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Single.OnSubscribe;
+import rx.exceptions.CompositeException;
 import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.observers.TestSubscriber;
@@ -460,5 +467,67 @@ public class SingleTest {
     	a.subscribe(ts);
     	ts.assertValue("a");
     	ts.assertCompleted();
+    }
+
+    @Test
+    public void doOnErrorShouldNotCallActionIfNoErrorHasOccurred() {
+        Action1<Throwable> action = mock(Action1.class);
+
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Single
+                .just("value")
+                .doOnError(action)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValue("value");
+        testSubscriber.assertNoErrors();
+
+        verifyZeroInteractions(action);
+    }
+
+    @Test
+    public void doOnErrorShouldCallActionIfErrorHasOccurred() {
+        Action1<Throwable> action = mock(Action1.class);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Throwable error = new IllegalStateException();
+
+        Single
+                .error(error)
+                .doOnError(action)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(error);
+
+        verify(action).call(error);
+    }
+
+    @Test
+    public void doOnErrorShouldThrowCompositeExceptionIfOnErrorActionThrows() {
+        Action1<Throwable> action = mock(Action1.class);
+
+
+        Throwable error = new RuntimeException();
+        Throwable exceptionFromOnErrorAction = new IllegalStateException();
+        doThrow(exceptionFromOnErrorAction).when(action).call(error);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Single
+                .error(error)
+                .doOnError(action)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        CompositeException compositeException = (CompositeException) testSubscriber.getOnErrorEvents().get(0);
+
+        assertEquals(2, compositeException.getExceptions().size());
+        assertSame(error, compositeException.getExceptions().get(0));
+        assertSame(exceptionFromOnErrorAction, compositeException.getExceptions().get(1));
+
+        verify(action).call(error);
     }
 }
