@@ -26,6 +26,8 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.exceptions.TestException;
+import rx.internal.operators.BlockingOperatorToIterator.SubscriberIterator;
+import rx.internal.util.RxRingBuffer;
 
 public class BlockingOperatorToIteratorTest {
 
@@ -79,6 +81,50 @@ public class BlockingOperatorToIteratorTest {
         for (String string : strings) {
             // never reaches here
             System.out.println(string);
+        }
+    }
+
+    @Test
+    public void testIteratorExertBackpressure() {
+        final Counter src = new Counter();
+
+        Observable<Integer> obs = Observable.from(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return src;
+            }
+        });
+
+        Iterator<Integer> it = toIterator(obs);
+        while (it.hasNext()) {
+            // Correct backpressure should cause this interleaved behavior.
+            // We first request RxRingBuffer.SIZE. Then in increments of
+            // SubscriberIterator.LIMIT.
+            int i = it.next();
+            int expected = i - (i % SubscriberIterator.LIMIT) + RxRingBuffer.SIZE;
+            expected = Math.min(expected, Counter.MAX);
+
+            assertEquals(expected, src.count);
+        }
+    }
+
+    public static final class Counter implements Iterator<Integer> {
+        static final int MAX = 5 * RxRingBuffer.SIZE;
+        public int count;
+
+        @Override
+        public boolean hasNext() {
+            return count < MAX;
+        }
+
+        @Override
+        public Integer next() {
+            return ++count;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
         }
     }
 }
