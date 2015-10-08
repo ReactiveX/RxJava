@@ -1953,4 +1953,48 @@ public class Single<T> {
     public final Single<T> delay(long delay, TimeUnit unit) {
         return delay(delay, unit, Schedulers.computation());
     }
+
+    /**
+     * Returns a {@link Single} that calls a {@link Single} factory to create a {@link Single} for each new Observer
+     * that subscribes. That is, for each subscriber, the actual {@link Single} that subscriber observes is
+     * determined by the factory function.
+     * <p>
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defer.png" alt="">
+     * <p>
+     * The defer Observer allows you to defer or delay emitting value from a {@link Single} until such time as an
+     * Observer subscribes to the {@link Single}. This allows an {@link Observer} to easily obtain updates or a
+     * refreshed version of the sequence.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param singleFactory
+     *            the {@link Single} factory function to invoke for each {@link Observer} that subscribes to the
+     *            resulting {@link Single}.
+     * @param <T>
+     *            the type of the items emitted by the {@link Single}.
+     * @return a {@link Single} whose {@link Observer}s' subscriptions trigger an invocation of the given
+     *         {@link Single} factory function.
+     * @see <a href="http://reactivex.io/documentation/operators/defer.html">ReactiveX operators documentation: Defer</a>
+     */
+    @Experimental
+    public static <T> Single<T> defer(final Callable<Single<T>> singleFactory) {
+        return create(new OnSubscribe<T>() {
+            @Override
+            public void call(SingleSubscriber<? super T> singleSubscriber) {
+                Single<? extends T> single;
+
+                try {
+                    single = singleFactory.call();
+                } catch (Throwable t) {
+                    Exceptions.throwIfFatal(t);
+                    singleSubscriber.onError(t);
+                    return;
+                }
+
+                single.subscribe(singleSubscriber);
+            }
+        });
+    }
 }
