@@ -36,7 +36,7 @@ public class MultipleAssignmentSubscriptionTest {
     @Before
     public void before() {
         unsubscribe = mock(Action0.class);
-        s = create(unsubscribe);
+        s = Subscriptions.doOnUnsubscribe(unsubscribe);
     }
 
     @Test

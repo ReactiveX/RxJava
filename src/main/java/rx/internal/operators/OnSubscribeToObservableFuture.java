@@ -59,7 +59,7 @@ public final class OnSubscribeToObservableFuture {
 
         @Override
         public void call(Subscriber<? super T> subscriber) {
-            subscriber.add(Subscriptions.create(new Action0() {
+            subscriber.add(Subscriptions.doOnUnsubscribe(new Action0() {
                 @Override
                 public void call() {
                     // If the Future is already completed, "cancel" does nothing.

@@ -88,7 +88,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
         @Override
         public void call(final Subscriber<? super T> s) {
             if (state.casObserverRef(null, s)) {
-                s.add(Subscriptions.create(new Action0() {
+                s.add(Subscriptions.doOnUnsubscribe(new Action0() {
                     @SuppressWarnings("unchecked")
                     @Override
                     public void call() {

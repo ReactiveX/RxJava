@@ -119,7 +119,7 @@ import rx.subscriptions.*;
             final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
             mas.set(first);
             tasks.add(mas);
-            final Subscription removeMas = Subscriptions.create(new Action0() {
+            final Subscription removeMas = Subscriptions.doOnUnsubscribe(new Action0() {
                 @Override
                 public void call() {
                     tasks.remove(mas);

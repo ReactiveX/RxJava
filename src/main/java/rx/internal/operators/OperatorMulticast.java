@@ -93,7 +93,7 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                 // we do this since it is also a Subscription whereas the Subject is not
                 subscription = Subscribers.from(subject);
                 final AtomicReference<Subscription> gs = new AtomicReference<Subscription>();
-                gs.set(Subscriptions.create(new Action0() {
+                gs.set(Subscriptions.doOnUnsubscribe(new Action0() {
                     @Override
                     public void call() {
                         Subscription s;

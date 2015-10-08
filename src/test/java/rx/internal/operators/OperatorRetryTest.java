@@ -588,7 +588,7 @@ public class OperatorRetryTest {
                 }
             };
             thread.start();
-            subscriber.add(Subscriptions.create(new Action0() {
+            subscriber.add(Subscriptions.doOnUnsubscribe(new Action0() {
                 @Override
                 public void call() {
                     terminate.set(true);

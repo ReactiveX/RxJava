@@ -364,7 +364,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     public void call(final Subscriber<? super T> subscriber) {
         
         //setup unsubscription of all the subscribers to the sources
-        subscriber.add(Subscriptions.create(new Action0() {
+        subscriber.add(Subscriptions.doOnUnsubscribe(new Action0() {
 
             @Override
             public void call() {

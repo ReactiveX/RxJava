@@ -119,7 +119,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
             this.worker = worker;
             this.guard = new Object();
             this.state = State.empty();
-            child.add(Subscriptions.create(new Action0() {
+            child.add(Subscriptions.doOnUnsubscribe(new Action0() {
                 @Override
                 public void call() {
                     // if there is no active window, unsubscribe the upstream

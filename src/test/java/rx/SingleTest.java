@@ -273,7 +273,7 @@ public class SingleTest {
                     }
 
                 });
-                s.add(Subscriptions.create(new Action0() {
+                s.add(Subscriptions.doOnUnsubscribe(new Action0() {
 
                     @Override
                     public void call() {
@@ -342,7 +342,7 @@ public class SingleTest {
                     }
 
                 });
-                s.add(Subscriptions.create(new Action0() {
+                s.add(Subscriptions.doOnUnsubscribe(new Action0() {
 
                     @Override
                     public void call() {
@@ -398,7 +398,7 @@ public class SingleTest {
                     }
 
                 });
-                s.add(Subscriptions.create(new Action0() {
+                s.add(Subscriptions.doOnUnsubscribe(new Action0() {
 
                     @Override
                     public void call() {

@@ -219,7 +219,7 @@ public class OnSubscribeUsingTest {
         Func0<Subscription> resourceFactory = new Func0<Subscription>() {
             @Override
             public Subscription call() {
-                return Subscriptions.create(unsubscribe);
+                return Subscriptions.doOnUnsubscribe(unsubscribe);
             }
         };
 
@@ -256,7 +256,7 @@ public class OnSubscribeUsingTest {
         Func0<Subscription> resourceFactory = new Func0<Subscription>() {
             @Override
             public Subscription call() {
-                return Subscriptions.create(unsubscribe);
+                return Subscriptions.doOnUnsubscribe(unsubscribe);
             }
         };
 

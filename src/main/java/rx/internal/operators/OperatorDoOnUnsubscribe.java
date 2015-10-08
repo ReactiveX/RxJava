@@ -38,7 +38,7 @@ public class OperatorDoOnUnsubscribe<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        child.add(Subscriptions.create(unsubscribe));
+        child.add(Subscriptions.doOnUnsubscribe(unsubscribe));
 
         // Pass through since this operator is for notification only, there is
         // no change to the stream whatsoever.

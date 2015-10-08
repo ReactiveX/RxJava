@@ -65,7 +65,7 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
                 }
             });
             
-            sa.add(Subscriptions.create(new Action0() {
+            sa.add(Subscriptions.doOnUnsubscribe(new Action0() {
                 @Override
                 public void call() {
                     interruptFlag.set(Thread.currentThread().isInterrupted());

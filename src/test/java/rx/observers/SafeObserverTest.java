@@ -158,7 +158,7 @@ public class SafeObserverTest {
     public void onCompleteSuccessWithUnsubscribeFailure() {
         Subscriber<String> o = OBSERVER_SUCCESS();
         try {
-            o.add(Subscriptions.create(new Action0() {
+            o.add(Subscriptions.doOnUnsubscribe(new Action0() {
 
                 @Override
                 public void call() {
@@ -184,7 +184,7 @@ public class SafeObserverTest {
         AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
         Subscriber<String> o = OBSERVER_SUCCESS(onError);
         try {
-            o.add(Subscriptions.create(new Action0() {
+            o.add(Subscriptions.doOnUnsubscribe(new Action0() {
 
                 @Override
                 public void call() {
@@ -215,7 +215,7 @@ public class SafeObserverTest {
     public void onErrorFailureWithUnsubscribeFailure() {
         Subscriber<String> o = OBSERVER_ONERROR_FAIL();
         try {
-            o.add(Subscriptions.create(new Action0() {
+            o.add(Subscriptions.doOnUnsubscribe(new Action0() {
 
                 @Override
                 public void call() {
@@ -257,7 +257,7 @@ public class SafeObserverTest {
     public void onErrorNotImplementedFailureWithUnsubscribeFailure() {
         Subscriber<String> o = OBSERVER_ONERROR_NOTIMPLEMENTED();
         try {
-            o.add(Subscriptions.create(new Action0() {
+            o.add(Subscriptions.doOnUnsubscribe(new Action0() {
 
                 @Override
                 public void call() {

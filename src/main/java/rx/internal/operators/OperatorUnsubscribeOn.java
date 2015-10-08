@@ -54,7 +54,7 @@ public class OperatorUnsubscribeOn<T> implements Operator<T, T> {
 
         };
         
-        subscriber.add(Subscriptions.create(new Action0() {
+        subscriber.add(Subscriptions.doOnUnsubscribe(new Action0() {
 
             @Override
             public void call() {

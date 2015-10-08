@@ -146,7 +146,7 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
     }
 
     private Subscription disconnect(final CompositeSubscription current) {
-        return Subscriptions.create(new Action0() {
+        return Subscriptions.doOnUnsubscribe(new Action0() {
             @Override
             public void call() {
                 lock.lock();
