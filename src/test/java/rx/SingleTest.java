@@ -20,8 +20,10 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -529,5 +531,43 @@ public class SingleTest {
         assertSame(exceptionFromOnErrorAction, compositeException.getExceptions().get(1));
 
         verify(action).call(error);
+    }
+
+    @Test
+    public void shouldEmitValueFromCallable() throws Exception {
+        Callable<String> callable = mock(Callable.class);
+
+        when(callable.call()).thenReturn("value");
+
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Single
+                .fromCallable(callable)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValue("value");
+        testSubscriber.assertNoErrors();
+
+        verify(callable).call();
+    }
+
+    @Test
+    public void shouldPassErrorFromCallable() throws Exception {
+        Callable<String> callable = mock(Callable.class);
+
+        Throwable error = new IllegalStateException();
+
+        when(callable.call()).thenThrow(error);
+
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Single
+                .fromCallable(callable)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(error);
+
+        verify(callable).call();
     }
 }
