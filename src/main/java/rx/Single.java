@@ -31,6 +31,7 @@ import rx.functions.Func7;
 import rx.functions.Func8;
 import rx.functions.Func9;
 import rx.internal.operators.OnSubscribeToObservableFuture;
+import rx.internal.operators.OperatorDoOnEach;
 import rx.internal.operators.OperatorMap;
 import rx.internal.operators.OperatorObserveOn;
 import rx.internal.operators.OperatorOnErrorReturn;
@@ -1789,4 +1790,40 @@ public class Single<T> {
         return zip(this, other, zipFunction);
     }
 
+    /**
+     * Modifies the source {@link Single} so that it invokes an action if it calls {@code onError}.
+     * <p>
+     * In case the onError action throws, the downstream will receive a composite exception containing
+     * the original exception and the exception thrown by onError.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onError
+     *            the action to invoke if the source {@link Single} calls {@code onError}
+     * @return the source {@link Single} with the side-effecting behavior applied
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     */
+    @Experimental
+    public final Single<T> doOnError(final Action1<Throwable> onError) {
+        Observer<T> observer = new Observer<T>() {
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                onError.call(e);
+            }
+
+            @Override
+            public void onNext(T t) {
+            }
+        };
+
+        return lift(new OperatorDoOnEach<T>(observer));
+    }
 }
