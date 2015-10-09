@@ -9987,6 +9987,75 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that upon completion of the source Observable subscribes to the passed {@code other}
+     * Observable and then emits all items emitted by that Observable. This function does not expect the source
+     * Observable to emit any item, in case, the source Observable, emits any item, an {@link IllegalStateException}
+     * is raised.
+     * <p>
+     *
+     * This is different than {@link #concatWith(Observable)} as it does not expect the source Observable to ever emit
+     * an item. So, this usually is useful for {@code Observable<Void>} and results in cleaner code as opposed to using
+     * a {@link #cast(Class)}, something like:
+     *
+     * {@code Observable.<Void>empty().cast(String.class).concatWith(Observable.just("Hello"))}
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatEmptyWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>{@code concatEmptyWith} does not propagate any demands from the subscriber to the source {@code Observable}
+     *  as it never expects the source to ever emit an item. All demands are sent to the {@code other}
+     *  {@code Observable}.</dd>
+     *
+     * @return an Observable that upon completion of the source, starts emitting items from the {@code other}
+     * Observable.
+     * @throws IllegalStateException If the source emits any item.
+     *
+     * @see #mergeEmptyWith(Observable)
+     */
+    @Experimental
+    public final <R> Observable<R> concatEmptyWith(Observable<R> other) {
+        return lift(new OperatorConcatEmptyWith<T, R>(other));
+    }
+
+    /**
+     * Returns an Observable that only listens for error from the source Observable and emit items only from the passed
+     * {@code other} Observable. This function does not expect the source Observable to emit any item, in case, the
+     * source Observable, emits any item, an {@link IllegalStateException} is raised.
+     * <p>
+     *
+     * This is different than {@link #mergeWith(Observable)} as it does not expect the source Observable to ever emit
+     * an item. So, this usually is useful for using on {@code Observable<Void>} and results in cleaner code as opposed
+     * to using a {@link #cast(Class)}, something like:
+     * {@code Observable.<Void>empty().cast(String.class).mergeWith(Observable.just("Hello"))}
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeEmptyWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>{@code mergeEmptyWith} does not propagate any demands from the subscriber to the source {@code Observable}
+     *  as it never expects the source to ever emit an item. All demands are sent to the {@code other}
+     *  {@code Observable}.</dd>
+     * </dl>
+     *
+     * @return an Observable that only listens for errors from the source and starts emitting items from the
+     * {@code other} Observable on subscription.
+     * Observable.
+     * @throws IllegalStateException If the source emits any item.
+     *
+     * @see #concatEmptyWith(Observable)
+     */
+    @Experimental
+    public final <R> Observable<R> mergeEmptyWith(Observable<R> other) {
+        return lift(new OperatorMergeEmptyWith<T, R>(other));
+    }
+
+    /**
      * An Observable that never sends any information to an {@link Observer}.
      * This Observable is useful primarily for testing purposes.
      * 
