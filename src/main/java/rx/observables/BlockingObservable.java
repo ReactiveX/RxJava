@@ -482,7 +482,7 @@ public final class BlockingObservable<T> {
      * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
      */
     @Experimental
-    public void run() {
+    public void subscribe() {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] error = { null };
         Subscription s = o.subscribe(new Subscriber<T>() {
@@ -640,14 +640,6 @@ public final class BlockingObservable<T> {
         } finally {
             s.unsubscribe();
         }
-    }
-    
-    /**
-     * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
-     */
-    @Experimental
-    public void subscribe() {
-        run();
     }
     
     /**
