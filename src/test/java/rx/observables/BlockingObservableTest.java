@@ -634,18 +634,18 @@ public class BlockingObservableTest {
 
     @Test
     public void testRun() {
-        Observable.just(1).observeOn(Schedulers.computation()).toBlocking().run();
+        Observable.just(1).observeOn(Schedulers.computation()).toBlocking().subscribe();
     }
     
     @Test(expected = TestException.class)
     public void testRunException() {
-        Observable.error(new TestException()).observeOn(Schedulers.computation()).toBlocking().run();
+        Observable.error(new TestException()).observeOn(Schedulers.computation()).toBlocking().subscribe();
     }
     
     @Test
     public void testRunIOException() {
         try {
-            Observable.error(new IOException()).observeOn(Schedulers.computation()).toBlocking().run();
+            Observable.error(new IOException()).observeOn(Schedulers.computation()).toBlocking().subscribe();
             fail("No exception thrown");
         } catch (RuntimeException ex) {
             if (ex.getCause() instanceof IOException) {
