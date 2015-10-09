@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -569,5 +570,82 @@ public class SingleTest {
         testSubscriber.assertError(error);
 
         verify(callable).call();
+    }
+
+    @Test
+    public void doOnSuccessShouldInvokeAction() {
+        Action1<String> action = mock(Action1.class);
+
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Single
+                .just("value")
+                .doOnSuccess(action)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValue("value");
+        testSubscriber.assertNoErrors();
+
+        verify(action).call(eq("value"));
+    }
+
+    @Test
+    public void doOnSuccessShouldPassErrorFromActionToSubscriber() {
+        Action1<String> action = mock(Action1.class);
+
+        Throwable error = new IllegalStateException();
+        doThrow(error).when(action).call(eq("value"));
+
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Single
+                .just("value")
+                .doOnSuccess(action)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(error);
+
+        verify(action).call(eq("value"));
+    }
+
+    @Test
+    public void doOnSuccessShouldNotCallActionIfSingleThrowsError() {
+        Action1<Object> action = mock(Action1.class);
+
+        Throwable error = new IllegalStateException();
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Single
+                .error(error)
+                .doOnSuccess(action)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(error);
+
+        verifyZeroInteractions(action);
+    }
+
+    @Test
+    public void doOnSuccessShouldNotSwallowExceptionThrownByAction() {
+        Action1<String> action = mock(Action1.class);
+
+        Throwable exceptionFromAction = new IllegalStateException();
+
+        doThrow(exceptionFromAction).when(action).call(eq("value"));
+
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Single
+                .just("value")
+                .doOnSuccess(action)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(exceptionFromAction);
+
+        verify(action).call(eq("value"));
     }
 }
