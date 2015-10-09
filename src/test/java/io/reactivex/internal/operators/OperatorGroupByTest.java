@@ -22,8 +22,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
-import org.junit.*;
-import org.mockito.*;
+import org.junit.Test;
+import org.mockito.Matchers;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable;
@@ -1288,7 +1288,9 @@ public class OperatorGroupByTest {
 
         TestSubscriber<String> ts = new TestSubscriber<>();
 
-        Observable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function<GroupedObservable<Boolean, Integer>, Observable<String>>() {
+        Observable.range(1, 4000)
+            .doOnNext(v -> System.out.println("testgroupByBackpressure2 >> " + v))
+            .groupBy(IS_EVEN2).flatMap(new Function<GroupedObservable<Boolean, Integer>, Observable<String>>() {
 
             @Override
             public Observable<String> apply(final GroupedObservable<Boolean, Integer> g) {
@@ -1470,5 +1472,78 @@ public class OperatorGroupByTest {
                         request(Long.MAX_VALUE-1);
                     }});
         assertTrue(completed.get());
+    }
+    
+    /**
+     * Issue #3425.
+     * 
+     * The problem is that a request of 1 may create a new group, emit to the desired group
+     * or emit to a completely different group. In this test, the merge requests N which
+     * must be produced by the range, however it will create a bunch of groups before the actual
+     * group receives a value.
+     */
+    @Test
+    public void testBackpressureObserveOnOuter() {
+        for (int j = 0; j < 1000; j++) {
+            Observable.merge(
+                    Observable.range(0, 500)
+                    .groupBy(i -> i % (Observable.bufferSize() + 2))
+                    .observeOn(Schedulers.computation())
+            ).toBlocking().last();
+        }
+    }
+    
+    /**
+     * Synchronous verification of issue #3425.
+     */
+    @Test
+    public void testBackpressureInnerDoesntOverflowOuter() {
+        TestSubscriber<GroupedObservable<Integer, Integer>> ts = new TestSubscriber<>((Long)null);
+        
+        Observable.fromArray(1, 2)
+                .groupBy(v -> v)
+                .doOnNext(g -> g.subscribe()) // this will request Long.MAX_VALUE
+                .subscribe(ts)
+                ;
+        ts.request(1);
+        
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+        ts.assertValueCount(1);
+    }
+    
+    @Test
+    public void testOneGroupInnerRequestsTwiceBuffer() {
+        TestSubscriber<Object> ts1 = new TestSubscriber<>((Long)null);
+        TestSubscriber<Object> ts2 = new TestSubscriber<>((Long)null);
+        
+        Observable.range(1, Observable.bufferSize() * 2)
+        .groupBy(v -> 1)
+        .doOnNext(g -> g.subscribe(ts2))
+        .subscribe(ts1);
+        
+        ts1.assertNoValues();
+        ts1.assertNoErrors();
+        ts1.assertNotComplete();
+        
+        ts2.assertNoValues();
+        ts2.assertNoErrors();
+        ts2.assertNotComplete();
+        
+        ts1.request(1);
+        
+        ts1.assertValueCount(1);
+        ts1.assertNoErrors();
+        ts1.assertNotComplete();
+        
+        ts2.assertNoValues();
+        ts2.assertNoErrors();
+        ts2.assertNotComplete();
+        
+        ts2.request(Observable.bufferSize() * 2);
+        
+        ts2.assertValueCount(Observable.bufferSize() * 2);
+        ts2.assertNoErrors();
+        ts2.assertNotComplete();
     }
 }
