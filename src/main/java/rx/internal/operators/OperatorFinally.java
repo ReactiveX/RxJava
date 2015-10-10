@@ -33,6 +33,9 @@ public final class OperatorFinally<T> implements Operator<T, T> {
     final Action0 action;
 
     public OperatorFinally(Action0 action) {
+        if (action == null) {
+            throw new NullPointerException("Action can not be null");
+        }
         this.action = action;
     }
 
