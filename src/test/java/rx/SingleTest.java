@@ -51,7 +51,6 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
-
 public class SingleTest {
 
     @Test
@@ -890,5 +889,56 @@ public class SingleTest {
         verify(action).call();
         testSubscriber.assertNoValues();
         testSubscriber.assertNoTerminalEvent();
+    }
+
+    @Test
+    public void doAfterTerminateActionShouldBeInvokedAfterOnSuccess() {
+        Action0 action = mock(Action0.class);
+
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Single
+                .just("value")
+                .doAfterTerminate(action)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValue("value");
+        testSubscriber.assertNoErrors();
+
+        verify(action).call();
+    }
+
+    @Test
+    public void doAfterTerminateActionShouldBeInvokedAfterOnError() {
+        Action0 action = mock(Action0.class);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Throwable error = new IllegalStateException();
+
+        Single
+                .error(error)
+                .doAfterTerminate(action)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(error);
+
+        verify(action).call();
+    }
+
+    @Test
+    public void doAfterTerminateActionShouldNotBeInvokedUntilSubscriberSubscribes() {
+        Action0 action = mock(Action0.class);
+
+        Single
+                .just("value")
+                .doAfterTerminate(action);
+
+        Single
+                .error(new IllegalStateException())
+                .doAfterTerminate(action);
+
+        verifyZeroInteractions(action);
     }
 }

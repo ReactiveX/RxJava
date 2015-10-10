@@ -36,6 +36,7 @@ import rx.internal.operators.OnSubscribeToObservableFuture;
 import rx.internal.operators.OperatorDelay;
 import rx.internal.operators.OperatorDoOnEach;
 import rx.internal.operators.OperatorDoOnUnsubscribe;
+import rx.internal.operators.OperatorFinally;
 import rx.internal.operators.OperatorMap;
 import rx.internal.operators.OperatorObserveOn;
 import rx.internal.operators.OperatorOnErrorReturn;
@@ -2019,5 +2020,26 @@ public class Single<T> {
     @Experimental
     public final Single<T> doOnUnsubscribe(final Action0 action) {
         return lift(new OperatorDoOnUnsubscribe<T>(action));
+    }
+
+    /**
+     * Registers an {@link Action0} to be called when this {@link Single} invokes either
+     * {@link SingleSubscriber#onSuccess(Object)}  onSuccess} or {@link SingleSubscriber#onError onError}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param action
+     *            an {@link Action0} to be invoked when the source {@link Single} finishes.
+     * @return a {@link Single} that emits the same item or error as the source {@link Single}, then invokes the
+     *         {@link Action0}
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     */
+    @Experimental
+    public final Single<T> doAfterTerminate(Action0 action) {
+        return lift(new OperatorFinally<T>(action));
     }
 }
