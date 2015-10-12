@@ -1251,22 +1251,26 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that invokes passed function and emits its result for each new Observer that subscribes.
+     * Returns an Observable that, when an observer subscribes to it, invokes a function you specify and then
+     * emits the value returned from that function.
      * <p>
-     * Allows you to defer execution of passed function until Observer subscribes to the Observable.
-     * It makes passed function "lazy".
-     * Result of the function invocation will be emitted by the Observable.
+     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.png" alt="">
+     * <p>
+     * This allows you to defer the execution of the function you specify untl an observer subscribes to the
+     * Observable. That is to say, it makes the function "lazy."
      * <dl>
      *   <dt><b>Scheduler:</b></dt>
      *   <dd>{@code fromCallable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param func
-     *         function which execution should be deferred, it will be invoked when Observer will subscribe to the Observable
+     *         a function, the execution of which should be deferred; {@code fromCallable} will invoke this
+     *         function only when an observer subscribes to the Observable that {@code fromCallable} returns
      * @param <T>
      *         the type of the item emitted by the Observable
      * @return an Observable whose {@link Observer}s' subscriptions trigger an invocation of the given function
      * @see #defer(Func0)
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public static <T> Observable<T> fromCallable(Callable<? extends T> func) {
