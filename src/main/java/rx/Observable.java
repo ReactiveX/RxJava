@@ -217,7 +217,7 @@ public class Observable<T> {
      * emits only a single item. If the source Observable emits more than one item or no items, notify of an
      * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
      * <p>
-     * <img width="640" height="295" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSingle.png" alt="">
+     * <img width="640" height="295" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toSingle.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
