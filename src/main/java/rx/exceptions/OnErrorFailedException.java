@@ -32,19 +32,19 @@ public class OnErrorFailedException extends RuntimeException {
      * @param message
      *          the message to assign to the {@code Throwable} to re-throw
      * @param e
-     *          the {@code Throwable} to re-throw
+     *          the {@code Throwable} to re-throw; if null, a NullPointerException is constructed
      */
     public OnErrorFailedException(String message, Throwable e) {
-        super(message, e);
+        super(message, e != null ? e : new NullPointerException());
     }
 
     /**
      * Wraps the {@code Throwable} before it is to be re-thrown as an {@code OnErrorFailedException}.
      *
      * @param e
-     *          the {@code Throwable} to re-throw
+     *          the {@code Throwable} to re-throw; if null, a NullPointerException is constructed
      */
     public OnErrorFailedException(Throwable e) {
-        super(e.getMessage(), e);
+        super(e != null ? e.getMessage() : null, e != null ? e : new NullPointerException());
     }
 }

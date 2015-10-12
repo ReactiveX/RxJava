@@ -15,15 +15,35 @@
  */
 package rx.exceptions;
 
+import rx.Subscriber;
+
+/**
+ * Represents an exception used to re-throw errors thrown from {@link Subscriber#onCompleted()}.
+ */
 public final class OnCompletedFailedException extends RuntimeException {
 
     private static final long serialVersionUID = 8622579378868820554L;
 
+    /**
+     * Wraps the {@code Throwable} before it is to be re-thrown as an {@code OnCompletedFailedException}.
+     *
+     * @param e
+     *          the {@code Throwable} to re-throw; if null, a NullPointerException is constructed
+     */
     public OnCompletedFailedException(Throwable throwable) {
-        super(throwable);
+        super(throwable != null ? throwable : new NullPointerException());
     }
     
+    /**
+     * Customizes the {@code Throwable} with a custom message and wraps it before it is to be re-thrown as an
+     * {@code OnCompletedFailedException}.
+     *
+     * @param message
+     *          the message to assign to the {@code Throwable} to re-throw
+     * @param e
+     *          the {@code Throwable} to re-throw; if null, a NullPointerException is constructed
+     */
     public OnCompletedFailedException(String message, Throwable throwable) {
-        super(message, throwable);
+        super(message, throwable != null ? throwable : new NullPointerException());
     }
 }

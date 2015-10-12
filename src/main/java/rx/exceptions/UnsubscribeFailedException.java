@@ -15,16 +15,36 @@
  */
 package rx.exceptions;
 
+import rx.Subscriber;
+
+/**
+ * Represents an exception used to re-throw errors thrown from {@link Subscriber#unsubscribe()}.
+ */
 public final class UnsubscribeFailedException extends RuntimeException {
 
     private static final long serialVersionUID = 4594672310593167598L;
 
+    /**
+     * Wraps the {@code Throwable} before it is to be re-thrown as an {@code OnErrorFailedException}.
+     *
+     * @param throwable
+     *          the {@code Throwable} to re-throw; if null, a NullPointerException is constructed
+     */
     public UnsubscribeFailedException(Throwable throwable) {
-        super(throwable);
+        super(throwable != null ? throwable : new NullPointerException());
     }
     
+    /**
+     * Customizes the {@code Throwable} with a custom message and wraps it before it is to be re-thrown as an
+     * {@code UnsubscribeFailedException}.
+     *
+     * @param message
+     *          the message to assign to the {@code Throwable} to re-throw
+     * @param throwable
+     *          the {@code Throwable} to re-throw; if null, a NullPointerException is constructed
+     */
     public UnsubscribeFailedException(String message, Throwable throwable) {
-        super(message, throwable);
+        super(message, throwable != null ? throwable : new NullPointerException());
     }
     
 }
