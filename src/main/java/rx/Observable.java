@@ -5595,6 +5595,24 @@ public class Observable<T> {
     public final Observable<T> ignoreElements() {
         return lift(OperatorIgnoreElements.<T> instance());
     }
+    
+    /**
+     * Returns the source with all {@code onNext} emissions ignored concatenated with the Observable {@code following}.  
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElementsThen.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code ignoreElementsThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @return the concatenation of {@code source.ignoreElements()} with {@code following}
+     * @see <a href="http://reactivex.io/documentation/operators/ignoreelements.html">ReactiveX operators documentation: IgnoreElementsThen</a>
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final <R> Observable<R> ignoreElementsThen(Observable<R> following) {
+        return ((Observable<R>) (Observable<?>) ignoreElements()).concatWith(following);
+    }
 
     /**
      * Returns an Observable that emits {@code true} if the source Observable is empty, otherwise {@code false}.

@@ -127,4 +127,21 @@ public class OperatorIgnoreElementsTest {
         assertEquals(0, count.get());
     }
     
+    @Test
+    public void testIgnoreElementsThen() {
+        final AtomicBoolean firstCompleted = new AtomicBoolean(false);
+        assertEquals(Arrays.asList(1, 2, 3), 
+                Observable
+                    .just("a","b","c")
+                    .doOnCompleted(new Action0() {
+
+                        @Override
+                        public void call() {
+                            firstCompleted.set(true);
+                        }})
+                    .ignoreElementsThen(Observable.just(1, 2, 3))
+                    .toList().toBlocking().single());
+        assertTrue(firstCompleted.get());
+    }
+    
 }
