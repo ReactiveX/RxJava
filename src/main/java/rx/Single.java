@@ -21,6 +21,7 @@ import rx.Observable.Operator;
 import rx.annotations.Experimental;
 import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorNotImplementedException;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -32,6 +33,7 @@ import rx.functions.Func7;
 import rx.functions.Func8;
 import rx.functions.Func9;
 import rx.internal.operators.OnSubscribeToObservableFuture;
+import rx.internal.operators.OperatorDelay;
 import rx.internal.operators.OperatorDoOnEach;
 import rx.internal.operators.OperatorMap;
 import rx.internal.operators.OperatorObserveOn;
@@ -1897,5 +1899,51 @@ public class Single<T> {
         };
 
         return lift(new OperatorDoOnEach<T>(observer));
+    }
+
+    /**
+     * Returns an Single that emits the items emitted by the source Single shifted forward in time by a
+     * specified delay. Error notifications from the source Single are not delayed.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
+     *
+     * @param delay
+     *            the delay to shift the source by
+     * @param unit
+     *            the time unit of {@code delay}
+     * @param scheduler
+     *            the {@link Scheduler} to use for delaying
+     * @return the source Single shifted in time by the specified delay
+     * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
+     */
+    @Experimental
+    public final Single<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
+        return lift(new OperatorDelay<T>(delay, unit, scheduler));
+    }
+
+    /**
+     * Returns an Single that emits the items emitted by the source Single shifted forward in time by a
+     * specified delay. Error notifications from the source Observable are not delayed.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code delay} operates by default on the {@code compuation} {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param delay
+     *            the delay to shift the source by
+     * @param unit
+     *            the {@link TimeUnit} in which {@code period} is defined
+     * @return the source Single shifted in time by the specified delay
+     * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
+     */
+    @Experimental
+    public final Single<T> delay(long delay, TimeUnit unit) {
+        return delay(delay, unit, Schedulers.computation());
     }
 }

@@ -39,9 +39,11 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.schedulers.TestScheduler;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
+
 
 public class SingleTest {
 
@@ -436,7 +438,7 @@ public class SingleTest {
             fail("timed out waiting for latch");
         }
     }
-    
+
     @Test
     public void testBackpressureAsObservable() {
         Single<String> s = Single.create(new OnSubscribe<String>() {
@@ -462,7 +464,7 @@ public class SingleTest {
 
         ts.assertValue("hello");
     }
-    
+
     @Test
     public void testToObservable() {
     	Observable<String> a = Single.just("a").toObservable();
@@ -647,5 +649,44 @@ public class SingleTest {
         testSubscriber.assertError(exceptionFromAction);
 
         verify(action).call(eq("value"));
+    }
+
+    @Test
+    public void delayWithSchedulerShouldDelayCompletion() {
+        TestScheduler scheduler = new TestScheduler();
+        Single<Integer> single = Single.just(1).delay(100, TimeUnit.DAYS, scheduler);
+
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        single.subscribe(subscriber);
+
+        subscriber.assertNotCompleted();
+        scheduler.advanceTimeBy(99, TimeUnit.DAYS);
+        subscriber.assertNotCompleted();
+        scheduler.advanceTimeBy(91, TimeUnit.DAYS);
+        subscriber.assertCompleted();
+        subscriber.assertValue(1);
+    }
+
+    @Test
+    public void delayWithSchedulerShouldShortCutWithFailure() {
+        TestScheduler scheduler = new TestScheduler();
+        final RuntimeException expected = new RuntimeException();
+        Single<Integer> single = Single.create(new OnSubscribe<Integer>() {
+            @Override
+            public void call(SingleSubscriber<? super Integer> singleSubscriber) {
+                singleSubscriber.onSuccess(1);
+                singleSubscriber.onError(expected);
+            }
+        }).delay(100, TimeUnit.DAYS, scheduler);
+
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        single.subscribe(subscriber);
+
+        subscriber.assertNotCompleted();
+        scheduler.advanceTimeBy(99, TimeUnit.DAYS);
+        subscriber.assertNotCompleted();
+        scheduler.advanceTimeBy(91, TimeUnit.DAYS);
+        subscriber.assertNoValues();
+        subscriber.assertError(expected);
     }
 }
