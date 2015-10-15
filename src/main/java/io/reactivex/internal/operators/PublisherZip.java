@@ -199,6 +199,12 @@ public final class PublisherZip<T, R> implements Publisher<R> {
                         return;
                     }
                     
+                    if (v == null) {
+                        clear();
+                        a.onError(new NullPointerException("The zipper returned null"));
+                        return;
+                    }
+                    
                     a.onNext(v);
                     
                     r--;

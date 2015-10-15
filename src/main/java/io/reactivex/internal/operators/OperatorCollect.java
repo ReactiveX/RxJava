@@ -39,6 +39,10 @@ public final class OperatorCollect<T, U> implements Operator<U, T> {
             EmptySubscription.error(e, t);
             return CancelledSubscriber.INSTANCE;
         }
+        if (u == null) {
+            EmptySubscription.error(new NullPointerException("The initial value supplied is null"), t);
+            return CancelledSubscriber.INSTANCE;
+        }
         
         return new CollectSubscriber<>(t, u, collector);
     }

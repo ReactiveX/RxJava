@@ -258,6 +258,10 @@ public final class NbpAsyncSubject<T> extends NbpSubject<T, T> {
             if (done) {
                 return;
             }
+            if (value == null) {
+                onError(new NullPointerException());
+                return;
+            }
             lazySet(value);
         }
         
@@ -268,6 +272,9 @@ public final class NbpAsyncSubject<T> extends NbpSubject<T, T> {
                 return;
             }
             done = true;
+            if (e == null) {
+                e = new NullPointerException();
+            }
             for (NbpSubscriber<? super T> v : terminate(NotificationLite.error(e))) {
                 v.onError(e);
             }

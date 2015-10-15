@@ -40,6 +40,11 @@ public final class NbpOperatorCollect<T, U> implements NbpOperator<U, T> {
             return NbpCancelledSubscriber.INSTANCE;
         }
         
+        if (u == null) {
+            EmptyDisposable.error(new NullPointerException("The inital supplier returned a null value"), t);
+            return NbpCancelledSubscriber.INSTANCE;
+        }
+        
         return new CollectSubscriber<>(t, u, collector);
     }
     

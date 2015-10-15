@@ -284,12 +284,14 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
     public void run() {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] error = { null };
-        LambdaSubscriber<T> ls = new LambdaSubscriber<>(v -> { }, e -> {
+        NbpLambdaSubscriber<T> ls = new NbpLambdaSubscriber<>(v -> { }, e -> {
             error[0] = e;
             cdl.countDown();
         }, () -> {
             cdl.countDown();
-        }, s -> s.request(Long.MAX_VALUE));
+        }, s -> { });
+        
+        o.subscribe(ls);
         
         awaitForComplete(cdl, ls);
         Throwable e = error[0];

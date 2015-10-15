@@ -59,14 +59,65 @@ public class Single<T> {
     }
     
     public static <T> Single<T> amb(Iterable<? extends Single<? extends T>> sources) {
+        Objects.requireNonNull(sources, "sources is null");
         return create(s -> {
             AtomicBoolean once = new AtomicBoolean();
             CompositeDisposable set = new CompositeDisposable();
             s.onSubscribe(set);
             
             int c = 0;
-            for (Single<? extends T> s1 : sources) {
+            Iterator<? extends Single<? extends T>> iterator;
+            
+            try {
+                iterator = sources.iterator();
+            } catch (Throwable e) {
+                s.onError(e);
+                return;
+            }
+            
+            if (iterator == null) {
+                s.onError(new NullPointerException("The iterator returned is null"));
+                return;
+            }
+            for (;;) {
                 if (once.get()) {
+                    return;
+                }
+                
+                boolean b;
+                
+                try {
+                    b = iterator.hasNext();
+                } catch (Throwable e) {
+                    s.onError(e);
+                    return;
+                }
+                
+                if (once.get()) {
+                    return;
+                }
+
+                if (!b) {
+                    break;
+                }
+                
+                Single<? extends T> s1;
+
+                if (once.get()) {
+                    return;
+                }
+
+                try {
+                    s1 = iterator.next();
+                } catch (Throwable e) {
+                    set.dispose();
+                    s.onError(e);
+                    return;
+                }
+                
+                if (s1 == null) {
+                    set.dispose();
+                    s.onError(new NullPointerException("The single source returned by the iterator is null"));
                     return;
                 }
                 
@@ -119,6 +170,17 @@ public class Single<T> {
             
             for (Single<? extends T> s1 : sources) {
                 if (once.get()) {
+                    return;
+                }
+                
+                if (s1 == null) {
+                    set.dispose();
+                    Throwable e = new NullPointerException("One of the sources is null");
+                    if (once.compareAndSet(false, true)) {
+                        s.onError(e);
+                    } else {
+                        RxJavaPlugins.onError(e);
+                    }
                     return;
                 }
                 
@@ -273,6 +335,7 @@ public class Single<T> {
     }
     
     public static <T> Single<T> defer(Supplier<? extends Single<? extends T>> singleSupplier) {
+        Objects.requireNonNull(singleSupplier, "singleSupplier is null");
         return create(s -> {
             Single<? extends T> next;
             
@@ -624,7 +687,7 @@ public class Single<T> {
 
     public static <T, U> Single<T> using(Supplier<U> resourceSupplier, 
             Function<? super U, ? extends Single<? extends T>> singleFunction, Consumer<? super U> disposer) {
-        return using(resourceSupplier, singleFunction, disposer);
+        return using(resourceSupplier, singleFunction, disposer, true);
     }
         
     public static <T, U> Single<T> using(Supplier<U> resourceSupplier, 
@@ -723,7 +786,10 @@ public class Single<T> {
         });
     }
 
-    public static <T, R> Observable<R> zip(Iterable<? extends Single<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
+    @SuppressWarnings("unchecked")
+    public static <T, R> Single<R> zip(Iterable<? extends Single<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
+        Objects.requireNonNull(sources, "sources is null");
+        
         Iterable<? extends Observable<T>> it = () -> {
             Iterator<? extends Single<? extends T>> sit = sources.iterator();
             return new Iterator<Observable<T>>() {
@@ -733,7 +799,6 @@ public class Single<T> {
                     return sit.hasNext();
                 }
 
-                @SuppressWarnings("unchecked")
                 @Override
                 public Observable<T> next() {
                     return ((Observable<T>)sit.next().toFlowable());
@@ -741,10 +806,10 @@ public class Single<T> {
                 
             };
         };
-        return Observable.zipIterable(zipper, false, 1, it);
+        return (Single<R>)Observable.zipIterable(zipper, false, 1, it).toSingle();
     }
 
-    public static <T1, T2, R> Observable<R> zip(
+    public static <T1, T2, R> Single<R> zip(
             Single<? extends T1> s1, Single<? extends T2> s2,
             BiFunction<? super T1, ? super T2, ? extends R> zipper
      ) {
@@ -753,7 +818,7 @@ public class Single<T> {
         return zipArray(toFunction(zipper), s1, s2);
     }
 
-    public static <T1, T2, T3, R> Observable<R> zip(
+    public static <T1, T2, T3, R> Single<R> zip(
             Single<? extends T1> s1, Single<? extends T2> s2,
             Single<? extends T3> s3,
             Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper
@@ -764,7 +829,7 @@ public class Single<T> {
         return zipArray(zipper, s1, s2, s3);
     }
 
-    public static <T1, T2, T3, T4, R> Observable<R> zip(
+    public static <T1, T2, T3, T4, R> Single<R> zip(
             Single<? extends T1> s1, Single<? extends T2> s2,
             Single<? extends T3> s3, Single<? extends T4> s4,
             Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipper
@@ -776,7 +841,7 @@ public class Single<T> {
         return zipArray(zipper, s1, s2, s3, s4);
     }
 
-    public static <T1, T2, T3, T4, T5, R> Observable<R> zip(
+    public static <T1, T2, T3, T4, T5, R> Single<R> zip(
             Single<? extends T1> s1, Single<? extends T2> s2,
             Single<? extends T3> s3, Single<? extends T4> s4,
             Single<? extends T5> s5,
@@ -790,7 +855,7 @@ public class Single<T> {
         return zipArray(zipper, s1, s2, s3, s4, s5);
     }
 
-    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> zip(
+    public static <T1, T2, T3, T4, T5, T6, R> Single<R> zip(
             Single<? extends T1> s1, Single<? extends T2> s2,
             Single<? extends T3> s3, Single<? extends T4> s4,
             Single<? extends T5> s5, Single<? extends T6> s6,
@@ -805,7 +870,7 @@ public class Single<T> {
         return zipArray(zipper, s1, s2, s3, s4, s5, s6);
     }
 
-    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> zip(
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Single<R> zip(
             Single<? extends T1> s1, Single<? extends T2> s2,
             Single<? extends T3> s3, Single<? extends T4> s4,
             Single<? extends T5> s5, Single<? extends T6> s6,
@@ -822,7 +887,7 @@ public class Single<T> {
         return zipArray(zipper, s1, s2, s3, s4, s5, s6, s7);
     }
     
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> zip(
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Single<R> zip(
             Single<? extends T1> s1, Single<? extends T2> s2,
             Single<? extends T3> s3, Single<? extends T4> s4,
             Single<? extends T5> s5, Single<? extends T6> s6,
@@ -840,7 +905,7 @@ public class Single<T> {
         return zipArray(zipper, s1, s2, s3, s4, s5, s6, s7, s8);
     }
     
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> zip(
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Single<R> zip(
             Single<? extends T1> s1, Single<? extends T2> s2,
             Single<? extends T3> s3, Single<? extends T4> s4,
             Single<? extends T5> s5, Single<? extends T6> s6,
@@ -862,14 +927,14 @@ public class Single<T> {
 
     @SafeVarargs
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static <T, R> Observable<R> zipArray(Function<? super Object[], ? extends R> zipper, Single<? extends T>... sources) {
+    public static <T, R> Single<R> zipArray(Function<? super Object[], ? extends R> zipper, Single<? extends T>... sources) {
         Publisher[] sourcePublishers = new Publisher[sources.length];
         int i = 0;
         for (Single<? extends T> s : sources) {
             sourcePublishers[i] = s.toFlowable();
             i++;
         }
-        return Observable.zipArray(zipper, false, 1, sourcePublishers);
+        return Observable.zipArray(zipper, false, 1, sourcePublishers).toSingle();
     }
 
     protected final SingleOnSubscribe<T> onSubscribe;
@@ -879,6 +944,7 @@ public class Single<T> {
     }
 
     public final Single<T> ambWith(Single<? extends T> other) {
+        Objects.requireNonNull(other, "other is null");
         return amb(this, other);
     }
     
@@ -965,6 +1031,7 @@ public class Single<T> {
     }
     
     public final <U> Single<U> cast(Class<? extends U> clazz) {
+        Objects.requireNonNull(clazz, "clazz is null");
         return create(s -> {
             subscribe(new SingleSubscriber<T>() {
 
@@ -1031,6 +1098,7 @@ public class Single<T> {
     }
     
     public final Single<T> doOnSubscribe(Consumer<? super Disposable> onSubscribe) {
+        Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         return create(s -> {
             subscribe(new SingleSubscriber<T>() {
                 boolean done;
@@ -1071,6 +1139,7 @@ public class Single<T> {
     }
     
     public final Single<T> doOnSuccess(Consumer<? super T> onSuccess) {
+        Objects.requireNonNull(onSuccess, "onSuccess is null");
         return create(s -> {
             subscribe(new SingleSubscriber<T>() {
                 @Override
@@ -1099,6 +1168,7 @@ public class Single<T> {
     }
     
     public final Single<T> doOnError(Consumer<? super Throwable> onError) {
+        Objects.requireNonNull(onError, "onError is null");
         return create(s -> {
             subscribe(new SingleSubscriber<T>() {
                 @Override
@@ -1126,6 +1196,7 @@ public class Single<T> {
     }
     
     public final Single<T> doOnCancel(Runnable onCancel) {
+        Objects.requireNonNull(onCancel, "onCancel is null");
         return create(s -> {
             subscribe(new SingleSubscriber<T>() {
                 @Override
@@ -1151,6 +1222,7 @@ public class Single<T> {
     }
 
     public final <R> Single<R> flatMap(Function<? super T, ? extends Single<? extends R>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         return lift(new SingleOperatorFlatMap<>(mapper));   
     }
 
@@ -1212,6 +1284,8 @@ public class Single<T> {
     }
 
     public final Single<Boolean> contains(Object value, BiPredicate<Object, Object> comparer) {
+        Objects.requireNonNull(value, "value is null");
+        Objects.requireNonNull(comparer, "comparer is null");
         return create(s -> {
             subscribe(new SingleSubscriber<T>() {
 
@@ -1243,6 +1317,7 @@ public class Single<T> {
     }
     
     public final Single<T> observeOn(Scheduler scheduler) {
+        Objects.requireNonNull(scheduler, "scheduler is null");
         return create(s -> {
             CompositeDisposable mad = new CompositeDisposable();
             s.onSubscribe(mad);
@@ -1269,6 +1344,7 @@ public class Single<T> {
     }
 
     public final Single<T> onErrorReturn(Supplier<? extends T> valueSupplier) {
+        Objects.requireNonNull(valueSupplier, "valueSupplier is null");
         return create(s -> {
             subscribe(new SingleSubscriber<T>() {
 
@@ -1285,8 +1361,9 @@ public class Single<T> {
                     }
                     
                     if (v == null) {
-                        e.addSuppressed(new NullPointerException("Value supplied was null"));
-                        s.onError(e);
+                        NullPointerException npe = new NullPointerException("Value supplied was null");
+                        npe.addSuppressed(e);
+                        s.onError(npe);
                         return;
                     }
                     
@@ -1313,6 +1390,7 @@ public class Single<T> {
     }
 
     public final Single<T> onErrorResumeNext(Function<? super Throwable, ? extends Single<? extends T>> nextFunction) {
+        Objects.requireNonNull(nextFunction, "nextFunction is null");
         return create(s -> {
             MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
             s.onSubscribe(mad);
@@ -1342,7 +1420,9 @@ public class Single<T> {
                     }
                     
                     if (next == null) {
-                        s.onError(new NullPointerException("The next Single supplied was null"));
+                        NullPointerException npe = new NullPointerException("The next Single supplied was null");
+                        npe.addSuppressed(e);
+                        s.onError(npe);
                         return;
                     }
                     
@@ -1613,7 +1693,7 @@ public class Single<T> {
         toFlowable().unsafeSubscribe(s);
     }
     
-    public final <U, R> Observable<R> zipWith(Single<U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
+    public final <U, R> Single<R> zipWith(Single<U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
         return zip(this, other, zipper);
     }
 }

@@ -150,6 +150,13 @@ public final class OperatorConcatMap<T, U> implements Operator<U, T> {
                 actual.onError(e);
                 return;
             }
+            
+            if (p == null) {
+                cancel();
+                actual.onError(new NullPointerException("The publisher returned is null"));
+                return;
+            }
+            
             index++;
             // this is not RS but since our Subscriber doesn't hold state by itself,
             // subscribing it to each source is safe and saves allocation

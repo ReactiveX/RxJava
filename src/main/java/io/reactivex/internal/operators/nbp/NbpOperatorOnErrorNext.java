@@ -88,15 +88,15 @@ public final class NbpOperatorOnErrorNext<T> implements NbpOperator<T, T> {
             try {
                 p = nextSupplier.apply(t);
             } catch (Throwable e) {
-                t.addSuppressed(e);
-                actual.onError(t);
+                e.addSuppressed(t);
+                actual.onError(e);
                 return;
             }
             
             if (p == null) {
                 NullPointerException npe = new NullPointerException("Observable is null");
-                t.addSuppressed(npe);
-                actual.onError(t);
+                npe.addSuppressed(t);
+                actual.onError(npe);
                 return;
             }
             

@@ -791,4 +791,68 @@ public class NbpOperatorDelayTest {
         ts.assertError(TestException.class);
         ts.assertNotComplete();
     }
+    
+    public void testDelaySupplierSimple() {
+        NbpPublishSubject<Integer> ps = NbpPublishSubject.create();
+        
+        NbpObservable<Integer> source = NbpObservable.range(1, 5);
+        
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        
+        source.delaySubscription(() -> ps).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ps.onNext(1);
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testDelaySupplierCompletes() {
+        NbpPublishSubject<Integer> ps = NbpPublishSubject.create();
+        
+        NbpObservable<Integer> source = NbpObservable.range(1, 5);
+        
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        
+        source.delaySubscription(() -> ps).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        // FIXME should this complete the source instead of consuming it?
+        ps.onComplete();
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testDelaySupplierErrors() {
+        NbpPublishSubject<Integer> ps = NbpPublishSubject.create();
+        
+        NbpObservable<Integer> source = NbpObservable.range(1, 5);
+        
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        
+        source.delaySubscription(() -> ps).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ps.onError(new TestException());
+        
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(TestException.class);
+    }
+
 }

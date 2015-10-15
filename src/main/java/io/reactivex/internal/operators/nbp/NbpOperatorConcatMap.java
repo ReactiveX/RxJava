@@ -137,6 +137,13 @@ public final class NbpOperatorConcatMap<T, U> implements NbpOperator<U, T> {
                 actual.onError(e);
                 return;
             }
+            
+            if (p == null) {
+                cancel();
+                actual.onError(new NullPointerException("The NbpObservable returned is null"));
+                return;
+            }
+            
             index++;
             // this is not RS but since our Subscriber doesn't hold state by itself,
             // subscribing it to each source is safe and saves allocation

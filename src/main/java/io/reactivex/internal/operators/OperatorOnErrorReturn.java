@@ -92,8 +92,9 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
             
             if (v == null) {
                 STATE.lazySet(this, HAS_REQUEST_HAS_VALUE);
-                t.addSuppressed(new NullPointerException("The supplied value is null"));
-                actual.onError(t);
+                NullPointerException npe = new NullPointerException("The supplied value is null");
+                npe.addSuppressed(t);
+                actual.onError(npe);
                 return;
             }
             
