@@ -4127,7 +4127,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     public final Observable<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
-        return lift(new OperatorDelay<T>(this, delay, unit, scheduler));
+        return lift(new OperatorDelay<T>(delay, unit, scheduler));
     }
 
     /**
