@@ -92,7 +92,7 @@ public class OperatorIgnoreElementsTest {
                     }
                 })
                 //
-                .ignoreElements()
+                .<Integer>ignoreElements()
                 //
                 .doOnNext(new Action1<Integer>() {
 

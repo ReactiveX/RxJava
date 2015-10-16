@@ -5592,8 +5592,8 @@ public class Observable<T> {
      *         called by the source Observable
      * @see <a href="http://reactivex.io/documentation/operators/ignoreelements.html">ReactiveX operators documentation: IgnoreElements</a>
      */
-    public final Observable<T> ignoreElements() {
-        return lift(OperatorIgnoreElements.<T> instance());
+    public final <R> Observable<R> ignoreElements() {
+        return lift(OperatorIgnoreElements.<R, T>instance());
     }
 
     /**
