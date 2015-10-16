@@ -32,13 +32,11 @@ import rx.functions.Action0;
  */
 public final class OperatorDelay<T> implements Operator<T, T> {
 
-    final Observable<? extends T> source;
     final long delay;
     final TimeUnit unit;
     final Scheduler scheduler;
 
-    public OperatorDelay(Observable<? extends T> source, long delay, TimeUnit unit, Scheduler scheduler) {
-        this.source = source;
+    public OperatorDelay(long delay, TimeUnit unit, Scheduler scheduler) {
         this.delay = delay;
         this.unit = unit;
         this.scheduler = scheduler;
