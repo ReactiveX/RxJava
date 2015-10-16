@@ -159,19 +159,11 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
     }
     
     public T first() {
-        Optional<T> o = firstOption();
-        if (o.isPresent()) {
-            return o.get();
-        }
-        throw new NoSuchElementException();
+        return firstOption().get();
     }
     
     public T first(T defaultValue) {
-        Optional<T> o = firstOption();
-        if (o.isPresent()) {
-            return o.get();
-        }
-        return defaultValue;
+        return firstOption().orElse(defaultValue);
     }
     
     public Optional<T> lastOption() {
@@ -179,38 +171,24 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
     }
     
     public T last() {
-        Optional<T> o = lastOption();
-        if (o.isPresent()) {
-            return o.get();
-        }
-        throw new NoSuchElementException();
+        return lastOption().get();
     }
     
     public T last(T defaultValue) {
-        Optional<T> o = lastOption();
-        if (o.isPresent()) {
-            return o.get();
-        }
-        return defaultValue;
+        return lastOption().orElse(defaultValue);
     }
     
     public T single() {
         Iterator<T> it = iterate(o.single());
         Optional<T> o = makeStream(it, false).findFirst();
-        if (o.isPresent()) {
-            return o.get();
-        }
-        throw new NoSuchElementException();
+        return o.get();
     }
     
     public T single(T defaultValue) {
         @SuppressWarnings("unchecked")
         Iterator<T> it = iterate(((NbpObservable<T>)o).single(defaultValue));
         Optional<T> o = makeStream(it, false).findFirst();
-        if (o.isPresent()) {
-            return o.get();
-        }
-        return defaultValue;
+        return o.orElse(defaultValue);
     }
     
     public Iterable<T> mostRecent(T initialValue) {
