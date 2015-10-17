@@ -27,6 +27,8 @@ import rx.exceptions.*;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed together.
+ * <p>
+ * All methods of this class are thread-safe.
  */
 public final class CompositeSubscription implements Subscription {
 
@@ -98,8 +100,8 @@ public final class CompositeSubscription implements Subscription {
 
     /**
      * Unsubscribes any subscriptions that are currently part of this {@code CompositeSubscription} and remove
-     * them from the {@code CompositeSubscription} so that the {@code CompositeSubscription} is empty and in
-     * an unoperative state.
+     * them from the {@code CompositeSubscription} so that the {@code CompositeSubscription} is empty and
+     * able to manage new subscriptions.
      */
     public void clear() {
         if (!unsubscribed) {
@@ -116,6 +118,11 @@ public final class CompositeSubscription implements Subscription {
         }
     }
 
+    /**
+     * Unsubscribes itself and all inner subscriptions.
+     * <p>After call of this method, new {@code Subscription}s added to {@link CompositeSubscription}
+     * will be unsubscribed immediately.
+     */
     @Override
     public void unsubscribe() {
         if (!unsubscribed) {
