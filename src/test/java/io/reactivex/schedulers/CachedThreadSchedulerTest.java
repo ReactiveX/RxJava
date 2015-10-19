@@ -20,7 +20,6 @@ import java.util.function.*;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.Scheduler.Worker;
 
 public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -66,20 +65,9 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
         SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
     
-    @Test(timeout = 30000)
+    @Test(timeout = 90000)
     public void testCancelledTaskRetention() throws InterruptedException {
-        Worker w = Schedulers.io().createWorker();
-        try {
-            ExecutorSchedulerTest.testCancelledRetention(w, false);
-        } finally {
-            w.dispose();
-        }
-        w = Schedulers.io().createWorker();
-        try {
-            ExecutorSchedulerTest.testCancelledRetention(w, true);
-        } finally {
-            w.dispose();
-        }
+        SchedulerRetentionTest.testCancellationRetention(Schedulers.io(), true);
     }
 
 }

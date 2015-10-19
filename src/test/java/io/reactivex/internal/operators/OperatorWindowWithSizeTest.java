@@ -182,7 +182,7 @@ public class OperatorWindowWithSizeTest {
                 })
                 .observeOn(Schedulers.computation())
                 .window(5, 4)
-                .take(2))
+                .take(2), 128)
                 .subscribe(ts);
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();

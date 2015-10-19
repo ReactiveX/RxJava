@@ -94,15 +94,28 @@ public final class Schedulers {
         return new ExecutorScheduler(executor);
     }
     
+    /**
+     * Shuts down all standard schedulers: computation, io, newThread, single and trampoline.
+     * <p>The method is threadsafe and idempotent with respect to other calls to it until the
+     * {@link #start()} method is called.
+     * <p>Note that this may cut streams in half and they may end up hanging indefinitely.
+     * Make sure you cancel all outstanding streams before you shut down the standard schedulers.
+     * <p>Schedulers created from Executors via {@link #from(Executor)} are not affected.
+     */
     public static void shutdown() {
         computation().shutdown();
         io().shutdown();
         newThread().shutdown();
         single().shutdown();
         trampoline().shutdown();
+        SchedulerPoolHelper.shutdown();
     }
     
+    /**
+     * Starts up all standard schedulers: computation, io, newThread, single and trampoline.
+     */
     public static void start() {
+        SchedulerPoolHelper.start();
         computation().start();
         io().start();
         newThread().start();

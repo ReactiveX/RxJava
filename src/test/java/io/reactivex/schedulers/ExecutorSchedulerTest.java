@@ -13,9 +13,8 @@
 
 package io.reactivex.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.lang.management.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -46,90 +45,14 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
     
-    public static void testCancelledRetention(Scheduler.Worker w, boolean periodic) throws InterruptedException {
-        System.out.println("Wait before GC");
-        Thread.sleep(1000);
-        
-        System.out.println("GC");
-        System.gc();
-        
-        Thread.sleep(1000);
-
-        
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        MemoryUsage memHeap = memoryMXBean.getHeapMemoryUsage();
-        long initial = memHeap.getUsed();
-        
-        System.out.printf("Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
-
-        int n = 500 * 1000;
-        if (periodic) {
-            final CountDownLatch cdl = new CountDownLatch(n);
-            final Runnable action = new Runnable() {
-                @Override
-                public void run() {
-                    cdl.countDown();
-                }
-            };
-            for (int i = 0; i < n; i++) {
-                if (i % 50000 == 0) {
-                    System.out.println("  -> still scheduling: " + i);
-                }
-                w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
-            }
-            
-            System.out.println("Waiting for the first round to finish...");
-            cdl.await();
-        } else {
-            for (int i = 0; i < n; i++) {
-                if (i % 50000 == 0) {
-                    System.out.println("  -> still scheduling: " + i);
-                }
-                w.schedule(() -> { }, 1, TimeUnit.DAYS);
-            }
-        }
-        
-        memHeap = memoryMXBean.getHeapMemoryUsage();
-        long after = memHeap.getUsed();
-        System.out.printf("Peak: %.3f MB%n", after / 1024.0 / 1024.0);
-        
-        w.dispose();
-        
-        System.out.println("Wait before second GC");
-        Thread.sleep(1000 + 2000);
-        
-        System.out.println("Second GC");
-        System.gc();
-        
-        Thread.sleep(1000);
-        
-        memHeap = memoryMXBean.getHeapMemoryUsage();
-        long finish = memHeap.getUsed();
-        System.out.printf("After: %.3f MB%n", finish / 1024.0 / 1024.0);
-        
-        if (finish > initial * 5) {
-            fail(String.format("Tasks retained: %.3f -> %.3f -> %.3f", initial / 1024 / 1024.0, after / 1024 / 1024.0, finish / 1024 / 1024d));
-        }
-    }
     
-    @Test(timeout = 30000)
+    
+    @Test(timeout = 90000)
     public void testCancelledTaskRetention() throws InterruptedException {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         Scheduler s = Schedulers.from(exec);
         try {
-            Scheduler.Worker w = s.createWorker();
-            try {
-                testCancelledRetention(w, false);
-            } finally {
-                w.dispose();
-            }
-            
-            w = s.createWorker();
-            try {
-                testCancelledRetention(w, true);
-            } finally {
-                w.dispose();
-            }
+            SchedulerRetentionTest.testCancellationRetention(s, false);
         } finally {
             exec.shutdownNow();
         }

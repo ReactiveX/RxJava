@@ -61,7 +61,6 @@ public final class IOScheduler extends Scheduler implements SchedulerLifecycle {
             Future<?> task = null;
             if (unit != null) {
                 evictor = Executors.newScheduledThreadPool(1, EVICTOR_THREAD_FACTORY);
-                ((ScheduledThreadPoolExecutor)evictor).setRemoveOnCancelPolicy(true);
                 try {
                     task = evictor.scheduleWithFixedDelay(
                             new Runnable() {
