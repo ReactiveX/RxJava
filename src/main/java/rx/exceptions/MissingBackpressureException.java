@@ -48,9 +48,17 @@ public class MissingBackpressureException extends Exception {
 
     private static final long serialVersionUID = 7250870679677032194L;
 
+    /**
+     * Constructs the exception without any custom message.
+     */
     public MissingBackpressureException() {
+        
     }
 
+    /**
+     * Constructs the exception with the given customized message.
+     * @param message the customized message
+     */
     public MissingBackpressureException(String message) {
         super(message);
     }
