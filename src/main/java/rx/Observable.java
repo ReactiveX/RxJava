@@ -1330,7 +1330,7 @@ public class Observable<T> {
      *  <dd>This operator does not support backpressure as it uses time. If the downstream needs a slower rate
      *      it should slow the timer or use something like {@link #onBackpressureDrop}.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code timer} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     *  <dd>{@code interval} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param initialDelay
