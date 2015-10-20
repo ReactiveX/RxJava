@@ -76,12 +76,7 @@ public final class Exceptions {
         if (t instanceof OnErrorNotImplementedException) {
             throw (OnErrorNotImplementedException) t;
         } else if (t instanceof OnErrorFailedException) {
-            Throwable cause = t.getCause();
-            if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
-            } else {
-                throw (OnErrorFailedException) t;
-            }
+            throw (OnErrorFailedException) t;
         }
         // values here derived from https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495
         else if (t instanceof StackOverflowError) {

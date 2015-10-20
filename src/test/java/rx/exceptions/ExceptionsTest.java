@@ -25,6 +25,8 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.observables.GroupedObservable;
 import rx.subjects.PublishSubject;
 
 public class ExceptionsTest {
@@ -45,7 +47,7 @@ public class ExceptionsTest {
     public void testStackOverflowWouldOccur() {
         final PublishSubject<Integer> a = PublishSubject.create();
         final PublishSubject<Integer> b = PublishSubject.create();
-        final int MAX_STACK_DEPTH = 1000;
+        final int MAX_STACK_DEPTH = 800;
         final AtomicInteger depth = new AtomicInteger();
         
         a.subscribe(new Observer<Integer>() {
@@ -156,10 +158,72 @@ public class ExceptionsTest {
                 }
             });
             fail("expecting an exception to be thrown");
-        } catch (CompositeException t) {
-            assertTrue(t.getExceptions().get(0) instanceof IllegalArgumentException);
-            assertTrue(t.getExceptions().get(1) instanceof IllegalStateException);
+        } catch (OnErrorFailedException t) {
+            CompositeException cause = (CompositeException) t.getCause();
+            assertTrue(cause.getExceptions().get(0) instanceof IllegalArgumentException);
+            assertTrue(cause.getExceptions().get(1) instanceof IllegalStateException);
         }
     }
 
+    /**
+     * https://github.com/ReactiveX/RxJava/issues/2998
+     */
+    @Test(expected = OnErrorFailedException.class)
+    public void testOnErrorExceptionIsThrownFromGroupBy() throws Exception {
+        Observable
+            .just(1)
+            .groupBy(new Func1<Integer, Integer>() {
+                @Override
+                public Integer call(Integer integer) {
+                    throw new RuntimeException();
+                }
+            })
+            .subscribe(new Observer<GroupedObservable<Integer, Integer>>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    throw new RuntimeException();
+                }
+
+                @Override
+                public void onNext(GroupedObservable<Integer, Integer> integerIntegerGroupedObservable) {
+
+                }
+            });
+    }
+
+    /**
+     * https://github.com/ReactiveX/RxJava/issues/2998
+     */
+    @Test(expected = OnErrorFailedException.class)
+    public void testOnErrorExceptionIsThrownFromOnNext() throws Exception {
+        Observable
+            .just(1)
+            .doOnNext(new Action1<Integer>() {
+                @Override
+                public void call(Integer integer) {
+                    throw new RuntimeException();
+                }
+            })
+            .subscribe(new Observer<Integer>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    throw new RuntimeException();
+                }
+
+                @Override
+                public void onNext(Integer integer) {
+
+                }
+            });
+    }
 }
