@@ -17,11 +17,14 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.*;
+import java.util.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.Consumer;
 
 import org.junit.*;
+import org.reactivestreams.Subscriber;
 
+import io.reactivex.Observable;
 import io.reactivex.exceptions.*;
 
 public class SubscribersTest {
@@ -184,5 +187,32 @@ public class SubscribersTest {
         
         Consumer<Throwable> throwAction = e -> { };
         Subscribers.create(e -> { }, throwAction).onComplete();
+    }
+    
+    @Test
+    public void testCreateOnNext() {
+        List<Integer> list = new ArrayList<>();
+        Subscriber<Integer> s = Subscribers.create(v -> list.add(v));
+        
+        Observable.range(1, 10).subscribe(s);
+        
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), list);
+    }
+    
+    @Test
+    public void testCreateOnError() {
+        List<Integer> list = new ArrayList<>();
+        List<Throwable> errors = new ArrayList<>();
+        Subscriber<Integer> s = Subscribers.create(v -> list.add(v), e -> errors.add(e));
+        
+        Observable
+        .range(1, 10)
+        .concatWith(Observable.error(new TestException()))
+        .subscribe(s);
+        
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), list);
+        assertEquals(1, errors.size());
+        System.out.println(errors);
+        assertTrue(errors.get(0) instanceof TestException);
     }
 }

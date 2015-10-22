@@ -161,14 +161,14 @@ public final class Subscribers {
     public static <T> Subscriber<T> create(
             Consumer<? super T> onNext
     ) {
-        return create(onNext, RxJavaPlugins::onError, () -> { }, s -> { });
+        return create(onNext, RxJavaPlugins::onError, () -> { }, s -> s.request(Long.MAX_VALUE));
     }
 
     public static <T> Subscriber<T> create(
             Consumer<? super T> onNext,
             Consumer<? super Throwable> onError
     ) {
-        return create(onNext, onError, () -> { }, s -> { });
+        return create(onNext, onError, () -> { }, s -> s.request(Long.MAX_VALUE));
     }
 
     public static <T> Subscriber<T> create(
@@ -176,7 +176,7 @@ public final class Subscribers {
             Consumer<? super Throwable> onError,
             Runnable onComplete
     ) {
-        return create(onNext, onError, onComplete, s -> { });
+        return create(onNext, onError, onComplete, s -> s.request(Long.MAX_VALUE));
     }
     
     public static <T> Subscriber<T> create(
