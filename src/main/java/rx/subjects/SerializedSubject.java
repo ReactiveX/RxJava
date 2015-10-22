@@ -16,7 +16,6 @@
 package rx.subjects;
 
 import rx.Subscriber;
-import rx.annotations.Experimental;
 import rx.observers.SerializedObserver;
 
 /**
@@ -68,76 +67,5 @@ public class SerializedSubject<T, R> extends Subject<T, R> {
     @Override
     public boolean hasObservers() {
         return actual.hasObservers();
-    }
-    
-    /**
-     * {@inheritDoc}
-     * @deprecated this method is scheduled to be removed in the next release
-     */
-    @Override
-    @Experimental
-    @Deprecated
-    public boolean hasCompleted() {
-        return actual.hasCompleted();
-    }
-    /**
-     * {@inheritDoc}
-     * @deprecated this method is scheduled to be removed in the next release
-     */
-    @Override
-    @Experimental
-    @Deprecated
-    public boolean hasThrowable() {
-        return actual.hasThrowable();
-    }
-    /**
-     * {@inheritDoc}
-     * @deprecated this method is scheduled to be removed in the next release
-     */
-    @Override
-    @Experimental
-    @Deprecated
-    public boolean hasValue() {
-        return actual.hasValue();
-    }
-    /**
-     * {@inheritDoc}
-     * @deprecated this method is scheduled to be removed in the next release
-     */
-    @Override
-    @Experimental
-    @Deprecated
-    public Throwable getThrowable() {
-        return actual.getThrowable();
-    }
-    /**
-     * {@inheritDoc}
-     * @deprecated this method is scheduled to be removed in the next release
-     */
-    @Override
-    @Experimental
-    @Deprecated
-    public T getValue() {
-        return actual.getValue();
-    }
-    /**
-     * {@inheritDoc}
-     * @deprecated this method is scheduled to be removed in the next release
-     */
-    @Override
-    @Experimental
-    @Deprecated
-    public Object[] getValues() {
-        return actual.getValues();
-    }
-    /**
-     * {@inheritDoc}
-     * @deprecated this method is scheduled to be removed in the next release
-     */
-    @Override
-    @Experimental
-    @Deprecated
-    public T[] getValues(T[] a) {
-        return actual.getValues(a);
     }
 }
