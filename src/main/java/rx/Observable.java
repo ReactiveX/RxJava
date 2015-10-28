@@ -1243,7 +1243,14 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     public final static <T> Observable<T> from(T[] array) {
-        return from(Arrays.asList(array));
+        int n = array.length;
+        if (n == 0) {
+            return empty();
+        } else
+        if (n == 1) {
+            return just(array[0]);
+        }
+        return create(new OnSubscribeFromArray<T>(array));
     }
 
     /**
@@ -1423,7 +1430,7 @@ public class Observable<T> {
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> just(T t1, T t2) {
-        return from(Arrays.asList(t1, t2));
+        return from((T[])new Object[] { t1, t2 });
     }
 
     /**
@@ -1449,7 +1456,7 @@ public class Observable<T> {
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> just(T t1, T t2, T t3) {
-        return from(Arrays.asList(t1, t2, t3));
+        return from((T[])new Object[] { t1, t2, t3 });
     }
 
     /**
@@ -1477,7 +1484,7 @@ public class Observable<T> {
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> just(T t1, T t2, T t3, T t4) {
-        return from(Arrays.asList(t1, t2, t3, t4));
+        return from((T[])new Object[] { t1, t2, t3, t4 });
     }
 
     /**
@@ -1507,7 +1514,7 @@ public class Observable<T> {
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5) {
-        return from(Arrays.asList(t1, t2, t3, t4, t5));
+        return from((T[])new Object[] { t1, t2, t3, t4, t5 });
     }
 
     /**
@@ -1539,7 +1546,7 @@ public class Observable<T> {
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5, T t6) {
-        return from(Arrays.asList(t1, t2, t3, t4, t5, t6));
+        return from((T[])new Object[] { t1, t2, t3, t4, t5, t6 });
     }
 
     /**
@@ -1573,7 +1580,7 @@ public class Observable<T> {
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
-        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7));
+        return from((T[])new Object[] { t1, t2, t3, t4, t5, t6, t7 });
     }
 
     /**
@@ -1609,7 +1616,7 @@ public class Observable<T> {
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
-        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8));
+        return from((T[])new Object[] { t1, t2, t3, t4, t5, t6, t7, t8 });
     }
 
     /**
@@ -1647,7 +1654,7 @@ public class Observable<T> {
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
-        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+        return from((T[])new Object[] { t1, t2, t3, t4, t5, t6, t7, t8, t9 });
     }
 
     /**
@@ -1687,7 +1694,7 @@ public class Observable<T> {
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9, T t10) {
-        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
+        return from((T[])new Object[] { t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 });
     }
     
     /**
@@ -1821,7 +1828,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2) {
-        return merge(from(Arrays.asList(t1, t2)));
+        return merge(new Observable[] { t1, t2 });
     }
 
     /**
@@ -1847,7 +1854,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
-        return merge(from(Arrays.asList(t1, t2, t3)));
+        return merge(new Observable[] { t1, t2, t3 });
     }
 
     /**
@@ -1875,7 +1882,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
-        return merge(from(Arrays.asList(t1, t2, t3, t4)));
+        return merge(new Observable[] { t1, t2, t3, t4 });
     }
 
     /**
@@ -1905,7 +1912,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
-        return merge(from(Arrays.asList(t1, t2, t3, t4, t5)));
+        return merge(new Observable[] { t1, t2, t3, t4, t5 });
     }
 
     /**
@@ -1937,7 +1944,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
-        return merge(from(Arrays.asList(t1, t2, t3, t4, t5, t6)));
+        return merge(new Observable[] { t1, t2, t3, t4, t5, t6 });
     }
 
     /**
@@ -1971,7 +1978,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
-        return merge(from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7)));
+        return merge(new Observable[] { t1, t2, t3, t4, t5, t6, t7 });
     }
 
     /**
@@ -2007,7 +2014,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
-        return merge(from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8)));
+        return merge(new Observable[] { t1, t2, t3, t4, t5, t6, t7, t8 });
     }
 
     /**
@@ -2045,7 +2052,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
-        return merge(from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9)));
+        return merge(new Observable[] { t1, t2, t3, t4, t5, t6, t7, t8, t9 });
     }
 
     /**
