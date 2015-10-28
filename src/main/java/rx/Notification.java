@@ -203,10 +203,10 @@ public final class Notification<T> {
         if (hasThrowable() && !getThrowable().equals(notification.getThrowable()))
             return false;
         if(!hasValue() && !hasThrowable() && notification.hasValue())
-        	return false;
+            return false;
         if(!hasValue() && !hasThrowable() && notification.hasThrowable())
-        	return false;
-        
+            return false;
+
         return true;
     }
 }
