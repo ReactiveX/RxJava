@@ -33,15 +33,25 @@ import rx.internal.util.SubscriptionList;
 public abstract class Subscriber<T> implements Observer<T>, Subscription {
     
     // represents requested not set yet
-    private static final Long NOT_SET = Long.MIN_VALUE;
+    private static final long NOT_SET = Long.MIN_VALUE;
 
-    private final SubscriptionList subscriptions;
+//    private final SubscriptionList subscriptions;
     private final Subscriber<?> subscriber;
     /* protected by `this` */
     private Producer producer;
     /* protected by `this` */
     private long requested = NOT_SET; // default to not set
 
+    SubscriptionList subscriptions;
+    static final SubscriptionList UNSUBSCRIBED;
+    
+    final boolean sharedSubscriptions;
+    
+    static {
+       UNSUBSCRIBED = new SubscriptionList();
+       UNSUBSCRIBED.unsubscribe();
+    }
+    
     protected Subscriber() {
         this(null, false);
     }
@@ -78,7 +88,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      */
     protected Subscriber(Subscriber<?> subscriber, boolean shareSubscriptions) {
         this.subscriber = subscriber;
-        this.subscriptions = shareSubscriptions && subscriber != null ? subscriber.subscriptions : new SubscriptionList();
+        this.sharedSubscriptions = shareSubscriptions && subscriber != null;
     }
 
     /**
@@ -90,12 +100,37 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      *            the {@code Subscription} to add
      */
     public final void add(Subscription s) {
-        subscriptions.add(s);
+        if (sharedSubscriptions) {
+            subscriber.add(s);
+            return;
+        }
+        SubscriptionList sl;
+        synchronized (this) {
+            sl = subscriptions;
+            if (sl == null) {
+                sl = new SubscriptionList();
+                subscriptions = sl;
+            }
+        }
+        sl.add(s);
     }
 
     @Override
     public final void unsubscribe() {
-        subscriptions.unsubscribe();
+        if (sharedSubscriptions) {
+            subscriber.unsubscribe();
+            return;
+        }
+        SubscriptionList sl;
+        synchronized (this) {
+            sl = subscriptions;
+            if (sl == null) {
+                subscriptions = UNSUBSCRIBED;
+                return;
+            }
+        }
+        
+        sl.unsubscribe();
     }
 
     /**
@@ -105,7 +140,11 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      */
     @Override
     public final boolean isUnsubscribed() {
-        return subscriptions.isUnsubscribed();
+        if (sharedSubscriptions) {
+            return subscriber.isUnsubscribed();
+        }
+        SubscriptionList sl = subscriptions;
+        return sl != null && sl.isUnsubscribed();
     }
 
     /**
@@ -144,12 +183,20 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         
         // if producer is set then we will request from it
         // otherwise we increase the requested count by n
-        Producer producerToRequestFrom = null;
+        Producer producerToRequestFrom;
         synchronized (this) {
-            if (producer != null) {
-                producerToRequestFrom = producer;
-            } else {
-                addToRequested(n);
+            producerToRequestFrom = producer;
+            if (producerToRequestFrom == null) {
+                long r = requested;
+                if (r == NOT_SET) {
+                    requested = n;
+                } else { 
+                    long u = r + n;
+                    if (u < 0L) {
+                        u = Long.MAX_VALUE;
+                    }
+                    requested = u;
+                }
                 return;
             }
         }
@@ -157,20 +204,6 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         producerToRequestFrom.request(n);
     }
 
-    private void addToRequested(long n) {
-        if (requested == NOT_SET) {
-            requested = n;
-        } else { 
-            final long total = requested + n;
-            // check if overflow occurred
-            if (total < 0) {
-                requested = Long.MAX_VALUE;
-            } else {
-                requested = total;
-            }
-        }
-    }
-    
     /**
      * If other subscriber is set (by calling constructor
      * {@link #Subscriber(Subscriber)} or
@@ -189,10 +222,11 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     public void setProducer(Producer p) {
         long toRequest;
         boolean passToSubscriber = false;
+        final Subscriber<?> child = subscriber;
         synchronized (this) {
             toRequest = requested;
             producer = p;
-            if (subscriber != null) {
+            if (child != null) {
                 // middle operator ... we pass thru unless a request has been made
                 if (toRequest == NOT_SET) {
                     // we pass-thru to the next producer as nothing has been requested
@@ -202,13 +236,13 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         }
         // do after releasing lock
         if (passToSubscriber) {
-            subscriber.setProducer(producer);
+            child.setProducer(p);
         } else {
             // we execute the request with whatever has been requested (or Long.MAX_VALUE)
             if (toRequest == NOT_SET) {
-                producer.request(Long.MAX_VALUE);
+                p.request(Long.MAX_VALUE);
             } else {
-                producer.request(toRequest);
+                p.request(toRequest);
             }
         }
     }
