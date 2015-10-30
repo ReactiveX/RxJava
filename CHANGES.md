@@ -1,5 +1,43 @@
 # RxJava Releases #
 
+### Version 1.0.15 – October 9 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.15%7C)) ###
+
+* [Pull 3438] (https://github.com/ReactiveX/RxJava/pull/3438) Better null tolerance in rx.exceptions.*Exception classes
+* [Pull 3455] (https://github.com/ReactiveX/RxJava/pull/3455) OnErrorFailedException fix
+* [Pull 3448] (https://github.com/ReactiveX/RxJava/pull/3448) Single delay
+* [Pull 3429] (https://github.com/ReactiveX/RxJava/pull/3429) Removed the alias BlockingObservable#run
+* [Pull 3417] (https://github.com/ReactiveX/RxJava/pull/3417) Add Single.doOnSuccess()
+* [Pull 3418] (https://github.com/ReactiveX/RxJava/pull/3418) Add Single.fromCallable()
+* [Pull 3419] (https://github.com/ReactiveX/RxJava/pull/3419) Add Single.doOnError()
+* [Pull 3423] (https://github.com/ReactiveX/RxJava/pull/3423) Renaming Observable#x to Observable#extend
+* [Pull 3174] (https://github.com/ReactiveX/RxJava/pull/3174) Blocking subscribe methods for convenience
+* [Pull 3351] (https://github.com/ReactiveX/RxJava/pull/3351) Make BlockingOperatorToIterator exert backpressure.
+* [Pull 3357] (https://github.com/ReactiveX/RxJava/pull/3357) Eager ConcatMap
+* [Pull 3342] (https://github.com/ReactiveX/RxJava/pull/3342) Remove redundant onStart implementation in OperatorGroupBy
+* [Pull 3361] (https://github.com/ReactiveX/RxJava/pull/3361) Safer error handling in BlockingOperatorToFuture
+* [Pull 3363] (https://github.com/ReactiveX/RxJava/pull/3363) Remove unused private method from CachedObservable and make "state" final
+* [Pull 3408] (https://github.com/ReactiveX/RxJava/pull/3408) DoOnEach: report both original exception and callback exception.
+* [Pull 3386] (https://github.com/ReactiveX/RxJava/pull/3386) Changed javadoc for Observable.doOnRequest(Action1)
+* [Pull 3149] (https://github.com/ReactiveX/RxJava/pull/3149) Scheduler shutdown capability
+* [Pull 3384] (https://github.com/ReactiveX/RxJava/pull/3384) Fix for take() reentrancy bug.
+* [Pull 3356] (https://github.com/ReactiveX/RxJava/pull/3356) Fix to a bunch of bugs and issues with AsyncOnSubscribe
+* [Pull 3362] (https://github.com/ReactiveX/RxJava/pull/3362) Fix synchronization on non-final field in BufferUntilSubscriber
+* [Pull 3365] (https://github.com/ReactiveX/RxJava/pull/3365) Make field final and remove unnecessary unboxing in OnSubscribeRedo.RetryWithPredicate
+* [Pull 3370] (https://github.com/ReactiveX/RxJava/pull/3370) Remove unused field updater from SubjectSubscriptionManager
+* [Pull 3369] (https://github.com/ReactiveX/RxJava/pull/3369) Lint fixes for unnecessary unboxing
+* [Pull 3203] (https://github.com/ReactiveX/RxJava/pull/3203) Implemented the AsyncOnSubscribe
+* [Pull 3340] (https://github.com/ReactiveX/RxJava/pull/3340) test/subjects: Use statically imported never() methods
+* [Pull 3154] (https://github.com/ReactiveX/RxJava/pull/3154) Add Observable.fromCallable() as a companion for Observable.defer()
+* [Pull 3285] (https://github.com/ReactiveX/RxJava/pull/3285) Added latch to async SyncOnSubscrbeTest
+* [Pull 3118] (https://github.com/ReactiveX/RxJava/pull/3118) Implementing the SyncOnSubscribe
+* [Pull 3183] (https://github.com/ReactiveX/RxJava/pull/3183) Refactored exception reporting of most operators.
+* [Pull 3214] (https://github.com/ReactiveX/RxJava/pull/3214) Fix to Notification equals method.
+* [Pull 3171] (https://github.com/ReactiveX/RxJava/pull/3171) Scan backpressure and first emission fix
+* [Pull 3181] (https://github.com/ReactiveX/RxJava/pull/3181) MapNotification producer NPE fix
+* [Pull 3167] (https://github.com/ReactiveX/RxJava/pull/3167) Fixed negative request due to unsubscription of a large requester
+* [Pull 3177] (https://github.com/ReactiveX/RxJava/pull/3177) BackpressureUtils capped add/multiply methods + tests
+* [Pull 3155] (https://github.com/ReactiveX/RxJava/pull/3155) SafeSubscriber - report onCompleted unsubscribe error to RxJavaPlugin
+
 ### Version 1.0.14 – August 12th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.14%7C)) ###
 
 * [Pull 2963] (https://github.com/ReactiveX/RxJava/pull/2963) Set of standard producers and updated queue implementations
