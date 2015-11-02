@@ -21,7 +21,6 @@ import rx.Observable.Operator;
 import rx.annotations.Experimental;
 import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
