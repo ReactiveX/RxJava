@@ -6399,7 +6399,8 @@ public class Observable<T> {
      *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the source Observable modified to buffer items up to the given capacity
+     * @param capacity number of slots available in the buffer.
+     * @return the source {@code Observable} modified to buffer items up to the given capacity.
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      * @since 1.1.0
      */
@@ -6419,12 +6420,49 @@ public class Observable<T> {
      *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the source Observable modified to buffer items up to the given capacity
+     * @param capacity number of slots available in the buffer.
+     * @param onOverflow action to execute if an item needs to be buffered, but there are no available slots.  Null is allowed.
+     * @return the source {@code Observable} modified to buffer items up to the given capacity
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      * @since 1.1.0
      */
     public final Observable<T> onBackpressureBuffer(long capacity, Action0 onOverflow) {
         return lift(new OperatorOnBackpressureBuffer<T>(capacity, onOverflow));
+    }
+
+    /**
+     * Instructs an Observable that is emitting items faster than its observer can consume them to buffer up to
+     * a given amount of items until they can be emitted. The resulting Observable will behave as determined
+     * by {@code overflowStrategy} if the buffer capacity is exceeded.
+     *
+     * <ul>
+     *     <li>{@code BackpressureOverflow.Strategy.ON_OVERFLOW_ERROR} (default) will {@code onError} dropping all undelivered items,
+     *     unsubscribing from the source, and notifying the producer with {@code onOverflow}. </li>
+     *     <li>{@code BackpressureOverflow.Strategy.ON_OVERFLOW_DROP_LATEST} will drop any new items emitted by the producer while
+     *     the buffer is full, without generating any {@code onError}.  Each drop will however invoke {@code onOverflow}
+     *     to signal the overflow to the producer.</li>j
+     *     <li>{@code BackpressureOverflow.Strategy.ON_OVERFLOW_DROP_OLDEST} will drop the oldest items in the buffer in order to make
+     *     room for newly emitted ones. Overflow will not generate an{@code onError}, but each drop will invoke
+     *     {@code onOverflow} to signal the overflow to the producer.</li>
+     * </ul>
+     *
+     * <p>
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param capacity number of slots available in the buffer.
+     * @param onOverflow action to execute if an item needs to be buffered, but there are no available slots.  Null is allowed.
+     * @param overflowStrategy how should the {@code Observable} react to buffer overflows.  Null is not allowed.
+     * @return the source {@code Observable} modified to buffer items up to the given capacity
+     * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public final Observable<T> onBackpressureBuffer(long capacity, Action0 onOverflow, BackpressureOverflow.Strategy overflowStrategy) {
+        return lift(new OperatorOnBackpressureBuffer<T>(capacity, onOverflow, overflowStrategy));
     }
 
     /**

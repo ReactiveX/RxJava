@@ -118,7 +118,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
     @Test
     public void testErrorPassesThru() {
         // Trigger failure on second element
-        TestObservable f = new TestObservable("one", "ERROR", "two", "three");
+        TestObservable f = new TestObservable("one", "ON_OVERFLOW_ERROR", "two", "three");
         Observable<String> w = Observable.create(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> observable = w.onExceptionResumeNext(resume);
@@ -240,7 +240,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
                                 throw new Exception("Forced Exception");
                             else if ("RUNTIMEEXCEPTION".equals(s))
                                 throw new RuntimeException("Forced RuntimeException");
-                            else if ("ERROR".equals(s))
+                            else if ("ON_OVERFLOW_ERROR".equals(s))
                                 throw new Error("Forced Error");
                             else if ("THROWABLE".equals(s))
                                 throw new Throwable("Forced Throwable");
