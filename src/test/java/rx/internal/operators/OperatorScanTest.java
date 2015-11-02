@@ -391,4 +391,39 @@ public class OperatorScanTest {
         ts.assertNotCompleted();
         ts.assertValue(0);
     }
+    
+    @Test
+    public void testInitialValueNull() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(1, 10).scan(null, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                if (t1 == null) {
+                    return t2;
+                }
+                return t1 + t2;
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(null, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void testEverythingIsNull() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(1, 6).scan(null, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return null;
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(null, null, null, null, null, null, null);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
 }

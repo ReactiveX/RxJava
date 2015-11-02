@@ -36,6 +36,9 @@ import rx.internal.util.unsafe.*;
  * <p>
  * Note that when you pass a seed to {@code scan} the resulting Observable will emit that seed as its
  * first emitted item.
+ * 
+ * @param <R> the aggregate and output type
+ * @param <T> the input value type
  */
 public final class OperatorScan<R, T> implements Operator<R, T> {
 
@@ -192,7 +195,7 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
                 q = new SpscLinkedAtomicQueue<Object>();  // new SpscUnboundedAtomicArrayQueue<R>(8);
             }
             this.queue = q;
-            q.offer(initialValue);
+            q.offer(NotificationLite.instance().next(initialValue));
         }
         
         @Override
