@@ -67,7 +67,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         state.onTerminated = new Action1<SubjectObserver<T>>() {
             @Override
             public void call(SubjectObserver<T> o) {
-                Object v = state.get();
+                Object v = state.getLatest();
                 NotificationLite<T> nl = state.nl;
                 o.accept(v, nl);
                 if (v == null || (!nl.isCompleted(v) && !nl.isError(v))) {
@@ -145,7 +145,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     @Override
     public boolean hasValue() {
         Object v = lastValue;
-        Object o = state.get();
+        Object o = state.getLatest();
         return !nl.isError(o) && nl.isNext(v);
     }
     /**
@@ -155,7 +155,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     @Experimental
     @Override
     public boolean hasThrowable() {
-        Object o = state.get();
+        Object o = state.getLatest();
         return nl.isError(o);
     }
     /**
@@ -165,7 +165,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     @Experimental
     @Override
     public boolean hasCompleted() {
-        Object o = state.get();
+        Object o = state.getLatest();
         return o != null && !nl.isError(o);
     }
     /**
@@ -181,7 +181,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     @Override
     public T getValue() {
         Object v = lastValue;
-        Object o = state.get();
+        Object o = state.getLatest();
         if (!nl.isError(o) && nl.isNext(v)) {
             return nl.getValue(v);
         }
@@ -195,7 +195,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     @Experimental
     @Override
     public Throwable getThrowable() {
-        Object o = state.get();
+        Object o = state.getLatest();
         if (nl.isError(o)) {
             return nl.getError(o);
         }
@@ -207,7 +207,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     @SuppressWarnings("unchecked")
     public T[] getValues(T[] a) {
         Object v = lastValue;
-        Object o = state.get();
+        Object o = state.getLatest();
         if (!nl.isError(o) && nl.isNext(v)) {
             T val = nl.getValue(v);
             if (a.length == 0) {

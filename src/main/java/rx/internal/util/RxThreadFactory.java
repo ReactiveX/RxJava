@@ -16,13 +16,10 @@
 package rx.internal.util;
 
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.concurrent.atomic.AtomicLong;
 
-public final class RxThreadFactory implements ThreadFactory {
+public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
     final String prefix;
-    volatile long counter;
-    static final AtomicLongFieldUpdater<RxThreadFactory> COUNTER_UPDATER
-            = AtomicLongFieldUpdater.newUpdater(RxThreadFactory.class, "counter");
 
     public RxThreadFactory(String prefix) {
         this.prefix = prefix;
@@ -30,7 +27,7 @@ public final class RxThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable r) {
-        Thread t = new Thread(r, prefix + COUNTER_UPDATER.incrementAndGet(this));
+        Thread t = new Thread(r, prefix + incrementAndGet());
         t.setDaemon(true);
         return t;
     }

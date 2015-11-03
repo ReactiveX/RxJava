@@ -15,7 +15,7 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Notification;
 import rx.Observable.Operator;
@@ -76,10 +76,7 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
         // guarded by this
         private boolean missed = false;
 
-        private volatile long requested;
-        @SuppressWarnings("rawtypes")
-        private static final AtomicLongFieldUpdater<ParentSubscriber> REQUESTED = AtomicLongFieldUpdater
-                .newUpdater(ParentSubscriber.class, "requested");
+        private final AtomicLong requested = new AtomicLong();
 
         ParentSubscriber(Subscriber<? super Notification<T>> child) {
             this.child = child;
@@ -91,7 +88,7 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
         }
 
         void requestMore(long n) {
-            BackpressureUtils.getAndAddRequest(REQUESTED, this, n);
+            BackpressureUtils.getAndAddRequest(requested, n);
             request(n);
             drain();
         }
@@ -117,12 +114,13 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
 
         private void decrementRequested() {
             // atomically decrement requested
+            AtomicLong localRequested = this.requested;
             while (true) {
-                long r = requested;
+                long r = localRequested.get();
                 if (r == Long.MAX_VALUE) {
                     // don't decrement if unlimited requested
                     return;
-                } else if (REQUESTED.compareAndSet(this, r, r - 1)) {
+                } else if (localRequested.compareAndSet(r, r - 1)) {
                     return;
                 }
             }
@@ -137,11 +135,12 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
                 } 
             }
             // drain loop
+            final AtomicLong localRequested = this.requested;
             while (!child.isUnsubscribed()) {
                 Notification<T> tn;
                 tn = terminalNotification;
                 if (tn != null) {
-                    if (requested > 0) {
+                    if (localRequested.get() > 0) {
                         // allow tn to be GC'd after the onNext call
                         terminalNotification = null;
                         // emit the terminal notification

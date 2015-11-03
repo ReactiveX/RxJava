@@ -63,7 +63,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(SubjectObserver<T> o) {
-                o.emitFirst(state.get(), state.nl);
+                o.emitFirst(state.getLatest(), state.nl);
             }
             
         };
@@ -127,7 +127,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
     @Experimental
     @Override
     public boolean hasThrowable() {
-        Object o = state.get();
+        Object o = state.getLatest();
         return nl.isError(o);
     }
     /**
@@ -137,7 +137,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
     @Experimental
     @Override
     public boolean hasCompleted() {
-        Object o = state.get();
+        Object o = state.getLatest();
         return o != null && !nl.isError(o);
     }
     /**
@@ -148,7 +148,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
     @Experimental
     @Override
     public Throwable getThrowable() {
-        Object o = state.get();
+        Object o = state.getLatest();
         if (nl.isError(o)) {
             return nl.getError(o);
         }

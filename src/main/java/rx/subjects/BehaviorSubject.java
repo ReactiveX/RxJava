@@ -97,13 +97,13 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     private static <T> BehaviorSubject<T> create(T defaultValue, boolean hasDefault) {
         final SubjectSubscriptionManager<T> state = new SubjectSubscriptionManager<T>();
         if (hasDefault) {
-            state.set(NotificationLite.instance().next(defaultValue));
+            state.setLatest(NotificationLite.instance().next(defaultValue));
         }
         state.onAdded = new Action1<SubjectObserver<T>>() {
 
             @Override
             public void call(SubjectObserver<T> o) {
-                o.emitFirst(state.get(), state.nl);
+                o.emitFirst(state.getLatest(), state.nl);
             }
             
         };
@@ -121,7 +121,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        Object last = state.get();
+        Object last = state.getLatest();
         if (last == null || state.active) {
             Object n = nl.completed();
             for (SubjectObserver<T> bo : state.terminate(n)) {
@@ -132,7 +132,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     @Override
     public void onError(Throwable e) {
-        Object last = state.get();
+        Object last = state.getLatest();
         if (last == null || state.active) {
             Object n = nl.error(e);
             List<Throwable> errors = null;
@@ -153,7 +153,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T v) {
-        Object last = state.get();
+        Object last = state.getLatest();
         if (last == null || state.active) {
             Object n = nl.next(v);
             for (SubjectObserver<T> bo : state.next(n)) {
@@ -180,7 +180,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     @Experimental
     @Override
     public boolean hasValue() {
-        Object o = state.get();
+        Object o = state.getLatest();
         return nl.isNext(o);
     }
     /**
@@ -190,7 +190,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     @Experimental
     @Override
     public boolean hasThrowable() {
-        Object o = state.get();
+        Object o = state.getLatest();
         return nl.isError(o);
     }
     /**
@@ -200,7 +200,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     @Experimental
     @Override
     public boolean hasCompleted() {
-        Object o = state.get();
+        Object o = state.getLatest();
         return nl.isCompleted(o);
     }
     /**
@@ -215,7 +215,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     @Experimental
     @Override
     public T getValue() {
-        Object o = state.get();
+        Object o = state.getLatest();
         if (nl.isNext(o)) {
             return nl.getValue(o);
         }
@@ -229,7 +229,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     @Experimental
     @Override
     public Throwable getThrowable() {
-        Object o = state.get();
+        Object o = state.getLatest();
         if (nl.isError(o)) {
             return nl.getError(o);
         }
@@ -239,7 +239,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     @Experimental
     @SuppressWarnings("unchecked")
     public T[] getValues(T[] a) {
-        Object o = state.get();
+        Object o = state.getLatest();
         if (nl.isNext(o)) {
             if (a.length == 0) {
                 a = (T[])Array.newInstance(a.getClass().getComponentType(), 1);
