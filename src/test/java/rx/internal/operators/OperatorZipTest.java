@@ -1313,4 +1313,32 @@ public class OperatorZipTest {
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(11));
     }
+    
+    @SuppressWarnings("cast")
+    @Test
+    public void testZipObservableObservableBackpressure() {
+        @SuppressWarnings("unchecked")
+        Observable<Integer>[] osArray = new Observable[] { 
+                Observable.range(0, 10), 
+                Observable.range(0, 10) 
+        };
+        
+        Observable<Observable<Integer>> os = (Observable<Observable<Integer>>) Observable.from(osArray);
+        Observable<Integer> o1 = Observable.zip(os, new FuncN<Integer>() {
+            @Override
+            public Integer call(Object... a) {
+                return 0;
+            }
+        });
+        
+        TestSubscriber<Integer> sub1 = TestSubscriber.create(5);
+        
+        o1.subscribe(sub1);
+
+        sub1.requestMore(5);
+
+        sub1.assertValueCount(10);
+        sub1.assertNoErrors();
+        sub1.assertCompleted();
+    }
 }

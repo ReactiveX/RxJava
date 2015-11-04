@@ -111,8 +111,11 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     public Subscriber<? super Observable[]> call(final Subscriber<? super R> child) {
         final Zip<R> zipper = new Zip<R>(child, zipFunction);
         final ZipProducer<R> producer = new ZipProducer<R>(zipper);
-        child.setProducer(producer);
         final ZipSubscriber subscriber = new ZipSubscriber(child, zipper, producer);
+
+        child.add(subscriber);
+        child.setProducer(producer);
+        
         return subscriber;
     }
 
@@ -124,7 +127,6 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         final ZipProducer<R> producer;
 
         public ZipSubscriber(Subscriber<? super R> child, Zip<R> zipper, ZipProducer<R> producer) {
-            super(child);
             this.child = child;
             this.zipper = zipper;
             this.producer = producer;
