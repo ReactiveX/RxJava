@@ -22,6 +22,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import rx.Single;
+import rx.SingleSubscriber;
+import rx.Subscriber;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Action1;
@@ -225,5 +228,112 @@ public class ExceptionsTest {
 
                 }
             });
+    }
+
+    @Test(expected = OnErrorFailedException.class)
+    public void testOnErrorExceptionIsThrownFromSubscribe() {
+        Observable.create(new Observable.OnSubscribe<Integer>() {
+                              @Override
+                              public void call(Subscriber<? super Integer> s1) {
+                                  Observable.create(new Observable.OnSubscribe<Integer>() {
+                                      @Override
+                                      public void call(Subscriber<? super Integer> s2) {
+                                          throw new IllegalArgumentException("original exception");
+                                      }
+                                  }).subscribe(s1);
+                              }
+                          }
+        ).subscribe(new OnErrorFailedSubscriber());
+    }
+
+    @Test(expected = OnErrorFailedException.class)
+    public void testOnErrorExceptionIsThrownFromUnsafeSubscribe() {
+        Observable.create(new Observable.OnSubscribe<Integer>() {
+                              @Override
+                              public void call(Subscriber<? super Integer> s1) {
+                                  Observable.create(new Observable.OnSubscribe<Integer>() {
+                                      @Override
+                                      public void call(Subscriber<? super Integer> s2) {
+                                          throw new IllegalArgumentException("original exception");
+                                      }
+                                  }).unsafeSubscribe(s1);
+                              }
+                          }
+        ).subscribe(new OnErrorFailedSubscriber());
+    }
+
+    @Test(expected = OnErrorFailedException.class)
+    public void testOnErrorExceptionIsThrownFromSingleDoOnSuccess() throws Exception {
+        Single.just(1)
+                .doOnSuccess(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        throw new RuntimeException();
+                    }
+                })
+                .subscribe(new OnErrorFailedSubscriber());
+    }
+
+    @Test(expected = OnErrorFailedException.class)
+    public void testOnErrorExceptionIsThrownFromSingleSubscribe() {
+        Single.create(new Single.OnSubscribe<Integer>() {
+                          @Override
+                          public void call(SingleSubscriber<? super Integer> s1) {
+                              Single.create(new Single.OnSubscribe<Integer>() {
+                                  @Override
+                                  public void call(SingleSubscriber<? super Integer> s2) {
+                                      throw new IllegalArgumentException("original exception");
+                                  }
+                              }).subscribe(s1);
+                          }
+                      }
+        ).subscribe(new OnErrorFailedSubscriber());
+    }
+
+    @Test(expected = OnErrorFailedException.class)
+    public void testOnErrorExceptionIsThrownFromSingleUnsafeSubscribe() {
+        Single.create(new Single.OnSubscribe<Integer>() {
+                          @Override
+                          public void call(final SingleSubscriber<? super Integer> s1) {
+                              Single.create(new Single.OnSubscribe<Integer>() {
+                                  @Override
+                                  public void call(SingleSubscriber<? super Integer> s2) {
+                                      throw new IllegalArgumentException("original exception");
+                                  }
+                              }).unsafeSubscribe(new Subscriber<Integer>() {
+
+                                  @Override
+                                  public void onCompleted() {
+                                  }
+
+                                  @Override
+                                  public void onError(Throwable e) {
+                                      s1.onError(e);
+                                  }
+
+                                  @Override
+                                  public void onNext(Integer v) {
+                                      s1.onSuccess(v);
+                                  }
+
+                              });
+                          }
+                      }
+        ).subscribe(new OnErrorFailedSubscriber());
+    }
+
+    private class OnErrorFailedSubscriber extends Subscriber<Integer> {
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            throw new RuntimeException();
+        }
+
+        @Override
+        public void onNext(Integer value) {
+        }
     }
 }
