@@ -5774,6 +5774,27 @@ public class Observable<T> {
         return lift(new OperatorMap<T, R>(func));
     }
     
+    /**
+     * Maps the items of this observable by applying a mapper function to each value which may also
+     * throw a checked exception.
+     * <p>
+     * Throwing a checked exception terminates the sequence with an onError event.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>{@code mapIO} is a pass-through for backpressure; it doesn't interfere with requests
+     *  or number of items delivered to downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mapIO} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the result type
+     * @param <E> the exception type
+     * @param mapper the function that maps the items of this Observable into (potentially) other type and values.
+     * @return the new Observable instance
+     */
+    public final <R, E extends Exception> Observable<R> mapIO(Func1E<? super T, ? extends R, E> mapper) {
+        return create(new OnSubscribeMapIO<T, R, E>(this, mapper));
+    }
+    
     private final <R> Observable<R> mapNotification(Func1<? super T, ? extends R> onNext, Func1<? super Throwable, ? extends R> onError, Func0<? extends R> onCompleted) {
         return lift(new OperatorMapNotification<T, R>(onNext, onError, onCompleted));
     }
