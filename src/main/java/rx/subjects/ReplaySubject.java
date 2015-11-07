@@ -958,7 +958,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public boolean test(Object value, long now) {
             return first.test(value, now) || second.test(value, now);
         }
-    };
+    }
     
     /** Maps the values to Timestamped. */
     static final class AddTimestamped implements Func1<Object, Object> {

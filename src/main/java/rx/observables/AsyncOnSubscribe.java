@@ -29,7 +29,7 @@ import rx.internal.operators.*;
 import rx.observers.*;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.CompositeSubscription;
-;
+
 /**
  * A utility class to create {@code OnSubscribe<T>} functions that respond correctly to back
  * pressure requests from subscribers. This is an improvement over

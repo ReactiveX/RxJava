@@ -79,11 +79,11 @@ public final class BlockingOperatorNext {
             }
             // Since an iterator should not be used in different thread,
             // so we do not need any synchronization.
-            if (hasNext == false) {
+            if (!hasNext) {
                 // the iterator has reached the end.
                 return false;
             }
-            if (isNextConsumed == false) {
+            if (!isNextConsumed) {
                 // next has not been used yet.
                 return true;
             }

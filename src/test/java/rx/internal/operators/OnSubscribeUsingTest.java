@@ -45,9 +45,9 @@ import rx.subscriptions.Subscriptions;
 public class OnSubscribeUsingTest {
 
     private interface Resource {
-        public String getTextFromWeb();
-
-        public void dispose();
+        String getTextFromWeb();
+        
+        void dispose();
     }
 
     private static class DisposeAction implements Action1<Resource> {

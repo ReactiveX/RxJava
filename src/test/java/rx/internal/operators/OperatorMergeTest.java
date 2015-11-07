@@ -946,7 +946,7 @@ public class OperatorMergeTest {
     }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
-        Observable<Integer> observable = Observable.from(new Iterable<Integer>() {
+        return Observable.from(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
@@ -967,7 +967,6 @@ public class OperatorMergeTest {
                 };
             }
         });
-        return observable;
     }
 
     @Test

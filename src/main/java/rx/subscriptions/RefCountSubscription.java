@@ -143,5 +143,5 @@ public final class RefCountSubscription implements Subscription {
         public boolean isUnsubscribed() {
             return innerDone != 0;
         }
-    };
+    }
 }

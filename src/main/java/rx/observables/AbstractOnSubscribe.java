@@ -597,10 +597,7 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
          */
         protected void free() {
             int i = inUse.get();
-            if (i <= 0) {
-                return;
-            } else
-            if (inUse.decrementAndGet() == 0) {
+            if (i > 0 && inUse.decrementAndGet() == 0) {
                 parent.onTerminated(state);
             }
         }
