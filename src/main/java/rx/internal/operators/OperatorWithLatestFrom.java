@@ -60,7 +60,6 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T>  {
                         s.onNext(result);
                     } catch (Throwable e) {
                         Exceptions.throwOrReport(e, this);
-                        return;
                     }
                 }
             }

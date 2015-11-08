@@ -976,7 +976,7 @@ public class OperatorGroupByTest {
 
     Observable<Event> ASYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
         return SYNC_INFINITE_OBSERVABLE_OF_EVENT(numGroups, subscribeCounter, sentEventCounter).subscribeOn(Schedulers.newThread());
-    };
+    }
 
     Observable<Event> SYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
         return Observable.create(new OnSubscribe<Event>() {
@@ -997,7 +997,7 @@ public class OperatorGroupByTest {
             }
 
         });
-    };
+    }
 
     @Test
     public void testGroupByOnAsynchronousSourceAcceptsMultipleSubscriptions() throws InterruptedException {

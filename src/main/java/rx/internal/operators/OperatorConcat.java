@@ -229,5 +229,5 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
             arbiter.setProducer(producer);
         }
 
-    };
+    }
 }

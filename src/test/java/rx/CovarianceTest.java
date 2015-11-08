@@ -211,7 +211,7 @@ public class CovarianceTest {
 
                 return Observable.from(delta);
             }
-        };
+        }
     };
 
     /*

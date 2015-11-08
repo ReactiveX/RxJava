@@ -251,7 +251,7 @@ public class OnSubscribeCombineLatestTest {
     }
 
     private Func3<String, String, String, String> getConcat3StringsCombineLatestFunction() {
-        Func3<String, String, String, String> combineLatestFunction = new Func3<String, String, String, String>() {
+        return new Func3<String, String, String, String>() {
 
             @Override
             public String call(String a1, String a2, String a3) {
@@ -268,11 +268,10 @@ public class OnSubscribeCombineLatestTest {
             }
 
         };
-        return combineLatestFunction;
     }
 
     private Func2<String, Integer, String> getConcatStringIntegerCombineLatestFunction() {
-        Func2<String, Integer, String> combineLatestFunction = new Func2<String, Integer, String>() {
+        return new Func2<String, Integer, String>() {
 
             @Override
             public String call(String s, Integer i) {
@@ -280,11 +279,10 @@ public class OnSubscribeCombineLatestTest {
             }
 
         };
-        return combineLatestFunction;
     }
 
     private Func3<String, Integer, int[], String> getConcatStringIntegerIntArrayCombineLatestFunction() {
-        Func3<String, Integer, int[], String> combineLatestFunction = new Func3<String, Integer, int[], String>() {
+        return new Func3<String, Integer, int[], String>() {
 
             @Override
             public String call(String s, Integer i, int[] iArray) {
@@ -292,7 +290,6 @@ public class OnSubscribeCombineLatestTest {
             }
 
         };
-        return combineLatestFunction;
     }
 
     private static String getStringValue(Object o) {

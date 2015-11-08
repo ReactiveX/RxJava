@@ -160,18 +160,16 @@ public class EventLoopsScheduler extends Scheduler implements SchedulerLifecycle
             if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
-            ScheduledAction s = poolWorker.scheduleActual(action, 0, null, serial);
-            
-            return s;
+
+            return poolWorker.scheduleActual(action, 0, null, serial);
         }
         @Override
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
-            ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit, timed);
-            
-            return s;
+
+            return poolWorker.scheduleActual(action, delayTime, unit, timed);
         }
     }
     

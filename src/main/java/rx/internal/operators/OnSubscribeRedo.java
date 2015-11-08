@@ -195,7 +195,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
         final AtomicBoolean resumeBoundary = new AtomicBoolean(true);
         
         // incremented when requests are made, decremented when requests are fulfilled
-        final AtomicLong consumerCapacity = new AtomicLong(0l);
+        final AtomicLong consumerCapacity = new AtomicLong();
 
         final Scheduler.Worker worker = scheduler.createWorker();
         child.add(worker);

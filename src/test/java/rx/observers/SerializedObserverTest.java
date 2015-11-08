@@ -500,7 +500,7 @@ public class SerializedObserverTest {
         }
     }
 
-    private static enum TestConcurrencyObserverEvent {
+    private enum TestConcurrencyObserverEvent {
         onCompleted, onError, onNext
     }
 

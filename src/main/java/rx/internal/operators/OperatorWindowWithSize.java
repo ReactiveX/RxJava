@@ -117,7 +117,6 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
                 noWindow = true;
                 if (child.isUnsubscribed()) {
                     unsubscribe();
-                    return;
                 }
             }
         }
