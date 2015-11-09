@@ -15,49 +15,25 @@
  */
 package rx;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
-import rx.Observable.OnSubscribe;
-import rx.Observable.Transformer;
+import rx.Observable.*;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action1;
-import rx.functions.Action2;
-import rx.functions.Func0;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
-import rx.schedulers.TestScheduler;
-import rx.subjects.ReplaySubject;
-import rx.subjects.Subject;
+import rx.schedulers.*;
+import rx.subjects.*;
 import rx.subscriptions.BooleanSubscription;
 
 public class ObservableTests {
@@ -1101,19 +1077,45 @@ public class ObservableTests {
     }
     
     @Test
-    public void testErrorThrownIssue1685() {
+    public void testErrorThrownIssue1685() throws Exception {
         Subject<Object, Object> subject = ReplaySubject.create();
 
-        Observable.error(new RuntimeException("oops"))
-            .materialize()
-            .delay(1, TimeUnit.SECONDS)
-            .dematerialize()
-            .subscribe(subject);
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        
+        try {
+            
+            final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
+            
+            Scheduler s = Schedulers.from(exec);
+            exec.submit(new Runnable() {
+                @Override
+                public void run() {
+                    Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+                        @Override
+                        public void uncaughtException(Thread t, Throwable e) {
+                            err.set(e);
+                        }
+                    });
+                }
+            }).get();
+            
+            Observable.error(new RuntimeException("oops"))
+                .materialize()
+                .delay(1, TimeUnit.SECONDS, s)
+                .dematerialize()
+                .subscribe(subject);
+    
+            subject.subscribe();
+            subject.materialize().toBlocking().first();
 
-        subject.subscribe();
-        subject.materialize().toBlocking().first();
-
-        System.out.println("Done");
+            Thread.sleep(1000); // the uncaught exception comes after the terminal event reaches toBlocking
+            
+            assertNotNull("UncaughtExceptionHandler didn't get anything.", err.get());
+            
+            System.out.println("Done");
+        } finally {
+            exec.shutdownNow();
+        }
     }
 
     @Test
