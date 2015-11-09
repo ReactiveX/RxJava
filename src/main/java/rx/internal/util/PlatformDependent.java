@@ -34,6 +34,8 @@ public final class PlatformDependent {
 
     private static final boolean IS_ANDROID = ANDROID_API_VERSION != ANDROID_API_VERSION_IS_NOT_ANDROID;
 
+    /** If Android detected but couldn't get the version number. */
+    private static final int ANDROID_API_VERSION_MIN = 7;
     /**
      * Returns {@code true} if and only if the current platform is Android.
      */
@@ -59,15 +61,21 @@ public final class PlatformDependent {
      * @see <a href="http://developer.android.com/reference/android/os/Build.VERSION.html#SDK_INT">Documentation</a>
      */
     private static int resolveAndroidApiVersion() {
+        Class<?> verClass;
         try {
-            return (Integer) Class
-                    .forName("android.os.Build$VERSION", true, getSystemClassLoader())
-                    .getField("SDK_INT")
-                    .get(null);
+            verClass = Class
+                    .forName("android.os.Build$VERSION", true, getSystemClassLoader());
         } catch (Exception e) {
             // Can not resolve version of Android API, maybe current platform is not Android
             // or API of resolving current Version of Android API has changed in some release of Android
             return ANDROID_API_VERSION_IS_NOT_ANDROID;
+        }
+        try {
+            return (Integer) verClass
+                    .getField("SDK_INT")
+                    .get(null);
+        } catch (Exception ex) {
+            return ANDROID_API_VERSION_MIN;
         }
     }
 
