@@ -145,36 +145,14 @@ public class Observable<T> {
      *  <dd>{@code lift} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the value type after the transformation by the operator
      * @param operator the Operator that implements the Observable-operating function to be applied to the source
      *             Observable
      * @return an Observable that is the result of applying the lifted Operator to the source Observable
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
     public final <R> Observable<R> lift(final Operator<? extends R, ? super T> operator) {
-        return new Observable<R>(new OnSubscribe<R>() {
-            @Override
-            public void call(Subscriber<? super R> o) {
-                try {
-                    Subscriber<? super T> st = hook.onLift(operator).call(o);
-                    try {
-                        // new Subscriber created and being subscribed with so 'onStart' it
-                        st.onStart();
-                        onSubscribe.call(st);
-                    } catch (Throwable e) {
-                        // localized capture of errors rather than it skipping all operators 
-                        // and ending up in the try/catch of the subscribe method which then
-                        // prevents onErrorResumeNext and other similar approaches to error handling
-                        Exceptions.throwIfFatal(e);
-                        st.onError(e);
-                    }
-                } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    // if the lift function failed all we can do is pass the error to the final Subscriber
-                    // as we don't have the operator available to us
-                    o.onError(e);
-                }
-            }
-        });
+        return create(new OnSubscribeLift<T, R>(this.onSubscribe, operator));
     }
     
     /**
@@ -5813,7 +5791,25 @@ public class Observable<T> {
      * @return an Observable that emits all of the items emitted by the source Observables
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
+    @SuppressWarnings("unchecked")
     public final Observable<T> mergeWith(Observable<? extends T> t1) {
+        if (this.onSubscribe instanceof OnSubscribeLift) {
+            OnSubscribeLift lifted = (OnSubscribeLift) this.onSubscribe;
+            if ((lifted.operator() instanceof OperatorMerge) && (lifted.source() instanceof OnSubscribeFromIterable)) {
+                OnSubscribeFromIterable<Observable<? extends T>> iter = (OnSubscribeFromIterable<Observable<? extends T>>)lifted.source();
+                Iterable<? extends Observable<? extends T>> it = iter.iterable();
+                if (it instanceof List) {
+                    List<? extends Observable<? extends T>> lit = (List<? extends Observable<? extends T>>) it;
+                    List<Observable<? extends T>> newList = new ArrayList<Observable<? extends T>>(lit.size() + 1);
+                    for (Observable<? extends T> t : lit) {
+                        newList.add(t);
+                    }
+                    newList.add(t1);
+                    
+                    return merge(from(newList));
+                }
+            }
+        }
         return merge(this, t1);
     }
     
@@ -8167,7 +8163,7 @@ public class Observable<T> {
         try {
             // new Subscriber so onStart it
             subscriber.onStart();
-            // allow the hook to intercept and/or decorate
+            // allow the HOOK to intercept and/or decorate
             hook.onSubscribeStart(this, onSubscribe).call(subscriber);
             return hook.onSubscribeReturn(subscriber);
         } catch (Throwable e) {
@@ -8181,9 +8177,9 @@ public class Observable<T> {
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
-                // TODO could the hook be the cause of the error in the on error handling.
+                // TODO could the HOOK be the cause of the error in the on error handling.
                 hook.onSubscribeError(r);
-                // TODO why aren't we throwing the hook's return value.
+                // TODO why aren't we throwing the HOOK's return value.
                 throw r;
             }
             return Subscriptions.unsubscribed();
@@ -8260,7 +8256,7 @@ public class Observable<T> {
         // The code below is exactly the same an unsafeSubscribe but not used because it would 
         // add a significant depth to already huge call stacks.
         try {
-            // allow the hook to intercept and/or decorate
+            // allow the HOOK to intercept and/or decorate
             hook.onSubscribeStart(observable, observable.onSubscribe).call(subscriber);
             return hook.onSubscribeReturn(subscriber);
         } catch (Throwable e) {
@@ -8274,9 +8270,9 @@ public class Observable<T> {
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
-                // TODO could the hook be the cause of the error in the on error handling.
+                // TODO could the HOOK be the cause of the error in the on error handling.
                 hook.onSubscribeError(r);
-                // TODO why aren't we throwing the hook's return value.
+                // TODO why aren't we throwing the HOOK's return value.
                 throw r;
             }
             return Subscriptions.unsubscribed();

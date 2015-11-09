@@ -25,10 +25,10 @@ import rx.functions.Action0;
  * the 3 methods that return Scheduler (io(), computation(), newThread()).
  * 2.  You may wrap/decorate an {@link Action0}, before it is handed off to a Scheduler.  The system-
  * supplied Schedulers (Schedulers.ioScheduler, Schedulers.computationScheduler,
- * Scheduler.newThreadScheduler) all use this hook, so it's a convenient way to
+ * Scheduler.newThreadScheduler) all use this HOOK, so it's a convenient way to
  * modify Scheduler functionality without redefining Schedulers wholesale.
  *
- * Also, when redefining Schedulers, you are free to use/not use the onSchedule decoration hook.
+ * Also, when redefining Schedulers, you are free to use/not use the onSchedule decoration HOOK.
  * <p>
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins:
  * <a href="https://github.com/ReactiveX/RxJava/wiki/Plugins">https://github.com/ReactiveX/RxJava/wiki/Plugins</a>.

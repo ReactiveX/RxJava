@@ -144,7 +144,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
      */
     public final static <T> Single<T> create(OnSubscribe<T> f) {
-        return new Single<T>(f); // TODO need hook 
+        return new Single<T>(f); // TODO need HOOK 
     }
 
     /**
@@ -1492,8 +1492,8 @@ public class Single<T> {
         try {
             // new Subscriber so onStart it
             subscriber.onStart();
-            // TODO add back the hook
-            //            hook.onSubscribeStart(this, onSubscribe).call(subscriber);
+            // TODO add back the HOOK
+            //            HOOK.onSubscribeStart(this, onSubscribe).call(subscriber);
             onSubscribe.call(subscriber);
             hook.onSubscribeReturn(subscriber);
         } catch (Throwable e) {
@@ -1507,9 +1507,9 @@ public class Single<T> {
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
-                // TODO could the hook be the cause of the error in the on error handling.
+                // TODO could the HOOK be the cause of the error in the on error handling.
                 hook.onSubscribeError(r);
-                // TODO why aren't we throwing the hook's return value.
+                // TODO why aren't we throwing the HOOK's return value.
                 throw r;
             }
         }
@@ -1578,9 +1578,9 @@ public class Single<T> {
 
         // The code below is exactly the same an unsafeSubscribe but not used because it would add a sigificent depth to alreay huge call stacks.
         try {
-            // allow the hook to intercept and/or decorate
-            // TODO add back the hook
-            //            hook.onSubscribeStart(this, onSubscribe).call(subscriber);
+            // allow the HOOK to intercept and/or decorate
+            // TODO add back the HOOK
+            //            HOOK.onSubscribeStart(this, onSubscribe).call(subscriber);
             onSubscribe.call(subscriber);
             return hook.onSubscribeReturn(subscriber);
         } catch (Throwable e) {
@@ -1594,9 +1594,9 @@ public class Single<T> {
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
-                // TODO could the hook be the cause of the error in the on error handling.
+                // TODO could the HOOK be the cause of the error in the on error handling.
                 hook.onSubscribeError(r);
-                // TODO why aren't we throwing the hook's return value.
+                // TODO why aren't we throwing the HOOK's return value.
                 throw r;
             }
             return Subscriptions.empty();

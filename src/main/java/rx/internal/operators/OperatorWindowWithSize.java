@@ -70,7 +70,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
              */
             this.child = child;
             /*
-             * Add unsubscribe hook to child to get unsubscribe on outer (unsubscribing on next window, not on the inner window itself)
+             * Add unsubscribe HOOK to child to get unsubscribe on outer (unsubscribing on next window, not on the inner window itself)
              */
         }
         void init() {
@@ -156,7 +156,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
 
         void init() {
             /*
-             * Add unsubscribe hook to child to get unsubscribe on outer (unsubscribing on next window, not on the inner window itself)
+             * Add unsubscribe HOOK to child to get unsubscribe on outer (unsubscribing on next window, not on the inner window itself)
              */
             child.add(Subscriptions.create(new Action0() {
 
