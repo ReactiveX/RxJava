@@ -460,4 +460,112 @@ public class JCToolsQueueTests {
         }
         UnsafeAccess.addressOf(Object.class, "field");
     }
+    
+    @Test
+    public void testSpscExactAtomicArrayQueue() {
+        for (int i = 1; i <= RxRingBuffer.SIZE * 2; i++) {
+            SpscExactAtomicArrayQueue<Integer> q = new SpscExactAtomicArrayQueue<Integer>(i);
+            
+            for (int j = 0; j < i; j++) {
+                assertTrue(q.offer(j));
+            }
+            
+            assertFalse(q.offer(i));
+            
+            for (int j = 0; j < i; j++) {
+                assertEquals((Integer)j, q.peek());
+                assertEquals((Integer)j, q.poll());
+            }
+            
+            for (int j = 0; j < RxRingBuffer.SIZE * 4; j++) {
+                assertTrue(q.offer(j));
+                assertEquals((Integer)j, q.peek());
+                assertEquals((Integer)j, q.poll());
+            }
+        }
+    }
+    
+    @Test
+    public void testUnboundedAtomicArrayQueue() {
+        for (int i = 1; i <= RxRingBuffer.SIZE * 2; i *= 2) {
+            SpscUnboundedAtomicArrayQueue<Integer> q = new SpscUnboundedAtomicArrayQueue<Integer>(i);
+            
+            for (int j = 0; j < i; j++) {
+                assertTrue(q.offer(j));
+            }
+            
+            assertTrue(q.offer(i));
+            
+            for (int j = 0; j < i; j++) {
+                assertEquals((Integer)j, q.peek());
+                assertEquals((Integer)j, q.poll());
+            }
+            
+            assertEquals((Integer)i, q.peek());
+            assertEquals((Integer)i, q.poll());
+            
+            for (int j = 0; j < RxRingBuffer.SIZE * 4; j++) {
+                assertTrue(q.offer(j));
+                assertEquals((Integer)j, q.peek());
+                assertEquals((Integer)j, q.poll());
+            }
+        }
+        
+    }
+
+    
+    @Test(expected = NullPointerException.class)
+    public void testSpscAtomicArrayQueueNull() {
+        SpscAtomicArrayQueue<Integer> q = new SpscAtomicArrayQueue<Integer>(16);
+        q.offer(null);
+    }
+    
+    @Test
+    public void testSpscAtomicArrayQueueOfferPoll() {
+        Queue<Integer> q = new SpscAtomicArrayQueue<Integer>(128);
+        
+        testOfferPoll(q);
+    }
+    @Test(expected = UnsupportedOperationException.class)
+    public void testSpscAtomicArrayQueueIterator() {
+        SpscAtomicArrayQueue<Integer> q = new SpscAtomicArrayQueue<Integer>(16);
+        q.iterator();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testSpscExactAtomicArrayQueueNull() {
+        SpscExactAtomicArrayQueue<Integer> q = new SpscExactAtomicArrayQueue<Integer>(10);
+        q.offer(null);
+    }
+    
+    @Test
+    public void testSpscExactAtomicArrayQueueOfferPoll() {
+        Queue<Integer> q = new SpscAtomicArrayQueue<Integer>(120);
+        
+        testOfferPoll(q);
+    }
+    @Test(expected = UnsupportedOperationException.class)
+    public void testSpscExactAtomicArrayQueueIterator() {
+        SpscAtomicArrayQueue<Integer> q = new SpscAtomicArrayQueue<Integer>(10);
+        q.iterator();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testSpscUnboundedAtomicArrayQueueNull() {
+        SpscUnboundedAtomicArrayQueue<Integer> q = new SpscUnboundedAtomicArrayQueue<Integer>(16);
+        q.offer(null);
+    }
+    
+    @Test
+    public void testSpscUnboundedAtomicArrayQueueOfferPoll() {
+        Queue<Integer> q = new SpscUnboundedAtomicArrayQueue<Integer>(128);
+        
+        testOfferPoll(q);
+    }
+    @Test(expected = UnsupportedOperationException.class)
+    public void testSpscUnboundedAtomicArrayQueueIterator() {
+        SpscUnboundedAtomicArrayQueue<Integer> q = new SpscUnboundedAtomicArrayQueue<Integer>(16);
+        q.iterator();
+    }
+
 }
