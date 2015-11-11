@@ -15,7 +15,7 @@
  */
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Subscription;
@@ -27,17 +27,14 @@ import rx.functions.Action0;
  */
 public final class BooleanSubscription implements Subscription {
 
-    private final Action0 action;
-    volatile int unsubscribed;
-    static final AtomicIntegerFieldUpdater<BooleanSubscription> UNSUBSCRIBED_UPDATER
-            = AtomicIntegerFieldUpdater.newUpdater(BooleanSubscription.class, "unsubscribed");
+    final AtomicReference<Action0> actionRef;
 
     public BooleanSubscription() {
-        action = null;
+        actionRef = new AtomicReference<Action0>();
     }
 
     private BooleanSubscription(Action0 action) {
-        this.action = action;
+        actionRef = new AtomicReference<Action0>(action);
     }
 
     /**
@@ -62,16 +59,25 @@ public final class BooleanSubscription implements Subscription {
 
     @Override
     public boolean isUnsubscribed() {
-        return unsubscribed != 0;
+        return actionRef.get() == EMPTY_ACTION;
     }
 
     @Override
     public final void unsubscribe() {
-        if (UNSUBSCRIBED_UPDATER.compareAndSet(this, 0, 1)) {
-            if (action != null) {
+        Action0 action = actionRef.get();
+        if (action != EMPTY_ACTION) {
+            action = actionRef.getAndSet(EMPTY_ACTION);
+            if (action != null && action != EMPTY_ACTION) {
                 action.call();
             }
         }
     }
+
+    static final Action0 EMPTY_ACTION = new Action0() {
+        @Override
+        public void call() {
+
+        }
+    };
 
 }

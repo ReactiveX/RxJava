@@ -18,7 +18,6 @@ package rx.schedulers;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Scheduler;
 import rx.Subscription;
@@ -47,9 +46,7 @@ public final class TrampolineScheduler extends Scheduler {
 
     private static class InnerCurrentThreadScheduler extends Scheduler.Worker implements Subscription {
 
-        private static final AtomicIntegerFieldUpdater<InnerCurrentThreadScheduler> COUNTER_UPDATER = AtomicIntegerFieldUpdater.newUpdater(InnerCurrentThreadScheduler.class, "counter");
-        @SuppressWarnings("unused")
-        volatile int counter;
+        final AtomicInteger counter = new AtomicInteger();
         private final PriorityBlockingQueue<TimedAction> queue = new PriorityBlockingQueue<TimedAction>();
         private final BooleanSubscription innerSubscription = new BooleanSubscription();
         private final AtomicInteger wip = new AtomicInteger();
@@ -70,7 +67,7 @@ public final class TrampolineScheduler extends Scheduler {
             if (innerSubscription.isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
-            final TimedAction timedAction = new TimedAction(action, execTime, COUNTER_UPDATER.incrementAndGet(this));
+            final TimedAction timedAction = new TimedAction(action, execTime, counter.incrementAndGet());
             queue.add(timedAction);
 
             if (wip.getAndIncrement() == 0) {

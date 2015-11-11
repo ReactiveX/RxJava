@@ -15,7 +15,7 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Producer;
@@ -53,10 +53,7 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
         final SerialSubscription serialSubscription;
         final ProducerArbiter pa;
         
-        volatile int attempts;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<SourceSubscriber> ATTEMPTS_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(SourceSubscriber.class, "attempts");
+        final AtomicInteger attempts = new AtomicInteger();
 
         public SourceSubscriber(Subscriber<? super T> child, 
                 final Func2<Integer, Throwable, Boolean> predicate, 
@@ -88,7 +85,7 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
                 @Override
                 public void call() {
                     final Action0 _self = this;
-                    ATTEMPTS_UPDATER.incrementAndGet(SourceSubscriber.this);
+                    attempts.incrementAndGet();
 
                     // new subscription each time so if it unsubscribes itself it does not prevent retries
                     // by unsubscribing the child subscription
@@ -106,7 +103,7 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
                         public void onError(Throwable e) {
                             if (!done) {
                                 done = true;
-                                if (predicate.call(attempts, e) && !inner.isUnsubscribed()) {
+                                if (predicate.call(attempts.get(), e) && !inner.isUnsubscribed()) {
                                     // retry again
                                     inner.schedule(_self);
                                 } else {

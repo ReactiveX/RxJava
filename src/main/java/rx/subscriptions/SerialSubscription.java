@@ -15,7 +15,7 @@
  */
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
 
@@ -24,9 +24,7 @@ import rx.Subscription;
  * the previous underlying subscription to be unsubscribed.
  */
 public final class SerialSubscription implements Subscription {
-    volatile State state = new State(false, Subscriptions.empty());
-    static final AtomicReferenceFieldUpdater<SerialSubscription, State> STATE_UPDATER
-            = AtomicReferenceFieldUpdater.newUpdater(SerialSubscription.class, State.class, "state");
+    final AtomicReference<State> state = new AtomicReference<State>(new State(false, Subscriptions.empty()));
 
     private static final class State {
         final boolean isUnsubscribed;
@@ -49,21 +47,22 @@ public final class SerialSubscription implements Subscription {
 
     @Override
     public boolean isUnsubscribed() {
-        return state.isUnsubscribed;
+        return state.get().isUnsubscribed;
     }
 
     @Override
     public void unsubscribe() {
         State oldState;
         State newState;
+        final AtomicReference<State> localState = this.state;
         do {
-            oldState = state;
+            oldState = localState.get();
             if (oldState.isUnsubscribed) {
                 return;
             } else {
                 newState = oldState.unsubscribe();
             }
-        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
+        } while (!localState.compareAndSet(oldState, newState));
         oldState.subscription.unsubscribe();
     }
 
@@ -81,15 +80,16 @@ public final class SerialSubscription implements Subscription {
         }
         State oldState;
         State newState;
+        final AtomicReference<State> localState = this.state;
         do {
-            oldState = state;
+            oldState = localState.get();
             if (oldState.isUnsubscribed) {
                 s.unsubscribe();
                 return;
             } else {
                 newState = oldState.set(s);
             }
-        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
+        } while (!localState.compareAndSet(oldState, newState));
         oldState.subscription.unsubscribe();
     }
 
@@ -99,7 +99,7 @@ public final class SerialSubscription implements Subscription {
      * @return the current {@link Subscription} that is being represented by this {@code SerialSubscription}
      */
     public Subscription get() {
-        return state.subscription;
+        return state.get().subscription;
     }
 
 }
