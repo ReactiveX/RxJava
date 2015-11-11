@@ -16,16 +16,11 @@
 package rx.internal.operators;
 
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.Operator;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Func3;
-import rx.functions.Func4;
+import rx.functions.*;
+import rx.internal.producers.ProducerArbiter;
 import rx.observers.SerializedSubscriber;
 import rx.subscriptions.SerialSubscription;
 
@@ -65,15 +60,21 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
     public Subscriber<? super T> call(Subscriber<? super T> subscriber) {
         Scheduler.Worker inner = scheduler.createWorker();
         subscriber.add(inner);
-        final SerialSubscription serial = new SerialSubscription();
-        subscriber.add(serial);
         // Use SynchronizedSubscriber for safe memory access
         // as the subscriber will be accessed in the current thread or the
         // scheduler or other Observables.
         final SerializedSubscriber<T> synchronizedSubscriber = new SerializedSubscriber<T>(subscriber);
 
+        final SerialSubscription serial = new SerialSubscription();
+        synchronizedSubscriber.add(serial);
+
         TimeoutSubscriber<T> timeoutSubscriber = new TimeoutSubscriber<T>(synchronizedSubscriber, timeoutStub, serial, other, inner);
+        
+        synchronizedSubscriber.add(timeoutSubscriber);
+        synchronizedSubscriber.setProducer(timeoutSubscriber.arbiter);
+        
         serial.set(firstTimeoutStub.call(timeoutSubscriber, 0L, inner));
+        
         return timeoutSubscriber;
     }
 
@@ -81,51 +82,64 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
             Subscriber<T> {
 
         private final SerialSubscription serial;
-        private final Object gate = new Object();
 
         private final SerializedSubscriber<T> serializedSubscriber;
 
         private final TimeoutStub<T> timeoutStub;
 
         private final Observable<? extends T> other;
+        
         private final Scheduler.Worker inner;
         
-        final AtomicInteger terminated = new AtomicInteger();
-        final AtomicLong actual = new AtomicLong();
+        final ProducerArbiter arbiter;
+        
+        /** Guarded by this. */
+        boolean terminated;
+        /** Guarded by this. */
+        long actual;
         
         private TimeoutSubscriber(
                 SerializedSubscriber<T> serializedSubscriber,
                 TimeoutStub<T> timeoutStub, SerialSubscription serial,
                 Observable<? extends T> other,
                 Scheduler.Worker inner) {
-            super(serializedSubscriber);
             this.serializedSubscriber = serializedSubscriber;
             this.timeoutStub = timeoutStub;
             this.serial = serial;
             this.other = other;
             this.inner = inner;
+            this.arbiter = new ProducerArbiter();
         }
 
         @Override
+        public void setProducer(Producer p) {
+            arbiter.setProducer(p);
+        }
+        
+        @Override
         public void onNext(T value) {
             boolean onNextWins = false;
-            synchronized (gate) {
-                if (terminated.get() == 0) {
-                    actual.incrementAndGet();
+            long a;
+            synchronized (this) {
+                if (!terminated) {
+                    a = ++actual;
                     onNextWins = true;
+                } else {
+                    a = actual;
                 }
             }
             if (onNextWins) {
                 serializedSubscriber.onNext(value);
-                serial.set(timeoutStub.call(this, actual.get(), value, inner));
+                serial.set(timeoutStub.call(this, a, value, inner));
             }
         }
 
         @Override
         public void onError(Throwable error) {
             boolean onErrorWins = false;
-            synchronized (gate) {
-                if (terminated.getAndSet(1) == 0) {
+            synchronized (this) {
+                if (!terminated) {
+                    terminated = true;
                     onErrorWins = true;
                 }
             }
@@ -138,8 +152,9 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         @Override
         public void onCompleted() {
             boolean onCompletedWins = false;
-            synchronized (gate) {
-                if (terminated.getAndSet(1) == 0) {
+            synchronized (this) {
+                if (!terminated) {
+                    terminated = true;
                     onCompletedWins = true;
                 }
             }
@@ -152,8 +167,9 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         public void onTimeout(long seqId) {
             long expected = seqId;
             boolean timeoutWins = false;
-            synchronized (gate) {
-                if (expected == actual.get() && terminated.getAndSet(1) == 0) {
+            synchronized (this) {
+                if (expected == actual && !terminated) {
+                    terminated = true;
                     timeoutWins = true;
                 }
             }
@@ -161,8 +177,29 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
                 if (other == null) {
                     serializedSubscriber.onError(new TimeoutException());
                 } else {
-                    other.unsafeSubscribe(serializedSubscriber);
-                    serial.set(serializedSubscriber);
+                    Subscriber<T> second = new Subscriber<T>() {
+                        @Override
+                        public void onNext(T t) {
+                            serializedSubscriber.onNext(t);
+                        }
+                        
+                        @Override
+                        public void onError(Throwable e) {
+                            serializedSubscriber.onError(e);
+                        }
+                        
+                        @Override
+                        public void onCompleted() {
+                            serializedSubscriber.onCompleted();
+                        }
+                        
+                        @Override
+                        public void setProducer(Producer p) {
+                            arbiter.setProducer(p);
+                        }
+                    };
+                    other.unsafeSubscribe(second);
+                    serial.set(second);
                 }
             }
         }

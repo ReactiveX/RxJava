@@ -17,23 +17,10 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.Operator;
-import rx.Observer;
-import rx.Producer;
-import rx.Subscriber;
-import rx.exceptions.Exceptions;
-import rx.exceptions.MissingBackpressureException;
-import rx.functions.Func2;
-import rx.functions.Func3;
-import rx.functions.Func4;
-import rx.functions.Func5;
-import rx.functions.Func6;
-import rx.functions.Func7;
-import rx.functions.Func8;
-import rx.functions.Func9;
-import rx.functions.FuncN;
-import rx.functions.Functions;
+import rx.exceptions.*;
+import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.subscriptions.CompositeSubscription;
 
@@ -111,8 +98,11 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     public Subscriber<? super Observable[]> call(final Subscriber<? super R> child) {
         final Zip<R> zipper = new Zip<R>(child, zipFunction);
         final ZipProducer<R> producer = new ZipProducer<R>(zipper);
-        child.setProducer(producer);
         final ZipSubscriber subscriber = new ZipSubscriber(child, zipper, producer);
+
+        child.add(subscriber);
+        child.setProducer(producer);
+        
         return subscriber;
     }
 
@@ -124,7 +114,6 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         final ZipProducer<R> producer;
 
         public ZipSubscriber(Subscriber<? super R> child, Zip<R> zipper, ZipProducer<R> producer) {
-            super(child);
             this.child = child;
             this.zipper = zipper;
             this.producer = producer;
@@ -176,6 +165,8 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     }
 
     private static final class Zip<R> extends AtomicLong {
+        /** */
+        private static final long serialVersionUID = 3014069338189397063L;
         private final Observer<? super R> child;
         private final FuncN<? extends R> zipFunction;
         private final CompositeSubscription childSubscription = new CompositeSubscription();
