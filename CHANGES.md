@@ -1,5 +1,16 @@
 # RxJava Releases #
 
+### Version 1.0.16 – November 11 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.16%7C)) ###
+* [Pull 3169] (https://github.com/ReactiveX/RxJava/pull/3169) Merge can now operate in horizontally unbounded mode
+* [Pull 3286] (https://github.com/ReactiveX/RxJava/pull/3286) Implements BlockingSingle
+* [Pull 3433] (https://github.com/ReactiveX/RxJava/pull/3433) Add Single.defer()
+* [Pull 3468] (https://github.com/ReactiveX/RxJava/pull/3468) Fix other places that may swallow OnErrorFailedException
+* [Pull 3485] (https://github.com/ReactiveX/RxJava/pull/3485) fix scan() not accepting a null initial value
+* [Pull 3488] (https://github.com/ReactiveX/RxJava/pull/3488) Replace all instances of Atomic*FieldUpdater with direct Atomic* instances
+* [Pull 3493] (https://github.com/ReactiveX/RxJava/pull/3493) fix for zip(Obs<Obs<T>>) backpressure problem
+* [Pull 3510] (https://github.com/ReactiveX/RxJava/pull/3510) eager concatMap to choose safe or unsafe queue based on platform
+* [Pull 3512] (https://github.com/ReactiveX/RxJava/pull/3512) fix SafeSubscriber documentation regarding unsubscribe
+
 ### Version 1.0.15 – October 9 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.15%7C)) ###
 
 * [Pull 3438] (https://github.com/ReactiveX/RxJava/pull/3438) Better null tolerance in rx.exceptions.*Exception classes
