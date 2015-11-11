@@ -20,6 +20,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -30,10 +31,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import rx.Single.OnSubscribe;
 import rx.exceptions.CompositeException;
 import rx.functions.Action0;
@@ -698,5 +702,130 @@ public class SingleTest {
         scheduler.advanceTimeBy(91, TimeUnit.DAYS);
         subscriber.assertNoValues();
         subscriber.assertError(expected);
+    }
+
+    @Test
+    public void deferShouldNotCallFactoryFuncUntilSubscriberSubscribes() throws Exception {
+        Callable<Single<Object>> singleFactory = mock(Callable.class);
+        Single.defer(singleFactory);
+        verifyZeroInteractions(singleFactory);
+    }
+
+    @Test
+    public void deferShouldSubscribeSubscriberToSingleFromFactoryFuncAndEmitValue() throws Exception {
+        Callable<Single<Object>> singleFactory = mock(Callable.class);
+        Object value = new Object();
+        Single<Object> single = Single.just(value);
+
+        when(singleFactory.call()).thenReturn(single);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Single
+                .defer(singleFactory)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValue(value);
+        testSubscriber.assertNoErrors();
+
+        verify(singleFactory).call();
+    }
+
+    @Test
+    public void deferShouldSubscribeSubscriberToSingleFromFactoryFuncAndEmitError() throws Exception {
+        Callable<Single<Object>> singleFactory = mock(Callable.class);
+        Throwable error = new IllegalStateException();
+        Single<Object> single = Single.error(error);
+
+        when(singleFactory.call()).thenReturn(single);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Single
+                .defer(singleFactory)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(error);
+
+        verify(singleFactory).call();
+    }
+
+    @Test
+    public void deferShouldPassErrorFromSingleFactoryToTheSubscriber() throws Exception {
+        Callable<Single<Object>> singleFactory = mock(Callable.class);
+        Throwable errorFromSingleFactory = new IllegalStateException();
+        when(singleFactory.call()).thenThrow(errorFromSingleFactory);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Single
+                .defer(singleFactory)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(errorFromSingleFactory);
+
+        verify(singleFactory).call();
+    }
+
+    @Test
+    public void deferShouldCallSingleFactoryForEachSubscriber() throws Exception {
+        Callable<Single<String>> singleFactory = mock(Callable.class);
+
+        String[] values = {"1", "2", "3"};
+        final Single[] singles = new Single[]{Single.just(values[0]), Single.just(values[1]), Single.just(values[2])};
+
+        final AtomicInteger singleFactoryCallsCounter = new AtomicInteger();
+
+        when(singleFactory.call()).thenAnswer(new Answer<Single<String>>() {
+            @Override
+            public Single<String> answer(InvocationOnMock invocation) throws Throwable {
+                return singles[singleFactoryCallsCounter.getAndIncrement()];
+            }
+        });
+
+        Single<String> deferredSingle = Single.defer(singleFactory);
+
+        for (int i = 0; i < singles.length; i ++) {
+            TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+            deferredSingle.subscribe(testSubscriber);
+
+            testSubscriber.assertValue(values[i]);
+            testSubscriber.assertNoErrors();
+        }
+
+        verify(singleFactory, times(3)).call();
+    }
+
+    @Test
+    public void deferShouldPassNullPointerExceptionToTheSubscriberIfSingleFactoryIsNull() {
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Single
+                .defer(null)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(NullPointerException.class);
+    }
+
+
+    @Test
+    public void deferShouldPassNullPointerExceptionToTheSubscriberIfSingleFactoryReturnsNull() throws Exception {
+        Callable<Single<Object>> singleFactory = mock(Callable.class);
+        when(singleFactory.call()).thenReturn(null);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Single
+                .defer(singleFactory)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(NullPointerException.class);
+
+        verify(singleFactory).call();
     }
 }
