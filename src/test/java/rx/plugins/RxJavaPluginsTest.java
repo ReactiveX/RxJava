@@ -15,21 +15,12 @@
  */
 package rx.plugins;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -250,5 +241,34 @@ public class RxJavaPluginsTest {
     private static String getFullClassNameForTestClass(Class<?> cls) {
         return RxJavaPlugins.class.getPackage()
                                   .getName() + "." + RxJavaPluginsTest.class.getSimpleName() + "$" + cls.getSimpleName();
+    }
+    
+    @Test
+    public void testShortPluginDiscovery() {
+        Properties props = new Properties();
+        
+        props.setProperty("rxjava.plugin.1.class", "Map");
+        props.setProperty("rxjava.plugin.1.impl", "java.util.HashMap");
+
+        props.setProperty("rxjava.plugin.xyz.class", "List");
+        props.setProperty("rxjava.plugin.xyz.impl", "java.util.ArrayList");
+
+        
+        Object o = RxJavaPlugins.getPluginImplementationViaProperty(Map.class, props);
+        
+        assertTrue("" + o, o instanceof HashMap);
+        
+        o = RxJavaPlugins.getPluginImplementationViaProperty(List.class, props);
+        
+        assertTrue("" + o, o instanceof ArrayList);
+    }
+    
+    @Test(expected = RuntimeException.class)
+    public void testShortPluginDiscoveryMissing() {
+        Properties props = new Properties();
+        
+        props.setProperty("rxjava.plugin.1.class", "Map");
+
+        RxJavaPlugins.getPluginImplementationViaProperty(Map.class, props);
     }
 }
