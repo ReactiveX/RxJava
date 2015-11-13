@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -52,5 +54,15 @@ public class OperatorFinallyTest {
     @Test
     public void testFinallyCalledOnError() {
         checkActionCalled(Observable.<String> error(new RuntimeException("expected")));
+    }
+
+    @Test
+    public void nullActionShouldBeCheckedInConstructor() {
+        try {
+            new OperatorFinally<Object>(null);
+            fail();
+        } catch (NullPointerException expected) {
+            assertEquals("Action can not be null", expected.getMessage());
+        }
     }
 }
