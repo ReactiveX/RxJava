@@ -470,7 +470,7 @@ public class BackpressureTests {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test(timeout = 30000)
     public void testOnBackpressureDropWithAction() {
         for (int i = 0; i < 100; i++) {
             final AtomicInteger emitCount = new AtomicInteger();
@@ -508,7 +508,7 @@ public class BackpressureTests {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test(timeout = 30000)
     public void testOnBackpressureDropSynchronous() {
         for (int i = 0; i < 100; i++) {
             int NUM = (int) (RxRingBuffer.SIZE * 1.1); // > 1 so that take doesn't prevent buffer overflow
@@ -530,7 +530,7 @@ public class BackpressureTests {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test(timeout = 30000)
     public void testOnBackpressureDropSynchronousWithAction() {
         for (int i = 0; i < 100; i++) {
             final AtomicInteger dropCount = new AtomicInteger();

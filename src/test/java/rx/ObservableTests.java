@@ -35,6 +35,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -55,6 +58,7 @@ import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
@@ -1101,19 +1105,45 @@ public class ObservableTests {
     }
     
     @Test
-    public void testErrorThrownIssue1685() {
+    public void testErrorThrownIssue1685() throws ExecutionException, InterruptedException {
         Subject<Object, Object> subject = ReplaySubject.create();
 
-        Observable.error(new RuntimeException("oops"))
-            .materialize()
-            .delay(1, TimeUnit.SECONDS)
-            .dematerialize()
-            .subscribe(subject);
+        ExecutorService exec = Executors.newSingleThreadExecutor();
 
-        subject.subscribe();
-        subject.materialize().toBlocking().first();
+        try {
 
-        System.out.println("Done");
+            final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
+
+            Scheduler s = Schedulers.from(exec);
+            exec.submit(new Runnable() {
+                @Override
+                public void run() {
+                    Thread.currentThread().setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                        @Override
+                        public void uncaughtException(Thread t, Throwable e) {
+                            err.set(e);
+                        }
+                    });
+                }
+            }).get();
+
+            Observable.error(new RuntimeException("oops"))
+                    .materialize()
+                    .delay(1, TimeUnit.SECONDS, s)
+                    .dematerialize()
+                    .subscribe(subject);
+
+            subject.subscribe();
+            subject.materialize().toBlocking().first();
+
+            Thread.sleep(1000); // the uncaught exception comes after the terminal event reaches toBlocking
+
+            assertNotNull("UncaughtExceptionHandler didn't get anything.", err.get());
+
+            System.out.println("Done");
+        } finally {
+            exec.shutdownNow();
+        }
     }
 
     @Test

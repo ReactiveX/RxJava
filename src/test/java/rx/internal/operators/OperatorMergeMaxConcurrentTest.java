@@ -27,6 +27,7 @@ import org.mockito.*;
 import rx.*;
 import rx.Observable;
 import rx.Observer;
+import rx.internal.util.PlatformDependent;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -218,10 +219,15 @@ public class OperatorMergeMaxConcurrentTest {
     }
     @Test(timeout = 10000)
     public void testSimpleOneLessAsyncLoop() {
-        for (int i = 0; i < 200; i++) {
+        int max = 200;
+        if (PlatformDependent.isAndroid()) {
+            max = 50;
+        }
+        for (int i = 0; i < max; i++) {
             testSimpleOneLessAsync();
         }
     }
+
     @Test(timeout = 10000)
     public void testSimpleOneLessAsync() {
         long t = System.currentTimeMillis();

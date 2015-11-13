@@ -1,18 +1,30 @@
-language: java
-jdk:
-- oraclejdk7
-sudo: false
 # as per http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
+sudo: false
 
-# script for build and release via Travis to Bintray
-script: gradle/buildViaTravis.sh
+language: android
+
+android:
+  components:
+    - build-tools-23.0.1
+    - android-23
+    - extra-android-m2repository
+    - sys-img-armeabi-v7a-android-18
+
+jdk:
+  - oraclejdk7
+
+script: gradle/build.sh
 
 # cache between builds
 cache:
   directories:
   - $HOME/.m2
   - $HOME/.gradle
+
 env:
+  matrix:
+    - TARGET_PLATFORM=jdk
+    - TARGET_PLATFORM="android-18 --abi armeabi-v7a"
   global:
   - secure: YcLpYfNc/dyDON+oDvnJK5pFNhpPeJHxlAHV8JBt42e51prAl6njqrg1Qlfdp0pvBiskTPQHUxbFy9DOB1Z+43lPj5vlqz6qBgtS3vtBnsrczr+5Xx7NTdVKq6oZGl45VjfNPT7zdM6GQ5ifdzOid6kJIFu34g9JZkCzOY3BWGM=
   - secure: WVmfSeW1UMNdem7+X4cVDjkEkqdeNavYH4udn3bFN1IFaWdliWFp4FYVBVi+p1T/IgkRSqzoW9Bm43DABe1UMFoErFCbfd7B0Ofgb4NZAsxFgokHGVLCe6k5+rQyASseiO7k0itSj3Kq9TrDueKPhv+g+IG0w1A8yZTnXdhXHvY=

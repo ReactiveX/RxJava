@@ -1,0 +1,43 @@
+description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+sourceSets {
+    main {
+        java {
+            srcDir '../src/main/java'
+        }
+    }
+
+    test {
+        java {
+            srcDir '../src/test/java'
+        }
+    }
+}
+
+dependencies {
+    testCompile libraries.junit
+    testCompile libraries.mockitoCore
+}
+
+javadoc {
+    exclude '**/rx/internal/**'
+}
+
+// support for snapshot/final releases with the various branches RxJava uses
+nebulaRelease {
+    addReleaseBranchPattern(/\d+\.\d+\.\d+/)
+    addReleaseBranchPattern('HEAD')
+}
+
+if (project.hasProperty('release.useLastTag')) {
+    tasks.prepare.enabled = false
+}
+
+test {
+     maxHeapSize = '2g'
+}
