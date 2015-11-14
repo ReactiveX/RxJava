@@ -158,115 +158,14 @@ public class Single<T> {
         return sources.concatMap(Single::toFlowable);
     }
     
-    public static <T> Observable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2
-     ) {
-        Objects.requireNonNull(s1);
-        Objects.requireNonNull(s2);
-        return concat(Observable.fromArray(s1, s2));
+    public static <T> Observable<T> concat(Single<? extends T>... sources) {
+        for (Single<? extends T> s : sources) {
+            Objects.requireNonNull(s)
+        }
+        return concat(Observable.fromArray(sources));
     }
     
-    public static <T> Observable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3
-     ) {
-        Objects.requireNonNull(s1);
-        Objects.requireNonNull(s2);
-        Objects.requireNonNull(s3);
-        return concat(Observable.fromArray(s1, s2, s3));
-    }
-    
-    public static <T> Observable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4
-     ) {
-        Objects.requireNonNull(s1);
-        Objects.requireNonNull(s2);
-        Objects.requireNonNull(s3);
-        Objects.requireNonNull(s4);
-        return concat(Observable.fromArray(s1, s2, s3, s4));
-    }
-    
-    public static <T> Observable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5
-     ) {
-        Objects.requireNonNull(s1);
-        Objects.requireNonNull(s2);
-        Objects.requireNonNull(s3);
-        Objects.requireNonNull(s4);
-        Objects.requireNonNull(s5);
-        return concat(Observable.fromArray(s1, s2, s3, s4, s5));
-    }
-    
-    public static <T> Observable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5, Single<? extends T> s6
-     ) {
-        Objects.requireNonNull(s1);
-        Objects.requireNonNull(s2);
-        Objects.requireNonNull(s3);
-        Objects.requireNonNull(s4);
-        Objects.requireNonNull(s5);
-        Objects.requireNonNull(s6);
-        return concat(Observable.fromArray(s1, s2, s3, s4, s5, s6));
-    }
-    
-    public static <T> Observable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5, Single<? extends T> s6,
-            Single<? extends T> s7
-     ) {
-        Objects.requireNonNull(s1);
-        Objects.requireNonNull(s2);
-        Objects.requireNonNull(s3);
-        Objects.requireNonNull(s4);
-        Objects.requireNonNull(s5);
-        Objects.requireNonNull(s6);
-        Objects.requireNonNull(s7);
-        return concat(Observable.fromArray(s1, s2, s3, s4, s5, s6, s7));
-    }
-    
-    public static <T> Observable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5, Single<? extends T> s6,
-            Single<? extends T> s7, Single<? extends T> s8
-     ) {
-        Objects.requireNonNull(s1);
-        Objects.requireNonNull(s2);
-        Objects.requireNonNull(s3);
-        Objects.requireNonNull(s4);
-        Objects.requireNonNull(s5);
-        Objects.requireNonNull(s6);
-        Objects.requireNonNull(s7);
-        Objects.requireNonNull(s8);
-        return concat(Observable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8));
-    }
-    
-    public static <T> Observable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5, Single<? extends T> s6,
-            Single<? extends T> s7, Single<? extends T> s8,
-            Single<? extends T> s9
-     ) {
-        Objects.requireNonNull(s1);
-        Objects.requireNonNull(s2);
-        Objects.requireNonNull(s3);
-        Objects.requireNonNull(s4);
-        Objects.requireNonNull(s5);
-        Objects.requireNonNull(s6);
-        Objects.requireNonNull(s7);
-        Objects.requireNonNull(s8);
-        Objects.requireNonNull(s9);
-        return concat(Observable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
-    }
-    
-    public static <T> Single<T> create(SingleOnSubscribe<T> onSubscribe) {
+      public static <T> Single<T> create(SingleOnSubscribe<T> onSubscribe) {
         Objects.requireNonNull(onSubscribe);
         // TODO plugin wrapper
         return new Single<>(onSubscribe);
