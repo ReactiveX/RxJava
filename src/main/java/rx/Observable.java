@@ -7929,7 +7929,8 @@ public class Observable<T> {
     }
 
     /**
-     * Subscribes to an Observable but ignore its emissions and notifications.
+     * Subscribes to an Observable and ignores {@code onNext} and {@code onCompleted} emissions. If an {@code onError} emission arrives then 
+     * {@link OnErrorNotImplementedException} is thrown. 
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
