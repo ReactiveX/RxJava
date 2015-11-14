@@ -165,7 +165,7 @@ public class Single<T> {
         return concat(Observable.fromArray(sources));
     }
     
-      public static <T> Single<T> create(SingleOnSubscribe<T> onSubscribe) {
+    public static <T> Single<T> create(SingleOnSubscribe<T> onSubscribe) {
         Objects.requireNonNull(onSubscribe);
         // TODO plugin wrapper
         return new Single<>(onSubscribe);
