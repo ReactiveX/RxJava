@@ -160,7 +160,7 @@ public class Single<T> {
     
     public static <T> Observable<T> concat(Single<? extends T>... sources) {
         for (Single<? extends T> s : sources) {
-            Objects.requireNonNull(s)
+            Objects.requireNonNull(s);
         }
         return concat(Observable.fromArray(sources));
     }
