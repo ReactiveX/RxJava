@@ -8789,6 +8789,9 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      */
     public final Observable<T> throttleFirst(long skipDuration, TimeUnit unit, Scheduler scheduler) {
+        if (skipDuration <= 0) {
+            throw new IllegalArgumentException("skipDuration must be greater than zero");
+        }
         return lift(new OperatorThrottleFirst<T>(skipDuration, unit, scheduler));
     }
 
