@@ -16,23 +16,29 @@
 
 package rx.internal.util;
 
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.*;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.schedulers.Schedulers;
 
 /**
  * Test suite for {@link BlockingUtils}.
  */
 public class BlockingUtilsTest {
+    
+    @Before
+    @After
+    public void before() {
+        // make sure the interrupted flag is cleared
+        Thread.interrupted();
+    }
+    
     @Test
     public void awaitCompleteShouldReturnIfCountIsZero() {
         Subscription subscription = mock(Subscription.class);
