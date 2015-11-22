@@ -476,8 +476,14 @@ public class SyncOnSubscribeTest {
         final CountDownLatch l1 = new CountDownLatch(1);
         final CountDownLatch l2 = new CountDownLatch(1);
         
-        @SuppressWarnings("unchecked")
-        Action1<? super Integer> onUnSubscribe = mock(Action1.class);
+        final CountDownLatch l3 = new CountDownLatch(1);
+
+        final Action1<Object> onUnSubscribe = new Action1<Object>() {
+            @Override
+            public void call(Object t) {
+                l3.countDown();
+            }
+        };
         
         OnSubscribe<Integer> os = SyncOnSubscribe.createStateful(
                 new Func0<Integer>() {
@@ -532,7 +538,10 @@ public class SyncOnSubscribeTest {
         inOrder.verify(o, times(finalCount)).onNext(any());
         inOrder.verify(o, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
-        verify(onUnSubscribe, times(1)).call(any(Integer.class));
+        
+        if (!l3.await(2, TimeUnit.SECONDS)) {
+            fail("SyncOnSubscribe failed to countDown onUnSubscribe latch");
+        }
     }
 
     @Test
