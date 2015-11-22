@@ -59,6 +59,7 @@ public final class OperatorZipIterable<T1, T2, R> implements Operator<R, T1> {
             @Override
             public void onError(Throwable e) {
                 if (done) {
+                    Exceptions.throwIfFatal(e);
                     return;
                 }
                 done = true;
