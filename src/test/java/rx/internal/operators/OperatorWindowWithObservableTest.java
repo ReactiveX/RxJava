@@ -383,7 +383,7 @@ public class OperatorWindowWithObservableTest {
         ts.assertValueCount(1);
     }
     @Test
-    public void testNoBackpressure() {
+    public void testInnerBackpressure() {
         Observable<Integer> source = Observable.range(1, 10);
         final PublishSubject<Integer> boundary = PublishSubject.create();
         Func0<Observable<Integer>> boundaryFunc = new Func0<Observable<Integer>>() {
@@ -409,7 +409,13 @@ public class OperatorWindowWithObservableTest {
         ts1.assertValueCount(1);
         
         ts.assertNoErrors();
+        ts.assertNotCompleted();
+        ts.assertValues(1);
+        
+        ts.requestMore(11);
+        
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        ts.assertNoErrors();
         ts.assertCompleted();
     }
     @Test

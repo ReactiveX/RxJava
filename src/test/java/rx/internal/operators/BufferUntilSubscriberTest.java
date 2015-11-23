@@ -15,19 +15,18 @@
  */
 package rx.internal.operators;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+
+import org.junit.*;
+
 import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import rx.exceptions.TestException;
+import rx.functions.*;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
-
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class BufferUntilSubscriberTest {
 
@@ -81,5 +80,99 @@ public class BufferUntilSubscriberTest {
             Assert.fail("Incomplete! Went through " + latch.getCount() + " iterations");
         else
             Assert.assertEquals(NITERS, counter.get());
+    }
+    
+    @Test
+    public void testBackpressure() {
+        UnicastSubject<Integer> bus = UnicastSubject.create();
+        for (int i = 0; i < 32; i++) {
+            bus.onNext(i);
+        }
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        bus.subscribe(ts);
+        
+        ts.assertValueCount(0);
+        ts.assertNoTerminalEvent();
+        
+        ts.requestMore(10);
+        
+        ts.assertValueCount(10);
+        
+        ts.requestMore(22);
+        ts.assertValueCount(32);
+
+        Assert.assertFalse(bus.state.caughtUp);
+
+        ts.requestMore(Long.MAX_VALUE);
+        
+        Assert.assertTrue(bus.state.caughtUp);
+
+        for (int i = 32; i < 64; i++) {
+            bus.onNext(i);
+        }
+        bus.onCompleted();
+        
+        ts.assertValueCount(64);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    @Test
+    public void testErrorCutsAhead() {
+        UnicastSubject<Integer> bus = UnicastSubject.create();
+        for (int i = 0; i < 32; i++) {
+            bus.onNext(i);
+        }
+        bus.onError(new TestException());
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        bus.subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+        ts.assertError(TestException.class);
+    }
+    @Test
+    public void testErrorCutsAheadAfterSubscribed() {
+        UnicastSubject<Integer> bus = UnicastSubject.create();
+        for (int i = 0; i < 32; i++) {
+            bus.onNext(i);
+        }
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        bus.subscribe(ts);
+
+        ts.assertNoValues();
+        ts.assertNoTerminalEvent();
+
+        bus.onError(new TestException());
+        
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+        ts.assertError(TestException.class);
+    }
+    @Test
+    public void testUnsubscribeClearsQueue() {
+        UnicastSubject<Integer> bus = UnicastSubject.create();
+        for (int i = 0; i < 32; i++) {
+            bus.onNext(i);
+        }
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        ts.unsubscribe();
+        
+        bus.subscribe(ts);
+        
+        ts.assertNoTerminalEvent();
+        ts.assertNoValues();
+        
+        Assert.assertTrue(bus.state.queue.isEmpty());
+        
+        bus.onNext(32);
+        
+        Assert.assertTrue(bus.state.queue.isEmpty());
     }
 }

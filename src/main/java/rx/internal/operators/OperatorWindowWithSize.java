@@ -60,7 +60,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
     final class ExactSubscriber extends Subscriber<T> {
         final Subscriber<? super Observable<T>> child;
         int count;
-        BufferUntilSubscriber<T> window;
+        UnicastSubject<T> window;
         volatile boolean noWindow = true;
         public ExactSubscriber(Subscriber<? super Observable<T>> child) {
             /**
@@ -107,7 +107,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         public void onNext(T t) {
             if (window == null) {
                 noWindow = false;
-                window = BufferUntilSubscriber.create();
+                window = UnicastSubject.create();
                 child.onNext(window);
             }
             window.onNext(t);
@@ -242,7 +242,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         }
 
         CountedSubject<T> createCountedSubject() {
-            final BufferUntilSubscriber<T> bus = BufferUntilSubscriber.create();
+            final UnicastSubject<T> bus = UnicastSubject.create();
             return new CountedSubject<T>(bus, bus);
         }
     }
