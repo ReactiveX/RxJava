@@ -160,7 +160,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
             child.onNext(producer);
         }
         void createNewWindow() {
-            BufferUntilSubscriber<T> bus = BufferUntilSubscriber.create();
+            UnicastSubject<T> bus = UnicastSubject.create();
             consumer = bus;
             producer = bus;
             Observable<? extends U> other;
