@@ -623,7 +623,8 @@ public class OperatorReplayTest {
         verifyObserverMock(mockObserverAfterConnect, 2, 6);
 
         verify(spiedWorker, times(1)).isUnsubscribed();
-        verify(spiedWorker, times(1)).unsubscribe();
+        // subscribeOn didn't unsubscribe the worker before but it should have
+        verify(spiedWorker, times(2)).unsubscribe();
         verify(sourceUnsubscribed, times(1)).call();
 
         verifyNoMoreInteractions(sourceNext);
@@ -684,7 +685,8 @@ public class OperatorReplayTest {
         verifyObserver(mockObserverAfterConnect, 2, 2, illegalArgumentException);
 
         verify(spiedWorker, times(1)).isUnsubscribed();
-        verify(spiedWorker, times(1)).unsubscribe();
+     // subscribeOn didn't unsubscribe the worker before but it should have
+        verify(spiedWorker, times(2)).unsubscribe();
         verify(sourceUnsubscribed, times(1)).call();
 
         verifyNoMoreInteractions(sourceNext);

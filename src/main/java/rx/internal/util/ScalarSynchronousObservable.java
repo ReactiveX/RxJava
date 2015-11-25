@@ -15,20 +15,74 @@
  */
 package rx.internal.util;
 
-import rx.Observable;
-import rx.Scheduler;
-import rx.Scheduler.Worker;
-import rx.Subscriber;
-import rx.functions.Action0;
-import rx.functions.Func1;
-import rx.internal.schedulers.EventLoopsScheduler;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import rx.*;
+import rx.exceptions.Exceptions;
+import rx.functions.*;
+import rx.internal.producers.SingleProducer;
+import rx.internal.schedulers.EventLoopsScheduler;
+import rx.observers.Subscribers;
+import rx.schedulers.Schedulers;
+
+/**
+ * An Observable that emits a single constant scalar value to Subscribers.
+ * <p>
+ * This is a direct implementation of the Observable class to allow identifying it
+ * in flatMap and bypass the subscription to it altogether.
+ *
+ * @param <T> the value type
+ */
 public final class ScalarSynchronousObservable<T> extends Observable<T> {
 
+    /**
+     * We expect the Schedulers.computation() to return an EventLoopsScheduler all the time.
+     */
+    static final Func1<Action0, Subscription> COMPUTATION_ONSCHEDULE = new Func1<Action0, Subscription>() {
+        final EventLoopsScheduler els = (EventLoopsScheduler)Schedulers.computation();
+        
+        @Override
+        public Subscription call(Action0 t) {
+            return els.scheduleDirect(t);
+        }
+    };
+
+    /**
+     * Indicates that the Producer used by this Observable should be fully
+     * threadsafe. It is possible, but unlikely that multiple concurrent
+     * requests will arrive to just().
+     */
+    static final boolean STRONG_MODE;
+    static {
+        String wp = System.getProperty("rx.just.strong-mode", "false");
+        STRONG_MODE = Boolean.valueOf(wp);
+    }
+
+    /**
+     * Creates a scalar producer depending on the state of STRONG_MODE.
+     * @param <T> the type of the scalar value
+     * @param s the target subscriber
+     * @param v the value to emit
+     * @return the created Producer
+     */
+    static <T> Producer createProducer(Subscriber<? super T> s, T v) {
+        if (STRONG_MODE) {
+            return new SingleProducer<T>(s, v);
+        }
+        return new WeakSingleProducer<T>(s, v);
+    }
+    
+    /**
+     * Constructs a ScalarSynchronousObservable with the given constant value.
+     * @param <T> the value type
+     * @param t the value to emit when requested
+     * @return the new Observable
+     */
     public static final <T> ScalarSynchronousObservable<T> create(T t) {
         return new ScalarSynchronousObservable<T>(t);
     }
 
+    /** The constant scalar value to emit on request. */
     private final T t;
 
     protected ScalarSynchronousObservable(final T t) {
@@ -36,116 +90,198 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
 
             @Override
             public void call(Subscriber<? super T> s) {
-                /*
-                 *  We don't check isUnsubscribed as it is a significant performance impact in the fast-path use cases.
-                 *  See PerfBaseline tests and https://github.com/ReactiveX/RxJava/issues/1383 for more information.
-                 *  The assumption here is that when asking for a single item we should emit it and not concern ourselves with 
-                 *  being unsubscribed already. If the Subscriber unsubscribes at 0, they shouldn't have subscribed, or it will 
-                 *  filter it out (such as take(0)). This prevents us from paying the price on every subscription. 
-                 */
-                s.onNext(t);
-                s.onCompleted();
+                s.setProducer(createProducer(s, t));
             }
 
         });
         this.t = t;
     }
 
+    /**
+     * Returns the scalar constant value directly.
+     * @return the scalar constant value directly
+     */
     public T get() {
         return t;
     }
+    
+    
     /**
      * Customized observeOn/subscribeOn implementation which emits the scalar
      * value directly or with less overhead on the specified scheduler.
      * @param scheduler the target scheduler
      * @return the new observable
      */
-    public Observable<T> scalarScheduleOn(Scheduler scheduler) {
+    public Observable<T> scalarScheduleOn(final Scheduler scheduler) {
+        final Func1<Action0, Subscription> onSchedule;
         if (scheduler instanceof EventLoopsScheduler) {
-            EventLoopsScheduler es = (EventLoopsScheduler) scheduler;
-            return create(new DirectScheduledEmission<T>(es, t));
+            onSchedule = COMPUTATION_ONSCHEDULE;
+        } else {
+            onSchedule = new Func1<Action0, Subscription>() {
+                @Override
+                public Subscription call(final Action0 a) {
+                    final Scheduler.Worker w = scheduler.createWorker();
+                    w.schedule(new Action0() {
+                        @Override
+                        public void call() {
+                            try {
+                                a.call();
+                            } finally {
+                                w.unsubscribe();
+                            }
+                        }
+                    });
+                    return w;
+                }
+            };
         }
-        return create(new NormalScheduledEmission<T>(scheduler, t));
+        
+        return create(new ScalarAsyncOnSubscribe<T>(t, onSchedule));
     }
     
-    /** Optimized observeOn for scalar value observed on the EventLoopsScheduler. */
-    static final class DirectScheduledEmission<T> implements OnSubscribe<T> {
-        private final EventLoopsScheduler es;
-        private final T value;
-        DirectScheduledEmission(EventLoopsScheduler es, T value) {
-            this.es = es;
+    /**
+     * The OnSubscribe implementation that creates the ScalarAsyncProducer for each
+     * incoming subscriber.
+     *
+     * @param <T> the value type
+     */
+    static final class ScalarAsyncOnSubscribe<T> implements OnSubscribe<T> {
+        final T value;
+        final Func1<Action0, Subscription> onSchedule;
+
+        private ScalarAsyncOnSubscribe(T value, Func1<Action0, Subscription> onSchedule) {
             this.value = value;
+            this.onSchedule = onSchedule;
         }
+
         @Override
-        public void call(final Subscriber<? super T> child) {
-            child.add(es.scheduleDirect(new ScalarSynchronousAction<T>(child, value)));
+        public void call(Subscriber<? super T> s) {
+            s.setProducer(new ScalarAsyncProducer<T>(s, value, onSchedule));
         }
     }
-    /** Emits a scalar value on a general scheduler. */
-    static final class NormalScheduledEmission<T> implements OnSubscribe<T> {
-        private final Scheduler scheduler;
-        private final T value;
 
-        NormalScheduledEmission(Scheduler scheduler, T value) {
-            this.scheduler = scheduler;
+    /**
+     * Represents a producer which schedules the emission of a scalar value on
+     * the first positive request via the given scheduler callback.
+     *
+     * @param <T> the value type
+     */
+    static final class ScalarAsyncProducer<T> extends AtomicBoolean implements Producer, Action0 {
+        /** */
+        private static final long serialVersionUID = -2466317989629281651L;
+        final Subscriber<? super T> actual;
+        final T value;
+        final Func1<Action0, Subscription> onSchedule;
+        
+        public ScalarAsyncProducer(Subscriber<? super T> actual, T value, Func1<Action0, Subscription> onSchedule) {
+            this.actual = actual;
             this.value = value;
+            this.onSchedule = onSchedule;
+        }
+
+        @Override
+        public void request(long n) {
+            if (n < 0L) {
+                throw new IllegalArgumentException("n >= 0 required but it was " + n);
+            }
+            if (n != 0 && compareAndSet(false, true)) {
+                actual.add(onSchedule.call(this));
+            }
         }
         
         @Override
-        public void call(final Subscriber<? super T> subscriber) {
-            Worker worker = scheduler.createWorker();
-            subscriber.add(worker);
-            worker.schedule(new ScalarSynchronousAction<T>(subscriber, value));
-        }
-    }
-    /** Action that emits a single value when called. */
-    static final class ScalarSynchronousAction<T> implements Action0 {
-        private final Subscriber<? super T> subscriber;
-        private final T value;
-
-        private ScalarSynchronousAction(Subscriber<? super T> subscriber,
-                T value) {
-            this.subscriber = subscriber;
-            this.value = value;
-        }
-
-        @Override
         public void call() {
-            try {
-                subscriber.onNext(value);
-            } catch (Throwable t) {
-                subscriber.onError(t);
+            Subscriber<? super T> a = actual;
+            if (a.isUnsubscribed()) {
                 return;
             }
-            subscriber.onCompleted();
+            T v = value;
+            try {
+                a.onNext(v);
+            } catch (Throwable e) {
+                Exceptions.throwOrReport(e, a, v);
+                return;
+            }
+            if (a.isUnsubscribed()) {
+                return;
+            }
+            a.onCompleted();
+        }
+        
+        @Override
+        public String toString() {
+            return "ScalarAsyncProducer[" + value + ", " + get() + "]";
         }
     }
     
+    /**
+     * Given this scalar source as input to a flatMap, avoid one step of subscription
+     * and subscribes to the single Observable returned by the function.
+     * <p>
+     * If the functions returns another scalar, no subscription happens and this inner
+     * scalar value will be emitted once requested.
+     * @param <R> the result type
+     * @param func the mapper function that returns an Observable for the scalar value of this
+     * @return the new observable
+     */
     public <R> Observable<R> scalarFlatMap(final Func1<? super T, ? extends Observable<? extends R>> func) {
         return create(new OnSubscribe<R>() {
             @Override
             public void call(final Subscriber<? super R> child) {
                 Observable<? extends R> o = func.call(t);
-                if (o.getClass() == ScalarSynchronousObservable.class) {
-                    child.onNext(((ScalarSynchronousObservable<? extends R>)o).t);
-                    child.onCompleted();
+                if (o instanceof ScalarSynchronousObservable) {
+                    child.setProducer(createProducer(child, ((ScalarSynchronousObservable<? extends R>)o).t));
                 } else {
-                    o.unsafeSubscribe(new Subscriber<R>(child) {
-                        @Override
-                        public void onNext(R v) {
-                            child.onNext(v);
-                        }
-                        @Override
-                        public void onError(Throwable e) {
-                            child.onError(e);
-                        }
-                        @Override
-                        public void onCompleted() {
-                            child.onCompleted();
-                        }
-                    });
+                    o.unsafeSubscribe(Subscribers.wrap(child));
                 }
             }
         });
+    }
+    
+    /**
+     * This is the weak version of SingleProducer that uses plain fields
+     * to avoid reentrancy and as such is not threadsafe for concurrent
+     * request() calls.
+     *
+     * @param <T> the value type
+     */
+    static final class WeakSingleProducer<T> implements Producer {
+        final Subscriber<? super T> actual;
+        final T value;
+        boolean once;
+        
+        public WeakSingleProducer(Subscriber<? super T> actual, T value) {
+            this.actual = actual;
+            this.value = value;
+        }
+        
+        @Override
+        public void request(long n) {
+            if (once) {
+                return;
+            }
+            if (n < 0L) {
+                throw new IllegalStateException("n >= required but it was " + n);
+            }
+            if (n != 0L) {
+                once = true;
+                Subscriber<? super T> a = actual;
+                if (a.isUnsubscribed()) {
+                    return;
+                }
+                T v = value;
+                try {
+                    a.onNext(v);
+                } catch (Throwable e) {
+                    Exceptions.throwOrReport(e, a, v);
+                    return;
+                }
+                
+                if (a.isUnsubscribed()) {
+                    return;
+                }
+                a.onCompleted();
+            }
+        }
     }
 }
