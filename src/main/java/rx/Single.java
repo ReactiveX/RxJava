@@ -190,14 +190,18 @@ public class Single<T> {
                         st.onStart();
                         onSubscribe.call(st);
                     } catch (Throwable e) {
-                        Exceptions.throwIfFatal(e);
-                        // localized capture of errors rather than it skipping all operators
+                        // localized capture of errors rather than it skipping all operators 
                         // and ending up in the try/catch of the subscribe method which then
                         // prevents onErrorResumeNext and other similar approaches to error handling
+                        if (e instanceof OnErrorNotImplementedException) {
+                            throw (OnErrorNotImplementedException) e;
+                        }
                         st.onError(e);
                     }
                 } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
+                    if (e instanceof OnErrorNotImplementedException) {
+                        throw (OnErrorNotImplementedException) e;
+                    }
                     // if the lift function failed all we can do is pass the error to the final Subscriber
                     // as we don't have the operator available to us
                     o.onError(e);
@@ -1503,8 +1507,10 @@ public class Single<T> {
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
                 subscriber.onError(hook.onSubscribeError(e));
+            } catch (OnErrorNotImplementedException e2) {
+                // special handling when onError is not implemented ... we just rethrow
+                throw e2;
             } catch (Throwable e2) {
-                Exceptions.throwIfFatal(e2);
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
@@ -1590,8 +1596,10 @@ public class Single<T> {
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
                 subscriber.onError(hook.onSubscribeError(e));
+            } catch (OnErrorNotImplementedException e2) {
+                // special handling when onError is not implemented ... we just rethrow
+                throw e2;
             } catch (Throwable e2) {
-                Exceptions.throwIfFatal(e2);
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
