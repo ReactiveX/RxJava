@@ -8177,8 +8177,10 @@ public class Observable<T> {
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
                 subscriber.onError(hook.onSubscribeError(e));
+            } catch (OnErrorNotImplementedException e2) {
+                // special handling when onError is not implemented ... we just rethrow
+                throw e2;
             } catch (Throwable e2) {
-                Exceptions.throwIfFatal(e2);
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
@@ -8270,8 +8272,10 @@ public class Observable<T> {
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
                 subscriber.onError(hook.onSubscribeError(e));
+            } catch (OnErrorNotImplementedException e2) {
+                // special handling when onError is not implemented ... we just rethrow
+                throw e2;
             } catch (Throwable e2) {
-                Exceptions.throwIfFatal(e2);
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
