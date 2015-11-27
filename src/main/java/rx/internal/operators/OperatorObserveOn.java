@@ -16,22 +16,17 @@
 package rx.internal.operators;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
-import rx.internal.util.RxRingBuffer;
-import rx.internal.util.SynchronizedQueue;
-import rx.internal.util.unsafe.SpscArrayQueue;
-import rx.internal.util.unsafe.UnsafeAccess;
-import rx.schedulers.ImmediateScheduler;
-import rx.schedulers.TrampolineScheduler;
+import rx.internal.util.*;
+import rx.internal.util.atomic.SpscAtomicArrayQueue;
+import rx.internal.util.unsafe.*;
+import rx.plugins.RxJavaPlugins;
+import rx.schedulers.*;
 
 /**
  * Delivers events on the specified {@code Scheduler} asynchronously via an unbounded buffer.
@@ -44,12 +39,15 @@ import rx.schedulers.TrampolineScheduler;
 public final class OperatorObserveOn<T> implements Operator<T, T> {
 
     private final Scheduler scheduler;
+    private final boolean delayError;
 
     /**
-     * @param scheduler
+     * @param scheduler the scheduler to use
+     * @param delayError delay errors until all normal events are emitted in the other thread?
      */
-    public OperatorObserveOn(Scheduler scheduler) {
+    public OperatorObserveOn(Scheduler scheduler, boolean delayError) {
         this.scheduler = scheduler;
+        this.delayError = delayError;
     }
 
     @Override
@@ -61,58 +59,65 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             // avoid overhead, execute directly
             return child;
         } else {
-            ObserveOnSubscriber<T> parent = new ObserveOnSubscriber<T>(scheduler, child);
+            ObserveOnSubscriber<T> parent = new ObserveOnSubscriber<T>(scheduler, child, delayError);
             parent.init();
             return parent;
         }
     }
 
     /** Observe through individual queue per observer. */
-    private static final class ObserveOnSubscriber<T> extends Subscriber<T> {
+    private static final class ObserveOnSubscriber<T> extends Subscriber<T> implements Action0 {
         final Subscriber<? super T> child;
         final Scheduler.Worker recursiveScheduler;
-        final ScheduledUnsubscribe scheduledUnsubscribe;
-        final NotificationLite<T> on = NotificationLite.instance();
-
+        final NotificationLite<T> on;
+        final boolean delayError;
         final Queue<Object> queue;
         
         // the status of the current stream
-        volatile boolean finished = false;
+        volatile boolean finished;
 
         final AtomicLong requested = new AtomicLong();
         
         final AtomicLong counter = new AtomicLong();
         
-        volatile Throwable error;
+        /** 
+         * The single exception if not null, should be written before setting finished (release) and read after
+         * reading finished (acquire).
+         */
+        Throwable error;
 
         // do NOT pass the Subscriber through to couple the subscription chain ... unsubscribing on the parent should
         // not prevent anything downstream from consuming, which will happen if the Subscription is chained
-        public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> child) {
+        public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> child, boolean delayError) {
             this.child = child;
             this.recursiveScheduler = scheduler.createWorker();
+            this.delayError = delayError;
+            this.on = NotificationLite.instance();
             if (UnsafeAccess.isUnsafeAvailable()) {
                 queue = new SpscArrayQueue<Object>(RxRingBuffer.SIZE);
             } else {
-                queue = new SynchronizedQueue<Object>(RxRingBuffer.SIZE);
+                queue = new SpscAtomicArrayQueue<Object>(RxRingBuffer.SIZE);
             }
-            this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler);
         }
         
         void init() {
             // don't want this code in the constructor because `this` can escape through the 
             // setProducer call
-            child.add(scheduledUnsubscribe);
-            child.setProducer(new Producer() {
+            Subscriber<? super T> localChild = child;
+            
+            localChild.setProducer(new Producer() {
 
                 @Override
                 public void request(long n) {
-                    BackpressureUtils.getAndAddRequest(requested, n);
-                    schedule();
+                    if (n > 0L) {
+                        BackpressureUtils.getAndAddRequest(requested, n);
+                        schedule();
+                    }
                 }
 
             });
-            child.add(recursiveScheduler);
-            child.add(this);
+            localChild.add(recursiveScheduler);
+            localChild.add(this);
         }
 
         @Override
@@ -123,7 +128,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
         @Override
         public void onNext(final T t) {
-            if (isUnsubscribed()) {
+            if (isUnsubscribed() || finished) {
                 return;
             }
             if (!queue.offer(on.next(t))) {
@@ -145,106 +150,126 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         @Override
         public void onError(final Throwable e) {
             if (isUnsubscribed() || finished) {
+                RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                 return;
             }
             error = e;
-            // unsubscribe eagerly since time will pass before the scheduled onError results in an unsubscribe event
-            unsubscribe();
             finished = true;
-            // polling thread should skip any onNext still in the queue
             schedule();
         }
 
-        final Action0 action = new Action0() {
-
-            @Override
-            public void call() {
-                pollQueue();
-            }
-
-        };
-
         protected void schedule() {
             if (counter.getAndIncrement() == 0) {
-                recursiveScheduler.schedule(action);
+                recursiveScheduler.schedule(this);
             }
         }
 
         // only execute this from schedule()
-        void pollQueue() {
-            int emitted = 0;
-            final AtomicLong localRequested = this.requested;
-            final AtomicLong localCounter = this.counter;
-            do {
-                localCounter.set(1);
-                long produced = 0;
-                long r = localRequested.get();
-                for (;;) {
-                    if (child.isUnsubscribed())
+        @Override
+        public void call() {
+            long emitted = 0L;
+
+            long missed = 1L;
+
+            // these are accessed in a tight loop around atomics so
+            // loading them into local variables avoids the mandatory re-reading
+            // of the constant fields
+            final Queue<Object> q = this.queue;
+            final Subscriber<? super T> localChild = this.child;
+            final NotificationLite<T> localOn = this.on;
+            
+            // requested and counter are not included to avoid JIT issues with register spilling
+            // and their access is is amortized because they are part of the outer loop which runs
+            // less frequently (usually after each RxRingBuffer.SIZE elements)
+            
+            for (;;) {
+                if (checkTerminated(finished, q.isEmpty(), localChild, q)) {
+                    return;
+                }
+
+                long requestAmount = requested.get();
+                boolean unbounded = requestAmount == Long.MAX_VALUE;
+                long currentEmission = 0L;
+                
+                while (requestAmount != 0L) {
+                    boolean done = finished;
+                    Object v = q.poll();
+                    boolean empty = v == null;
+                    
+                    if (checkTerminated(done, empty, localChild, q)) {
                         return;
-                    Throwable error;
-                    if (finished) {
-                        if ((error = this.error) != null) {
-                            // errors shortcut the queue so 
-                            // release the elements in the queue for gc
-                            queue.clear();
-                            child.onError(error);
-                            return;
-                        } else
-                        if (queue.isEmpty()) {
-                            child.onCompleted();
-                            return;
-                        }
                     }
-                    if (r > 0) {
-                        Object o = queue.poll();
-                        if (o != null) {
-                            child.onNext(on.getValue(o));
-                            r--;
-                            emitted++;
-                            produced++;
-                        } else {
-                            break;
-                        }
-                    } else {
+                    
+                    if (empty) {
                         break;
                     }
+                    
+                    localChild.onNext(localOn.getValue(v));
+                    
+                    requestAmount--;
+                    currentEmission--;
+                    emitted++;
                 }
-                if (produced > 0 && localRequested.get() != Long.MAX_VALUE) {
-                    localRequested.addAndGet(-produced);
+                
+                if (currentEmission != 0L && !unbounded) {
+                    requested.addAndGet(currentEmission);
                 }
-            } while (localCounter.decrementAndGet() > 0);
-            if (emitted > 0) {
+                
+                missed = counter.addAndGet(-missed);
+                if (missed == 0L) {
+                    break;
+                }
+            }
+            
+            if (emitted != 0L) {
                 request(emitted);
             }
         }
-    }
-
-    static final class ScheduledUnsubscribe extends AtomicInteger implements Subscription {
-        final Scheduler.Worker worker;
-        volatile boolean unsubscribed = false;
-
-        public ScheduledUnsubscribe(Scheduler.Worker worker) {
-            this.worker = worker;
-        }
-
-        @Override
-        public boolean isUnsubscribed() {
-            return unsubscribed;
-        }
-
-        @Override
-        public void unsubscribe() {
-            if (getAndSet(1) == 0) {
-                worker.schedule(new Action0() {
-                    @Override
-                    public void call() {
-                        worker.unsubscribe();
-                        unsubscribed = true;
-                    }
-                });
+        
+        boolean checkTerminated(boolean done, boolean isEmpty, Subscriber<? super T> a, Queue<Object> q) {
+            if (a.isUnsubscribed()) {
+                q.clear();
+                return true;
             }
+            
+            if (done) {
+                if (delayError) {
+                    if (isEmpty) {
+                        Throwable e = error;
+                        try {
+                            if (e != null) {
+                                a.onError(e);
+                            } else {
+                                a.onCompleted();
+                            }
+                        } finally {
+                            recursiveScheduler.unsubscribe();
+                        }
+                    }
+                } else {
+                    Throwable e = error;
+                    if (e != null) {
+                        q.clear();
+                        try {
+                            a.onError(e);
+                        } finally {
+                            recursiveScheduler.unsubscribe();
+                        }
+                        return true;
+                    } else
+                    if (isEmpty) {
+                        try {
+                            a.onCompleted();
+                        } finally {
+                            recursiveScheduler.unsubscribe();
+                        }
+                        return true;
+                    }
+                }
+                    
+            }
+            
+            return false;
         }
-
     }
 }

@@ -107,6 +107,11 @@ public final class SpscAtomicArrayQueue<E> extends AtomicReferenceArrayQueue<E> 
         }
     }
 
+    @Override
+    public boolean isEmpty() {
+        return lvProducerIndex() == lvConsumerIndex();
+    }
+
     private void soProducerIndex(long newIndex) {
         producerIndex.lazySet(newIndex);
     }

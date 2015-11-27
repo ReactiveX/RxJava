@@ -1321,7 +1321,9 @@ public class Single<T> {
      * @see #subscribeOn
      */
     public final Single<T> observeOn(Scheduler scheduler) {
-        return lift(new OperatorObserveOn<T>(scheduler));
+        // Note that since Single emits onSuccess xor onError, 
+        // there is no cut-ahead possible like with regular Observable sequences.
+        return lift(new OperatorObserveOn<T>(scheduler, false));
     }
 
     /**
