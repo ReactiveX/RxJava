@@ -1789,9 +1789,8 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if {@code maxConcurrent} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.0.15
      */
-    @Experimental
     @SuppressWarnings({"unchecked", "rawtypes"})
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
         if (source.getClass() == ScalarSynchronousObservable.class) {
@@ -2088,9 +2087,8 @@ public class Observable<T> {
      *            the maximum number of Observables that may be subscribed to concurrently
      * @return an Observable that emits all of the items emitted by the Observables in the Array
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.0.15
      */
-    @Experimental
     public final static <T> Observable<T> merge(Observable<? extends T>[] sequences, int maxConcurrent) {
         return merge(from(sequences), maxConcurrent);
     }
