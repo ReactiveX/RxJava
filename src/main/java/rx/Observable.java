@@ -5896,9 +5896,8 @@ public class Observable<T> {
      *
      * @return the source Observable modified to buffer items up to the given capacity
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.0.15
      */
-    @Beta
     public final Observable<T> onBackpressureBuffer(long capacity) {
         return lift(new OperatorOnBackpressureBuffer<T>(capacity));
     }
@@ -5917,9 +5916,8 @@ public class Observable<T> {
      *
      * @return the source Observable modified to buffer items up to the given capacity
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.0.15
      */
-    @Beta
     public final Observable<T> onBackpressureBuffer(long capacity, Action0 onOverflow) {
         return lift(new OperatorOnBackpressureBuffer<T>(capacity, onOverflow));
     }
