@@ -5941,9 +5941,8 @@ public class Observable<T> {
      * @return the source Observable modified to drop {@code onNext} notifications on overflow
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      * @Experimental The behavior of this can change at any time. 
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.0.15
      */
-    @Experimental
     public final Observable<T> onBackpressureDrop(Action1<? super T> onDrop) {
         return lift(new OperatorOnBackpressureDrop<T>(onDrop));
     }
