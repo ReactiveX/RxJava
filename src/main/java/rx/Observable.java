@@ -8728,9 +8728,8 @@ public class Observable<T> {
      *         condition after each item, and then completes if the condition is satisfied.
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      * @see Observable#takeWhile(Func1)
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.0.15
      */
-    @Experimental
     public final Observable<T> takeUntil(final Func1<? super T, Boolean> stopPredicate) {
         return lift(new OperatorTakeUntilPredicate<T>(stopPredicate));
     }
