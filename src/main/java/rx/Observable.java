@@ -6051,9 +6051,8 @@ public class Observable<T> {
      *
      * @return the source Observable modified so that it emits the most recently-received item upon request
      * @Experimental The behavior of this can change at any time. 
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.0.15
      */
-    @Experimental
     public final Observable<T> onBackpressureLatest() {
         return lift(OperatorOnBackpressureLatest.<T>instance());
     }
