@@ -1,6 +1,16 @@
 # RxJava Releases #
 
+### Version 1.0.17 – December 1 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.17%7C)) ###
+
+* [Pull 3491] (https://github.com/ReactiveX/RxJava/pull/3491) Make scan's delayed Producer independent of event serialization
+* [Pull 3150] (https://github.com/ReactiveX/RxJava/pull/3150) Window operators now support backpressure in the inner observable
+* [Pull 3535] (https://github.com/ReactiveX/RxJava/pull/3535) Don't swallow fatal errors in OperatorZipIterable
+* [Pull 3528] (https://github.com/ReactiveX/RxJava/pull/3528) Avoid to call next when Iterator is drained
+* [Pull 3436] (https://github.com/ReactiveX/RxJava/pull/3436) Add action != null check in OperatorFinally
+* [Pull 3513] (https://github.com/ReactiveX/RxJava/pull/3513) Add shorter RxJavaPlugin class lookup approach
+
 ### Version 1.0.16 – November 11 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.16%7C)) ###
+
 * [Pull 3169] (https://github.com/ReactiveX/RxJava/pull/3169) Merge can now operate in horizontally unbounded mode
 * [Pull 3286] (https://github.com/ReactiveX/RxJava/pull/3286) Implements BlockingSingle
 * [Pull 3433] (https://github.com/ReactiveX/RxJava/pull/3433) Add Single.defer()
