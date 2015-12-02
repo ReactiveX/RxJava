@@ -426,4 +426,24 @@ public class OperatorScanTest {
         ts.assertNoErrors();
         ts.assertCompleted();
     }
+    
+    @Test(timeout = 1000)
+    public void testUnboundedSource() {
+        Observable.range(0, Integer.MAX_VALUE)
+        .scan(0, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer a, Integer b) {
+                return 0;
+            }
+        })
+        .subscribe(new TestSubscriber<Integer>() {
+            int count;
+            @Override
+            public void onNext(Integer t) {
+                if (++count == 2) {
+                    unsubscribe();
+                }
+            }
+        });
+    }
 }
