@@ -21,8 +21,10 @@ import java.util.Map;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Func0;
 import rx.functions.Func1;
+import rx.observers.Subscribers;
 
 /**
  * Maps the elements of the source observable into a java.util.Map instance and
@@ -75,9 +77,24 @@ public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super Map<K, V>> subscriber) {
+        
+        Map<K, V> localMap;
+        
+        try {
+            localMap = mapFactory.call();
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            subscriber.onError(ex);
+            Subscriber<? super T> parent = Subscribers.empty();
+            parent.unsubscribe();
+            return parent;
+        }
+        
+        final Map<K, V> fLocalMap = localMap;
+        
         return new Subscriber<T>(subscriber) {
 
-            private Map<K, V> map = mapFactory.call();
+            private Map<K, V> map = fLocalMap;
 
             @Override
             public void onStart() {
@@ -86,8 +103,18 @@ public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
             
             @Override
             public void onNext(T v) {
-                K key = keySelector.call(v);
-                V value = valueSelector.call(v);
+                K key;
+                V value;
+
+                try {
+                    key = keySelector.call(v);
+                    value = valueSelector.call(v);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    subscriber.onError(ex);
+                    return;
+                }
+                
                 map.put(key, value);
             }
 
