@@ -15,9 +15,8 @@
  */
 package rx.plugins;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.annotations.Experimental;
+import rx.*;
+import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 
 /**
@@ -67,7 +66,7 @@ public abstract class RxJavaErrorHandler {
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the
      *        release number)
      */
-    @Experimental
+    @Beta
     public final String handleOnNextValueRendering(Object item) {
 
         try {
@@ -98,7 +97,7 @@ public abstract class RxJavaErrorHandler {
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the
      *        release number)
      */
-    @Experimental
+    @Beta
     protected String render (Object item) throws InterruptedException {
         //do nothing by default
         return null;

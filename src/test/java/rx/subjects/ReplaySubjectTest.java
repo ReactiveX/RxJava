@@ -15,12 +15,7 @@
  */
 package rx.subjects;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -886,5 +881,172 @@ public class ReplaySubjectTest {
         
         assertArrayEquals(expected, rs.getValues());
         
+    }
+    
+    @Test
+    public void testReplaySubjectValueRelay() {
+        ReplaySubject<Integer> async = ReplaySubject.create();
+        async.onNext(1);
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectValueRelayIncomplete() {
+        ReplaySubject<Integer> async = ReplaySubject.create();
+        async.onNext(1);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectValueRelayBounded() {
+        ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
+        async.onNext(0);
+        async.onNext(1);
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectValueRelayBoundedIncomplete() {
+        ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
+        async.onNext(0);
+        async.onNext(1);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectValueRelayBoundedEmptyIncomplete() {
+        ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectValueRelayEmptyIncomplete() {
+        ReplaySubject<Integer> async = ReplaySubject.create();
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    
+    @Test
+    public void testReplaySubjectEmpty() {
+        ReplaySubject<Integer> async = ReplaySubject.create();
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectError() {
+        ReplaySubject<Integer> async = ReplaySubject.create();
+        TestException te = new TestException();
+        async.onError(te);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertTrue(async.hasThrowable());
+        assertSame(te, async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    
+    @Test
+    public void testReplaySubjectBoundedEmpty() {
+        ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectBoundedError() {
+        ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
+        TestException te = new TestException();
+        async.onError(te);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertTrue(async.hasThrowable());
+        assertSame(te, async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
 }

@@ -15,12 +15,9 @@
  */
 package rx.observers;
 
-import rx.Observer;
-import rx.Subscriber;
-import rx.annotations.Experimental;
+import rx.*;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action0;
-import rx.functions.Action1;
+import rx.functions.*;
 
 /**
  * Helper methods and utilities for creating and working with {@link Subscriber} objects.
@@ -213,9 +210,8 @@ public final class Subscribers {
      *         <code>subscriber</code>, has backpressure controlled by
      *         <code>subscriber</code> and uses <code>subscriber</code> to
      *         manage unsubscription.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public static <T> Subscriber<T> wrap(final Subscriber<? super T> subscriber) {
         return new Subscriber<T>(subscriber) {
 

@@ -152,9 +152,8 @@ public final class Exceptions {
      * @param exceptions the collection of exceptions. If null or empty, no exception is thrown.
      * If the collection contains a single exception, that exception is either thrown as-is or wrapped into a
      * CompositeException. Multiple exceptions are wrapped into a CompositeException.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public static void throwIfAny(List<? extends Throwable> exceptions) {
         if (exceptions != null && !exceptions.isEmpty()) {
             if (exceptions.size() == 1) {
