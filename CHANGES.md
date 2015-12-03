@@ -1,5 +1,36 @@
 # RxJava Releases #
 
+### Version 1.1.0 – December 2 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.0%7C)) ###
+
+* [Pull 3550] (https://github.com/ReactiveX/RxJava/pull/3550) Public API changes for 1.1.0 release
+
+#### Promotions to Public API
+
+* Subscriptions.unsubscribed
+* Subscribers.wrap
+* 2 RxJavaErrorHandler methods
+* Single + SingleSubscriber
+* Exceptions.throwIfAny
+* Observable.switchIfEmpty with Observable
+* BackpressureDrainManager
+* Observable.onBackpressureLatest
+* Observable.onBackpressureDrop with action
+* Observable.onBackpressureBuffer overloads
+* 2 Observable.merge overloads for maxConcurrent
+* TestSubscriber methods
+* Observable.takeUntil with predicate 
+
+#### Promotions to BETA
+
+* ConnectableObservable.autoConnect
+* Stateful Subject methods on ReplaySubject, PublishSubject, BehaviorSubject, and AsyncSubject
+
+#### Removals from Public API
+
+* Observable.onBackpressureBlock
+* rx.observables.AbstractOnSubscribe
+* Removal of stateful methods from the generic rx.subjects.Subject abstract class
+
 ### Version 1.0.17 – December 1 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.17%7C)) ###
 
 * [Pull 3491] (https://github.com/ReactiveX/RxJava/pull/3491) Make scan's delayed Producer independent of event serialization
