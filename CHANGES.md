@@ -25,7 +25,7 @@
 * ConnectableObservable.autoConnect
 * Stateful Subject methods on ReplaySubject, PublishSubject, BehaviorSubject, and AsyncSubject
 
-#### Removals from Public API
+#### Experimental APIs Removed
 
 * Observable.onBackpressureBlock
 * rx.observables.AbstractOnSubscribe
