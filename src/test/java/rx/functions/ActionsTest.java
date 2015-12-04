@@ -17,11 +17,11 @@ package rx.functions;
 
 import static org.junit.Assert.*;
 
-import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
+import rx.internal.util.PrivateConstructorChecker;
 
 public class ActionsTest {
 
@@ -269,22 +269,13 @@ public class ActionsTest {
             assertEquals(i, value.get());
         }
     }
-    
+
     @Test
     public void testNotInstantiable() {
-        try {
-            Constructor<?> c = Actions.class.getDeclaredConstructor();
-            c.setAccessible(true);
-            Object instance = c.newInstance();
-            fail("Could instantiate Actions! " + instance);
-        } catch (NoSuchMethodException ex) {
-            ex.printStackTrace();
-        } catch (InvocationTargetException ex) {
-            ex.printStackTrace();
-        } catch (InstantiationException ex) {
-            ex.printStackTrace();
-        } catch (IllegalAccessException ex) {
-            ex.printStackTrace();
-        }
+        PrivateConstructorChecker
+                .forClass(Actions.class)
+                .expectedTypeOfException(IllegalStateException.class)
+                .expectedExceptionMessage("No instances!")
+                .check();
     }
 }
