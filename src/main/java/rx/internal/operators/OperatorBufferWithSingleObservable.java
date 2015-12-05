@@ -33,8 +33,9 @@ import rx.observers.Subscribers;
  * {@link Observable} constructed using the {@link Func0} argument, produces a value. The buffer is then
  * emitted, and a new buffer is created to replace it. A new {@link Observable} will be constructed using
  * the provided {@link Func0} object, which will determine when this new buffer is emitted. When the source
- * {@link Observable} completes or produces an error, the current buffer is emitted, and the event is
- * propagated to all subscribed {@link Observer}s.
+ * {@link Observable} completes, the current buffer is emitted, and the event is propagated to all 
+ * subscribed {@link Observer}s. Note that if the source {@link Observable} issues an onError notification
+ * the event is passed on immediately without first emitting the buffer it is in the process of assembling.
  * <p>
  * Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
  * exactly one buffer actively storing values.

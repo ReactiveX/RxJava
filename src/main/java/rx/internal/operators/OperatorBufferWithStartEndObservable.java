@@ -37,8 +37,10 @@ import rx.subscriptions.CompositeSubscription;
  * {@link Observable}. This creates a new buffer which will then start recording values which are produced
  * by the "source" {@link Observable}. Additionally the "bufferClosingSelector" will be used to construct an
  * {@link Observable} which can produce values. When it does so it will close this (and only this) newly
- * created buffer. When the source {@link Observable} completes or produces an error, all chunks are
- * emitted, and the event is propagated to all subscribed {@link Observer}s.
+ * created buffer. When the source {@link Observable} completes, the current buffer is emitted, and the
+ * event is propagated to all subscribed {@link Observer}s. Note that if the source {@link Observable}
+ * issues an onError notification the event is passed on immediately without first emitting the buffer
+ * it is in the process of assembling.
  * </p><p>
  * Note that when using this operation <strong>multiple overlapping chunks</strong> could be active at any
  * one point.
