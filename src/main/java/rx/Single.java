@@ -21,6 +21,7 @@ import rx.Observable.Operator;
 import rx.annotations.Experimental;
 import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorNotImplementedException;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -34,6 +35,7 @@ import rx.functions.Func9;
 import rx.internal.operators.OnSubscribeToObservableFuture;
 import rx.internal.operators.OperatorDelay;
 import rx.internal.operators.OperatorDoOnEach;
+import rx.internal.operators.OperatorDoOnUnsubscribe;
 import rx.internal.operators.OperatorMap;
 import rx.internal.operators.OperatorObserveOn;
 import rx.internal.operators.OperatorOnErrorReturn;
@@ -1997,5 +1999,25 @@ public class Single<T> {
                 single.subscribe(singleSubscriber);
             }
         });
+    }
+
+    /**
+     * Modifies the source {@link Single} so that it invokes the given action when it is unsubscribed from
+     * its subscribers.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnUnsubscribe.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnUnsubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param action
+     *            the action that gets called when this {@link Single} is unsubscribed.
+     * @return the source {@link Single} modified so as to call this Action when appropriate.
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     */
+    @Experimental
+    public final Single<T> doOnUnsubscribe(final Action0 action) {
+        return lift(new OperatorDoOnUnsubscribe<T>(action));
     }
 }

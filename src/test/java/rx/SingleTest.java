@@ -40,6 +40,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import rx.Single.OnSubscribe;
 import rx.exceptions.CompositeException;
+import rx.functions.Action;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -827,5 +828,67 @@ public class SingleTest {
         testSubscriber.assertError(NullPointerException.class);
 
         verify(singleFactory).call();
+    }
+
+    @Test
+    public void doOnUnsubscribeShouldInvokeActionAfterSuccess() {
+        Action0 action = mock(Action0.class);
+
+        Single<String> single = Single
+            .just("test")
+            .doOnUnsubscribe(action);
+
+        verifyZeroInteractions(action);
+
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+        single.subscribe(testSubscriber);
+
+        testSubscriber.assertValue("test");
+        testSubscriber.assertCompleted();
+
+        verify(action).call();
+    }
+
+    @Test
+    public void doOnUnsubscribeShouldInvokeActionAfterError() {
+        Action0 action = mock(Action0.class);
+
+        Single<Object> single = Single
+            .error(new RuntimeException("test"))
+            .doOnUnsubscribe(action);
+
+        verifyZeroInteractions(action);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+        single.subscribe(testSubscriber);
+
+        testSubscriber.assertError(RuntimeException.class);
+        assertEquals("test", testSubscriber.getOnErrorEvents().get(0).getMessage());
+
+        verify(action).call();
+    }
+
+    @Test
+    public void doOnUnsubscribeShouldInvokeActionAfterExplicitUnsubscription() {
+        Action0 action = mock(Action0.class);
+
+        Single<Object> single = Single
+            .create(new OnSubscribe<Object>() {
+                @Override
+                public void call(SingleSubscriber<? super Object> singleSubscriber) {
+                    // Broken Single that never ends itself (simulates long computation in one thread).
+                }
+            })
+            .doOnUnsubscribe(action);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+        Subscription subscription = single.subscribe(testSubscriber);
+
+        verifyZeroInteractions(action);
+
+        subscription.unsubscribe();
+        verify(action).call();
+        testSubscriber.assertNoValues();
+        testSubscriber.assertNoTerminalEvent();
     }
 }
