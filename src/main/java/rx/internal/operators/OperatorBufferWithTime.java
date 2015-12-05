@@ -35,7 +35,7 @@ import rx.observers.SerializedSubscriber;
  * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
  * The creation of chunks is also periodical. How often this is done depends on the specified timeshift.
  * When the source {@link Observable} completes, the current buffer is emitted, and the event is propagated
- * to all subscribed {@link Observer}s. Note that if the source {@link Observable} issues an onError
+ * to all subscribed {@link Subscriber}s. Note that if the source {@link Observable} issues an onError
  * notification the event is passed on immediately without first emitting the buffer it is in the process
  * of assembling.
  * <p>
