@@ -1252,7 +1252,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.png" alt="">
      * <p>
-     * This allows you to defer the execution of the function you specify untl an observer subscribes to the
+     * This allows you to defer the execution of the function you specify until an observer subscribes to the
      * Observable. That is to say, it makes the function "lazy."
      * <dl>
      *   <dt><b>Scheduler:</b></dt>
