@@ -26,6 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -61,8 +62,7 @@ public class BehaviorSubjectTest {
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(testException);
-        verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -78,12 +78,10 @@ public class BehaviorSubjectTest {
         subject.onNext("two");
         subject.onNext("three");
 
-        verify(observer, never()).onNext("default");
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(testException);
-        verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -99,8 +97,8 @@ public class BehaviorSubjectTest {
 
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -113,10 +111,8 @@ public class BehaviorSubjectTest {
         Observer<String> observer = mock(Observer.class);
         subject.subscribe(observer);
 
-        verify(observer, never()).onNext("default");
-        verify(observer, never()).onNext("one");
-        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -130,10 +126,8 @@ public class BehaviorSubjectTest {
         Observer<String> observer = mock(Observer.class);
         subject.subscribe(observer);
 
-        verify(observer, never()).onNext("default");
-        verify(observer, never()).onNext("one");
         verify(observer, times(1)).onError(re);
-        verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -198,8 +192,7 @@ public class BehaviorSubjectTest {
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onError(testException);
-        verify(observer, never()).onNext("two");
-        verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -218,15 +211,13 @@ public class BehaviorSubjectTest {
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onError(testException);
-        verify(observer, never()).onNext("two");
-        verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o2 = mock(Observer.class);
         subject.subscribe(o2);
         verify(o2, times(1)).onError(testException);
-        verify(o2, never()).onNext(any());
-        verify(o2, never()).onCompleted();
+        verifyNoMoreInteractions(o2);
     }
 
     @Test
@@ -245,15 +236,13 @@ public class BehaviorSubjectTest {
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onCompleted();
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onNext("two");
+        verifyNoMoreInteractions(observer);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o2 = mock(Observer.class);
         subject.subscribe(o2);
         verify(o2, times(1)).onCompleted();
-        verify(o2, never()).onNext(any());
-        verify(o2, never()).onError(any(Throwable.class));
+        verifyNoMoreInteractions(o2);
     }
     @Test(timeout = 1000)
     public void testUnsubscriptionCase() {
@@ -344,8 +333,7 @@ public class BehaviorSubjectTest {
         source.subscribe(o);
 
         verify(o).onCompleted();
-        verify(o, never()).onError(any(Throwable.class));
-        verify(o, never()).onNext(any());
+        verifyNoMoreInteractions(o);
     }
     
     @Test
@@ -358,8 +346,8 @@ public class BehaviorSubjectTest {
         
         verify(o).onNext(1);
         verify(o).onCompleted();
-        verify(o, never()).onError(any(Throwable.class));
-        
+        verifyNoMoreInteractions(o);
+
         assertEquals(0, source.subscriberCount());
         assertFalse(source.hasObservers());
     }
