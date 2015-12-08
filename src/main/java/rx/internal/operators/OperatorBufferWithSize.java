@@ -30,8 +30,10 @@ import rx.exceptions.Exceptions;
  * This operation takes
  * values from the specified {@link Observable} source and stores them in all active chunks until the buffer
  * contains a specified number of elements. The buffer is then emitted. Chunks are created after a certain
- * amount of values have been received. When the source {@link Observable} completes or produces an error,
- * the currently active chunks are emitted, and the event is propagated to all subscribed {@link Subscriber}s.
+ * amount of values have been received. When the source {@link Observable} completes, the current buffer is
+ * emitted, and the event is propagated to all subscribed {@link Subscriber}s. Note that if the source
+ * {@link Observable} issues an onError notification the event is passed on immediately without first emitting
+ * the buffer it is in the process of assembling.
  * <p>
  * Note that this operation can produce <strong>non-connected, connected non-overlapping, or overlapping
  * chunks</strong> depending on the input parameters.
