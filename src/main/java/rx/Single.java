@@ -32,19 +32,8 @@ import rx.functions.Func6;
 import rx.functions.Func7;
 import rx.functions.Func8;
 import rx.functions.Func9;
-import rx.internal.operators.OnSubscribeToObservableFuture;
-import rx.internal.operators.OperatorDelay;
-import rx.internal.operators.OperatorDoOnEach;
-import rx.internal.operators.OperatorDoOnUnsubscribe;
-import rx.internal.operators.OperatorFinally;
-import rx.internal.operators.OperatorMap;
-import rx.internal.operators.OperatorObserveOn;
-import rx.internal.operators.OperatorOnErrorReturn;
-import rx.internal.operators.OperatorSubscribeOn;
-import rx.internal.operators.OperatorTimeout;
-import rx.internal.operators.OperatorZip;
-
 import rx.annotations.Beta;
+import rx.internal.operators.*;
 import rx.internal.producers.SingleDelayedProducer;
 import rx.singles.BlockingSingle;
 import rx.observers.SafeSubscriber;
@@ -2040,6 +2029,6 @@ public class Single<T> {
      */
     @Experimental
     public final Single<T> doAfterTerminate(Action0 action) {
-        return lift(new OperatorFinally<T>(action));
+        return lift(new OperatorDoAfterTerminate<T>(action));
     }
 }
