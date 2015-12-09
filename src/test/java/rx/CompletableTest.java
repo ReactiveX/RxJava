@@ -1888,11 +1888,11 @@ public class CompletableTest {
     }
     
     @Test(timeout = 1000)
-    public void finallyDoNormal() {
+    public void doAfterTerminateNormal() {
         final AtomicBoolean doneAfter = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
         
-        Completable c = normal.completable.finallyDo(new Action0() {
+        Completable c = normal.completable.doAfterTerminate(new Action0() {
             @Override
             public void call() {
                 doneAfter.set(complete.get());
@@ -1919,14 +1919,14 @@ public class CompletableTest {
         c.await();
         
         Assert.assertTrue("Not completed", complete.get());
-        Assert.assertTrue("Finally called before onComplete", doneAfter.get());
+        Assert.assertTrue("Closure called before onComplete", doneAfter.get());
     }
     
     @Test(timeout = 1000)
-    public void finallyDoWithError() {
+    public void doAfterTerminateWithError() {
         final AtomicBoolean doneAfter = new AtomicBoolean();
         
-        Completable c = error.completable.finallyDo(new Action0() {
+        Completable c = error.completable.doAfterTerminate(new Action0() {
             @Override
             public void call() {
                 doneAfter.set(true);
@@ -1940,12 +1940,12 @@ public class CompletableTest {
             // expected
         }
         
-        Assert.assertFalse("FinallyDo called", doneAfter.get());
+        Assert.assertFalse("Closure called", doneAfter.get());
     }
     
     @Test(expected = NullPointerException.class)
-    public void finallyDoNull() {
-        normal.completable.finallyDo(null);
+    public void doAfterTerminateNull() {
+        normal.completable.doAfterTerminate(null);
     }
     
     @Test(timeout = 1000)

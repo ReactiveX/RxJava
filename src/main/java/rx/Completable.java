@@ -1356,7 +1356,7 @@ public class Completable {
      * @return the new Completable instance
      * @throws NullPointerException if onAfterComplete is null
      */
-    public final Completable finallyDo(Action0 onAfterComplete) {
+    public final Completable doAfterTerminate(Action0 onAfterComplete) {
         return doOnLifecycle(Actions.empty(), Actions.empty(), Actions.empty(), onAfterComplete, Actions.empty());
     }
     
