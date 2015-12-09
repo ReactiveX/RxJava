@@ -5115,9 +5115,32 @@ public class Observable<T> {
      *         {@link Action0}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      * @see #doOnTerminate(Action0)
+     * @deprecated use {@link #doAfterTerminate(Action0)} instead.
      */
+    @Deprecated
     public final Observable<T> finallyDo(Action0 action) {
-        return lift(new OperatorFinally<T>(action));
+        return lift(new OperatorDoAfterTerminate<T>(action));
+    }
+
+    /**
+     * Registers an {@link Action0} to be called when this Observable invokes either
+     * {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param action
+     *            an {@link Action0} to be invoked when the source Observable finishes
+     * @return an Observable that emits the same items as the source Observable, then invokes the
+     *         {@link Action0}
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     * @see #doOnTerminate(Action0)
+     */
+    public final Observable<T> doAfterTerminate(Action0 action) {
+        return lift(new OperatorDoAfterTerminate<T>(action));
     }
 
     /**
