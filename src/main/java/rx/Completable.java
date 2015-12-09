@@ -568,7 +568,7 @@ public class Completable {
                     }
                 };
                 cs.onSubscribe(subscriber);
-                flowable.subscribe(subscriber);
+                flowable.unsafeSubscribe(subscriber);
             }
         });
     }
