@@ -232,6 +232,31 @@ public class Observable<T> {
         return new Single<T>(OnSubscribeSingle.create(this));
     }
 
+    /**
+     * Returns a Completable that discards all onNext emissions (similar to
+     * {@code ignoreAllElements()}) and calls onCompleted when this source observable calls
+     * onCompleted. Error terminal events are propagated.
+     * <p>
+     * <img width="640" height="295" src=
+     * "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toCompletable.png"
+     * alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a Completable that calls onCompleted on it's subscriber when the source Observable
+     *         calls onCompleted
+     * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation:
+     *      Completable</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
+     *        with the release number)
+     */
+    @Experimental
+    public Completable toCompletable() {
+        return Completable.fromObservable(this);
+    }
+    
 
     /* *********************************************************************************************************
      * Operators Below Here
