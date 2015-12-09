@@ -26,6 +26,11 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -45,6 +50,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.functions.FuncN;
 import rx.schedulers.TestScheduler;
 import rx.singles.BlockingSingle;
 import rx.observers.TestSubscriber;
@@ -111,6 +117,57 @@ public class SingleTest {
         })
                 .subscribe(ts);
         ts.assertReceivedOnNext(Arrays.asList("AB"));
+    }
+
+    @Test
+    public void zipIterableShouldZipListOfSingles() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Iterable<Single<Integer>> singles = Arrays.asList(Single.just(1), Single.just(2), Single.just(3));
+
+        Single
+                .zip(singles, new FuncN<String>() {
+                    @Override
+                    public String call(Object... args) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (Object arg : args) {
+                            stringBuilder.append(arg);
+                        }
+                        return stringBuilder.toString();
+                    }
+                }).subscribe(ts);
+
+        ts.assertValue("123");
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void zipIterableShouldZipSetOfSingles() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Set<Single<String>> singlesSet = Collections.newSetFromMap(new LinkedHashMap<Single<String>, Boolean>(2));
+        Single<String> s1 = Single.just("1");
+        Single<String> s2 = Single.just("2");
+        Single<String> s3 = Single.just("3");
+
+        singlesSet.add(s1);
+        singlesSet.add(s2);
+        singlesSet.add(s3);
+
+        Single
+                .zip(singlesSet, new FuncN<String>() {
+                    @Override
+                    public String call(Object... args) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (Object arg : args) {
+                            stringBuilder.append(arg);
+                        }
+                        return stringBuilder.toString();
+                    }
+                }).subscribe(ts);
+
+        ts.assertValue("123");
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 
     @Test
@@ -940,5 +997,36 @@ public class SingleTest {
                 .doAfterTerminate(action);
 
         verifyZeroInteractions(action);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void iterableToArrayShouldThrowNullPointerExceptionIfIterableNull() {
+        Single.iterableToArray(null);
+    }
+
+    @Test
+    public void iterableToArrayShouldConvertList() {
+        List<Single<String>> singlesList = Arrays.asList(Single.just("1"), Single.just("2"));
+
+        Single<? extends String>[] singlesArray = Single.iterableToArray(singlesList);
+        assertEquals(2, singlesArray.length);
+        assertSame(singlesList.get(0), singlesArray[0]);
+        assertSame(singlesList.get(1), singlesArray[1]);
+    }
+
+    @Test
+    public void iterableToArrayShouldConvertSet() {
+        // Just to trigger different path of the code that handles non-list iterables.
+        Set<Single<String>> singlesSet = Collections.newSetFromMap(new LinkedHashMap<Single<String>, Boolean>(2));
+        Single<String> s1 = Single.just("1");
+        Single<String> s2 = Single.just("2");
+
+        singlesSet.add(s1);
+        singlesSet.add(s2);
+
+        Single<? extends String>[] singlesArray = Single.iterableToArray(singlesSet);
+        assertEquals(2, singlesArray.length);
+        assertSame(s1, singlesArray[0]);
+        assertSame(s2, singlesArray[1]);
     }
 }

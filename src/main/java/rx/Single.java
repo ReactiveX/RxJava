@@ -12,6 +12,7 @@
  */
 package rx;
 
+import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +33,7 @@ import rx.functions.Func6;
 import rx.functions.Func7;
 import rx.functions.Func8;
 import rx.functions.Func9;
+import rx.functions.FuncN;
 import rx.annotations.Beta;
 import rx.internal.operators.*;
 import rx.internal.producers.SingleDelayedProducer;
@@ -1197,6 +1199,30 @@ public class Single<T> {
     }
 
     /**
+     * Returns a Single that emits the result of specified combiner function applied to combination of
+     * items emitted, in sequence, by an Iterable of other Singles.
+     * <p>
+     * {@code zip} applies this function in strict sequence.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param singles
+     *            an Iterable of source Singles
+     * @param zipFunction
+     *            a function that, when applied to an item emitted by each of the source Singles, results in
+     *            an item that will be emitted by the resulting Single
+     * @return a Single that emits the zipped results
+     * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
+     */
+    public static <R> Single<R> zip(Iterable<? extends Single<?>> singles, FuncN<? extends R> zipFunction) {
+        return SingleOperatorZip.zip(iterableToArray(singles), zipFunction);
+    }
+
+    /**
      * Returns an Observable that emits the item emitted by the source Single, then the item emitted by the
      * specified Single.
      * <p>
@@ -1264,7 +1290,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param func
      *            a function to apply to the item emitted by the Single
      * @return a Single that emits the item from the source Single, transformed by the specified function
@@ -2030,5 +2056,47 @@ public class Single<T> {
     @Experimental
     public final Single<T> doAfterTerminate(Action0 action) {
         return lift(new OperatorDoAfterTerminate<T>(action));
+    }
+
+    /**
+     * FOR INTERNAL USE ONLY.
+     * <p>
+     * Converts {@link Iterable} of {@link Single} to array of {@link Single}.
+     *
+     * @param singlesIterable
+     *         non null iterable of {@link Single}.
+     * @return array of {@link Single} with same length as passed iterable.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Single<? extends T>[] iterableToArray(final Iterable<? extends Single<? extends T>> singlesIterable) {
+        final Single<? extends T>[] singlesArray;
+        int count;
+
+        if (singlesIterable instanceof Collection) {
+            Collection<? extends Single<? extends T>> list = (Collection<? extends Single<? extends T>>) singlesIterable;
+            count = list.size();
+            singlesArray = list.toArray(new Single[count]);
+        } else {
+            Single<? extends T>[] tempArray = new Single[8]; // Magic number used just to reduce number of allocations.
+            count = 0;
+            for (Single<? extends T> s : singlesIterable) {
+                if (count == tempArray.length) {
+                    Single<? extends T>[] sb = new Single[count + (count >> 2)];
+                    System.arraycopy(tempArray, 0, sb, 0, count);
+                    tempArray = sb;
+                }
+                tempArray[count] = s;
+                count++;
+            }
+
+            if (tempArray.length == count) {
+                singlesArray = tempArray;
+            } else {
+                singlesArray = new Single[count];
+                System.arraycopy(tempArray, 0, singlesArray, 0, count);
+            }
+        }
+
+        return singlesArray;
     }
 }
