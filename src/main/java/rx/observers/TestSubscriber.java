@@ -168,7 +168,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     
     @Override
     public void onStart() {
-        if  (initialRequest >= 0) {
+        if (initialRequest >= 0) {
             requestMore(initialRequest);
         }
     }
