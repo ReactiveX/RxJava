@@ -18,15 +18,15 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Subscriber;
 
-public class OperatorIgnoreElements<T> implements Operator<T, T> {
+public class OperatorIgnoreElements<R, T> implements Operator<R, T> {
 
     private static class Holder {
-        static final OperatorIgnoreElements<?> INSTANCE = new OperatorIgnoreElements<Object>();
+        static final OperatorIgnoreElements<?, ?> INSTANCE = new OperatorIgnoreElements<Object, Object>();
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> OperatorIgnoreElements<T> instance() {
-        return (OperatorIgnoreElements<T>) Holder.INSTANCE;
+    public static <T, R> OperatorIgnoreElements<T, R> instance() {
+        return (OperatorIgnoreElements<T, R>) Holder.INSTANCE;
     }
 
     private OperatorIgnoreElements() {
@@ -34,7 +34,7 @@ public class OperatorIgnoreElements<T> implements Operator<T, T> {
     }
 
     @Override
-    public Subscriber<? super T> call(final Subscriber<? super T> child) {
+    public Subscriber<? super T> call(final Subscriber<? super R> child) {
         Subscriber<T> parent = new Subscriber<T>() {
 
             @Override
