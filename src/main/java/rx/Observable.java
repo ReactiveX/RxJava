@@ -3665,6 +3665,15 @@ public class Observable<T> {
     }
 
     /**
+     * @see #cacheWithInitialCapacity(int)
+     * @deprecated Use {@link #cacheWithInitialCapacity(int)} instead.
+     */
+    @Deprecated
+    public final Observable<T> cache(int initialCapacity) {
+        return cacheWithInitialCapacity(initialCapacity);
+    }
+
+    /**
      * Caches emissions from the source Observable and replays them in order to any subsequent Subscribers.
      * This method has similar behavior to {@link #replay} except that this auto-subscribes to the source
      * Observable rather than returning a {@link ConnectableObservable} for which you must call
@@ -3689,14 +3698,17 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>
+     * <em>Note:</em> The capacity hint is not an upper bound on cache size. For that, consider
+     * {@link #replay(int)} in combination with {@link ConnectableObservable#autoConnect()} or similar.
      * 
-     * @param capacityHint hint for number of items to cache (for optimizing underlying data structure)
+     * @param initialCapacity hint for number of items to cache (for optimizing underlying data structure)
      * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
      *         benefit of subsequent subscribers
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
-    public final Observable<T> cache(int capacityHint) {
-        return CachedObservable.from(this, capacityHint);
+    public final Observable<T> cacheWithInitialCapacity(int initialCapacity) {
+        return CachedObservable.from(this, initialCapacity);
     }
 
     /**
