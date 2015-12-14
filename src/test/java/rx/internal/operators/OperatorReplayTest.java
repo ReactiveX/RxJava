@@ -749,11 +749,11 @@ public class OperatorReplayTest {
     @Test
     public void testBoundedReplayBuffer() {
         BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>();
-        buf.addLast(new Node(1));
-        buf.addLast(new Node(2));
-        buf.addLast(new Node(3));
-        buf.addLast(new Node(4));
-        buf.addLast(new Node(5));
+        buf.addLast(new Node(1, 0));
+        buf.addLast(new Node(2, 1));
+        buf.addLast(new Node(3, 2));
+        buf.addLast(new Node(4, 3));
+        buf.addLast(new Node(5, 4));
         
         List<Integer> values = new ArrayList<Integer>();
         buf.collect(values);
@@ -768,8 +768,8 @@ public class OperatorReplayTest {
         buf.collect(values);
         Assert.assertTrue(values.isEmpty());
 
-        buf.addLast(new Node(5));
-        buf.addLast(new Node(6));
+        buf.addLast(new Node(5, 5));
+        buf.addLast(new Node(6, 6));
         buf.collect(values);
         
         Assert.assertEquals(Arrays.asList(5, 6), values);
@@ -1145,4 +1145,107 @@ public class OperatorReplayTest {
         Assert.assertEquals(Arrays.asList(5L, 5L), requests);
     }
     
+    @Test
+    public void testSubscribersComeAndGoAtRequestBoundaries() {
+        ConnectableObservable<Integer> source = Observable.range(1, 10).replay(1);
+        source.connect();
+        
+        TestSubscriber<Integer> ts1 = TestSubscriber.create(2);
+        
+        source.subscribe(ts1);
+        
+        ts1.assertValues(1, 2);
+        ts1.assertNoErrors();
+        ts1.unsubscribe();
+        
+        TestSubscriber<Integer> ts2 = TestSubscriber.create(2);
+        
+        source.subscribe(ts2);
+        
+        ts2.assertValues(2, 3);
+        ts2.assertNoErrors();
+        ts2.unsubscribe();
+
+        TestSubscriber<Integer> ts21 = TestSubscriber.create(1);
+        
+        source.subscribe(ts21);
+        
+        ts21.assertValues(3);
+        ts21.assertNoErrors();
+        ts21.unsubscribe();
+
+        TestSubscriber<Integer> ts22 = TestSubscriber.create(1);
+        
+        source.subscribe(ts22);
+        
+        ts22.assertValues(3);
+        ts22.assertNoErrors();
+        ts22.unsubscribe();
+
+        
+        TestSubscriber<Integer> ts3 = TestSubscriber.create();
+        
+        source.subscribe(ts3);
+        
+        ts3.assertNoErrors();
+        System.out.println(ts3.getOnNextEvents());
+        ts3.assertValues(3, 4, 5, 6, 7, 8, 9, 10);
+        ts3.assertCompleted();
+    }
+    
+    @Test
+    public void testSubscribersComeAndGoAtRequestBoundaries2() {
+        ConnectableObservable<Integer> source = Observable.range(1, 10).replay(2);
+        source.connect();
+        
+        TestSubscriber<Integer> ts1 = TestSubscriber.create(2);
+        
+        source.subscribe(ts1);
+        
+        ts1.assertValues(1, 2);
+        ts1.assertNoErrors();
+        ts1.unsubscribe();
+
+        TestSubscriber<Integer> ts11 = TestSubscriber.create(2);
+        
+        source.subscribe(ts11);
+        
+        ts11.assertValues(1, 2);
+        ts11.assertNoErrors();
+        ts11.unsubscribe();
+
+        TestSubscriber<Integer> ts2 = TestSubscriber.create(3);
+        
+        source.subscribe(ts2);
+        
+        ts2.assertValues(1, 2, 3);
+        ts2.assertNoErrors();
+        ts2.unsubscribe();
+
+        TestSubscriber<Integer> ts21 = TestSubscriber.create(1);
+        
+        source.subscribe(ts21);
+        
+        ts21.assertValues(2);
+        ts21.assertNoErrors();
+        ts21.unsubscribe();
+
+        TestSubscriber<Integer> ts22 = TestSubscriber.create(1);
+        
+        source.subscribe(ts22);
+        
+        ts22.assertValues(2);
+        ts22.assertNoErrors();
+        ts22.unsubscribe();
+
+        
+        TestSubscriber<Integer> ts3 = TestSubscriber.create();
+        
+        source.subscribe(ts3);
+        
+        ts3.assertNoErrors();
+        System.out.println(ts3.getOnNextEvents());
+        ts3.assertValues(2, 3, 4, 5, 6, 7, 8, 9, 10);
+        ts3.assertCompleted();
+    }
 }
