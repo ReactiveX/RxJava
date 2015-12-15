@@ -24,7 +24,8 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.exceptions.Exceptions;
 import rx.functions.*;
-import rx.internal.util.unsafe.SpscArrayQueue;
+import rx.internal.util.atomic.SpscAtomicArrayQueue;
+import rx.internal.util.unsafe.*;
 import rx.subscriptions.Subscriptions;
 
 public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
@@ -278,7 +279,13 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
         public EagerInnerSubscriber(EagerOuterSubscriber<?, T> parent, int bufferSize) {
             super();
             this.parent = parent;
-            this.queue = new SpscArrayQueue<T>(bufferSize);
+            Queue<T> q;
+            if (UnsafeAccess.isUnsafeAvailable()) {
+                q = new SpscArrayQueue<T>(bufferSize);
+            } else {
+                q = new SpscAtomicArrayQueue<T>(bufferSize);
+            }
+            this.queue = q;
             request(bufferSize);
         }
         

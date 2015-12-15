@@ -91,7 +91,7 @@ public class OperatorMapTest {
             @Override
             public Observable<String> call(Integer id) {
                 /* simulate making a nested async call which creates another Observable */
-                Observable<Map<String, String>> subObservable = null;
+                Observable<Map<String, String>> subObservable;
                 if (id == 1) {
                     Map<String, String> m1 = getMap("One");
                     Map<String, String> m2 = getMap("Two");

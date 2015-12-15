@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,7 +28,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Action0;
 
-public class OperatorFinallyTest {
+public class OperatorDoAfterTerminateTest {
 
     private Action0 aAction0;
     private Observer<String> observer;
@@ -40,17 +42,27 @@ public class OperatorFinallyTest {
     }
 
     private void checkActionCalled(Observable<String> input) {
-        input.finallyDo(aAction0).subscribe(observer);
+        input.doAfterTerminate(aAction0).subscribe(observer);
         verify(aAction0, times(1)).call();
     }
 
     @Test
-    public void testFinallyCalledOnComplete() {
+    public void testDoAfterTerminateCalledOnComplete() {
         checkActionCalled(Observable.from(new String[] { "1", "2", "3" }));
     }
 
     @Test
-    public void testFinallyCalledOnError() {
+    public void testDoAfterTerminateCalledOnError() {
         checkActionCalled(Observable.<String> error(new RuntimeException("expected")));
+    }
+
+    @Test
+    public void nullActionShouldBeCheckedInConstructor() {
+        try {
+            new OperatorDoAfterTerminate<Object>(null);
+            fail();
+        } catch (NullPointerException expected) {
+            assertEquals("Action can not be null", expected.getMessage());
+        }
     }
 }

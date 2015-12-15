@@ -16,7 +16,7 @@
 package rx.internal.operators;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observer;
 import rx.Subscriber;
@@ -59,15 +59,9 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
     }
 
     /** The common state. */
-    static final class State<T> {
-        volatile Observer<? super T> observerRef = null;
-        /** Field updater for observerRef. */
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<State, Observer> OBSERVER_UPDATER
-                = AtomicReferenceFieldUpdater.newUpdater(State.class, Observer.class, "observerRef");
-
+    static final class State<T> extends AtomicReference<Observer<? super T>> {
         boolean casObserverRef(Observer<? super T>  expected, Observer<? super T>  next) {
-            return OBSERVER_UPDATER.compareAndSet(this, expected, next);
+            return compareAndSet(expected, next);
         }
 
         final Object guard = new Object();
@@ -92,7 +86,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
                     @SuppressWarnings("unchecked")
                     @Override
                     public void call() {
-                        state.observerRef = EMPTY_OBSERVER;
+                        state.set(EMPTY_OBSERVER);
                     }
                 }));
                 boolean win = false;
@@ -107,7 +101,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
                     while(true) {
                         Object o;
                         while ((o = state.buffer.poll()) != null) {
-                            nl.accept(state.observerRef, o);
+                            nl.accept(state.get(), o);
                         }
                         synchronized (state.guard) {
                             if (state.buffer.isEmpty()) {
@@ -138,7 +132,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
     private void emit(Object v) {
         synchronized (state.guard) {
             state.buffer.add(v);
-            if (state.observerRef != null && !state.emitting) {
+            if (state.get() != null && !state.emitting) {
                 // Have an observer and nobody is emitting,
                 // should drain the `buffer`
                 forward = true;
@@ -148,7 +142,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
         if (forward) {
             Object o;
             while ((o = state.buffer.poll()) != null) {
-                state.nl.accept(state.observerRef, o);
+                state.nl.accept(state.get(), o);
             }
             // Because `emit(Object v)` will be called in sequence,
             // no event will be put into `buffer` after we drain it.
@@ -158,7 +152,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
     @Override
     public void onCompleted() {
         if (forward) {
-            state.observerRef.onCompleted();
+            state.get().onCompleted();
         }
         else {
             emit(state.nl.completed());
@@ -168,7 +162,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
     @Override
     public void onError(Throwable e) {
         if (forward) {
-            state.observerRef.onError(e);
+            state.get().onError(e);
         }
         else {
             emit(state.nl.error(e));
@@ -178,7 +172,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
     @Override
     public void onNext(T t) {
         if (forward) {
-            state.observerRef.onNext(t);
+            state.get().onNext(t);
         }
         else {
             emit(state.nl.next(t));
@@ -188,7 +182,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
     @Override
     public boolean hasObservers() {
         synchronized (state.guard) {
-            return state.observerRef != null;
+            return state.get() != null;
         }
     }
 

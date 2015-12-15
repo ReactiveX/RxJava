@@ -164,15 +164,11 @@ public class Observable<T> {
                         // localized capture of errors rather than it skipping all operators 
                         // and ending up in the try/catch of the subscribe method which then
                         // prevents onErrorResumeNext and other similar approaches to error handling
-                        if (e instanceof OnErrorNotImplementedException) {
-                            throw (OnErrorNotImplementedException) e;
-                        }
+                        Exceptions.throwIfFatal(e);
                         st.onError(e);
                     }
                 } catch (Throwable e) {
-                    if (e instanceof OnErrorNotImplementedException) {
-                        throw (OnErrorNotImplementedException) e;
-                    }
+                    Exceptions.throwIfFatal(e);
                     // if the lift function failed all we can do is pass the error to the final Subscriber
                     // as we don't have the operator available to us
                     o.onError(e);
@@ -231,11 +227,36 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/single.html">ReactiveX documentation: Single</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public Single<T> toSingle() {
         return new Single<T>(OnSubscribeSingle.create(this));
     }
 
+    /**
+     * Returns a Completable that discards all onNext emissions (similar to
+     * {@code ignoreAllElements()}) and calls onCompleted when this source observable calls
+     * onCompleted. Error terminal events are propagated.
+     * <p>
+     * <img width="640" height="295" src=
+     * "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toCompletable.png"
+     * alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a Completable that calls onCompleted on it's subscriber when the source Observable
+     *         calls onCompleted
+     * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation:
+     *      Completable</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
+     *        with the release number)
+     */
+    @Experimental
+    public Completable toCompletable() {
+        return Completable.fromObservable(this);
+    }
+    
 
     /* *********************************************************************************************************
      * Operators Below Here
@@ -1251,22 +1272,26 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that invokes passed function and emits its result for each new Observer that subscribes.
+     * Returns an Observable that, when an observer subscribes to it, invokes a function you specify and then
+     * emits the value returned from that function.
      * <p>
-     * Allows you to defer execution of passed function until Observer subscribes to the Observable.
-     * It makes passed function "lazy".
-     * Result of the function invocation will be emitted by the Observable.
+     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.png" alt="">
+     * <p>
+     * This allows you to defer the execution of the function you specify until an observer subscribes to the
+     * Observable. That is to say, it makes the function "lazy."
      * <dl>
      *   <dt><b>Scheduler:</b></dt>
      *   <dd>{@code fromCallable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param func
-     *         function which execution should be deferred, it will be invoked when Observer will subscribe to the Observable
+     *         a function, the execution of which should be deferred; {@code fromCallable} will invoke this
+     *         function only when an observer subscribes to the Observable that {@code fromCallable} returns
      * @param <T>
      *         the type of the item emitted by the Observable
      * @return an Observable whose {@link Observer}s' subscriptions trigger an invocation of the given function
      * @see #defer(Func0)
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public static <T> Observable<T> fromCallable(Callable<? extends T> func) {
@@ -1326,7 +1351,7 @@ public class Observable<T> {
      *  <dd>This operator does not support backpressure as it uses time. If the downstream needs a slower rate
      *      it should slow the timer or use something like {@link #onBackpressureDrop}.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code timer} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     *  <dd>{@code interval} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param initialDelay
@@ -1789,9 +1814,8 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if {@code maxConcurrent} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     @SuppressWarnings({"unchecked", "rawtypes"})
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
         if (source.getClass() == ScalarSynchronousObservable.class) {
@@ -2088,9 +2112,8 @@ public class Observable<T> {
      *            the maximum number of Observables that may be subscribed to concurrently
      * @return an Observable that emits all of the items emitted by the Observables in the Array
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public final static <T> Observable<T> merge(Observable<? extends T>[] sequences, int maxConcurrent) {
         return merge(from(sequences), maxConcurrent);
     }
@@ -3653,6 +3676,15 @@ public class Observable<T> {
     }
 
     /**
+     * @see #cacheWithInitialCapacity(int)
+     * @deprecated Use {@link #cacheWithInitialCapacity(int)} instead.
+     */
+    @Deprecated
+    public final Observable<T> cache(int initialCapacity) {
+        return cacheWithInitialCapacity(initialCapacity);
+    }
+
+    /**
      * Caches emissions from the source Observable and replays them in order to any subsequent Subscribers.
      * This method has similar behavior to {@link #replay} except that this auto-subscribes to the source
      * Observable rather than returning a {@link ConnectableObservable} for which you must call
@@ -3677,14 +3709,17 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>
+     * <em>Note:</em> The capacity hint is not an upper bound on cache size. For that, consider
+     * {@link #replay(int)} in combination with {@link ConnectableObservable#autoConnect()} or similar.
      * 
-     * @param capacityHint hint for number of items to cache (for optimizing underlying data structure)
+     * @param initialCapacity hint for number of items to cache (for optimizing underlying data structure)
      * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
      *         benefit of subsequent subscribers
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
-    public final Observable<T> cache(int capacityHint) {
-        return CachedObservable.from(this, capacityHint);
+    public final Observable<T> cacheWithInitialCapacity(int initialCapacity) {
+        return CachedObservable.from(this, initialCapacity);
     }
 
     /**
@@ -4025,9 +4060,8 @@ public class Observable<T> {
      *              the alternate Observable to subscribe to if the source does not emit any items
      * @return  an Observable that emits the items emitted by the source Observable or the items of an
      *          alternate Observable if the source Observable is empty.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public final Observable<T> switchIfEmpty(Observable<? extends T> alternate) {
         return lift(new OperatorSwitchIfEmpty<T>(alternate));
     }
@@ -4134,7 +4168,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     public final Observable<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
-        return lift(new OperatorDelay<T>(this, delay, unit, scheduler));
+        return lift(new OperatorDelay<T>(delay, unit, scheduler));
     }
 
     /**
@@ -4202,6 +4236,32 @@ public class Observable<T> {
         return create(new OnSubscribeDelaySubscriptionWithSelector<T, U>(this, subscriptionDelay));
     }
 
+    /**
+     * Returns an Observable that delays the subscription to this Observable
+     * until the other Observable emits an element or completes normally.
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator forwards the backpressure requests to this Observable once
+     *  the subscription happens and requests Long.MAX_VALUE from the other Observable</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <U> the value type of the other Observable, irrelevant
+     * @param other the other Observable that should trigger the subscription
+     *        to this Observable.
+     * @return an Observable that delays the subscription to this Observable
+     *         until the other Observable emits an element or completes normally.
+     */
+    @Experimental
+    public final <U> Observable<T> delaySubscription(Observable<U> other) {
+        if (other == null) {
+            throw new NullPointerException();
+        }
+        return create(new OnSubscribeDelaySubscriptionOther<T, U>(this, other));
+    }
+    
     /**
      * Returns an Observable that reverses the effect of {@link #materialize materialize} by transforming the
      * {@link Notification} objects emitted by the source Observable into the items or notifications they
@@ -5103,9 +5163,32 @@ public class Observable<T> {
      *         {@link Action0}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      * @see #doOnTerminate(Action0)
+     * @deprecated use {@link #doAfterTerminate(Action0)} instead.
      */
+    @Deprecated
     public final Observable<T> finallyDo(Action0 action) {
-        return lift(new OperatorFinally<T>(action));
+        return lift(new OperatorDoAfterTerminate<T>(action));
+    }
+
+    /**
+     * Registers an {@link Action0} to be called when this Observable invokes either
+     * {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param action
+     *            an {@link Action0} to be invoked when the source Observable finishes
+     * @return an Observable that emits the same items as the source Observable, then invokes the
+     *         {@link Action0}
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     * @see #doOnTerminate(Action0)
+     */
+    public final Observable<T> doAfterTerminate(Action0 action) {
+        return lift(new OperatorDoAfterTerminate<T>(action));
     }
 
     /**
@@ -5907,9 +5990,8 @@ public class Observable<T> {
      *
      * @return the source Observable modified to buffer items up to the given capacity
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Beta
     public final Observable<T> onBackpressureBuffer(long capacity) {
         return lift(new OperatorOnBackpressureBuffer<T>(capacity));
     }
@@ -5928,9 +6010,8 @@ public class Observable<T> {
      *
      * @return the source Observable modified to buffer items up to the given capacity
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Beta
     public final Observable<T> onBackpressureBuffer(long capacity, Action0 onOverflow) {
         return lift(new OperatorOnBackpressureBuffer<T>(capacity, onOverflow));
     }
@@ -5952,9 +6033,8 @@ public class Observable<T> {
      * @return the source Observable modified to drop {@code onNext} notifications on overflow
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      * @Experimental The behavior of this can change at any time. 
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public final Observable<T> onBackpressureDrop(Action1<? super T> onDrop) {
         return lift(new OperatorOnBackpressureDrop<T>(onDrop));
     }
@@ -5980,72 +6060,6 @@ public class Observable<T> {
     }
     
     /**
-     * Instructs an Observable that is emitting items faster than its observer can consume them to
-     * block the producer thread.
-     * <p>
-     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.block.png" alt="">
-     * <p>
-     * The producer side can emit up to {@code maxQueueLength} onNext elements without blocking, but the
-     * consumer side considers the amount its downstream requested through {@code Producer.request(n)}
-     * and doesn't emit more than requested even if more is available. For example, using 
-     * {@code onBackpressureBlock(384).observeOn(Schedulers.io())} will not throw a MissingBackpressureException.
-     * <p>
-     * Note that if the upstream Observable does support backpressure, this operator ignores that capability
-     * and doesn't propagate any backpressure requests from downstream.
-     * <p>
-     * Warning! Using a chain like {@code source.onBackpressureBlock().subscribeOn(scheduler)} is prone to
-     * deadlocks because the consumption of the internal queue is scheduled behind a blocked emission by
-     * the subscribeOn. In order to avoid this, the operators have to be swapped in the chain: 
-     * {@code source.subscribeOn(scheduler).onBackpressureBlock()} and in general, no subscribeOn operator should follow
-     * this operator.
-     *  
-     * @param maxQueueLength the maximum number of items the producer can emit without blocking
-     * @return the source Observable modified to block {@code onNext} notifications on overflow
-     * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
-     * @Experimental The behavior of this can change at any time.
-     * @deprecated The operator doesn't work properly with {@link #subscribeOn(Scheduler)} and is prone to
-     *             deadlocks. It will be removed/unavailable starting from 1.1.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
-     */
-    @Experimental
-    @Deprecated
-    public final Observable<T> onBackpressureBlock(int maxQueueLength) {
-        return lift(new OperatorOnBackpressureBlock<T>(maxQueueLength));
-    }
-
-    /**
-     * Instructs an Observable that is emitting items faster than its observer can consume them to block the
-     * producer thread if the number of undelivered onNext events reaches the system-wide ring buffer size.
-     * <p>
-     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.block.png" alt="">
-     * <p>
-     * The producer side can emit up to the system-wide ring buffer size onNext elements without blocking, but
-     * the consumer side considers the amount its downstream requested through {@code Producer.request(n)}
-     * and doesn't emit more than requested even if available.
-     * <p>
-     * Note that if the upstream Observable does support backpressure, this operator ignores that capability
-     * and doesn't propagate any backpressure requests from downstream.
-     * <p>
-     * Warning! Using a chain like {@code source.onBackpressureBlock().subscribeOn(scheduler)} is prone to
-     * deadlocks because the consumption of the internal queue is scheduled behind a blocked emission by
-     * the subscribeOn. In order to avoid this, the operators have to be swapped in the chain: 
-     * {@code source.subscribeOn(scheduler).onBackpressureBlock()} and in general, no subscribeOn operator should follow
-     * this operator.
-     * 
-     * @return the source Observable modified to block {@code onNext} notifications on overflow
-     * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
-     * @Experimental The behavior of this can change at any time. 
-     * @deprecated The operator doesn't work properly with {@link #subscribeOn(Scheduler)} and is prone to
-     *             deadlocks. It will be removed/unavailable starting from 1.1.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
-     */
-    @Experimental
-    @Deprecated
-    public final Observable<T> onBackpressureBlock() {
-        return onBackpressureBlock(rx.internal.util.RxRingBuffer.SIZE);
-    }
-    
-    /**
      * Instructs an Observable that is emitting items faster than its observer can consume them to 
      * hold onto the latest value and emit that on request.
      * <p>
@@ -6061,10 +6075,8 @@ public class Observable<T> {
      * requesting more than 1 from downstream doesn't guarantee a continuous delivery of onNext events.
      *
      * @return the source Observable modified so that it emits the most recently-received item upon request
-     * @Experimental The behavior of this can change at any time. 
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public final Observable<T> onBackpressureLatest() {
         return lift(OperatorOnBackpressureLatest.<T>instance());
     }
@@ -7940,7 +7952,8 @@ public class Observable<T> {
     }
 
     /**
-     * Subscribes to an Observable but ignore its emissions and notifications.
+     * Subscribes to an Observable and ignores {@code onNext} and {@code onCompleted} emissions. If an {@code onError} emission arrives then 
+     * {@link OnErrorNotImplementedException} is thrown. 
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8187,10 +8200,8 @@ public class Observable<T> {
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
                 subscriber.onError(hook.onSubscribeError(e));
-            } catch (OnErrorNotImplementedException e2) {
-                // special handling when onError is not implemented ... we just rethrow
-                throw e2;
             } catch (Throwable e2) {
+                Exceptions.throwIfFatal(e2);
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
@@ -8282,10 +8293,8 @@ public class Observable<T> {
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
                 subscriber.onError(hook.onSubscribeError(e));
-            } catch (OnErrorNotImplementedException e2) {
-                // special handling when onError is not implemented ... we just rethrow
-                throw e2;
             } catch (Throwable e2) {
+                Exceptions.throwIfFatal(e2);
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
@@ -8742,9 +8751,8 @@ public class Observable<T> {
      *         condition after each item, and then completes if the condition is satisfied.
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      * @see Observable#takeWhile(Func1)
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public final Observable<T> takeUntil(final Func1<? super T, Boolean> stopPredicate) {
         return lift(new OperatorTakeUntilPredicate<T>(stopPredicate));
     }

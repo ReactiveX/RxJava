@@ -138,7 +138,7 @@ public class OperatorObserveOnTest {
                 assertTrue(correctThreadName);
             }
 
-        }).finallyDo(new Action0() {
+        }).doAfterTerminate(new Action0() {
 
             @Override
             public void call() {

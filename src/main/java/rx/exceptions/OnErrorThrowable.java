@@ -69,16 +69,18 @@ public final class OnErrorThrowable extends RuntimeException {
      * Converts a {@link Throwable} into an {@link OnErrorThrowable}.
      *
      * @param t
-     *          the {@code Throwable} to convert
+     *          the {@code Throwable} to convert; if null, a NullPointerException is constructed
      * @return an {@code OnErrorThrowable} representation of {@code t}
      */
     public static OnErrorThrowable from(Throwable t) {
+        if (t == null) {
+            t = new NullPointerException();
+        }
         Throwable cause = Exceptions.getFinalCause(t);
         if (cause instanceof OnErrorThrowable.OnNextValue) {
             return new OnErrorThrowable(t, ((OnNextValue) cause).getValue());
-        } else {
-            return new OnErrorThrowable(t);
         }
+        return new OnErrorThrowable(t);
     }
 
     /**
@@ -93,6 +95,9 @@ public final class OnErrorThrowable extends RuntimeException {
      *         cause
      */
     public static Throwable addValueAsLastCause(Throwable e, Object value) {
+        if (e == null) {
+            e = new NullPointerException();
+        }
         Throwable lastCause = Exceptions.getFinalCause(e);
         if (lastCause != null && lastCause instanceof OnNextValue) {
             // purposefully using == for object reference check

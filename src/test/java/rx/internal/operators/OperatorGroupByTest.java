@@ -15,45 +15,24 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
-import rx.Notification;
+import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
 import rx.exceptions.TestException;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.internal.util.UtilityFunctions;
+import rx.functions.*;
+import rx.internal.util.*;
 import rx.observables.GroupedObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -976,7 +955,7 @@ public class OperatorGroupByTest {
 
     Observable<Event> ASYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
         return SYNC_INFINITE_OBSERVABLE_OF_EVENT(numGroups, subscribeCounter, sentEventCounter).subscribeOn(Schedulers.newThread());
-    };
+    }
 
     Observable<Event> SYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
         return Observable.create(new OnSubscribe<Event>() {
@@ -997,7 +976,7 @@ public class OperatorGroupByTest {
             }
 
         });
-    };
+    }
 
     @Test
     public void testGroupByOnAsynchronousSourceAcceptsMultipleSubscriptions() throws InterruptedException {
@@ -1501,4 +1480,105 @@ public class OperatorGroupByTest {
                     }});
         assertTrue(completed.get());
     }
+    
+    /**
+     * Issue #3425.
+     * 
+     * The problem is that a request of 1 may create a new group, emit to the desired group
+     * or emit to a completely different group. In this test, the merge requests N which
+     * must be produced by the range, however it will create a bunch of groups before the actual
+     * group receives a value.
+     */
+    @Test
+    public void testBackpressureObserveOnOuter() {
+        for (int j = 0; j < 1000; j++) {
+            Observable.merge(
+                    Observable.range(0, 500)
+                    .groupBy(new Func1<Integer, Object>() {
+                        @Override
+                        public Object call(Integer i) {
+                            return i % (RxRingBuffer.SIZE + 2);
+                        }
+                    })
+                    .observeOn(Schedulers.computation())
+            ).toBlocking().last();
+        }
+    }
+    
+    /**
+     * Synchronous verification of issue #3425.
+     */
+    @Test
+    public void testBackpressureInnerDoesntOverflowOuter() {
+        TestSubscriber<Object> ts = TestSubscriber.create(0);
+        
+        Observable.just(1, 2)
+                .groupBy(new Func1<Integer, Object>() {
+                    @Override
+                    public Object call(Integer v) {
+                        return v;
+                    }
+                })
+                .doOnNext(new Action1<GroupedObservable<Object, Integer>>() {
+                    @Override
+                    public void call(GroupedObservable<Object, Integer> g) {
+                        // this will request Long.MAX_VALUE
+                        g.subscribe();
+                    }
+                })
+                // this won't request anything just yet
+                .subscribe(ts)
+                ;
+        ts.requestMore(1);
+        
+        ts.assertNotCompleted();
+        ts.assertNoErrors();
+        ts.assertValueCount(1);
+    }
+    
+    @Test
+    public void testOneGroupInnerRequestsTwiceBuffer() {
+        TestSubscriber<Object> ts1 = TestSubscriber.create(0);
+        final TestSubscriber<Object> ts2 = TestSubscriber.create(0);
+        
+        Observable.range(1, RxRingBuffer.SIZE * 2)
+        .groupBy(new Func1<Integer, Object>() {
+            @Override
+            public Object call(Integer v) {
+                return 1;
+            }
+        })
+        .doOnNext(new Action1<GroupedObservable<Object, Integer>>() {
+            @Override
+            public void call(GroupedObservable<Object, Integer> g) {
+                g.subscribe(ts2);
+            }
+        })
+        .subscribe(ts1);
+        
+        ts1.assertNoValues();
+        ts1.assertNoErrors();
+        ts1.assertNotCompleted();
+        
+        ts2.assertNoValues();
+        ts2.assertNoErrors();
+        ts2.assertNotCompleted();
+        
+        ts1.requestMore(1);
+        
+        ts1.assertValueCount(1);
+        ts1.assertNoErrors();
+        ts1.assertNotCompleted();
+        
+        ts2.assertNoValues();
+        ts2.assertNoErrors();
+        ts2.assertNotCompleted();
+        
+        ts2.requestMore(RxRingBuffer.SIZE * 2);
+        
+        ts2.assertValueCount(RxRingBuffer.SIZE * 2);
+        ts2.assertNoErrors();
+        ts2.assertNotCompleted();
+    }
+
 }

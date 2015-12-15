@@ -1,5 +1,95 @@
 # RxJava Releases #
 
+### Version 1.1.0 – December 2 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.0%7C)) ###
+
+* [Pull 3550] (https://github.com/ReactiveX/RxJava/pull/3550) Public API changes for 1.1.0 release
+
+#### Promotions to Public API
+
+* Subscriptions.unsubscribed
+* Subscribers.wrap
+* 2 RxJavaErrorHandler methods
+* Single + SingleSubscriber
+* Exceptions.throwIfAny
+* Observable.switchIfEmpty with Observable
+* BackpressureDrainManager
+* Observable.onBackpressureLatest
+* Observable.onBackpressureDrop with action
+* Observable.onBackpressureBuffer overloads
+* 2 Observable.merge overloads for maxConcurrent
+* TestSubscriber methods
+* Observable.takeUntil with predicate 
+
+#### Promotions to BETA
+
+* ConnectableObservable.autoConnect
+* Stateful Subject methods on ReplaySubject, PublishSubject, BehaviorSubject, and AsyncSubject
+
+#### Experimental APIs Removed
+
+* Observable.onBackpressureBlock
+* rx.observables.AbstractOnSubscribe
+* Removal of stateful methods from the generic rx.subjects.Subject abstract class
+
+### Version 1.0.17 – December 1 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.17%7C)) ###
+
+* [Pull 3491] (https://github.com/ReactiveX/RxJava/pull/3491) Make scan's delayed Producer independent of event serialization
+* [Pull 3150] (https://github.com/ReactiveX/RxJava/pull/3150) Window operators now support backpressure in the inner observable
+* [Pull 3535] (https://github.com/ReactiveX/RxJava/pull/3535) Don't swallow fatal errors in OperatorZipIterable
+* [Pull 3528] (https://github.com/ReactiveX/RxJava/pull/3528) Avoid to call next when Iterator is drained
+* [Pull 3436] (https://github.com/ReactiveX/RxJava/pull/3436) Add action != null check in OperatorFinally
+* [Pull 3513] (https://github.com/ReactiveX/RxJava/pull/3513) Add shorter RxJavaPlugin class lookup approach
+
+### Version 1.0.16 – November 11 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.16%7C)) ###
+
+* [Pull 3169] (https://github.com/ReactiveX/RxJava/pull/3169) Merge can now operate in horizontally unbounded mode
+* [Pull 3286] (https://github.com/ReactiveX/RxJava/pull/3286) Implements BlockingSingle
+* [Pull 3433] (https://github.com/ReactiveX/RxJava/pull/3433) Add Single.defer()
+* [Pull 3468] (https://github.com/ReactiveX/RxJava/pull/3468) Fix other places that may swallow OnErrorFailedException
+* [Pull 3485] (https://github.com/ReactiveX/RxJava/pull/3485) fix scan() not accepting a null initial value
+* [Pull 3488] (https://github.com/ReactiveX/RxJava/pull/3488) Replace all instances of Atomic*FieldUpdater with direct Atomic* instances
+* [Pull 3493] (https://github.com/ReactiveX/RxJava/pull/3493) fix for zip(Obs<Obs<T>>) backpressure problem
+* [Pull 3510] (https://github.com/ReactiveX/RxJava/pull/3510) eager concatMap to choose safe or unsafe queue based on platform
+* [Pull 3512] (https://github.com/ReactiveX/RxJava/pull/3512) fix SafeSubscriber documentation regarding unsubscribe
+
+### Version 1.0.15 – October 9 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.15%7C)) ###
+
+* [Pull 3438] (https://github.com/ReactiveX/RxJava/pull/3438) Better null tolerance in rx.exceptions.*Exception classes
+* [Pull 3455] (https://github.com/ReactiveX/RxJava/pull/3455) OnErrorFailedException fix
+* [Pull 3448] (https://github.com/ReactiveX/RxJava/pull/3448) Single delay
+* [Pull 3429] (https://github.com/ReactiveX/RxJava/pull/3429) Removed the alias BlockingObservable#run
+* [Pull 3417] (https://github.com/ReactiveX/RxJava/pull/3417) Add Single.doOnSuccess()
+* [Pull 3418] (https://github.com/ReactiveX/RxJava/pull/3418) Add Single.fromCallable()
+* [Pull 3419] (https://github.com/ReactiveX/RxJava/pull/3419) Add Single.doOnError()
+* [Pull 3423] (https://github.com/ReactiveX/RxJava/pull/3423) Renaming Observable#x to Observable#extend
+* [Pull 3174] (https://github.com/ReactiveX/RxJava/pull/3174) Blocking subscribe methods for convenience
+* [Pull 3351] (https://github.com/ReactiveX/RxJava/pull/3351) Make BlockingOperatorToIterator exert backpressure.
+* [Pull 3357] (https://github.com/ReactiveX/RxJava/pull/3357) Eager ConcatMap
+* [Pull 3342] (https://github.com/ReactiveX/RxJava/pull/3342) Remove redundant onStart implementation in OperatorGroupBy
+* [Pull 3361] (https://github.com/ReactiveX/RxJava/pull/3361) Safer error handling in BlockingOperatorToFuture
+* [Pull 3363] (https://github.com/ReactiveX/RxJava/pull/3363) Remove unused private method from CachedObservable and make "state" final
+* [Pull 3408] (https://github.com/ReactiveX/RxJava/pull/3408) DoOnEach: report both original exception and callback exception.
+* [Pull 3386] (https://github.com/ReactiveX/RxJava/pull/3386) Changed javadoc for Observable.doOnRequest(Action1)
+* [Pull 3149] (https://github.com/ReactiveX/RxJava/pull/3149) Scheduler shutdown capability
+* [Pull 3384] (https://github.com/ReactiveX/RxJava/pull/3384) Fix for take() reentrancy bug.
+* [Pull 3356] (https://github.com/ReactiveX/RxJava/pull/3356) Fix to a bunch of bugs and issues with AsyncOnSubscribe
+* [Pull 3362] (https://github.com/ReactiveX/RxJava/pull/3362) Fix synchronization on non-final field in BufferUntilSubscriber
+* [Pull 3365] (https://github.com/ReactiveX/RxJava/pull/3365) Make field final and remove unnecessary unboxing in OnSubscribeRedo.RetryWithPredicate
+* [Pull 3370] (https://github.com/ReactiveX/RxJava/pull/3370) Remove unused field updater from SubjectSubscriptionManager
+* [Pull 3369] (https://github.com/ReactiveX/RxJava/pull/3369) Lint fixes for unnecessary unboxing
+* [Pull 3203] (https://github.com/ReactiveX/RxJava/pull/3203) Implemented the AsyncOnSubscribe
+* [Pull 3340] (https://github.com/ReactiveX/RxJava/pull/3340) test/subjects: Use statically imported never() methods
+* [Pull 3154] (https://github.com/ReactiveX/RxJava/pull/3154) Add Observable.fromCallable() as a companion for Observable.defer()
+* [Pull 3285] (https://github.com/ReactiveX/RxJava/pull/3285) Added latch to async SyncOnSubscrbeTest
+* [Pull 3118] (https://github.com/ReactiveX/RxJava/pull/3118) Implementing the SyncOnSubscribe
+* [Pull 3183] (https://github.com/ReactiveX/RxJava/pull/3183) Refactored exception reporting of most operators.
+* [Pull 3214] (https://github.com/ReactiveX/RxJava/pull/3214) Fix to Notification equals method.
+* [Pull 3171] (https://github.com/ReactiveX/RxJava/pull/3171) Scan backpressure and first emission fix
+* [Pull 3181] (https://github.com/ReactiveX/RxJava/pull/3181) MapNotification producer NPE fix
+* [Pull 3167] (https://github.com/ReactiveX/RxJava/pull/3167) Fixed negative request due to unsubscription of a large requester
+* [Pull 3177] (https://github.com/ReactiveX/RxJava/pull/3177) BackpressureUtils capped add/multiply methods + tests
+* [Pull 3155] (https://github.com/ReactiveX/RxJava/pull/3155) SafeSubscriber - report onCompleted unsubscribe error to RxJavaPlugin
+
 ### Version 1.0.14 – August 12th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.14%7C)) ###
 
 * [Pull 2963] (https://github.com/ReactiveX/RxJava/pull/2963) Set of standard producers and updated queue implementations

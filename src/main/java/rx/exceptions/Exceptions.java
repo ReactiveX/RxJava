@@ -76,12 +76,7 @@ public final class Exceptions {
         if (t instanceof OnErrorNotImplementedException) {
             throw (OnErrorNotImplementedException) t;
         } else if (t instanceof OnErrorFailedException) {
-            Throwable cause = t.getCause();
-            if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
-            } else {
-                throw (OnErrorFailedException) t;
-            }
+            throw (OnErrorFailedException) t;
         }
         // values here derived from https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495
         else if (t instanceof StackOverflowError) {
@@ -157,9 +152,8 @@ public final class Exceptions {
      * @param exceptions the collection of exceptions. If null or empty, no exception is thrown.
      * If the collection contains a single exception, that exception is either thrown as-is or wrapped into a
      * CompositeException. Multiple exceptions are wrapped into a CompositeException.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public static void throwIfAny(List<? extends Throwable> exceptions) {
         if (exceptions != null && !exceptions.isEmpty()) {
             if (exceptions.size() == 1) {

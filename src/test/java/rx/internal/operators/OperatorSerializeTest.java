@@ -213,7 +213,7 @@ public class OperatorSerializeTest {
         }
     }
 
-    private static enum TestConcurrencyobserverEvent {
+    private enum TestConcurrencyobserverEvent {
         onCompleted, onError, onNext
     }
 

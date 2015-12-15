@@ -214,7 +214,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                 unsubscribe();
                 return false;
             }
-            BufferUntilSubscriber<T> bus = BufferUntilSubscriber.create();
+            UnicastSubject<T> bus = UnicastSubject.create();
             state = state.create(bus, bus);
             child.onNext(bus);
             return true;
@@ -492,7 +492,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
             }
         }
         CountedSerializedSubject<T> createCountedSerializedSubject() {
-            BufferUntilSubscriber<T> bus = BufferUntilSubscriber.create();
+            UnicastSubject<T> bus = UnicastSubject.create();
             return new CountedSerializedSubject<T>(bus, bus);
         }
     }

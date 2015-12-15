@@ -15,7 +15,7 @@
  */
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Subscription;
@@ -26,9 +26,7 @@ import rx.Subscription;
  */
 public final class MultipleAssignmentSubscription implements Subscription {
 
-    volatile State state = new State(false, Subscriptions.empty());
-    static final AtomicReferenceFieldUpdater<MultipleAssignmentSubscription, State> STATE_UPDATER
-            = AtomicReferenceFieldUpdater.newUpdater(MultipleAssignmentSubscription.class, State.class, "state");
+    final AtomicReference<State> state = new AtomicReference<State>(new State(false, Subscriptions.empty()));
     
     private static final class State {
         final boolean isUnsubscribed;
@@ -50,21 +48,22 @@ public final class MultipleAssignmentSubscription implements Subscription {
     }
     @Override
     public boolean isUnsubscribed() {
-        return state.isUnsubscribed;
+        return state.get().isUnsubscribed;
     }
 
     @Override
     public void unsubscribe() {
         State oldState;
         State newState;
+        final AtomicReference<State> localState = this.state;
         do {
-            oldState = state;
+            oldState = localState.get();
             if (oldState.isUnsubscribed) {
                 return;
             } else {
                 newState = oldState.unsubscribe();
             }
-        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
+        } while (!localState.compareAndSet(oldState, newState));
         oldState.subscription.unsubscribe();
     }
 
@@ -81,15 +80,16 @@ public final class MultipleAssignmentSubscription implements Subscription {
         }
         State oldState;
         State newState;
+        final AtomicReference<State> localState = this.state;
         do {
-            oldState = state;
+            oldState = localState.get();
             if (oldState.isUnsubscribed) {
                 s.unsubscribe();
                 return;
             } else {
                 newState = oldState.set(s);
             }
-        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
+        } while (!localState.compareAndSet(oldState, newState));
     }
 
     /**
@@ -98,7 +98,7 @@ public final class MultipleAssignmentSubscription implements Subscription {
      * @return the {@link Subscription} that underlies the {@code MultipleAssignmentSubscription}
      */
     public Subscription get() {
-        return state.subscription;
+        return state.get().subscription;
     }
 
 }

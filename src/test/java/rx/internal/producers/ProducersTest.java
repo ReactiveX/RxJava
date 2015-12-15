@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.*;
 
 import rx.*;
-import rx.Observable.OnSubscribe;
 import rx.Observable;
+import rx.Observable.*;
 import rx.Observer;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
@@ -377,5 +377,53 @@ public class ProducersTest {
         ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 3L, 4L,
                 20L, 21L, 22L, 23L, 24L,
                 40L, 41L, 42L, 43L, 44L));
+    }
+    
+    @Test(timeout = 1000)
+    public void testProducerObserverArbiterUnbounded() {
+        Observable.range(0, Integer.MAX_VALUE)
+        .lift(new Operator<Integer, Integer>() {
+            @Override
+            public Subscriber<? super Integer> call(Subscriber<? super Integer> t) {
+                final ProducerObserverArbiter<Integer> poa = new ProducerObserverArbiter<Integer>(t);
+                
+                Subscriber<Integer> parent = new Subscriber<Integer>() {
+
+                    @Override
+                    public void onCompleted() {
+                        poa.onCompleted();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        poa.onError(e);
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                        poa.onNext(t);
+                    }
+                    
+                    
+                    @Override
+                    public void setProducer(Producer p) {
+                        poa.setProducer(p);
+                    }
+                };
+                
+                t.add(parent);
+                t.setProducer(poa);
+                
+                return parent;
+            }
+        }).subscribe(new TestSubscriber<Integer>() {
+            int count;
+            @Override
+            public void onNext(Integer t) {
+                if (++count == 2) {
+                    unsubscribe();
+                }
+            }
+        });
     }
 }

@@ -46,23 +46,31 @@ public final class OperatorZipIterable<T1, T2, R> implements Operator<R, T1> {
             return Subscribers.empty();
         }
         return new Subscriber<T1>(subscriber) {
-            boolean once;
+            boolean done;
             @Override
             public void onCompleted() {
-                if (once) {
+                if (done) {
                     return;
                 }
-                once = true;
+                done = true;
                 subscriber.onCompleted();
             }
 
             @Override
             public void onError(Throwable e) {
+                if (done) {
+                    Exceptions.throwIfFatal(e);
+                    return;
+                }
+                done = true;
                 subscriber.onError(e);
             }
 
             @Override
             public void onNext(T1 t) {
+                if (done) {
+                    return;
+                }
                 try {
                     subscriber.onNext(zipFunction.call(t, iterator.next()));
                     if (!iterator.hasNext()) {

@@ -19,7 +19,6 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -90,10 +89,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
         private final BitSet completion;
         private volatile int completionCount; // does this need to be volatile or is WIP sufficient?
 
-        @SuppressWarnings("unused")
-        private volatile long counter;
-        @SuppressWarnings("rawtypes")
-        private static final AtomicLongFieldUpdater<MultiSourceProducer> WIP = AtomicLongFieldUpdater.newUpdater(MultiSourceProducer.class, "counter");
+        private final AtomicLong counter = new AtomicLong();
 
         @SuppressWarnings("unchecked")
         public MultiSourceProducer(final Subscriber<? super R> child, final List<? extends Observable<? extends T>> sources, FuncN<? extends R> combinator) {
@@ -139,7 +135,8 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
          * that there is always once who acts on each `tick`. Same concept as used in OperationObserveOn.
          */
         void tick() {
-            if (WIP.getAndIncrement(this) == 0) {
+            AtomicLong localCounter = this.counter;
+            if (localCounter.getAndIncrement() == 0) {
                 int emitted = 0;
                 do {
                     // we only emit if requested > 0
@@ -155,7 +152,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                             }
                         }
                     }
-                } while (WIP.decrementAndGet(this) > 0);
+                } while (localCounter.decrementAndGet() > 0);
                 if (emitted > 0) {
                     for (MultiSourceRequestableSubscriber<T, R> s : subscribers) {
                         s.requestUpTo(emitted);

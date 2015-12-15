@@ -191,11 +191,8 @@ public class IndexedRingBufferTest {
             @Override
             public Boolean call(String t1) {
                 list.add(t1);
-                if (i++ == 2) {
-                    return false;
-                } else {
-                    return true;
-                }
+                i++;
+                return i != 3;
             }
 
         }, 0);

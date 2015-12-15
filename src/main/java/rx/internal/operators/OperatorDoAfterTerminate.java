@@ -29,10 +29,13 @@ import rx.functions.Action0;
  * 
  * @param <T> the value type
  */
-public final class OperatorFinally<T> implements Operator<T, T> {
+public final class OperatorDoAfterTerminate<T> implements Operator<T, T> {
     final Action0 action;
 
-    public OperatorFinally(Action0 action) {
+    public OperatorDoAfterTerminate(Action0 action) {
+        if (action == null) {
+            throw new NullPointerException("Action can not be null");
+        }
         this.action = action;
     }
 

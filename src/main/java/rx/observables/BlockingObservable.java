@@ -26,6 +26,7 @@ import rx.annotations.Experimental;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.*;
 import rx.internal.operators.*;
+import rx.internal.util.BlockingUtils;
 import rx.internal.util.UtilityFunctions;
 import rx.subscriptions.Subscriptions;
 
@@ -123,7 +124,7 @@ public final class BlockingObservable<T> {
                 onNext.call(args);
             }
         });
-        awaitForComplete(latch, subscription);
+        BlockingUtils.awaitForComplete(latch, subscription);
 
         if (exceptionFromOnError.get() != null) {
             if (exceptionFromOnError.get() instanceof RuntimeException) {
@@ -446,7 +447,7 @@ public final class BlockingObservable<T> {
                 returnItem.set(item);
             }
         });
-        awaitForComplete(latch, subscription);
+        BlockingUtils.awaitForComplete(latch, subscription);
 
         if (returnException.get() != null) {
             if (returnException.get() instanceof RuntimeException) {
@@ -457,25 +458,6 @@ public final class BlockingObservable<T> {
         }
 
         return returnItem.get();
-    }
-
-    private void awaitForComplete(CountDownLatch latch, Subscription subscription) {
-        if (latch.getCount() == 0) {
-            // Synchronous observable completes before awaiting for it.
-            // Skip await so InterruptedException will never be thrown.
-            return;
-        }
-        // block until the subscription completes and then return
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            subscription.unsubscribe();
-            // set the interrupted flag again so callers can still get it
-            // for more information see https://github.com/ReactiveX/RxJava/pull/147#issuecomment-13624780
-            Thread.currentThread().interrupt();
-            // using Runtime so it is not checked
-            throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
-        }
     }
     
     /**
@@ -502,7 +484,7 @@ public final class BlockingObservable<T> {
             }
         });
         
-        awaitForComplete(cdl, s);
+        BlockingUtils.awaitForComplete(cdl, s);
         Throwable e = error[0];
         if (e != null) {
             if (e instanceof RuntimeException) {

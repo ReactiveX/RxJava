@@ -189,24 +189,39 @@ public final class Notification<T> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
-        if (this == obj)
+        }
+
+        if (this == obj) {
             return true;
-        if (obj.getClass() != getClass())
+        }
+
+        if (obj.getClass() != getClass()) {
             return false;
+        }
+
         Notification<?> notification = (Notification<?>) obj;
-        if (notification.getKind() != getKind())
+        if (notification.getKind() != getKind()) {
             return false;
-        if (hasValue() && !getValue().equals(notification.getValue()))
+        }
+
+        if (hasValue() && !getValue().equals(notification.getValue())) {
             return false;
-        if (hasThrowable() && !getThrowable().equals(notification.getThrowable()))
+        }
+
+        if (hasThrowable() && !getThrowable().equals(notification.getThrowable())) {
             return false;
-        if(!hasValue() && !hasThrowable() && notification.hasValue())
-        	return false;
-        if(!hasValue() && !hasThrowable() && notification.hasThrowable())
-        	return false;
-        
+        }
+
+        if (!hasValue() && !hasThrowable() && notification.hasValue()) {
+            return false;
+        }
+
+        if (!hasValue() && !hasThrowable() && notification.hasThrowable()) {
+            return false;
+        }
+
         return true;
     }
 }

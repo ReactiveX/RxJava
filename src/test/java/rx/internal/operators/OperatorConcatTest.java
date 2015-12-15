@@ -728,7 +728,7 @@ public class OperatorConcatTest {
                 Observable<Integer> observable = Observable.just(t)
                         .subscribeOn(sch)
                 ;
-                Subject<Integer, Integer> subject = BufferUntilSubscriber.create();
+                Subject<Integer, Integer> subject = UnicastSubject.create();
                 observable.subscribe(subject);
                 return subject;
             }
@@ -749,7 +749,7 @@ public class OperatorConcatTest {
                 if (counter.getAndIncrement() % 100 == 0) {
                     System.out.print("testIssue2890NoStackoverflow -> ");
                     System.out.println(counter.get());
-                };
+                }
             }
 
             @Override

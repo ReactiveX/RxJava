@@ -16,14 +16,14 @@
 package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable;
 import rx.Observable.Operator;
-import rx.exceptions.*;
 import rx.Observer;
 import rx.Producer;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
+import rx.exceptions.MissingBackpressureException;
 import rx.functions.Func2;
 import rx.functions.Func3;
 import rx.functions.Func4;
@@ -111,8 +111,11 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     public Subscriber<? super Observable[]> call(final Subscriber<? super R> child) {
         final Zip<R> zipper = new Zip<R>(child, zipFunction);
         final ZipProducer<R> producer = new ZipProducer<R>(zipper);
-        child.setProducer(producer);
         final ZipSubscriber subscriber = new ZipSubscriber(child, zipper, producer);
+
+        child.add(subscriber);
+        child.setProducer(producer);
+        
         return subscriber;
     }
 
@@ -124,7 +127,6 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         final ZipProducer<R> producer;
 
         public ZipSubscriber(Subscriber<? super R> child, Zip<R> zipper, ZipProducer<R> producer) {
-            super(child);
             this.child = child;
             this.zipper = zipper;
             this.producer = producer;
@@ -175,15 +177,10 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
     }
 
-    private static final class Zip<R> {
+    private static final class Zip<R> extends AtomicLong {
         private final Observer<? super R> child;
         private final FuncN<? extends R> zipFunction;
         private final CompositeSubscription childSubscription = new CompositeSubscription();
-
-        @SuppressWarnings("unused")
-        volatile long counter;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<Zip> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(Zip.class, "counter");
 
         static final int THRESHOLD = (int) (RxRingBuffer.SIZE * 0.7);
         int emitted = 0; // not volatile/synchronized as accessed inside COUNTER_UPDATER block
@@ -227,7 +224,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                 // nothing yet to do (initial request from Producer)
                 return;
             }
-            if (COUNTER_UPDATER.getAndIncrement(this) == 0) {
+            if (getAndIncrement() == 0) {
                 final int length = observers.length;
                 final Observer<? super R> child = this.child;
                 final AtomicLong requested = this.requested;
@@ -290,7 +287,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                             break;
                         }
                     }
-                } while (COUNTER_UPDATER.decrementAndGet(this) > 0);
+                } while (decrementAndGet() > 0);
             }
 
         }

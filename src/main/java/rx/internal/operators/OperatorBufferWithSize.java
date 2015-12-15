@@ -158,7 +158,6 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                         }
                         if (n == Long.MAX_VALUE) {
                             requestInfinite();
-                            return;
                         } else {
                             if (firstRequest) {
                                 firstRequest = false;

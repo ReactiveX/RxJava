@@ -70,7 +70,6 @@ public final class GenericScheduledExecutorService implements SchedulerLifecycle
                     NewThreadWorker.registerExecutor((ScheduledThreadPoolExecutor)exec);
                 }
             }
-            return;
         } else {
             exec.shutdownNow();
         }

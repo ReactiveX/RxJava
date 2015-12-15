@@ -17,13 +17,15 @@ package rx.internal.operators;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.*;
-import rx.Observable.Operator;
 import rx.Observable;
+import rx.Observable.Operator;
 import rx.exceptions.*;
 import rx.internal.util.*;
+import rx.internal.util.atomic.*;
+import rx.internal.util.unsafe.*;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -144,7 +146,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         
         MergeProducer<T> producer;
         
-        volatile RxRingBuffer queue;
+        volatile Queue<Object> queue;
         
         /** Tracks the active subscriptions to sources. */
         volatile CompositeSubscription subscriptions;
@@ -182,8 +184,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             this.nl = NotificationLite.instance();
             this.innerGuard = new Object();
             this.innerSubscribers = EMPTY;
-            long r = Math.min(maxConcurrent, RxRingBuffer.SIZE);
-            request(r);
+            request(maxConcurrent == Integer.MAX_VALUE ? Long.MAX_VALUE : maxConcurrent);
         }
         
         Queue<Throwable> getOrCreateErrorQueue() {
@@ -443,23 +444,27 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
              * due to lack of requests or an ongoing emission,
              * enqueue the value and try the slow emission path.
              */
-            RxRingBuffer q = this.queue;
+            Queue<Object> q = this.queue;
             if (q == null) {
-                q = RxRingBuffer.getSpscInstance();
-                this.add(q);
+                int mc = maxConcurrent;
+                if (mc == Integer.MAX_VALUE) {
+                    q = new SpscUnboundedAtomicArrayQueue<Object>(RxRingBuffer.SIZE);
+                } else {
+                    if (Pow2.isPowerOfTwo(mc)) {
+                        if (UnsafeAccess.isUnsafeAvailable()) {
+                            q = new SpscArrayQueue<Object>(mc);
+                        } else {
+                            q = new SpscAtomicArrayQueue<Object>(mc);
+                        }
+                    } else {
+                        q = new SpscExactAtomicArrayQueue<Object>(mc);
+                    }
+                }
                 this.queue = q;
             }
-            try {
-                q.onNext(nl.next(value));
-            } catch (MissingBackpressureException ex) {
-                this.unsubscribe();
-                this.onError(ex);
-                return;
-            } catch (IllegalStateException ex) {
-                if (!this.isUnsubscribed()) {
-                    this.unsubscribe();
-                    this.onError(ex);
-                }
+            if (!q.offer(value)) {
+                unsubscribe();
+                onError(OnErrorThrowable.addValueAsLastCause(new MissingBackpressureException(), value));
                 return;
             }
             emit();
@@ -533,7 +538,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                         skipFinal = true;
                         return;
                     }
-                    RxRingBuffer svq = queue;
+                    Queue<Object> svq = queue;
                     
                     long r = producer.get();
                     boolean unbounded = r == Long.MAX_VALUE;
@@ -609,9 +614,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                             child.onCompleted();
                         } else {
                             reportError();
-                        }
-                        if (svq != null) {
-                            svq.release();
                         }
                         skipFinal = true;
                         return;

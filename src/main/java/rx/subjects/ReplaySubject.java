@@ -16,15 +16,17 @@
 package rx.subjects;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.*;
 import rx.Observer;
-import rx.annotations.Experimental;
+import rx.Scheduler;
+import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.internal.operators.NotificationLite;
 import rx.internal.util.UtilityFunctions;
 import rx.schedulers.Timestamped;
@@ -113,15 +115,17 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 }
                 boolean skipFinal = false;
                 try {
+                    //noinspection UnnecessaryLocalVariable - Avoid re-read from outside this scope
+                    final UnboundedReplayState<T> localState = state;
                     for (;;) {
                         int idx = o.<Integer>index();
-                        int sidx = state.index;
+                        int sidx = localState.get();
                         if (idx != sidx) {
-                            Integer j = state.replayObserverFromIndex(idx, o);
+                            Integer j = localState.replayObserverFromIndex(idx, o);
                             o.index(j);
                         }
                         synchronized (o) {
-                            if (sidx == state.index) {
+                            if (sidx == localState.get()) {
                                 o.emitting = false;
                                 skipFinal = true;
                                 break;
@@ -410,7 +414,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @return Returns the number of subscribers.
      */
     /* Support test. */int subscriberCount() {
-        return ssm.state.observers.length;
+        return ssm.get().observers.length;
     }
 
     @Override
@@ -439,17 +443,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * The unbounded replay state.
      * @param <T> the input and output type
      */
-    static final class UnboundedReplayState<T> implements ReplayState<T, Integer> {
+    static final class UnboundedReplayState<T> extends AtomicInteger implements ReplayState<T, Integer> {
         private final NotificationLite<T> nl = NotificationLite.instance();
         /** The buffer. */
         private final ArrayList<Object> list;
         /** The termination flag. */
         private volatile boolean terminated;
-        /** The size of the buffer. */
-        volatile int index;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<UnboundedReplayState> INDEX_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(UnboundedReplayState.class, "index");
         public UnboundedReplayState(int initialCapacity) {
             list = new ArrayList<Object>(initialCapacity);
         }
@@ -458,7 +457,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public void next(T n) {
             if (!terminated) {
                 list.add(nl.next(n));
-                INDEX_UPDATER.getAndIncrement(this); // release index
+                getAndIncrement(); // release index
             }
         }
 
@@ -471,7 +470,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             if (!terminated) {
                 terminated = true;
                 list.add(nl.completed());
-                INDEX_UPDATER.getAndIncrement(this); // release index
+                getAndIncrement(); // release index
             }
         }
         @Override
@@ -479,7 +478,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             if (!terminated) {
                 terminated = true;
                 list.add(nl.error(e));
-                INDEX_UPDATER.getAndIncrement(this); // release index
+                getAndIncrement(); // release index
             }
         }
 
@@ -511,7 +510,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @Override
         public Integer replayObserverFromIndex(Integer idx, SubjectObserver<? super T> observer) {
             int i = idx;
-            while (i < index) {
+            while (i < get()) {
                 accept(observer, i);
                 i++;
             }
@@ -526,7 +525,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         @Override
         public int size() {
-            int idx = index; // aquire
+            int idx = get(); // aquire
             if (idx > 0) {
                 Object o = list.get(idx - 1);
                 if (nl.isCompleted(o) || nl.isError(o)) {
@@ -561,7 +560,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
         @Override
         public T latest() {
-            int idx = index;
+            int idx = get();
             if (idx > 0) {
                 Object o = list.get(idx - 1);
                 if (nl.isCompleted(o) || nl.isError(o)) {
@@ -958,7 +957,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public boolean test(Object value, long now) {
             return first.test(value, now) || second.test(value, now);
         }
-    };
+    }
     
     /** Maps the values to Timestamped. */
     static final class AddTimestamped implements Func1<Object, Object> {
@@ -1098,22 +1097,20 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * Check if the Subject has terminated with an exception.
      * @return true if the subject has received a throwable through {@code onError}.
      */
-    @Experimental
-    @Override
+    @Beta
     public boolean hasThrowable() {
         NotificationLite<T> nl = ssm.nl;
-        Object o = ssm.get();
+        Object o = ssm.getLatest();
         return nl.isError(o);
     }
     /**
      * Check if the Subject has terminated normally.
      * @return true if the subject completed normally via {@code onCompleted}
      */
-    @Experimental
-    @Override
+    @Beta
     public boolean hasCompleted() {
         NotificationLite<T> nl = ssm.nl;
-        Object o = ssm.get();
+        Object o = ssm.getLatest();
         return o != null && !nl.isError(o);
     }
     /**
@@ -1121,11 +1118,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @return the Throwable that terminated the Subject or {@code null} if the
      * subject hasn't terminated yet or it terminated normally.
      */
-    @Experimental
-    @Override
+    @Beta
     public Throwable getThrowable() {
         NotificationLite<T> nl = ssm.nl;
-        Object o = ssm.get();
+        Object o = ssm.getLatest();
         if (nl.isError(o)) {
             return nl.getError(o);
         }
@@ -1135,19 +1131,18 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * Returns the current number of items (non-terminal events) available for replay.
      * @return the number of items available
      */
-    @Experimental
+    @Beta
     public int size() {
         return state.size();
     }
     /**
      * @return true if the Subject holds at least one non-terminal event available for replay
      */
-    @Experimental
+    @Beta
     public boolean hasAnyValue() {
         return !state.isEmpty();
     }
-    @Experimental
-    @Override
+    @Beta
     public boolean hasValue() {
         return hasAnyValue();
     }
@@ -1157,14 +1152,32 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @param a the array to fill in
      * @return the array {@code a} if it had enough capacity or a new array containing the available values 
      */
-    @Experimental
-    @Override
+    @Beta
     public T[] getValues(T[] a) {
         return state.toArray(a);
     }
     
-    @Override
-    @Experimental
+    /** An empty array to trigger getValues() to return a new array. */
+    private static final Object[] EMPTY_ARRAY = new Object[0];
+    
+    /**
+     * Returns a snapshot of the currently buffered non-terminal events.
+     * <p>The operation is threadsafe.
+     *
+     * @return a snapshot of the currently buffered non-terminal events.
+     * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
+     */
+    @SuppressWarnings("unchecked")
+    @Beta
+    public Object[] getValues() {
+        T[] r = getValues((T[])EMPTY_ARRAY);
+        if (r == EMPTY_ARRAY) {
+            return new Object[0]; // don't leak the default empty array.
+        }
+        return r;
+    }
+    
+    @Beta
     public T getValue() {
         return state.latest();
     }

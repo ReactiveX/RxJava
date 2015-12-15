@@ -716,7 +716,8 @@ public class OperatorMergeTest {
             }
         };
 
-        Observable.merge(o1).observeOn(Schedulers.computation()).take(RxRingBuffer.SIZE * 2).subscribe(testSubscriber);
+        int limit = RxRingBuffer.SIZE; // the default unbounded behavior makes this test fail 100% of the time: source is too fast
+        Observable.merge(o1, limit).observeOn(Schedulers.computation()).take(RxRingBuffer.SIZE * 2).subscribe(testSubscriber);
         testSubscriber.awaitTerminalEvent();
         if (testSubscriber.getOnErrorEvents().size() > 0) {
             testSubscriber.getOnErrorEvents().get(0).printStackTrace();
@@ -946,7 +947,7 @@ public class OperatorMergeTest {
     }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
-        Observable<Integer> observable = Observable.from(new Iterable<Integer>() {
+        return Observable.from(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
@@ -967,7 +968,6 @@ public class OperatorMergeTest {
                 };
             }
         });
-        return observable;
     }
 
     @Test
@@ -1302,5 +1302,35 @@ public class OperatorMergeTest {
             };
             runMerge(toHiddenScalar, ts);
         }
+    }
+    
+    @Test
+    public void testUnboundedDefaultConcurrency() {
+        List<Observable<Integer>> os = new ArrayList<Observable<Integer>>();
+        for(int i=0; i < 2000; i++) {
+            os.add(Observable.<Integer>never());
+        }
+        os.add(Observable.range(0, 100));       
+
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable.merge(os).take(1).subscribe(ts);
+        ts.awaitTerminalEvent(5000, TimeUnit.MILLISECONDS);
+        ts.assertValue(0);
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void testConcurrencyLimit() {
+        List<Observable<Integer>> os = new ArrayList<Observable<Integer>>();
+        for(int i=0; i < 2000; i++) {
+            os.add(Observable.<Integer>never());
+        }
+        os.add(Observable.range(0, 100));       
+
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable.merge(os, Integer.MAX_VALUE).take(1).subscribe(ts);
+        ts.awaitTerminalEvent(5000, TimeUnit.MILLISECONDS);
+        ts.assertValue(0);
+        ts.assertCompleted();
     }
 }

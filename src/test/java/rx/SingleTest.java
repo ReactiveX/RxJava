@@ -13,32 +13,46 @@
 package rx;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import rx.Single.OnSubscribe;
 import rx.exceptions.CompositeException;
+import rx.functions.Action;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.functions.FuncN;
+import rx.schedulers.TestScheduler;
+import rx.singles.BlockingSingle;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
@@ -103,6 +117,57 @@ public class SingleTest {
         })
                 .subscribe(ts);
         ts.assertReceivedOnNext(Arrays.asList("AB"));
+    }
+
+    @Test
+    public void zipIterableShouldZipListOfSingles() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Iterable<Single<Integer>> singles = Arrays.asList(Single.just(1), Single.just(2), Single.just(3));
+
+        Single
+                .zip(singles, new FuncN<String>() {
+                    @Override
+                    public String call(Object... args) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (Object arg : args) {
+                            stringBuilder.append(arg);
+                        }
+                        return stringBuilder.toString();
+                    }
+                }).subscribe(ts);
+
+        ts.assertValue("123");
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void zipIterableShouldZipSetOfSingles() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Set<Single<String>> singlesSet = Collections.newSetFromMap(new LinkedHashMap<Single<String>, Boolean>(2));
+        Single<String> s1 = Single.just("1");
+        Single<String> s2 = Single.just("2");
+        Single<String> s3 = Single.just("3");
+
+        singlesSet.add(s1);
+        singlesSet.add(s2);
+        singlesSet.add(s3);
+
+        Single
+                .zip(singlesSet, new FuncN<String>() {
+                    @Override
+                    public String call(Object... args) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (Object arg : args) {
+                            stringBuilder.append(arg);
+                        }
+                        return stringBuilder.toString();
+                    }
+                }).subscribe(ts);
+
+        ts.assertValue("123");
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 
     @Test
@@ -256,6 +321,14 @@ public class SingleTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         ts.assertValue("hello");
+    }
+
+    @Test
+    public void testToBlocking() {
+        Single<String> s = Single.just("one");
+        BlockingSingle<String> blocking = s.toBlocking();
+        assertNotNull(blocking);
+        assertEquals("one", blocking.value());
     }
 
     @Test
@@ -436,7 +509,7 @@ public class SingleTest {
             fail("timed out waiting for latch");
         }
     }
-    
+
     @Test
     public void testBackpressureAsObservable() {
         Single<String> s = Single.create(new OnSubscribe<String>() {
@@ -462,7 +535,7 @@ public class SingleTest {
 
         ts.assertValue("hello");
     }
-    
+
     @Test
     public void testToObservable() {
     	Observable<String> a = Single.just("a").toObservable();
@@ -647,5 +720,313 @@ public class SingleTest {
         testSubscriber.assertError(exceptionFromAction);
 
         verify(action).call(eq("value"));
+    }
+
+    @Test
+    public void delayWithSchedulerShouldDelayCompletion() {
+        TestScheduler scheduler = new TestScheduler();
+        Single<Integer> single = Single.just(1).delay(100, TimeUnit.DAYS, scheduler);
+
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        single.subscribe(subscriber);
+
+        subscriber.assertNotCompleted();
+        scheduler.advanceTimeBy(99, TimeUnit.DAYS);
+        subscriber.assertNotCompleted();
+        scheduler.advanceTimeBy(91, TimeUnit.DAYS);
+        subscriber.assertCompleted();
+        subscriber.assertValue(1);
+    }
+
+    @Test
+    public void delayWithSchedulerShouldShortCutWithFailure() {
+        TestScheduler scheduler = new TestScheduler();
+        final RuntimeException expected = new RuntimeException();
+        Single<Integer> single = Single.create(new OnSubscribe<Integer>() {
+            @Override
+            public void call(SingleSubscriber<? super Integer> singleSubscriber) {
+                singleSubscriber.onSuccess(1);
+                singleSubscriber.onError(expected);
+            }
+        }).delay(100, TimeUnit.DAYS, scheduler);
+
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        single.subscribe(subscriber);
+
+        subscriber.assertNotCompleted();
+        scheduler.advanceTimeBy(99, TimeUnit.DAYS);
+        subscriber.assertNotCompleted();
+        scheduler.advanceTimeBy(91, TimeUnit.DAYS);
+        subscriber.assertNoValues();
+        subscriber.assertError(expected);
+    }
+
+    @Test
+    public void deferShouldNotCallFactoryFuncUntilSubscriberSubscribes() throws Exception {
+        Callable<Single<Object>> singleFactory = mock(Callable.class);
+        Single.defer(singleFactory);
+        verifyZeroInteractions(singleFactory);
+    }
+
+    @Test
+    public void deferShouldSubscribeSubscriberToSingleFromFactoryFuncAndEmitValue() throws Exception {
+        Callable<Single<Object>> singleFactory = mock(Callable.class);
+        Object value = new Object();
+        Single<Object> single = Single.just(value);
+
+        when(singleFactory.call()).thenReturn(single);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Single
+                .defer(singleFactory)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValue(value);
+        testSubscriber.assertNoErrors();
+
+        verify(singleFactory).call();
+    }
+
+    @Test
+    public void deferShouldSubscribeSubscriberToSingleFromFactoryFuncAndEmitError() throws Exception {
+        Callable<Single<Object>> singleFactory = mock(Callable.class);
+        Throwable error = new IllegalStateException();
+        Single<Object> single = Single.error(error);
+
+        when(singleFactory.call()).thenReturn(single);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Single
+                .defer(singleFactory)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(error);
+
+        verify(singleFactory).call();
+    }
+
+    @Test
+    public void deferShouldPassErrorFromSingleFactoryToTheSubscriber() throws Exception {
+        Callable<Single<Object>> singleFactory = mock(Callable.class);
+        Throwable errorFromSingleFactory = new IllegalStateException();
+        when(singleFactory.call()).thenThrow(errorFromSingleFactory);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Single
+                .defer(singleFactory)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(errorFromSingleFactory);
+
+        verify(singleFactory).call();
+    }
+
+    @Test
+    public void deferShouldCallSingleFactoryForEachSubscriber() throws Exception {
+        Callable<Single<String>> singleFactory = mock(Callable.class);
+
+        String[] values = {"1", "2", "3"};
+        final Single[] singles = new Single[]{Single.just(values[0]), Single.just(values[1]), Single.just(values[2])};
+
+        final AtomicInteger singleFactoryCallsCounter = new AtomicInteger();
+
+        when(singleFactory.call()).thenAnswer(new Answer<Single<String>>() {
+            @Override
+            public Single<String> answer(InvocationOnMock invocation) throws Throwable {
+                return singles[singleFactoryCallsCounter.getAndIncrement()];
+            }
+        });
+
+        Single<String> deferredSingle = Single.defer(singleFactory);
+
+        for (int i = 0; i < singles.length; i ++) {
+            TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+            deferredSingle.subscribe(testSubscriber);
+
+            testSubscriber.assertValue(values[i]);
+            testSubscriber.assertNoErrors();
+        }
+
+        verify(singleFactory, times(3)).call();
+    }
+
+    @Test
+    public void deferShouldPassNullPointerExceptionToTheSubscriberIfSingleFactoryIsNull() {
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Single
+                .defer(null)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(NullPointerException.class);
+    }
+
+
+    @Test
+    public void deferShouldPassNullPointerExceptionToTheSubscriberIfSingleFactoryReturnsNull() throws Exception {
+        Callable<Single<Object>> singleFactory = mock(Callable.class);
+        when(singleFactory.call()).thenReturn(null);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Single
+                .defer(singleFactory)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(NullPointerException.class);
+
+        verify(singleFactory).call();
+    }
+
+    @Test
+    public void doOnUnsubscribeShouldInvokeActionAfterSuccess() {
+        Action0 action = mock(Action0.class);
+
+        Single<String> single = Single
+            .just("test")
+            .doOnUnsubscribe(action);
+
+        verifyZeroInteractions(action);
+
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+        single.subscribe(testSubscriber);
+
+        testSubscriber.assertValue("test");
+        testSubscriber.assertCompleted();
+
+        verify(action).call();
+    }
+
+    @Test
+    public void doOnUnsubscribeShouldInvokeActionAfterError() {
+        Action0 action = mock(Action0.class);
+
+        Single<Object> single = Single
+            .error(new RuntimeException("test"))
+            .doOnUnsubscribe(action);
+
+        verifyZeroInteractions(action);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+        single.subscribe(testSubscriber);
+
+        testSubscriber.assertError(RuntimeException.class);
+        assertEquals("test", testSubscriber.getOnErrorEvents().get(0).getMessage());
+
+        verify(action).call();
+    }
+
+    @Test
+    public void doOnUnsubscribeShouldInvokeActionAfterExplicitUnsubscription() {
+        Action0 action = mock(Action0.class);
+
+        Single<Object> single = Single
+            .create(new OnSubscribe<Object>() {
+                @Override
+                public void call(SingleSubscriber<? super Object> singleSubscriber) {
+                    // Broken Single that never ends itself (simulates long computation in one thread).
+                }
+            })
+            .doOnUnsubscribe(action);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+        Subscription subscription = single.subscribe(testSubscriber);
+
+        verifyZeroInteractions(action);
+
+        subscription.unsubscribe();
+        verify(action).call();
+        testSubscriber.assertNoValues();
+        testSubscriber.assertNoTerminalEvent();
+    }
+
+    @Test
+    public void doAfterTerminateActionShouldBeInvokedAfterOnSuccess() {
+        Action0 action = mock(Action0.class);
+
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Single
+                .just("value")
+                .doAfterTerminate(action)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValue("value");
+        testSubscriber.assertNoErrors();
+
+        verify(action).call();
+    }
+
+    @Test
+    public void doAfterTerminateActionShouldBeInvokedAfterOnError() {
+        Action0 action = mock(Action0.class);
+
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Throwable error = new IllegalStateException();
+
+        Single
+                .error(error)
+                .doAfterTerminate(action)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(error);
+
+        verify(action).call();
+    }
+
+    @Test
+    public void doAfterTerminateActionShouldNotBeInvokedUntilSubscriberSubscribes() {
+        Action0 action = mock(Action0.class);
+
+        Single
+                .just("value")
+                .doAfterTerminate(action);
+
+        Single
+                .error(new IllegalStateException())
+                .doAfterTerminate(action);
+
+        verifyZeroInteractions(action);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void iterableToArrayShouldThrowNullPointerExceptionIfIterableNull() {
+        Single.iterableToArray(null);
+    }
+
+    @Test
+    public void iterableToArrayShouldConvertList() {
+        List<Single<String>> singlesList = Arrays.asList(Single.just("1"), Single.just("2"));
+
+        Single<? extends String>[] singlesArray = Single.iterableToArray(singlesList);
+        assertEquals(2, singlesArray.length);
+        assertSame(singlesList.get(0), singlesArray[0]);
+        assertSame(singlesList.get(1), singlesArray[1]);
+    }
+
+    @Test
+    public void iterableToArrayShouldConvertSet() {
+        // Just to trigger different path of the code that handles non-list iterables.
+        Set<Single<String>> singlesSet = Collections.newSetFromMap(new LinkedHashMap<Single<String>, Boolean>(2));
+        Single<String> s1 = Single.just("1");
+        Single<String> s2 = Single.just("2");
+
+        singlesSet.add(s1);
+        singlesSet.add(s2);
+
+        Single<? extends String>[] singlesArray = Single.iterableToArray(singlesSet);
+        assertEquals(2, singlesArray.length);
+        assertSame(s1, singlesArray[0]);
+        assertSame(s2, singlesArray[1]);
     }
 }

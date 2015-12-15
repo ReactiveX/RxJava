@@ -80,34 +80,10 @@ public class SyncOnSubscribePerf {
         new OnSubscribeFromIterable<Integer>(input.iterable).call(input.newSubscriber());
     }
     
-//    @Benchmark
-//  @Group("single")
-    public void benchAbstractOnSubscribe(final SingleInput input) {
-        final Iterator<Integer> iterator = input.iterable.iterator();
-        createAbstractOnSubscribe(iterator).call(input.newSubscriber());
-    }
-
-    private AbstractOnSubscribe<Integer, Void> createAbstractOnSubscribe(final Iterator<Integer> iterator) {
-        return new AbstractOnSubscribe<Integer, Void>() {
-            @Override
-            protected void next(rx.observables.AbstractOnSubscribe.SubscriptionState<Integer, Void> state) {
-                if (iterator.hasNext())
-                    state.onNext(iterator.next());
-                else
-                    state.onCompleted();
-            }};
-    }
-
     @Benchmark
 //    @Group("multi")
     public void benchSyncOnSubscribe2(final MultiInput input) {
         createSyncOnSubscribe(input.iterable.iterator()).call(input.newSubscriber());
-    }
-    
-//    @Benchmark
-//  @Group("multi")
-    public void benchAbstractOnSubscribe2(final MultiInput input) {
-        createAbstractOnSubscribe(input.iterable.iterator()).call(input.newSubscriber());
     }
     
     @Benchmark

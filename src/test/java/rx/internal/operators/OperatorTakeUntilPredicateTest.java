@@ -30,7 +30,7 @@ import rx.exceptions.TestException;
 import rx.functions.Func1;
 import rx.internal.util.UtilityFunctions;
 import rx.observers.TestSubscriber;
-;
+
 
 public class OperatorTakeUntilPredicateTest {
     @Test

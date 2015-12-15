@@ -15,17 +15,14 @@
  */
 package rx.subjects;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -61,8 +58,7 @@ public class BehaviorSubjectTest {
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(testException);
-        verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -78,12 +74,10 @@ public class BehaviorSubjectTest {
         subject.onNext("two");
         subject.onNext("three");
 
-        verify(observer, never()).onNext("default");
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(testException);
-        verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -99,8 +93,8 @@ public class BehaviorSubjectTest {
 
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -113,10 +107,8 @@ public class BehaviorSubjectTest {
         Observer<String> observer = mock(Observer.class);
         subject.subscribe(observer);
 
-        verify(observer, never()).onNext("default");
-        verify(observer, never()).onNext("one");
-        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -130,10 +122,8 @@ public class BehaviorSubjectTest {
         Observer<String> observer = mock(Observer.class);
         subject.subscribe(observer);
 
-        verify(observer, never()).onNext("default");
-        verify(observer, never()).onNext("one");
         verify(observer, times(1)).onError(re);
-        verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -198,8 +188,7 @@ public class BehaviorSubjectTest {
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onError(testException);
-        verify(observer, never()).onNext("two");
-        verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -218,15 +207,13 @@ public class BehaviorSubjectTest {
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onError(testException);
-        verify(observer, never()).onNext("two");
-        verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o2 = mock(Observer.class);
         subject.subscribe(o2);
         verify(o2, times(1)).onError(testException);
-        verify(o2, never()).onNext(any());
-        verify(o2, never()).onCompleted();
+        verifyNoMoreInteractions(o2);
     }
 
     @Test
@@ -245,15 +232,13 @@ public class BehaviorSubjectTest {
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onCompleted();
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onNext("two");
+        verifyNoMoreInteractions(observer);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o2 = mock(Observer.class);
         subject.subscribe(o2);
         verify(o2, times(1)).onCompleted();
-        verify(o2, never()).onNext(any());
-        verify(o2, never()).onError(any(Throwable.class));
+        verifyNoMoreInteractions(o2);
     }
     @Test(timeout = 1000)
     public void testUnsubscriptionCase() {
@@ -344,8 +329,7 @@ public class BehaviorSubjectTest {
         source.subscribe(o);
 
         verify(o).onCompleted();
-        verify(o, never()).onError(any(Throwable.class));
-        verify(o, never()).onNext(any());
+        verifyNoMoreInteractions(o);
     }
     
     @Test
@@ -358,8 +342,8 @@ public class BehaviorSubjectTest {
         
         verify(o).onNext(1);
         verify(o).onCompleted();
-        verify(o, never()).onError(any(Throwable.class));
-        
+        verifyNoMoreInteractions(o);
+
         assertEquals(0, source.subscriberCount());
         assertFalse(source.hasObservers());
     }
@@ -568,5 +552,87 @@ public class BehaviorSubjectTest {
         assertFalse(as.hasCompleted());
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
+    }
+    
+    @Test
+    public void testBehaviorSubjectValueRelay() {
+        BehaviorSubject<Integer> async = BehaviorSubject.create();
+        async.onNext(1);
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testBehaviorSubjectValueRelayIncomplete() {
+        BehaviorSubject<Integer> async = BehaviorSubject.create();
+        async.onNext(1);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testBehaviorSubjectIncompleteEmpty() {
+        BehaviorSubject<Integer> async = BehaviorSubject.create();
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testBehaviorSubjectEmpty() {
+        BehaviorSubject<Integer> async = BehaviorSubject.create();
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testBehaviorSubjectError() {
+        BehaviorSubject<Integer> async = BehaviorSubject.create();
+        TestException te = new TestException();
+        async.onError(te);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertTrue(async.hasThrowable());
+        assertSame(te, async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
 }

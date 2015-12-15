@@ -20,7 +20,6 @@ import java.util.concurrent.*;
 
 import rx.*;
 import rx.Observer;
-import rx.annotations.Experimental;
 import rx.exceptions.CompositeException;
 
 /**
@@ -58,10 +57,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * Constructs a TestSubscriber with the initial request to be requested from upstream.
      *
      * @param initialRequest the initial request value, negative value will revert to the default unbounded behavior
-     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
+     * @since 1.1.0
      */
     @SuppressWarnings("unchecked")
-    @Experimental
     public TestSubscriber(long initialRequest) {
         this((Observer<T>)INERT, initialRequest);
     }
@@ -72,9 +70,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
      *
      * @param initialRequest the initial request value, negative value will revert to the default unbounded behavior
      * @param delegate the Observer instance to wrap
-     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
+     * @throws NullPointerException if delegate is null
+     * @since 1.1.0
      */
-    @Experimental
     public TestSubscriber(Observer<T> delegate, long initialRequest) {
         if (delegate == null) {
             throw new NullPointerException();
@@ -83,46 +81,94 @@ public class TestSubscriber<T> extends Subscriber<T> {
         this.initialRequest = initialRequest;
     }
 
+    /**
+     * Constructs a TestSubscriber which requests Long.MAX_VALUE and delegates events to
+     * the given Subscriber.
+     * @param delegate the subscriber to delegate to.
+     * @throws NullPointerException if delegate is null
+     * @since 1.1.0
+     */
     public TestSubscriber(Subscriber<T> delegate) {
         this(delegate, -1);
     }
 
+    /**
+     * Constructs a TestSubscriber which requests Long.MAX_VALUE and delegates events to
+     * the given Observer.
+     * @param delegate the observer to delegate to.
+     * @throws NullPointerException if delegate is null
+     * @since 1.1.0
+     */
     public TestSubscriber(Observer<T> delegate) {
         this(delegate, -1);
     }
 
+    /**
+     * Constructs a TestSubscriber with an initial request of Long.MAX_VALUE and no delegation.
+     */
     public TestSubscriber() {
         this(-1);
     }
-    
-    @Experimental
+
+    /**
+     * Factory method to construct a TestSubscriber with an initial request of Long.MAX_VALUE and no delegation.
+     * @return the created TestSubscriber instance
+     * @since 1.1.0
+     */
     public static <T> TestSubscriber<T> create() {
         return new TestSubscriber<T>();
     }
     
-    @Experimental
+    /**
+     * Factory method to construct a TestSubscriber with the given initial request amount and no delegation.
+     * @param initialRequest the initial request amount, negative values revert to the default unbounded mode
+     * @return the created TestSubscriber instance
+     * @since 1.1.0
+     */
     public static <T> TestSubscriber<T> create(long initialRequest) {
         return new TestSubscriber<T>(initialRequest);
     }
     
-    @Experimental
+    /**
+     * Factory method to construct a TestSubscriber which delegates events to the given Observer and
+     * issues the given initial request amount.
+     * @param delegate the observer to delegate events to
+     * @param initialRequest the initial request amount, negative values revert to the default unbounded mode
+     * @return the created TestSubscriber instance
+     * @throws NullPointerException if delegate is null
+     * @since 1.1.0
+     */
     public static <T> TestSubscriber<T> create(Observer<T> delegate, long initialRequest) {
         return new TestSubscriber<T>(delegate, initialRequest);
     }
     
-    @Experimental
+    /**
+     * Factory method to construct a TestSubscriber which delegates events to the given Observer and
+     * an issues an initial request of Long.MAX_VALUE.
+     * @param delegate the observer to delegate events to
+     * @return the created TestSubscriber instance
+     * @throws NullPointerException if delegate is null
+     * @since 1.1.0
+     */
     public static <T> TestSubscriber<T> create(Subscriber<T> delegate) {
         return new TestSubscriber<T>(delegate);
     }
     
-    @Experimental
+    /**
+     * Factory method to construct a TestSubscriber which delegates events to the given Subscriber and
+     * an issues an initial request of Long.MAX_VALUE.
+     * @param delegate the subscriber to delegate events to
+     * @return the created TestSubscriber instance
+     * @throws NullPointerException if delegate is null
+     * @since 1.1.0
+     */
     public static <T> TestSubscriber<T> create(Observer<T> delegate) {
         return new TestSubscriber<T>(delegate);
     }
     
     @Override
     public void onStart() {
-        if  (initialRequest >= 0) {
+        if (initialRequest >= 0) {
             requestMore(initialRequest);
         }
     }
@@ -343,9 +389,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * Asserts that there is exactly one completion event.
      *
      * @throws AssertionError if there were zero, or more than one, onCompleted events
-     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public void assertCompleted() {
         int s = testObserver.getOnCompletedEvents().size();
         if (s == 0) {
@@ -360,9 +405,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * Asserts that there is no completion event.
      *
      * @throws AssertionError if there were one or more than one onCompleted events
-     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public void assertNotCompleted() {
         int s = testObserver.getOnCompletedEvents().size();
         if (s == 1) {
@@ -379,9 +423,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @param clazz the class to check the error against.
      * @throws AssertionError if there were zero, or more than one, onError events, or if the single onError
      *                        event did not carry an error of a subclass of the given class
-     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public void assertError(Class<? extends Throwable> clazz) {
         List<Throwable> err = testObserver.getOnErrorEvents();
         if (err.size() == 0) {
@@ -405,9 +448,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @param throwable the throwable to check
      * @throws AssertionError if there were zero, or more than one, onError events, or if the single onError
      *                        event did not carry an error that matches the specified throwable
-     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public void assertError(Throwable throwable) {
         List<Throwable> err = testObserver.getOnErrorEvents();
         if (err.size() == 0) {
@@ -429,9 +471,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * Asserts that there are no onError and onCompleted events.
      *
      * @throws AssertionError if there was either an onError or onCompleted event
-     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public void assertNoTerminalEvent() {
         List<Throwable> err = testObserver.getOnErrorEvents();
         int s = testObserver.getOnCompletedEvents().size();
@@ -455,9 +496,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * Asserts that there are no onNext events received.
      *
      * @throws AssertionError if there were any onNext events
-     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public void assertNoValues() {
         int s = testObserver.getOnNextEvents().size();
         if (s > 0) {
@@ -470,9 +510,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
      *
      * @param count the expected number of onNext events
      * @throws AssertionError if there were more or fewer onNext events than specified by {@code count}
-     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public void assertValueCount(int count) {
         int s = testObserver.getOnNextEvents().size();
         if (s != count) {
@@ -485,9 +524,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
      *
      * @param values the items to check
      * @throws AssertionError if the items emitted do not exactly match those specified by {@code values}
-     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public void assertValues(T... values) {
         assertReceivedOnNext(Arrays.asList(values));
     }
@@ -497,9 +535,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
      *
      * @param value the item to check
      * @throws AssertionError if the Observable does not emit only the single item specified by {@code value}
-     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public void assertValue(T value) {
         assertReceivedOnNext(Collections.singletonList(value));
     }
