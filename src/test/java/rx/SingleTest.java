@@ -27,7 +27,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
@@ -45,11 +44,17 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import rx.Single.OnSubscribe;
 import rx.exceptions.CompositeException;
-import rx.functions.Action;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.Func4;
+import rx.functions.Func5;
+import rx.functions.Func6;
+import rx.functions.Func7;
+import rx.functions.Func8;
+import rx.functions.Func9;
 import rx.functions.FuncN;
 import rx.schedulers.TestScheduler;
 import rx.singles.BlockingSingle;
@@ -102,21 +107,199 @@ public class SingleTest {
     }
 
     @Test
-    public void testZip() {
+    public void zip2Singles() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Single<String> a = Single.just("A");
-        Single<String> b = Single.just("B");
+        Single<Integer> a = Single.just(1);
+        Single<Integer> b = Single.just(2);
 
-        Single.zip(a, b, new Func2<String, String, String>() {
+        Single.zip(a, b, new Func2<Integer, Integer, String>() {
 
             @Override
-            public String call(String a, String b) {
-                return a + b;
+            public String call(Integer a, Integer b) {
+                return "" + a + b;
             }
 
         })
                 .subscribe(ts);
-        ts.assertReceivedOnNext(Arrays.asList("AB"));
+
+        ts.assertValue("12");
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void zip3Singles() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Single<Integer> a = Single.just(1);
+        Single<Integer> b = Single.just(2);
+        Single<Integer> c = Single.just(3);
+
+        Single.zip(a, b, c, new Func3<Integer, Integer, Integer, String>() {
+
+            @Override
+            public String call(Integer a, Integer b, Integer c) {
+                return "" + a + b + c;
+            }
+
+        })
+                .subscribe(ts);
+
+        ts.assertValue("123");
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void zip4Singles() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Single<Integer> a = Single.just(1);
+        Single<Integer> b = Single.just(2);
+        Single<Integer> c = Single.just(3);
+        Single<Integer> d = Single.just(4);
+
+        Single.zip(a, b, c, d, new Func4<Integer, Integer, Integer, Integer, String>() {
+
+            @Override
+            public String call(Integer a, Integer b, Integer c, Integer d) {
+                return "" + a + b + c + d;
+            }
+
+        })
+                .subscribe(ts);
+
+        ts.assertValue("1234");
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void zip5Singles() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Single<Integer> a = Single.just(1);
+        Single<Integer> b = Single.just(2);
+        Single<Integer> c = Single.just(3);
+        Single<Integer> d = Single.just(4);
+        Single<Integer> e = Single.just(5);
+
+        Single.zip(a, b, c, d, e, new Func5<Integer, Integer, Integer, Integer, Integer, String>() {
+
+            @Override
+            public String call(Integer a, Integer b, Integer c, Integer d, Integer e) {
+                return "" + a + b + c + d + e;
+            }
+
+        })
+                .subscribe(ts);
+
+        ts.assertValue("12345");
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void zip6Singles() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Single<Integer> a = Single.just(1);
+        Single<Integer> b = Single.just(2);
+        Single<Integer> c = Single.just(3);
+        Single<Integer> d = Single.just(4);
+        Single<Integer> e = Single.just(5);
+        Single<Integer> f = Single.just(6);
+
+        Single.zip(a, b, c, d, e, f, new Func6<Integer, Integer, Integer, Integer, Integer, Integer, String>() {
+
+            @Override
+            public String call(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f) {
+                return "" + a + b + c + d + e + f;
+            }
+
+        })
+                .subscribe(ts);
+
+        ts.assertValue("123456");
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void zip7Singles() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Single<Integer> a = Single.just(1);
+        Single<Integer> b = Single.just(2);
+        Single<Integer> c = Single.just(3);
+        Single<Integer> d = Single.just(4);
+        Single<Integer> e = Single.just(5);
+        Single<Integer> f = Single.just(6);
+        Single<Integer> g = Single.just(7);
+
+        Single.zip(a, b, c, d, e, f, g, new Func7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, String>() {
+
+            @Override
+            public String call(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g) {
+                return "" + a + b + c + d + e + f + g;
+            }
+
+        })
+                .subscribe(ts);
+
+        ts.assertValue("1234567");
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void zip8Singles() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Single<Integer> a = Single.just(1);
+        Single<Integer> b = Single.just(2);
+        Single<Integer> c = Single.just(3);
+        Single<Integer> d = Single.just(4);
+        Single<Integer> e = Single.just(5);
+        Single<Integer> f = Single.just(6);
+        Single<Integer> g = Single.just(7);
+        Single<Integer> h = Single.just(8);
+
+        Single.zip(a, b, c, d, e, f, g, h, new Func8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, String>() {
+
+            @Override
+            public String call(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g, Integer h) {
+                return "" + a + b + c + d + e + f + g + h;
+            }
+
+        })
+                .subscribe(ts);
+
+        ts.assertValue("12345678");
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void zip9Singles() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Single<Integer> a = Single.just(1);
+        Single<Integer> b = Single.just(2);
+        Single<Integer> c = Single.just(3);
+        Single<Integer> d = Single.just(4);
+        Single<Integer> e = Single.just(5);
+        Single<Integer> f = Single.just(6);
+        Single<Integer> g = Single.just(7);
+        Single<Integer> h = Single.just(8);
+        Single<Integer> i = Single.just(9);
+
+        Single.zip(a, b, c, d, e, f, g, h, i, new Func9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, String>() {
+
+            @Override
+            public String call(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g, Integer h, Integer i) {
+                return "" + a + b + c + d + e + f + g + h + i;
+            }
+
+        })
+                .subscribe(ts);
+
+        ts.assertValue("123456789");
+        ts.assertCompleted();
+        ts.assertNoErrors();
     }
 
     @Test
