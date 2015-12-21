@@ -5577,14 +5577,17 @@ public class Observable<T> {
     
     /**
      * Groups the items emitted by an {@code Observable} according to a specified criterion, and emits these
-     * grouped items as {@link GroupedObservable}s, one {@code GroupedObservable} per group.
+     * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservable} allows only a single 
+     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the 
+     * source terminates, the next emission by the source having the same key will trigger a new 
+     * {@code GroupedObservable} emission.
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
      * <p>
      * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
-     * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
+     * discard their buffers by applying an operator like {@link #ignoreElements} to them.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5609,14 +5612,17 @@ public class Observable<T> {
     
     /**
      * Groups the items emitted by an {@code Observable} according to a specified criterion, and emits these
-     * grouped items as {@link GroupedObservable}s, one {@code GroupedObservable} per group.
+     * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservable} allows only a single 
+     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the 
+     * source terminates, the next emission by the source having the same key will trigger a new 
+     * {@code GroupedObservable} emission.
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
      * <p>
      * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
-     * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
+     * discard their buffers by applying an operator like {@link #ignoreElements} to them.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
