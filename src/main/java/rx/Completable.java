@@ -16,13 +16,13 @@
 
 package rx;
 
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable.OnSubscribe;
 import rx.annotations.Experimental;
-import rx.exceptions.Exceptions;
+import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.util.*;
@@ -864,12 +864,33 @@ public class Completable {
                 try {
                     cs = completableFunc1.call(resource);
                 } catch (Throwable e) {
+                    try {
+                        disposer.call(resource);
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(e);
+                        Exceptions.throwIfFatal(ex);
+
+                        s.onSubscribe(Subscriptions.unsubscribed());
+                        s.onError(new CompositeException(Arrays.asList(e, ex)));
+                        return;
+                    }
+                    Exceptions.throwIfFatal(e);
+                    
                     s.onSubscribe(Subscriptions.unsubscribed());
                     s.onError(e);
                     return;
                 }
                 
                 if (cs == null) {
+                    try {
+                        disposer.call(resource);
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+
+                        s.onSubscribe(Subscriptions.unsubscribed());
+                        s.onError(new CompositeException(Arrays.asList(new NullPointerException("The completable supplied is null"), ex)));
+                        return;
+                    }
                     s.onSubscribe(Subscriptions.unsubscribed());
                     s.onError(new NullPointerException("The completable supplied is null"));
                     return;

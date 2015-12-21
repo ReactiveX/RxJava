@@ -31,6 +31,9 @@ import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.*;
 
+import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
+
 /**
  * Test Completable methods and operators.
  */
@@ -3410,4 +3413,135 @@ public class CompletableTest {
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
     }
+    
+    @Test
+    public void usingFactoryThrows() {
+        @SuppressWarnings("unchecked")
+        Action1<Integer> onDispose = mock(Action1.class);
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Completable.using(new Func0<Integer>() {
+            @Override
+            public Integer call() {
+                return 1;
+            }
+        },
+        new Func1<Integer, Completable>() {
+            @Override
+            public Completable call(Integer t) {
+                throw new TestException();
+            }
+        }, onDispose).subscribe(ts);
+        
+        verify(onDispose).call(1);
+        
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+        ts.assertError(TestException.class);
+    }
+
+    @Test
+    public void usingFactoryAndDisposerThrow() {
+        Action1<Integer> onDispose = new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                throw new TestException();
+            }
+        };
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Completable.using(new Func0<Integer>() {
+            @Override
+            public Integer call() {
+                return 1;
+            }
+        },
+        new Func1<Integer, Completable>() {
+            @Override
+            public Completable call(Integer t) {
+                throw new TestException();
+            }
+        }, onDispose).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+        ts.assertError(CompositeException.class);
+        
+        CompositeException ex = (CompositeException)ts.getOnErrorEvents().get(0);
+        
+        List<Throwable> listEx = ex.getExceptions();
+        
+        assertEquals(2, listEx.size());
+        
+        assertTrue(listEx.get(0).toString(), listEx.get(0) instanceof TestException);
+        assertTrue(listEx.get(1).toString(), listEx.get(1) instanceof TestException);
+    }
+
+    @Test
+    public void usingFactoryReturnsNull() {
+        @SuppressWarnings("unchecked")
+        Action1<Integer> onDispose = mock(Action1.class);
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Completable.using(new Func0<Integer>() {
+            @Override
+            public Integer call() {
+                return 1;
+            }
+        },
+        new Func1<Integer, Completable>() {
+            @Override
+            public Completable call(Integer t) {
+                return null;
+            }
+        }, onDispose).subscribe(ts);
+        
+        verify(onDispose).call(1);
+        
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+        ts.assertError(NullPointerException.class);
+    }
+
+    @Test
+    public void usingFactoryReturnsNullAndDisposerThrows() {
+        Action1<Integer> onDispose = new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                throw new TestException();
+            }
+        };
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Completable.using(new Func0<Integer>() {
+            @Override
+            public Integer call() {
+                return 1;
+            }
+        },
+        new Func1<Integer, Completable>() {
+            @Override
+            public Completable call(Integer t) {
+                return null;
+            }
+        }, onDispose).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+        ts.assertError(CompositeException.class);
+        
+        CompositeException ex = (CompositeException)ts.getOnErrorEvents().get(0);
+        
+        List<Throwable> listEx = ex.getExceptions();
+        
+        assertEquals(2, listEx.size());
+        
+        assertTrue(listEx.get(0).toString(), listEx.get(0) instanceof NullPointerException);
+        assertTrue(listEx.get(1).toString(), listEx.get(1) instanceof TestException);
+    }
+
 }
