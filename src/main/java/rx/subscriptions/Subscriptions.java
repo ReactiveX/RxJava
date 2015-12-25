@@ -120,7 +120,7 @@ public final class Subscriptions {
      */
     private static final Unsubscribed UNSUBSCRIBED = new Unsubscribed();
         /** Naming classes helps with debugging. */
-    private static final class Unsubscribed implements Subscription {
+    static final class Unsubscribed implements Subscription {
         @Override
         public void unsubscribe() {
         }

@@ -28,7 +28,7 @@ import rx.Subscriber;
  */
 public final class OperatorTakeLast<T> implements Operator<T, T> {
 
-    private final int count;
+    final int count;
 
     public OperatorTakeLast(int count) {
         if (count < 0) {

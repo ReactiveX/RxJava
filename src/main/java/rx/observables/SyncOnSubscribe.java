@@ -271,7 +271,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
         private final Func2<? super S, ? super Observer<? super T>, ? extends S> next;
         private final Action1<? super S> onUnsubscribe;
 
-        private SyncOnSubscribeImpl(Func0<? extends S> generator, Func2<? super S, ? super Observer<? super T>, ? extends S> next, Action1<? super S> onUnsubscribe) {
+        SyncOnSubscribeImpl(Func0<? extends S> generator, Func2<? super S, ? super Observer<? super T>, ? extends S> next, Action1<? super S> onUnsubscribe) {
             this.generator = generator;
             this.next = next;
             this.onUnsubscribe = onUnsubscribe;
@@ -322,8 +322,8 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
         private boolean hasTerminated;
         
         private S state;
-        
-        private SubscriptionProducer(final Subscriber<? super T> subscriber, SyncOnSubscribe<S, T> parent, S state) {
+
+        SubscriptionProducer(final Subscriber<? super T> subscriber, SyncOnSubscribe<S, T> parent, S state) {
             this.actualSubscriber = subscriber;
             this.parent = parent;
             this.state = state;

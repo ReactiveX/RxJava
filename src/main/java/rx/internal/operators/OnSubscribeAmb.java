@@ -271,7 +271,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         private final Selection<T> selection;
         private boolean chosen;
 
-        private AmbSubscriber(long requested, Subscriber<? super T> subscriber, Selection<T> selection) {
+        AmbSubscriber(long requested, Subscriber<? super T> subscriber, Selection<T> selection) {
             this.subscriber = subscriber;
             this.selection = selection;
             // initial request
@@ -434,7 +434,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         });
     }
 
-    private static <T> void unsubscribeAmbSubscribers(Collection<AmbSubscriber<T>> ambSubscribers) {
+    static <T> void unsubscribeAmbSubscribers(Collection<AmbSubscriber<T>> ambSubscribers) {
         if(!ambSubscribers.isEmpty()) {
             for (AmbSubscriber<T> other : ambSubscribers) {
                 other.unsubscribe();

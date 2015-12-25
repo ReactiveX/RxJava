@@ -104,6 +104,9 @@ public final class UtilityFunctions {
             Func8<T0, T1, T2, T3, T4, T5, T6, T7, R>,
             Func9<T0, T1, T2, T3, T4, T5, T6, T7, T8, R>,
             FuncN<R> {
+        NullFunction() {
+        }
+
         @Override
         public R call() {
             return null;

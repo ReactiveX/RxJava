@@ -31,7 +31,7 @@ public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
         private final Subscriber<? super T> child;
         private boolean done = false;
 
-        private ParentSubscriber(Subscriber<? super T> child) {
+        ParentSubscriber(Subscriber<? super T> child) {
             this.child = child;
         }
 
@@ -73,7 +73,7 @@ public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
         }
     }
 
-    private final Func1<? super T, Boolean> stopPredicate;
+    final Func1<? super T, Boolean> stopPredicate;
 
     public OperatorTakeUntilPredicate(final Func1<? super T, Boolean> stopPredicate) {
         this.stopPredicate = stopPredicate;

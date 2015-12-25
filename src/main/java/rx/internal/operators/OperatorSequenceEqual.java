@@ -33,7 +33,7 @@ public final class OperatorSequenceEqual {
     }
 
     /** NotificationLite doesn't work as zip uses it. */
-    private static final Object LOCAL_ONCOMPLETED = new Object();
+    static final Object LOCAL_ONCOMPLETED = new Object();
     static <T> Observable<Object> materializeLite(Observable<T> source) {
         return concat(
                 source.map(new Func1<T, Object>() {

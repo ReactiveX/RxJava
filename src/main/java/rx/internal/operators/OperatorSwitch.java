@@ -47,9 +47,9 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
     public static <T> OperatorSwitch<T> instance() {
         return (OperatorSwitch<T>)Holder.INSTANCE;
     }
-    
-    private OperatorSwitch() { }
-    
+
+    OperatorSwitch() { }
+
     @Override
     public Subscriber<? super Observable<? extends T>> call(final Subscriber<? super T> child) {
         SwitchSubscriber<T> sws = new SwitchSubscriber<T>(child);

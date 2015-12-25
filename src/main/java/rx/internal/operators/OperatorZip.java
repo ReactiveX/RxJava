@@ -178,7 +178,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     }
 
     private static final class Zip<R> extends AtomicLong {
-        private final Observer<? super R> child;
+        final Observer<? super R> child;
         private final FuncN<? extends R> zipFunction;
         private final CompositeSubscription childSubscription = new CompositeSubscription();
 

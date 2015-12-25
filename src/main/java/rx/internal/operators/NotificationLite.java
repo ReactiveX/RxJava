@@ -71,7 +71,7 @@ public final class NotificationLite<T> {
 
     private static class OnErrorSentinel implements Serializable {
         private static final long serialVersionUID = 3;
-        private final Throwable e;
+        final Throwable e;
 
         public OnErrorSentinel(Throwable e) {
             this.e = e;

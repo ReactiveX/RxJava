@@ -46,8 +46,8 @@ public final class OperatorSingle<T> implements Operator<T, T> {
     public static <T> OperatorSingle<T> instance() {
         return (OperatorSingle<T>) Holder.INSTANCE;
     }
-    
-    private OperatorSingle() {
+
+    OperatorSingle() {
         this(false, null);
     }
 

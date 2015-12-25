@@ -34,8 +34,8 @@ import rx.internal.producers.SingleDelayedProducer;
  *          the type of the items emitted by the source and the resulting {@code Observable}s
  */
 public final class OperatorToObservableSortedList<T> implements Operator<List<T>, T> {
-    private final Comparator<? super T> sortFunction;
-    private final int initialCapacity;
+    final Comparator<? super T> sortFunction;
+    final int initialCapacity;
 
     @SuppressWarnings("unchecked")
     public OperatorToObservableSortedList(int initialCapacity) {
@@ -105,6 +105,8 @@ public final class OperatorToObservableSortedList<T> implements Operator<List<T>
     private static Comparator DEFAULT_SORT_FUNCTION = new DefaultComparableFunction();
 
     private static class DefaultComparableFunction implements Comparator<Object> {
+        DefaultComparableFunction() {
+        }
 
         // unchecked because we want to support Object for this default
         @SuppressWarnings("unchecked")

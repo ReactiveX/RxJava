@@ -46,9 +46,9 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
     final List<Subscriber<? super R>> waitingForConnect;
 
     /** Guarded by guard. */
-    private Subscriber<T> subscription;
+    Subscriber<T> subscription;
     // wraps subscription above for unsubscription using guard
-    private Subscription guardedSubscription;
+    Subscription guardedSubscription;
 
     public OperatorMulticast(Observable<? extends T> source, final Func0<? extends Subject<? super T, ? extends R>> subjectFactory) {
         this(new Object(), new AtomicReference<Subject<? super T, ? extends R>>(), new ArrayList<Subscriber<? super R>>(), source, subjectFactory);

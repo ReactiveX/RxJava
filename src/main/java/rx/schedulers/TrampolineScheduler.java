@@ -47,9 +47,12 @@ public final class TrampolineScheduler extends Scheduler {
     private static class InnerCurrentThreadScheduler extends Scheduler.Worker implements Subscription {
 
         final AtomicInteger counter = new AtomicInteger();
-        private final PriorityBlockingQueue<TimedAction> queue = new PriorityBlockingQueue<TimedAction>();
+        final PriorityBlockingQueue<TimedAction> queue = new PriorityBlockingQueue<TimedAction>();
         private final BooleanSubscription innerSubscription = new BooleanSubscription();
         private final AtomicInteger wip = new AtomicInteger();
+
+        InnerCurrentThreadScheduler() {
+        }
 
         @Override
         public Subscription schedule(Action0 action) {
@@ -108,7 +111,7 @@ public final class TrampolineScheduler extends Scheduler {
         final Long execTime;
         final int count; // In case if time between enqueueing took less than 1ms
 
-        private TimedAction(Action0 action, Long execTime, int count) {
+        TimedAction(Action0 action, Long execTime, int count) {
             this.action = action;
             this.execTime = execTime;
             this.count = count;
@@ -125,7 +128,7 @@ public final class TrampolineScheduler extends Scheduler {
     }
 
     // because I can't use Integer.compare from Java 7
-    private static int compare(int x, int y) {
+    static int compare(int x, int y) {
         return (x < y) ? -1 : ((x == y) ? 0 : 1);
     }
 

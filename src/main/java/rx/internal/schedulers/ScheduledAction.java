@@ -131,7 +131,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
     private final class FutureCompleter implements Subscription {
         private final Future<?> f;
 
-        private FutureCompleter(Future<?> f) {
+        FutureCompleter(Future<?> f) {
             this.f = f;
         }
 

@@ -28,9 +28,9 @@ import rx.internal.util.unsafe.*;
 import rx.schedulers.Schedulers;
 
 public abstract class ObjectPool<T> implements SchedulerLifecycle {
-    private Queue<T> pool;
-    private final int minSize;
-    private final int maxSize;
+    Queue<T> pool;
+    final int minSize;
+    final int maxSize;
     private final long validationInterval;
 
     private final AtomicReference<Worker> schedulerWorker;

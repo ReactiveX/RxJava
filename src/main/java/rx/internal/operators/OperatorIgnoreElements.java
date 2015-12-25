@@ -29,7 +29,7 @@ public class OperatorIgnoreElements<T> implements Operator<T, T> {
         return (OperatorIgnoreElements<T>) Holder.INSTANCE;
     }
 
-    private OperatorIgnoreElements() {
+    OperatorIgnoreElements() {
 
     }
 

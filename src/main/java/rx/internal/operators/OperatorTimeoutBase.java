@@ -92,8 +92,8 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         
         final AtomicInteger terminated = new AtomicInteger();
         final AtomicLong actual = new AtomicLong();
-        
-        private TimeoutSubscriber(
+
+        TimeoutSubscriber(
                 SerializedSubscriber<T> serializedSubscriber,
                 TimeoutStub<T> timeoutStub, SerialSubscription serial,
                 Observable<? extends T> other,

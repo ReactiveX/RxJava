@@ -90,7 +90,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
     final boolean delayErrors;
     final int maxConcurrent;
 
-    private OperatorMerge(boolean delayErrors, int maxConcurrent) {
+    OperatorMerge(boolean delayErrors, int maxConcurrent) {
         this.delayErrors = delayErrors;
         this.maxConcurrent = maxConcurrent;
     }
