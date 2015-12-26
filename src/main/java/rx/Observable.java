@@ -3786,7 +3786,7 @@ public class Observable<T> {
     /**
      * Returns a new Observable that emits items resulting from applying a function that you supply to each item
      * emitted by the source Observable, where that function returns an Observable, and then emitting the items
-     * that result from concatinating those resulting Observables.
+     * that result from concatenating those resulting Observables.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
      * <dl>
@@ -3798,7 +3798,7 @@ public class Observable<T> {
      *            a function that, when applied to an item emitted by the source Observable, returns an
      *            Observable
      * @return an Observable that emits the result of applying the transformation function to each item emitted
-     *         by the source Observable and concatinating the Observables obtained from this transformation
+     *         by the source Observable and concatenating the Observables obtained from this transformation
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     public final <R> Observable<R> concatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
