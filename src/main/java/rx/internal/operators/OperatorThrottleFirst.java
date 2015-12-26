@@ -25,11 +25,13 @@ import rx.Observable.Operator;
  */
 public final class OperatorThrottleFirst<T> implements Operator<T, T> {
 
-    private final long timeInMilliseconds;
+    private final long windowDurationMs;
     private final Scheduler scheduler;
+    
+    private static long UNSET = Long.MIN_VALUE;
 
-    public OperatorThrottleFirst(long windowDuration, TimeUnit unit, Scheduler scheduler) {
-        this.timeInMilliseconds = unit.toMillis(windowDuration);
+    public OperatorThrottleFirst(long windowDurationMs, TimeUnit unit, Scheduler scheduler) {
+        this.windowDurationMs = unit.toMillis(windowDurationMs);
         this.scheduler = scheduler;
     }
 
@@ -37,7 +39,7 @@ public final class OperatorThrottleFirst<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
         return new Subscriber<T>(subscriber) {
 
-            private long lastOnNext = 0;
+            private long nextWindowStartTime = UNSET; 
 
             @Override
             public void onStart() {
@@ -45,12 +47,17 @@ public final class OperatorThrottleFirst<T> implements Operator<T, T> {
             }
             
             @Override
-            public void onNext(T v) {
+            public void onNext(T t) {
                 long now = scheduler.now();
-                if (lastOnNext == 0 || now - lastOnNext >= timeInMilliseconds) {
-                    lastOnNext = now;
-                    subscriber.onNext(v);
-                } 
+                if (nextWindowStartTime == UNSET) {
+                    nextWindowStartTime = now + windowDurationMs;
+                    subscriber.onNext(t);
+                } else if (now >= nextWindowStartTime) {
+                    // ensure that we advance the next window start time to just beyond now
+                    long n = (now - nextWindowStartTime) / windowDurationMs + 1;
+                    nextWindowStartTime += n * windowDurationMs;
+                    subscriber.onNext(t);
+                }
             }
 
             @Override

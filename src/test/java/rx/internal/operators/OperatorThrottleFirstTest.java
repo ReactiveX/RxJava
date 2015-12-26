@@ -158,4 +158,40 @@ public class OperatorThrottleFirstTest {
         inOrder.verify(observer).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
+    
+    @Test
+    public void testThrottleWindowIsConstantDuration() {
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = mock(Observer.class);
+        TestScheduler s = new TestScheduler();
+        PublishSubject<Integer> o = PublishSubject.create();
+        o.throttleFirst(1000, TimeUnit.MILLISECONDS, s).subscribe(observer);
+
+        // send events with simulated time increments
+        s.advanceTimeTo(0, TimeUnit.MILLISECONDS);
+        o.onNext(1); 
+        s.advanceTimeTo(1200, TimeUnit.MILLISECONDS);
+        o.onNext(2); 
+        s.advanceTimeTo(2100, TimeUnit.MILLISECONDS);
+        o.onNext(3); 
+        o.onCompleted();
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer).onNext(1);
+        inOrder.verify(observer).onNext(2);
+        inOrder.verify(observer).onNext(3);
+        inOrder.verify(observer).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testSkipDurationOfZeroThrowsIllegalArgumentException() {
+        Observable.just(1).throttleFirst(0, TimeUnit.SECONDS);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testSkipDurationOfLessThanZeroThrowsIllegalArgumentException() {
+        Observable.just(1).throttleFirst(-1, TimeUnit.SECONDS);
+    }
 }
