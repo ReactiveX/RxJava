@@ -67,7 +67,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     };
 
     public static final class RedoFinite implements Func1<Observable<? extends Notification<?>>, Observable<?>> {
-        private final long count;
+        final long count;
 
         public RedoFinite(long count) {
             this.count = count;
@@ -98,7 +98,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     }
 
     public static final class RetryWithPredicate implements Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>> {
-        private final Func2<Integer, Throwable, Boolean> predicate;
+        final Func2<Integer, Throwable, Boolean> predicate;
 
         public RetryWithPredicate(Func2<Integer, Throwable, Boolean> predicate) {
             this.predicate = predicate;
@@ -173,10 +173,10 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
         return create(new OnSubscribeRedo<T>(source, notificationHandler, false, false, scheduler));
     }
 
-    private final Observable<T> source;
+    final Observable<T> source;
     private final Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> controlHandlerFunction;
-    private final boolean stopOnComplete;
-    private final boolean stopOnError;
+    final boolean stopOnComplete;
+    final boolean stopOnError;
     private final Scheduler scheduler;
 
     private OnSubscribeRedo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> f, boolean stopOnComplete, boolean stopOnError,

@@ -27,8 +27,8 @@ import rx.internal.producers.SingleDelayedProducer;
  * an observable sequence satisfies a condition, otherwise <code>false</code>.
  */
 public final class OperatorAny<T> implements Operator<Boolean, T> {
-    private final Func1<? super T, Boolean> predicate;
-    private final boolean returnOnEmpty;
+    final Func1<? super T, Boolean> predicate;
+    final boolean returnOnEmpty;
 
     public OperatorAny(Func1<? super T, Boolean> predicate, boolean returnOnEmpty) {
         this.predicate = predicate;

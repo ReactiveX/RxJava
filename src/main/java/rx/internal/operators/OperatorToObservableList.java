@@ -49,7 +49,7 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
     public static <T> OperatorToObservableList<T> instance() {
         return (OperatorToObservableList<T>)Holder.INSTANCE;
     }
-    private OperatorToObservableList() { }
+    OperatorToObservableList() { }
     @Override
     public Subscriber<? super T> call(final Subscriber<? super List<T>> o) {
         final SingleDelayedProducer<List<T>> producer = new SingleDelayedProducer<List<T>>(o);

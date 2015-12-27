@@ -105,7 +105,7 @@ public final class OnSubscribeUsing<T, Resource> implements OnSubscribe<T> {
         private Action1<? super Resource> dispose;
         private Resource resource;
 
-        private DisposeAction(Action1<? super Resource> dispose, Resource resource) {
+        DisposeAction(Action1<? super Resource> dispose, Resource resource) {
             this.dispose = dispose;
             this.resource = resource;
             lazySet(false); // StoreStore barrier

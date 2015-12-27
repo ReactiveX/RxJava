@@ -538,14 +538,14 @@ public final class BlockingObservable<T> {
     }
     
     /** Constant to indicate the onStart method should be called. */
-    private static final Object ON_START = new Object();
-    
+    static final Object ON_START = new Object();
+
     /** Constant indicating the setProducer method should be called. */
-    private static final Object SET_PRODUCER = new Object();
+    static final Object SET_PRODUCER = new Object();
 
     /** Indicates an unsubscripton happened */
-    private static final Object UNSUBSCRIBE = new Object();
-    
+    static final Object UNSUBSCRIBE = new Object();
+
     /**
      * Subscribes to the source and calls the Subscriber methods on the current thread.
      * <p>

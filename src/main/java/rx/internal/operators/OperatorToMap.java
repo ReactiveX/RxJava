@@ -45,9 +45,9 @@ public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
     }
 
 
-    private final Func1<? super T, ? extends K> keySelector;
+    final Func1<? super T, ? extends K> keySelector;
 
-    private final Func1<? super T, ? extends V> valueSelector;
+    final Func1<? super T, ? extends V> valueSelector;
 
     private final Func0<? extends Map<K, V>> mapFactory;
 

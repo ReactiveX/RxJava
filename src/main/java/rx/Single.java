@@ -111,7 +111,7 @@ public class Single<T> {
         this.onSubscribe = f;
     }
 
-    private static final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
+    static final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
      * Returns a Single that will execute the specified function when a {@link SingleSubscriber} executes it or

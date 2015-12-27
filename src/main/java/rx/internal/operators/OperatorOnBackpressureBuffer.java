@@ -39,8 +39,8 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
     public static <T> OperatorOnBackpressureBuffer<T> instance() {
         return (OperatorOnBackpressureBuffer<T>) Holder.INSTANCE;
     }
-    
-    private OperatorOnBackpressureBuffer() {
+
+    OperatorOnBackpressureBuffer() {
         this.capacity = null;
         this.onOverflow = null;
     }

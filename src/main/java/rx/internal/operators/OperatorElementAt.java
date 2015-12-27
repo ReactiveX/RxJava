@@ -26,9 +26,9 @@ import rx.Subscriber;
  */
 public final class OperatorElementAt<T> implements Operator<T, T> {
 
-    private final int index;
-    private final boolean hasDefault;
-    private final T defaultValue;
+    final int index;
+    final boolean hasDefault;
+    final T defaultValue;
 
     public OperatorElementAt(int index) {
         this(index, null, false);

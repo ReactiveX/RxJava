@@ -55,7 +55,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
         private final Subscriber<? super T> o;
         private final Iterator<? extends T> it;
 
-        private IterableProducer(Subscriber<? super T> o, Iterator<? extends T> it) {
+        IterableProducer(Subscriber<? super T> o, Iterator<? extends T> it) {
             this.o = o;
             this.it = it;
         }

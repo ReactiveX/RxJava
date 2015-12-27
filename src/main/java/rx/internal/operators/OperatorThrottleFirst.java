@@ -25,8 +25,8 @@ import rx.Observable.Operator;
  */
 public final class OperatorThrottleFirst<T> implements Operator<T, T> {
 
-    private final long timeInMilliseconds;
-    private final Scheduler scheduler;
+    final long timeInMilliseconds;
+    final Scheduler scheduler;
 
     public OperatorThrottleFirst(long windowDuration, TimeUnit unit, Scheduler scheduler) {
         this.timeInMilliseconds = unit.toMillis(windowDuration);

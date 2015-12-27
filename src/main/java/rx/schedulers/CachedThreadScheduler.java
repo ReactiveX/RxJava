@@ -26,11 +26,11 @@ import rx.subscriptions.*;
 
 /* package */final class CachedThreadScheduler extends Scheduler implements SchedulerLifecycle {
     private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler-";
-    private static final RxThreadFactory WORKER_THREAD_FACTORY =
+    static final RxThreadFactory WORKER_THREAD_FACTORY =
             new RxThreadFactory(WORKER_THREAD_NAME_PREFIX);
 
     private static final String EVICTOR_THREAD_NAME_PREFIX = "RxCachedWorkerPoolEvictor-";
-    private static final RxThreadFactory EVICTOR_THREAD_FACTORY =
+    static final RxThreadFactory EVICTOR_THREAD_FACTORY =
             new RxThreadFactory(EVICTOR_THREAD_NAME_PREFIX);
 
     private static final long KEEP_ALIVE_TIME = 60;

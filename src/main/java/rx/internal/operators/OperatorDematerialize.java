@@ -42,7 +42,7 @@ public final class OperatorDematerialize<T> implements Operator<T, Notification<
     public static OperatorDematerialize instance() {
         return Holder.INSTANCE; // using raw types because the type inference is not good enough
     }
-    private OperatorDematerialize() { }
+    OperatorDematerialize() { }
     @Override
     public Subscriber<? super Notification<T>> call(final Subscriber<? super T> child) {
         return new Subscriber<Notification<T>>(child) {

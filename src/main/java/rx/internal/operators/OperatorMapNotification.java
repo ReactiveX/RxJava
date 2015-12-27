@@ -34,9 +34,9 @@ import rx.internal.util.unsafe.*;
  */
 public final class OperatorMapNotification<T, R> implements Operator<R, T> {
 
-    private final Func1<? super T, ? extends R> onNext;
-    private final Func1<? super Throwable, ? extends R> onError;
-    private final Func0<? extends R> onCompleted;
+    final Func1<? super T, ? extends R> onNext;
+    final Func1<? super Throwable, ? extends R> onError;
+    final Func0<? extends R> onCompleted;
 
     public OperatorMapNotification(Func1<? super T, ? extends R> onNext, Func1<? super Throwable, ? extends R> onError, Func0<? extends R> onCompleted) {
         this.onNext = onNext;
@@ -58,8 +58,8 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
         private final Subscriber<? super R> o;
         private final ProducerArbiter pa;
         final SingleEmitter<R> emitter;
-        
-        private MapNotificationSubscriber(ProducerArbiter pa, Subscriber<? super R> o) {
+
+        MapNotificationSubscriber(ProducerArbiter pa, Subscriber<? super R> o) {
             this.pa = pa;
             this.o = o;
             this.emitter = new SingleEmitter<R>(o, pa, this);

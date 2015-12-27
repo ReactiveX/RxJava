@@ -43,7 +43,7 @@ import rx.subscriptions.SerialSubscription;
  */
 public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T, T> {
 
-    private final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction;
+    final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction;
 
     public OperatorOnErrorResumeNextViaFunction(Func1<Throwable, ? extends Observable<? extends T>> f) {
         this.resumeFunction = f;

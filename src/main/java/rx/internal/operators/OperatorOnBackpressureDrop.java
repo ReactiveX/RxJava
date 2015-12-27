@@ -38,9 +38,9 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
         return (OperatorOnBackpressureDrop<T>)Holder.INSTANCE;
     }
 
-    private final Action1<? super T> onDrop;
+    final Action1<? super T> onDrop;
 
-    private OperatorOnBackpressureDrop() {
+    OperatorOnBackpressureDrop() {
         this(null);
     }
 

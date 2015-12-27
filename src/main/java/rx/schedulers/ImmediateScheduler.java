@@ -45,6 +45,9 @@ public final class ImmediateScheduler extends Scheduler {
 
         final BooleanSubscription innerSubscription = new BooleanSubscription();
 
+        InnerImmediateScheduler() {
+        }
+
         @Override
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             // since we are executing immediately on this thread we must cause this thread to sleep

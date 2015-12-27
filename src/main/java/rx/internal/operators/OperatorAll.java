@@ -28,7 +28,7 @@ import rx.internal.producers.SingleDelayedProducer;
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/all.png" alt="">
  */
 public final class OperatorAll<T> implements Operator<Boolean, T> {
-    private final Func1<? super T, Boolean> predicate;
+    final Func1<? super T, Boolean> predicate;
 
     public OperatorAll(Func1<? super T, Boolean> predicate) {
         this.predicate = predicate;

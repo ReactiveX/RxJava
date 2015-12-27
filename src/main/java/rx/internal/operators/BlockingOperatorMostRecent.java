@@ -63,8 +63,8 @@ public final class BlockingOperatorMostRecent {
     private static final class MostRecentObserver<T> extends Subscriber<T> {
         final NotificationLite<T> nl = NotificationLite.instance();
         volatile Object value;
-        
-        private MostRecentObserver(T value) {
+
+        MostRecentObserver(T value) {
             this.value = nl.next(value);
         }
 
