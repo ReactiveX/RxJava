@@ -470,7 +470,7 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
          *         is reached
          */
         public void onNext(T value) {
-            if (hasOnNext) {
+            if (!hasOnNext) {
                 throw new IllegalStateException("onNext not consumed yet!");
             } else
             if (hasCompleted) {
