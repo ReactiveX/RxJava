@@ -63,7 +63,7 @@ public class PublishSubjectTest {
         subject.onError(new Throwable());
 
         assertCompletedObserver(observer);
-        // todo bug?            assertNeverObserver(anotherObserver);
+        assertNeverObserver(anotherObserver);
     }
 
     @Test
@@ -113,6 +113,16 @@ public class PublishSubjectTest {
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
+        verify(observer, never()).onNext("four");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+    }
+
+    private void assertNeverObserver(Observer<String> observer) {
+        verify(observer, never()).onNext("one");
+        verify(observer, never()).onNext("two");
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onNext("four");
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
@@ -139,7 +149,7 @@ public class PublishSubjectTest {
         subject.onCompleted();
 
         assertErrorObserver(observer);
-        // todo bug?            assertNeverObserver(anotherObserver);
+        assertNeverErrorObserver(anotherObserver);
     }
 
     private void assertErrorObserver(Observer<String> observer) {
@@ -147,6 +157,15 @@ public class PublishSubjectTest {
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
         verify(observer, times(1)).onError(testException);
+        verify(observer, never()).onCompleted();
+    }
+
+    private void assertNeverErrorObserver(Observer<String> observer) {
+        verify(observer, never()).onNext("one");
+        verify(observer, never()).onNext("two");
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onNext("four");
+        verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onCompleted();
     }
 
