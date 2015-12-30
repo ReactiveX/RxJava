@@ -22,6 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -116,6 +117,7 @@ public class PublishSubjectTest {
         verify(observer, never()).onNext("four");
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     private void assertNeverObserver(Observer<String> observer) {
@@ -125,6 +127,7 @@ public class PublishSubjectTest {
         verify(observer, never()).onNext("four");
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -158,6 +161,7 @@ public class PublishSubjectTest {
         verify(observer, times(1)).onNext("three");
         verify(observer, times(1)).onError(testException);
         verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     private void assertNeverErrorObserver(Observer<String> observer) {
@@ -167,6 +171,7 @@ public class PublishSubjectTest {
         verify(observer, never()).onNext("four");
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
