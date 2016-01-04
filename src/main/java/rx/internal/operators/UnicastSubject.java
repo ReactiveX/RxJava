@@ -32,12 +32,15 @@ import rx.subscriptions.Subscriptions;
  * amount. In this case, the buffered values are no longer retained. If the Subscriber
  * requests a limited amount, queueing is involved and only those values are retained which
  * weren't requested by the Subscriber at that time.
+ * 
+ * @param <T> the input and output value type
  */
 public final class UnicastSubject<T> extends Subject<T, T> {
 
     /**
      * Constructs an empty UnicastSubject instance with the default capacity hint of 16 elements.
      * 
+     * @param <T> the input and output value type
      * @return the created UnicastSubject instance
      */
     public static <T> UnicastSubject<T> create() {
@@ -48,14 +51,34 @@ public final class UnicastSubject<T> extends Subject<T, T> {
      * <p>The capacity hint determines the internal queue's island size: the larger
      * it is the less frequent allocation will happen if there is no subscriber
      * or the subscriber hasn't caught up.
+     * @param <T> the input and output value type
      * @param capacityHint the capacity hint for the internal queue
      * @return the created BufferUntilSubscriber instance
      */
     public static <T> UnicastSubject<T> create(int capacityHint) {
-        State<T> state = new State<T>(capacityHint);
+        State<T> state = new State<T>(capacityHint, null);
         return new UnicastSubject<T>(state);
     }
-    
+
+    /**
+     * Constructs an empty UnicastSubject instance with a capacity hint and
+     * an Action0 instance to call if the subject reaches its terminal state
+     * or the single Subscriber unsubscribes mid-sequence.
+     * <p>The capacity hint determines the internal queue's island size: the larger
+     * it is the less frequent allocation will happen if there is no subscriber
+     * or the subscriber hasn't caught up.
+     * @param <T> the input and output value type
+     * @param capacityHint the capacity hint for the internal queue
+     * @param onTerminated the optional callback to call when subject reaches its terminal state
+     *                      or the single Subscriber unsubscribes mid-sequence. It will be called
+     *                      at most once.
+     * @return the created BufferUntilSubscriber instance
+     */
+    public static <T> UnicastSubject<T> create(int capacityHint, Action0 onTerminated) {
+        State<T> state = new State<T>(capacityHint, onTerminated);
+        return new UnicastSubject<T>(state);
+    }
+
     final State<T> state;
 
     private UnicastSubject(State<T> state) {
@@ -97,6 +120,8 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         final Queue<Object> queue;
         /** JCTools queues don't accept nulls. */
         final NotificationLite<T> nl;
+        /** Atomically set to true on terminal condition. */
+        final AtomicReference<Action0> terminateOnce;
         /** In case the source emitted an error. */
         Throwable error;
         /** Indicates the source has terminated. */
@@ -111,10 +136,14 @@ public final class UnicastSubject<T> extends Subject<T, T> {
          * Constructor.
          * @param capacityHint indicates how large each island in the Spsc queue should be to
          * reduce allocation frequency
+         * @param onTerminated the action to call when the subject reaches its terminal state or
+         * the single subscriber unsubscribes.
          */
-        public State(int capacityHint) {
+        public State(int capacityHint, Action0 onTerminated) {
             this.nl = NotificationLite.instance();
             this.subscriber = new AtomicReference<Subscriber<? super T>>();
+            this.terminateOnce = onTerminated != null ? new AtomicReference<Action0>(onTerminated) : null;
+            
             Queue<Object> q;
             if (capacityHint > 1) {
                 q = UnsafeAccess.isUnsafeAvailable()
@@ -162,6 +191,9 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         @Override
         public void onError(Throwable e) {
             if (!done) {
+                
+                doTerminate();
+                
                 error = e;
                 done = true;
                 if (!caughtUp) {
@@ -180,6 +212,9 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         @Override
         public void onCompleted() {
             if (!done) {
+
+                doTerminate();
+
                 done = true;
                 if (!caughtUp) {
                     boolean stillReplay = false;
@@ -293,6 +328,9 @@ public final class UnicastSubject<T> extends Subject<T, T> {
          */
         @Override
         public void call() {
+
+            doTerminate();
+
             done = true;
             synchronized (this) {
                 if (emitting) {
@@ -328,6 +366,19 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                 }
             }
             return false;
+        }
+        
+        /**
+         * Call the optional termination action at most once.
+         */
+        void doTerminate() {
+            AtomicReference<Action0> ref = this.terminateOnce;
+            if (ref != null) {
+                Action0 a = ref.get();
+                if (a != null && ref.compareAndSet(a, null)) {
+                    a.call();
+                }
+            }
         }
     }
 }
