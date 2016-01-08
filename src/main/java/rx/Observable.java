@@ -4218,7 +4218,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This version of {@code delay} operates by default on the {@code compuation} {@link Scheduler}.</dd>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param subscriptionDelay
