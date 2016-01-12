@@ -1081,6 +1081,21 @@ public class Completable {
     }
     
     /**
+     * Returns an Observable which will subscribe to this Completable and once that is completed then 
+     * will subscribe to the {@code next} Observable. An error event from this Completable will be 
+     * propagated to the downstream subscriber and will result in skipping the subscription of the 
+     * Observable.  
+     * 
+     * @param next the Observable to subscribe after this Completable is completed, not null
+     * @return Observable that composes this Completable and next
+     * @throws NullPointerException if next is null
+     */
+    public final <T> Observable<T> andThen(Observable<T> next) {
+        requireNonNull(next);
+        return next.delaySubscription(toObservable());
+    }
+    
+    /**
      * Concatenates this Completable with another Completable.
      * @param other the other Completable, not null
      * @return the new Completable which subscribes to this and then the other Completable

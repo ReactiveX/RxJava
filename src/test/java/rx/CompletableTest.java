@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 
 import rx.Completable.*;
+import rx.Observable.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
@@ -355,6 +356,64 @@ public class CompletableTest {
         
         // FIXME this request pattern looks odd because all 10 completions trigger 1 requests
         Assert.assertEquals(Arrays.asList(5L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L), requested);
+    }
+    
+    @Test
+    public void andThen() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        Completable.complete().andThen(Observable.just("foo")).subscribe(ts);
+        ts.requestMore(1);
+        ts.assertValue("foo");
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void andThenNever() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        Completable.never().andThen(Observable.just("foo")).subscribe(ts);
+        ts.requestMore(1);
+        ts.assertNoValues();
+        ts.assertNoTerminalEvent();
+    }
+    
+    @Test
+    public void andThenError() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        final AtomicBoolean hasRun = new AtomicBoolean(false);
+        final Exception e = new Exception();
+        Completable.create(new CompletableOnSubscribe() {
+                @Override
+                public void call(CompletableSubscriber cs) {
+                    cs.onError(e);
+                }
+            })
+            .andThen(Observable.<String>create(new OnSubscribe<String>() {
+                @Override
+                public void call(Subscriber<? super String> s) {
+                    hasRun.set(true);
+                    s.onNext("foo");
+                    s.onCompleted();
+                }
+            }))
+            .subscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(e);
+        Assert.assertFalse("Should not have subscribed to observable when completable errors", hasRun.get());
+    }
+    
+    @Test
+    public void andThenSubscribeOn() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestScheduler scheduler = new TestScheduler();
+        Completable.complete().andThen(Observable.just("foo").delay(1, TimeUnit.SECONDS, scheduler)).subscribe(ts);
+        ts.requestMore(1);
+        ts.assertNoValues();
+        ts.assertNoTerminalEvent();
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        ts.assertValue("foo");
+        ts.assertCompleted();
+        ts.assertNoErrors();
     }
     
     @Test(expected = NullPointerException.class)
