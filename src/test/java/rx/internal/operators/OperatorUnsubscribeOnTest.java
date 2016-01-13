@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -31,13 +31,14 @@ import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.internal.util.RxThreadFactory;
 import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
 public class OperatorUnsubscribeOnTest {
 
-    @Test
+    @Test(timeout = 1000)
     public void testUnsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnSameThread() throws InterruptedException {
         UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
         try {
@@ -56,7 +57,11 @@ public class OperatorUnsubscribeOnTest {
             });
 
             TestObserver<Integer> observer = new TestObserver<Integer>();
-            w.subscribeOn(UI_EVENT_LOOP).observeOn(Schedulers.computation()).unsubscribeOn(UI_EVENT_LOOP).subscribe(observer);
+            w
+            .subscribeOn(UI_EVENT_LOOP)
+            .observeOn(Schedulers.computation())
+            .unsubscribeOn(UI_EVENT_LOOP)
+            .subscribe(observer);
 
             Thread unsubscribeThread = subscription.getThread();
 
@@ -78,7 +83,7 @@ public class OperatorUnsubscribeOnTest {
         }
     }
 
-    @Test
+    @Test(timeout = 1000)
     public void testUnsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnDifferentThreads() throws InterruptedException {
         UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
         try {
@@ -97,7 +102,11 @@ public class OperatorUnsubscribeOnTest {
             });
 
             TestObserver<Integer> observer = new TestObserver<Integer>();
-            w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation()).unsubscribeOn(UI_EVENT_LOOP).subscribe(observer);
+            w
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(Schedulers.computation())
+            .unsubscribeOn(UI_EVENT_LOOP)
+            .subscribe(observer);
 
             Thread unsubscribeThread = subscription.getThread();
 
@@ -110,7 +119,10 @@ public class OperatorUnsubscribeOnTest {
 
             System.out.println("unsubscribeThread: " + unsubscribeThread);
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
-            assertTrue(unsubscribeThread == UI_EVENT_LOOP.getThread());
+            Thread uiThread = UI_EVENT_LOOP.getThread();
+            System.out.println("UI_EVENT_LOOP: " + uiThread);
+
+            assertTrue(unsubscribeThread == uiThread);
 
             observer.assertReceivedOnNext(Arrays.asList(1, 2));
             observer.assertTerminalEvent();
@@ -153,23 +165,24 @@ public class OperatorUnsubscribeOnTest {
 
     public static class UIEventLoopScheduler extends Scheduler {
 
-        private final Scheduler.Worker eventLoop;
-        private final Subscription s;
+        private final ExecutorService eventLoop;
+        final Scheduler single;
         private volatile Thread t;
 
         public UIEventLoopScheduler() {
 
-            eventLoop = Schedulers.newThread().createWorker();
-            s = eventLoop;
+            eventLoop = Executors.newSingleThreadExecutor(new RxThreadFactory("Test-EventLoop"));
 
+            single = Schedulers.from(eventLoop);
+            
             /*
              * DON'T DO THIS IN PRODUCTION CODE
              */
             final CountDownLatch latch = new CountDownLatch(1);
-            eventLoop.schedule(new Action0() {
+            eventLoop.submit(new Runnable() {
 
                 @Override
-                public void call() {
+                public void run() {
                     t = Thread.currentThread();
                     latch.countDown();
                 }
@@ -184,11 +197,11 @@ public class OperatorUnsubscribeOnTest {
         
         @Override
         public Worker createWorker() {
-            return eventLoop;
+            return single.createWorker();
         }
 
         public void shutdown() {
-            s.unsubscribe();
+            eventLoop.shutdownNow();
         }
 
         public Thread getThread() {
