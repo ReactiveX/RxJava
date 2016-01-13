@@ -177,6 +177,10 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         /** An empty array to avoid creating new empty arrays in removeInner. */ 
         static final InnerSubscriber<?>[] EMPTY = new InnerSubscriber<?>[0];
 
+        final int scalarEmissionLimit;
+        
+        int scalarEmissionCount;
+        
         public MergeSubscriber(Subscriber<? super T> child, boolean delayErrors, int maxConcurrent) {
             this.child = child;
             this.delayErrors = delayErrors;
@@ -184,7 +188,13 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             this.nl = NotificationLite.instance();
             this.innerGuard = new Object();
             this.innerSubscribers = EMPTY;
-            request(maxConcurrent == Integer.MAX_VALUE ? Long.MAX_VALUE : maxConcurrent);
+            if (maxConcurrent == Integer.MAX_VALUE) {
+                scalarEmissionLimit = Integer.MAX_VALUE;
+                request(Long.MAX_VALUE);
+            } else {
+                scalarEmissionLimit = Math.max(1, maxConcurrent >> 1);
+                request(maxConcurrent);
+            }
         }
         
         Queue<Throwable> getOrCreateErrorQueue() {
@@ -488,7 +498,15 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 if (r != Long.MAX_VALUE) {
                     producer.produced(1);
                 }
-                this.requestMore(1);
+                
+                int produced = scalarEmissionCount + 1;
+                if (produced == scalarEmissionLimit) {
+                    scalarEmissionCount = 0;
+                    this.requestMore(produced);
+                } else {
+                    scalarEmissionCount = produced;
+                }
+                
                 // check if some state changed while emitting
                 synchronized (this) {
                     skipFinal = true;
