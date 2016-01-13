@@ -16,57 +16,25 @@
 
 package rx.observables;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
+import org.mockito.*;
 
+import rx.*;
 import rx.Observable;
-import rx.Observable.OnSubscribe;
-import rx.Observable.Operator;
+import rx.Observable.*;
 import rx.Observer;
-import rx.Producer;
-import rx.Subscriber;
 import rx.exceptions.TestException;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Action2;
-import rx.functions.Func0;
-import rx.functions.Func2;
+import rx.functions.*;
 import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
-import rx.schedulers.TestScheduler;
+import rx.schedulers.*;
 
 /**
  * Test if SyncOnSubscribe adheres to the usual unsubscription and backpressure contracts.
@@ -490,6 +458,16 @@ public class SyncOnSubscribeTest {
     }
 
     @Test
+    public void testConcurrentRequestsLoop() throws InterruptedException {
+        for (int i = 0; i < 100; i++) {
+            if (i % 10 == 0) {
+                System.out.println("testConcurrentRequestsLoop >> " + i);
+            }
+            testConcurrentRequests();
+        }
+    }
+    
+    @Test
     public void testConcurrentRequests() throws InterruptedException {
         final int count1 = 1000;
         final int count2 = 1000;
@@ -498,8 +476,14 @@ public class SyncOnSubscribeTest {
         final CountDownLatch l1 = new CountDownLatch(1);
         final CountDownLatch l2 = new CountDownLatch(1);
         
-        @SuppressWarnings("unchecked")
-        Action1<? super Integer> onUnSubscribe = mock(Action1.class);
+        final CountDownLatch l3 = new CountDownLatch(1);
+
+        final Action1<Object> onUnSubscribe = new Action1<Object>() {
+            @Override
+            public void call(Object t) {
+                l3.countDown();
+            }
+        };
         
         OnSubscribe<Integer> os = SyncOnSubscribe.createStateful(
                 new Func0<Integer>() {
@@ -514,12 +498,20 @@ public class SyncOnSubscribeTest {
                         l2.countDown();
                         // wait until the 2nd request returns then proceed
                         try {
-                            if (!l1.await(1, TimeUnit.SECONDS))
-                                throw new IllegalStateException();
-                        } catch (InterruptedException e) {}
+                            if (!l1.await(2, TimeUnit.SECONDS)) {
+                                observer.onError(new TimeoutException());
+                                return state + 1;
+                            }
+                        } catch (InterruptedException e) {
+                            observer.onError(e);
+                            return state + 1;
+                        }
                         observer.onNext(state);
-                        if (state == finalCount)
+                        
+                        if (state == finalCount) {
                             observer.onCompleted();
+                        }
+                        
                         return state + 1;
                     }},
                 onUnSubscribe);
@@ -532,10 +524,9 @@ public class SyncOnSubscribeTest {
         Observable.create(os).subscribeOn(Schedulers.newThread()).subscribe(ts);
 
         // wait until the first request has started processing
-        try {
-            if (!l2.await(1, TimeUnit.SECONDS))
-                throw new IllegalStateException();
-        } catch (InterruptedException e) {}
+        if (!l2.await(2, TimeUnit.SECONDS)) {
+            fail("SyncOnSubscribe failed to countDown in time");
+        }
         // make a concurrent request, this should return
         ts.requestMore(count2);
         // unblock the 1st thread to proceed fulfilling requests
@@ -547,7 +538,10 @@ public class SyncOnSubscribeTest {
         inOrder.verify(o, times(finalCount)).onNext(any());
         inOrder.verify(o, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
-        verify(onUnSubscribe, times(1)).call(any(Integer.class));
+        
+        if (!l3.await(2, TimeUnit.SECONDS)) {
+            fail("SyncOnSubscribe failed to countDown onUnSubscribe latch");
+        }
     }
 
     @Test

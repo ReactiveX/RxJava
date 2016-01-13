@@ -50,7 +50,7 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
     public static <T> OperatorConcat<T> instance() {
         return (OperatorConcat<T>)Holder.INSTANCE;
     }
-    private OperatorConcat() { }
+    OperatorConcat() { }
     @Override
     public Subscriber<? super Observable<? extends T>> call(final Subscriber<? super T> child) {
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);

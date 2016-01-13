@@ -32,7 +32,7 @@ public final class OperatorSerialize<T> implements Operator<T, T> {
     public static <T> OperatorSerialize<T> instance() {
         return (OperatorSerialize<T>)Holder.INSTANCE;
     }
-    private OperatorSerialize() { }
+    OperatorSerialize() { }
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> s) {
         return new SerializedSubscriber<T>(new Subscriber<T>(s) {

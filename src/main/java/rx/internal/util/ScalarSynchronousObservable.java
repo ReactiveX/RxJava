@@ -83,7 +83,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
     }
 
     /** The constant scalar value to emit on request. */
-    private final T t;
+    final T t;
 
     protected ScalarSynchronousObservable(final T t) {
         super(new OnSubscribe<T>() {
@@ -149,7 +149,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
         final T value;
         final Func1<Action0, Subscription> onSchedule;
 
-        private ScalarAsyncOnSubscribe(T value, Func1<Action0, Subscription> onSchedule) {
+        ScalarAsyncOnSubscribe(T value, Func1<Action0, Subscription> onSchedule) {
             this.value = value;
             this.onSchedule = onSchedule;
         }

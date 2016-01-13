@@ -194,7 +194,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
     static final class LatestSubscriber<T> extends Subscriber<T> {
         private final LatestEmitter<T> producer;
 
-        private LatestSubscriber(LatestEmitter<T> producer) {
+        LatestSubscriber(LatestEmitter<T> producer) {
             this.producer = producer;
         }
 

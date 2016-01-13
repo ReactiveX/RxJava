@@ -27,9 +27,9 @@ import org.mockito.MockitoAnnotations;
 
 import rx.*;
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.functions.*;
-import rx.observables.AbstractOnSubscribe;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
@@ -371,12 +371,17 @@ public class OperatorScanTest {
     
     @Test
     public void testInitialValueEmittedWithProducer() {
-        Observable<Integer> source = new AbstractOnSubscribe<Integer, Void>() {
+        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
             @Override
-            protected void next(rx.observables.AbstractOnSubscribe.SubscriptionState<Integer, Void> state) {
-                state.stop();
+            public void call(Subscriber<? super Integer> t) {
+                t.setProducer(new Producer() {
+                    @Override
+                    public void request(long n) {
+                        // deliberately no op
+                    }
+                });
             }
-        }.toObservable();
+        });
         
         TestSubscriber<Integer> ts = TestSubscriber.create();
         
@@ -425,5 +430,25 @@ public class OperatorScanTest {
         ts.assertValues(null, null, null, null, null, null, null);
         ts.assertNoErrors();
         ts.assertCompleted();
+    }
+    
+    @Test(timeout = 1000)
+    public void testUnboundedSource() {
+        Observable.range(0, Integer.MAX_VALUE)
+        .scan(0, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer a, Integer b) {
+                return 0;
+            }
+        })
+        .subscribe(new TestSubscriber<Integer>() {
+            int count;
+            @Override
+            public void onNext(Integer t) {
+                if (++count == 2) {
+                    unsubscribe();
+                }
+            }
+        });
     }
 }

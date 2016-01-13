@@ -35,18 +35,18 @@ public final class GenericScheduledExecutorService implements SchedulerLifecycle
 
     private static final String THREAD_NAME_PREFIX = "RxScheduledExecutorPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
-    
-    /* Schedulers needs acces to this in order to work with the lifecycle. */
-    public final static GenericScheduledExecutorService INSTANCE = new GenericScheduledExecutorService();
-    
-    private final AtomicReference<ScheduledExecutorService> executor;
-    
-    static final ScheduledExecutorService NONE;
+
+    private static final ScheduledExecutorService NONE;
     static {
         NONE = Executors.newScheduledThreadPool(0);
         NONE.shutdownNow();
     }
+
+    /* Schedulers needs acces to this in order to work with the lifecycle. */
+    public final static GenericScheduledExecutorService INSTANCE = new GenericScheduledExecutorService();
     
+    private final AtomicReference<ScheduledExecutorService> executor;
+
     private GenericScheduledExecutorService() {
         executor = new AtomicReference<ScheduledExecutorService>(NONE);
         start();

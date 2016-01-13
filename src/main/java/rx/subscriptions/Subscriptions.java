@@ -18,7 +18,6 @@ package rx.subscriptions;
 import java.util.concurrent.Future;
 
 import rx.Subscription;
-import rx.annotations.Experimental;
 import rx.functions.Action0;
 
 /**
@@ -57,9 +56,8 @@ public final class Subscriptions {
      * </code></pre>
      *
      * @return a {@link Subscription} to which {@code unsubscribe} does nothing, as it is already unsubscribed
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.1.0
      */
-    @Experimental
     public static Subscription unsubscribed() {
         return UNSUBSCRIBED;
     }
@@ -122,7 +120,7 @@ public final class Subscriptions {
      */
     private static final Unsubscribed UNSUBSCRIBED = new Unsubscribed();
         /** Naming classes helps with debugging. */
-    private static final class Unsubscribed implements Subscription {
+    static final class Unsubscribed implements Subscription {
         @Override
         public void unsubscribe() {
         }

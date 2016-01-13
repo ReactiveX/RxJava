@@ -15,11 +15,7 @@
  */
 package rx.subjects;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.inOrder;
@@ -394,5 +390,44 @@ public class AsyncSubjectTest {
         assertFalse(as.hasCompleted());
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
+    }
+    
+    @Test
+    public void testAsyncSubjectValueRelay() {
+        AsyncSubject<Integer> async = AsyncSubject.create();
+        async.onNext(1);
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+    }
+    @Test
+    public void testAsyncSubjectValueEmpty() {
+        AsyncSubject<Integer> async = AsyncSubject.create();
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+    }
+    @Test
+    public void testAsyncSubjectValueError() {
+        AsyncSubject<Integer> async = AsyncSubject.create();
+        TestException te = new TestException();
+        async.onError(te);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertTrue(async.hasThrowable());
+        assertSame(te, async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
     }
 }

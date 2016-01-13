@@ -28,7 +28,7 @@ import rx.functions.Func1;
  */
 public final class OperatorMap<T, R> implements Operator<R, T> {
 
-    private final Func1<? super T, ? extends R> transformer;
+    final Func1<? super T, ? extends R> transformer;
 
     public OperatorMap(Func1<? super T, ? extends R> transformer) {
         this.transformer = transformer;

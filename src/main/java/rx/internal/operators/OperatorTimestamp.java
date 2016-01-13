@@ -27,7 +27,7 @@ import rx.schedulers.Timestamped;
  */
 public final class OperatorTimestamp<T> implements Operator<Timestamped<T>, T> {
 
-    private final Scheduler scheduler;
+    final Scheduler scheduler;
 
     public OperatorTimestamp(Scheduler scheduler) {
         this.scheduler = scheduler;

@@ -163,7 +163,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
                 emitting = true;
             }
 
-            if  (localHasValue) {
+            if (localHasValue) {
                 try {
                     onNextAndComplete.onNext(localValue);
                 } catch (Throwable e) {

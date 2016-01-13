@@ -28,7 +28,7 @@ import rx.functions.Action1;
  */
 public class OperatorDoOnRequest<T> implements Operator<T, T> {
 
-    private final Action1<Long> request;
+    final Action1<Long> request;
 
     public OperatorDoOnRequest(Action1<Long> request) {
         this.request = request;
@@ -55,7 +55,7 @@ public class OperatorDoOnRequest<T> implements Operator<T, T> {
     private static final class ParentSubscriber<T> extends Subscriber<T> {
         private final Subscriber<? super T> child;
 
-        private ParentSubscriber(Subscriber<? super T> child) {
+        ParentSubscriber(Subscriber<? super T> child) {
             this.child = child;
         }
 

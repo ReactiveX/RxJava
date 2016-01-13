@@ -36,11 +36,13 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.internal.operators.OperatorToMultimap.DefaultMultimapCollectionFactory;
 import rx.internal.operators.OperatorToMultimap.DefaultToMultimapFactory;
 import rx.internal.util.UtilityFunctions;
+import rx.observers.TestSubscriber;
 
 public class OperatorToMultimapTest {
     @Mock
@@ -268,5 +270,99 @@ public class OperatorToMultimapTest {
         verify(objectObserver, times(1)).onError(any(Throwable.class));
         verify(objectObserver, never()).onNext(expected);
         verify(objectObserver, never()).onCompleted();
+    }
+    
+    @Test
+    public void testKeySelectorThrows() {
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        
+        Observable.just(1, 2).toMultimap(new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer v) {
+                throw new TestException();
+            }
+        }).subscribe(ts);
+        
+        ts.assertError(TestException.class);
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testValueSelectorThrows() {
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        
+        Observable.just(1, 2).toMultimap(new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer v) {
+                return v;
+            }
+        }, new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer v) {
+                throw new TestException();
+            }
+        }).subscribe(ts);
+        
+        ts.assertError(TestException.class);
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testMapFactoryThrows() {
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        
+        Observable.just(1, 2).toMultimap(new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer v) {
+                return v;
+            }
+        }, new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer v) {
+                return v;
+            }
+        }, new Func0<Map<Integer, Collection<Integer>>>() {
+            @Override
+            public Map<Integer, Collection<Integer>> call() {
+                throw new TestException();
+            }
+        }).subscribe(ts);
+        
+        ts.assertError(TestException.class);
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testCollectionFactoryThrows() {
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        
+        Observable.just(1, 2).toMultimap(new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer v) {
+                return v;
+            }
+        }, new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer v) {
+                return v;
+            }
+        }, new Func0<Map<Integer, Collection<Integer>>>() {
+            @Override
+            public Map<Integer, Collection<Integer>> call() {
+                return new HashMap<Integer, Collection<Integer>>();
+            }
+        }, new Func1<Integer, Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call(Integer k) {
+                throw new TestException();
+            }
+        }).subscribe(ts);
+        
+        ts.assertError(TestException.class);
+        ts.assertNoValues();
+        ts.assertNotCompleted();
     }
 }

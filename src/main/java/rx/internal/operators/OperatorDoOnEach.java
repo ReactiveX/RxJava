@@ -25,7 +25,7 @@ import rx.exceptions.*;
  * Converts the elements of an observable sequence to the specified type.
  */
 public class OperatorDoOnEach<T> implements Operator<T, T> {
-    private final Observer<? super T> doOnEachObserver;
+    final Observer<? super T> doOnEachObserver;
 
     public OperatorDoOnEach(Observer<? super T> doOnEachObserver) {
         this.doOnEachObserver = doOnEachObserver;

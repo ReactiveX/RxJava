@@ -47,7 +47,7 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
         return (OperatorMaterialize<T>) Holder.INSTANCE;
     }
 
-    private OperatorMaterialize() {
+    OperatorMaterialize() {
     }
 
     @Override

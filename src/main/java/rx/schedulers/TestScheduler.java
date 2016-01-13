@@ -31,17 +31,17 @@ import rx.subscriptions.Subscriptions;
  * advancing the clock at whatever pace you choose.
  */
 public class TestScheduler extends Scheduler {
-    private final Queue<TimedAction> queue = new PriorityQueue<TimedAction>(11, new CompareActionsByTime());
-    private static long counter = 0;
+    final Queue<TimedAction> queue = new PriorityQueue<TimedAction>(11, new CompareActionsByTime());
+    static long counter = 0;
 
     private static final class TimedAction {
 
-        private final long time;
-        private final Action0 action;
-        private final Worker scheduler;
+        final long time;
+        final Action0 action;
+        final Worker scheduler;
         private final long count = counter++; // for differentiating tasks at same time
 
-        private TimedAction(Worker scheduler, long time, Action0 action) {
+        TimedAction(Worker scheduler, long time, Action0 action) {
             this.time = time;
             this.action = action;
             this.scheduler = scheduler;
@@ -54,6 +54,9 @@ public class TestScheduler extends Scheduler {
     }
 
     private static class CompareActionsByTime implements Comparator<TimedAction> {
+        CompareActionsByTime() {
+        }
+
         @Override
         public int compare(TimedAction action1, TimedAction action2) {
             if (action1.time == action2.time) {
@@ -65,7 +68,7 @@ public class TestScheduler extends Scheduler {
     }
 
     // Storing time in nanoseconds internally.
-    private long time;
+    long time;
 
     @Override
     public long now() {
@@ -131,6 +134,9 @@ public class TestScheduler extends Scheduler {
     private final class InnerTestScheduler extends Worker {
 
         private final BooleanSubscription s = new BooleanSubscription();
+
+        InnerTestScheduler() {
+        }
 
         @Override
         public void unsubscribe() {

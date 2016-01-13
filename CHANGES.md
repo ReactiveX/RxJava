@@ -1,5 +1,57 @@
 # RxJava Releases #
 
+### Version 1.1.0 – December 2 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.0%7C)) ###
+
+* [Pull 3550] (https://github.com/ReactiveX/RxJava/pull/3550) Public API changes for 1.1.0 release
+
+#### Promotions to Public API
+
+* Subscriptions.unsubscribed
+* Subscribers.wrap
+* 2 RxJavaErrorHandler methods
+* Single + SingleSubscriber
+* Exceptions.throwIfAny
+* Observable.switchIfEmpty with Observable
+* BackpressureDrainManager
+* Observable.onBackpressureLatest
+* Observable.onBackpressureDrop with action
+* Observable.onBackpressureBuffer overloads
+* 2 Observable.merge overloads for maxConcurrent
+* TestSubscriber methods
+* Observable.takeUntil with predicate 
+
+#### Promotions to BETA
+
+* ConnectableObservable.autoConnect
+* Stateful Subject methods on ReplaySubject, PublishSubject, BehaviorSubject, and AsyncSubject
+
+#### Experimental APIs Removed
+
+* Observable.onBackpressureBlock
+* rx.observables.AbstractOnSubscribe
+* Removal of stateful methods from the generic rx.subjects.Subject abstract class
+
+### Version 1.0.17 – December 1 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.17%7C)) ###
+
+* [Pull 3491] (https://github.com/ReactiveX/RxJava/pull/3491) Make scan's delayed Producer independent of event serialization
+* [Pull 3150] (https://github.com/ReactiveX/RxJava/pull/3150) Window operators now support backpressure in the inner observable
+* [Pull 3535] (https://github.com/ReactiveX/RxJava/pull/3535) Don't swallow fatal errors in OperatorZipIterable
+* [Pull 3528] (https://github.com/ReactiveX/RxJava/pull/3528) Avoid to call next when Iterator is drained
+* [Pull 3436] (https://github.com/ReactiveX/RxJava/pull/3436) Add action != null check in OperatorFinally
+* [Pull 3513] (https://github.com/ReactiveX/RxJava/pull/3513) Add shorter RxJavaPlugin class lookup approach
+
+### Version 1.0.16 – November 11 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.16%7C)) ###
+
+* [Pull 3169] (https://github.com/ReactiveX/RxJava/pull/3169) Merge can now operate in horizontally unbounded mode
+* [Pull 3286] (https://github.com/ReactiveX/RxJava/pull/3286) Implements BlockingSingle
+* [Pull 3433] (https://github.com/ReactiveX/RxJava/pull/3433) Add Single.defer()
+* [Pull 3468] (https://github.com/ReactiveX/RxJava/pull/3468) Fix other places that may swallow OnErrorFailedException
+* [Pull 3485] (https://github.com/ReactiveX/RxJava/pull/3485) fix scan() not accepting a null initial value
+* [Pull 3488] (https://github.com/ReactiveX/RxJava/pull/3488) Replace all instances of Atomic*FieldUpdater with direct Atomic* instances
+* [Pull 3493] (https://github.com/ReactiveX/RxJava/pull/3493) fix for zip(Obs<Obs<T>>) backpressure problem
+* [Pull 3510] (https://github.com/ReactiveX/RxJava/pull/3510) eager concatMap to choose safe or unsafe queue based on platform
+* [Pull 3512] (https://github.com/ReactiveX/RxJava/pull/3512) fix SafeSubscriber documentation regarding unsubscribe
+
 ### Version 1.0.15 – October 9 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.15%7C)) ###
 
 * [Pull 3438] (https://github.com/ReactiveX/RxJava/pull/3438) Better null tolerance in rx.exceptions.*Exception classes

@@ -25,7 +25,7 @@ import rx.schedulers.TimeInterval;
  */
 public final class OperatorTimeInterval<T> implements Operator<TimeInterval<T>, T> {
 
-    private final Scheduler scheduler;
+    final Scheduler scheduler;
 
     public OperatorTimeInterval(Scheduler scheduler) {
         this.scheduler = scheduler;

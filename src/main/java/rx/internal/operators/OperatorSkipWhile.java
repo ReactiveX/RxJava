@@ -25,7 +25,7 @@ import rx.functions.Func2;
  * as soon as the condition becomes false.
  */
 public final class OperatorSkipWhile<T> implements Operator<T, T> {
-    private final Func2<? super T, Integer, Boolean> predicate;
+    final Func2<? super T, Integer, Boolean> predicate;
 
     public OperatorSkipWhile(Func2<? super T, Integer, Boolean> predicate) {
         this.predicate = predicate;

@@ -12,10 +12,11 @@
  */
 package rx;
 
+import java.util.Collection;
 import java.util.concurrent.*;
 
 import rx.Observable.Operator;
-import rx.annotations.Experimental;
+import rx.annotations.*;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
@@ -23,6 +24,7 @@ import rx.internal.producers.SingleDelayedProducer;
 import rx.observers.SafeSubscriber;
 import rx.plugins.*;
 import rx.schedulers.Schedulers;
+import rx.singles.BlockingSingle;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -46,7 +48,7 @@ import rx.subscriptions.Subscriptions;
  *            the type of the item emitted by the Single
  * @since (If this class graduates from "Experimental" replace this parenthetical with the release number)
  */
-@Experimental
+@Beta
 public class Single<T> {
 
     final Observable.OnSubscribe<T> onSubscribe;
@@ -93,7 +95,7 @@ public class Single<T> {
         this.onSubscribe = f;
     }
 
-    private static final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
+    static final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
      * Returns a Single that will execute the specified function when a {@link SingleSubscriber} executes it or
@@ -1181,6 +1183,30 @@ public class Single<T> {
     }
 
     /**
+     * Returns a Single that emits the result of specified combiner function applied to combination of
+     * items emitted, in sequence, by an Iterable of other Singles.
+     * <p>
+     * {@code zip} applies this function in strict sequence.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param singles
+     *            an Iterable of source Singles
+     * @param zipFunction
+     *            a function that, when applied to an item emitted by each of the source Singles, results in
+     *            an item that will be emitted by the resulting Single
+     * @return a Single that emits the zipped results
+     * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
+     */
+    public static <R> Single<R> zip(Iterable<? extends Single<?>> singles, FuncN<? extends R> zipFunction) {
+        return SingleOperatorZip.zip(iterableToArray(singles), zipFunction);
+    }
+
+    /**
      * Returns an Observable that emits the item emitted by the source Single, then the item emitted by the
      * specified Single.
      * <p>
@@ -1248,7 +1274,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param func
      *            a function to apply to the item emitted by the Single
      * @return a Single that emits the item from the source Single, transformed by the specified function
@@ -1808,6 +1834,21 @@ public class Single<T> {
     }
 
     /**
+     * Converts a Single into a {@link BlockingSingle} (a Single with blocking operators).
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toBlocking} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a {@code BlockingSingle} version of this Single.
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
+     */
+    @Experimental
+    public final BlockingSingle<T> toBlocking() {
+        return BlockingSingle.from(this);
+    }
+
+    /**
      * Returns a Single that emits the result of applying a specified function to the pair of items emitted by
      * the source Single and another specified Single.
      * <p>
@@ -1949,5 +1990,132 @@ public class Single<T> {
     @Experimental
     public final Single<T> delay(long delay, TimeUnit unit) {
         return delay(delay, unit, Schedulers.computation());
+    }
+
+    /**
+     * Returns a {@link Single} that calls a {@link Single} factory to create a {@link Single} for each new Observer
+     * that subscribes. That is, for each subscriber, the actual {@link Single} that subscriber observes is
+     * determined by the factory function.
+     * <p>
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defer.png" alt="">
+     * <p>
+     * The defer Observer allows you to defer or delay emitting value from a {@link Single} until such time as an
+     * Observer subscribes to the {@link Single}. This allows an {@link Observer} to easily obtain updates or a
+     * refreshed version of the sequence.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param singleFactory
+     *            the {@link Single} factory function to invoke for each {@link Observer} that subscribes to the
+     *            resulting {@link Single}.
+     * @param <T>
+     *            the type of the items emitted by the {@link Single}.
+     * @return a {@link Single} whose {@link Observer}s' subscriptions trigger an invocation of the given
+     *         {@link Single} factory function.
+     * @see <a href="http://reactivex.io/documentation/operators/defer.html">ReactiveX operators documentation: Defer</a>
+     */
+    @Experimental
+    public static <T> Single<T> defer(final Callable<Single<T>> singleFactory) {
+        return create(new OnSubscribe<T>() {
+            @Override
+            public void call(SingleSubscriber<? super T> singleSubscriber) {
+                Single<? extends T> single;
+
+                try {
+                    single = singleFactory.call();
+                } catch (Throwable t) {
+                    Exceptions.throwIfFatal(t);
+                    singleSubscriber.onError(t);
+                    return;
+                }
+
+                single.subscribe(singleSubscriber);
+            }
+        });
+    }
+
+    /**
+     * Modifies the source {@link Single} so that it invokes the given action when it is unsubscribed from
+     * its subscribers.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnUnsubscribe.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnUnsubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param action
+     *            the action that gets called when this {@link Single} is unsubscribed.
+     * @return the source {@link Single} modified so as to call this Action when appropriate.
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     */
+    @Experimental
+    public final Single<T> doOnUnsubscribe(final Action0 action) {
+        return lift(new OperatorDoOnUnsubscribe<T>(action));
+    }
+
+    /**
+     * Registers an {@link Action0} to be called when this {@link Single} invokes either
+     * {@link SingleSubscriber#onSuccess(Object)}  onSuccess} or {@link SingleSubscriber#onError onError}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param action
+     *            an {@link Action0} to be invoked when the source {@link Single} finishes.
+     * @return a {@link Single} that emits the same item or error as the source {@link Single}, then invokes the
+     *         {@link Action0}
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     */
+    @Experimental
+    public final Single<T> doAfterTerminate(Action0 action) {
+        return lift(new OperatorDoAfterTerminate<T>(action));
+    }
+
+    /**
+     * FOR INTERNAL USE ONLY.
+     * <p>
+     * Converts {@link Iterable} of {@link Single} to array of {@link Single}.
+     *
+     * @param singlesIterable
+     *         non null iterable of {@link Single}.
+     * @return array of {@link Single} with same length as passed iterable.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Single<? extends T>[] iterableToArray(final Iterable<? extends Single<? extends T>> singlesIterable) {
+        final Single<? extends T>[] singlesArray;
+        int count;
+
+        if (singlesIterable instanceof Collection) {
+            Collection<? extends Single<? extends T>> list = (Collection<? extends Single<? extends T>>) singlesIterable;
+            count = list.size();
+            singlesArray = list.toArray(new Single[count]);
+        } else {
+            Single<? extends T>[] tempArray = new Single[8]; // Magic number used just to reduce number of allocations.
+            count = 0;
+            for (Single<? extends T> s : singlesIterable) {
+                if (count == tempArray.length) {
+                    Single<? extends T>[] sb = new Single[count + (count >> 2)];
+                    System.arraycopy(tempArray, 0, sb, 0, count);
+                    tempArray = sb;
+                }
+                tempArray[count] = s;
+                count++;
+            }
+
+            if (tempArray.length == count) {
+                singlesArray = tempArray;
+            } else {
+                singlesArray = new Single[count];
+                System.arraycopy(tempArray, 0, singlesArray, 0, count);
+            }
+        }
+
+        return singlesArray;
     }
 }

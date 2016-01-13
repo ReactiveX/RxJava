@@ -30,9 +30,9 @@ import java.util.concurrent.TimeUnit;
  */
 public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
 
-    private final long ageMillis;
-    private final Scheduler scheduler;
-    private final int count;
+    final long ageMillis;
+    final Scheduler scheduler;
+    final int count;
 
     public OperatorTakeLastTimed(long time, TimeUnit unit, Scheduler scheduler) {
         this.ageMillis = unit.toMillis(time);

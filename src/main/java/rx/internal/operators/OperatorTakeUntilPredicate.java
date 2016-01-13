@@ -17,7 +17,6 @@ package rx.internal.operators;
 
 import rx.*;
 import rx.Observable.Operator;
-import rx.annotations.Experimental;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 
@@ -26,14 +25,13 @@ import rx.functions.Func1;
  * the provided predicate returns false
  * <p>
  */
-@Experimental
 public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
     /** Subscriber returned to the upstream. */
     private final class ParentSubscriber extends Subscriber<T> {
         private final Subscriber<? super T> child;
         private boolean done = false;
 
-        private ParentSubscriber(Subscriber<? super T> child) {
+        ParentSubscriber(Subscriber<? super T> child) {
             this.child = child;
         }
 
@@ -75,7 +73,7 @@ public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
         }
     }
 
-    private final Func1<? super T, Boolean> stopPredicate;
+    final Func1<? super T, Boolean> stopPredicate;
 
     public OperatorTakeUntilPredicate(final Func1<? super T, Boolean> stopPredicate) {
         this.stopPredicate = stopPredicate;

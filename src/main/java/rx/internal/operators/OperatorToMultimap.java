@@ -22,9 +22,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import rx.Observable.Operator;
+import rx.exceptions.Exceptions;
 import rx.Subscriber;
 import rx.functions.Func0;
 import rx.functions.Func1;
+import rx.observers.Subscribers;
 
 /**
  * Maps the elements of the source observable into a multimap
@@ -56,10 +58,10 @@ public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collec
         }
     }
 
-    private final Func1<? super T, ? extends K> keySelector;
-    private final Func1<? super T, ? extends V> valueSelector;
+    final Func1<? super T, ? extends K> keySelector;
+    final Func1<? super T, ? extends V> valueSelector;
     private final Func0<? extends Map<K, Collection<V>>> mapFactory;
-    private final Func1<? super K, ? extends Collection<V>> collectionFactory;
+    final Func1<? super K, ? extends Collection<V>> collectionFactory;
 
     /**
      * ToMultimap with key selector, custom value selector,
@@ -103,8 +105,24 @@ public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collec
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super Map<K, Collection<V>>> subscriber) {
+        
+        Map<K, Collection<V>> localMap;
+        
+        try {
+            localMap = mapFactory.call();
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            subscriber.onError(ex);
+            
+            Subscriber<? super T> parent = Subscribers.empty();
+            parent.unsubscribe();
+            return parent;
+        }
+        
+        final Map<K, Collection<V>> fLocalMap = localMap;
+        
         return new Subscriber<T>(subscriber) {
-            private Map<K, Collection<V>> map = mapFactory.call();
+            private Map<K, Collection<V>> map = fLocalMap;
 
             @Override
             public void onStart() {
@@ -113,11 +131,27 @@ public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collec
             
             @Override
             public void onNext(T v) {
-                K key = keySelector.call(v);
-                V value = valueSelector.call(v);
+                K key;
+                V value;
+
+                try {
+                    key = keySelector.call(v);
+                    value = valueSelector.call(v);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    subscriber.onError(ex);
+                    return;
+                }
+                
                 Collection<V> collection = map.get(key);
                 if (collection == null) {
-                    collection = collectionFactory.call(key);
+                    try {
+                        collection = collectionFactory.call(key);
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        subscriber.onError(ex);
+                        return;
+                    }
                     map.put(key, collection);
                 }
                 collection.add(value);

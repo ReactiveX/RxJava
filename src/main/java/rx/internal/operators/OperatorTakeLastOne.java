@@ -18,7 +18,7 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
         return (OperatorTakeLastOne<T>) Holder.INSTANCE;
     }
 
-    private OperatorTakeLastOne() {
+    OperatorTakeLastOne() {
 
     }
 

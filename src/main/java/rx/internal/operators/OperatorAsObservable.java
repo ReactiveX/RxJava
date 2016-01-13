@@ -37,7 +37,7 @@ public final class OperatorAsObservable<T> implements Operator<T, T> {
     public static <T> OperatorAsObservable<T> instance() {
         return (OperatorAsObservable<T>)Holder.INSTANCE;
     }
-    private OperatorAsObservable() { }
+    OperatorAsObservable() { }
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> s) {
         return s;

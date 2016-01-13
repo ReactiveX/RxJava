@@ -75,7 +75,7 @@ public final class TestSubject<T> extends Subject<T, T> {
         onCompleted(0);
     }
 
-    private void _onCompleted() {
+    void _onCompleted() {
         if (state.active) {
             for (SubjectObserver<T> bo : state.terminate(NotificationLite.instance().completed())) {
                 bo.onCompleted();
@@ -108,7 +108,7 @@ public final class TestSubject<T> extends Subject<T, T> {
         onError(e, 0);
     }
 
-    private void _onError(final Throwable e) {
+    void _onError(final Throwable e) {
         if (state.active) {
             for (SubjectObserver<T> bo : state.terminate(NotificationLite.instance().error(e))) {
                 bo.onError(e);
@@ -143,7 +143,7 @@ public final class TestSubject<T> extends Subject<T, T> {
         onNext(v, 0);
     }
 
-    private void _onNext(T v) {
+    void _onNext(T v) {
         for (Observer<? super T> o : state.observers()) {
             o.onNext(v);
         }
