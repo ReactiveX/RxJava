@@ -32,19 +32,19 @@ Version 1.x is now a stable API and will be supported for several years.
 
 Minor 1.x increments (such as 1.1, 1.2, etc) will occur when non-trivial new functionality is added or significant enhancements or bug fixes occur that may have behavioral changes that may affect some edge cases (such as dependence on behavior resulting from a bug). An example of an enhancement that would classify as this is adding reactive pull backpressure support to an operator that previously did not support it. This should be backwards compatible but does behave differently.
 
-Patch 1.x.y increments (such as 1.0.0 -> 1.0.1, 1.3.1 -> 1.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an `@Beta` or `@Experimental` annotation can also be added in patch releases to allow rapid exploration and iteration of unstable new functionality. 
+Patch 1.x.y increments (such as 1.0.0 -> 1.0.1, 1.3.1 -> 1.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an [`@Beta`](https://github.com/ReactiveX/RxJava/blob/f2410f88dc28c1013f48754606e38507e493245f/src/main/java/rx/annotations/Beta.java) or [`@Experimental`](https://github.com/ReactiveX/RxJava/blob/f2410f88dc28c1013f48754606e38507e493245f/src/main/java/rx/annotations/Experimental.java) annotation can also be added in patch releases to allow rapid exploration and iteration of unstable new functionality. 
 
 #### @Beta
 
-APIs marked with the `@Beta` annotation at the class or method level are subject to change. They can be modified in any way, or even removed in any major or minor release but not in a patch release. If your code is a library itself (i.e. it is used on the CLASSPATH of users outside your own control), you should not use beta APIs, unless you repackage them (e.g. using ProGuard, shading, etc).
+APIs marked with the [`@Beta`](https://github.com/ReactiveX/RxJava/blob/f2410f88dc28c1013f48754606e38507e493245f/src/main/java/rx/annotations/Beta.java) annotation at the class or method level are subject to change. They can be modified in any way, or even removed in any major or minor release but not in a patch release. If your code is a library itself (i.e. it is used on the CLASSPATH of users outside your own control), you should not use beta APIs, unless you repackage them (e.g. using ProGuard, shading, etc).
 
 #### @Experimental
 
-APIs marked with the `@Experimental` annotation at the class or method level will almost certainly change. They can be modified in any way, or even removed in any major, minor or, patch release. You should not use or rely on them in any production code. They are purely to allow broad testing and feedback. 
+APIs marked with the [`@Experimental`](https://github.com/ReactiveX/RxJava/blob/f2410f88dc28c1013f48754606e38507e493245f/src/main/java/rx/annotations/Experimental.java) annotation at the class or method level will almost certainly change. They can be modified in any way, or even removed in any major, minor or, patch release. You should not use or rely on them in any production code. They are purely to allow broad testing and feedback. 
 
 #### @Deprecated
 
-APIs marked with the `@Deprecated` annotation at the class or method level will remain supported until the next major release but it is recommended to stop using them. APIs marked with `@Beta` and `@Experimental` will be marked as deprecated for at least one minor release before they removed in a minor or patch release respectively.
+APIs marked with the `@Deprecated` annotation at the class or method level will remain supported until the next major release but it is recommended to stop using them. APIs marked with [`@Beta`](https://github.com/ReactiveX/RxJava/blob/f2410f88dc28c1013f48754606e38507e493245f/src/main/java/rx/annotations/Beta.java) and [`@Experimental`](https://github.com/ReactiveX/RxJava/blob/f2410f88dc28c1013f48754606e38507e493245f/src/main/java/rx/annotations/Experimental.java) will be marked as deprecated for at least one minor release before they removed in a minor or patch release respectively.
 
 #### rx.internal.*
 
