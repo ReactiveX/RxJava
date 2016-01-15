@@ -152,13 +152,18 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
         }
         
         void cancel(Queue<?> q) {
-            q.clear();
+            clear(q);
             for (CombinerSubscriber<T, R> s : subscribers) {
                 s.cancel();
             }
         }
-        
-        Object last = "1";
+
+        void clear(Queue<?> q) {
+            synchronized (this) {
+                Arrays.fill(latest, null);
+            }
+            q.clear();
+        }
         
         void combine(T value, int index) {
             CombinerSubscriber<T, R> cs = subscribers[index];
@@ -169,6 +174,9 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
             boolean empty;
             boolean f;
             synchronized (this) {
+                if (cancelled) {
+                    return;
+                }
                 len = latest.length;
                 Object o = latest[index];
                 a = active;
@@ -287,6 +295,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
             if (d) {
                 if (delayError) {
                     if (empty) {
+                        clear(queue);
                         Throwable e = error;
                         if (e != null) {
                             a.onError(e);
@@ -303,6 +312,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
                         return true;
                     } else
                     if (empty) {
+                        clear(queue);
                         a.onComplete();
                         return true;
                     }
