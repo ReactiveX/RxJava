@@ -118,12 +118,13 @@ public final class CompositeException extends RuntimeException {
                 // we now have 'e' as the last in the chain
                 try {
                     chain.initCause(e);
+                    chain = chain.getCause();
                 } catch (Throwable t) {
                     // ignore
                     // the javadocs say that some Throwables (depending on how they're made) will never
                     // let me call initCause without blowing up even if it returns null
+                    chain = e;
                 }
-                chain = chain.getCause();
             }
             cause = _cause;
         }

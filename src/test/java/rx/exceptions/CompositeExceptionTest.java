@@ -178,4 +178,46 @@ public class CompositeExceptionTest {
         composite.getCause();
         composite.printStackTrace();
     }
+
+    @Test(timeout = 1000)
+    public void testCompositeExceptionWithUnsupportedInitCause() {
+        Throwable t = new Throwable() {
+            @Override
+            public synchronized Throwable initCause(Throwable cause) {
+                throw new UnsupportedOperationException();
+            }
+        };
+        CompositeException cex = new CompositeException(Arrays.asList(t, ex1));
+
+        System.err.println("----------------------------- print composite stacktrace");
+        cex.printStackTrace();
+        assertEquals(2, cex.getExceptions().size());
+
+        assertNoCircularReferences(cex);
+        assertNotNull(getRootCause(cex));
+
+        System.err.println("----------------------------- print cause stacktrace");
+        cex.getCause().printStackTrace();
+    }
+
+    @Test(timeout = 1000)
+    public void testCompositeExceptionWithNullInitCause() {
+        Throwable t = new Throwable("ThrowableWithNullInitCause") {
+            @Override
+            public synchronized Throwable initCause(Throwable cause) {
+                return null;
+            }
+        };
+        CompositeException cex = new CompositeException(Arrays.asList(t, ex1));
+
+        System.err.println("----------------------------- print composite stacktrace");
+        cex.printStackTrace();
+        assertEquals(2, cex.getExceptions().size());
+
+        assertNoCircularReferences(cex);
+        assertNotNull(getRootCause(cex));
+
+        System.err.println("----------------------------- print cause stacktrace");
+        cex.getCause().printStackTrace();
+    }
 }
