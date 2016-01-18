@@ -37,6 +37,8 @@ import rx.functions.FuncN;
 import rx.annotations.Beta;
 import rx.internal.operators.*;
 import rx.internal.producers.SingleDelayedProducer;
+import rx.internal.util.ScalarSynchronousSingle;
+import rx.internal.util.UtilityFunctions;
 import rx.singles.BlockingSingle;
 import rx.observers.SafeSubscriber;
 import rx.plugins.*;
@@ -656,15 +658,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     public final static <T> Single<T> just(final T value) {
-        // TODO add similar optimization as ScalarSynchronousObservable
-        return Single.create(new OnSubscribe<T>() {
-
-            @Override
-            public void call(SingleSubscriber<? super T> te) {
-                te.onSuccess(value);
-            }
-
-        });
+        return ScalarSynchronousSingle.create(value);
     }
 
     /**
@@ -685,6 +679,9 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final static <T> Single<T> merge(final Single<? extends Single<? extends T>> source) {
+        if (source.getClass() == ScalarSynchronousSingle.class) {
+            return ((ScalarSynchronousSingle<T>)source).scalarFlatMap((Func1) UtilityFunctions.identity());
+        }
         return Single.create(new OnSubscribe<T>() {
 
             @Override
@@ -1258,6 +1255,9 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     public final <R> Single<R> flatMap(final Func1<? super T, ? extends Single<? extends R>> func) {
+        if (getClass() == ScalarSynchronousSingle.class) {
+            return ((ScalarSynchronousSingle<T>)this).scalarFlatMap(func);
+        }
         return merge(map(func));
     }
 
@@ -1340,6 +1340,9 @@ public class Single<T> {
      * @see #subscribeOn
      */
     public final Single<T> observeOn(Scheduler scheduler) {
+        if (this instanceof ScalarSynchronousSingle) {
+            return ((ScalarSynchronousSingle<T>)this).scalarScheduleOn(scheduler);
+        }
         return lift(new OperatorObserveOn<T>(scheduler));
     }
 
@@ -1699,6 +1702,9 @@ public class Single<T> {
      * @see #observeOn
      */
     public final Single<T> subscribeOn(Scheduler scheduler) {
+        if (this instanceof ScalarSynchronousSingle) {
+            return ((ScalarSynchronousSingle<T>)this).scalarScheduleOn(scheduler);
+        }
         return nest().lift(new OperatorSubscribeOn<T>(scheduler));
     }
     
