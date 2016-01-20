@@ -12,31 +12,20 @@
  */
 package rx;
 
-import rx.annotations.Beta;
-import rx.annotations.Experimental;
-import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorNotImplementedException;
+import java.util.*;
+import java.util.concurrent.*;
+
+import rx.annotations.*;
+import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.producers.SingleProducer;
-import rx.internal.util.RxRingBuffer;
-import rx.internal.util.ScalarSynchronousObservable;
-import rx.internal.util.UtilityFunctions;
-import rx.observables.BlockingObservable;
-import rx.observables.ConnectableObservable;
-import rx.observables.GroupedObservable;
+import rx.internal.util.*;
+import rx.observables.*;
 import rx.observers.SafeSubscriber;
-import rx.plugins.RxJavaObservableExecutionHook;
-import rx.plugins.RxJavaPlugins;
-import rx.schedulers.Schedulers;
-import rx.schedulers.TimeInterval;
-import rx.schedulers.Timestamped;
+import rx.plugins.*;
+import rx.schedulers.*;
 import rx.subscriptions.Subscriptions;
-
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * The Observable class that implements the Reactive Pattern.
@@ -50,7 +39,7 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * For more information see the <a href="http://reactivex.io/documentation/observable.html">ReactiveX
  * documentation</a>.
- * 
+ *
  * @param <T>
  *            the type of the items emitted by the Observable
  */
@@ -63,7 +52,7 @@ public class Observable<T> {
      * <p>
      * <em>Note:</em> Use {@link #create(OnSubscribe)} to create an Observable, instead of this constructor,
      * unless you specifically have a need for inheritance.
-     * 
+     *
      * @param f
      *            {@link OnSubscribe} to be executed when {@link #subscribe(Subscriber)} is called
      */
@@ -92,7 +81,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T>
      *            the type of the items that this Observable emits
      * @param f
@@ -123,8 +112,8 @@ public class Observable<T> {
     /**
      * Passes all emitted values from this Observable to the provided conversion function to be collected and
      * returned as a single value. Note that it is legal for a conversion function to return an Observable
-     * (enabling chaining). 
-     * 
+     * (enabling chaining).
+     *
      * @param conversion a function that converts from this {@code Observable<T>} to an {@code R}
      * @return an instance of R created by the provided conversion function
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
@@ -137,7 +126,7 @@ public class Observable<T> {
                 subscriber.add(Observable.subscribe(subscriber, Observable.this));
             }});
     }
-    
+
     /**
      * Lifts a function to the current Observable and returns a new Observable that when subscribed to will pass
      * the values of the current Observable through the Operator function.
@@ -155,7 +144,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code lift} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param operator the Operator that implements the Observable-operating function to be applied to the source
      *             Observable
      * @return an Observable that is the result of applying the lifted Operator to the source Observable
@@ -172,7 +161,7 @@ public class Observable<T> {
                         st.onStart();
                         onSubscribe.call(st);
                     } catch (Throwable e) {
-                        // localized capture of errors rather than it skipping all operators 
+                        // localized capture of errors rather than it skipping all operators
                         // and ending up in the try/catch of the subscribe method which then
                         // prevents onErrorResumeNext and other similar approaches to error handling
                         Exceptions.throwIfFatal(e);
@@ -187,7 +176,7 @@ public class Observable<T> {
             }
         });
     }
-    
+
     /**
      * Transform an Observable by applying a particular Transformer function to it.
      * <p>
@@ -201,7 +190,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param transformer implements the function that transforms the source Observable
      * @return the source Observable, transformed by the transformer function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
@@ -267,7 +256,7 @@ public class Observable<T> {
     public Completable toCompletable() {
         return Completable.fromObservable(this);
     }
-    
+
 
     /* *********************************************************************************************************
      * Operators Below Here
@@ -283,7 +272,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param sources
      *            an Iterable of Observable sources competing to react first
      * @return an Observable that emits the same sequence as whichever of the source Observables first
@@ -303,7 +292,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -325,7 +314,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -349,7 +338,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -403,7 +392,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -499,7 +488,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -562,7 +551,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -590,7 +579,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -621,7 +610,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -654,7 +643,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -689,7 +678,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -726,7 +715,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -765,7 +754,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -896,7 +885,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -1012,7 +1001,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -1046,7 +1035,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -1087,7 +1076,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param observableFactory
      *            the Observable factory function to invoke for each {@link Observer} that subscribes to the
      *            resulting Observable
@@ -1110,7 +1099,7 @@ public class Observable<T> {
             }
         });
     }
-    
+
     /**
      * Returns an Observable that emits no items to the {@link Observer} and immediately invokes its
      * {@link Observer#onCompleted onCompleted} method.
@@ -1141,7 +1130,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param exception
      *            the particular Throwable to pass to {@link Observer#onError onError}
      * @param <T>
@@ -1168,7 +1157,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param future
      *            the source {@link Future}
      * @param <T>
@@ -1195,7 +1184,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param future
      *            the source {@link Future}
      * @param timeout
@@ -1224,7 +1213,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param future
      *            the source {@link Future}
      * @param scheduler
@@ -1249,7 +1238,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param iterable
      *            the source {@link Iterable} sequence
      * @param <T>
@@ -1270,7 +1259,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param array
      *            the source Array
      * @param <T>
@@ -1324,7 +1313,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code interval} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param interval
      *            interval size in time units (see below)
      * @param unit
@@ -1345,7 +1334,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param interval
      *            interval size in time units (see below)
      * @param unit
@@ -1371,7 +1360,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code interval} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param initialDelay
      *            the initial delay time to wait before emitting the first value of 0L
      * @param period
@@ -1399,7 +1388,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param initialDelay
      *            the initial delay time to wait before emitting the first value of 0L
      * @param period
@@ -1433,7 +1422,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param value
      *            the item to emit
      * @param <T>
@@ -1444,7 +1433,7 @@ public class Observable<T> {
     public final static <T> Observable<T> just(final T value) {
         return ScalarSynchronousObservable.create(value);
     }
-    
+
     /**
      * Converts two items into an Observable that emits those items.
      * <p>
@@ -1453,7 +1442,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            first item
      * @param t2
@@ -1477,7 +1466,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            first item
      * @param t2
@@ -1503,7 +1492,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            first item
      * @param t2
@@ -1561,7 +1550,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            first item
      * @param t2
@@ -1593,7 +1582,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            first item
      * @param t2
@@ -1627,7 +1616,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            first item
      * @param t2
@@ -1663,7 +1652,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            first item
      * @param t2
@@ -1701,7 +1690,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            first item
      * @param t2
@@ -1732,7 +1721,7 @@ public class Observable<T> {
     public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9, T t10) {
         return from((T[])new Object[] { t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 });
     }
-    
+
     /**
      * Flattens an Iterable of Observables into one Observable, without any transformation.
      * <p>
@@ -1744,7 +1733,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param sequences
      *            the Iterable of Observables
      * @return an Observable that emits items that are the result of flattening the items emitted by the
@@ -1767,7 +1756,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param sequences
      *            the Iterable of Observables
      * @param maxConcurrent
@@ -1822,7 +1811,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param source
      *            an Observable that emits Observables
      * @param maxConcurrent
@@ -1853,7 +1842,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -1877,7 +1866,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -1903,7 +1892,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -1931,7 +1920,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -1961,7 +1950,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -1993,7 +1982,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2027,7 +2016,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2063,7 +2052,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2101,7 +2090,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param sequences
      *            the Array of Observables
      * @return an Observable that emits all of the items emitted by the Observables in the Array
@@ -2110,7 +2099,7 @@ public class Observable<T> {
     public final static <T> Observable<T> merge(Observable<? extends T>[] sequences) {
         return merge(from(sequences));
     }
-    
+
     /**
      * Flattens an Array of Observables into one Observable, without any transformation, while limiting the
      * number of concurrent subscriptions to these Observables.
@@ -2123,7 +2112,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param sequences
      *            the Array of Observables
      * @param maxConcurrent
@@ -2153,7 +2142,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param source
      *            an Observable that emits Observables
      * @return an Observable that emits all of the items emitted by the Observables emitted by the
@@ -2182,7 +2171,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param source
      *            an Observable that emits Observables
      * @param maxConcurrent
@@ -2214,7 +2203,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2244,7 +2233,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2276,7 +2265,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2310,7 +2299,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2346,7 +2335,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2385,7 +2374,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2425,7 +2414,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2468,7 +2457,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2503,7 +2492,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code nest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @return an Observable that emits a single item: the source Observable
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
@@ -2521,7 +2510,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code never} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T>
      *            the type of items (not) emitted by the Observable
      * @return an Observable that never emits any items or sends any notifications to an {@link Observer}
@@ -2539,7 +2528,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code range} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param start
      *            the value of the first Integer in the sequence
      * @param count
@@ -2575,7 +2564,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param start
      *            the value of the first Integer in the sequence
      * @param count
@@ -2598,7 +2587,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param first
      *            the first Observable to compare
      * @param second
@@ -2630,7 +2619,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param first
      *            the first Observable to compare
      * @param second
@@ -2661,7 +2650,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the item type
      * @param sequenceOfSequences
      *            the source Observable that emits Observables
@@ -2685,7 +2674,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timer} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param initialDelay
      *            the initial delay time to wait before emitting the first value of 0L
      * @param period
@@ -2714,7 +2703,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param initialDelay
      *            the initial delay time to wait before emitting the first value of 0L
      * @param period
@@ -2744,7 +2733,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timer} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param delay
      *            the initial delay before emitting a single {@code 0L}
      * @param unit
@@ -2768,7 +2757,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param delay
      *            the initial delay before emitting a single 0L
      * @param unit
@@ -2791,7 +2780,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param resourceFactory
      *            the factory function to create a resource object that depends on the Observable
      * @param observableFactory
@@ -2807,9 +2796,9 @@ public class Observable<T> {
             final Action1<? super Resource> disposeAction) {
         return using(resourceFactory, observableFactory, disposeAction, false);
     }
-    
+
     /**
-     * Constructs an Observable that creates a dependent resource object which is disposed of just before 
+     * Constructs an Observable that creates a dependent resource object which is disposed of just before
      * termination if you have set {@code disposeEagerly} to {@code true} and unsubscription does not occur
      * before termination. Otherwise resource disposal will occur on unsubscription.  Eager disposal is
      * particularly appropriate for a synchronous Observable that resuses resources. {@code disposeAction} will
@@ -2820,7 +2809,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @warn "Backpressure Support" section missing from javadoc
      * @param resourceFactory
      *            the factory function to create a resource object that depends on the Observable
@@ -2829,7 +2818,7 @@ public class Observable<T> {
      * @param disposeAction
      *            the function that will dispose of the resource
      * @param disposeEagerly
-     *            if {@code true} then disposal will happen either on unsubscription or just before emission of 
+     *            if {@code true} then disposal will happen either on unsubscription or just before emission of
      *            a terminal event ({@code onComplete} or {@code onError}).
      * @return the Observable whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
@@ -2861,7 +2850,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param ws
      *            an Iterable of source Observables
      * @param zipFunction
@@ -2895,7 +2884,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param ws
      *            an Observable of source Observables
      * @param zipFunction
@@ -2933,7 +2922,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -2967,7 +2956,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3003,7 +2992,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3041,7 +3030,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3080,7 +3069,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3122,7 +3111,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3166,7 +3155,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3212,7 +3201,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3251,7 +3240,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code all} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param predicate
      *            a function that evaluates an item and returns a Boolean
      * @return an Observable that emits {@code true} if all items emitted by the source Observable satisfy the
@@ -3261,7 +3250,7 @@ public class Observable<T> {
     public final Observable<Boolean> all(Func1<? super T, Boolean> predicate) {
         return lift(new OperatorAll<T>(predicate));
     }
-    
+
     /**
      * Mirrors the Observable (current or provided) that first either emits an item or sends a termination
      * notification.
@@ -3271,7 +3260,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable competing to react first
      * @return an Observable that emits the same sequence as whichever of the source Observables first
@@ -3290,7 +3279,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code asObservable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @return an Observable that hides the identity of this Observable
      */
     public final Observable<T> asObservable() {
@@ -3310,7 +3299,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param bufferClosingSelector
      *            a {@link Func0} that produces an Observable that governs the boundary between buffers.
      *            Whenever this {@code Observable} emits an item, {@code buffer} emits the current buffer and
@@ -3334,7 +3323,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param count
      *            the maximum number of items in each buffer before it should be emitted
      * @return an Observable that emits connected, non-overlapping buffers, each containing at most
@@ -3356,7 +3345,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param count
      *            the maximum size of each buffer before it should be emitted
      * @param skip
@@ -3386,7 +3375,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param timespan
      *            the period of time each buffer collects items before it is emitted
      * @param timeshift
@@ -3416,7 +3405,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param timespan
      *            the period of time each buffer collects items before it is emitted
      * @param timeshift
@@ -3447,7 +3436,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
      *            buffer
@@ -3476,7 +3465,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
      *            buffer
@@ -3509,7 +3498,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
      *            buffer
@@ -3543,7 +3532,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
      *            buffer
@@ -3572,7 +3561,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param bufferOpenings
      *            the Observable that, when it emits an item, causes a new buffer to be created
      * @param bufferClosingSelector
@@ -3602,7 +3591,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <B>
      *            the boundary value type (ignored)
      * @param boundary
@@ -3632,7 +3621,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <B>
      *            the boundary value type (ignored)
      * @param boundary
@@ -3673,7 +3662,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
      *         benefit of subsequent subscribers
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
@@ -3719,7 +3708,7 @@ public class Observable<T> {
      * <p>
      * <em>Note:</em> The capacity hint is not an upper bound on cache size. For that, consider
      * {@link #replay(int)} in combination with {@link ConnectableObservable#autoConnect()} or similar.
-     * 
+     *
      * @param initialCapacity hint for number of items to cache (for optimizing underlying data structure)
      * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
      *         benefit of subsequent subscribers
@@ -3738,7 +3727,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code cast} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param klass
      *            the target class type that {@code cast} will cast the items emitted by the source Observable
      *            into before emitting them from the resulting Observable
@@ -3764,7 +3753,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code collect} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param stateFactory
      *           the mutable data structure that will collect the items
      * @param collector
@@ -3784,11 +3773,11 @@ public class Observable<T> {
             }
 
         };
-        
+
         /*
          * Discussion and confirmation of implementation at
          * https://github.com/ReactiveX/RxJava/issues/423#issuecomment-27642532
-         * 
+         *
          * It should use last() not takeLast(1) since it needs to emit an error if the sequence is empty.
          */
         return lift(new OperatorScan<R, T>(stateFactory, accumulator)).last();
@@ -3804,7 +3793,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param func
      *            a function that, when applied to an item emitted by the source Observable, returns an
      *            Observable
@@ -3815,7 +3804,7 @@ public class Observable<T> {
     public final <R> Observable<R> concatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
         return concat(map(func));
     }
-    
+
     /**
      * Returns an Observable that emits the items emitted from the current Observable, then the next, one after
      * the other, without interleaving them.
@@ -3825,7 +3814,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            an Observable to be concatenated after the current
      * @return an Observable that emits items emitted by the two source Observables, one after the other,
@@ -3845,7 +3834,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code contains} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param element
      *            the item to search for in the emissions from the source Observable
      * @return an Observable that emits {@code true} if the specified item is emitted by the source Observable,
@@ -3872,7 +3861,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code count} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @return an Observable that emits a single item: the number of elements emitted by the source Observable
      * @see <a href="http://reactivex.io/documentation/operators/count.html">ReactiveX operators documentation: Count</a>
      * @see #countLong()
@@ -3880,7 +3869,7 @@ public class Observable<T> {
     public final Observable<Integer> count() {
         return reduce(0, CountHolder.INSTANCE);
     }
-    
+
     private static final class CountHolder {
         static final Func2<Integer, Object, Integer> INSTANCE = new Func2<Integer, Object, Integer>() {
             @Override
@@ -3889,7 +3878,7 @@ public class Observable<T> {
             }
         };
     }
-    
+
     /**
      * Returns an Observable that counts the total number of items emitted by the source Observable and emits
      * this count as a 64-bit Long.
@@ -3902,7 +3891,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code countLong} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @return an Observable that emits a single item: the number of items emitted by the source Observable as a
      *         64-bit Long item
      * @see <a href="http://reactivex.io/documentation/operators/count.html">ReactiveX operators documentation: Count</a>
@@ -3920,7 +3909,7 @@ public class Observable<T> {
             }
         };
     }
-    
+
     /**
      * Returns an Observable that mirrors the source Observable, except that it drops items emitted by the
      * source Observable that are followed by another item within a computed debounce duration.
@@ -3933,7 +3922,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code debounce} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <U>
      *            the debounce value type (ignored)
      * @param debounceSelector
@@ -3970,7 +3959,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code debounce} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param timeout
      *            the time each item has to be "the most recent" of those emitted by the source Observable to
      *            ensure that it's not dropped
@@ -4009,7 +3998,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param timeout
      *            the time each item has to be "the most recent" of those emitted by the source Observable to
      *            ensure that it's not dropped
@@ -4037,7 +4026,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code defaultIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param defaultValue
      *            the item to emit if the source Observable emits no items
      * @return an Observable that emits either the specified default item if the source Observable emits no
@@ -4085,7 +4074,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delay} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <U>
      *            the subscription delay value type (ignored)
      * @param <V>
@@ -4119,7 +4108,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delay} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <U>
      *            the item delay value type (ignored)
      * @param itemDelay
@@ -4143,7 +4132,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delay} operates by default on the {@code compuation} {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param delay
      *            the delay to shift the source by
      * @param unit
@@ -4164,7 +4153,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param delay
      *            the delay to shift the source by
      * @param unit
@@ -4186,7 +4175,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delay} operates by default on the {@code compuation} {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param delay
      *            the time to delay the subscription
      * @param unit
@@ -4207,7 +4196,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param delay
      *            the time to delay the subscription
      * @param unit
@@ -4221,7 +4210,7 @@ public class Observable<T> {
     public final Observable<T> delaySubscription(long delay, TimeUnit unit, Scheduler scheduler) {
         return create(new OnSubscribeDelaySubscription<T>(this, delay, unit, scheduler));
     }
-    
+
     /**
      * Returns an Observable that delays the subscription to the source Observable until a second Observable
      * emits an item.
@@ -4231,7 +4220,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param subscriptionDelay
      *            a function that returns an Observable that triggers the subscription to the source Observable
      *            once it emits any item
@@ -4254,7 +4243,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <U> the value type of the other Observable, irrelevant
      * @param other the other Observable that should trigger the subscription
      *        to this Observable.
@@ -4268,7 +4257,7 @@ public class Observable<T> {
         }
         return create(new OnSubscribeDelaySubscriptionOther<T, U>(this, other));
     }
-    
+
     /**
      * Returns an Observable that reverses the effect of {@link #materialize materialize} by transforming the
      * {@link Notification} objects emitted by the source Observable into the items or notifications they
@@ -4279,7 +4268,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code dematerialize} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @return an Observable that emits the items and notifications embedded in the {@link Notification} objects
      *         emitted by the source Observable
      * @throws OnErrorNotImplementedException
@@ -4299,7 +4288,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code distinct} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @return an Observable that emits only those items emitted by the source Observable that are distinct from
      *         each other
      * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
@@ -4317,7 +4306,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code distinct} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param keySelector
      *            a function that projects an emitted item to a key value that is used to decide whether an item
      *            is distinct from another one or not
@@ -4337,7 +4326,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @return an Observable that emits those items from the source Observable that are distinct from their
      *         immediate predecessors
      * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
@@ -4355,7 +4344,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param keySelector
      *            a function that projects an emitted item to a key value that is used to decide whether an item
      *            is distinct from another one or not
@@ -4375,7 +4364,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnCompleted} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param onCompleted
      *            the action to invoke when the source Observable calls {@code onCompleted}
      * @return the source Observable with the side-effecting behavior applied
@@ -4400,7 +4389,24 @@ public class Observable<T> {
 
         return lift(new OperatorDoOnEach<T>(observer));
     }
-
+	
+    /**
+     * Modifies the source Observable so that it invokes an action when it calls {@code onCompleted} and no items were emitted.
+     * <p>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onEmpty
+     *            the action to invoke when the source Observable calls {@code onCompleted}, contingent on no items were emitted
+     * @return the source Observable with the side-effecting behavior applied
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     */
+    public final Observable<T> doOnEmpty(final Action0 onEmpty) {
+        return lift(new OperatorDoOnEmpty<T>(onEmpty));
+    }
+	
     /**
      * Modifies the source Observable so that it invokes an action for each item it emits.
      * <p>
@@ -4409,7 +4415,7 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param onNotification
      *            the action to invoke for each item emitted by the source Observable
      * @return the source Observable with the side-effecting behavior applied
@@ -4435,22 +4441,6 @@ public class Observable<T> {
         };
 
         return lift(new OperatorDoOnEach<T>(observer));
-    }
-    /**
-     * Modifies the source Observable so that it invokes an action when it calls {@code onCompleted} and no items were emitted.
-     * <p>
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code doOnEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param onEmpty
-     *            the action to invoke when the source Observable calls {@code onCompleted}, contingent on no items were emitted
-     * @return the source Observable with the side-effecting behavior applied
-     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     */
-    public final Observable<T> doOnEmpty(final Action0 onEmpty) {
-        return lift(new OperatorDoOnEmpty<T>(onEmpty));
     }
 
     /**
