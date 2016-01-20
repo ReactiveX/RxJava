@@ -31,8 +31,7 @@ public final class OnSubscribeFromCallable<T> implements Observable.OnSubscribe<
         try {
             singleDelayedProducer.setValue(resultFactory.call());
         } catch (Throwable t) {
-            Exceptions.throwIfFatal(t);
-            subscriber.onError(t);
+            Exceptions.throwOrReport(t, subscriber);
         }
     }
 }

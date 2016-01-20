@@ -185,17 +185,15 @@ public class Single<T> {
                         st.onStart();
                         onSubscribe.call(st);
                     } catch (Throwable e) {
-                        Exceptions.throwIfFatal(e);
                         // localized capture of errors rather than it skipping all operators
                         // and ending up in the try/catch of the subscribe method which then
                         // prevents onErrorResumeNext and other similar approaches to error handling
-                        st.onError(e);
+                        Exceptions.throwOrReport(e, st);
                     }
                 } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
                     // if the lift function failed all we can do is pass the error to the final Subscriber
                     // as we don't have the operator available to us
-                    o.onError(e);
+                    Exceptions.throwOrReport(e, o);
                 }
             }
         });

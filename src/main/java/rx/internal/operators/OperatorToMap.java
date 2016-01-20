@@ -83,8 +83,7 @@ public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
         try {
             localMap = mapFactory.call();
         } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            subscriber.onError(ex);
+            Exceptions.throwOrReport(ex, subscriber);
             Subscriber<? super T> parent = Subscribers.empty();
             parent.unsubscribe();
             return parent;
@@ -110,8 +109,7 @@ public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
                     key = keySelector.call(v);
                     value = valueSelector.call(v);
                 } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    subscriber.onError(ex);
+                    Exceptions.throwOrReport(ex, subscriber);
                     return;
                 }
                 
