@@ -12,20 +12,31 @@
  */
 package rx;
 
-import java.util.*;
-import java.util.concurrent.*;
-
-import rx.annotations.*;
-import rx.exceptions.*;
+import rx.annotations.Beta;
+import rx.annotations.Experimental;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.producers.SingleProducer;
-import rx.internal.util.*;
-import rx.observables.*;
+import rx.internal.util.RxRingBuffer;
+import rx.internal.util.ScalarSynchronousObservable;
+import rx.internal.util.UtilityFunctions;
+import rx.observables.BlockingObservable;
+import rx.observables.ConnectableObservable;
+import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
-import rx.plugins.*;
-import rx.schedulers.*;
+import rx.plugins.RxJavaObservableExecutionHook;
+import rx.plugins.RxJavaPlugins;
+import rx.schedulers.Schedulers;
+import rx.schedulers.TimeInterval;
+import rx.schedulers.Timestamped;
 import rx.subscriptions.Subscriptions;
+
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The Observable class that implements the Reactive Pattern.
@@ -4424,6 +4435,22 @@ public class Observable<T> {
         };
 
         return lift(new OperatorDoOnEach<T>(observer));
+    }
+    /**
+     * Modifies the source Observable so that it invokes an action when it calls {@code onCompleted} and no items were emitted.
+     * <p>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onEmpty
+     *            the action to invoke when the source Observable calls {@code onCompleted}, contingent on no items were emitted
+     * @return the source Observable with the side-effecting behavior applied
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     */
+    public final Observable<T> doOnEmpty(final Action0 onEmpty) {
+        return lift(new OperatorDoOnEmpty<T>(onEmpty));
     }
 
     /**
