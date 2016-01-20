@@ -272,6 +272,23 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, times(2)).onNext("hello");
     }
 
+    // This is pretty much a clone of testMergeList but with the overloaded MergeDelayError for Iterables
+    @Test     
+    public void mergeIterable() {
+        final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
+        final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
+        List<Observable<String>> listOfObservables = new ArrayList<Observable<String>>();
+        listOfObservables.add(o1);
+        listOfObservables.add(o2);
+
+        Observable<String> m = Observable.mergeDelayError(listOfObservables);
+        m.subscribe(stringObserver);
+
+        verify(stringObserver, never()).onError(any(Throwable.class));
+        verify(stringObserver, times(1)).onCompleted();
+        verify(stringObserver, times(2)).onNext("hello");	
+    }
+
     @Test
     public void testMergeArrayWithThreading() {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
