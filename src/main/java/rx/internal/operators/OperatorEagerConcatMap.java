@@ -166,6 +166,7 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
             
             final AtomicLong requested = sharedProducer;
             final Subscriber<? super R> actualSubscriber = this.actual;
+            final NotificationLite<R> nl = NotificationLite.instance();
             
             for (;;) {
                 
@@ -200,13 +201,13 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
                     long emittedAmount = 0L;
                     boolean unbounded = requestedAmount == Long.MAX_VALUE;
                     
-                    Queue<R> innerQueue = innerSubscriber.queue;
+                    Queue<Object> innerQueue = innerSubscriber.queue;
                     boolean innerDone = false;
                     
                     
                     for (;;) {
                         outerDone = innerSubscriber.done;
-                        R v = innerQueue.peek();
+                        Object v = innerQueue.peek();
                         empty = v == null;
                         
                         if (outerDone) {
@@ -237,7 +238,7 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
                         innerQueue.poll();
                         
                         try {
-                            actualSubscriber.onNext(v);
+                            actualSubscriber.onNext(nl.getValue(v));
                         } catch (Throwable ex) {
                             Exceptions.throwOrReport(ex, actualSubscriber, v);
                             return;
@@ -271,7 +272,8 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
     
     static final class EagerInnerSubscriber<T> extends Subscriber<T> {
         final EagerOuterSubscriber<?, T> parent;
-        final Queue<T> queue;
+        final Queue<Object> queue;
+        final NotificationLite<T> nl;
         
         volatile boolean done;
         Throwable error;
@@ -279,19 +281,20 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
         public EagerInnerSubscriber(EagerOuterSubscriber<?, T> parent, int bufferSize) {
             super();
             this.parent = parent;
-            Queue<T> q;
+            Queue<Object> q;
             if (UnsafeAccess.isUnsafeAvailable()) {
-                q = new SpscArrayQueue<T>(bufferSize);
+                q = new SpscArrayQueue<Object>(bufferSize);
             } else {
-                q = new SpscAtomicArrayQueue<T>(bufferSize);
+                q = new SpscAtomicArrayQueue<Object>(bufferSize);
             }
             this.queue = q;
+            this.nl = NotificationLite.instance();
             request(bufferSize);
         }
         
         @Override
         public void onNext(T t) {
-            queue.offer(t);
+            queue.offer(nl.next(t));
             parent.drain();
         }
         
