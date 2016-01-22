@@ -394,4 +394,20 @@ public class OperatorEagerConcatMapTest {
         ts.assertNotCompleted();
         Assert.assertEquals(RxRingBuffer.SIZE, count.get());
     }
+    
+    @Test
+    public void testInnerNull() {
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        
+        Observable.just(1).concatMapEager(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t) {
+                return Observable.just(null);
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        ts.assertValue(null);
+    }
 }
