@@ -154,8 +154,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                 try {
                     s.onNext(t);
                 } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    s.onError(OnErrorThrowable.addValueAsLastCause(ex, t));
+                    Exceptions.throwOrReport(ex, s, t);
                 }
             }
         }

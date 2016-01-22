@@ -95,8 +95,7 @@ public class SerializedObserver<T> implements Observer<T> {
             actual.onNext(t);
         } catch (Throwable e) {
             terminated = true;
-            Exceptions.throwIfFatal(e);
-            actual.onError(OnErrorThrowable.addValueAsLastCause(e, t));
+            Exceptions.throwOrReport(e, actual, t);
             return;
         }
         for (;;) {

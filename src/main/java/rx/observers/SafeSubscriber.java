@@ -141,9 +141,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
         } catch (Throwable e) {
             // we handle here instead of another method so we don't add stacks to the frame
             // which can prevent it from being able to handle StackOverflow
-            Exceptions.throwIfFatal(e);
-            // handle errors if the onNext implementation fails, not just if the Observable fails
-            onError(e);
+            Exceptions.throwOrReport(e, this);
         }
     }
 
