@@ -11,6 +11,9 @@ apply plugin: 'java'
 dependencies {
     testCompile 'junit:junit-dep:4.10'
     testCompile 'org.mockito:mockito-core:1.8.5'
+
+    perfCompile 'org.openjdk.jmh:jmh-core:1.11.3'
+    perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.11.3'
 }
 
 javadoc {
