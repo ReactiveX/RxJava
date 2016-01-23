@@ -15,10 +15,17 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -27,11 +34,9 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class OperatorOnBackpressureBufferTest {
 
@@ -147,5 +152,30 @@ public class OperatorOnBackpressureBufferTest {
         }
 
     });
+    
+    private static final Action0 THROWS_NON_FATAL = new Action0() {
+
+        @Override
+        public void call() {
+            throw new RuntimeException();
+        }}; 
+    
+    @Test
+    public void testNonFatalExceptionThrownByOnOverflowIsNotReportedByUpstream() {
+         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
+         TestSubscriber<Long> ts = TestSubscriber.create(0);
+         infinite
+           .subscribeOn(Schedulers.computation())
+           .doOnError(new Action1<Throwable>() {
+                 @Override
+                 public void call(Throwable t) {
+                     errorOccurred.set(true);
+                 }
+             })
+           .onBackpressureBuffer(1, THROWS_NON_FATAL)
+           .subscribe(ts);
+         ts.awaitTerminalEvent();
+         assertFalse(errorOccurred.get());
+    }
 
 }
