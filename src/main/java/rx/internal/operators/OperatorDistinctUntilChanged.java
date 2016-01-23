@@ -17,6 +17,7 @@ package rx.internal.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.internal.util.UtilityFunctions;
 
@@ -56,7 +57,13 @@ public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T> 
             @Override
             public void onNext(T t) {
                 U currentKey = previousKey;
-                U key = keySelector.call(t);
+                final U key;
+                try {
+                    key = keySelector.call(t);
+                } catch (Throwable e) {
+                    Exceptions.throwOrReport(e, child, t);
+                    return;
+                }
                 previousKey = key;
                 
                 if (hasPrevious) {
