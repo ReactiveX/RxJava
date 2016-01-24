@@ -17,6 +17,7 @@ package rx.internal.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.functions.Func2;
 
@@ -40,7 +41,14 @@ public final class OperatorSkipWhile<T> implements Operator<T, T> {
                 if (!skipping) {
                     child.onNext(t);
                 } else {
-                    if (!predicate.call(t, index++)) {
+                    final boolean skip;
+                    try {
+                        skip = predicate.call(t,  index++);
+                    } catch (Throwable e) {
+                        Exceptions.throwOrReport(e, child, t);
+                        return;
+                    }
+                    if (!skip) {
                         skipping = false;
                         child.onNext(t);
                     } else {

@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.inOrder;
@@ -23,12 +24,17 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.observers.Subscribers;
+import rx.observers.TestSubscriber;
 
 public class OperatorSkipWhileTest {
 
@@ -49,6 +55,20 @@ public class OperatorSkipWhileTest {
         @Override
         public Boolean call(Integer value) {
             return index++ < 3;
+        }
+    };
+    
+    private static final Func1<Integer, Boolean> THROWS_NON_FATAL = new Func1<Integer, Boolean>() {
+        @Override
+        public Boolean call(Integer values) {
+            throw new RuntimeException();
+        }
+    };
+    
+    private static final Func1<Integer, Boolean> THROWS_FATAL = new Func1<Integer, Boolean>() {
+        @Override
+        public Boolean call(Integer values) {
+            throw new OutOfMemoryError();
         }
     };
 
@@ -118,6 +138,33 @@ public class OperatorSkipWhileTest {
         inOrder.verify(w, never()).onNext(anyInt());
         inOrder.verify(w, never()).onCompleted();
         inOrder.verify(w, times(1)).onError(any(RuntimeException.class));
+    }
+    
+    @Test
+    public void testPredicateRuntimeError() {
+        Observable.just(1).skipWhile(THROWS_NON_FATAL).subscribe(w);
+        InOrder inOrder = inOrder(w);
+        inOrder.verify(w, never()).onNext(anyInt());
+        inOrder.verify(w, never()).onCompleted();
+        inOrder.verify(w, times(1)).onError(any(RuntimeException.class));
+    }
+    
+    @Test(expected = OutOfMemoryError.class)
+    public void testPredicateFatalError() {
+        Observable.just(1).skipWhile(THROWS_FATAL).unsafeSubscribe(Subscribers.empty());
+    }
+    
+    @Test
+    public void testPredicateRuntimeErrorDoesNotGoUpstreamFirst() {
+        final AtomicBoolean errorOccurred = new AtomicBoolean(false);
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable.just(1).doOnError(new Action1<Throwable>() {
+            @Override
+            public void call(Throwable t) {
+                errorOccurred.set(true);
+            }
+        }).skipWhile(THROWS_NON_FATAL).subscribe(ts);
+        assertFalse(errorOccurred.get());
     }
     
     @Test
