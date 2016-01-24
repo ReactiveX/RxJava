@@ -22,6 +22,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
 import org.mockito.*;
@@ -528,9 +529,12 @@ public class OnSubscribeRefCountTest {
 
     @Test(timeout = 10000)
     public void testUpstreamErrorAllowsRetry() throws InterruptedException {
+        final AtomicReference<Throwable> err1 = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> err2 = new AtomicReference<Throwable>();
+
         final AtomicInteger intervalSubscribed = new AtomicInteger();
         Observable<String> interval =
-                Observable.interval(200,TimeUnit.MILLISECONDS)
+                Observable.interval(200, TimeUnit.MILLISECONDS)
                         .doOnSubscribe(
                                 new Action0() {
                                     @Override
@@ -538,7 +542,7 @@ public class OnSubscribeRefCountTest {
                                         System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
                                     }
                                 }
-                         )
+                        )
                         .flatMap(new Func1<Long, Observable<String>>() {
                             @Override
                             public Observable<String> call(Long t1) {
@@ -572,26 +576,39 @@ public class OnSubscribeRefCountTest {
                     public void call(String t1) {
                         System.out.println("Subscriber 1: " + t1);
                     }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable t) {
+                        err1.set(t);
+                    }
                 });
         Thread.sleep(100);
         interval
-        .doOnError(new Action1<Throwable>() {
-            @Override
-            public void call(Throwable t1) {
-                System.out.println("Subscriber 2 onError: " + t1);
-            }
-        })
-        .retry(5)
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable t1) {
+                        System.out.println("Subscriber 2 onError: " + t1);
+                    }
+                })
+                .retry(5)
                 .subscribe(new Action1<String>() {
                     @Override
                     public void call(String t1) {
                         System.out.println("Subscriber 2: " + t1);
                     }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable t) {
+                        err2.set(t);
+                    }
                 });
-        
+
         Thread.sleep(1300);
-        
+
         System.out.println(intervalSubscribed.get());
         assertEquals(6, intervalSubscribed.get());
+
+        assertNotNull("First subscriber didn't get the error", err1);
+        assertNotNull("Second subscriber didn't get the error", err2);
     }
 }

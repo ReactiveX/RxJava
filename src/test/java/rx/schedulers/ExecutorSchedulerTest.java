@@ -15,20 +15,29 @@
  */
 package rx.schedulers;
 
-import static org.junit.Assert.*;
-
-import java.lang.management.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
 
-import rx.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import rx.Scheduler;
 import rx.Scheduler.Worker;
-import rx.functions.*;
+import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Actions;
 import rx.internal.schedulers.NewThreadWorker;
 import rx.internal.util.RxThreadFactory;
 import rx.schedulers.ExecutorScheduler.ExecutorSchedulerWorker;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -59,9 +68,8 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         Thread.sleep(1000);
 
         
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        MemoryUsage memHeap = memoryMXBean.getHeapMemoryUsage();
-        long initial = memHeap.getUsed();
+        Runtime runtime = Runtime.getRuntime();
+        long initial = runtime.totalMemory() - runtime.freeMemory();
         
         System.out.printf("Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
 
@@ -92,8 +100,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
             }
         }
         
-        memHeap = memoryMXBean.getHeapMemoryUsage();
-        long after = memHeap.getUsed();
+        long after = runtime.totalMemory() - runtime.freeMemory();
         System.out.printf("Peak: %.3f MB%n", after / 1024.0 / 1024.0);
         
         w.unsubscribe();
@@ -106,8 +113,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         
         Thread.sleep(1000);
         
-        memHeap = memoryMXBean.getHeapMemoryUsage();
-        long finish = memHeap.getUsed();
+        long finish = runtime.totalMemory() - runtime.freeMemory();
         System.out.printf("After: %.3f MB%n", finish / 1024.0 / 1024.0);
         
         if (finish > initial * 5) {

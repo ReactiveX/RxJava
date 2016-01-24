@@ -1,32 +1,23 @@
 buildscript {
-  repositories { jcenter() }
-  dependencies { classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:2.2.3' }
+    repositories { jcenter() }
+    dependencies { classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:2.2.3' }
 }
 
-description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
+allprojects {
+    repositories {
+        jcenter()
+    }
 
-apply plugin: 'rxjava-project'
-apply plugin: 'java'
-
-dependencies {
-    testCompile 'junit:junit-dep:4.10'
-    testCompile 'org.mockito:mockito-core:1.8.5'
+    apply plugin: 'rxjava-project'
 }
 
-javadoc {
-    exclude "**/rx/internal/**"
-}
+ext.libraries = [
+        rxJava                  : project(':rxjava'),
 
-// support for snapshot/final releases with the various branches RxJava uses
-nebulaRelease {
-    addReleaseBranchPattern(/\d+\.\d+\.\d+/)
-    addReleaseBranchPattern('HEAD')
-}
-
-if (project.hasProperty('release.useLastTag')) {
-    tasks.prepare.enabled = false
-}
-
-test{
-     maxHeapSize = "2g"
-}
+        junit                   : 'junit:junit-dep:4.10',
+        mockitoCore             : 'org.mockito:mockito-core:1.10.19',
+        dexMaker                : 'com.crittercism.dexmaker:dexmaker:1.4',
+        dexMakerDx              : 'com.crittercism.dexmaker:dexmaker-dx:1.4',
+        dexMakerMockito         : 'com.crittercism.dexmaker:dexmaker-mockito:1.4',
+        androidSupportTestRunner: 'com.android.support.test:runner:0.4'
+]
