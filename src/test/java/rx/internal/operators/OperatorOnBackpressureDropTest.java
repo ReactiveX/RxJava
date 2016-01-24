@@ -16,8 +16,10 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -26,6 +28,8 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
+import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -117,6 +121,33 @@ public class OperatorOnBackpressureDropTest {
             }});
         assertEquals(n, count.get());
     }
+    
+    @Test
+    public void testNonFatalExceptionFromOverflowActionIsNotReportedFromUpstreamOperator() {
+        final AtomicBoolean errorOccurred = new AtomicBoolean(false);
+        //request 0 
+        TestSubscriber<Long> ts = TestSubscriber.create(0);
+        //range method emits regardless of requests so should trigger onBackpressureDrop action
+        range(2)
+          // if haven't caught exception in onBackpressureDrop operator then would incorrectly
+          // be picked up by this call to doOnError
+          .doOnError(new Action1<Throwable>() {
+                @Override
+                public void call(Throwable t) {
+                    errorOccurred.set(true);
+                }
+            })
+          .onBackpressureDrop(THROW_NON_FATAL)
+          .subscribe(ts);
+        assertFalse(errorOccurred.get());
+    }
+    
+    private static final Action1<Long> THROW_NON_FATAL = new Action1<Long>() {
+        @Override
+        public void call(Long n) {
+            throw new RuntimeException();
+        }
+    }; 
 
     static final Observable<Long> infinite = Observable.create(new OnSubscribe<Long>() {
 

@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 
 public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
@@ -84,7 +85,12 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
                 } else {
                     // item dropped
                     if(onDrop != null) {
-                        onDrop.call(t);
+                        try {
+                            onDrop.call(t);
+                        } catch (Throwable e) {
+                            Exceptions.throwOrReport(e, child, t);
+                            return;
+                        }
                     }
                 }
             }
