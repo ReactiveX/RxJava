@@ -954,9 +954,9 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param o1
+     * @param s1
      *            the first source Single
-     * @param o2
+     * @param s2
      *            a second source Single
      * @param zipFunction
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -964,8 +964,13 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    public final static <T1, T2, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, final Func2<? super T1, ? super T2, ? extends R> zipFunction) {
-        return just(new Observable<?>[] { asObservable(o1), asObservable(o2) }).lift(new OperatorZip<R>(zipFunction));
+    public static final <T1, T2, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, final Func2<? super T1, ? super T2, ? extends R> zipFunction) {
+        return SingleOperatorZip.zip(new Single<?>[] {s1, s2}, new FuncN<R>() {
+            @Override
+            public R call(Object... args) {
+                return zipFunction.call((T1) args[0], (T2) args[1]);
+            }
+        });
     }
 
     /**
@@ -978,11 +983,11 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param o1
+     * @param s1
      *            the first source Single
-     * @param o2
+     * @param s2
      *            a second source Single
-     * @param o3
+     * @param s3
      *            a third source Single
      * @param zipFunction
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -990,8 +995,13 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    public final static <T1, T2, T3, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
-        return just(new Observable<?>[] { asObservable(o1), asObservable(o2), asObservable(o3) }).lift(new OperatorZip<R>(zipFunction));
+    public static final <T1, T2, T3, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, final Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
+        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3}, new FuncN<R>() {
+            @Override
+            public R call(Object... args) {
+                return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2]);
+            }
+        });
     }
 
     /**
@@ -1004,13 +1014,13 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param o1
+     * @param s1
      *            the first source Single
-     * @param o2
+     * @param s2
      *            a second source Single
-     * @param o3
+     * @param s3
      *            a third source Single
-     * @param o4
+     * @param s4
      *            a fourth source Single
      * @param zipFunction
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -1018,8 +1028,13 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    public final static <T1, T2, T3, T4, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Single<? extends T4> o4, Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
-        return just(new Observable<?>[] { asObservable(o1), asObservable(o2), asObservable(o3), asObservable(o4) }).lift(new OperatorZip<R>(zipFunction));
+    public static final <T1, T2, T3, T4, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, final Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
+        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3, s4}, new FuncN<R>() {
+            @Override
+            public R call(Object... args) {
+                return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2], (T4) args[3]);
+            }
+        });
     }
 
     /**
@@ -1032,15 +1047,15 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param o1
+     * @param s1
      *            the first source Single
-     * @param o2
+     * @param s2
      *            a second source Single
-     * @param o3
+     * @param s3
      *            a third source Single
-     * @param o4
+     * @param s4
      *            a fourth source Single
-     * @param o5
+     * @param s5
      *            a fifth source Single
      * @param zipFunction
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -1048,8 +1063,13 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    public final static <T1, T2, T3, T4, T5, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Single<? extends T4> o4, Single<? extends T5> o5, Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
-        return just(new Observable<?>[] { asObservable(o1), asObservable(o2), asObservable(o3), asObservable(o4), asObservable(o5) }).lift(new OperatorZip<R>(zipFunction));
+    public static final <T1, T2, T3, T4, T5, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, final Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
+        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3, s4, s5}, new FuncN<R>() {
+            @Override
+            public R call(Object... args) {
+                return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2], (T4) args[3], (T5) args[4]);
+            }
+        });
     }
 
     /**
@@ -1062,17 +1082,17 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param o1
+     * @param s1
      *            the first source Single
-     * @param o2
+     * @param s2
      *            a second source Single
-     * @param o3
+     * @param s3
      *            a third source Single
-     * @param o4
+     * @param s4
      *            a fourth source Single
-     * @param o5
+     * @param s5
      *            a fifth source Single
-     * @param o6
+     * @param s6
      *            a sixth source Single
      * @param zipFunction
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -1080,9 +1100,14 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    public final static <T1, T2, T3, T4, T5, T6, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Single<? extends T4> o4, Single<? extends T5> o5, Single<? extends T6> o6,
-            Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipFunction) {
-        return just(new Observable<?>[] { asObservable(o1), asObservable(o2), asObservable(o3), asObservable(o4), asObservable(o5), asObservable(o6) }).lift(new OperatorZip<R>(zipFunction));
+    public static final <T1, T2, T3, T4, T5, T6, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, Single<? extends T6> s6,
+                                                            final Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipFunction) {
+        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3, s4, s5, s6}, new FuncN<R>() {
+            @Override
+            public R call(Object... args) {
+                return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2], (T4) args[3], (T5) args[4], (T6) args[5]);
+            }
+        });
     }
 
     /**
@@ -1095,19 +1120,19 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param o1
+     * @param s1
      *            the first source Single
-     * @param o2
+     * @param s2
      *            a second source Single
-     * @param o3
+     * @param s3
      *            a third source Single
-     * @param o4
+     * @param s4
      *            a fourth source Single
-     * @param o5
+     * @param s5
      *            a fifth source Single
-     * @param o6
+     * @param s6
      *            a sixth source Single
-     * @param o7
+     * @param s7
      *            a seventh source Single
      * @param zipFunction
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -1115,9 +1140,14 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    public final static <T1, T2, T3, T4, T5, T6, T7, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Single<? extends T4> o4, Single<? extends T5> o5, Single<? extends T6> o6, Single<? extends T7> o7,
-            Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipFunction) {
-        return just(new Observable<?>[] { asObservable(o1), asObservable(o2), asObservable(o3), asObservable(o4), asObservable(o5), asObservable(o6), asObservable(o7) }).lift(new OperatorZip<R>(zipFunction));
+    public static final <T1, T2, T3, T4, T5, T6, T7, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, Single<? extends T6> s6, Single<? extends T7> s7,
+                                                                final Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipFunction) {
+        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3, s4, s5, s6, s7}, new FuncN<R>() {
+            @Override
+            public R call(Object... args) {
+                return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2], (T4) args[3], (T5) args[4], (T6) args[5], (T7) args[6]);
+            }
+        });
     }
 
     /**
@@ -1130,21 +1160,21 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param o1
+     * @param s1
      *            the first source Single
-     * @param o2
+     * @param s2
      *            a second source Single
-     * @param o3
+     * @param s3
      *            a third source Single
-     * @param o4
+     * @param s4
      *            a fourth source Single
-     * @param o5
+     * @param s5
      *            a fifth source Single
-     * @param o6
+     * @param s6
      *            a sixth source Single
-     * @param o7
+     * @param s7
      *            a seventh source Single
-     * @param o8
+     * @param s8
      *            an eighth source Single
      * @param zipFunction
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -1152,9 +1182,14 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    public final static <T1, T2, T3, T4, T5, T6, T7, T8, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Single<? extends T4> o4, Single<? extends T5> o5, Single<? extends T6> o6, Single<? extends T7> o7, Single<? extends T8> o8,
-            Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipFunction) {
-        return just(new Observable<?>[] { asObservable(o1), asObservable(o2), asObservable(o3), asObservable(o4), asObservable(o5), asObservable(o6), asObservable(o7), asObservable(o8) }).lift(new OperatorZip<R>(zipFunction));
+    public static final <T1, T2, T3, T4, T5, T6, T7, T8, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, Single<? extends T6> s6, Single<? extends T7> s7, Single<? extends T8> s8,
+                                                                    final Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipFunction) {
+        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3, s4, s5, s6, s7, s8}, new FuncN<R>() {
+            @Override
+            public R call(Object... args) {
+                return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2], (T4) args[3], (T5) args[4], (T6) args[5], (T7) args[6], (T8) args[7]);
+            }
+        });
     }
 
     /**
@@ -1167,23 +1202,23 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param o1
+     * @param s1
      *            the first source Single
-     * @param o2
+     * @param s2
      *            a second source Single
-     * @param o3
+     * @param s3
      *            a third source Single
-     * @param o4
+     * @param s4
      *            a fourth source Single
-     * @param o5
+     * @param s5
      *            a fifth source Single
-     * @param o6
+     * @param s6
      *            a sixth source Single
-     * @param o7
+     * @param s7
      *            a seventh source Single
-     * @param o8
+     * @param s8
      *            an eighth source Single
-     * @param o9
+     * @param s9
      *            a ninth source Single
      * @param zipFunction
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -1191,9 +1226,14 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    public final static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Single<? extends T4> o4, Single<? extends T5> o5, Single<? extends T6> o6, Single<? extends T7> o7, Single<? extends T8> o8,
-            Single<? extends T9> o9, Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipFunction) {
-        return just(new Observable<?>[] { asObservable(o1), asObservable(o2), asObservable(o3), asObservable(o4), asObservable(o5), asObservable(o6), asObservable(o7), asObservable(o8), asObservable(o9) }).lift(new OperatorZip<R>(zipFunction));
+    public static final <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, Single<? extends T6> s6, Single<? extends T7> s7, Single<? extends T8> s8,
+                                                                        Single<? extends T9> s9, final Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipFunction) {
+        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3, s4, s5, s6, s7, s8, s9}, new FuncN<R>() {
+            @Override
+            public R call(Object... args) {
+                return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2], (T4) args[3], (T5) args[4], (T6) args[5], (T7) args[6], (T8) args[7], (T9) args[8]);
+            }
+        });
     }
 
     /**
