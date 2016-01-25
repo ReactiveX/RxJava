@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
 import rx.internal.util.BackpressureDrainManager;
@@ -156,7 +157,15 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                                 "Overflowed buffer of "
                                         + baseCapacity));
                         if (onOverflow != null) {
-                            onOverflow.call();
+                            try {
+                                onOverflow.call();
+                            } catch (Throwable e) {
+                                Exceptions.throwIfFatal(e);
+                                manager.terminateAndDrain(e);
+                                // this line not strictly necessary but nice for clarity
+                                // and in case of future changes to code after this catch block 
+                                return false;
+                            }
                         }
                     }
                     return false;
