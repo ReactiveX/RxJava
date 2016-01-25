@@ -989,4 +989,27 @@ public class SyncOnSubscribeTest {
             if (exec != null) exec.shutdownNow();
         }
     }
+    
+    @Test
+    public void testStateThrows() {
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        
+        SyncOnSubscribe.<Object, Object>createSingleState(
+                new Func0<Object>() {
+                    @Override
+                    public Object call() {
+                        throw new TestException();
+                    }
+                }
+        , new Action2<Object, Observer<Object>>() {
+            @Override
+            public void call(Object s, Observer<? super Object> o) { 
+                
+            }
+        }).call(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotCompleted();
+    }
 }
