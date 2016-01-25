@@ -353,8 +353,6 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     //give default access instead of private as a micro-optimization 
     //for access from anonymous classes below
     final Iterable<? extends Observable<? extends T>> sources;
-    final Selection<T> selection = new Selection<T>();
-    final AtomicReference<AmbSubscriber<T>> choice = selection.choice;
     
     private OnSubscribeAmb(Iterable<? extends Observable<? extends T>> sources) {
         this.sources = sources;
@@ -362,6 +360,8 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
     @Override
     public void call(final Subscriber<? super T> subscriber) {
+        final Selection<T> selection = new Selection<T>();
+        final AtomicReference<AmbSubscriber<T>> choice = selection.choice;
         
         //setup unsubscription of all the subscribers to the sources
         subscriber.add(Subscriptions.create(new Action0() {

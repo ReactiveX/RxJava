@@ -288,5 +288,26 @@ public class OnSubscribeAmbTest {
         }).ambWith(Observable.just(2)).toBlocking().single();
         assertEquals(1, result);
     }
-    
+
+    @Test(timeout = 1000)
+    public void testMultipleUse() {
+        TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
+
+        Observable<Long> amb = Observable.timer(100, TimeUnit.MILLISECONDS).ambWith(Observable.timer(200, TimeUnit.MILLISECONDS));
+        
+        amb.subscribe(ts1);
+        amb.subscribe(ts2);
+        
+        ts1.awaitTerminalEvent();
+        ts2.awaitTerminalEvent();
+        
+        ts1.assertValue(0L);
+        ts1.assertCompleted();
+        ts1.assertNoErrors();
+
+        ts2.assertValue(0L);
+        ts2.assertCompleted();
+        ts2.assertNoErrors();
+    }
 }
