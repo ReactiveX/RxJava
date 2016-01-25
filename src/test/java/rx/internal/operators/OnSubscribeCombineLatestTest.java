@@ -16,40 +16,20 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Matchers;
+import org.mockito.*;
 
-import rx.Notification;
+import rx.*;
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
-import rx.functions.Action1;
-import rx.functions.Func2;
-import rx.functions.Func3;
-import rx.functions.Func4;
-import rx.functions.Func5;
-import rx.functions.Func6;
-import rx.functions.Func7;
-import rx.functions.Func8;
-import rx.functions.Func9;
-import rx.functions.FuncN;
+import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -851,6 +831,7 @@ public class OnSubscribeCombineLatestTest {
     
     @Test(timeout=10000)
     public void testCombineLatestRequestOverflow() throws InterruptedException {
+        @SuppressWarnings("unchecked")
         List<Observable<Integer>> sources = Arrays.asList(Observable.from(Arrays.asList(1,2,3,4)), Observable.from(Arrays.asList(5,6,7,8)));
         Observable<Integer> o = Observable.combineLatest(sources,new FuncN<Integer>() {
             @Override
@@ -884,4 +865,92 @@ public class OnSubscribeCombineLatestTest {
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
+    @Test
+    public void testCombineMany() {
+        int n = RxRingBuffer.SIZE * 3;
+        
+        Observable<Integer> source = Observable.just(1);
+        
+        List<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
+        
+        for (int i = 0; i < n; i++) {
+            sources.add(source);
+        }
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.combineLatest(sources, new FuncN<Integer>() {
+            @Override
+            public Integer call(Object... args) {
+                int sum = 0;
+                for (Object o : args) {
+                    sum += (Integer)o;
+                }
+                return sum;
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoErrors();
+        ts.assertValue(n);
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void testCombineManyNulls() {
+        int n = RxRingBuffer.SIZE * 3;
+        
+        Observable<Integer> source = Observable.just((Integer)null);
+        
+        List<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
+        
+        for (int i = 0; i < n; i++) {
+            sources.add(source);
+        }
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.combineLatest(sources, new FuncN<Integer>() {
+            @Override
+            public Integer call(Object... args) {
+                int sum = 0;
+                for (Object o : args) {
+                    if (o == null) {
+                        sum ++;
+                    }
+                }
+                return sum;
+            }
+        }).subscribe(ts);
+        
+        ts.assertValue(n);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void testNonFatalExceptionThrownByCombinatorForSingleSourceIsNotReportedByUpstreamOperator() {
+        final AtomicBoolean errorOccurred = new AtomicBoolean(false);
+        TestSubscriber<Integer> ts = TestSubscriber.create(1);
+        Observable<Integer> source = Observable.just(1)
+          // if haven't caught exception in combineLatest operator then would incorrectly
+          // be picked up by this call to doOnError
+          .doOnError(new Action1<Throwable>() {
+                @Override
+                public void call(Throwable t) {
+                    errorOccurred.set(true);
+                }
+            });
+        Observable
+          .combineLatest(Collections.singletonList(source), THROW_NON_FATAL)
+          .subscribe(ts);
+        assertFalse(errorOccurred.get());
+    }
+    
+    private static final FuncN<Integer> THROW_NON_FATAL = new FuncN<Integer>() {
+        @Override
+        public Integer call(Object... args) {
+            throw new RuntimeException();
+        }
+
+    }; 
 }
