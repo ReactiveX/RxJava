@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 public final class OperatorDoOnEmptyTest {
 
@@ -46,7 +47,7 @@ public final class OperatorDoOnEmptyTest {
             }
         }).subscribe();
 
-        assertTrue(!wasCalled.get());
+        assertFalse(wasCalled.get());
     }
 
     @Test
@@ -91,7 +92,7 @@ public final class OperatorDoOnEmptyTest {
 
         subscription.unsubscribe();
 
-        assertTrue(!wasCalled.get());
+        assertFalse(wasCalled.get());
     }
 
     @Test
@@ -115,7 +116,7 @@ public final class OperatorDoOnEmptyTest {
         assertTrue(subscriber.getOnNextEvents().size() == 1);
         assertTrue(subscriber.getOnCompletedEvents().isEmpty());
         assertTrue(subscriber.getOnErrorEvents().size() == 0);
-        assertTrue(!wasCalled.get());
+        assertFalse(wasCalled.get());
     }
 
     @Test
