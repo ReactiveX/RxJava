@@ -8330,7 +8330,7 @@ public class Observable<T> {
         if (this instanceof ScalarSynchronousObservable) {
             return ((ScalarSynchronousObservable<T>)this).scalarScheduleOn(scheduler);
         }
-        return nest().lift(new OperatorSubscribeOn<T>(scheduler));
+        return create(new OperatorSubscribeOn<T>(this, scheduler));
     }
 
     /**

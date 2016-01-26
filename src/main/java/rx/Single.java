@@ -1736,8 +1736,43 @@ public class Single<T> {
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #observeOn
      */
-    public final Single<T> subscribeOn(Scheduler scheduler) {
-        return nest().lift(new OperatorSubscribeOn<T>(scheduler));
+    public final Single<T> subscribeOn(final Scheduler scheduler) {
+        return create(new OnSubscribe<T>() {
+            @Override
+            public void call(final SingleSubscriber<? super T> t) {
+                final Scheduler.Worker w = scheduler.createWorker();
+                t.add(w);
+
+                w.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        SingleSubscriber<T> ssub = new SingleSubscriber<T>() {
+                            @Override
+                            public void onSuccess(T value) {
+                                try {
+                                    t.onSuccess(value);
+                                } finally {
+                                    w.unsubscribe();
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable error) {
+                                try {
+                                    t.onError(error);
+                                } finally {
+                                    w.unsubscribe();
+                                }
+                            }
+                        };
+
+                        t.add(ssub);
+
+                        Single.this.subscribe(ssub);
+                    }
+                });
+            }
+        });  
     }
     
     /**
