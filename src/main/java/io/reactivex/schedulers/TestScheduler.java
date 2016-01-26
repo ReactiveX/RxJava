@@ -14,6 +14,7 @@
 package io.reactivex.schedulers;
 
 import java.util.*;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Scheduler;
@@ -27,7 +28,7 @@ import io.reactivex.internal.disposables.EmptyDisposable;
  */
 public final class TestScheduler extends Scheduler {
     /** The ordered queue for the runnable tasks. */
-    private final Queue<TimedRunnable> queue = new PriorityQueue<>(11);
+    private final Queue<TimedRunnable> queue = new PriorityBlockingQueue<>(11);
     /** The per-scheduler global order counter. */
     long counter;
 
@@ -60,7 +61,7 @@ public final class TestScheduler extends Scheduler {
     }
 
     // Storing time in nanoseconds internally.
-    private long time;
+    private volatile long time;
 
     @Override
     public long now(TimeUnit unit) {

@@ -14,6 +14,7 @@
 package io.reactivex.schedulers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.*;
 
@@ -214,6 +215,42 @@ public class TestSchedulerTest {
             inOrder.verify(calledOp, times(1)).run();
         } finally {
             inner.dispose();
+        }
+    }
+
+    @Test
+    public final void testConcurrentInsertionAndTimeChange() {
+        final TestScheduler scheduler = new TestScheduler();
+        new Thread() {
+            @Override public void run() {
+                while (true) {
+                    Thread.yield(); // Scheduling service lock is not fair
+                    final Scheduler.Worker inner = scheduler.createWorker();
+                    inner.schedule(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
+                        }
+
+                    },1, TimeUnit.SECONDS);
+                }
+            }
+        }.start();
+        try
+        {
+            for (int i = 0; i < 10; i++) {
+                Thread.sleep(5);
+                scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            }
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        try
+        {
+        } catch(NullPointerException e) {
+            fail("unexpected NullPointerException : " + e);
         }
     }
 }
