@@ -78,7 +78,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
      * @param t the value to emit when requested
      * @return the new Observable
      */
-    public static final <T> ScalarSynchronousObservable<T> create(T t) {
+    public static <T> ScalarSynchronousObservable<T> create(T t) {
         return new ScalarSynchronousObservable<T>(t);
     }
 

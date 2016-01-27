@@ -47,7 +47,7 @@ public final class UnsafeAccess {
         UNSAFE = u;
     }
 
-    public static final boolean isUnsafeAvailable() {
+    public static boolean isUnsafeAvailable() {
         return UNSAFE != null;
     }
 

@@ -71,7 +71,7 @@ public final class Observers {
      * @return an {@code Observer} that calls {@code onNext} for each emitted item from the {@code Observable}
      *         the {@code Observer} subscribes to
      */
-    public static final <T> Observer<T> create(final Action1<? super T> onNext) {
+    public static <T> Observer<T> create(final Action1<? super T> onNext) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -111,7 +111,7 @@ public final class Observers {
      *         the {@code Observer} subscribes to, and calls {@code onError} if the {@code Observable} notifies
      *         of an error
      */
-    public static final <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError) {
+    public static <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -157,7 +157,7 @@ public final class Observers {
      *         of an error, and calls {@code onComplete} if the {@code Observable} notifies that the observable
      *         sequence is complete
      */
-    public static final <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
+    public static <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }

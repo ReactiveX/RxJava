@@ -278,7 +278,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
             request(requested);
         }
 
-        private final void requestMore(long n) {
+        private void requestMore(long n) {
             request(n);
         }
 
