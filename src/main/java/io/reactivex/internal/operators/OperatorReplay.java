@@ -55,9 +55,23 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             Publisher<R> observable;
             try {
                 co = connectableFactory.get();
+            } catch (Throwable e) {
+                EmptySubscription.error(e, child);
+                return;
+            }
+            if (co == null) {
+                EmptySubscription.error(new NullPointerException("The connectableFactory returned null"), child);
+                return;
+            }
+
+            try {
                 observable = selector.apply(co);
             } catch (Throwable e) {
                 EmptySubscription.error(e, child);
+                return;
+            }
+            if (observable == null) {
+                EmptySubscription.error(new NullPointerException("The selector returned a null Publisher"), child);
                 return;
             }
             

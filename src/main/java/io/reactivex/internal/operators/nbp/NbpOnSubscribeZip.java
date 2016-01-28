@@ -180,6 +180,12 @@ public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
                         return;
                     }
                     
+                    if (v == null) {
+                        clear();
+                        a.onError(new NullPointerException("The zipper returned a null value"));
+                        return;
+                    }
+                    
                     a.onNext(v);
                 }
                 

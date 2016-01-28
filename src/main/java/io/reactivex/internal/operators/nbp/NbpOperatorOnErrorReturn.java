@@ -64,14 +64,15 @@ public final class NbpOperatorOnErrorReturn<T> implements NbpOperator<T, T> {
             try {
                 v = valueSupplier.apply(t);
             } catch (Throwable e) {
-                t.addSuppressed(e);
-                actual.onError(t);
+                e.addSuppressed(t);
+                actual.onError(e);
                 return;
             }
             
             if (v == null) {
-                t.addSuppressed(new NullPointerException("The supplied value is null"));
-                actual.onError(t);
+                NullPointerException e = new NullPointerException("The supplied value is null");
+                e.addSuppressed(t);
+                actual.onError(e);
                 return;
             }
             

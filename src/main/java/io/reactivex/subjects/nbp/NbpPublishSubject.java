@@ -34,7 +34,9 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
     
     @Override
     public void onSubscribe(Disposable d) {
-        // NbpSubjects never cancel the disposable
+        if (state.done) {
+            d.dispose();
+        }
     }
     
     @Override
@@ -109,7 +111,7 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
         @SuppressWarnings("rawtypes")
         static final NbpSubscriber[] TERMINATED = new NbpSubscriber[0];
 
-        boolean done;
+        volatile boolean done;
         
         public State() {
             SUBSCRIBERS.lazySet(this, EMPTY);
@@ -218,6 +220,10 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
             if (done) {
                 return;
             }
+            if (value == null) {
+                onError(new NullPointerException("The value is null"));
+                return;
+            }
             for (NbpSubscriber<? super T> v : subscribers) {
                 v.onNext(value);
             }
@@ -230,6 +236,10 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
                 return;
             }
             done = true;
+            if (e == null) {
+                e = new NullPointerException();
+            }
+
             for (NbpSubscriber<? super T> v : terminate(NotificationLite.error(e))) {
                 v.onError(e);
             }

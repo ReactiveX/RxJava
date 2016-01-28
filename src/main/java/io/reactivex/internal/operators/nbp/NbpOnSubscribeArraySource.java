@@ -37,7 +37,12 @@ public final class NbpOnSubscribeArraySource<T> implements NbpOnSubscribe<T> {
         int n = a.length;
         
         for (int i = 0; i < n && !bd.isDisposed(); i++) {
-            s.onNext(a[i]);
+            T value = a[i];
+            if (value == null) {
+                s.onError(new NullPointerException("The " + i + "th element is null"));
+                return;
+            }
+            s.onNext(value);
         }
         if (!bd.isDisposed()) {
             s.onComplete();

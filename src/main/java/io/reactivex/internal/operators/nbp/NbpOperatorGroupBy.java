@@ -119,6 +119,12 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
                 onError(e);
                 return;
             }
+            
+            if (v == null) {
+                s.dispose();
+                onError(new NullPointerException("The value supplied is null"));
+                return;
+            }
 
             group.onNext(v);
         }

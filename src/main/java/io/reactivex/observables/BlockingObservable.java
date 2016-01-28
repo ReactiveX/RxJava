@@ -275,6 +275,8 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
             cdl.countDown();
         }, s -> s.request(Long.MAX_VALUE));
         
+        o.subscribe(ls);
+        
         awaitForComplete(cdl, ls);
         Throwable e = error[0];
         if (e != null) {
