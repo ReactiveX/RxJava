@@ -69,7 +69,7 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
             
         };
         
-        Subscriber<T> result = new Subscriber<T>(child) {
+        Subscriber<T> result = new Subscriber<T>() {
             @Override
             public void onNext(T t) {
                 value.set(t);
@@ -87,6 +87,8 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
                 unsubscribe();
             }
         };
+        
+        child.add(result);
         
         sampler.unsafeSubscribe(samplerSub);
         
