@@ -28,6 +28,8 @@ import rx.Observable.OnSubscribe;
  * <p>
  * You can convert any object that supports the Iterable interface into an Observable that emits each item in
  * the object, with the {@code toObservable} operation.
+ * 
+ * @param <T> the value type
  */
 public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
@@ -38,6 +40,10 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
             throw new NullPointerException("iterable must not be null");
         }
         this.is = iterable;
+    }
+    
+    public Iterable<? extends T> iterable() {
+        return is;
     }
 
     @Override
