@@ -95,26 +95,18 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
             final Queue<Object> q = queue;
 
             long now = scheduler.now(unit);
-            long time = this.time;
-            long c = count;
-            boolean unbounded = c == Long.MAX_VALUE;
-            
+
             q.offer(now);
             q.offer(t);
             
-            while (!q.isEmpty()) {
-                long ts = (Long)q.peek();
-                if (ts <= now - time || (!unbounded && (q.size() >> 1) > c)) {
-                    q.poll();
-                    q.poll();
-                } else {
-                    break;
-                }
-            }
+            trim(now, q);
         }
         
         @Override
         public void onError(Throwable t) {
+            if (delayError) {
+                trim(scheduler.now(unit), queue);
+            }
             error = t;
             done = true;
             drain();
@@ -122,8 +114,25 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
         
         @Override
         public void onComplete() {
+            trim(scheduler.now(unit), queue);
             done = true;
             drain();
+        }
+        
+        void trim(long now, Queue<Object> q) {
+            long time = this.time;
+            long c = count;
+            boolean unbounded = c == Long.MAX_VALUE;
+
+            while (!q.isEmpty()) {
+                long ts = (Long)q.peek();
+                if (ts < now - time || (!unbounded && (q.size() >> 1) > c)) {
+                    q.poll();
+                    q.poll();
+                } else {
+                    break;
+                }
+            }
         }
         
         @Override
@@ -171,28 +180,25 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
                     boolean unbounded = r == Long.MAX_VALUE;
                     long e = 0L;
                     
-                    while (r != 0) {
-                        Object ts = q.poll(); // the timestamp long
+                    for (;;) {
+                        Object ts = q.peek(); // the timestamp long
                         empty = ts == null;
                         
                         if (checkTerminated(empty, a, delayError)) {
                             return;
                         }
                         
-                        if (empty) {
+                        if (empty || r == 0L) {
                             break;
                         }
                         
+                        q.poll();
                         @SuppressWarnings("unchecked")
                         T o = (T)q.poll();
                         if (o == null) {
                             s.cancel();
                             a.onError(new IllegalStateException("Queue empty?!"));
                             return;
-                        }
-                        
-                        if ((Long)ts < scheduler.now(unit) - time) {
-                            continue;
                         }
                         
                         a.onNext(o);
