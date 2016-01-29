@@ -144,8 +144,8 @@ public final class NbpUnicastSubject<T> extends NbpSubject<T, T> {
         @Override
         public void accept(NbpSubscriber<? super T> s) {
             if (once == 0 && ONCE.compareAndSet(this, 0, 1)) {
-                SUBSCRIBER.lazySet(this, s);
                 s.onSubscribe(this);
+                SUBSCRIBER.lazySet(this, s); // full barrier in drain
                 drain();
             } else {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
