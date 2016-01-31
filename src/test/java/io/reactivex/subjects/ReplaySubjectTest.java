@@ -820,4 +820,91 @@ public class ReplaySubjectTest {
         assertArrayEquals(expected, rs.getValues());
         
     }
+    
+    @Test
+    public void testBackpressureHonored() {
+        ReplaySubject<Integer> rs = ReplaySubject.create();
+        rs.onNext(1);
+        rs.onNext(2);
+        rs.onNext(3);
+        rs.onComplete();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        
+        rs.subscribe(ts);
+        
+        ts.request(1);
+        ts.assertValue(1);
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+        
+        
+        ts.request(1);
+        ts.assertValues(1, 2);
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+
+        ts.request(1);
+        ts.assertValues(1, 2, 3);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testBackpressureHonoredSizeBound() {
+        ReplaySubject<Integer> rs = ReplaySubject.createWithSize(100);
+        rs.onNext(1);
+        rs.onNext(2);
+        rs.onNext(3);
+        rs.onComplete();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        
+        rs.subscribe(ts);
+        
+        ts.request(1);
+        ts.assertValue(1);
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+        
+        
+        ts.request(1);
+        ts.assertValues(1, 2);
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+
+        ts.request(1);
+        ts.assertValues(1, 2, 3);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testBackpressureHonoredTimeBound() {
+        ReplaySubject<Integer> rs = ReplaySubject.createWithTime(1, TimeUnit.DAYS);
+        rs.onNext(1);
+        rs.onNext(2);
+        rs.onNext(3);
+        rs.onComplete();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        
+        rs.subscribe(ts);
+        
+        ts.request(1);
+        ts.assertValue(1);
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+        
+        
+        ts.request(1);
+        ts.assertValues(1, 2);
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+
+        ts.request(1);
+        ts.assertValues(1, 2, 3);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
 }
