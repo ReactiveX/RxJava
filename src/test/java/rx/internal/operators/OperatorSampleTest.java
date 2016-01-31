@@ -16,21 +16,16 @@
 package rx.internal.operators;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.functions.Action0;
+import rx.functions.*;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -282,5 +277,39 @@ public class OperatorSampleTest {
         );
         o.throttleLast(1, TimeUnit.MILLISECONDS).subscribe().unsubscribe();
         verify(s).unsubscribe();
+    }
+    
+    @Test
+    public void testSampleOtherUnboundedIn() {
+        
+        final long[] requested = { -1 };
+        
+        PublishSubject.create()
+        .doOnRequest(new Action1<Long>() {
+            @Override
+            public void call(Long t) {
+                requested[0] = t;
+            }
+        })
+        .sample(PublishSubject.create()).subscribe();
+        
+        Assert.assertEquals(Long.MAX_VALUE, requested[0]);
+    }
+    
+    @Test
+    public void testSampleTimedUnboundedIn() {
+        
+        final long[] requested = { -1 };
+        
+        PublishSubject.create()
+        .doOnRequest(new Action1<Long>() {
+            @Override
+            public void call(Long t) {
+                requested[0] = t;
+            }
+        })
+        .sample(1, TimeUnit.SECONDS).subscribe().unsubscribe();
+        
+        Assert.assertEquals(Long.MAX_VALUE, requested[0]);
     }
 }
