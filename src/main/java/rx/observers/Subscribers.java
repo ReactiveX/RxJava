@@ -79,7 +79,7 @@ public final class Subscribers {
      * @return a {@code Subscriber} that calls {@code onNext} for each emitted item from the {@code Observable}
      *         the {@code Subscriber} subscribes to
      */
-    public static final <T> Subscriber<T> create(final Action1<? super T> onNext) {
+    public static <T> Subscriber<T> create(final Action1<? super T> onNext) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -119,7 +119,7 @@ public final class Subscribers {
      *         the {@code Subscriber} subscribes to, and calls {@code onError} if the {@code Observable}
      *         notifies of an error
      */
-    public static final <T> Subscriber<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError) {
+    public static <T> Subscriber<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -165,7 +165,7 @@ public final class Subscribers {
      *         of an error, and calls {@code onComplete} if the {@code Observable} notifies that the observable
      *         sequence is complete
      */
-    public static final <T> Subscriber<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
+    public static <T> Subscriber<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }

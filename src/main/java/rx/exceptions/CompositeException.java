@@ -247,7 +247,7 @@ public final class CompositeException extends RuntimeException {
         }
     }
 
-    private final List<Throwable> getListOfCauses(Throwable ex) {
+    private List<Throwable> getListOfCauses(Throwable ex) {
         List<Throwable> list = new ArrayList<Throwable>();
         Throwable root = ex.getCause();
         if (root == null) {

@@ -85,7 +85,7 @@ public class GroupedObservable<K, T> extends Observable<T> {
      * @return a GroupedObservable that, when a {@link Subscriber} subscribes to it, will execute the specified
      *         function
      */
-    public final static <K, T> GroupedObservable<K, T> create(K key, OnSubscribe<T> f) {
+    public static <K, T> GroupedObservable<K, T> create(K key, OnSubscribe<T> f) {
         return new GroupedObservable<K, T>(key, f);
     }
 

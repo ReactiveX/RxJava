@@ -299,7 +299,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      *          the shared state
      * @return the created subject
      */
-    static final <T> ReplaySubject<T> createWithState(final BoundedState<T> state,
+    static <T> ReplaySubject<T> createWithState(final BoundedState<T> state,
             Action1<SubjectObserver<T>> onStart) {
         SubjectSubscriptionManager<T> ssm = new SubjectSubscriptionManager<T>();
         ssm.onStart = onStart;

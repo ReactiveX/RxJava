@@ -58,7 +58,7 @@ public final class IndexedRingBuffer<E> implements Subscription {
     };
 
     @SuppressWarnings("unchecked")
-    public final static <T> IndexedRingBuffer<T> getInstance() {
+    public static <T> IndexedRingBuffer<T> getInstance() {
         return (IndexedRingBuffer<T>) POOL.borrowObject();
     }
 
