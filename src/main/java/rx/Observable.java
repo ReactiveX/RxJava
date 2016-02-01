@@ -811,6 +811,31 @@ public class Observable<T> {
     }
 
     /**
+     * Combines a collection of source Observables by emitting an item that aggregates the latest values of each of
+     * the source Observables each time an item is received from any of the source Observables, where this
+     * aggregation is defined by a specified function.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T>
+     *            the common base type of source values
+     * @param <R>
+     *            the result type
+     * @param sources
+     *            the collection of source Observables
+     * @param combineFunction
+     *            the aggregation function used to combine the items emitted by the source Observables
+     * @return an Observable that emits items that are the result of combining the items emitted by the source
+     *         Observables by means of the given aggregation function
+     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
+     */
+    public static <T, R> Observable<R> combineLatest(Iterable<? extends Observable<? extends T>> sources, FuncN<? extends R> combineFunction) {
+        return create(new OnSubscribeCombineLatest<T, R>(sources, combineFunction));
+    }
+
+    /**
      * Returns an Observable that emits the items emitted by each of the Observables emitted by the source
      * Observable, one after the other, without interleaving them.
      * <p>
