@@ -1,317 +1,409 @@
 /**
- * Copyright 2014 Netflix, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
+ * Copyright 2015 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
+ * the License for the specific language governing permissions and limitations under the License.
  */
+
 package rx.internal.operators;
 
-import java.util.BitSet;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.*;
+import java.util.concurrent.atomic.*;
 
+import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.exceptions.*;
-import rx.Producer;
-import rx.Subscriber;
+import rx.exceptions.CompositeException;
 import rx.functions.FuncN;
 import rx.internal.util.RxRingBuffer;
+import rx.internal.util.atomic.SpscLinkedArrayQueue;
+import rx.plugins.RxJavaPlugins;
 
-/**
- * Returns an Observable that combines the emissions of multiple source observables. Once each
- * source Observable has emitted at least one item, combineLatest emits an item whenever any of
- * the source Observables emits an item, by combining the latest emissions from each source
- * Observable with a specified function.
- * <p>
- * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/combineLatest.png" alt="">
- * 
- * @param <T>
- *            the common basetype of the source values
- * @param <R>
- *            the result type of the combinator function
- */
 public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
-    final List<? extends Observable<? extends T>> sources;
-    final FuncN<? extends R> combinator;
-
-    public OnSubscribeCombineLatest(List<? extends Observable<? extends T>> sources, FuncN<? extends R> combinator) {
+    final Observable<? extends T>[] sources;
+    final Iterable<? extends Observable<? extends T>> sourcesIterable;
+    final FuncN<? extends R> combiner;
+    final int bufferSize;
+    final boolean delayError;
+    
+    public OnSubscribeCombineLatest(Iterable<? extends Observable<? extends T>> sourcesIterable,
+            FuncN<? extends R> combiner) {
+        this(null, sourcesIterable, combiner, RxRingBuffer.SIZE, false);
+    }
+    
+    public OnSubscribeCombineLatest(Observable<? extends T>[] sources,
+            Iterable<? extends Observable<? extends T>> sourcesIterable,
+            FuncN<? extends R> combiner, int bufferSize,
+            boolean delayError) {
         this.sources = sources;
-        this.combinator = combinator;
-        if (sources.size() > RxRingBuffer.SIZE) {
-            // For design simplicity this is limited to RxRingBuffer.SIZE. If more are really needed we'll need to
-            // adjust the design of how RxRingBuffer is used in the implementation below.
-            throw new IllegalArgumentException("More than RxRingBuffer.SIZE sources to combineLatest is not supported.");
-        }
+        this.sourcesIterable = sourcesIterable;
+        this.combiner = combiner;
+        this.bufferSize = bufferSize;
+        this.delayError = delayError;
     }
 
+    
     @Override
-    public void call(final Subscriber<? super R> child) {
-        if (sources.isEmpty()) {
-            child.onCompleted();
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void call(Subscriber<? super R> s) {
+        Observable<? extends T>[] sources = this.sources;
+        int count = 0;
+        if (sources == null) {
+            if (sourcesIterable instanceof List) {
+                // unchecked & raw: javac type inference problem otherwise
+                List list = (List)sourcesIterable;
+                sources = (Observable[])list.toArray(new Observable[list.size()]);
+                count = sources.length;
+            } else {
+                sources = new Observable[8];
+                for (Observable<? extends T> p : sourcesIterable) {
+                    if (count == sources.length) {
+                        Observable<? extends T>[] b = new Observable[count + (count >> 2)];
+                        System.arraycopy(sources, 0, b, 0, count);
+                        sources = b;
+                    }
+                    sources[count++] = p;
+                }
+            }
+        } else {
+            count = sources.length;
+        }
+        
+        if (count == 0) {
+            s.onCompleted();
             return;
         }
-        if (sources.size() == 1) {
-            child.setProducer(new SingleSourceProducer<T, R>(child, sources.get(0), combinator));
-        } else {
-            child.setProducer(new MultiSourceProducer<T, R>(child, sources, combinator));
-        }
-
+        
+        LatestCoordinator<T, R> lc = new LatestCoordinator<T, R>(s, combiner, count, bufferSize, delayError);
+        lc.subscribe(sources);
     }
+    
+    static final class LatestCoordinator<T, R> extends AtomicInteger implements Producer, Subscription {
+        /** */
+        private static final long serialVersionUID = 8567835998786448817L;
+        final Subscriber<? super R> actual;
+        final FuncN<? extends R> combiner;
+        final int count;
+        final CombinerSubscriber<T, R>[] subscribers;
+        final int bufferSize;
+        final Object[] latest;
+        final SpscLinkedArrayQueue<Object> queue;
+        final boolean delayError;
+        
+        volatile boolean cancelled;
+        
+        volatile boolean done;
+        
+        final AtomicLong requested;
 
-    /*
-     * benjchristensen => This implementation uses a buffer enqueue/drain pattern. It could be optimized to have a fast-path to
-     * skip the buffer and emit directly when no conflict, but that is quite complicated and I don't have the time to attempt it right now.
-     */
-    final static class MultiSourceProducer<T, R> implements Producer {
-        private final AtomicBoolean started = new AtomicBoolean();
-        private final AtomicLong requested = new AtomicLong();
-        private final List<? extends Observable<? extends T>> sources;
-        private final Subscriber<? super R> child;
-        private final FuncN<? extends R> combinator;
-        private final MultiSourceRequestableSubscriber<T, R>[] subscribers;
-
-        /* following are guarded by WIP */
-        private final RxRingBuffer buffer = RxRingBuffer.getSpmcInstance();
-        private final Object[] collectedValues;
-        private final BitSet haveValues;
-        private volatile int haveValuesCount; // does this need to be volatile or is WIP sufficient?
-        private final BitSet completion;
-        private volatile int completionCount; // does this need to be volatile or is WIP sufficient?
-
-        private final AtomicLong counter = new AtomicLong();
-
+        final AtomicReference<Throwable> error;
+        
+        int active;
+        int complete;
+        
+        /** Indicates the particular source hasn't emitted any value yet. */
+        static final Object MISSING = new Object();
+        
         @SuppressWarnings("unchecked")
-        public MultiSourceProducer(final Subscriber<? super R> child, final List<? extends Observable<? extends T>> sources, FuncN<? extends R> combinator) {
-            this.sources = sources;
-            this.child = child;
-            this.combinator = combinator;
-
-            int n = sources.size();
-            this.subscribers = new MultiSourceRequestableSubscriber[n];
-            this.collectedValues = new Object[n];
-            this.haveValues = new BitSet(n);
-            this.completion = new BitSet(n);
+        public LatestCoordinator(Subscriber<? super R> actual, 
+                FuncN<? extends R> combiner, 
+                int count, int bufferSize, boolean delayError) {
+            this.actual = actual;
+            this.combiner = combiner;
+            this.count = count;
+            this.bufferSize = bufferSize;
+            this.delayError = delayError;
+            this.latest = new Object[count];
+            Arrays.fill(latest, MISSING);
+            this.subscribers = new CombinerSubscriber[count];
+            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
+            this.requested = new AtomicLong();
+            this.error = new AtomicReference<Throwable>();
         }
-
+        
+        public void subscribe(Observable<? extends T>[] sources) {
+            Subscriber<T>[] as = subscribers;
+            int len = as.length;
+            for (int i = 0; i < len; i++) {
+                as[i] = new CombinerSubscriber<T, R>(this, i);
+            }
+            lazySet(0); // release array contents
+            actual.add(this);
+            actual.setProducer(this);
+            for (int i = 0; i < len; i++) {
+                if (cancelled) {
+                    return;
+                }
+                sources[i].subscribe(as[i]);
+            }
+        }
+        
         @Override
         public void request(long n) {
-            BackpressureUtils.getAndAddRequest(requested, n);
-            if (!started.get() && started.compareAndSet(false, true)) {
-                /*
-                 * NOTE: this logic will ONLY work if we don't have more sources than the size of the buffer.
-                 * 
-                 * We would likely need to make an RxRingBuffer that can be sized to [numSources * n] instead
-                 * of the current global default size it has.
-                 */
-                int sizePerSubscriber = RxRingBuffer.SIZE / sources.size();
-                int leftOver = RxRingBuffer.SIZE % sources.size();
-                for (int i = 0; i < sources.size(); i++) {
-                    Observable<? extends T> o = sources.get(i);
-                    int toRequest = sizePerSubscriber;
-                    if (i == sources.size() - 1) {
-                        toRequest += leftOver;
-                    }
-                    MultiSourceRequestableSubscriber<T, R> s = new MultiSourceRequestableSubscriber<T, R>(i, toRequest, child, this);
-                    subscribers[i] = s;
-                    o.unsafeSubscribe(s);
+            if (n < 0) {
+                throw new IllegalArgumentException("n >= required but it was " + n);
+            }
+            if (n != 0) {
+                BackpressureUtils.getAndAddRequest(requested, n);
+                drain();
+            }
+        }
+        
+        @Override
+        public void unsubscribe() {
+            if (!cancelled) {
+                cancelled = true;
+                
+                if (getAndIncrement() == 0) {
+                    cancel(queue);
                 }
             }
-            tick();
         }
-
+        
+        @Override
+        public boolean isUnsubscribed() {
+            return cancelled;
+        }
+        
+        void cancel(Queue<?> q) {
+            q.clear();
+            for (CombinerSubscriber<T, R> s : subscribers) {
+                s.unsubscribe();
+            }
+        }
+        
         /**
-         * This will only allow one thread at a time to do the work, but ensures via `counter` increment/decrement
-         * that there is always once who acts on each `tick`. Same concept as used in OperationObserveOn.
+         * Combine the given notification value from the indexth source with the existing known
+         * latest values.
+         * @param value the notification to combine, null indicates the source terminated normally
+         * @param index the index of the source subscriber
          */
-        void tick() {
-            AtomicLong localCounter = this.counter;
-            if (localCounter.getAndIncrement() == 0) {
-                int emitted = 0;
-                do {
-                    // we only emit if requested > 0
-                    if (requested.get() > 0) {
-                        Object o = buffer.poll();
-                        if (o != null) {
-                            if (buffer.isCompleted(o)) {
-                                child.onCompleted();
-                            } else {
-                                buffer.accept(o, child);
-                                emitted++;
-                                requested.decrementAndGet();
-                            }
-                        }
+        void combine(Object value, int index) {
+            CombinerSubscriber<T, R> combinerSubscriber = subscribers[index];
+            
+            int activeCount;
+            int completedCount;
+            int sourceCount;
+            boolean empty;
+            boolean allSourcesFinished;
+            synchronized (this) {
+                sourceCount = latest.length;
+                Object o = latest[index];
+                activeCount = active;
+                if (o == MISSING) {
+                    active = ++activeCount;
+                }
+                completedCount = complete;
+                if (value == null) {
+                    complete = ++completedCount;
+                } else {
+                    latest[index] = combinerSubscriber.nl.getValue(value);
+                }
+                allSourcesFinished = activeCount == sourceCount;
+                // see if either all sources completed
+                empty = completedCount == sourceCount 
+                        || (value == null && o == MISSING); // or this source completed without any value
+                if (!empty) {
+                    if (value != null && allSourcesFinished) {
+                        queue.offer(combinerSubscriber, latest.clone());
+                    } else
+                    if (value == null && error.get() != null) {
+                        done = true; // if this source completed without a value
                     }
-                } while (localCounter.decrementAndGet() > 0);
-                if (emitted > 0) {
-                    for (MultiSourceRequestableSubscriber<T, R> s : subscribers) {
-                        s.requestUpTo(emitted);
-                    }
+                } else {
+                    done = true;
                 }
             }
-        }
-
-        public void onCompleted(int index, boolean hadValue) {
-            if (!hadValue) {
-                child.onCompleted();
+            if (!allSourcesFinished && value != null) {
+                combinerSubscriber.requestMore(1);
                 return;
             }
-            boolean done = false;
-            synchronized (this) {
-                if (!completion.get(index)) {
-                    completion.set(index);
-                    completionCount++;
-                    done = completionCount == collectedValues.length;
-                }
+            drain();
+        }
+        void drain() {
+            if (getAndIncrement() != 0) {
+                return;
             }
-            if (done) {
-                buffer.onCompleted();
-                tick();
+            
+            final Queue<Object> q = queue;
+            final Subscriber<? super R> a = actual;
+            final boolean delayError = this.delayError;
+            final AtomicLong localRequested = this.requested;
+            
+            int missed = 1;
+            for (;;) {
+                
+                if (checkTerminated(done, q.isEmpty(), a, q, delayError)) {
+                    return;
+                }
+                
+                long requestAmount = localRequested.get();
+                boolean unbounded = requestAmount == Long.MAX_VALUE;
+                long emitted = 0L;
+                
+                while (requestAmount != 0L) {
+                    
+                    boolean d = done;
+                    @SuppressWarnings("unchecked")
+                    CombinerSubscriber<T, R> cs = (CombinerSubscriber<T, R>)q.peek();
+                    boolean empty = cs == null;
+                    
+                    if (checkTerminated(d, empty, a, q, delayError)) {
+                        return;
+                    }
+                    
+                    if (empty) {
+                        break;
+                    }
+
+                    q.poll();
+                    Object[] array = (Object[])q.poll();
+                    
+                    if (array == null) {
+                        cancelled = true;
+                        cancel(q);
+                        a.onError(new IllegalStateException("Broken queue?! Sender received but not the array."));
+                        return;
+                    }
+                    
+                    R v;
+                    try {
+                        v = combiner.call(array);
+                    } catch (Throwable ex) {
+                        cancelled = true;
+                        cancel(q);
+                        a.onError(ex);
+                        return;
+                    }
+                    
+                    a.onNext(v);
+                    
+                    cs.requestMore(1);
+                    
+                    requestAmount--;
+                    emitted--;
+                }
+                
+                if (emitted != 0L) {
+                    if (!unbounded) {
+                        localRequested.addAndGet(emitted);
+                    }
+                }
+                
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
+                }
             }
         }
-
-        /**
-         * @return boolean true if propagated value
-         */
-        public boolean onNext(int index, T t) {
-            synchronized (this) {
-                if (!haveValues.get(index)) {
-                    haveValues.set(index);
-                    haveValuesCount++;
-                }
-                collectedValues[index] = t;
-                if (haveValuesCount != collectedValues.length) {
-                    // haven't received value from each source yet so won't emit
-                    return false;
+        
+        
+        boolean checkTerminated(boolean mainDone, boolean queueEmpty, Subscriber<?> childSubscriber, Queue<?> q, boolean delayError) {
+            if (cancelled) {
+                cancel(q);
+                return true;
+            }
+            if (mainDone) {
+                if (delayError) {
+                    if (queueEmpty) {
+                        Throwable e = error.get();
+                        if (e != null) {
+                            childSubscriber.onError(e);
+                        } else {
+                            childSubscriber.onCompleted();
+                        }
+                        return true;
+                    }
                 } else {
-                    try {
-                        buffer.onNext(combinator.call(collectedValues));
-                    } catch (MissingBackpressureException e) {
-                        onError(e);
-                    } catch (Throwable e) {
-                        Exceptions.throwOrReport(e, child);
+                    Throwable e = error.get();
+                    if (e != null) {
+                        cancel(q);
+                        childSubscriber.onError(e);
+                        return true;
+                    } else
+                    if (queueEmpty) {
+                        childSubscriber.onCompleted();
+                        return true;
                     }
                 }
             }
-            tick();
-            return true;
+            return false;
         }
-
-        public void onError(Throwable e) {
-            child.onError(e);
+        
+        void onError(Throwable e) {
+            AtomicReference<Throwable> localError = this.error;
+            for (;;) {
+                Throwable curr = localError.get();
+                Throwable next;
+                if (curr != null) {
+                    if (curr instanceof CompositeException) {
+                        CompositeException ce = (CompositeException) curr;
+                        List<Throwable> es = new ArrayList<Throwable>(ce.getExceptions());
+                        es.add(e);
+                        next = new CompositeException(es);
+                    } else {
+                        next = new CompositeException(Arrays.asList(curr, e));
+                    }
+                } else {
+                    next = e;
+                }
+                if (localError.compareAndSet(curr, next)) {
+                    return;
+                }
+            }
         }
     }
-
-    final static class MultiSourceRequestableSubscriber<T, R> extends Subscriber<T> {
-
-        final MultiSourceProducer<T, R> producer;
+    
+    static final class CombinerSubscriber<T, R> extends Subscriber<T> {
+        final LatestCoordinator<T, R> parent;
         final int index;
-        final AtomicLong emitted = new AtomicLong();
-        boolean hasValue = false;
-
-        public MultiSourceRequestableSubscriber(int index, int initial, Subscriber<? super R> child, MultiSourceProducer<T, R> producer) {
-            super(child);
+        final NotificationLite<T> nl;
+        
+        boolean done;
+        
+        public CombinerSubscriber(LatestCoordinator<T, R> parent, int index) {
+            this.parent = parent;
             this.index = index;
-            this.producer = producer;
-            request(initial);
+            this.nl = NotificationLite.instance();
+            request(parent.bufferSize);
         }
-
-        public void requestUpTo(long n) {
-            do {
-                long r = emitted.get();
-                long u = Math.min(r, n);
-                if (emitted.compareAndSet(r, r - u)) {
-                    request(u);
-                    break;
-                }
-            } while (true);
-        }
-
-        @Override
-        public void onCompleted() {
-            producer.onCompleted(index, hasValue);
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            producer.onError(e);
-        }
-
+        
         @Override
         public void onNext(T t) {
-            hasValue = true;
-            emitted.incrementAndGet();
-            boolean emitted = producer.onNext(index, t);
-            if (!emitted) {
-                request(1);
+            if (done) {
+                return;
             }
+            parent.combine(nl.next(t), index);
         }
-
-    }
-
-    final static class SingleSourceProducer<T, R> implements Producer {
-        final AtomicBoolean started = new AtomicBoolean();
-        final Observable<? extends T> source;
-        final Subscriber<? super R> child;
-        final FuncN<? extends R> combinator;
-        final SingleSourceRequestableSubscriber<T, R> subscriber;
-
-        public SingleSourceProducer(final Subscriber<? super R> child, Observable<? extends T> source, FuncN<? extends R> combinator) {
-            this.source = source;
-            this.child = child;
-            this.combinator = combinator;
-            this.subscriber = new SingleSourceRequestableSubscriber<T, R>(child, combinator);
-        }
-
+        
         @Override
-        public void request(final long n) {
-            subscriber.requestMore(n);
-            if (started.compareAndSet(false, true)) {
-                source.unsafeSubscribe(subscriber);
+        public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.getInstance().getErrorHandler().handleError(t);
+                return;
             }
-
+            parent.onError(t);
+            done = true;
+            parent.combine(null, index);
         }
-
-    }
-
-    final static class SingleSourceRequestableSubscriber<T, R> extends Subscriber<T> {
-
-        private final Subscriber<? super R> child;
-        private final FuncN<? extends R> combinator;
-
-        SingleSourceRequestableSubscriber(Subscriber<? super R> child, FuncN<? extends R> combinator) {
-            super(child);
-            this.child = child;
-            this.combinator = combinator;
+        
+        @Override
+        public void onCompleted() {
+            if (done) {
+                return;
+            }
+            done = true;
+            parent.combine(null, index);
         }
-
+        
         public void requestMore(long n) {
             request(n);
-        }
-
-        @Override
-        public void onNext(T t) {
-            child.onNext(combinator.call(t));
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            child.onError(e);
-        }
-
-        @Override
-        public void onCompleted() {
-            child.onCompleted();
         }
     }
 }
