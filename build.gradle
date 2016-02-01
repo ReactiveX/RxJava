@@ -33,3 +33,8 @@ if (project.hasProperty('release.useLastTag')) {
 test{
      maxHeapSize = "2g"
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.10'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
