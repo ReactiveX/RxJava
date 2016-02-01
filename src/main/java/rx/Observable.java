@@ -781,7 +781,7 @@ public class Observable<T> {
      *         Observables by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
-    public static final <T, R> Observable<R> combineLatest(List<? extends Observable<? extends T>> sources, FuncN<? extends R> combineFunction) {
+    public static final <T, R> Observable<R> combineLatest(Iterable<? extends Observable<? extends T>> sources, FuncN<? extends R> combineFunction) {
         return create(new OnSubscribeCombineLatest<T, R>(sources, combineFunction));
     }
 
