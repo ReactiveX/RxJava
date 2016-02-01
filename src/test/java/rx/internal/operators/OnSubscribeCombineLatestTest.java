@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -477,7 +478,7 @@ public class OnSubscribeCombineLatestTest {
         };
         for (int i = 1; i <= n; i++) {
             System.out.println("test1ToNSources: " + i + " sources");
-            List<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
+            Collection<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
             List<Object> values = new ArrayList<Object>();
             for (int j = 0; j < i; j++) {
                 sources.add(Observable.just(j));
@@ -509,7 +510,7 @@ public class OnSubscribeCombineLatestTest {
         };
         for (int i = 1; i <= n; i++) {
             System.out.println("test1ToNSourcesScheduled: " + i + " sources");
-            List<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
+            Collection<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
             List<Object> values = new ArrayList<Object>();
             for (int j = 0; j < i; j++) {
                 sources.add(Observable.just(j).subscribeOn(Schedulers.io()));
