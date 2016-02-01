@@ -16,7 +16,8 @@
 package rx.internal.operators;
 
 import java.util.BitSet;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -42,10 +43,10 @@ import rx.internal.util.RxRingBuffer;
  *            the result type of the combinator function
  */
 public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
-    final List<? extends Observable<? extends T>> sources;
+    final Collection<? extends Observable<? extends T>> sources;
     final FuncN<? extends R> combinator;
 
-    public OnSubscribeCombineLatest(List<? extends Observable<? extends T>> sources, FuncN<? extends R> combinator) {
+    public OnSubscribeCombineLatest(Collection<? extends Observable<? extends T>> sources, FuncN<? extends R> combinator) {
         this.sources = sources;
         this.combinator = combinator;
         if (sources.size() > RxRingBuffer.SIZE) {
@@ -62,7 +63,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
             return;
         }
         if (sources.size() == 1) {
-            child.setProducer(new SingleSourceProducer<T, R>(child, sources.get(0), combinator));
+            child.setProducer(new SingleSourceProducer<T, R>(child, sources.iterator().next(), combinator));
         } else {
             child.setProducer(new MultiSourceProducer<T, R>(child, sources, combinator));
         }
@@ -76,7 +77,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
     final static class MultiSourceProducer<T, R> implements Producer {
         private final AtomicBoolean started = new AtomicBoolean();
         private final AtomicLong requested = new AtomicLong();
-        private final List<? extends Observable<? extends T>> sources;
+        private final Collection<? extends Observable<? extends T>> sources;
         private final Subscriber<? super R> child;
         private final FuncN<? extends R> combinator;
         private final MultiSourceRequestableSubscriber<T, R>[] subscribers;
@@ -92,7 +93,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
         private final AtomicLong counter = new AtomicLong();
 
         @SuppressWarnings("unchecked")
-        public MultiSourceProducer(final Subscriber<? super R> child, final List<? extends Observable<? extends T>> sources, FuncN<? extends R> combinator) {
+        public MultiSourceProducer(final Subscriber<? super R> child, final Collection<? extends Observable<? extends T>> sources, FuncN<? extends R> combinator) {
             this.sources = sources;
             this.child = child;
             this.combinator = combinator;
@@ -116,10 +117,11 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                  */
                 int sizePerSubscriber = RxRingBuffer.SIZE / sources.size();
                 int leftOver = RxRingBuffer.SIZE % sources.size();
-                for (int i = 0; i < sources.size(); i++) {
-                    Observable<? extends T> o = sources.get(i);
+                Iterator<? extends Observable<? extends T>> iterator = sources.iterator();
+                for (int i = 0; iterator.hasNext(); i++) {
+                    Observable<? extends T> o = iterator.next();
                     int toRequest = sizePerSubscriber;
-                    if (i == sources.size() - 1) {
+                    if (!iterator.hasNext()) {
                         toRequest += leftOver;
                     }
                     MultiSourceRequestableSubscriber<T, R> s = new MultiSourceRequestableSubscriber<T, R>(i, toRequest, child, this);
