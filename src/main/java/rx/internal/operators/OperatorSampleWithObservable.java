@@ -16,9 +16,9 @@
 package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicReference;
-import rx.Observable;
+
+import rx.*;
 import rx.Observable.Operator;
-import rx.Subscriber;
 import rx.observers.SerializedSubscriber;
 
 /**
@@ -44,7 +44,9 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
     
         final AtomicReference<Object> value = new AtomicReference<Object>(EMPTY_TOKEN);
         
-        Subscriber<U> samplerSub = new Subscriber<U>(child) {
+        final AtomicReference<Subscription> main = new AtomicReference<Subscription>();
+        
+        final Subscriber<U> samplerSub = new Subscriber<U>() {
             @Override
             public void onNext(U t) {
                 Object localValue = value.getAndSet(EMPTY_TOKEN);
@@ -58,15 +60,17 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
             @Override
             public void onError(Throwable e) {
                 s.onError(e);
-                unsubscribe();
+                // no need to null check, main is assigned before any of the two gets subscribed
+                main.get().unsubscribe();
             }
 
             @Override
             public void onCompleted() {
+                // onNext(null); // emit the very last value?
                 s.onCompleted();
-                unsubscribe();
+                // no need to null check, main is assigned before any of the two gets subscribed
+                main.get().unsubscribe();
             }
-            
         };
         
         Subscriber<T> result = new Subscriber<T>() {
@@ -78,17 +82,23 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
             @Override
             public void onError(Throwable e) {
                 s.onError(e);
-                unsubscribe();
+                
+                samplerSub.unsubscribe();
             }
 
             @Override
             public void onCompleted() {
+                // samplerSub.onNext(null); // emit the very last value?
                 s.onCompleted();
-                unsubscribe();
+
+                samplerSub.unsubscribe();
             }
         };
         
+        main.lazySet(result);
+        
         child.add(result);
+        child.add(samplerSub);
         
         sampler.unsafeSubscribe(samplerSub);
         
