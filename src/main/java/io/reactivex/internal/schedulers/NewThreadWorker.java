@@ -32,11 +32,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
     
     /* package */
     public NewThreadWorker(ThreadFactory threadFactory) {
-        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1, threadFactory);
-        // Java 7+: cancelled future tasks can be removed from the executor thus avoiding memory leak
-        if (exec instanceof ScheduledThreadPoolExecutor) {
-            ((ScheduledThreadPoolExecutor)exec).setRemoveOnCancelPolicy(true);
-        }
+        ScheduledExecutorService exec = SchedulerPoolHelper.create(threadFactory);
         executor = exec;
     }
 
@@ -59,7 +55,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
      * @param run
      * @param delayTime
      * @param unit
-     * @return
+     * @return a Disposable that let's the caller cancel the scheduled runnable
      */
     public Disposable scheduleDirect(final Runnable run, long delayTime, TimeUnit unit) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
@@ -84,7 +80,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
      * @param initialDelay
      * @param period
      * @param unit
-     * @return
+     * @return a Disposable that let's the caller cancel the scheduled runnable
      */
     public Disposable schedulePeriodicallyDirect(final Runnable run, long initialDelay, long period, TimeUnit unit) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
@@ -103,12 +99,15 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
      * on the underlying ScheduledExecutorService.
      * <p>If the schedule has been rejected, the ScheduledRunnable.wasScheduled will return
      * false.
-     * @param action
+     * @param run
      * @param delayTime
      * @param unit
-     * @return
+     * @param parent the parent tracking structure to add the created ScheduledRunnable instance before
+     * it gets scheduled.
+     * @return a Disposable that let's the caller cancel the scheduled runnable
      */
-    public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, TimeUnit unit, CompositeResource<Disposable> parent) {
+    public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, TimeUnit unit, 
+            CompositeResource<Disposable> parent) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         
         ScheduledRunnable sr = new ScheduledRunnable(decoratedRun, parent);

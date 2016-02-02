@@ -178,9 +178,9 @@ public class NbpOperatorWindowWithSizeTest {
                 })
                 .observeOn(Schedulers.computation())
                 .window(5, 4)
-                .take(2))
+                .take(2), 128)
                 .subscribe(ts);
-        ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        ts.awaitTerminalEvent(400, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
         ts.assertValues(1, 2, 3, 4, 5, 5, 6, 7, 8, 9);
         // make sure we don't emit all values ... the unsubscribe should propagate
