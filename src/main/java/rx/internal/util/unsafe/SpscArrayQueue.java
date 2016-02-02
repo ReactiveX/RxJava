@@ -162,6 +162,11 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
             }
         }
     }
+    
+    @Override
+    public boolean isEmpty() {
+        return lvProducerIndex() == lvConsumerIndex();
+    }
 
     private void soProducerIndex(long v) {
         UNSAFE.putOrderedLong(this, P_INDEX_OFFSET, v);

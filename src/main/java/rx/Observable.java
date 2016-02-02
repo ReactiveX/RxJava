@@ -5915,7 +5915,9 @@ public class Observable<T> {
     
     /**
      * Modifies an Observable to perform its emissions and notifications on a specified {@link Scheduler},
-     * asynchronously with an unbounded buffer.
+     * asynchronously with a bounded buffer.
+     * <p>Note that onError notifications will cut ahead of onNext notifications on the emission thread if Scheduler is truly
+     * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, boolean)} overload.
      * <p>
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
@@ -5930,12 +5932,43 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #subscribeOn
+     * @see #observeOn(Scheduler, boolean)
      */
     public final Observable<T> observeOn(Scheduler scheduler) {
         if (this instanceof ScalarSynchronousObservable) {
             return ((ScalarSynchronousObservable<T>)this).scalarScheduleOn(scheduler);
         }
-        return lift(new OperatorObserveOn<T>(scheduler));
+        return lift(new OperatorObserveOn<T>(scheduler, false));
+    }
+
+    /**
+     * Modifies an Observable to perform its emissions and notifications on a specified {@link Scheduler},
+     * asynchronously with a bounded buffer and optionally delays onError notifications.
+     * <p>
+     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
+     * 
+     * @param scheduler
+     *            the {@link Scheduler} to notify {@link Observer}s on
+     * @param delayError
+     *            indicates if the onError notification may not cut ahead of onNext notification on the other side of the
+     *            scheduling boundary. If true a sequence ending in onError will be replayed in the same order as was received
+     *            from upstream
+     * @return the source Observable modified so that its {@link Observer}s are notified on the specified
+     *         {@link Scheduler}
+     * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
+     * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
+     * @see #subscribeOn
+     * @see #observeOn(Scheduler)
+     */
+    public final Observable<T> observeOn(Scheduler scheduler, boolean delayError) {
+        if (this instanceof ScalarSynchronousObservable) {
+            return ((ScalarSynchronousObservable<T>)this).scalarScheduleOn(scheduler);
+        }
+        return lift(new OperatorObserveOn<T>(scheduler, delayError));
     }
 
     /**
