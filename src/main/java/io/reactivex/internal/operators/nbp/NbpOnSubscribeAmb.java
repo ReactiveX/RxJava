@@ -100,6 +100,13 @@ public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
             int w = winner;
             if (w == 0) {
                 if (WINNER.compareAndSet(this, 0, index)) {
+                    AmbInnerSubscriber<T>[] a = subscribers;
+                    int n = a.length;
+                    for (int i = 0; i < n; i++) {
+                        if (i + 1 != index) {
+                            a[i].dispose();
+                        }
+                    }
                     return true;
                 }
                 return false;

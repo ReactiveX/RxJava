@@ -116,6 +116,13 @@ public final class PublisherAmb<T> implements Publisher<T> {
             int w = winner;
             if (w == 0) {
                 if (WINNER.compareAndSet(this, 0, index)) {
+                    AmbInnerSubscriber<T>[] a = subscribers;
+                    int n = a.length;
+                    for (int i = 0; i < n; i++) {
+                        if (i + 1 != index) {
+                            a[i].cancel();
+                        }
+                    }
                     return true;
                 }
                 return false;
@@ -189,6 +196,9 @@ public final class PublisherAmb<T> implements Publisher<T> {
             if (s != null) {
                 s.request(n);
             } else {
+                if (SubscriptionHelper.validateRequest(n)) {
+                    return;
+                }
                 BackpressureHelper.add(MISSED_REQUESTED, this, n);
                 s = get();
                 if (s != null && s != CANCELLED) {
