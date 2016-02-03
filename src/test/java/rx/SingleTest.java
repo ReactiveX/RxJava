@@ -1,11 +1,11 @@
 /**
  * Copyright 2015 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -1180,6 +1180,42 @@ public class SingleTest {
                 .doAfterTerminate(action);
 
         verifyZeroInteractions(action);
+    }
+
+    @Test
+    public void onErrorResumeNextViaSingleShouldNotInterruptSuccessfulSingle() {
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Single
+                .just("success")
+                .onErrorResumeNext(Single.just("fail"))
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValue("success");
+    }
+
+    @Test
+    public void onErrorResumeNextViaSingleShouldResumeWithPassedSingleInCaseOfError() {
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Single
+                .<String>error(new RuntimeException("test exception"))
+                .onErrorResumeNext(Single.just("fallback"))
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValue("fallback");
+    }
+
+    @Test
+    public void onErrorResumeNextViaSingleShouldPreventNullSingle() {
+        try {
+            Single
+                    .just("value")
+                    .onErrorResumeNext(null);
+            fail();
+        } catch (NullPointerException expected) {
+            assertEquals("resumeSingleInCaseOfError must not be null", expected.getMessage());
+        }
     }
 
     @Test(expected = NullPointerException.class)
