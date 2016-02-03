@@ -9660,8 +9660,8 @@ public class Observable<T> {
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>The operator honors backpressure on its outer subscriber, ignores backpressure in its inner Observables 
-     *  but each of them will emit at most {@code count} elements.</dd>
+     *  <dd>The operator honors backpressure of its inner and outer subscribers, however, the inner Observable uses an
+     *  unbounded buffer that may hold at most {@code count} elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9670,6 +9670,7 @@ public class Observable<T> {
      *            the maximum size of each window before it should be emitted
      * @return an Observable that emits connected, non-overlapping windows, each containing at most
      *         {@code count} items from the source Observable
+     * @throws IllegalArgumentException if either count is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     public final Observable<Observable<T>> window(int count) {
@@ -9685,8 +9686,8 @@ public class Observable<T> {
      * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>The operator honors backpressure on its outer subscriber, ignores backpressure in its inner Observables 
-     *  but each of them will emit at most {@code count} elements.</dd>
+     *  <dd>The operator honors backpressure of its inner and outer subscribers, however, the inner Observable uses an
+     *  unbounded buffer that may hold at most {@code count} elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9698,9 +9699,16 @@ public class Observable<T> {
      *            {@code count} are equal this is the same operation as {@link #window(int)}.
      * @return an Observable that emits windows every {@code skip} items containing at most {@code count} items
      *         from the source Observable
+     * @throws IllegalArgumentException if either count or skip is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     public final Observable<Observable<T>> window(int count, int skip) {
+        if (count <= 0) {
+            throw new IllegalArgumentException("count > 0 required but it was " + count);
+        }
+        if (skip <= 0) {
+            throw new IllegalArgumentException("skip > 0 required but it was " + skip);
+        }
         return lift(new OperatorWindowWithSize<T>(count, skip));
     }
 

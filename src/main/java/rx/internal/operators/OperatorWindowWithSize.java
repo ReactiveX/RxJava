@@ -16,12 +16,14 @@
 package rx.internal.operators;
 
 import java.util.*;
+import java.util.concurrent.atomic.*;
 
 import rx.*;
-import rx.Observable.Operator;
 import rx.Observable;
-import rx.Observer;
+import rx.Observable.Operator;
 import rx.functions.Action0;
+import rx.internal.util.atomic.SpscLinkedArrayQueue;
+import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -48,215 +50,459 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
     @Override
     public Subscriber<? super T> call(Subscriber<? super Observable<T>> child) {
         if (skip == size) {
-            ExactSubscriber e = new ExactSubscriber(child);
-            e.init();
-            return e;
+            WindowExact<T> parent = new WindowExact<T>(child, size);
+            
+            child.add(parent.cancel);
+            child.setProducer(parent.createProducer());
+            
+            return parent;
+        } else
+        if (skip > size) {
+            WindowSkip<T> parent = new WindowSkip<T>(child, size, skip);
+            
+            child.add(parent.cancel);
+            child.setProducer(parent.createProducer());
+            
+            return parent;
         }
-        InexactSubscriber ie = new InexactSubscriber(child);
-        ie.init();
-        return ie;
-    }
-    /** Subscriber with exact, non-overlapping window bounds. */
-    final class ExactSubscriber extends Subscriber<T> {
-        final Subscriber<? super Observable<T>> child;
-        int count;
-        UnicastSubject<T> window;
-        volatile boolean noWindow = true;
-        public ExactSubscriber(Subscriber<? super Observable<T>> child) {
-            /**
-             * See https://github.com/ReactiveX/RxJava/issues/1546
-             * We cannot compose through a Subscription because unsubscribing
-             * applies to the outer, not the inner.
-             */
-            this.child = child;
-            /*
-             * Add unsubscribe hook to child to get unsubscribe on outer (unsubscribing on next window, not on the inner window itself)
-             */
-        }
-        void init() {
-            child.add(Subscriptions.create(new Action0() {
 
+        WindowOverlap<T> parent = new WindowOverlap<T>(child, size, skip);
+        
+        child.add(parent.cancel);
+        child.setProducer(parent.createProducer());
+        
+        return parent;
+        
+    }
+    
+    static final class WindowExact<T> extends Subscriber<T> implements Action0 {
+        final Subscriber<? super Observable<T>> actual;
+        
+        final int size;
+        
+        final AtomicInteger wip;
+        
+        final Subscription cancel;
+        
+        int index;
+        
+        Subject<T, T> window;
+        
+        public WindowExact(Subscriber<? super Observable<T>> actual, int size) {
+            this.actual = actual;
+            this.size = size;
+            this.wip = new AtomicInteger(1);
+            this.cancel = Subscriptions.create(this);
+            this.add(cancel);
+            this.request(0);
+        }
+        
+        @Override
+        public void onNext(T t) {
+            int i = index;
+            
+            Subject<T, T> w = window;
+            if (i == 0) {
+                wip.getAndIncrement();
+                
+                w = UnicastSubject.create(size, this);
+                window = w;
+                
+                actual.onNext(w);
+            }
+            i++;
+            
+            w.onNext(t);
+            
+            if (i == size) {
+                index = 0;
+                window = null;
+                w.onCompleted();
+            } else {
+                index = i;
+            }
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            Subject<T, T> w = window;
+            
+            if (w != null) {
+                window = null;
+                w.onError(e);
+            }
+            actual.onError(e);
+        }
+        
+        @Override
+        public void onCompleted() {
+            Subject<T, T> w = window;
+            
+            if (w != null) {
+                window = null;
+                w.onCompleted();
+            }
+            actual.onCompleted();
+        }
+        
+        Producer createProducer() {
+            return new Producer() {
                 @Override
-                public void call() {
-                    // if no window we unsubscribe up otherwise wait until window ends
-                    if (noWindow) {
-                        unsubscribe();
+                public void request(long n) {
+                    if (n < 0L) {
+                        throw new IllegalArgumentException("n >= 0 required but it was " + n);
+                    }
+                    if (n != 0L) {
+                        long u = BackpressureUtils.multiplyCap(size, n);
+                        WindowExact.this.request(u);
+                    }
+                }
+            };
+        }
+        
+        @Override
+        public void call() {
+            if (wip.decrementAndGet() == 0) {
+                unsubscribe();
+            }
+        }
+    }
+    
+    static final class WindowSkip<T> extends Subscriber<T> implements Action0 {
+        final Subscriber<? super Observable<T>> actual;
+        
+        final int size;
+        
+        final int skip;
+        
+        final AtomicInteger wip;
+        
+        final Subscription cancel;
+        
+        int index;
+        
+        Subject<T, T> window;
+        
+        public WindowSkip(Subscriber<? super Observable<T>> actual, int size, int skip) {
+            this.actual = actual;
+            this.size = size;
+            this.skip = skip;
+            this.wip = new AtomicInteger(1);
+            this.cancel = Subscriptions.create(this);
+            this.add(cancel);
+            this.request(0);
+        }
+        
+        @Override
+        public void onNext(T t) {
+            int i = index;
+            
+            Subject<T, T> w = window;
+            if (i == 0) {
+                wip.getAndIncrement();
+                
+                w = UnicastSubject.create(size, this);
+                window = w;
+                
+                actual.onNext(w);
+            }
+            i++;
+            
+            if (w != null) {
+                w.onNext(t);
+            }
+            
+            if (i == size) {
+                index = i;
+                window = null;
+                w.onCompleted();
+            } else
+            if (i == skip) {
+                index = 0;
+            } else {
+                index = i;
+            }
+            
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            Subject<T, T> w = window;
+            
+            if (w != null) {
+                window = null;
+                w.onError(e);
+            }
+            actual.onError(e);
+        }
+        
+        @Override
+        public void onCompleted() {
+            Subject<T, T> w = window;
+            
+            if (w != null) {
+                window = null;
+                w.onCompleted();
+            }
+            actual.onCompleted();
+        }
+        
+        Producer createProducer() {
+            return new WindowSkipProducer();
+        }
+        
+        @Override
+        public void call() {
+            if (wip.decrementAndGet() == 0) {
+                unsubscribe();
+            }
+        }
+        
+        final class WindowSkipProducer extends AtomicBoolean implements Producer {
+            /** */
+            private static final long serialVersionUID = 4625807964358024108L;
+
+            @Override
+            public void request(long n) {
+                if (n < 0L) {
+                    throw new IllegalArgumentException("n >= 0 required but it was " + n);
+                }
+                if (n != 0L) {
+                    WindowSkip<T> parent = WindowSkip.this;
+                    if (!get() && compareAndSet(false, true)) {
+                        long u = BackpressureUtils.multiplyCap(n, parent.size);
+                        long v = BackpressureUtils.multiplyCap(parent.skip - parent.size, n - 1);
+                        long w = BackpressureUtils.addCap(u, v);
+                        parent.request(w);
+                    } else {
+                        long u = BackpressureUtils.multiplyCap(n, parent.skip);
+                        parent.request(u);
+                    }
+                }
+            }
+        }
+    }
+    
+    static final class WindowOverlap<T> extends Subscriber<T> implements Action0 {
+        final Subscriber<? super Observable<T>> actual;
+        
+        final int size;
+        
+        final int skip;
+        
+        final AtomicInteger wip;
+        
+        final Subscription cancel;
+
+        final ArrayDeque<Subject<T, T>> windows;
+
+        final AtomicLong requested;
+        
+        final AtomicInteger drainWip;
+        
+        final Queue<Subject<T, T>> queue;
+        
+        Throwable error;
+        
+        volatile boolean done;
+        
+        int index;
+        
+        int produced;
+        
+        public WindowOverlap(Subscriber<? super Observable<T>> actual, int size, int skip) {
+            this.actual = actual;
+            this.size = size;
+            this.skip = skip;
+            this.wip = new AtomicInteger(1);
+            this.windows = new ArrayDeque<Subject<T, T>>();
+            this.drainWip = new AtomicInteger();
+            this.requested = new AtomicLong();
+            this.cancel = Subscriptions.create(this);
+            this.add(cancel);
+            this.request(0);
+            int maxWindows = (size + (skip - 1)) / skip;
+            this.queue = new SpscLinkedArrayQueue<Subject<T, T>>(maxWindows);
+        }
+        
+        @Override
+        public void onNext(T t) {
+            int i = index;
+            
+            ArrayDeque<Subject<T, T>> q = windows;
+            
+            if (i == 0 && !actual.isUnsubscribed()) {
+                wip.getAndIncrement();
+                
+                Subject<T, T> w = UnicastSubject.create(16, this);
+                q.offer(w);
+                
+                queue.offer(w);
+                drain();
+            }
+
+            for (Subject<T, T> w : windows) {
+                w.onNext(t);
+            }
+
+            int p = produced + 1;
+            
+            if (p == size) {
+                produced = p - skip;
+                
+                Subject<T, T> w = q.poll();
+                if (w != null) {
+                    w.onCompleted();
+                }
+            } else {
+                produced = p;
+            }
+            
+            i++;
+            if (i == skip) {
+                index = 0;
+            } else {
+                index = i;
+            }
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            for (Subject<T, T> w : windows) {
+                w.onError(e);
+            }
+            windows.clear();
+            
+            error = e;
+            done = true;
+            drain();
+        }
+        
+        @Override
+        public void onCompleted() {
+            for (Subject<T, T> w : windows) {
+                w.onCompleted();
+            }
+            windows.clear();
+            
+            done = true;
+            drain();
+        }
+        
+        Producer createProducer() {
+            return new WindowOverlapProducer();
+        }
+        
+        @Override
+        public void call() {
+            if (wip.decrementAndGet() == 0) {
+                unsubscribe();
+            }
+        }
+        
+        void drain() {
+            AtomicInteger dw = drainWip;
+            if (dw.getAndIncrement() != 0) {
+                return;
+            }
+
+            final Subscriber<? super Subject<T, T>> a = actual;
+            final Queue<Subject<T, T>> q = queue;
+            
+            int missed = 1;
+            
+            for (;;) {
+                
+                long r = requested.get();
+                long e = 0L;
+                
+                while (e != r) {
+                    boolean d = done;
+                    Subject<T, T> v = q.poll();
+                    boolean empty = v == null;
+                    
+                    if (checkTerminated(d, empty, a, q)) {
+                        return;
+                    }
+                    
+                    if (empty) {
+                        break;
+                    }
+                    
+                    a.onNext(v);
+                    
+                    e++;
+                }
+                
+                if (e == r) {
+                    if (checkTerminated(done, q.isEmpty(), a, q)) {
+                        return;
                     }
                 }
                 
-            }));
-            child.setProducer(new Producer() {
-                @Override
-                public void request(long n) {
-                    if (n > 0) {
-                        long u = n * size;
-                        if (((u >>> 31) != 0) && (u / n != size)) {
-                            u = Long.MAX_VALUE;
-                        }
-                        requestMore(u);
-                    }
+                if (e != 0 && r != Long.MAX_VALUE) {
+                    requested.addAndGet(-e);
                 }
-            });
+                
+                int m = dw.get();
+                if (m == missed) {
+                    missed = dw.addAndGet(-missed);
+                    if (missed == 0) {
+                        break;
+                    }
+                    missed = m;
+                }
+            }
         }
         
-        void requestMore(long n) {
-            request(n);
-        }
-
-        @Override
-        public void onNext(T t) {
-            if (window == null) {
-                noWindow = false;
-                window = UnicastSubject.create();
-                child.onNext(window);
+        boolean checkTerminated(boolean d, boolean empty, Subscriber<? super Subject<T, T>> a, Queue<Subject<T, T>> q) {
+            if (a.isUnsubscribed()) {
+                q.clear();
+                return true;
             }
-            window.onNext(t);
-            if (++count % size == 0) {
-                window.onCompleted();
-                window = null;
-                noWindow = true;
-                if (child.isUnsubscribed()) {
-                    unsubscribe();
+            if (d) {
+                Throwable e = error;
+                if (e != null) {
+                    q.clear();
+                    a.onError(e);
+                    return true;
+                } else
+                if (empty) {
+                    a.onCompleted();
+                    return true;
                 }
             }
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            if (window != null) {
-                window.onError(e);
-            }
-            child.onError(e);
-        }
-
-        @Override
-        public void onCompleted() {
-            if (window != null) {
-                window.onCompleted();
-            }
-            child.onCompleted();
-        }
-    }
-
-    /** Subscriber with inexact, possibly overlapping or skipping windows. */
-    final class InexactSubscriber extends Subscriber<T> {
-        final Subscriber<? super Observable<T>> child;
-        int count;
-        final List<CountedSubject<T>> chunks = new LinkedList<CountedSubject<T>>();
-        volatile boolean noWindow = true;
-
-        public InexactSubscriber(Subscriber<? super Observable<T>> child) {
-            /**
-             * See https://github.com/ReactiveX/RxJava/issues/1546
-             * We cannot compose through a Subscription because unsubscribing
-             * applies to the outer, not the inner.
-             */
-            this.child = child;
-        }
-
-        void init() {
-            /*
-             * Add unsubscribe hook to child to get unsubscribe on outer (unsubscribing on next window, not on the inner window itself)
-             */
-            child.add(Subscriptions.create(new Action0() {
-
-                @Override
-                public void call() {
-                    // if no window we unsubscribe up otherwise wait until window ends
-                    if (noWindow) {
-                        unsubscribe();
-                    }
-                }
-
-            }));
-            
-            child.setProducer(new Producer() {
-                @Override
-                public void request(long n) {
-                    if (n > 0) {
-                        long u = n * size;
-                        if (((u >>> 31) != 0) && (u / n != size)) {
-                            u = Long.MAX_VALUE;
-                        }
-                        requestMore(u);
-                    }
-                }
-            });
+            return false;
         }
         
-        void requestMore(long n) {
-            request(n);
-        }
+        final class WindowOverlapProducer extends AtomicBoolean implements Producer {
+            /** */
+            private static final long serialVersionUID = 4625807964358024108L;
 
-        @Override
-        public void onNext(T t) {
-            if (count++ % skip == 0) {
-                if (!child.isUnsubscribed()) {
-                    if (chunks.isEmpty()) {
-                        noWindow = false;
+            @Override
+            public void request(long n) {
+                if (n < 0L) {
+                    throw new IllegalArgumentException("n >= 0 required but it was " + n);
+                }
+                if (n != 0L) {
+                    
+                    WindowOverlap<T> parent = WindowOverlap.this;
+                    
+                    if (!get() && compareAndSet(false, true)) {
+                        long u = BackpressureUtils.multiplyCap(parent.skip, n - 1);
+                        long v = BackpressureUtils.addCap(u, parent.size);
+                        
+                        parent.request(v);
+                    } else {
+                        long u = BackpressureUtils.multiplyCap(parent.skip, n);
+                        WindowOverlap.this.request(u);
                     }
-                    CountedSubject<T> cs = createCountedSubject();
-                    chunks.add(cs);
-                    child.onNext(cs.producer);
+                    
+                    BackpressureUtils.getAndAddRequest(parent.requested, n);
+                    parent.drain();
                 }
             }
-
-            Iterator<CountedSubject<T>> it = chunks.iterator();
-            while (it.hasNext()) {
-                CountedSubject<T> cs = it.next();
-                cs.consumer.onNext(t);
-                if (++cs.count == size) {
-                    it.remove();
-                    cs.consumer.onCompleted();
-                }
-            }
-            if (chunks.isEmpty()) {
-                noWindow = true;
-                if (child.isUnsubscribed()) {
-                    unsubscribe();
-                }
-            }
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            List<CountedSubject<T>> list = new ArrayList<CountedSubject<T>>(chunks);
-            chunks.clear();
-            noWindow = true;
-            for (CountedSubject<T> cs : list) {
-                cs.consumer.onError(e);
-            }
-            child.onError(e);
-        }
-
-        @Override
-        public void onCompleted() {
-            List<CountedSubject<T>> list = new ArrayList<CountedSubject<T>>(chunks);
-            chunks.clear();
-            noWindow = true;
-            for (CountedSubject<T> cs : list) {
-                cs.consumer.onCompleted();
-            }
-            child.onCompleted();
-        }
-
-        CountedSubject<T> createCountedSubject() {
-            final UnicastSubject<T> bus = UnicastSubject.create();
-            return new CountedSubject<T>(bus, bus);
         }
     }
-    /** 
-     * Record to store the subject and the emission count. 
-     * @param <T> the subject's in-out type
-     */
-    static final class CountedSubject<T> {
-        final Observer<T> consumer;
-        final Observable<T> producer;
-        int count;
 
-        public CountedSubject(Observer<T> consumer, Observable<T> producer) {
-            this.consumer = consumer;
-            this.producer = producer;
-        }
-    }
 }
