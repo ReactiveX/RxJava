@@ -301,7 +301,14 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
 
         @Override
         public void onNext(T t) {
-            child.onNext(combinator.call(t));
+            final R value;
+            try {
+                value = combinator.call(t);
+            } catch (Throwable e) {
+                Exceptions.throwOrReport(e, child);
+                return;
+            }
+            child.onNext(value);
         }
 
         @Override

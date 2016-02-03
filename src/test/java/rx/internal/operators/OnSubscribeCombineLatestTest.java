@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -883,5 +884,32 @@ public class OnSubscribeCombineLatestTest {
             }});
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
+    
+    @Test
+    public void testNonFatalExceptionThrownByCombinatorForSingleSourceIsNotReportedByUpstreamOperator() {
+        final AtomicBoolean errorOccurred = new AtomicBoolean(false);
+        TestSubscriber<Integer> ts = TestSubscriber.create(1);
+        Observable<Integer> source = Observable.just(1)
+          // if haven't caught exception in combineLatest operator then would incorrectly
+          // be picked up by this call to doOnError
+          .doOnError(new Action1<Throwable>() {
+                @Override
+                public void call(Throwable t) {
+                    errorOccurred.set(true);
+                }
+            });
+        Observable
+          .combineLatest(Collections.singletonList(source), THROW_NON_FATAL)
+          .subscribe(ts);
+        assertFalse(errorOccurred.get());
+    }
+    
+    private static final FuncN<Integer> THROW_NON_FATAL = new FuncN<Integer>() {
+        @Override
+        public Integer call(Object... args) {
+            throw new RuntimeException();
+        }
+
+    }; 
 
 }
