@@ -32,7 +32,7 @@ public final class Subscribers {
 
     /**
      * Returns an inert {@link Subscriber} that does nothing in response to the emissions or notifications 
-     * from any {@code Observable} it subscribes to.  Will throw an exception if {@link Subscriber#onError onError} 
+     * from any {@code Observable} it subscribes to.  Will throw an {@link OnErrorNotImplementedException} if {@link Subscriber#onError onError} 
      * method is called
      *
      * @return an inert {@code Observer}
