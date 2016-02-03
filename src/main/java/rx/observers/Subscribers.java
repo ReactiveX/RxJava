@@ -31,10 +31,9 @@ public final class Subscribers {
     }
 
     /**
-     * Returns an inert {@link Subscriber} that does nothing in response to the emissions or notifications from
-     * any {@code Observable} it subscribes to. This is different, however, from an {@code EmptyObserver}, in
-     * that it will throw an exception if its {@link Subscriber#onError onError} method is called (whereas
-     * {@code EmptyObserver} will swallow the error in such a case).
+     * Returns an inert {@link Subscriber} that does nothing in response to the emissions or notifications 
+     * from any {@code Observable} it subscribes to.  Will throw an exception if {@link Subscriber#onError onError} 
+     * method is called
      *
      * @return an inert {@code Observer}
      */
