@@ -103,4 +103,27 @@ public final class BackpressureUtils {
         return u;
     }
     
+    /**
+     * Atomically subtracts a value from the requested amount unless it's at Long.MAX_VALUE.
+     * @param requested the requested amount holder
+     * @param n the value to subtract from the requested amount, has to be positive (not verified)
+     * @return the new requested amount
+     * @throws IllegalStateException if n is greater than the current requested amount, which
+     * indicates a bug in the request accounting logic
+     */
+    public static long produced(AtomicLong requested, long n) {
+        for (;;) {
+            long current = requested.get();
+            if (current == Long.MAX_VALUE) {
+                return Long.MAX_VALUE;
+            }
+            long next = current - n;
+            if (next < 0L) {
+                throw new IllegalStateException("More produced than requested: " + next);
+            }
+            if (requested.compareAndSet(current, next)) {
+                return next;
+            }
+        }
+    }
 }
