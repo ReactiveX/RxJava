@@ -57,6 +57,7 @@ public class OperatorDoOnRequest<T> implements Operator<T, T> {
 
         ParentSubscriber(Subscriber<? super T> child) {
             this.child = child;
+            this.request(0);
         }
 
         private void requestMore(long n) {
