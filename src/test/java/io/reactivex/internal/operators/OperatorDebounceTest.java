@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,7 +17,6 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -25,6 +24,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
@@ -279,7 +279,7 @@ public class OperatorDebounceTest {
     @Test
     public void debounceWithTimeBackpressure() throws InterruptedException {
         TestScheduler scheduler = new TestScheduler();
-        TestSubscriber<Integer> subscriber = new TestSubscriber<>();
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
         Observable.merge(
                 Observable.just(1),
                 Observable.just(2).delay(10, TimeUnit.MILLISECONDS, scheduler)

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,10 +14,11 @@
 package io.reactivex.internal.operators;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
 public final class PublisherRetryPredicate<T> implements Publisher<T> {
@@ -37,7 +38,7 @@ public final class PublisherRetryPredicate<T> implements Publisher<T> {
         SubscriptionArbiter sa = new SubscriptionArbiter();
         s.onSubscribe(sa);
         
-        RepeatSubscriber<T> rs = new RepeatSubscriber<>(s, count, predicate, sa, source);
+        RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, count, predicate, sa, source);
         rs.subscribeNext();
     }
     
@@ -82,8 +83,7 @@ public final class PublisherRetryPredicate<T> implements Publisher<T> {
                 try {
                     b = predicate.test(t);
                 } catch (Throwable e) {
-                    e.addSuppressed(t);
-                    actual.onError(e);
+                    actual.onError(new CompositeException(e, t));
                     return;
                 }
                 if (!b) {

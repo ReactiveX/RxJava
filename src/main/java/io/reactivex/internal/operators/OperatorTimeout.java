@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,13 +14,13 @@
 package io.reactivex.internal.operators;
 
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-import java.util.function.*;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -41,11 +41,11 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
         if (other == null) {
-            return new TimeoutSubscriber<>(
-                    new SerializedSubscriber<>(t), 
+            return new TimeoutSubscriber<T, U, V>(
+                    new SerializedSubscriber<T>(t), 
                     firstTimeoutSelector, timeoutSelector);
         }
-        return new TimeoutOtherSubscriber<>(t, firstTimeoutSelector, timeoutSelector, other);
+        return new TimeoutOtherSubscriber<T, U, V>(t, firstTimeoutSelector, timeoutSelector, other);
     }
     
     static final class TimeoutSubscriber<T, U, V> implements Subscriber<T>, Subscription, OnTimeout {
@@ -59,12 +59,12 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
         
         volatile long index;
         
-        volatile Disposable timeout;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<TimeoutSubscriber, Disposable> TIMEOUT =
-                AtomicReferenceFieldUpdater.newUpdater(TimeoutSubscriber.class, Disposable.class, "timeout");
+        final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
         public TimeoutSubscriber(Subscriber<? super T> actual, 
                 Supplier<? extends Publisher<U>> firstTimeoutSelector,
@@ -104,9 +104,9 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
                     return;
                 }
                 
-                TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<>(this, 0);
+                TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
                 
-                if (TIMEOUT.compareAndSet(this, null, tis)) {
+                if (timeout.compareAndSet(null, tis)) {
                     a.onSubscribe(s);
                     p.subscribe(tis);
                 }
@@ -122,7 +122,7 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
 
             actual.onNext(t);
             
-            Disposable d = timeout;
+            Disposable d = timeout.get();
             if (d != null) {
                 d.dispose();
             }
@@ -143,9 +143,9 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
                 return;
             }
             
-            TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<>(this, idx);
+            TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, idx);
             
-            if (TIMEOUT.compareAndSet(this, d, tis)) {
+            if (timeout.compareAndSet(d, tis)) {
                 p.subscribe(tis);
             }
         }
@@ -172,9 +172,9 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
             cancelled = true;
             s.cancel();
             
-            Disposable d = timeout;
+            Disposable d = timeout.get();
             if (d != CANCELLED) {
-                d = TIMEOUT.getAndSet(this, CANCELLED);
+                d = timeout.getAndSet(CANCELLED);
                 if (d != CANCELLED && d != null) {
                     d.dispose();
                 }
@@ -247,12 +247,12 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
         
         volatile long index;
         
-        volatile Disposable timeout;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<TimeoutOtherSubscriber, Disposable> TIMEOUT =
-                AtomicReferenceFieldUpdater.newUpdater(TimeoutOtherSubscriber.class, Disposable.class, "timeout");
+        final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
         public TimeoutOtherSubscriber(Subscriber<? super T> actual,
                 Supplier<? extends Publisher<U>> firstTimeoutSelector,
@@ -261,7 +261,7 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
             this.firstTimeoutSelector = firstTimeoutSelector;
             this.timeoutSelector = timeoutSelector;
             this.other = other;
-            this.arbiter = new FullArbiter<>(actual, this, 8);
+            this.arbiter = new FullArbiter<T>(actual, this, 8);
         }
         
         @Override
@@ -293,9 +293,9 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
                     return;
                 }
                 
-                TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<>(this, 0);
+                TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
                 
-                if (TIMEOUT.compareAndSet(this, null, tis)) {
+                if (timeout.compareAndSet(null, tis)) {
                     a.onSubscribe(arbiter);
                     p.subscribe(tis);
                 }
@@ -316,7 +316,7 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
                 return;
             }
             
-            Disposable d = timeout;
+            Disposable d = timeout.get();
             if (d != null) {
                 d.dispose();
             }
@@ -335,9 +335,9 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
                 return;
             }
             
-            TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<>(this, idx);
+            TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, idx);
             
-            if (TIMEOUT.compareAndSet(this, d, tis)) {
+            if (timeout.compareAndSet(d, tis)) {
                 p.subscribe(tis);
             }
         }
@@ -368,9 +368,9 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
             cancelled = true;
             s.cancel();
             
-            Disposable d = timeout;
+            Disposable d = timeout.get();
             if (d != CANCELLED) {
-                d = TIMEOUT.getAndSet(this, CANCELLED);
+                d = timeout.getAndSet(CANCELLED);
                 if (d != CANCELLED && d != null) {
                     d.dispose();
                 }
@@ -381,7 +381,7 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
         public void timeout(long idx) {
             if (idx == index) {
                 dispose();
-                other.subscribe(new FullArbiterSubscriber<>(arbiter));
+                other.subscribe(new FullArbiterSubscriber<T>(arbiter));
             }
         }
     }

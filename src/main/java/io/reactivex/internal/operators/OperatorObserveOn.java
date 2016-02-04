@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,8 +18,8 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler;
+import io.reactivex.Observable.Operator;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.schedulers.TrampolineScheduler;
@@ -45,7 +45,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         
         Scheduler.Worker w = scheduler.createWorker();
         
-        return new ObserveOnSubscriber<>(t, w, delayError, bufferSize);
+        return new ObserveOnSubscriber<T>(t, w, delayError, bufferSize);
     }
     
     /**
@@ -65,10 +65,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         /** */
         private static final long serialVersionUID = 7659422588548271214L;
         
-        volatile long requested;
-        static final AtomicLongFieldUpdater<Padding1> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(Padding1.class, "requested");
-        
+        final AtomicLong requested = new AtomicLong();
     }
     
     /**
@@ -103,9 +100,9 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             this.bufferSize = bufferSize;
             Queue<T> q;
             if (Pow2.isPowerOfTwo(bufferSize)) {
-                q = new SpscArrayQueue<>(bufferSize);
+                q = new SpscArrayQueue<T>(bufferSize);
             } else {
-                q = new SpscExactArrayQueue<>(bufferSize);
+                q = new SpscExactArrayQueue<T>(bufferSize);
             }
             this.queue = q;
         }
@@ -159,7 +156,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(requested, n);
             schedule();
         }
         
@@ -190,7 +187,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                     return;
                 }
                 
-                long r = requested;
+                long r = requested.get();
                 long e = 0L;
                 boolean unbounded = r == Long.MAX_VALUE;
                 
@@ -218,7 +215,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                 }
                 if (e != 0L) {
                     if (!unbounded) {
-                        REQUESTED.addAndGet(this, -e);
+                        requested.addAndGet(-e);
                     }
                     s.request(e);
                 }

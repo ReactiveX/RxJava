@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,20 +20,20 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
 
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 
 public class OperatorSwitchTest {
 
@@ -449,7 +449,7 @@ public class OperatorSwitchTest {
         publishCompleted(o3, 55);
 
         
-        final TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+        final TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
         Observable.switchOnNext(o).subscribe(new Observer<String>() {
 
             private int requested = 0;
@@ -458,6 +458,7 @@ public class OperatorSwitchTest {
             public void onStart() {
                 requested = 3;
                 request(3);
+                testSubscriber.onSubscribe(EmptySubscription.INSTANCE);
             }
 
             @Override
@@ -547,7 +548,7 @@ public class OperatorSwitchTest {
     
     @Test(timeout = 10000)
     public void testInitialRequestsAreAdditive() {
-        TestSubscriber<Long> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
         Observable.switchOnNext(
                 Observable.interval(100, TimeUnit.MILLISECONDS)
                           .map(
@@ -566,7 +567,7 @@ public class OperatorSwitchTest {
     
     @Test(timeout = 10000)
     public void testInitialRequestsDontOverflow() {
-        TestSubscriber<Long> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
         Observable.switchOnNext(
                 Observable.interval(100, TimeUnit.MILLISECONDS)
                         .map(new Function<Long, Observable<Long>>() {
@@ -584,7 +585,7 @@ public class OperatorSwitchTest {
     
     @Test(timeout = 10000)
     public void testSecondaryRequestsDontOverflow() throws InterruptedException {
-        TestSubscriber<Long> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
         Observable.switchOnNext(
                 Observable.interval(100, TimeUnit.MILLISECONDS)
                         .map(new Function<Long, Observable<Long>>() {
@@ -606,16 +607,21 @@ public class OperatorSwitchTest {
     @Ignore("Request pattern changed and I can't decide if this is okay or not")
     public void testSecondaryRequestsAdditivelyAreMoreThanLongMaxValueInducesMaxValueRequestFromUpstream()
             throws InterruptedException {
-        final List<Long> requests = new CopyOnWriteArrayList<>();
+        final List<Long> requests = new CopyOnWriteArrayList<Long>();
 
-        TestSubscriber<Long> ts = new TestSubscriber<>(1L);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(1L);
         Observable.switchOnNext(
                 Observable.interval(100, TimeUnit.MILLISECONDS)
                         .map(new Function<Long, Observable<Long>>() {
                             @Override
                             public Observable<Long> apply(Long t) {
                                 return Observable.fromIterable(Arrays.asList(1L, 2L, 3L))
-                                        .doOnRequest(v -> requests.add(v));
+                                        .doOnRequest(new LongConsumer() {
+                                            @Override
+                                            public void accept(long v) {
+                                                requests.add(v);
+                                            }
+                                        });
                             }
                         }).take(3)).subscribe(ts);
         // we will miss two of the first observables

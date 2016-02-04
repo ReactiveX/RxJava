@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,15 +17,15 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.function.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 
 public class NbpOnSubscribeUsingTest {
 
@@ -67,10 +67,18 @@ public class NbpOnSubscribeUsingTest {
         final Resource resource = mock(Resource.class);
         when(resource.getTextFromWeb()).thenReturn("Hello world!");
 
-        Supplier<Resource> resourceFactory = () -> resource;
+        Supplier<Resource> resourceFactory = new Supplier<Resource>() {
+            @Override
+            public Resource get() {
+                return resource;
+            }
+        };
 
-        Function<Resource, NbpObservable<String>> observableFactory = res -> {
-            return NbpObservable.fromArray(res.getTextFromWeb().split(" "));
+        Function<Resource, NbpObservable<String>> observableFactory = new Function<Resource, NbpObservable<String>>() {
+            @Override
+            public NbpObservable<String> apply(Resource res) {
+                return NbpObservable.fromArray(res.getTextFromWeb().split(" "));
+            }
         };
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -126,8 +134,11 @@ public class NbpOnSubscribeUsingTest {
             }
         };
 
-        Function<Resource, NbpObservable<String>> observableFactory = res -> {
-                return NbpObservable.fromArray(res.getTextFromWeb().split(" "));
+        Function<Resource, NbpObservable<String>> observableFactory = new Function<Resource, NbpObservable<String>>() {
+            @Override
+            public NbpObservable<String> apply(Resource res) {
+                    return NbpObservable.fromArray(res.getTextFromWeb().split(" "));
+            }
         };
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -160,11 +171,19 @@ public class NbpOnSubscribeUsingTest {
     }
 
     private void performTestUsingWithResourceFactoryError(boolean disposeEagerly) {
-        Supplier<Disposable> resourceFactory = () -> {
-            throw new TestException();
+        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
+            @Override
+            public Disposable get() {
+                throw new TestException();
+            }
         };
 
-        Function<Disposable, NbpObservable<Integer>> observableFactory = s -> NbpObservable.empty();
+        Function<Disposable, NbpObservable<Integer>> observableFactory = new Function<Disposable, NbpObservable<Integer>>() {
+            @Override
+            public NbpObservable<Integer> apply(Disposable s) {
+                return NbpObservable.empty();
+            }
+        };
 
         NbpObservable.using(resourceFactory, observableFactory, disposeSubscription)
         .toBlocking()
@@ -183,10 +202,18 @@ public class NbpOnSubscribeUsingTest {
 
     private void performTestUsingWithObservableFactoryError(boolean disposeEagerly) {
         final Runnable unsubscribe = mock(Runnable.class);
-        Supplier<Disposable> resourceFactory = () -> Disposables.from(unsubscribe);
+        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
+            @Override
+            public Disposable get() {
+                return Disposables.from(unsubscribe);
+            }
+        };
 
-        Function<Disposable, NbpObservable<Integer>> observableFactory = subscription -> {
-            throw new TestException();
+        Function<Disposable, NbpObservable<Integer>> observableFactory = new Function<Disposable, NbpObservable<Integer>>() {
+            @Override
+            public NbpObservable<Integer> apply(Disposable subscription) {
+                throw new TestException();
+            }
         };
 
         try {
@@ -221,10 +248,16 @@ public class NbpOnSubscribeUsingTest {
             }
         };
 
-        Function<Disposable, NbpObservable<Integer>> observableFactory = subscription -> {
-            return NbpObservable.create(t1 -> {
-                throw new TestException();
-            });
+        Function<Disposable, NbpObservable<Integer>> observableFactory = new Function<Disposable, NbpObservable<Integer>>() {
+            @Override
+            public NbpObservable<Integer> apply(Disposable subscription) {
+                return NbpObservable.create(new NbpOnSubscribe<Integer>() {
+                    @Override
+                    public void accept(NbpSubscriber<? super Integer> t1) {
+                        throw new TestException();
+                    }
+                });
+            }
         };
 
         try {
@@ -242,12 +275,17 @@ public class NbpOnSubscribeUsingTest {
 
     @Test
     public void testUsingDisposesEagerlyBeforeCompletion() {
-        final List<String> events = new ArrayList<>();
+        final List<String> events = new ArrayList<String>();
         Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Runnable completion = createOnCompletedAction(events);
         final Runnable unsub =createUnsubAction(events);
 
-        Function<Resource, NbpObservable<String>> observableFactory = resource -> NbpObservable.fromArray(resource.getTextFromWeb().split(" "));
+        Function<Resource, NbpObservable<String>> observableFactory = new Function<Resource, NbpObservable<String>>() {
+            @Override
+            public NbpObservable<String> apply(Resource resource) {
+                return NbpObservable.fromArray(resource.getTextFromWeb().split(" "));
+            }
+        };
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
         
@@ -264,7 +302,7 @@ public class NbpOnSubscribeUsingTest {
 
     @Test
     public void testUsingDoesNotDisposesEagerlyBeforeCompletion() {
-        final List<String> events = new ArrayList<>();
+        final List<String> events = new ArrayList<String>();
         Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Runnable completion = createOnCompletedAction(events);
         final Runnable unsub = createUnsubAction(events);
@@ -293,7 +331,7 @@ public class NbpOnSubscribeUsingTest {
     
     @Test
     public void testUsingDisposesEagerlyBeforeError() {
-        final List<String> events = new ArrayList<>();
+        final List<String> events = new ArrayList<String>();
         Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Runnable unsub = createUnsubAction(events);
@@ -321,14 +359,17 @@ public class NbpOnSubscribeUsingTest {
     
     @Test
     public void testUsingDoesNotDisposesEagerlyBeforeError() {
-        final List<String> events = new ArrayList<>();
+        final List<String> events = new ArrayList<String>();
         final Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Runnable unsub = createUnsubAction(events);
         
-        Function<Resource, NbpObservable<String>> observableFactory = resource -> {
-            return NbpObservable.fromArray(resource.getTextFromWeb().split(" "))
-                    .concatWith(NbpObservable.<String>error(new RuntimeException()));
+        Function<Resource, NbpObservable<String>> observableFactory = new Function<Resource, NbpObservable<String>>() {
+            @Override
+            public NbpObservable<String> apply(Resource resource) {
+                return NbpObservable.fromArray(resource.getTextFromWeb().split(" "))
+                        .concatWith(NbpObservable.<String>error(new RuntimeException()));
+            }
         };
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -344,30 +385,50 @@ public class NbpOnSubscribeUsingTest {
     }
 
     private static Runnable createUnsubAction(final List<String> events) {
-        return () -> events.add("unsub");
+        return new Runnable() {
+            @Override
+            public void run() {
+                events.add("unsub");
+            }
+        };
     }
 
     private static Consumer<Throwable> createOnErrorAction(final List<String> events) {
-        return t -> events.add("error");
+        return new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable t) {
+                events.add("error");
+            }
+        };
     }
 
     private static Supplier<Resource> createResourceFactory(final List<String> events) {
-        return () -> new Resource() {
-
+        return new Supplier<Resource>() {
             @Override
-            public String getTextFromWeb() {
-                return "hello world";
-            }
+            public Resource get() {
+                return new Resource() {
 
-            @Override
-            public void dispose() {
-                events.add("disposed");
+                    @Override
+                    public String getTextFromWeb() {
+                        return "hello world";
+                    }
+
+                    @Override
+                    public void dispose() {
+                        events.add("disposed");
+                    }
+                };
             }
         };
     }
     
     private static Runnable createOnCompletedAction(final List<String> events) {
-        return () -> events.add("completed");
+        return new Runnable() {
+            @Override
+            public void run() {
+                events.add("completed");
+            }
+        };
     }
     
 }

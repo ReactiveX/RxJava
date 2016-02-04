@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.nbp;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.NbpObservable;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.SerialResource;
 import io.reactivex.internal.util.*;
 
@@ -32,6 +32,7 @@ public final class NbpCachedObservable<T> extends NbpObservable<T> {
 
     /**
      * Creates a cached Observable with a default capacity hint of 16.
+     * @param <T> the value type
      * @param source the source Observable to cache
      * @return the CachedObservable instance
      */
@@ -41,6 +42,7 @@ public final class NbpCachedObservable<T> extends NbpObservable<T> {
     
     /**
      * Creates a cached Observable with the given capacity hint.
+     * @param <T> the value type
      * @param source the source Observable to cache
      * @param capacityHint the hint for the internal buffer size
      * @return the CachedObservable instance
@@ -49,9 +51,9 @@ public final class NbpCachedObservable<T> extends NbpObservable<T> {
         if (capacityHint < 1) {
             throw new IllegalArgumentException("capacityHint > 0 required");
         }
-        CacheState<T> state = new CacheState<>(source, capacityHint);
-        CachedSubscribe<T> onSubscribe = new CachedSubscribe<>(state);
-        return new NbpCachedObservable<>(onSubscribe, state);
+        CacheState<T> state = new CacheState<T>(source, capacityHint);
+        CachedSubscribe<T> onSubscribe = new CachedSubscribe<T>(state);
+        return new NbpCachedObservable<T>(onSubscribe, state);
     }
     
     /**
@@ -116,7 +118,7 @@ public final class NbpCachedObservable<T> extends NbpObservable<T> {
             super(capacityHint);
             this.source = source;
             this.producers = EMPTY;
-            this.connection = new SerialResource<>(Disposable::dispose);
+            this.connection = new SerialResource<Disposable>(Disposables.consumeAndDispose());
         }
         /**
          * Adds a ReplayProducer to the producers array atomically.
@@ -230,7 +232,7 @@ public final class NbpCachedObservable<T> extends NbpObservable<T> {
         @Override
         public void accept(NbpSubscriber<? super T> t) {
             // we can connect first because we replay everything anyway
-            ReplaySubscription<T> rp = new ReplaySubscription<>(t, state);
+            ReplaySubscription<T> rp = new ReplaySubscription<T>(t, state);
             state.addProducer(rp);
             
             t.onSubscribe(rp);

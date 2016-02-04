@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -74,35 +74,35 @@ public class LinkedArrayList {
     }
     /**
      * Returns the head buffer segment or null if the list is empty.
-     * @return
+     * @return the head object array
      */
     public Object[] head() {
         return head;
     }
     /**
      * Returns the tail buffer segment or null if the list is empty.
-     * @return
+     * @return the tail object array
      */
     public Object[] tail() {
         return tail;
     }
     /**
      * Returns the total size of the list.
-     * @return
+     * @return the total size of the list
      */
     public int size() {
         return size;
     }
     /**
      * Returns the index of the next slot in the tail buffer segment.
-     * @return
+     * @return the index of the next slot in the tail buffer segment
      */
     public int indexInTail() {
         return indexInTail;
     }
     /**
      * Returns the capacity hint that indicates the capacity of each buffer segment.
-     * @return
+     * @return the capacity hint that indicates the capacity of each buffer segment
      */
     public int capacityHint() {
         return capacityHint;
@@ -110,7 +110,7 @@ public class LinkedArrayList {
     /* Test support */List<Object> toList() {
         final int cap = capacityHint;
         final int s = size;
-        final List<Object> list = new ArrayList<>(s + 1);
+        final List<Object> list = new ArrayList<Object>(s + 1);
         
         Object[] h = head();
         int j = 0;

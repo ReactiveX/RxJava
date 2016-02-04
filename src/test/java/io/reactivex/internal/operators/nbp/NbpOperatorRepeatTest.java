@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,13 +20,13 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
@@ -160,7 +160,7 @@ public class NbpOperatorRepeatTest {
                 .repeat(3)
                 .distinct();
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         src.subscribe(ts);
         
@@ -172,8 +172,8 @@ public class NbpOperatorRepeatTest {
     /** Issue #2844: wrong target of request. */
     @Test(timeout = 3000)
     public void testRepeatRetarget() {
-        final List<Integer> concatBase = new ArrayList<>();
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        final List<Integer> concatBase = new ArrayList<Integer>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.just(1, 2)
         .repeat(5)
         .concatMap(new Function<Integer, NbpObservable<Integer>>() {

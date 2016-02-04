@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.*;
 
 import org.junit.*;
 import org.mockito.*;
@@ -27,6 +26,7 @@ import org.mockito.*;
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.nbp.NbpPublishSubject;
@@ -309,7 +309,7 @@ public class NbpOperatorBufferTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<String>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -317,11 +317,21 @@ public class NbpOperatorBufferTest {
     }
 
     private <T> void push(final NbpSubscriber<T> NbpObserver, final T value, int delay) {
-        innerScheduler.schedule(() -> NbpObserver.onNext(value), delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                NbpObserver.onNext(value);
+            }
+        }, delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final NbpSubscriber<?> NbpObserver, int delay) {
-        innerScheduler.schedule(NbpObserver::onComplete, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                NbpObserver.onComplete();
+            }
+        }, delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
@@ -329,10 +339,15 @@ public class NbpOperatorBufferTest {
         NbpObservable<Integer> source = NbpObservable.never();
 
         NbpSubscriber<List<Integer>> o = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<List<Integer>> ts = new NbpTestSubscriber<>(o);
+        NbpTestSubscriber<List<Integer>> ts = new NbpTestSubscriber<List<Integer>>(o);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
-        .doOnNext(System.out::println)
+        .doOnNext(new Consumer<List<Integer>>() {
+            @Override
+            public void accept(List<Integer> pv) {
+                System.out.println(pv);
+            }
+        })
         .subscribe(ts);
 
         InOrder inOrder = Mockito.inOrder(o);
@@ -575,7 +590,12 @@ public class NbpOperatorBufferTest {
         InOrder inOrder = inOrder(o);
         
         result
-        .doOnNext(System.out::println)
+        .doOnNext(new Consumer<List<Long>>() {
+            @Override
+            public void accept(List<Long> pv) {
+                System.out.println(pv);
+            }
+        })
         .subscribe(o);
         
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);

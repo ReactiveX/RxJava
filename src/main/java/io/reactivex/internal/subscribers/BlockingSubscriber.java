@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Notification;
 import io.reactivex.internal.util.NotificationLite;
 
 public final class BlockingSubscriber<T> extends AtomicReference<Subscription> implements Subscriber<T>, Subscription {
@@ -69,7 +68,7 @@ public final class BlockingSubscriber<T> extends AtomicReference<Subscription> i
     
     @Override
     public void onComplete() {
-        queue.offer(Notification.complete());
+        queue.offer(NotificationLite.complete());
     }
     
     @Override

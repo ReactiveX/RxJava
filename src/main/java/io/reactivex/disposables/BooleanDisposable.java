@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,29 +13,32 @@
 
 package io.reactivex.disposables;
 
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class BooleanDisposable implements Disposable {
-    volatile Runnable run;
+    final AtomicReference<Runnable> run = new AtomicReference<Runnable>();
 
-    static final AtomicReferenceFieldUpdater<BooleanDisposable, Runnable> RUN =
-            AtomicReferenceFieldUpdater.newUpdater(BooleanDisposable.class, Runnable.class, "run");
-    
-    static final Runnable DISPOSED = () -> { };
+    static final Runnable DISPOSED = new Runnable() {
+        @Override
+        public void run() { }
+    };
 
     public BooleanDisposable() {
-        this(() -> { });
+        this(new Runnable() {
+            @Override
+            public void run() { }
+        });
     }
     
     public BooleanDisposable(Runnable run) {
-        RUN.lazySet(this, run);
+        this.run.lazySet(run);
     }
     
     @Override
     public void dispose() {
-        Runnable r = run;
+        Runnable r = run.get();
         if (r != DISPOSED) {
-            r = RUN.getAndSet(this, DISPOSED);
+            r = run.getAndSet(DISPOSED);
             if (r != DISPOSED) {
                 r.run();
             }
@@ -43,6 +46,6 @@ public final class BooleanDisposable implements Disposable {
     }
     
     public boolean isDisposed() {
-        return run == DISPOSED;
+        return run.get() == DISPOSED;
     }
 }

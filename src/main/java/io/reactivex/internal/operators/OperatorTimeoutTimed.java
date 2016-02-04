@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,12 +14,12 @@
 package io.reactivex.internal.operators;
 
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler;
+import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscribers.FullArbiterSubscriber;
@@ -43,11 +43,11 @@ public final class OperatorTimeoutTimed<T> implements Operator<T, T> {
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
         if (other == null) {
-            return new TimeoutTimedSubscriber<>(
-                    new SerializedSubscriber<>(t), // because errors can race 
+            return new TimeoutTimedSubscriber<T>(
+                    new SerializedSubscriber<T>(t), // because errors can race 
                     timeout, unit, scheduler.createWorker());
         }
-        return new TimeoutTimedOtherSubscriber<>(
+        return new TimeoutTimedOtherSubscriber<T>(
                 t, // the FullArbiter serializes
                 timeout, unit, scheduler.createWorker(), other);
     }
@@ -63,14 +63,17 @@ public final class OperatorTimeoutTimed<T> implements Operator<T, T> {
         
         final FullArbiter<T> arbiter;
 
-        volatile Disposable timer;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<TimeoutTimedOtherSubscriber, Disposable> TIMER =
-                AtomicReferenceFieldUpdater.newUpdater(TimeoutTimedOtherSubscriber.class, Disposable.class, "timer");
+        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
-        static final Disposable NEW_TIMER = () -> { };
+        static final Disposable NEW_TIMER = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
         volatile long index;
         
@@ -83,7 +86,7 @@ public final class OperatorTimeoutTimed<T> implements Operator<T, T> {
             this.unit = unit;
             this.worker = worker;
             this.other = other;
-            this.arbiter = new FullArbiter<>(actual, this, 8);
+            this.arbiter = new FullArbiter<T>(actual, this, 8);
         }
 
         @Override
@@ -113,36 +116,39 @@ public final class OperatorTimeoutTimed<T> implements Operator<T, T> {
             }
         }
         
-        void scheduleTimeout(long idx) {
-            Disposable d = timer;
+        void scheduleTimeout(final long idx) {
+            Disposable d = timer.get();
             if (d != null) {
                 d.dispose();
             }
             
-            if (TIMER.compareAndSet(this, d, NEW_TIMER)) {
-                d = worker.schedule(() -> {
-                    if (idx == index) {
-                        done = true;
-                        s.cancel();
-                        disposeTimer();
-                        worker.dispose();
-                        
-                        if (other == null) {
-                            actual.onError(new TimeoutException());
-                        } else {
-                            subscribeNext();
+            if (timer.compareAndSet(d, NEW_TIMER)) {
+                d = worker.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (idx == index) {
+                            done = true;
+                            s.cancel();
+                            disposeTimer();
+                            worker.dispose();
+                            
+                            if (other == null) {
+                                actual.onError(new TimeoutException());
+                            } else {
+                                subscribeNext();
+                            }
                         }
                     }
                 }, timeout, unit);
                 
-                if (!TIMER.compareAndSet(this, NEW_TIMER, d)) {
+                if (!timer.compareAndSet(NEW_TIMER, d)) {
                     d.dispose();
                 }
             }
         }
         
         void subscribeNext() {
-            other.subscribe(new FullArbiterSubscriber<>(arbiter));
+            other.subscribe(new FullArbiterSubscriber<T>(arbiter));
         }
         
         @Override
@@ -175,9 +181,9 @@ public final class OperatorTimeoutTimed<T> implements Operator<T, T> {
         }
         
         public void disposeTimer() {
-            Disposable d = timer;
+            Disposable d = timer.get();
             if (d != CANCELLED) {
-                d = TIMER.getAndSet(this, CANCELLED);
+                d = timer.getAndSet(CANCELLED);
                 if (d != CANCELLED && d != null) {
                     d.dispose();
                 }
@@ -193,14 +199,17 @@ public final class OperatorTimeoutTimed<T> implements Operator<T, T> {
         
         Subscription s; 
         
-        volatile Disposable timer;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<TimeoutTimedSubscriber, Disposable> TIMER =
-                AtomicReferenceFieldUpdater.newUpdater(TimeoutTimedSubscriber.class, Disposable.class, "timer");
+        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
-        static final Disposable NEW_TIMER = () -> { };
+        static final Disposable NEW_TIMER = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
         volatile long index;
         
@@ -237,24 +246,27 @@ public final class OperatorTimeoutTimed<T> implements Operator<T, T> {
             scheduleTimeout(idx);
         }
         
-        void scheduleTimeout(long idx) {
-            Disposable d = timer;
+        void scheduleTimeout(final long idx) {
+            Disposable d = timer.get();
             if (d != null) {
                 d.dispose();
             }
             
-            if (TIMER.compareAndSet(this, d, NEW_TIMER)) {
-                d = worker.schedule(() -> {
-                    if (idx == index) {
-                        done = true;
-                        s.cancel();
-                        dispose();
-                        
-                        actual.onError(new TimeoutException());
+            if (timer.compareAndSet(d, NEW_TIMER)) {
+                d = worker.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (idx == index) {
+                            done = true;
+                            s.cancel();
+                            dispose();
+                            
+                            actual.onError(new TimeoutException());
+                        }
                     }
                 }, timeout, unit);
                 
-                if (!TIMER.compareAndSet(this, NEW_TIMER, d)) {
+                if (!timer.compareAndSet(NEW_TIMER, d)) {
                     d.dispose();
                 }
             }
@@ -290,9 +302,9 @@ public final class OperatorTimeoutTimed<T> implements Operator<T, T> {
         }
         
         public void disposeTimer() {
-            Disposable d = timer;
+            Disposable d = timer.get();
             if (d != CANCELLED) {
-                d = TIMER.getAndSet(this, CANCELLED);
+                d = timer.getAndSet(CANCELLED);
                 if (d != CANCELLED && d != null) {
                     d.dispose();
                 }

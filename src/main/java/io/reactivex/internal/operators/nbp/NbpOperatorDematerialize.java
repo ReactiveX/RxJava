@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,10 +13,8 @@
 
 package io.reactivex.internal.operators.nbp;
 
-import java.util.Optional;
-
+import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
-import io.reactivex.Try;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -31,7 +29,7 @@ public enum NbpOperatorDematerialize implements NbpOperator<Object, Try<Optional
     
     @Override
     public NbpSubscriber<? super Try<Optional<Object>>> apply(NbpSubscriber<? super Object> t) {
-        return new DematerializeSubscriber<>(t);
+        return new DematerializeSubscriber<Object>(t);
     }
     
     static final class DematerializeSubscriber<T> implements NbpSubscriber<Try<Optional<T>>> {

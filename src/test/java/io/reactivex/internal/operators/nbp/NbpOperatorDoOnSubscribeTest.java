@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -21,6 +21,8 @@ import org.junit.Test;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public class NbpOperatorDoOnSubscribeTest {
@@ -28,8 +30,11 @@ public class NbpOperatorDoOnSubscribeTest {
     @Test
     public void testDoOnSubscribe() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        NbpObservable<Integer> o = NbpObservable.just(1).doOnSubscribe(s -> {
-                count.incrementAndGet();
+        NbpObservable<Integer> o = NbpObservable.just(1).doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable s) {
+                    count.incrementAndGet();
+            }
         });
 
         o.subscribe();
@@ -41,10 +46,16 @@ public class NbpOperatorDoOnSubscribeTest {
     @Test
     public void testDoOnSubscribe2() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        NbpObservable<Integer> o = NbpObservable.just(1).doOnSubscribe(s -> {
-                count.incrementAndGet();
-        }).take(1).doOnSubscribe(s -> {
-                count.incrementAndGet();
+        NbpObservable<Integer> o = NbpObservable.just(1).doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable s) {
+                    count.incrementAndGet();
+            }
+        }).take(1).doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable s) {
+                    count.incrementAndGet();
+            }
         });
 
         o.subscribe();
@@ -56,7 +67,7 @@ public class NbpOperatorDoOnSubscribeTest {
         final AtomicInteger onSubscribed = new AtomicInteger();
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();
-        final AtomicReference<NbpSubscriber<? super Integer>> sref = new AtomicReference<>();
+        final AtomicReference<NbpSubscriber<? super Integer>> sref = new AtomicReference<NbpSubscriber<? super Integer>>();
         NbpObservable<Integer> o = NbpObservable.create(new NbpOnSubscribe<Integer>() {
 
             @Override
@@ -66,11 +77,17 @@ public class NbpOperatorDoOnSubscribeTest {
                 sref.set(s);
             }
 
-        }).doOnSubscribe(s -> {
-                countBefore.incrementAndGet();
+        }).doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable s) {
+                    countBefore.incrementAndGet();
+            }
         }).publish().refCount()
-        .doOnSubscribe(s -> {
-                countAfter.incrementAndGet();
+        .doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable s) {
+                    countAfter.incrementAndGet();
+            }
         });
 
         o.subscribe();

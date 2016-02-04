@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,11 +14,11 @@
 package io.reactivex.internal.operators.nbp;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BooleanSupplier;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.*;
+import io.reactivex.functions.BooleanSupplier;
 
 public final class NbpOnSubscribeRepeatUntil<T> implements NbpOnSubscribe<T> {
     final NbpObservable<? extends T> source;
@@ -33,7 +33,7 @@ public final class NbpOnSubscribeRepeatUntil<T> implements NbpOnSubscribe<T> {
         MultipleAssignmentDisposable sa = new MultipleAssignmentDisposable();
         s.onSubscribe(sa);
         
-        RepeatSubscriber<T> rs = new RepeatSubscriber<>(s, until, sa, source);
+        RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, until, sa, source);
         rs.subscribeNext();
     }
     

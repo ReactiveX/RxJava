@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.mockito.*;
@@ -27,7 +26,9 @@ import org.mockito.*;
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.nbp.NbpPublishSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
 public class NbpPublishSubjectTest {
@@ -62,7 +63,7 @@ public class NbpPublishSubjectTest {
         NbpSubscriber<Object> observerB = TestHelper.mockNbpSubscriber();
         NbpSubscriber<Object> observerC = TestHelper.mockNbpSubscriber();
 
-        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<>(observerA);
+        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<Object>(observerA);
         
         channel.subscribe(ts);
         channel.subscribe(observerB);
@@ -171,7 +172,7 @@ public class NbpPublishSubjectTest {
         NbpPublishSubject<String> subject = NbpPublishSubject.create();
 
         NbpSubscriber<String> observer = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(observer);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(observer);
         subject.subscribe(ts);
 
         subject.onNext("one");
@@ -206,7 +207,7 @@ public class NbpPublishSubjectTest {
         final AtomicInteger countChildren = new AtomicInteger();
         final AtomicInteger countTotal = new AtomicInteger();
 
-        final ArrayList<String> list = new ArrayList<>();
+        final ArrayList<String> list = new ArrayList<String>();
 
         s.flatMap(new Function<Integer, NbpObservable<String>>() {
 
@@ -257,7 +258,7 @@ public class NbpPublishSubjectTest {
         final NbpPublishSubject<Integer> ps = NbpPublishSubject.create();
 
         NbpSubscriber<Integer> o1 = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>(o1);
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>(o1);
         ps.subscribe(ts);
 
         // emit
@@ -275,7 +276,7 @@ public class NbpPublishSubjectTest {
         ps.onNext(2);
 
         NbpSubscriber<Integer> o2 = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<Integer> ts2 = new NbpTestSubscriber<>(o2);
+        NbpTestSubscriber<Integer> ts2 = new NbpTestSubscriber<Integer>(o2);
         ps.subscribe(ts2);
 
         // emit
@@ -339,7 +340,7 @@ public class NbpPublishSubjectTest {
 //        PublishSubject<String> ps = PublishSubject.create();
 //
 //        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<>();
+//        TestSubscriber<String> ts = new TestSubscriber<String>();
 //        ps.subscribe(ts);
 //
 //        try {

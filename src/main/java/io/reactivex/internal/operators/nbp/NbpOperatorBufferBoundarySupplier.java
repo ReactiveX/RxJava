@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,16 +14,17 @@
 package io.reactivex.internal.operators.nbp;
 
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-import java.util.function.Supplier;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.nbp.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.nbp.NbpSerializedSubscriber;
 
@@ -38,7 +39,7 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
 
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super U> t) {
-        return new BufferBondarySupplierSubscriber<>(new NbpSerializedSubscriber<>(t), bufferSupplier, boundarySupplier);
+        return new BufferBondarySupplierSubscriber<T, U, B>(new NbpSerializedSubscriber<U>(t), bufferSupplier, boundarySupplier);
     }
     
     static final class BufferBondarySupplierSubscriber<T, U extends Collection<? super T>, B>
@@ -49,18 +50,18 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
         
         Disposable s;
         
-        volatile Disposable other;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<BufferBondarySupplierSubscriber, Disposable> OTHER =
-                AtomicReferenceFieldUpdater.newUpdater(BufferBondarySupplierSubscriber.class, Disposable.class, "other");
+        final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
         
-        static final Disposable DISPOSED = () -> { };
+        static final Disposable DISPOSED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         U buffer;
         
         public BufferBondarySupplierSubscriber(NbpSubscriber<? super U> actual, Supplier<U> bufferSupplier,
                 Supplier<? extends NbpObservable<B>> boundarySupplier) {
-            super(actual, new MpscLinkedQueue<>());
+            super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundarySupplier = boundarySupplier;
         }
@@ -111,8 +112,8 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
                 return;
             }
             
-            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<>(this);
-            other = bs;
+            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
+            other.set(bs);
             
             actual.onSubscribe(this);
             
@@ -151,7 +152,7 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
             queue.offer(b);
             done = true;
             if (enter()) {
-                drainLoop(queue, actual, false, this);
+                QueueDrainHelper.drainLoop(queue, actual, false, this, this);
             }
         }
         
@@ -169,9 +170,9 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
         }
         
         void disposeOther() {
-            Disposable d = other;
+            Disposable d = other.get();
             if (d != DISPOSED) {
-                d = OTHER.getAndSet(this, DISPOSED);
+                d = other.getAndSet(DISPOSED);
                 if (d != DISPOSED && d != null) {
                     d.dispose();
                 }
@@ -180,7 +181,7 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
         
         void next() {
             
-            Disposable o = other;
+            Disposable o = other.get();
             
             U next;
             
@@ -216,9 +217,9 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
                 return;
             }
             
-            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<>(this);
+            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
             
-            if (!OTHER.compareAndSet(this, o, bs)) {
+            if (!other.compareAndSet(o, bs)) {
                 return;
             }
             

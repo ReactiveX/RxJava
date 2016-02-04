@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,16 +19,16 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.LongConsumer;
 
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
+import io.reactivex.functions.LongConsumer;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -197,7 +197,11 @@ public class OperatorMergeDelayErrorTest {
 
         assertNotNull(w.e);
         
-        assertEquals(1, w.e.getSuppressed().length);
+        int size = ((CompositeException)w.e).size();
+        if (size != 2) {
+            w.e.printStackTrace();
+        }
+        assertEquals(2, size);
         
 //        if (w.e instanceof CompositeException) {
 //            assertEquals(2, ((CompositeException) w.e).getExceptions().size());
@@ -254,7 +258,7 @@ public class OperatorMergeDelayErrorTest {
     public void testMergeList() {
         final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
-        List<Observable<String>> listOfObservables = new ArrayList<>();
+        List<Observable<String>> listOfObservables = new ArrayList<Observable<String>>();
         listOfObservables.add(o1);
         listOfObservables.add(o2);
 
@@ -490,7 +494,7 @@ public class OperatorMergeDelayErrorTest {
 
     @Test
     public void testErrorInParentObservable() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.mergeDelayError(
                 Observable.just(Observable.just(1), Observable.just(2))
                         .startWith(Observable.<Integer> error(new RuntimeException()))
@@ -519,7 +523,7 @@ public class OperatorMergeDelayErrorTest {
     
             Subscriber<String> stringObserver = TestHelper.mockSubscriber();
             
-            TestSubscriber<String> ts = new TestSubscriber<>(stringObserver);
+            TestSubscriber<String> ts = new TestSubscriber<String>(stringObserver);
             Observable<String> m = Observable.mergeDelayError(parentObservable);
             m.subscribe(ts);
             System.out.println("testErrorInParentObservableDelayed | " + i);
@@ -557,7 +561,7 @@ public class OperatorMergeDelayErrorTest {
     }
     @Test
     public void testDelayErrorMaxConcurrent() {
-        final List<Long> requests = new ArrayList<>();
+        final List<Long> requests = new ArrayList<Long>();
         Observable<Integer> source = Observable.mergeDelayError(Observable.just(
                 Observable.just(1).asObservable(), 
                 Observable.<Integer>error(new TestException()))
@@ -568,7 +572,7 @@ public class OperatorMergeDelayErrorTest {
                     }
                 }), 1);
         
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         source.subscribe(ts);
         

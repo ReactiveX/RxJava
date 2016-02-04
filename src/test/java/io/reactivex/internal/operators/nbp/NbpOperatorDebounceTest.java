@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,7 +17,6 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -25,6 +24,7 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.nbp.NbpPublishSubject;
@@ -279,7 +279,7 @@ public class NbpOperatorDebounceTest {
     @Test
     public void debounceWithTimeBackpressure() throws InterruptedException {
         TestScheduler scheduler = new TestScheduler();
-        NbpTestSubscriber<Integer> NbpSubscriber = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> NbpSubscriber = new NbpTestSubscriber<Integer>();
         NbpObservable.merge(
                 NbpObservable.just(1),
                 NbpObservable.just(2).delay(10, TimeUnit.MILLISECONDS, scheduler)

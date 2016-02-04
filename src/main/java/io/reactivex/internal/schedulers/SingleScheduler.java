@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,19 +13,16 @@
 package io.reactivex.internal.schedulers;
 
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleScheduler extends Scheduler {
     
-    volatile ScheduledExecutorService executor;
-    
-    static final AtomicReferenceFieldUpdater<SingleScheduler, ScheduledExecutorService> EXECUTOR =
-            AtomicReferenceFieldUpdater.newUpdater(SingleScheduler.class, ScheduledExecutorService.class, "executor");
+    final AtomicReference<ScheduledExecutorService> executor = new AtomicReference<ScheduledExecutorService>();
     
     static final ScheduledExecutorService SHUTDOWN;
     static {
@@ -34,12 +31,11 @@ public final class SingleScheduler extends Scheduler {
     }
     
     public SingleScheduler() {
-        executor = createExecutor();
+        executor.lazySet(createExecutor());
     }
 
     static ScheduledExecutorService createExecutor() {
-        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1, new RxThreadFactory("RxSingleScheduler-"));
-        ((ScheduledThreadPoolExecutor)exec).setRemoveOnCancelPolicy(true);
+        ScheduledExecutorService exec = SchedulerPoolFactory.create(new RxThreadFactory("RxSingleScheduler-"));
         return exec;
     }
     
@@ -47,7 +43,7 @@ public final class SingleScheduler extends Scheduler {
     public void start() {
         ScheduledExecutorService next = null;
         for (;;) {
-            ScheduledExecutorService current = executor;
+            ScheduledExecutorService current = executor.get();
             if (current != SHUTDOWN) {
                 if (next != null) {
                     next.shutdown();
@@ -57,7 +53,7 @@ public final class SingleScheduler extends Scheduler {
             if (next == null) {
                 next = createExecutor();
             }
-            if (EXECUTOR.compareAndSet(this, current, next)) {
+            if (executor.compareAndSet(current, next)) {
                 return;
             }
             
@@ -66,9 +62,9 @@ public final class SingleScheduler extends Scheduler {
     
     @Override
     public void shutdown() {
-        ScheduledExecutorService current = executor;
+        ScheduledExecutorService current = executor.get();
         if (current != SHUTDOWN) {
-            current = EXECUTOR.getAndSet(this, SHUTDOWN);
+            current = executor.getAndSet(SHUTDOWN);
             if (current != SHUTDOWN) {
                 current.shutdownNow();
             }
@@ -77,7 +73,7 @@ public final class SingleScheduler extends Scheduler {
     
     @Override
     public Worker createWorker() {
-        return new ScheduledWorker(executor);
+        return new ScheduledWorker(executor.get());
     }
     
     @Override
@@ -86,11 +82,11 @@ public final class SingleScheduler extends Scheduler {
         try {
             Future<?> f;
             if (delay <= 0L) {
-                f = executor.submit(decoratedRun);
+                f = executor.get().submit(decoratedRun);
             } else {
-                f = executor.schedule(decoratedRun, delay, unit);
+                f = executor.get().schedule(decoratedRun, delay, unit);
             }
-            return () -> f.cancel(true);
+            return Disposables.from(f);
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;
@@ -101,8 +97,8 @@ public final class SingleScheduler extends Scheduler {
     public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
-            Future<?> f = executor.scheduleAtFixedRate(decoratedRun, initialDelay, period, unit);
-            return () -> f.cancel(true);
+            Future<?> f = executor.get().scheduleAtFixedRate(decoratedRun, initialDelay, period, unit);
+            return Disposables.from(f);
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;
@@ -119,7 +115,7 @@ public final class SingleScheduler extends Scheduler {
         
         public ScheduledWorker(ScheduledExecutorService executor) {
             this.executor = executor;
-            this.tasks = new SetCompositeResource<>(Disposable::dispose);
+            this.tasks = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
         }
         
         @Override

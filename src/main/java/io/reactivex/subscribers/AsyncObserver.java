@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,13 +13,13 @@
 
 package io.reactivex.subscribers;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.ListCompositeResource;
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
@@ -36,22 +36,13 @@ import io.reactivex.internal.util.BackpressureHelper;
  */
 public abstract class AsyncObserver<T> implements Subscriber<T>, Disposable {
     /** The active subscription. */
-    private volatile Subscription s;
-    /** Updater of s. */
-    @SuppressWarnings("rawtypes")
-    private static final AtomicReferenceFieldUpdater<AsyncObserver, Subscription> S =
-            AtomicReferenceFieldUpdater.newUpdater(AsyncObserver.class, Subscription.class, "s");
+    private final AtomicReference<Subscription> s;
 
     /** The resource composite, can be null. */
     private final ListCompositeResource<Disposable> resources;
     
     /** Remembers the request(n) counts until a subscription arrives. */
-    @SuppressWarnings("unused")
-    private volatile long missedRequested;
-    /** The updater of missedRequested. */
-    @SuppressWarnings("rawtypes")
-    private static final AtomicLongFieldUpdater<AsyncObserver> MISSED_REQUESTED =
-            AtomicLongFieldUpdater.newUpdater(AsyncObserver.class, "missedRequested");
+    private final AtomicLong missedRequested;
     
     /** The cancelled subscription indicator. */
     private static final Subscription CANCELLED = new Subscription() {
@@ -78,7 +69,9 @@ public abstract class AsyncObserver<T> implements Subscriber<T>, Disposable {
      * @param withResources true if resource support should be on.
      */
     public AsyncObserver(boolean withResources) {
-        this.resources = withResources ? new ListCompositeResource<>(Disposable::dispose) : null;
+        this.resources = withResources ? new ListCompositeResource<Disposable>(Disposables.consumeAndDispose()) : null;
+        this.missedRequested = new AtomicLong();
+        this.s = new AtomicReference<Subscription>();
     }
 
     /**
@@ -95,7 +88,7 @@ public abstract class AsyncObserver<T> implements Subscriber<T>, Disposable {
      * @see #supportsResources()
      */
     public final void add(Disposable resource) {
-        Objects.requireNonNull(resource);
+        Objects.requireNonNull(resource, "resource is null");
         if (resources != null) {
             add(resource);
         } else {
@@ -115,7 +108,7 @@ public abstract class AsyncObserver<T> implements Subscriber<T>, Disposable {
     
     @Override
     public final void onSubscribe(Subscription s) {
-        if (!S.compareAndSet(this, null, s)) {
+        if (!this.s.compareAndSet(null, s)) {
             s.cancel();
             if (s != CANCELLED) {
                 SubscriptionHelper.reportSubscriptionSet();
@@ -123,7 +116,7 @@ public abstract class AsyncObserver<T> implements Subscriber<T>, Disposable {
             return;
         }
         
-        long mr = MISSED_REQUESTED.getAndSet(this, 0L);
+        long mr = missedRequested.getAndSet(0L);
         if (mr != 0L) {
             s.request(mr);
         }
@@ -152,12 +145,12 @@ public abstract class AsyncObserver<T> implements Subscriber<T>, Disposable {
         if (SubscriptionHelper.validateRequest(n)) {
             return;
         }
-        Subscription a = s;
+        Subscription a = s.get();
         if (a == null) {
-            BackpressureHelper.add(MISSED_REQUESTED, this, n);
-            a = s;
+            BackpressureHelper.add(missedRequested, n);
+            a = s.get();
             if (a != null) {
-                long mr = MISSED_REQUESTED.getAndSet(this, 0L);
+                long mr = missedRequested.getAndSet(0L);
                 if (mr != 0L) {
                     a.request(mr);
                 }
@@ -175,9 +168,9 @@ public abstract class AsyncObserver<T> implements Subscriber<T>, Disposable {
      * case the Subscription will be immediately cancelled.
      */
     protected final void cancel() {
-        Subscription a = s;
+        Subscription a = s.get();
         if (a != CANCELLED) {
-            a = S.getAndSet(this, CANCELLED);
+            a = s.getAndSet(CANCELLED);
             if (a != CANCELLED && a != null) {
                 a.cancel();
                 if (resources != null) {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -33,7 +33,7 @@ public class NbpOperatorUnsubscribeOnTest {
         UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
-            final AtomicReference<Thread> subscribeThread = new AtomicReference<>();
+            final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
             NbpObservable<Integer> w = NbpObservable.create(new NbpOnSubscribe<Integer>() {
 
                 @Override
@@ -46,7 +46,7 @@ public class NbpOperatorUnsubscribeOnTest {
                 }
             });
 
-            NbpTestSubscriber<Integer> NbpObserver = new NbpTestSubscriber<>();
+            NbpTestSubscriber<Integer> NbpObserver = new NbpTestSubscriber<Integer>();
             w.subscribeOn(UI_EVENT_LOOP).observeOn(Schedulers.computation()).unsubscribeOn(UI_EVENT_LOOP).subscribe(NbpObserver);
 
             NbpObserver.awaitTerminalEvent(1, TimeUnit.SECONDS);
@@ -77,7 +77,7 @@ public class NbpOperatorUnsubscribeOnTest {
         UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
-            final AtomicReference<Thread> subscribeThread = new AtomicReference<>();
+            final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
             NbpObservable<Integer> w = NbpObservable.create(new NbpOnSubscribe<Integer>() {
 
                 @Override
@@ -90,7 +90,7 @@ public class NbpOperatorUnsubscribeOnTest {
                 }
             });
 
-            NbpTestSubscriber<Integer> NbpObserver = new NbpTestSubscriber<>();
+            NbpTestSubscriber<Integer> NbpObserver = new NbpTestSubscriber<Integer>();
             w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation()).unsubscribeOn(UI_EVENT_LOOP).subscribe(NbpObserver);
 
             NbpObserver.awaitTerminalEvent(1, TimeUnit.SECONDS);

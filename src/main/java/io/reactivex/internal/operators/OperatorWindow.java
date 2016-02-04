@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -38,9 +38,9 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
     @Override
     public Subscriber<? super T> apply(Subscriber<? super Observable<T>> t) {
         if (count == skip) {
-            return new WindowExactSubscriber<>(t, count, capacityHint);
+            return new WindowExactSubscriber<T>(t, count, capacityHint);
         }
-        return new WindowSkipSubscriber<>(t, count, skip, capacityHint);
+        return new WindowSkipSubscriber<T>(t, count, skip, capacityHint);
     }
     
     static final class WindowExactSubscriber<T>
@@ -159,17 +159,14 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
         
         Subscription s;
         
-        volatile int wip;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<WindowSkipSubscriber> WIP =
-                AtomicIntegerFieldUpdater.newUpdater(WindowSkipSubscriber.class, "wip");
+        final AtomicInteger wip = new AtomicInteger();
         
         public WindowSkipSubscriber(Subscriber<? super Observable<T>> actual, long count, long skip, int capacityHint) {
             this.actual = actual;
             this.count = count;
             this.skip = skip;
             this.capacityHint = capacityHint;
-            this.windows = new ArrayDeque<>();
+            this.windows = new ArrayDeque<UnicastSubject<T>>();
         }
         
         @Override
@@ -192,7 +189,7 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
             long s = skip;
             
             if (i % s == 0 && !cancelled) {
-                WIP.getAndIncrement(this);
+                wip.getAndIncrement();
                 UnicastSubject<T> w = UnicastSubject.create(capacityHint, this);
                 ws.offer(w);
                 actual.onNext(w);
@@ -276,7 +273,7 @@ public final class OperatorWindow<T> implements Operator<Observable<T>, T> {
         
         @Override
         public void run() {
-            if (WIP.decrementAndGet(this) == 0) {
+            if (wip.decrementAndGet() == 0) {
                 if (cancelled) {
                     s.cancel();
                 }

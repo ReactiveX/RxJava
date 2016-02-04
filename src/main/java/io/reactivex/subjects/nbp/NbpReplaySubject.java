@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
@@ -41,7 +42,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         if (capacityHint <= 0) {
             throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
         }
-        ReplayBuffer<T> buffer = new UnboundedReplayBuffer<>(capacityHint);
+        ReplayBuffer<T> buffer = new UnboundedReplayBuffer<T>(capacityHint);
         return createWithBuffer(buffer);
     }
 
@@ -49,12 +50,12 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         if (size <= 0) {
             throw new IllegalArgumentException("size > 0 required but it was " + size);
         }
-        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<>(size);
+        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<T>(size);
         return createWithBuffer(buffer);
     }
 
     /* test */ static <T> NbpReplaySubject<T> createUnbounded() {
-        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<>(Integer.MAX_VALUE);
+        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<T>(Integer.MAX_VALUE);
         return createWithBuffer(buffer);
     }
 
@@ -67,18 +68,18 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
     }
 
     public static <T> NbpReplaySubject<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int size) {
-        Objects.requireNonNull(unit);
-        Objects.requireNonNull(scheduler);
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
         if (size <= 0) {
             throw new IllegalArgumentException("size > 0 required but it was " + size);
         }
-        SizeAndTimeBoundReplayBuffer<T> buffer = new SizeAndTimeBoundReplayBuffer<>(size, maxAge, unit, scheduler);
+        SizeAndTimeBoundReplayBuffer<T> buffer = new SizeAndTimeBoundReplayBuffer<T>(size, maxAge, unit, scheduler);
         return createWithBuffer(buffer);
     }
     
     static <T> NbpReplaySubject<T> createWithBuffer(ReplayBuffer<T> buffer) {
-        State<T> state = new State<>(buffer);
-        return new NbpReplaySubject<>(state);
+        State<T> state = new State<T>(buffer);
+        return new NbpReplaySubject<T>(state);
     }
 
 
@@ -118,11 +119,11 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
 
     @Override
     public boolean hasSubscribers() {
-        return state.subscribers.length != 0;
+        return state.subscribers.get().length != 0;
     }
 
     /* test */ int subscriberCount() {
-        return state.subscribers.length;
+        return state.subscribers.get().length;
     }
 
     @Override
@@ -173,10 +174,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         
         boolean done;
         
-        volatile ReplayDisposable<T>[] subscribers;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<State, ReplayDisposable[]> SUBSCRIBERS =
-                AtomicReferenceFieldUpdater.newUpdater(State.class, ReplayDisposable[].class, "subscribers");
+        final AtomicReference<ReplayDisposable<T>[]> subscribers = new AtomicReference<ReplayDisposable<T>[]>();
         
         @SuppressWarnings("rawtypes")
         static final ReplayDisposable[] EMPTY = new ReplayDisposable[0];
@@ -184,14 +182,15 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         @SuppressWarnings("rawtypes")
         static final ReplayDisposable[] TERMINATED = new ReplayDisposable[0];
         
+        @SuppressWarnings("unchecked")
         public State(ReplayBuffer<T> buffer) {
             this.buffer = buffer;
-            SUBSCRIBERS.lazySet(this, EMPTY);
+            subscribers.lazySet(EMPTY);
         }
         
         @Override
         public void accept(NbpSubscriber<? super T> s) {
-            ReplayDisposable<T> rs = new ReplayDisposable<>(s, this);
+            ReplayDisposable<T> rs = new ReplayDisposable<T>(s, this);
             s.onSubscribe(rs);
             
             if (!rs.cancelled) {
@@ -207,7 +206,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         
         public boolean add(ReplayDisposable<T> rs) {
             for (;;) {
-                ReplayDisposable<T>[] a = subscribers;
+                ReplayDisposable<T>[] a = subscribers.get();
                 if (a == TERMINATED) {
                     return false;
                 }
@@ -216,7 +215,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
                 ReplayDisposable<T>[] b = new ReplayDisposable[len + 1];
                 System.arraycopy(a, 0, b, 0, len);
                 b[len] = rs;
-                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return true;
                 }
             }
@@ -225,7 +224,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         @SuppressWarnings("unchecked")
         public void remove(ReplayDisposable<T> rs) {
             for (;;) {
-                ReplayDisposable<T>[] a = subscribers;
+                ReplayDisposable<T>[] a = subscribers.get();
                 if (a == TERMINATED || a == EMPTY) {
                     return;
                 }
@@ -249,7 +248,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
                     System.arraycopy(a, 0, b, 0, j);
                     System.arraycopy(a, j + 1, b, j, len - j - 1);
                 }
-                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return;
                 }
             }
@@ -258,7 +257,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         @SuppressWarnings("unchecked")
         public ReplayDisposable<T>[] terminate(Object terminalValue) {
             if (compareAndSet(null, terminalValue)) {
-                return SUBSCRIBERS.getAndSet(this, TERMINATED);
+                return subscribers.getAndSet(TERMINATED);
             }
             return TERMINATED;
         }
@@ -279,7 +278,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
             ReplayBuffer<T> b = buffer;
             b.add(t);
             
-            for (ReplayDisposable<T> rs : subscribers) {
+            for (ReplayDisposable<T> rs : subscribers.get()) {
                 // FIXME there is a caught-up optimization possible here as is with 1.x
                 b.replay(rs);
             }
@@ -370,7 +369,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         volatile int size;
         
         public UnboundedReplayBuffer(int capacityHint) {
-            this.buffer = new ArrayList<>(capacityHint);
+            this.buffer = new ArrayList<Object>(capacityHint);
         }
         
         @Override
@@ -562,7 +561,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         
         public SizeBoundReplayBuffer(int maxSize) {
             this.maxSize = maxSize;
-            Node<Object> h = new Node<>(null);
+            Node<Object> h = new Node<Object>(null);
             this.tail = h;
             this.head = h;
         }
@@ -578,7 +577,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         @Override
         public void add(T value) {
             Object o = value;
-            Node<Object> n = new Node<>(o);
+            Node<Object> n = new Node<Object>(o);
             Node<Object> t = tail;
 
             tail = n;
@@ -596,7 +595,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         @Override
         public void addFinal(Object notificationLite) {
             Object o = notificationLite;
-            Node<Object> n = new Node<>(o);
+            Node<Object> n = new Node<Object>(o);
             Node<Object> t = tail;
 
             tail = n;
@@ -770,7 +769,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
             this.maxAge = maxAge;
             this.unit = unit;
             this.scheduler = scheduler;
-            TimedNode<Object> h = new TimedNode<>(null, 0L);
+            TimedNode<Object> h = new TimedNode<Object>(null, 0L);
             this.tail = h;
             this.head = h;
         }
@@ -826,7 +825,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         @Override
         public void add(T value) {
             Object o = value;
-            TimedNode<Object> n = new TimedNode<>(o, scheduler.now(unit));
+            TimedNode<Object> n = new TimedNode<Object>(o, scheduler.now(unit));
             TimedNode<Object> t = tail;
 
             tail = n;
@@ -844,7 +843,7 @@ public final class NbpReplaySubject<T> extends NbpSubject<T, T> {
         @Override
         public void addFinal(Object notificationLite) {
             Object o = notificationLite;
-            TimedNode<Object> n = new TimedNode<>(o, Long.MAX_VALUE);
+            TimedNode<Object> n = new TimedNode<Object>(o, Long.MAX_VALUE);
             TimedNode<Object> t = tail;
 
             tail = n;

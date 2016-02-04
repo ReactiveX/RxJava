@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,11 +14,11 @@ package io.reactivex.internal.operators;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 import io.reactivex.internal.util.Pow2;
@@ -34,10 +34,10 @@ public final class OperatorConcatMap<T, U> implements Operator<U, T> {
     }
     @Override
     public Subscriber<? super T> apply(Subscriber<? super U> s) {
-        SerializedSubscriber<U> ssub = new SerializedSubscriber<>(s);
+        SerializedSubscriber<U> ssub = new SerializedSubscriber<U>(s);
         SubscriptionArbiter sa = new SubscriptionArbiter();
         ssub.onSubscribe(sa);
-        return new SourceSubscriber<>(ssub, sa, mapper, bufferSize);
+        return new SourceSubscriber<T, U>(ssub, sa, mapper, bufferSize);
     }
     
     static final class SourceSubscriber<T, U> extends AtomicInteger implements Subscriber<T> {
@@ -62,12 +62,12 @@ public final class OperatorConcatMap<T, U> implements Operator<U, T> {
             this.sa = sa;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
-            this.inner = new InnerSubscriber<>(actual, sa, this);
+            this.inner = new InnerSubscriber<U>(actual, sa, this);
             Queue<T> q;
             if (Pow2.isPowerOfTwo(bufferSize)) {
-                q = new SpscArrayQueue<>(bufferSize);
+                q = new SpscArrayQueue<T>(bufferSize);
             } else {
-                q = new SpscExactArrayQueue<>(bufferSize);
+                q = new SpscExactArrayQueue<T>(bufferSize);
             }
             this.queue = q;
         }
@@ -150,6 +150,13 @@ public final class OperatorConcatMap<T, U> implements Operator<U, T> {
                 actual.onError(e);
                 return;
             }
+            
+            if (p == null) {
+                cancel();
+                actual.onError(new NullPointerException("The publisher returned is null"));
+                return;
+            }
+            
             index++;
             // this is not RS but since our Subscriber doesn't hold state by itself,
             // subscribing it to each source is safe and saves allocation

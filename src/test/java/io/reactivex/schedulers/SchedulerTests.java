@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -69,7 +69,7 @@ final class SchedulerTests {
         Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
         try {
             CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
-            CapturingObserver<Object> observer = new CapturingObserver<>();
+            CapturingObserver<Object> observer = new CapturingObserver<Object>();
             Thread.setDefaultUncaughtExceptionHandler(handler);
             IllegalStateException error = new IllegalStateException("Should be delivered to handler");
             Observable.error(error)

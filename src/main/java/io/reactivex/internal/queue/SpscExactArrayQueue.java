@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -21,25 +21,21 @@ package io.reactivex.internal.queue;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.util.Pow2;
 
 /**
  * A single-producer single-consumer array-backed queue with exact, non power-of-2 logical capacity.
+ * @param <T> the contained value type
  */
 public final class SpscExactArrayQueue<T> extends AtomicReferenceArray<T> implements Queue<T> {
     /** */
     private static final long serialVersionUID = 6210984603741293445L;
     final int mask;
     final int capacitySkip;
-    volatile long producerIndex;
-    volatile long consumerIndex;
-
-    @SuppressWarnings("rawtypes")
-    static final AtomicLongFieldUpdater<SpscExactArrayQueue> PRODUCER_INDEX =
-            AtomicLongFieldUpdater.newUpdater(SpscExactArrayQueue.class, "producerIndex");
-    @SuppressWarnings("rawtypes")
-    static final AtomicLongFieldUpdater<SpscExactArrayQueue> CONSUMER_INDEX =
-            AtomicLongFieldUpdater.newUpdater(SpscExactArrayQueue.class, "consumerIndex");
+    
+    final AtomicLong producerIndex = new AtomicLong();
+    final AtomicLong consumerIndex = new AtomicLong();
     
     public SpscExactArrayQueue(int capacity) {
         super(Pow2.roundToPowerOfTwo(capacity));
@@ -51,9 +47,9 @@ public final class SpscExactArrayQueue<T> extends AtomicReferenceArray<T> implem
     
     @Override
     public boolean offer(T value) {
-        Objects.requireNonNull(value);
+        Objects.requireNonNull(value, "value is null");
         
-        long pi = producerIndex;
+        long pi = producerIndex.get();
         int m = mask;
         
         int fullCheck = (int)(pi + capacitySkip) & m;
@@ -61,25 +57,25 @@ public final class SpscExactArrayQueue<T> extends AtomicReferenceArray<T> implem
             return false;
         }
         int offset = (int)pi & m;
-        PRODUCER_INDEX.lazySet(this, pi + 1);
+        producerIndex.lazySet(pi + 1);
         lazySet(offset, value);
         return true;
     }
     @Override
     public T poll() {
-        long ci = consumerIndex;
+        long ci = consumerIndex.get();
         int offset = (int)ci & mask;
         T value = get(offset);
         if (value == null) {
             return null;
         }
-        CONSUMER_INDEX.lazySet(this, ci + 1);
+        consumerIndex.lazySet(ci + 1);
         lazySet(offset, null);
         return value;
     }
     @Override
     public T peek() {
-        return get((int)consumerIndex & mask);
+        return get((int)consumerIndex.get() & mask);
     }
     @Override
     public void clear() {
@@ -87,15 +83,15 @@ public final class SpscExactArrayQueue<T> extends AtomicReferenceArray<T> implem
     }
     @Override
     public boolean isEmpty() {
-        return producerIndex == consumerIndex;
+        return producerIndex.get() == consumerIndex.get();
     }
     
     @Override
     public int size() {
-        long ci = consumerIndex;
+        long ci = consumerIndex.get();
         for (;;) {
-            long pi = producerIndex;
-            long ci2 = consumerIndex;
+            long pi = producerIndex.get();
+            long ci2 = consumerIndex.get();
             if (ci == ci2) {
                 return (int)(pi - ci2);
             }

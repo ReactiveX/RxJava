@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -28,6 +28,7 @@ import org.reactivestreams.*;
 import io.reactivex.Observable;
 import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscribers.CancelledSubscriber;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.ReplaySubject;
@@ -40,12 +41,27 @@ public class OnSubscribeRefCountTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Observable<Long> r = Observable.interval(0, 5, TimeUnit.MILLISECONDS)
-                .doOnSubscribe(s -> subscribeCount.incrementAndGet())
-                .doOnNext(l -> nextCount.incrementAndGet())
+                .doOnSubscribe(new Consumer<Subscription>() {
+                    @Override
+                    public void accept(Subscription s) {
+                        subscribeCount.incrementAndGet();
+                    }
+                })
+                .doOnNext(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long l) {
+                        nextCount.incrementAndGet();
+                    }
+                })
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable s1 = r.subscribe(l -> receivedCount.incrementAndGet());
+        Disposable s1 = r.subscribe(new Consumer<Long>() {
+            @Override
+            public void accept(Long l) {
+                receivedCount.incrementAndGet();
+            }
+        });
         
         Disposable s2 = r.subscribe();
 
@@ -72,12 +88,27 @@ public class OnSubscribeRefCountTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Observable<Integer> r = Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-                .doOnSubscribe(s -> subscribeCount.incrementAndGet())
-                .doOnNext(l -> nextCount.incrementAndGet())
+                .doOnSubscribe(new Consumer<Subscription>() {
+                    @Override
+                    public void accept(Subscription s) {
+                        subscribeCount.incrementAndGet();
+                    }
+                })
+                .doOnNext(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer l) {
+                        nextCount.incrementAndGet();
+                    }
+                })
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable s1 = r.subscribe(l -> receivedCount.incrementAndGet());
+        Disposable s1 = r.subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer l) {
+                receivedCount.incrementAndGet();
+            }
+        });
 
         Disposable s2 = r.subscribe();
 
@@ -103,15 +134,23 @@ public class OnSubscribeRefCountTest {
     public void testRefCountSynchronousTake() {
         final AtomicInteger nextCount = new AtomicInteger();
         Observable<Integer> r = Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-                .doOnNext(l -> {
-                        System.out.println("onNext --------> " + l);
-                        nextCount.incrementAndGet();
+                .doOnNext(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer l) {
+                            System.out.println("onNext --------> " + l);
+                            nextCount.incrementAndGet();
+                    }
                 })
                 .take(4)
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        r.subscribe(l -> receivedCount.incrementAndGet());
+        r.subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer l) {
+                receivedCount.incrementAndGet();
+            }
+        });
 
         System.out.println("onNext: " + nextCount.get());
 
@@ -124,21 +163,27 @@ public class OnSubscribeRefCountTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger unsubscribeCount = new AtomicInteger();
         Observable<Long> r = Observable.interval(0, 1, TimeUnit.MILLISECONDS)
-                .doOnSubscribe(s -> {
-                        System.out.println("******************************* Subscribe received");
-                        // when we are subscribed
-                        subscribeCount.incrementAndGet();
+                .doOnSubscribe(new Consumer<Subscription>() {
+                    @Override
+                    public void accept(Subscription s) {
+                            System.out.println("******************************* Subscribe received");
+                            // when we are subscribed
+                            subscribeCount.incrementAndGet();
+                    }
                 })
-                .doOnCancel(() -> {
-                        System.out.println("******************************* Unsubscribe received");
-                        // when we are unsubscribed
-                        unsubscribeCount.incrementAndGet();
+                .doOnCancel(new Runnable() {
+                    @Override
+                    public void run() {
+                            System.out.println("******************************* Unsubscribe received");
+                            // when we are unsubscribed
+                            unsubscribeCount.incrementAndGet();
+                    }
                 })
                 .publish().refCount();
 
         for (int i = 0; i < 10; i++) {
-            TestSubscriber<Long> ts1 = new TestSubscriber<>();
-            TestSubscriber<Long> ts2 = new TestSubscriber<>();
+            TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
+            TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
             r.subscribe(ts1);
             r.subscribe(ts2);
             try {
@@ -163,18 +208,24 @@ public class OnSubscribeRefCountTest {
         final CountDownLatch subscribeLatch = new CountDownLatch(1);
         
         Observable<Long> o = synchronousInterval()
-                .doOnSubscribe(s -> {
-                        System.out.println("******************************* Subscribe received");
-                        // when we are subscribed
-                        subscribeLatch.countDown();
+                .doOnSubscribe(new Consumer<Subscription>() {
+                    @Override
+                    public void accept(Subscription s) {
+                            System.out.println("******************************* Subscribe received");
+                            // when we are subscribed
+                            subscribeLatch.countDown();
+                    }
                 })
-                .doOnCancel(() -> {
-                        System.out.println("******************************* Unsubscribe received");
-                        // when we are unsubscribed
-                        unsubscribeLatch.countDown();
+                .doOnCancel(new Runnable() {
+                    @Override
+                    public void run() {
+                            System.out.println("******************************* Unsubscribe received");
+                            // when we are unsubscribed
+                            unsubscribeLatch.countDown();
+                    }
                 });
         
-        TestSubscriber<Long> s = new TestSubscriber<>();
+        TestSubscriber<Long> s = new TestSubscriber<Long>();
         o.publish().refCount().subscribeOn(Schedulers.newThread()).subscribe(s);
         System.out.println("send unsubscribe");
         // wait until connected
@@ -203,17 +254,23 @@ public class OnSubscribeRefCountTest {
     public void testConnectUnsubscribeRaceCondition() throws InterruptedException {
         final AtomicInteger subUnsubCount = new AtomicInteger();
         Observable<Long> o = synchronousInterval()
-                .doOnCancel(() -> {
-                        System.out.println("******************************* Unsubscribe received");
-                        // when we are unsubscribed
-                        subUnsubCount.decrementAndGet();
+                .doOnCancel(new Runnable() {
+                    @Override
+                    public void run() {
+                            System.out.println("******************************* Unsubscribe received");
+                            // when we are unsubscribed
+                            subUnsubCount.decrementAndGet();
+                    }
                 })
-                .doOnSubscribe(s -> {
-                        System.out.println("******************************* SUBSCRIBE received");
-                        subUnsubCount.incrementAndGet();
+                .doOnSubscribe(new Consumer<Subscription>() {
+                    @Override
+                    public void accept(Subscription s) {
+                            System.out.println("******************************* SUBSCRIBE received");
+                            subUnsubCount.incrementAndGet();
+                    }
                 });
 
-        TestSubscriber<Long> s = new TestSubscriber<>();
+        TestSubscriber<Long> s = new TestSubscriber<Long>();
         
         o.publish().refCount().subscribeOn(Schedulers.computation()).subscribe(s);
         System.out.println("send unsubscribe");
@@ -234,29 +291,32 @@ public class OnSubscribeRefCountTest {
     }
 
     private Observable<Long> synchronousInterval() {
-        return Observable.create(subscriber -> {
-            AtomicBoolean cancel = new AtomicBoolean();
-            subscriber.onSubscribe(new Subscription() {
-                @Override
-                public void request(long n) {
-                    
-                }
+        return Observable.create(new Publisher<Long>() {
+            @Override
+            public void subscribe(Subscriber<? super Long> subscriber) {
+                final AtomicBoolean cancel = new AtomicBoolean();
+                subscriber.onSubscribe(new Subscription() {
+                    @Override
+                    public void request(long n) {
+                        
+                    }
 
-                @Override
-                public void cancel() {
-                    cancel.set(true);
+                    @Override
+                    public void cancel() {
+                        cancel.set(true);
+                    }
+                    
+                });
+                for (;;) {
+                    if (cancel.get()) {
+                        break;
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                    }
+                    subscriber.onNext(1L);
                 }
-                
-            });
-            for (;;) {
-                if (cancel.get()) {
-                    break;
-                }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                }
-                subscriber.onNext(1L);
             }
         });
     }
@@ -303,8 +363,13 @@ public class OnSubscribeRefCountTest {
         Observable<Long> interval = Observable.interval(100, TimeUnit.MILLISECONDS, s).publish().refCount();
 
         // subscribe list1
-        final List<Long> list1 = new ArrayList<>();
-        Disposable s1 = interval.subscribe(t1 -> list1.add(t1));
+        final List<Long> list1 = new ArrayList<Long>();
+        Disposable s1 = interval.subscribe(new Consumer<Long>() {
+            @Override
+            public void accept(Long t1) {
+                list1.add(t1);
+            }
+        });
 
         s.advanceTimeBy(200, TimeUnit.MILLISECONDS);
 
@@ -313,8 +378,13 @@ public class OnSubscribeRefCountTest {
         assertEquals(1L, list1.get(1).longValue());
 
         // subscribe list2
-        final List<Long> list2 = new ArrayList<>();
-        Disposable s2 = interval.subscribe(t1 -> list2.add(t1));
+        final List<Long> list2 = new ArrayList<Long>();
+        Disposable s2 = interval.subscribe(new Consumer<Long>() {
+            @Override
+            public void accept(Long t1) {
+                list2.add(t1);
+            }
+        });
 
         s.advanceTimeBy(300, TimeUnit.MILLISECONDS);
 
@@ -353,8 +423,13 @@ public class OnSubscribeRefCountTest {
 
         // subscribing a new one should start over because the source should have been unsubscribed
         // subscribe list3
-        final List<Long> list3 = new ArrayList<>();
-        interval.subscribe(t1 -> list3.add(t1));
+        final List<Long> list3 = new ArrayList<Long>();
+        interval.subscribe(new Consumer<Long>() {
+            @Override
+            public void accept(Long t1) {
+                list3.add(t1);
+            }
+        });
 
         s.advanceTimeBy(200, TimeUnit.MILLISECONDS);
 
@@ -411,11 +486,16 @@ public class OnSubscribeRefCountTest {
     public void testConnectDisconnectConnectAndSubjectState() {
         Observable<Integer> o1 = Observable.just(10);
         Observable<Integer> o2 = Observable.just(20);
-        Observable<Integer> combined = Observable.combineLatest(o1, o2, (t1, t2) -> t1 + t2)
-                .publish().refCount();
+        Observable<Integer> combined = Observable.combineLatest(o1, o2, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        })
+        .publish().refCount();
 
-        TestSubscriber<Integer> ts1 = new TestSubscriber<>();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<>();
+        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
 
         combined.subscribe(ts1);
         combined.subscribe(ts2);
@@ -434,37 +514,61 @@ public class OnSubscribeRefCountTest {
         final AtomicInteger intervalSubscribed = new AtomicInteger();
         Observable<String> interval =
                 Observable.interval(200,TimeUnit.MILLISECONDS)
-                        .doOnSubscribe(s -> {
-                                        System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
-                                }
+                        .doOnSubscribe(new Consumer<Subscription>() {
+                            @Override
+                            public void accept(Subscription s) {
+                                            System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
+                                    }
+                        }
                          )
-                        .flatMap(t1 -> {
-                                return Observable.defer(() -> {
-                                        return Observable.<String>error(new Exception("Some exception"));
-                                });
+                        .flatMap(new Function<Long, Publisher<String>>() {
+                            @Override
+                            public Publisher<String> apply(Long t1) {
+                                    return Observable.defer(new Supplier<Publisher<String>>() {
+                                        @Override
+                                        public Publisher<String> get() {
+                                                return Observable.<String>error(new Exception("Some exception"));
+                                        }
+                                    });
+                            }
                         })
-                        .onErrorResumeNext(t1 -> {
-                                return Observable.error(t1);
+                        .onErrorResumeNext(new Function<Throwable, Publisher<String>>() {
+                            @Override
+                            public Publisher<String> apply(Throwable t1) {
+                                    return Observable.error(t1);
+                            }
                         })
                         .publish()
                         .refCount();
 
         interval
-                .doOnError(t1 -> {
-                        System.out.println("Subscriber 1 onError: " + t1);
+                .doOnError(new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable t1) {
+                            System.out.println("Subscriber 1 onError: " + t1);
+                    }
                 })
                 .retry(5)
-                .subscribe(t1 -> {
-                        System.out.println("Subscriber 1: " + t1);
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String t1) {
+                            System.out.println("Subscriber 1: " + t1);
+                    }
                 });
         Thread.sleep(100);
         interval
-        .doOnError(t1 -> {
-                System.out.println("Subscriber 2 onError: " + t1);
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable t1) {
+                    System.out.println("Subscriber 2 onError: " + t1);
+            }
         })
         .retry(5)
-                .subscribe(t1 -> {
-                        System.out.println("Subscriber 2: " + t1);
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String t1) {
+                            System.out.println("Subscriber 2: " + t1);
+                    }
                 });
         
         Thread.sleep(1300);

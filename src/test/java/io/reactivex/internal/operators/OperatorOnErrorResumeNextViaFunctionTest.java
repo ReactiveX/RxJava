@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,7 +18,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 import org.junit.*;
 import org.mockito.Mockito;
@@ -26,6 +25,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -34,7 +34,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
 
     @Test
     public void testResumeNextWithSynchronousExecution() {
-        final AtomicReference<Throwable> receivedException = new AtomicReference<>();
+        final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
         Observable<String> w = Observable.create(new Publisher<String>() {
 
             @Override
@@ -74,7 +74,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
 
     @Test
     public void testResumeNextWithAsyncExecution() {
-        final AtomicReference<Throwable> receivedException = new AtomicReference<>();
+        final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
         Subscription s = mock(Subscription.class);
         TestObservable w = new TestObservable(s, "one");
         Function<Throwable, Observable<String>> resume = new Function<Throwable, Observable<String>>() {
@@ -150,7 +150,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
     @Test
     @Ignore("Failed operator may leave the child subscriber in an inconsistent state which prevents further error delivery.")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
-        TestSubscriber<String> ts = new TestSubscriber<>();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable.just(1).lift(new Operator<String, Integer>() {
 
             @Override
@@ -183,11 +183,11 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
     @Test
     @Ignore("A crashing operator may leave the downstream in an inconsistent state and not suitable for event delivery")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
-        TestSubscriber<String> ts = new TestSubscriber<>();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable.just(1).lift(new Operator<String, Integer>() {
 
             @Override
-            public Subscriber<? super Integer> apply(Subscriber<? super String> t1) {
+            public Subscriber<? super Integer> apply(final Subscriber<? super String> t1) {
                 return new Subscriber<Integer>() {
 
                     @Override
@@ -260,7 +260,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         
-        TestSubscriber<String> ts = new TestSubscriber<>(observer, Long.MAX_VALUE);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer, Long.MAX_VALUE);
         observable.subscribe(ts);
         ts.awaitTerminalEvent();
 
@@ -312,7 +312,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
     
     @Test
     public void testBackpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(0, 100000)
                 .onErrorResumeNext(new Function<Throwable, Observable<Integer>>() {
 

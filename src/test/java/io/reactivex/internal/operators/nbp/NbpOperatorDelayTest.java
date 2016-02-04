@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,18 +19,19 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
-import io.reactivex.Observable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.nbp.NbpPublishSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
+import io.reactivex.Optional;
+import io.reactivex.Observable;
 
 public class NbpOperatorDelayTest {
     private NbpSubscriber<Long> NbpObserver;
@@ -216,7 +217,7 @@ public class NbpOperatorDelayTest {
         NbpObservable<Integer> result = NbpObservable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<>(o);
+        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<Object>(o);
 
         result.subscribe(ts);
         ts.dispose();
@@ -230,7 +231,7 @@ public class NbpOperatorDelayTest {
     @Test
     public void testDelayWithObservableNormal1() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
-        final List<NbpPublishSubject<Integer>> delays = new ArrayList<>();
+        final List<NbpPublishSubject<Integer>> delays = new ArrayList<NbpPublishSubject<Integer>>();
         final int n = 10;
         for (int i = 0; i < n; i++) {
             NbpPublishSubject<Integer> delay = NbpPublishSubject.create();
@@ -581,7 +582,7 @@ public class NbpOperatorDelayTest {
         int n = 3;
 
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
-        final List<NbpPublishSubject<Integer>> subjects = new ArrayList<>();
+        final List<NbpPublishSubject<Integer>> subjects = new ArrayList<NbpPublishSubject<Integer>>();
         for (int i = 0; i < n; i++) {
             subjects.add(NbpPublishSubject.<Integer> create());
         }
@@ -629,7 +630,7 @@ public class NbpOperatorDelayTest {
             }
 
         });
-        NbpTestSubscriber<Integer> NbpObserver = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> NbpObserver = new NbpTestSubscriber<Integer>();
         delayed.subscribe(NbpObserver);
         // all will be delivered after 500ms since range does not delay between them
         scheduler.advanceTimeBy(500L, TimeUnit.MILLISECONDS);
@@ -638,7 +639,7 @@ public class NbpOperatorDelayTest {
 
     @Test
     public void testBackpressureWithTimedDelay() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.range(1, Observable.bufferSize() * 2)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
@@ -666,7 +667,7 @@ public class NbpOperatorDelayTest {
     
     @Test
     public void testBackpressureWithSubscriptionTimedDelay() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.range(1, Observable.bufferSize() * 2)
                 .delaySubscription(100, TimeUnit.MILLISECONDS)
                 .delay(100, TimeUnit.MILLISECONDS)
@@ -695,7 +696,7 @@ public class NbpOperatorDelayTest {
 
     @Test
     public void testBackpressureWithSelectorDelay() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.range(1, Observable.bufferSize() * 2)
                 .delay(new Function<Integer, NbpObservable<Long>>() {
 
@@ -730,7 +731,7 @@ public class NbpOperatorDelayTest {
 
     @Test
     public void testBackpressureWithSelectorDelayAndSubscriptionDelay() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.range(1, Observable.bufferSize() * 2)
                 .delay(new Supplier<NbpObservable<Long>>() {
 
@@ -775,7 +776,7 @@ public class NbpOperatorDelayTest {
         
         NbpPublishSubject<Integer> ps = NbpPublishSubject.create();
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         ps.delay(1, TimeUnit.SECONDS, test).subscribe(ts);
         
@@ -791,4 +792,83 @@ public class NbpOperatorDelayTest {
         ts.assertError(TestException.class);
         ts.assertNotComplete();
     }
+    
+    public void testDelaySupplierSimple() {
+        final NbpPublishSubject<Integer> ps = NbpPublishSubject.create();
+        
+        NbpObservable<Integer> source = NbpObservable.range(1, 5);
+        
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
+        
+        source.delaySubscription(new Supplier<NbpObservable<Integer>>() {
+            @Override
+            public NbpObservable<Integer> get() {
+                return ps;
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ps.onNext(1);
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testDelaySupplierCompletes() {
+        final NbpPublishSubject<Integer> ps = NbpPublishSubject.create();
+        
+        NbpObservable<Integer> source = NbpObservable.range(1, 5);
+        
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
+        
+        source.delaySubscription(new Supplier<NbpObservable<Integer>>() {
+            @Override
+            public NbpObservable<Integer> get() {
+                return ps;
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        // FIXME should this complete the source instead of consuming it?
+        ps.onComplete();
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testDelaySupplierErrors() {
+        final NbpPublishSubject<Integer> ps = NbpPublishSubject.create();
+        
+        NbpObservable<Integer> source = NbpObservable.range(1, 5);
+        
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
+        
+        source.delaySubscription(new Supplier<NbpObservable<Integer>>() {
+            @Override
+            public NbpObservable<Integer> get() {
+                return ps;
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ps.onError(new TestException());
+        
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(TestException.class);
+    }
+
 }

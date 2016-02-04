@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,10 +13,9 @@
 
 package io.reactivex.subscribers.nbp;
 
-import java.util.Objects;
-import java.util.function.Consumer;
-
-import io.reactivex.*;
+import io.reactivex.NbpObserver;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -67,25 +66,28 @@ public final class NbpObservers {
     }
     
     public static <T> NbpObserver<T> create(Consumer<? super T> onNext) {
-        return create(onNext, RxJavaPlugins::onError, () -> { }, () -> { });
+        return create(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
     }
 
     public static <T> NbpObserver<T> create(Consumer<? super T> onNext, 
             Consumer<? super Throwable> onError) {
-        return create(onNext, onError, () -> { }, () -> { });
+        return create(onNext, onError, Functions.emptyRunnable(), Functions.emptyRunnable());
     }
 
     public static <T> NbpObserver<T> create(Consumer<? super T> onNext, 
             Consumer<? super Throwable> onError, Runnable onComplete) {
-        return create(onNext, onError, onComplete, () -> { });
+        return create(onNext, onError, onComplete, Functions.emptyRunnable());
     }
 
-    public static <T> NbpObserver<T> create(Consumer<? super T> onNext, 
-            Consumer<? super Throwable> onError, Runnable onComplete, Runnable onStart) {
-        Objects.requireNonNull(onNext);
-        Objects.requireNonNull(onError);
-        Objects.requireNonNull(onComplete);
-        Objects.requireNonNull(onStart);
+    public static <T> NbpObserver<T> create(
+            final Consumer<? super T> onNext, 
+            final Consumer<? super Throwable> onError, 
+            final Runnable onComplete, 
+            final Runnable onStart) {
+        Objects.requireNonNull(onNext, "onNext is null");
+        Objects.requireNonNull(onError, "onError is null");
+        Objects.requireNonNull(onComplete, "onComplete is null");
+        Objects.requireNonNull(onStart, "onStart ins null");
         return new NbpObserver<T>() {
             boolean done;
             @Override
@@ -99,8 +101,8 @@ public final class NbpObservers {
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
-                        ex.addSuppressed(e);
                         RxJavaPlugins.onError(ex);
+                        RxJavaPlugins.onError(e);
                     }
                 }
             }
@@ -117,8 +119,8 @@ public final class NbpObservers {
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
-                        ex.addSuppressed(e);
                         RxJavaPlugins.onError(ex);
+                        RxJavaPlugins.onError(e);
                     }
                 }
             }
@@ -133,8 +135,8 @@ public final class NbpObservers {
                 try {
                     onError.accept(t);
                 } catch (Throwable ex) {
-                    ex.addSuppressed(t);
                     RxJavaPlugins.onError(ex);
+                    RxJavaPlugins.onError(t);
                 }
             }
             
@@ -154,25 +156,28 @@ public final class NbpObservers {
     }
     
     public static <T> NbpAsyncObserver<T> createAsync(Consumer<? super T> onNext) {
-        return createAsync(onNext, RxJavaPlugins::onError, () -> { }, () -> { });
+        return createAsync(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
     }
 
     public static <T> NbpAsyncObserver<T> createAsync(Consumer<? super T> onNext, 
             Consumer<? super Throwable> onError) {
-        return createAsync(onNext, onError, () -> { }, () -> { });
+        return createAsync(onNext, onError, Functions.emptyRunnable(), Functions.emptyRunnable());
     }
 
     public static <T> NbpAsyncObserver<T> createAsync(Consumer<? super T> onNext, 
             Consumer<? super Throwable> onError, Runnable onComplete) {
-        return createAsync(onNext, onError, onComplete, () -> { });
+        return createAsync(onNext, onError, onComplete, Functions.emptyRunnable());
     }
     
-    public static <T> NbpAsyncObserver<T> createAsync(Consumer<? super T> onNext, 
-            Consumer<? super Throwable> onError, Runnable onComplete, Runnable onStart) {
-        Objects.requireNonNull(onNext);
-        Objects.requireNonNull(onError);
-        Objects.requireNonNull(onComplete);
-        Objects.requireNonNull(onStart);
+    public static <T> NbpAsyncObserver<T> createAsync(
+            final Consumer<? super T> onNext, 
+            final Consumer<? super Throwable> onError, 
+            final Runnable onComplete, 
+            final Runnable onStart) {
+        Objects.requireNonNull(onNext, "onNext is null");
+        Objects.requireNonNull(onError, "onError is null");
+        Objects.requireNonNull(onComplete, "onComplete is null");
+        Objects.requireNonNull(onStart, "onStart is null");
         return new NbpAsyncObserver<T>() {
             boolean done;
             @Override
@@ -185,8 +190,8 @@ public final class NbpObservers {
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
-                        ex.addSuppressed(e);
                         RxJavaPlugins.onError(ex);
+                        RxJavaPlugins.onError(e);
                     }
                 }
             }
@@ -203,8 +208,8 @@ public final class NbpObservers {
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
-                        ex.addSuppressed(e);
                         RxJavaPlugins.onError(ex);
+                        RxJavaPlugins.onError(e);
                     }
                 }
             }
@@ -219,8 +224,8 @@ public final class NbpObservers {
                 try {
                     onError.accept(t);
                 } catch (Throwable ex) {
-                    ex.addSuppressed(t);
                     RxJavaPlugins.onError(ex);
+                    RxJavaPlugins.onError(t);
                 }
             }
             

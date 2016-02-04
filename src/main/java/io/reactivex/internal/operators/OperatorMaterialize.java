@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators;
 
-import java.util.Optional;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -33,7 +32,7 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
     
     @Override
     public Subscriber<? super Object> apply(Subscriber<? super Try<Optional<Object>>> t) {
-        return new MaterializeSubscriber<>(t);
+        return new MaterializeSubscriber<Object>(t);
     }
     
     static final class MaterializeSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
@@ -43,10 +42,8 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
         
         Subscription s;
         
-        volatile int state;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<MaterializeSubscriber> STATE =
-                AtomicIntegerFieldUpdater.newUpdater(MaterializeSubscriber.class, "state");
+        final AtomicInteger state = new AtomicInteger();
+        
         Try<Optional<T>> value;
         
         volatile boolean done;
@@ -80,14 +77,14 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
         
         void tryEmit(Try<Optional<T>> v) {
             if (get() != 0L) {
-                STATE.lazySet(this, HAS_REQUEST_HAS_VALUE);
+                state.lazySet(HAS_REQUEST_HAS_VALUE);
                 actual.onNext(v);
                 actual.onComplete();
             } else {
                 for (;;) {
-                    int s = state;
+                    int s = state.get();
                     if (s == HAS_REQUEST_NO_VALUE) {
-                        if (STATE.compareAndSet(this, s, HAS_REQUEST_HAS_VALUE)) {
+                        if (state.compareAndSet(s, HAS_REQUEST_HAS_VALUE)) {
                             actual.onNext(v);
                             actual.onComplete();
                             return;
@@ -102,7 +99,7 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
                     } else {
                         value = v;
                         done = true;
-                        if (STATE.compareAndSet(this, s, NO_REQUEST_HAS_VALUE)) {
+                        if (state.compareAndSet(s, NO_REQUEST_HAS_VALUE)) {
                             return;
                         }
                     }
@@ -132,9 +129,9 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
             BackpressureHelper.add(this, n);
             if (done) {
                 for (;;) {
-                    int s = state;
+                    int s = state.get();
                     if (s == NO_REQUEST_HAS_VALUE) {
-                        if (STATE.compareAndSet(this, s, HAS_REQUEST_HAS_VALUE)) {
+                        if (state.compareAndSet(s, HAS_REQUEST_HAS_VALUE)) {
                             Try<Optional<T>> v = value;
                             value = null;
                             actual.onNext(v);
@@ -145,7 +142,7 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
                     if (s == HAS_REQUEST_NO_VALUE || s == HAS_REQUEST_HAS_VALUE) {
                         return;
                     } else
-                    if (STATE.compareAndSet(this, s, HAS_REQUEST_NO_VALUE)) {
+                    if (state.compareAndSet(s, HAS_REQUEST_NO_VALUE)) {
                         return;
                     }
                 }
@@ -156,7 +153,7 @@ public enum OperatorMaterialize implements Operator<Try<Optional<Object>>, Objec
         
         @Override
         public void cancel() {
-            STATE.lazySet(this, HAS_REQUEST_HAS_VALUE);
+            state.lazySet(HAS_REQUEST_HAS_VALUE);
             s.cancel();
         }
     }

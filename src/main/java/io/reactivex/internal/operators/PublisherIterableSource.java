@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -21,9 +21,6 @@ import org.reactivestreams.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
 
-/**
- *
- */
 public final class PublisherIterableSource<T> extends AtomicBoolean implements Publisher<T> {
     /** */
     private static final long serialVersionUID = 9051303031779816842L;
@@ -53,7 +50,7 @@ public final class PublisherIterableSource<T> extends AtomicBoolean implements P
             EmptySubscription.complete(s);
             return;
         }
-        s.onSubscribe(new IteratorSourceSubscription<>(it, s));
+        s.onSubscribe(new IteratorSourceSubscription<T>(it, s));
     }
     
     static final class IteratorSourceSubscription<T> extends AtomicLong implements Subscription {

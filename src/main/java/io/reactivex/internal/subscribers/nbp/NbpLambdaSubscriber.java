@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,10 +14,10 @@
 package io.reactivex.internal.subscribers.nbp;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -29,7 +29,10 @@ public final class NbpLambdaSubscriber<T> extends AtomicReference<Disposable> im
     final Runnable onComplete;
     final Consumer<? super Disposable> onSubscribe;
     
-    static final Disposable CANCELLED = () -> { };
+    static final Disposable CANCELLED = new Disposable() {
+        @Override
+        public void dispose() { }
+    };
     
     public NbpLambdaSubscriber(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
             Runnable onComplete,
@@ -68,8 +71,8 @@ public final class NbpLambdaSubscriber<T> extends AtomicReference<Disposable> im
         try {
             onError.accept(t);
         } catch (Throwable e) {
-            e.addSuppressed(t);
             RxJavaPlugins.onError(e);
+            RxJavaPlugins.onError(t);
         }
     }
     

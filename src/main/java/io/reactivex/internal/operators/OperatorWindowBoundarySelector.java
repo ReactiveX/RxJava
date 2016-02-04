@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,13 +15,13 @@ package io.reactivex.internal.operators;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable;
 import io.reactivex.Observable.Operator;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.SetCompositeResource;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.*;
@@ -45,8 +45,8 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
 
     @Override
     public Subscriber<? super T> apply(Subscriber<? super Observable<T>> t) {
-        return new WindowBoundaryMainSubscriber<>(
-                new SerializedSubscriber<>(t), 
+        return new WindowBoundaryMainSubscriber<T, B, V>(
+                new SerializedSubscriber<Observable<T>>(t), 
                 open, close, bufferSize);
     }
     
@@ -60,29 +60,26 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
 
         Subscription s;
         
-        volatile Disposable boundary;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<WindowBoundaryMainSubscriber, Disposable> BOUNDARY =
-                AtomicReferenceFieldUpdater.newUpdater(WindowBoundaryMainSubscriber.class, Disposable.class, "boundary");
+        final AtomicReference<Disposable> boundary = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         final List<UnicastSubject<T>> ws;
         
-        volatile long windows;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<WindowBoundaryMainSubscriber> WINDOWS =
-                AtomicLongFieldUpdater.newUpdater(WindowBoundaryMainSubscriber.class, "windows");
+        final AtomicLong windows = new AtomicLong();
 
         public WindowBoundaryMainSubscriber(Subscriber<? super Observable<T>> actual,
                 Publisher<B> open, Function<? super B, ? extends Publisher<V>> close, int bufferSize) {
-            super(actual, new MpscLinkedQueue<>());
+            super(actual, new MpscLinkedQueue<Object>());
             this.open = open;
             this.close = close;
             this.bufferSize = bufferSize;
-            this.resources = new SetCompositeResource<>(Disposable::dispose);
-            this.ws = new ArrayList<>();
-            WINDOWS.lazySet(this, 1);
+            this.resources = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+            this.ws = new ArrayList<UnicastSubject<T>>();
+            windows.lazySet(1);
         }
         
         @Override
@@ -99,10 +96,10 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
                 return;
             }
             
-            OperatorWindowBoundaryOpenSubscriber<T, B> os = new OperatorWindowBoundaryOpenSubscriber<>(this);
+            OperatorWindowBoundaryOpenSubscriber<T, B> os = new OperatorWindowBoundaryOpenSubscriber<T, B>(this);
             
-            if (BOUNDARY.compareAndSet(this, null, os)) {
-                WINDOWS.getAndIncrement(this);
+            if (boundary.compareAndSet(null, os)) {
+                windows.getAndIncrement();
                 s.request(Long.MAX_VALUE);
                 open.subscribe(os);
             }
@@ -140,7 +137,7 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
                 drainLoop();
             }
             
-            if (WINDOWS.decrementAndGet(this) == 0) {
+            if (windows.decrementAndGet() == 0) {
                 resources.dispose();
             }
             
@@ -158,7 +155,7 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
                 drainLoop();
             }
             
-            if (WINDOWS.decrementAndGet(this) == 0) {
+            if (windows.decrementAndGet() == 0) {
                 resources.dispose();
             }
             
@@ -168,7 +165,7 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
         
         
         void complete() {
-            if (WINDOWS.decrementAndGet(this) == 0) {
+            if (windows.decrementAndGet() == 0) {
                 s.cancel();
                 resources.dispose();
             }
@@ -177,7 +174,7 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
         }
         
         void error(Throwable t) {
-            if (WINDOWS.decrementAndGet(this) == 0) {
+            if (windows.decrementAndGet() == 0) {
                 s.cancel();
                 resources.dispose();
             }
@@ -199,9 +196,9 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
         
         void dispose() {
             resources.dispose();
-            Disposable d = boundary;
+            Disposable d = boundary.get();
             if (d != CANCELLED) {
-                d = BOUNDARY.getAndSet(this, CANCELLED);
+                d = boundary.getAndSet(CANCELLED);
                 if (d != CANCELLED && d != null) {
                     d.dispose();
                 }
@@ -251,7 +248,7 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
                             if (ws.remove(wo.w)) {
                                 wo.w.onComplete();
                                 
-                                if (WINDOWS.decrementAndGet(this) == 0) {
+                                if (windows.decrementAndGet() == 0) {
                                     dispose();
                                     return;
                                 }
@@ -295,10 +292,10 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
                             continue;
                         }
                         
-                        OperatorWindowBoundaryCloseSubscriber<T, V> cl = new OperatorWindowBoundaryCloseSubscriber<>(this, w);
+                        OperatorWindowBoundaryCloseSubscriber<T, V> cl = new OperatorWindowBoundaryCloseSubscriber<T, V>(this, w);
                         
                         if (resources.add(cl)) {
-                            WINDOWS.getAndIncrement(this);
+                            windows.getAndIncrement();
                             
                             p.subscribe(cl);
                         }
@@ -307,7 +304,7 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
                     }
                     
                     for (UnicastSubject<T> w : ws) {
-                        w.onNext(NotificationLite.getValue(o));
+                        w.onNext(NotificationLite.<T>getValue(o));
                     }
                 }
                 
@@ -325,7 +322,7 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
         }
         
         void open(B b) {
-            queue.offer(new WindowOperation<>(null, b));
+            queue.offer(new WindowOperation<T, B>(null, b));
             if (enter()) {
                 drainLoop();
             }
@@ -333,7 +330,7 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
         
         void close(OperatorWindowBoundaryCloseSubscriber<T, V> w) {
             resources.delete(w);
-            queue.offer(new WindowOperation<>(w.w, null));
+            queue.offer(new WindowOperation<T, B>(w.w, null));
             if (enter()) {
                 drainLoop();
             }

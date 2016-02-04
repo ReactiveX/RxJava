@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,10 +13,9 @@
 
 package io.reactivex.internal.operators.nbp;
 
-import java.util.function.BiFunction;
-
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class NbpOperatorScan<T> implements NbpOperator<T, T> {
@@ -27,7 +26,7 @@ public final class NbpOperatorScan<T> implements NbpOperator<T, T> {
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> t) {
-        return new ScanSubscriber<>(t, accumulator);
+        return new ScanSubscriber<T>(t, accumulator);
     }
     
     static final class ScanSubscriber<T> implements NbpSubscriber<T> {

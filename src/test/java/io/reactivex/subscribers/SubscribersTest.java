@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,11 +18,13 @@ import static org.mockito.Mockito.*;
 
 import java.lang.reflect.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.Consumer;
 
 import org.junit.*;
 
 import io.reactivex.exceptions.*;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.subscribers.Subscribers;
 
 public class SubscribersTest {
     @Test
@@ -59,7 +61,10 @@ public class SubscribersTest {
     @Ignore("Subscribers can't throw OnErrorNotImplementedException")
     public void testCreate1OnErrorNotImplemented() {
         try {
-            Subscribers.create(v -> { }).onError(new TestException());
+            Subscribers.create(new Consumer<Object>() {
+                @Override
+                public void accept(Object v) { }
+            }).onError(new TestException());
             fail("OnErrorNotImplementedException not thrown!");
         } catch (OnErrorNotImplementedException ex) {
             if (!(ex.getCause() instanceof TestException)) {
@@ -73,27 +78,45 @@ public class SubscribersTest {
     }
     @Test(expected = NullPointerException.class)
     public void testCreate2Null() {
-        Consumer<Throwable> throwAction = e -> { };
+        Consumer<Throwable> throwAction = new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) { }
+        };
         Subscribers.create(null, throwAction);
     }
     @Test(expected = NullPointerException.class)
     public void testCreate3Null() {
-        Subscribers.create(e -> { }, null);
+        Subscribers.create(new Consumer<Object>() {
+            @Override
+            public void accept(Object e) { }
+        }, null);
     }
     
     @Test(expected = NullPointerException.class)
     public void testCreate4Null() {
-        Consumer<Throwable> throwAction = e -> { };
-        Subscribers.create(null, throwAction, () -> { });
+        Consumer<Throwable> throwAction = new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) { }
+        };
+        Subscribers.create(null, throwAction, Functions.emptyRunnable());
     }
     @Test(expected = NullPointerException.class)
     public void testCreate5Null() {
-        Subscribers.create(e -> { }, null, () -> { });
+        Subscribers.create(new Consumer<Object>() {
+            @Override
+            public void accept(Object e) { }
+        }, null, Functions.emptyRunnable());
     }
     @Test(expected = NullPointerException.class)
     public void testCreate6Null() {
-        Consumer<Throwable> throwAction = e -> { };
-        Subscribers.create(e -> { }, throwAction, null);
+        Consumer<Throwable> throwAction = new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) { }
+        };
+        Subscribers.create(new Consumer<Object>() {
+            @Override
+            public void accept(Object e) { }
+        }, throwAction, null);
     }
     
     @Test
@@ -118,7 +141,10 @@ public class SubscribersTest {
                 value.set(t);
             }
         };
-        Consumer<Throwable> throwAction = e -> { };
+        Consumer<Throwable> throwAction = new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) { }
+        };
         Subscribers.create(action, throwAction).onNext(1);
         
         assertEquals(1, value.get());
@@ -133,15 +159,18 @@ public class SubscribersTest {
                 value.set(t);
             }
         };
-        Consumer<Throwable> throwAction = e -> { };
-        Subscribers.create(action, throwAction, () -> { }).onNext(1);
+        Consumer<Throwable> throwAction = new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) { }
+        };
+        Subscribers.create(action, throwAction, Functions.emptyRunnable()).onNext(1);
         
         assertEquals(1, value.get());
     }
     
     @Test
     public void testError2() {
-        final AtomicReference<Throwable> value = new AtomicReference<>();
+        final AtomicReference<Throwable> value = new AtomicReference<Throwable>();
         Consumer<Throwable> action = new Consumer<Throwable>() {
             @Override
             public void accept(Throwable t) {
@@ -149,14 +178,17 @@ public class SubscribersTest {
             }
         };
         TestException exception = new TestException();
-        Subscribers.create(e -> { }, action).onError(exception);
+        Subscribers.create(new Consumer<Object>() {
+            @Override
+            public void accept(Object e) { }
+        }, action).onError(exception);
         
         assertEquals(exception, value.get());
     }
     
     @Test
     public void testError3() {
-        final AtomicReference<Throwable> value = new AtomicReference<>();
+        final AtomicReference<Throwable> value = new AtomicReference<Throwable>();
         Consumer<Throwable> action = new Consumer<Throwable>() {
             @Override
             public void accept(Throwable t) {
@@ -164,7 +196,10 @@ public class SubscribersTest {
             }
         };
         TestException exception = new TestException();
-        Subscribers.create(e -> { }, action, () -> { }).onError(exception);
+        Subscribers.create(new Consumer<Object>() {
+            @Override
+            public void accept(Object e) { }
+        }, action, Functions.emptyRunnable()).onError(exception);
         
         assertEquals(exception, value.get());
     }
@@ -173,16 +208,31 @@ public class SubscribersTest {
     public void testCompleted() {
         Runnable action = mock(Runnable.class);
         
-        Consumer<Throwable> throwAction = e -> { };
-        Subscribers.create(e -> { }, throwAction, action).onComplete();
+        Consumer<Throwable> throwAction = new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) { }
+        };
+        Subscribers.create(new Consumer<Object>() {
+            @Override
+            public void accept(Object e) { }
+        }, throwAction, action).onComplete();
 
         verify(action).run();
     }
     @Test
     public void testEmptyCompleted() {
-        Subscribers.create(e -> { }).onComplete();
+        Subscribers.create(new Consumer<Object>() {
+            @Override
+            public void accept(Object e) { }
+        }).onComplete();
         
-        Consumer<Throwable> throwAction = e -> { };
-        Subscribers.create(e -> { }, throwAction).onComplete();
+        Consumer<Throwable> throwAction = new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) { }
+        };
+        Subscribers.create(new Consumer<Object>() {
+            @Override
+            public void accept(Object e) { }
+        }, throwAction).onComplete();
     }
 }

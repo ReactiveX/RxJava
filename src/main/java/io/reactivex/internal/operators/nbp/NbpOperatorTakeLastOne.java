@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -27,7 +27,7 @@ public enum NbpOperatorTakeLastOne implements NbpOperator<Object, Object> {
     
     @Override
     public NbpSubscriber<? super Object> apply(NbpSubscriber<? super Object> s) {
-        return new TakeLastOneSubscriber<>(s);
+        return new TakeLastOneSubscriber<Object>(s);
     }
     
     static final class TakeLastOneSubscriber<T> implements NbpSubscriber<T>, Disposable {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,13 +18,13 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.*;
 
 import java.util.NoSuchElementException;
-import java.util.function.Predicate;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.functions.*;
 
 public class NbpOperatorSingleTest {
 
@@ -175,7 +175,12 @@ public class NbpOperatorSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicate() {
         NbpObservable<Integer> o = NbpObservable.just(1, 2)
-                .filter(t1 -> t1 % 2 == 0)
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                })
                 .single(4);
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -190,7 +195,12 @@ public class NbpOperatorSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateAndTooManyElements() {
         NbpObservable<Integer> o = NbpObservable.just(1, 2, 3, 4)
-                .filter(t1 -> t1 % 2 == 0)
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                })
                 .single(6);
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -205,7 +215,12 @@ public class NbpOperatorSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateAndEmpty() {
         NbpObservable<Integer> o = NbpObservable.just(1)
-                .filter(t1 -> t1 % 2 == 0)
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                })
                 .single(2);
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -221,7 +236,12 @@ public class NbpOperatorSingleTest {
     public void testIssue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         NbpObservable<Integer> source = NbpObservable.just(1, 2, 3, 4, 5, 6);
-        NbpObservable<Integer> reduced = source.reduce((i1, i2) -> i1 + i2);
+        NbpObservable<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer i1, Integer i2) {
+                return i1 + i2;
+            }
+        });
 
         Integer r = reduced.toBlocking().first();
         assertEquals(21, r.intValue());

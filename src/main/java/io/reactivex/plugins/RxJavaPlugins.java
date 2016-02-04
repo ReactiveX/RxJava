@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -12,12 +12,11 @@
  */
 package io.reactivex.plugins;
 
-import java.util.function.*;
-
 import org.reactivestreams.*;
 
-import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.Scheduler;
+import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.functions.*;
 
 /**
  * Utility class to inject handlers to certain standard RxJava operations.
@@ -164,8 +163,9 @@ public final class RxJavaPlugins {
     }
     /**
      * Called when an Observable is created.
-     * @param publisher
-     * @return
+     * @param <T> the value type
+     * @param publisher the original publisher
+     * @return the replacement publisher
      */
     @SuppressWarnings({ "unchecked", "rawtypes"})
     public static <T> Publisher<T> onCreate(Publisher<T> publisher) {
@@ -189,7 +189,7 @@ public final class RxJavaPlugins {
                 if (error == null) {
                     error = new NullPointerException();
                 }
-                error.addSuppressed(e);
+                e.printStackTrace();
             }
         } else {
             if (error == null) {
@@ -217,8 +217,8 @@ public final class RxJavaPlugins {
 
     /**
      * Called when a task is scheduled.
-     * @param run
-     * @return
+     * @param run the runnable instance
+     * @return the replacement runnable
      */
     public static Runnable onSchedule(Runnable run) {
         Function<Runnable, Runnable> f = onScheduleHandler;
@@ -238,8 +238,9 @@ public final class RxJavaPlugins {
 
     /**
      * Called when a subscriber subscribes to an observable.
-     * @param subscriber
-     * @return
+     * @param <T> the value type
+     * @param subscriber the original subscriber
+     * @return the subscriber replacement
      */
     @SuppressWarnings({ "unchecked", "rawtypes"})
     public static <T> Subscriber<T> onSubscribe(Subscriber<T> subscriber) {
@@ -252,8 +253,9 @@ public final class RxJavaPlugins {
 
     /**
      * Called when a subscriber subscribes to an observable.
-     * @param subscriber
-     * @return
+     * @param <T> the value type
+     * @param subscriber the original NbpSubscriber
+     * @return the replacement NbpSubscriber
      */
     @SuppressWarnings({ "unchecked", "rawtypes"})
     public static <T> NbpSubscriber<T> onNbpSubscribe(NbpSubscriber<T> subscriber) {
@@ -266,8 +268,9 @@ public final class RxJavaPlugins {
 
     /**
      * Called when a subscriber subscribes to an observable.
-     * @param subscriber
-     * @return
+     * @param <T> the value type
+     * @param subscriber the original subscriber
+     * @return the replacement subscriber
      */
     @SuppressWarnings({ "unchecked", "rawtypes"})
     public static <T> NbpSubscriber<T> onSubscribe(NbpSubscriber<T> subscriber) {
@@ -401,7 +404,24 @@ public final class RxJavaPlugins {
     /* test. */static void unlock() {
         lockdown = false;
     }
+
+    /** Singleton consumer that calls RxJavaPlugins.onError. */
+    static final Consumer<Throwable> CONSUME_BY_RXJAVA_PLUGIN = new Consumer<Throwable>() {
+        @Override
+        public void accept(Throwable e) {
+            RxJavaPlugins.onError(e);
+        }
+    };
     
+    /**
+     * Returns a consumer which relays the received Throwable to RxJavaPlugins.onError().
+     * @return the consumer
+     */
+    public static final Consumer<Throwable> errorConsumer() {
+        return CONSUME_BY_RXJAVA_PLUGIN;
+    }
+    
+    /** Helper class, no instances. */
     private RxJavaPlugins() {
         throw new IllegalStateException("No instances!");
     }

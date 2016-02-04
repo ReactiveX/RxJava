@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -23,7 +23,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class OperatorSingle<T> implements Operator<T, T> {
     
-    static final OperatorSingle<Object> NO_DEFAULT = new OperatorSingle<>(null);
+    static final OperatorSingle<Object> NO_DEFAULT = new OperatorSingle<Object>(null);
     
     @SuppressWarnings("unchecked")
     public static <T> OperatorSingle<T> instanceNoDefault() {
@@ -36,7 +36,7 @@ public final class OperatorSingle<T> implements Operator<T, T> {
     }
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new SingleElementSubscriber<>(t, defaultValue);
+        return new SingleElementSubscriber<T>(t, defaultValue);
     }
     
     static final class SingleElementSubscriber<T> implements Subscriber<T>, Subscription {

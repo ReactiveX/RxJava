@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,11 +13,10 @@
 
 package io.reactivex.internal.operators.single;
 
-import java.util.function.Function;
-
 import io.reactivex.Single;
 import io.reactivex.Single.*;
 import io.reactivex.disposables.*;
+import io.reactivex.functions.Function;
 
 public final class SingleOperatorFlatMap<T, R> implements SingleOperator<R, T> {
     final Function<? super T, ? extends Single<? extends R>> mapper;
@@ -28,7 +27,7 @@ public final class SingleOperatorFlatMap<T, R> implements SingleOperator<R, T> {
     
     @Override
     public SingleSubscriber<? super T> apply(SingleSubscriber<? super R> t) {
-        return new SingleFlatMapCallback<>(t, mapper);
+        return new SingleFlatMapCallback<T, R>(t, mapper);
     }
     
     static final class SingleFlatMapCallback<T, R> implements SingleSubscriber<T> {

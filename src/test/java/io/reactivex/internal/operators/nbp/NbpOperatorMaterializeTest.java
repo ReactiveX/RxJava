@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,14 +17,15 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
+import io.reactivex.Optional;
 
 public class NbpOperatorMaterializeTest {
 
@@ -94,7 +95,7 @@ public class NbpOperatorMaterializeTest {
 
     @Test
     public void testWithCompletionCausingError() {
-        NbpTestSubscriber<Try<Optional<Integer>>> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Try<Optional<Integer>>> ts = new NbpTestSubscriber<Try<Optional<Integer>>>();
         final RuntimeException ex = new RuntimeException("boo");
         NbpObservable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
             @Override
@@ -111,7 +112,7 @@ public class NbpOperatorMaterializeTest {
 
         boolean onCompleted = false;
         boolean onError = false;
-        List<Try<Optional<String>>> notifications = new Vector<>();
+        List<Try<Optional<String>>> notifications = new Vector<Try<Optional<String>>>();
 
         @Override
         public void onComplete() {

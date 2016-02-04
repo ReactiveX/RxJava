@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -29,7 +29,7 @@ public final class OperatorSkipLast<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> s) {
-        return new SkipLastSubscriber<>(s, skip);
+        return new SkipLastSubscriber<T>(s, skip);
     }
     
     static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements Subscriber<T> {

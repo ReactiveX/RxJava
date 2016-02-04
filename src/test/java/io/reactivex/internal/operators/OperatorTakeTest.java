@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -28,6 +27,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
@@ -134,7 +134,7 @@ public class OperatorTakeTest {
     @Ignore("take(0) is now empty() and doesn't even subscribe to the original source")
     public void testTakeZeroDoesntLeakError() {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
-        BooleanSubscription bs = new BooleanSubscription();
+        final BooleanSubscription bs = new BooleanSubscription();
         Observable<String> source = Observable.create(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
@@ -283,7 +283,7 @@ public class OperatorTakeTest {
     @Test(timeout = 2000)
     public void testTakeObserveOn() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        TestSubscriber<Object> ts = new TestSubscriber<>(o);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
         
         INFINITE_OBSERVABLE.onBackpressureDrop()
         .observeOn(Schedulers.newThread()).take(1).subscribe(ts);
@@ -298,7 +298,7 @@ public class OperatorTakeTest {
     
     @Test
     public void testProducerRequestThroughTake() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
         Observable.create(new Publisher<Integer>() {
@@ -326,7 +326,7 @@ public class OperatorTakeTest {
     
     @Test
     public void testProducerRequestThroughTakeIsModified() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
         Observable.create(new Publisher<Integer>() {
@@ -354,7 +354,7 @@ public class OperatorTakeTest {
     
     @Test
     public void testInterrupt() throws InterruptedException {
-        final AtomicReference<Object> exception = new AtomicReference<>();
+        final AtomicReference<Object> exception = new AtomicReference<Object>();
         final CountDownLatch latch = new CountDownLatch(1);
         Observable.just(1).subscribeOn(Schedulers.computation()).take(1)
         .subscribe(new Consumer<Integer>() {
@@ -380,7 +380,7 @@ public class OperatorTakeTest {
     @Test
     public void testDoesntRequestMoreThanNeededFromUpstream() throws InterruptedException {
         final AtomicLong requests = new AtomicLong();
-        TestSubscriber<Long> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
         Observable.interval(100, TimeUnit.MILLISECONDS)
             //
             .doOnRequest(new LongConsumer() {
@@ -424,11 +424,16 @@ public class OperatorTakeTest {
     
     @Test
     public void testReentrantTake() {
-        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> source = PublishSubject.create();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        source.take(1).doOnNext(v -> source.onNext(2)).subscribe(ts);
+        source.take(1).doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) {
+                source.onNext(2);
+            }
+        }).subscribe(ts);
         
         source.onNext(1);
         

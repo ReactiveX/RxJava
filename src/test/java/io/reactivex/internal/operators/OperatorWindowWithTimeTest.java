@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,22 +13,22 @@
 
 package io.reactivex.internal.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
 
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.Scheduler;
+import io.reactivex.*;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 
 
 public class OperatorWindowWithTimeTest {
@@ -44,8 +44,8 @@ public class OperatorWindowWithTimeTest {
 
     @Test
     public void testTimedAndCount() {
-        final List<String> list = new ArrayList<>();
-        final List<List<String>> lists = new ArrayList<>();
+        final List<String> list = new ArrayList<String>();
+        final List<List<String>> lists = new ArrayList<List<String>>();
 
         Observable<String> source = Observable.create(new Publisher<String>() {
             @Override
@@ -78,8 +78,8 @@ public class OperatorWindowWithTimeTest {
 
     @Test
     public void testTimed() {
-        final List<String> list = new ArrayList<>();
-        final List<List<String>> lists = new ArrayList<>();
+        final List<String> list = new ArrayList<String>();
+        final List<List<String>> lists = new ArrayList<List<String>>();
 
         Observable<String> source = Observable.create(new Publisher<String>() {
             @Override
@@ -107,7 +107,7 @@ public class OperatorWindowWithTimeTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<String>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -139,13 +139,13 @@ public class OperatorWindowWithTimeTest {
                 stringObservable.subscribe(new Observer<T>() {
                     @Override
                     public void onComplete() {
-                        lists.add(new ArrayList<>(list));
+                        lists.add(new ArrayList<T>(list));
                         list.clear();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        fail(e.getMessage());
+                        Assert.fail(e.getMessage());
                     }
 
                     @Override
@@ -161,8 +161,8 @@ public class OperatorWindowWithTimeTest {
         Observable<Observable<Integer>> source = Observable.range(1, 10)
                 .window(1, TimeUnit.MINUTES, scheduler, 3);
         
-        final List<Integer> list = new ArrayList<>();
-        final List<List<Integer>> lists = new ArrayList<>();
+        final List<Integer> list = new ArrayList<Integer>();
+        final List<List<Integer>> lists = new ArrayList<List<Integer>>();
         
         source.subscribe(observeWindow(list, lists));
         
@@ -179,25 +179,40 @@ public class OperatorWindowWithTimeTest {
     
     @Test
     public void testTakeFlatMapCompletes() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        AtomicInteger wip = new AtomicInteger();
+        final AtomicInteger wip = new AtomicInteger();
         
         final int indicator = 999999999;
         
         OperatorWindowWithSizeTest.hotStream()
         .window(300, TimeUnit.MILLISECONDS)
         .take(10)
-        .doOnComplete(() -> System.out.println("Main done!"))
+        .doOnComplete(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Main done!");
+            }
+        })
         .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Observable<Integer> w) {
                 return w.startWith(indicator)
-                        .doOnComplete(() -> System.out.println("inner done: " + wip.incrementAndGet()))
+                        .doOnComplete(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.out.println("inner done: " + wip.incrementAndGet());
+                            }
+                        })
                         ;
             }
         })
-        .doOnNext(System.out::println)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer pv) {
+                System.out.println(pv);
+            }
+        })
         .subscribe(ts);
         
         ts.awaitTerminalEvent(5, TimeUnit.SECONDS);

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,12 +16,12 @@ package io.reactivex;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.*;
 import io.reactivex.internal.operators.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -42,7 +42,7 @@ public class ObservableConversionTest {
         protected Publisher<T> onSubscribe;
         
         public static <T> CylonDetectorObservable<T> create(Publisher<T> onSubscribe) {
-            return new CylonDetectorObservable<>(onSubscribe);
+            return new CylonDetectorObservable<T>(onSubscribe);
         }
 
         protected CylonDetectorObservable(Publisher<T> onSubscribe) {
@@ -137,7 +137,7 @@ public class ObservableConversionTest {
     
     @Test
     public void testConversionBetweenObservableClasses() {
-        final TestSubscriber<String> subscriber = new TestSubscriber<>(new Observer<String>() {
+        final TestSubscriber<String> subscriber = new TestSubscriber<String>(new Observer<String>() {
 
             @Override
             public void onComplete() {
@@ -159,13 +159,33 @@ public class ObservableConversionTest {
         List<Object> crewOfBattlestarGalactica = Arrays.asList(new Object[] {"William Adama", "Laura Roslin", "Lee Adama", new Cylon()});
         
         Observable.fromIterable(crewOfBattlestarGalactica)
-            .doOnNext(System.out::println)
-            .to(new ConvertToCylonDetector<>())
-            .beep(t -> t instanceof Cylon)
-            .boop(cylon -> new Jail(cylon))
+            .doOnNext(new Consumer<Object>() {
+                @Override
+                public void accept(Object pv) {
+                    System.out.println(pv);
+                }
+            })
+            .to(new ConvertToCylonDetector<Object>())
+            .beep(new Predicate<Object>() {
+                @Override
+                public boolean test(Object t) {
+                    return t instanceof Cylon;
+                }
+            })
+            .boop(new Function<Object, Object>() {
+                @Override
+                public Object apply(Object cylon) {
+                    return new Jail(cylon);
+                }
+            })
             .DESTROY()
             .x(new ConvertToObservable<String>())
-            .reduce("Cylon Detector finished. Report:\n", (a, n) -> a + n + "\n")
+            .reduce("Cylon Detector finished. Report:\n", new BiFunction<String, String, String>() {
+                @Override
+                public String apply(String a, String n) {
+                    return a + n + "\n";
+                }
+            })
             .subscribe(subscriber);
         
         subscriber.assertNoErrors();
@@ -174,37 +194,48 @@ public class ObservableConversionTest {
     
     @Test
     public void testConvertToConcurrentQueue() {
-        final AtomicReference<Throwable> thrown = new AtomicReference<>(null);
+        final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>(null);
         final AtomicBoolean isFinished = new AtomicBoolean(false);
         ConcurrentLinkedQueue<? extends Integer> queue = Observable.range(0,5)
-                .flatMap(i -> Observable.range(0, 5)
-                        .observeOn(Schedulers.io())
-                        .map(k -> {
-                            try {
-                                Thread.sleep(System.currentTimeMillis() % 100);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            return i + k;
-                        }))
-                    .to(onSubscribe -> {
-                        final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<>();
-                        onSubscribe.subscribe(new Observer<Integer>(){
-                            @Override
-                            public void onComplete() {
-                                isFinished.set(true);
-                            }
-      
-                            @Override
-                            public void onError(Throwable e) {
-                                thrown.set(e);
-                            }
-      
-                            @Override
-                            public void onNext(Integer t) {
-                                q.add(t);
-                            }});
-                        return q;
+                .flatMap(new Function<Integer, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(final Integer i) {
+                        return Observable.range(0, 5)
+                                .observeOn(Schedulers.io())
+                                .map(new Function<Integer, Integer>() {
+                                    @Override
+                                    public Integer apply(Integer k) {
+                                        try {
+                                            Thread.sleep(System.currentTimeMillis() % 100);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        return i + k;
+                                    }
+                                });
+                    }
+                })
+                    .to(new Function<Observable<Integer>, ConcurrentLinkedQueue<Integer>>() {
+                        @Override
+                        public ConcurrentLinkedQueue<Integer> apply(Observable<Integer> onSubscribe) {
+                            final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<Integer>();
+                            onSubscribe.subscribe(new Observer<Integer>(){
+                                @Override
+                                public void onComplete() {
+                                    isFinished.set(true);
+                                }
+     
+                                @Override
+                                public void onError(Throwable e) {
+                                    thrown.set(e);
+                                }
+     
+                                @Override
+                                public void onNext(Integer t) {
+                                    q.add(t);
+                                }});
+                            return q;
+                        }
                     });
         
         int x = 0;

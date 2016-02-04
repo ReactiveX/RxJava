@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,13 +17,12 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.function.Predicate;
-
 import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.subjects.*;
 import io.reactivex.subscribers.TestSubscriber;
@@ -223,7 +222,7 @@ public class OperatorTakeWhileTest {
                 return t1 < 100;
             }
         });
-        TestSubscriber<Integer> ts = new TestSubscriber<>(5L);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5L);
         
         source.subscribe(ts);
         
@@ -244,7 +243,7 @@ public class OperatorTakeWhileTest {
                 return t1 < 2;
             }
         });
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         source.unsafeSubscribe(ts);
         
@@ -256,7 +255,7 @@ public class OperatorTakeWhileTest {
     
     @Test
     public void testErrorCauseIncludesLastValue() {
-        TestSubscriber<String> ts = new TestSubscriber<>();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable.just("abc").takeWhile(new Predicate<String>() {
             @Override
             public boolean test(String t1) {

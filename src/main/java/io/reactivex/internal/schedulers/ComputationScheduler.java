@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.*;
 
 /**
@@ -95,7 +95,7 @@ public final class ComputationScheduler extends Scheduler {
      * count and using least-recent worker selection policy.
      */
     public ComputationScheduler() {
-        this.pool = new AtomicReference<>(NONE);
+        this.pool = new AtomicReference<FixedSchedulerPool>(NONE);
         start();
     }
     
@@ -149,9 +149,9 @@ public final class ComputationScheduler extends Scheduler {
 
         EventLoopWorker(PoolWorker poolWorker) {
             this.poolWorker = poolWorker;
-            this.serial = new ListCompositeResource<>(Disposable::dispose);
-            this.timed = new SetCompositeResource<>(Disposable::dispose);
-            this.both = new ArrayCompositeResource<>(2, Disposable::dispose);
+            this.serial = new ListCompositeResource<Disposable>(Disposables.consumeAndDispose());
+            this.timed = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+            this.both = new ArrayCompositeResource<Disposable>(2, Disposables.consumeAndDispose());
             this.both.lazySet(0, serial);
             this.both.lazySet(1, timed);
         }

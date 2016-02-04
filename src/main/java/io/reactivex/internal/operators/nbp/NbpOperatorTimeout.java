@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,12 +14,12 @@
 package io.reactivex.internal.operators.nbp;
 
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-import java.util.function.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.subscribers.NbpFullArbiterSubscriber;
 import io.reactivex.internal.subscribers.nbp.NbpDisposableSubscriber;
@@ -42,11 +42,11 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> t) {
         if (other == null) {
-            return new TimeoutSubscriber<>(
-                    new NbpSerializedSubscriber<>(t), 
+            return new TimeoutSubscriber<T, U, V>(
+                    new NbpSerializedSubscriber<T>(t), 
                     firstTimeoutSelector, timeoutSelector);
         }
-        return new TimeoutOtherSubscriber<>(t, firstTimeoutSelector, timeoutSelector, other);
+        return new TimeoutOtherSubscriber<T, U, V>(t, firstTimeoutSelector, timeoutSelector, other);
     }
     
     static final class TimeoutSubscriber<T, U, V> implements NbpSubscriber<T>, Disposable, OnTimeout {
@@ -60,12 +60,12 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
         
         volatile long index;
         
-        volatile Disposable timeout;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<TimeoutSubscriber, Disposable> TIMEOUT =
-                AtomicReferenceFieldUpdater.newUpdater(TimeoutSubscriber.class, Disposable.class, "timeout");
+        final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
         public TimeoutSubscriber(NbpSubscriber<? super T> actual, 
                 Supplier<? extends NbpObservable<U>> firstTimeoutSelector,
@@ -101,9 +101,9 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                     return;
                 }
                 
-                TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<>(this, 0);
+                TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
                 
-                if (TIMEOUT.compareAndSet(this, null, tis)) {
+                if (timeout.compareAndSet(null, tis)) {
                     a.onSubscribe(s);
                     p.subscribe(tis);
                 }
@@ -119,7 +119,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
 
             actual.onNext(t);
             
-            Disposable d = timeout;
+            Disposable d = timeout.get();
             if (d != null) {
                 d.dispose();
             }
@@ -140,9 +140,9 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                 return;
             }
             
-            TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<>(this, idx);
+            TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, idx);
             
-            if (TIMEOUT.compareAndSet(this, d, tis)) {
+            if (timeout.compareAndSet(d, tis)) {
                 p.subscribe(tis);
             }
         }
@@ -165,9 +165,9 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                 cancelled = true;
                 s.dispose();
                 
-                Disposable d = timeout;
+                Disposable d = timeout.get();
                 if (d != CANCELLED) {
-                    d = TIMEOUT.getAndSet(this, CANCELLED);
+                    d = timeout.getAndSet(CANCELLED);
                     if (d != CANCELLED && d != null) {
                         d.dispose();
                     }
@@ -241,12 +241,12 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
         
         volatile long index;
         
-        volatile Disposable timeout;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<TimeoutOtherSubscriber, Disposable> TIMEOUT =
-                AtomicReferenceFieldUpdater.newUpdater(TimeoutOtherSubscriber.class, Disposable.class, "timeout");
+        final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
         public TimeoutOtherSubscriber(NbpSubscriber<? super T> actual,
                 Supplier<? extends NbpObservable<U>> firstTimeoutSelector,
@@ -255,7 +255,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
             this.firstTimeoutSelector = firstTimeoutSelector;
             this.timeoutSelector = timeoutSelector;
             this.other = other;
-            this.arbiter = new NbpFullArbiter<>(actual, this, 8);
+            this.arbiter = new NbpFullArbiter<T>(actual, this, 8);
         }
         
         @Override
@@ -287,9 +287,9 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                     return;
                 }
                 
-                TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<>(this, 0);
+                TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
                 
-                if (TIMEOUT.compareAndSet(this, null, tis)) {
+                if (timeout.compareAndSet(null, tis)) {
                     a.onSubscribe(arbiter);
                     p.subscribe(tis);
                 }
@@ -310,7 +310,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                 return;
             }
             
-            Disposable d = timeout;
+            Disposable d = timeout.get();
             if (d != null) {
                 d.dispose();
             }
@@ -329,9 +329,9 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                 return;
             }
             
-            TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<>(this, idx);
+            TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, idx);
             
-            if (TIMEOUT.compareAndSet(this, d, tis)) {
+            if (timeout.compareAndSet(d, tis)) {
                 p.subscribe(tis);
             }
         }
@@ -363,9 +363,9 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                 cancelled = true;
                 s.dispose();
                 
-                Disposable d = timeout;
+                Disposable d = timeout.get();
                 if (d != CANCELLED) {
-                    d = TIMEOUT.getAndSet(this, CANCELLED);
+                    d = timeout.getAndSet(CANCELLED);
                     if (d != CANCELLED && d != null) {
                         d.dispose();
                     }
@@ -377,7 +377,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
         public void timeout(long idx) {
             if (idx == index) {
                 dispose();
-                other.subscribe(new NbpFullArbiterSubscriber<>(arbiter));
+                other.subscribe(new NbpFullArbiterSubscriber<T>(arbiter));
             }
         }
     }

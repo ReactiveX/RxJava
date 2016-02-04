@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -33,7 +33,7 @@ public class SafeSubscriberTest {
         Observable<String> st = Observable.create(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
-        st.subscribe(new SafeSubscriber<>(new TestSubscriber<>(w)));
+        st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
 
         t.sendOnNext("one");
         t.sendOnError(new RuntimeException("bad"));
@@ -54,7 +54,7 @@ public class SafeSubscriberTest {
 
         Subscriber<String> w = TestHelper.mockSubscriber();
         
-        st.subscribe(new SafeSubscriber<>(new TestSubscriber<>(w)));
+        st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
 
         t.sendOnNext("one");
         t.sendOnError(new RuntimeException("bad"));
@@ -74,7 +74,7 @@ public class SafeSubscriberTest {
         Observable<String> st = Observable.create(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
-        st.subscribe(new SafeSubscriber<>(new TestSubscriber<>(w)));
+        st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
 
         t.sendOnNext("one");
         t.sendOnCompleted();
@@ -95,7 +95,7 @@ public class SafeSubscriberTest {
         Observable<String> st = Observable.create(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
-        st.subscribe(new SafeSubscriber<>(new TestSubscriber<>(w)));
+        st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
 
         t.sendOnNext("one");
         t.sendOnCompleted();

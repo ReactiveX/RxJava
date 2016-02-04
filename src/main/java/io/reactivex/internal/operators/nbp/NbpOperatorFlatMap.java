@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,19 +15,16 @@ package io.reactivex.internal.operators.nbp;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.exceptions.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.Pow2;
 
-/**
- * FIXME handle maxConcurrency case
- */
 public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
     final Function<? super T, ? extends NbpObservable<? extends U>> mapper;
     final boolean delayErrors;
@@ -45,7 +42,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super U> t) {
-        return new MergeSubscriber<>(t, mapper, delayErrors, maxConcurrency, bufferSize);
+        return new MergeSubscriber<T, U>(t, mapper, delayErrors, maxConcurrency, bufferSize);
     }
     
     static final class MergeSubscriber<T, U> extends AtomicInteger implements Disposable, NbpSubscriber<T> {
@@ -62,19 +59,13 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         
         volatile boolean done;
         
-        volatile Queue<Throwable> errors;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<MergeSubscriber, Queue> ERRORS =
-                AtomicReferenceFieldUpdater.newUpdater(MergeSubscriber.class, Queue.class, "errors");
+        final AtomicReference<Queue<Throwable>> errors = new AtomicReference<Queue<Throwable>>();
         
-        static final Queue<Throwable> ERRORS_CLOSED = new RejectingQueue<>();
+        static final Queue<Throwable> ERRORS_CLOSED = new RejectingQueue<Throwable>();
         
         volatile boolean cancelled;
         
-        volatile InnerSubscriber<?, ?>[] subscribers;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<MergeSubscriber, InnerSubscriber[]> SUBSCRIBERS =
-                AtomicReferenceFieldUpdater.newUpdater(MergeSubscriber.class, InnerSubscriber[].class, "subscribers");
+        final AtomicReference<InnerSubscriber<?, ?>[]> subscribers;
         
         static final InnerSubscriber<?, ?>[] EMPTY = new InnerSubscriber<?, ?>[0];
         
@@ -98,9 +89,9 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
             this.maxConcurrency = maxConcurrency;
             this.bufferSize = bufferSize;
             if (maxConcurrency != Integer.MAX_VALUE) {
-                sources = new ArrayDeque<>(maxConcurrency);
+                sources = new ArrayDeque<NbpObservable<? extends U>>(maxConcurrency);
             }
-            SUBSCRIBERS.lazySet(this, EMPTY);
+            this.subscribers = new AtomicReference<InnerSubscriber<?, ?>[]>(EMPTY);
         }
         
         @Override
@@ -144,14 +135,14 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         }
         
         void subscribeInner(NbpObservable<? extends U> p) {
-            InnerSubscriber<T, U> inner = new InnerSubscriber<>(this, uniqueId++);
+            InnerSubscriber<T, U> inner = new InnerSubscriber<T, U>(this, uniqueId++);
             addInner(inner);
             p.subscribe(inner);
         }
         
         void addInner(InnerSubscriber<T, U> inner) {
             for (;;) {
-                InnerSubscriber<?, ?>[] a = subscribers;
+                InnerSubscriber<?, ?>[] a = subscribers.get();
                 if (a == CANCELLED) {
                     inner.dispose();
                     return;
@@ -160,7 +151,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
                 InnerSubscriber<?, ?>[] b = new InnerSubscriber[n + 1];
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = inner;
-                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return;
                 }
             }
@@ -168,7 +159,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         
         void removeInner(InnerSubscriber<T, U> inner) {
             for (;;) {
-                InnerSubscriber<?, ?>[] a = subscribers;
+                InnerSubscriber<?, ?>[] a = subscribers.get();
                 if (a == CANCELLED || a == EMPTY) {
                     return;
                 }
@@ -191,7 +182,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
                     System.arraycopy(a, 0, b, 0, j);
                     System.arraycopy(a, j + 1, b, j, n - j - 1);
                 }
-                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return;
                 }
             }
@@ -201,12 +192,12 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
             Queue<U> q = queue;
             if (q == null) {
                 if (maxConcurrency == Integer.MAX_VALUE) {
-                    q = new SpscLinkedArrayQueue<>(bufferSize);
+                    q = new SpscLinkedArrayQueue<U>(bufferSize);
                 } else {
                     if (Pow2.isPowerOfTwo(maxConcurrency)) {
-                        q = new SpscArrayQueue<>(maxConcurrency);
+                        q = new SpscArrayQueue<U>(maxConcurrency);
                     } else {
-                        q = new SpscExactArrayQueue<>(maxConcurrency);
+                        q = new SpscExactArrayQueue<U>(maxConcurrency);
                     }
                 }
                 queue = q;
@@ -236,7 +227,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         Queue<U> getInnerQueue(InnerSubscriber<T, U> inner) {
             Queue<U> q = inner.queue;
             if (q == null) {
-                q = new SpscArrayQueue<>(bufferSize);
+                q = new SpscArrayQueue<U>(bufferSize);
                 inner.queue = q;
             }
             return q;
@@ -251,7 +242,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
             } else {
                 Queue<U> q = inner.queue;
                 if (q == null) {
-                    q = new SpscLinkedArrayQueue<>(bufferSize);
+                    q = new SpscLinkedArrayQueue<U>(bufferSize);
                     inner.queue = q;
                 }
                 if (!q.offer(value)) {
@@ -334,11 +325,11 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
 
                 boolean d = done;
                 svq = queue;
-                InnerSubscriber<?, ?>[] inner = subscribers;
+                InnerSubscriber<?, ?>[] inner = subscribers.get();
                 int n = inner.length;
                 
                 if (d && (svq == null || svq.isEmpty()) && n == 0) {
-                    Queue<Throwable> e = errors;
+                    Queue<Throwable> e = errors.get();
                     if (e == null || e.isEmpty()) {
                         child.onComplete();
                     } else {
@@ -420,7 +411,6 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
                 }
                 
                 if (innerCompleted) {
-                    // TODO
                     if (maxConcurrency != Integer.MAX_VALUE) {
                         NbpObservable<? extends U> p;
                         synchronized (this) {
@@ -447,7 +437,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
                 unsubscribe();
                 return true;
             }
-            Queue<Throwable> e = errors;
+            Queue<Throwable> e = errors.get();
             if (!delayErrors && (e != null && !e.isEmpty())) {
                 try {
                     reportError(e);
@@ -460,6 +450,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         }
         
         void reportError(Queue<Throwable> q) {
+            CompositeException composite = null;
             Throwable ex = null;
             
             Throwable t;
@@ -468,20 +459,27 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
                 if (count == 0) {
                     ex = t;
                 } else {
-                    ex.addSuppressed(t);
+                    if (composite == null) {
+                        composite = new CompositeException(ex);
+                    }
+                    composite.suppress(t);
                 }
                 
                 count++;
             }
-            actual.onError(ex);
+            if (composite != null) {
+                actual.onError(composite);
+            } else {
+                actual.onError(ex);
+            }
         }
         
         void unsubscribe() {
-            InnerSubscriber<?, ?>[] a = subscribers;
+            InnerSubscriber<?, ?>[] a = subscribers.get();
             if (a != CANCELLED) {
-                a = SUBSCRIBERS.getAndSet(this, CANCELLED);
+                a = subscribers.getAndSet(CANCELLED);
                 if (a != CANCELLED) {
-                    ERRORS.getAndSet(this, ERRORS_CLOSED);
+                    errors.getAndSet(ERRORS_CLOSED);
                     for (InnerSubscriber<?, ?> inner : a) {
                         inner.dispose();
                     }
@@ -491,12 +489,12 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         
         Queue<Throwable> getErrorQueue() {
             for (;;) {
-                Queue<Throwable> q = errors;
+                Queue<Throwable> q = errors.get();
                 if (q != null) {
                     return q;
                 }
-                q = new MpscLinkedQueue<>();
-                if (ERRORS.compareAndSet(this, null, q)) {
+                q = new MpscLinkedQueue<Throwable>();
+                if (errors.compareAndSet(null, q)) {
                     return q;
                 }
             }
@@ -513,7 +511,10 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         volatile boolean done;
         volatile Queue<U> queue;
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         public InnerSubscriber(MergeSubscriber<T, U> parent, long id) {
             this.id = id;
@@ -575,7 +576,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
 
         @Override
         public Iterator<T> iterator() {
-            return Collections.emptyIterator();
+            return Collections.<T>emptyList().iterator();
         }
 
         @Override

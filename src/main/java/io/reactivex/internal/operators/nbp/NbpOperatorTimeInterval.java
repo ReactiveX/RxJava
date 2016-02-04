@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,8 +15,8 @@ package io.reactivex.internal.operators.nbp;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.NbpObservable.*;
 import io.reactivex.Scheduler;
+import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Timed;
 
@@ -31,7 +31,7 @@ public final class NbpOperatorTimeInterval<T> implements NbpOperator<Timed<T>, T
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super Timed<T>> t) {
-        return new TimeIntervalSubscriber<>(t, unit, scheduler);
+        return new TimeIntervalSubscriber<T>(t, unit, scheduler);
     }
     
     static final class TimeIntervalSubscriber<T> implements NbpSubscriber<T> {
@@ -59,7 +59,7 @@ public final class NbpOperatorTimeInterval<T> implements NbpOperator<Timed<T>, T
             long last = lastTime;
             lastTime = now;
             long delta = now - last;
-            actual.onNext(new Timed<>(t, delta, unit));
+            actual.onNext(new Timed<T>(t, delta, unit));
         }
         
         @Override

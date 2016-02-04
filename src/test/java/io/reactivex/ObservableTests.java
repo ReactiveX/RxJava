@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,13 +20,14 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.Predicate;
 
 import org.junit.*;
-import org.mockito.*;
+import org.mockito.InOrder;
 import org.reactivestreams.*;
 
+import io.reactivex.Observable.Transformer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.schedulers.*;
@@ -37,7 +38,12 @@ public class ObservableTests {
 
     Subscriber<Number> w;
 
-    private static final Predicate<Integer> IS_EVEN = v -> v % 2 == 0;
+    private static final Predicate<Integer> IS_EVEN = new Predicate<Integer>() {
+        @Override
+        public boolean test(Integer v) {
+            return v % 2 == 0;
+        }
+    };
 
     @Before
     public void before() {
@@ -54,7 +60,7 @@ public class ObservableTests {
 
     @Test
     public void fromIterable() {
-        ArrayList<String> items = new ArrayList<>();
+        ArrayList<String> items = new ArrayList<String>();
         items.add("one");
         items.add("two");
         items.add("three");
@@ -123,7 +129,12 @@ public class ObservableTests {
 
     @Test
     public void testCountError() {
-        Observable<String> o = Observable.error(() -> new RuntimeException());
+        Observable<String> o = Observable.error(new Supplier<Throwable>() {
+            @Override
+            public Throwable get() {
+                return new RuntimeException();
+            }
+        });
         
         o.count().subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -189,7 +200,12 @@ public class ObservableTests {
     @Test
     public void testReduce() {
         Observable<Integer> observable = Observable.just(1, 2, 3, 4);
-        observable.reduce((t1, t2) -> t1 + t2)
+        observable.reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        })
         .subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
@@ -202,9 +218,17 @@ public class ObservableTests {
     @Test(expected = NoSuchElementException.class)
     public void testReduceWithEmptyObservable() {
         Observable<Integer> observable = Observable.range(1, 0);
-        observable.reduce((t1, t2) -> t1 + t2)
-        .toBlocking().forEach(t1 -> {
-            // do nothing ... we expect an exception instead
+        observable.reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        })
+        .toBlocking().forEach(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer t1) {
+                // do nothing ... we expect an exception instead
+            }
         });
 
         fail("Expected an exception to be thrown");
@@ -218,7 +242,12 @@ public class ObservableTests {
     @Test
     public void testReduceWithEmptyObservableAndSeed() {
         Observable<Integer> observable = Observable.range(1, 0);
-        int value = observable.reduce(1, (t1, t2) -> t1 + t2)
+        int value = observable.reduce(1, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        })
                 .toBlocking().last();
 
         assertEquals(1, value);
@@ -227,7 +256,12 @@ public class ObservableTests {
     @Test
     public void testReduceWithInitialValue() {
         Observable<Integer> observable = Observable.just(1, 2, 3, 4);
-        observable.reduce(50, (t1, t2) -> t1 + t2)
+        observable.reduce(50, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        })
         .subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
@@ -240,7 +274,10 @@ public class ObservableTests {
         Subscriber<String> observer = TestHelper.mockSubscriber();
 
         final RuntimeException re = new RuntimeException("bad impl");
-        Observable<String> o = Observable.create(s -> { throw re; });
+        Observable<String> o = Observable.create(new Publisher<String>() {
+            @Override
+            public void subscribe(Subscriber<? super String> s) { throw re; }
+        });
         
         o.subscribe(observer);
         verify(observer, times(0)).onNext(anyString());
@@ -268,12 +305,13 @@ public class ObservableTests {
      * It is handled by the AtomicObserver that wraps the provided Observer.
      * 
      * Result: Passes (if AtomicObserver functionality exists)
+     * @throws InterruptedException if the test is interrupted
      */
     @Test
     public void testCustomObservableWithErrorInObserverAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
         // FIXME custom built???
         Observable.just("1", "2", "three", "4")
@@ -321,7 +359,7 @@ public class ObservableTests {
     @Test
     public void testCustomObservableWithErrorInObserverSynchronous() {
         final AtomicInteger count = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
         // FIXME custom built???
         Observable.just("1", "2", "three", "4")
@@ -364,9 +402,14 @@ public class ObservableTests {
     @Test
     public void testCustomObservableWithErrorInObservableSynchronous() {
         final AtomicInteger count = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         // FIXME custom built???
-        Observable.just("1", "2").concatWith(Observable.error(() -> new NumberFormatException()))
+        Observable.just("1", "2").concatWith(Observable.<String>error(new Supplier<Throwable>() {
+            @Override
+            public Throwable get() {
+                return new NumberFormatException();
+            }
+        }))
         .subscribe(new Observer<String>() {
 
             @Override
@@ -398,21 +441,30 @@ public class ObservableTests {
     @Test
     public void testPublishLast() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
-        ConnectableObservable<String> connectable = Observable.<String>create(observer -> {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
-            count.incrementAndGet();
-            new Thread(() -> {
-                observer.onNext("first");
-                observer.onNext("last");
-                observer.onComplete();
-            }).start();
+        ConnectableObservable<String> connectable = Observable.<String>create(new Publisher<String>() {
+            @Override
+            public void subscribe(final Subscriber<? super String> observer) {
+                observer.onSubscribe(EmptySubscription.INSTANCE);
+                count.incrementAndGet();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        observer.onNext("first");
+                        observer.onNext("last");
+                        observer.onComplete();
+                    }
+                }).start();
+            }
         }).takeLast(1).publish();
 
         // subscribe once
         final CountDownLatch latch = new CountDownLatch(1);
-        connectable.subscribe(value -> {
-            assertEquals("last", value);
-            latch.countDown();
+        connectable.subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String value) {
+                assertEquals("last", value);
+                latch.countDown();
+            }
         });
 
         // subscribe twice
@@ -427,17 +479,20 @@ public class ObservableTests {
     @Test
     public void testReplay() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.<String>create(observer -> {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
-                new Thread(new Runnable() {
+        ConnectableObservable<String> o = Observable.<String>create(new Publisher<String>() {
+            @Override
+            public void subscribe(final Subscriber<? super String> observer) {
+                    observer.onSubscribe(EmptySubscription.INSTANCE);
+                    new Thread(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        observer.onNext("one");
-                        observer.onComplete();
-                    }
-                }).start();
+                        @Override
+                        public void run() {
+                            counter.incrementAndGet();
+                            observer.onNext("one");
+                            observer.onComplete();
+                        }
+                    }).start();
+            }
         }).replay();
 
         // we connect immediately and it will emit the value
@@ -448,15 +503,21 @@ public class ObservableTests {
             final CountDownLatch latch = new CountDownLatch(2);
 
             // subscribe once
-            o.subscribe(v -> {
-                assertEquals("one", v);
-                latch.countDown();
+            o.subscribe(new Consumer<String>() {
+                @Override
+                public void accept(String v) {
+                    assertEquals("one", v);
+                    latch.countDown();
+                }
             });
 
             // subscribe again
-            o.subscribe(v -> {
-                assertEquals("one", v);
-                latch.countDown();
+            o.subscribe(new Consumer<String>() {
+                @Override
+                public void accept(String v) {
+                    assertEquals("one", v);
+                    latch.countDown();
+                }
             });
 
             if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -471,28 +532,40 @@ public class ObservableTests {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.<String>create(observer -> {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
-                new Thread(() -> {
-                    counter.incrementAndGet();
-                    observer.onNext("one");
-                    observer.onComplete();
-                }).start();
+        Observable<String> o = Observable.<String>create(new Publisher<String>() {
+            @Override
+            public void subscribe(final Subscriber<? super String> observer) {
+                    observer.onSubscribe(EmptySubscription.INSTANCE);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            counter.incrementAndGet();
+                            observer.onNext("one");
+                            observer.onComplete();
+                        }
+                    }).start();
+            }
         }).cache();
 
         // we then expect the following 2 subscriptions to get that same value
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(v -> {
-            assertEquals("one", v);
-            latch.countDown();
+        o.subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
         });
 
         // subscribe again
-        o.subscribe(v -> {
-            assertEquals("one", v);
-            latch.countDown();
+        o.subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -504,28 +577,40 @@ public class ObservableTests {
     @Test
     public void testCacheWithCapacity() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.<String>create(observer -> {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
-            new Thread(() -> {
-                counter.incrementAndGet();
-                observer.onNext("one");
-                observer.onComplete();
-            }).start();
+        Observable<String> o = Observable.<String>create(new Publisher<String>() {
+            @Override
+            public void subscribe(final Subscriber<? super String> observer) {
+                observer.onSubscribe(EmptySubscription.INSTANCE);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        counter.incrementAndGet();
+                        observer.onNext("one");
+                        observer.onComplete();
+                    }
+                }).start();
+            }
         }).cache(1);
 
         // we then expect the following 2 subscriptions to get that same value
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(v -> {
-            assertEquals("one", v);
-            latch.countDown();
+        o.subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
         });
 
         // subscribe again
-        o.subscribe(v -> {
-            assertEquals("one", v);
-            latch.countDown();
+        o.subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -570,17 +655,24 @@ public class ObservableTests {
     @Ignore("Subscribers can't throw")
     public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> exception = new AtomicReference<>();
-        Observable.create(observer -> {
-            new Thread(() -> {
-                try {
-                    observer.onError(new Error("failure"));
-                } catch (Throwable e) {
-                    // without an onError handler it has to just throw on whatever thread invokes it
-                    exception.set(e);
-                }
-                latch.countDown();
-            }).start();
+        final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
+        Observable.create(new Publisher<Object>() {
+            @Override
+            public void subscribe(final Subscriber<? super Object> observer) {
+                observer.onSubscribe(EmptySubscription.INSTANCE);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            observer.onError(new Error("failure"));
+                        } catch (Throwable e) {
+                            // without an onError handler it has to just throw on whatever thread invokes it
+                            exception.set(e);
+                        }
+                        latch.countDown();
+                    }
+                }).start();
+            }
         }).subscribe();
         // wait for exception
         latch.await(3000, TimeUnit.MILLISECONDS);
@@ -591,7 +683,7 @@ public class ObservableTests {
     @Test
     public void testTakeWithErrorInObserver() {
         final AtomicInteger count = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         Observable.just("1", "2", "three", "4").take(3)
         .safeSubscribe(new Observer<String>() {
 
@@ -642,9 +734,9 @@ public class ObservableTests {
 
     @Test
     public void testOfTypeWithPolymorphism() {
-        ArrayList<Integer> l1 = new ArrayList<>();
+        ArrayList<Integer> l1 = new ArrayList<Integer>();
         l1.add(1);
-        LinkedList<Integer> l2 = new LinkedList<>();
+        LinkedList<Integer> l2 = new LinkedList<Integer>();
         l2.add(2);
 
         @SuppressWarnings("rawtypes")
@@ -797,7 +889,17 @@ public class ObservableTests {
     @Test
     public void testCollectToList() {
         Observable<List<Integer>> o = Observable.just(1, 2, 3)
-        .collect(ArrayList::new, (list, v) -> list.add(v));
+        .collect(new Supplier<List<Integer>>() {
+            @Override
+            public List<Integer> get() {
+                return new ArrayList<Integer>();
+            }
+        }, new BiConsumer<List<Integer>, Integer>() {
+            @Override
+            public void accept(List<Integer> list, Integer v) {
+                list.add(v);
+            }
+        });
         
         List<Integer> list =  o.toBlocking().last();
 
@@ -817,34 +919,42 @@ public class ObservableTests {
 
     @Test
     public void testCollectToString() {
-        String value = Observable.just(1, 2, 3).collect(StringBuilder::new, 
-            (sb, v) -> {
-            if (sb.length() > 0) {
-                sb.append("-");
+        String value = Observable.just(1, 2, 3).collect(new Supplier<StringBuilder>() {
+            @Override
+            public StringBuilder get() {
+                return new StringBuilder();
             }
-            sb.append(v);
-        }).toBlocking().last().toString();
+        }, 
+            new BiConsumer<StringBuilder, Integer>() {
+                @Override
+                public void accept(StringBuilder sb, Integer v) {
+                if (sb.length() > 0) {
+                    sb.append("-");
+                }
+                sb.append(v);
+      }
+            }).toBlocking().last().toString();
 
         assertEquals("1-2-3", value);
     }
     
     @Test
     public void testMergeWith() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.just(1).mergeWith(Observable.just(2)).subscribe(ts);
         ts.assertValues(1, 2);
     }
     
     @Test
     public void testConcatWith() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.just(1).concatWith(Observable.just(2)).subscribe(ts);
         ts.assertValues(1, 2);
     }
     
     @Test
     public void testAmbWith() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.just(1).ambWith(Observable.just(2)).subscribe(ts);
         ts.assertValue(1);
     }
@@ -867,9 +977,19 @@ public class ObservableTests {
         for (int i = 0;i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE)
-                    .takeWhile(v -> v)
+                    .takeWhile(new Predicate<Boolean>() {
+                        @Override
+                        public boolean test(Boolean v) {
+                            return v;
+                        }
+                    })
                     .toList()
-                    .doOnNext(booleans -> count.incrementAndGet())
+                    .doOnNext(new Consumer<List<Boolean>>() {
+                        @Override
+                        public void accept(List<Boolean> booleans) {
+                            count.incrementAndGet();
+                        }
+                    })
                     .subscribe();
         }
         assertEquals(expectedCount, count.get());
@@ -877,8 +997,18 @@ public class ObservableTests {
     
     @Test
     public void testCompose() {
-        TestSubscriber<String> ts = new TestSubscriber<>();
-        Observable.just(1, 2, 3).compose(t1 ->t1.map(String::valueOf))
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.just(1, 2, 3).compose(new Transformer<Integer, String>() {
+            @Override
+            public Publisher<String> apply(Observable<Integer> t1) {
+                return t1.map(new Function<Integer, String>() {
+                    @Override
+                    public String apply(Integer v) {
+                        return String.valueOf(v);
+                    }
+                });
+            }
+        })
         .subscribe(ts);
         ts.assertTerminated();
         ts.assertNoErrors();
@@ -918,7 +1048,7 @@ public class ObservableTests {
 // FIXME this test doesn't make sense 
 //    @Test // cf. https://github.com/ReactiveX/RxJava/issues/2599
 //    public void testSubscribingSubscriberAsObserverMaintainsSubscriptionChain() {
-//        TestSubscriber<Object> subscriber = new TestSubscriber<>();
+//        TestSubscriber<Object> subscriber = new TestSubscriber<T>();
 //        Subscription subscription = Observable.just("event").subscribe((Observer<Object>) subscriber);
 //        subscription.unsubscribe();
 //
@@ -946,14 +1076,17 @@ public class ObservableTests {
     
     @Test
     public void testExtend() {
-        final TestSubscriber<Object> subscriber = new TestSubscriber<>();
+        final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
         final Object value = new Object();
-        Observable.just(value).to(onSubscribe -> {
-                onSubscribe.subscribe(subscriber);
-                subscriber.assertNoErrors();
-                subscriber.assertComplete();
-                subscriber.assertValue(value);
-                return subscriber.values().get(0);
-            });
+        Observable.just(value).to(new Function<Observable<Object>, Object>() {
+            @Override
+            public Object apply(Observable<Object> onSubscribe) {
+                    onSubscribe.subscribe(subscriber);
+                    subscriber.assertNoErrors();
+                    subscriber.assertComplete();
+                    subscriber.assertValue(value);
+                    return subscriber.values().get(0);
+                }
+        });
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,9 +16,6 @@ package io.reactivex.internal.operators.nbp;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
 
-/**
- * 
- */
 public final class NbpOperatorSkip<T> implements NbpOperator<T, T> {
     final long n;
     public NbpOperatorSkip(long n) {
@@ -27,7 +24,7 @@ public final class NbpOperatorSkip<T> implements NbpOperator<T, T> {
 
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> s) {
-        return new SkipSubscriber<>(s, n);
+        return new SkipSubscriber<T>(s, n);
     }
     
     static final class SkipSubscriber<T> implements NbpSubscriber<T> {

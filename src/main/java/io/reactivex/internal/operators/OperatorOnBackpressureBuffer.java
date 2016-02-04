@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -39,7 +39,7 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new BackpressureBufferSubscriber<>(t, bufferSize, unbounded, delayError, onOverflow);
+        return new BackpressureBufferSubscriber<T>(t, bufferSize, unbounded, delayError, onOverflow);
     }
     
     static final class BackpressureBufferSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
@@ -57,10 +57,7 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         volatile boolean done;
         Throwable error;
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<BackpressureBufferSubscriber> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(BackpressureBufferSubscriber.class, "requested");
+        final AtomicLong requested = new AtomicLong();
         
         public BackpressureBufferSubscriber(Subscriber<? super T> actual, int bufferSize, 
                 boolean unbounded, boolean delayError, Runnable onOverflow) {
@@ -71,12 +68,12 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
             Queue<T> q;
             
             if (unbounded) {
-                q = new SpscLinkedArrayQueue<>(bufferSize);
+                q = new SpscLinkedArrayQueue<T>(bufferSize);
             } else {
                 if (Pow2.isPowerOfTwo(bufferSize)) {
-                    q = new SpscArrayQueue<>(bufferSize);
+                    q = new SpscArrayQueue<T>(bufferSize);
                 } else {
-                    q = new SpscExactArrayQueue<>(bufferSize);
+                    q = new SpscExactArrayQueue<T>(bufferSize);
                 }
             }
             
@@ -101,7 +98,7 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                 try {
                     onOverflow.run();
                 } catch (Throwable e) {
-                    ex.addSuppressed(e);
+                    ex.initCause(e);
                 }
                 onError(ex);
                 return;
@@ -127,7 +124,7 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(requested, n);
             drain();
         }
         
@@ -154,7 +151,7 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                         return;
                     }
                     
-                    long r = requested;
+                    long r = requested.get();
                     boolean unbounded = r == Long.MAX_VALUE;
                     
                     long e = 0L;
@@ -180,7 +177,7 @@ public final class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                     
                     if (e != 0L) {
                         if (!unbounded) {
-                            REQUESTED.addAndGet(this, e);
+                            requested.addAndGet(e);
                         }
                     }
                     

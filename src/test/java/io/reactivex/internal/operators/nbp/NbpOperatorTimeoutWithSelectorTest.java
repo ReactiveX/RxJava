@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -31,6 +30,7 @@ import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.nbp.NbpPublishSubject;
@@ -321,34 +321,37 @@ public class NbpOperatorTimeoutWithSelectorTest {
         final CountDownLatch enteredTimeoutOne = new CountDownLatch(1);
         final AtomicBoolean latchTimeout = new AtomicBoolean(false);
 
-        final Function<Integer, NbpObservable<Integer>> timeoutFunc = t1 -> {
-            if (t1 == 1) {
-                // Force "unsubscribe" run on another thread
-                return NbpObservable.create(new NbpOnSubscribe<Integer>() {
-                    @Override
-                    public void accept(NbpSubscriber<? super Integer> NbpSubscriber) {
-                        NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
-                        enteredTimeoutOne.countDown();
-                        // force the timeout message be sent after NbpObserver.onNext(2)
-                        while (true) {
-                            try {
-                                if (!observerReceivedTwo.await(30, TimeUnit.SECONDS)) {
-                                    // CountDownLatch timeout
-                                    // There should be something wrong
-                                    latchTimeout.set(true);
+        final Function<Integer, NbpObservable<Integer>> timeoutFunc = new Function<Integer, NbpObservable<Integer>>() {
+            @Override
+            public NbpObservable<Integer> apply(Integer t1) {
+                if (t1 == 1) {
+                    // Force "unsubscribe" run on another thread
+                    return NbpObservable.create(new NbpOnSubscribe<Integer>() {
+                        @Override
+                        public void accept(NbpSubscriber<? super Integer> NbpSubscriber) {
+                            NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
+                            enteredTimeoutOne.countDown();
+                            // force the timeout message be sent after NbpObserver.onNext(2)
+                            while (true) {
+                                try {
+                                    if (!observerReceivedTwo.await(30, TimeUnit.SECONDS)) {
+                                        // CountDownLatch timeout
+                                        // There should be something wrong
+                                        latchTimeout.set(true);
+                                    }
+                                    break;
+                                } catch (InterruptedException e) {
+                                    // Since we just want to emulate a busy method,
+                                    // we ignore the interrupt signal from Scheduler.
                                 }
-                                break;
-                            } catch (InterruptedException e) {
-                                // Since we just want to emulate a busy method,
-                                // we ignore the interrupt signal from Scheduler.
                             }
+                            NbpSubscriber.onNext(1);
+                            timeoutEmittedOne.countDown();
                         }
-                        NbpSubscriber.onNext(1);
-                        timeoutEmittedOne.countDown();
-                    }
-                }).subscribeOn(Schedulers.newThread());
-            } else {
-                return NbpPublishSubject.create();
+                    }).subscribeOn(Schedulers.newThread());
+                } else {
+                    return NbpPublishSubject.create();
+                }
             }
         };
 
@@ -372,7 +375,7 @@ public class NbpOperatorTimeoutWithSelectorTest {
 
         }).when(o).onComplete();
 
-        final NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>(o);
+        final NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>(o);
 
         new Thread(new Runnable() {
 

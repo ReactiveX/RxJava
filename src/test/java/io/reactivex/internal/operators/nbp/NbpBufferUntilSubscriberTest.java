@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,12 +13,14 @@
 
 package io.reactivex.internal.operators.nbp;
 
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 
 import io.reactivex.NbpObservable;
+import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.nbp.NbpPublishSubject;
 
@@ -39,23 +41,32 @@ public class NbpBufferUntilSubscriberTest {
             NbpObservable.fromArray(numbers)
                     .takeUntil(s)
                     .window(50)
-                    .flatMap(integerObservable -> {
-                            return integerObservable
-                                    .subscribeOn(Schedulers.computation())
-                                    .map(integer -> {
-                                            if (integer >= 5 && completed.compareAndSet(false, true)) {
-                                                s.onComplete();
+                    .flatMap(new Function<NbpObservable<Integer>, NbpObservable<Object>>() {
+                        @Override
+                        public NbpObservable<Object> apply(NbpObservable<Integer> integerObservable) {
+                                return integerObservable
+                                        .subscribeOn(Schedulers.computation())
+                                        .map(new Function<Integer, Object>() {
+                                            @Override
+                                            public Object apply(Integer integer) {
+                                                    if (integer >= 5 && completed.compareAndSet(false, true)) {
+                                                        s.onComplete();
+                                                    }
+                                                    // do some work
+                                                    Math.pow(Math.random(), Math.random());
+                                                    return integer * 2;
                                             }
-                                            // do some work
-                                            Math.pow(Math.random(), Math.random());
-                                            return integer * 2;
-                                    });
+                                        });
+                        }
                     })
                     .toList()
-                    .doOnNext(integers -> {
-                            counter.incrementAndGet();
-                            latch.countDown();
-                            innerLatch.countDown();
+                    .doOnNext(new Consumer<List<Object>>() {
+                        @Override
+                        public void accept(List<Object> integers) {
+                                counter.incrementAndGet();
+                                latch.countDown();
+                                innerLatch.countDown();
+                        }
                     })
                     .subscribe();
             if (!innerLatch.await(30, TimeUnit.SECONDS))

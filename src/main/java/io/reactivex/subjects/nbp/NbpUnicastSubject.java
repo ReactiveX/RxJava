@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -38,6 +38,7 @@ public final class NbpUnicastSubject<T> extends NbpSubject<T, T> {
     
     /**
      * Creates an UnicastSubject with an internal buffer capacity hint 16.
+     * @param <T> the value type
      * @return an UnicastSubject instance
      */
     public static <T> NbpUnicastSubject<T> create() {
@@ -46,6 +47,7 @@ public final class NbpUnicastSubject<T> extends NbpSubject<T, T> {
     
     /**
      * Creates an UnicastSubject with the given internal buffer capacity hint.
+     * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
      * @return an UnicastSubject instance
      */
@@ -60,13 +62,14 @@ public final class NbpUnicastSubject<T> extends NbpSubject<T, T> {
      * <p>The callback, if not null, is called exactly once and
      * non-overlapped with any active replay.
      * 
+     * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
      * @param onCancelled the optional callback
      * @return an UnicastSubject instance
      */
     public static <T> NbpUnicastSubject<T> create(int capacityHint, Runnable onCancelled) {
-        State<T> state = new State<>(capacityHint, onCancelled);
-        return new NbpUnicastSubject<>(state);
+        State<T> state = new State<T>(capacityHint, onCancelled);
+        return new NbpUnicastSubject<T>(state);
     }
 
     /** The subject state. */
@@ -100,11 +103,7 @@ public final class NbpUnicastSubject<T> extends NbpSubject<T, T> {
         final Queue<T> queue;
         
         /** The single subscriber. */
-        volatile NbpSubscriber<? super T> subscriber;
-        /** Updater to the field subscriber. */
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<State, NbpSubscriber> SUBSCRIBER =
-                AtomicReferenceFieldUpdater.newUpdater(State.class, NbpSubscriber.class, "subscriber");
+        final AtomicReference<NbpSubscriber<? super T>> subscriber = new AtomicReference<NbpSubscriber<? super T>>();
         
         /** Indicates the single subscriber has cancelled. */
         volatile boolean cancelled;
@@ -118,11 +117,7 @@ public final class NbpUnicastSubject<T> extends NbpSubject<T, T> {
         Throwable error;
 
         /** Set to 1 atomically for the first and only Subscriber. */
-        volatile int once;
-        /** Updater to field once. */
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<State> ONCE =
-                AtomicIntegerFieldUpdater.newUpdater(State.class, "once");
+        final AtomicBoolean once = new AtomicBoolean();
         
         /** 
          * Called when the Subscriber has called cancel.
@@ -138,27 +133,18 @@ public final class NbpUnicastSubject<T> extends NbpSubject<T, T> {
          */
         public State(int capacityHint, Runnable onCancelled) {
             this.onCancelled = onCancelled;
-            queue = new SpscLinkedArrayQueue<>(capacityHint);
+            queue = new SpscLinkedArrayQueue<T>(capacityHint);
         }
         
         @Override
         public void accept(NbpSubscriber<? super T> s) {
-            if (once == 0 && ONCE.compareAndSet(this, 0, 1)) {
-                SUBSCRIBER.lazySet(this, s);
+            if (!once.get() && once.compareAndSet(false, true)) {
                 s.onSubscribe(this);
+                subscriber.lazySet(s); // full barrier in drain
                 drain();
             } else {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
-                if (done) {
-                    Throwable e = error;
-                    if (e != null) {
-                        s.onError(e);
-                    } else {
-                        s.onComplete();
-                    }
-                } else {
-                    s.onError(new IllegalStateException("Only a single subscriber allowed."));
-                }
+                s.onError(new IllegalStateException("Only a single subscriber allowed."));
             }
         }
         
@@ -186,7 +172,7 @@ public final class NbpUnicastSubject<T> extends NbpSubject<T, T> {
          * @param q the queue reference (avoid re-reading instance field).
          */
         void clear(Queue<?> q) {
-            SUBSCRIBER.lazySet(this, null);
+            subscriber.lazySet(null);
             q.clear();
             notifyOnCancelled();
         }
@@ -239,7 +225,7 @@ public final class NbpUnicastSubject<T> extends NbpSubject<T, T> {
             }
             
             final Queue<T> q = queue;
-            NbpSubscriber<? super T> a = subscriber;
+            NbpSubscriber<? super T> a = subscriber.get();
             int missed = 1;
             
             for (;;) {
@@ -255,7 +241,7 @@ public final class NbpUnicastSubject<T> extends NbpSubject<T, T> {
                     boolean d = done;
                     boolean empty = q.isEmpty();
                     if (d && empty) {
-                        SUBSCRIBER.lazySet(this, null);
+                        subscriber.lazySet(null);
                         Throwable ex = error;
                         if (ex != null) {
                             a.onError(ex);
@@ -278,7 +264,7 @@ public final class NbpUnicastSubject<T> extends NbpSubject<T, T> {
                         empty = v == null;
                         
                         if (d && empty) {
-                            SUBSCRIBER.lazySet(this, null);
+                            subscriber.lazySet(null);
                             Throwable ex = error;
                             if (ex != null) {
                                 a.onError(ex);
@@ -302,7 +288,7 @@ public final class NbpUnicastSubject<T> extends NbpSubject<T, T> {
                 }
                 
                 if (a == null) {
-                    a = subscriber;
+                    a = subscriber.get();
                 }
             }
         }

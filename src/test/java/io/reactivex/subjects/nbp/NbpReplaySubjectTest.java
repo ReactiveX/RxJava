@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 import org.junit.Test;
 import org.mockito.*;
@@ -29,7 +28,9 @@ import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.*;
+import io.reactivex.subjects.nbp.NbpReplaySubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
 public class NbpReplaySubjectTest {
@@ -67,7 +68,7 @@ public class NbpReplaySubjectTest {
         NbpSubscriber<Object> observerB = TestHelper.mockNbpSubscriber();
         NbpSubscriber<Object> observerC = TestHelper.mockNbpSubscriber();
         NbpSubscriber<Object> observerD = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<>(observerA);
+        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<Object>(observerA);
 
         channel.subscribe(ts);
         channel.subscribe(observerB);
@@ -218,7 +219,7 @@ public class NbpReplaySubjectTest {
         NbpReplaySubject<String> subject = NbpReplaySubject.create();
 
         NbpSubscriber<String> observer = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(observer);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(observer);
         subject.subscribe(ts);
 
         subject.onNext("one");
@@ -249,7 +250,7 @@ public class NbpReplaySubjectTest {
     @Test(timeout = 2000)
     public void testNewSubscriberDoesntBlockExisting() throws InterruptedException {
 
-        final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<>();
+        final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<String>();
         NbpSubscriber<String> observer1 = new NbpObserver<String>() {
 
             @Override
@@ -270,7 +271,7 @@ public class NbpReplaySubjectTest {
 
         };
 
-        final AtomicReference<String> lastValueForSubscriber2 = new AtomicReference<>();
+        final AtomicReference<String> lastValueForSubscriber2 = new AtomicReference<String>();
         final CountDownLatch oneReceived = new CountDownLatch(1);
         final CountDownLatch makeSlow = new CountDownLatch(1);
         final CountDownLatch completed = new CountDownLatch(1);
@@ -535,7 +536,7 @@ public class NbpReplaySubjectTest {
 //        NbpReplaySubject<String> ps = NbpReplaySubject.create();
 //
 //        ps.subscribe();
-//        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+//        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
 //        ps.subscribe(ts);
 //
 //        try {

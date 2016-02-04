@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,11 +19,11 @@ public final class MultipleAssignmentDisposable implements Disposable {
     final MultipleAssignmentResource<Disposable> resource;
     
     public MultipleAssignmentDisposable() {
-        this.resource = new MultipleAssignmentResource<>(Disposable::dispose);
+        this.resource = new MultipleAssignmentResource<Disposable>(Disposables.consumeAndDispose());
     }
     
     public MultipleAssignmentDisposable(Disposable initialDisposable) {
-        this.resource = new MultipleAssignmentResource<>(Disposable::dispose, initialDisposable);
+        this.resource = new MultipleAssignmentResource<Disposable>(Disposables.consumeAndDispose(), initialDisposable);
     }
     
     public void set(Disposable d) {

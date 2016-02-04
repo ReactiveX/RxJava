@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -25,6 +25,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.Schedulers;
 
@@ -38,7 +39,7 @@ public class SerializedObserverTest {
     }
 
     private Subscriber<String> serializedSubscriber(Subscriber<String> o) {
-        return new SerializedSubscriber<>(o);
+        return new SerializedSubscriber<String>(o);
     }
 
     @Test
@@ -159,7 +160,7 @@ public class SerializedObserverTest {
         try {
             TestConcurrencySubscriber tw = new TestConcurrencySubscriber();
             // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
-            Subscriber<String> w = serializedSubscriber(new SafeSubscriber<>(tw));
+            Subscriber<String> w = serializedSubscriber(new SafeSubscriber<String>(tw));
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
             Future<?> f2 = tp.submit(new OnNextThread(w, 5000));
@@ -209,7 +210,7 @@ public class SerializedObserverTest {
         try {
             TestConcurrencySubscriber tw = new TestConcurrencySubscriber();
             // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
-            Subscriber<String> w = serializedSubscriber(new SafeSubscriber<>(tw));
+            Subscriber<String> w = serializedSubscriber(new SafeSubscriber<String>(tw));
             w.onSubscribe(EmptySubscription.INSTANCE);
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
@@ -266,7 +267,7 @@ public class SerializedObserverTest {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final CountDownLatch running = new CountDownLatch(2);
 
-                TestSubscriber<String> to = new TestSubscriber<>(new Observer<String>() {
+                TestSubscriber<String> to = new TestSubscriber<String>(new Observer<String>() {
 
                     @Override
                     public void onComplete() {
@@ -347,7 +348,7 @@ public class SerializedObserverTest {
     @Test
     public void testThreadStarvation() throws InterruptedException {
 
-        TestSubscriber<String> to = new TestSubscriber<>(new Observer<String>() {
+        TestSubscriber<String> to = new TestSubscriber<String>(new Observer<String>() {
 
             @Override
             public void onComplete() {
@@ -369,14 +370,24 @@ public class SerializedObserverTest {
             }
 
         });
-        Subscriber<String> o = serializedSubscriber(to);
+        final Subscriber<String> o = serializedSubscriber(to);
 
         AtomicInteger p1 = new AtomicInteger();
         AtomicInteger p2 = new AtomicInteger();
 
         o.onSubscribe(EmptySubscription.INSTANCE);
-        AsyncObserver<String> as1 = Observers.createAsync(o::onNext);
-        AsyncObserver<String> as2 = Observers.createAsync(o::onNext);
+        AsyncObserver<String> as1 = Observers.createAsync(new Consumer<String>() {
+            @Override
+            public void accept(String v) {
+                o.onNext(v);
+            }
+        });
+        AsyncObserver<String> as2 = Observers.createAsync(new Consumer<String>() {
+            @Override
+            public void accept(String v) {
+                o.onNext(v);
+            }
+        });
         
         infinite(p1).subscribe(as1);
         infinite(p2).subscribe(as2);
@@ -512,7 +523,7 @@ public class SerializedObserverTest {
         /**
          * used to store the order and number of events received
          */
-        private final LinkedBlockingQueue<TestConcurrencySubscriberEvent> events = new LinkedBlockingQueue<>();
+        private final LinkedBlockingQueue<TestConcurrencySubscriberEvent> events = new LinkedBlockingQueue<TestConcurrencySubscriberEvent>();
         private final int waitTime;
 
         @SuppressWarnings("unused")
@@ -807,7 +818,7 @@ public class SerializedObserverTest {
     @Test
     @Ignore("Null values not permitted")
     public void testSerializeNull() {
-        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<>();
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
         TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
@@ -818,7 +829,7 @@ public class SerializedObserverTest {
             }
         };
         
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         serial.set(sobs);
         
         sobs.onNext(0);
@@ -836,7 +847,7 @@ public class SerializedObserverTest {
             }
         };
         
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         
         try {
             sobs.onNext(0);
@@ -850,7 +861,7 @@ public class SerializedObserverTest {
     @Test
     @Ignore("Null values no longer permitted")
     public void testSerializeReentrantNullAndComplete() {
-        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<>();
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
         TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
@@ -859,7 +870,7 @@ public class SerializedObserverTest {
             }
         };
         
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         serial.set(sobs);
         
         try {
@@ -875,7 +886,7 @@ public class SerializedObserverTest {
     @Test
     @Ignore("Subscribers can't throw")
     public void testSerializeReentrantNullAndError() {
-        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<>();
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
         TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
@@ -884,7 +895,7 @@ public class SerializedObserverTest {
             }
         };
         
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         serial.set(sobs);
         
         try {
@@ -900,7 +911,7 @@ public class SerializedObserverTest {
     @Test
     @Ignore("Null values no longer permitted")
     public void testSerializeDrainPhaseThrows() {
-        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<>();
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
         TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
@@ -914,7 +925,7 @@ public class SerializedObserverTest {
             }
         };
         
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         serial.set(sobs);
         
         sobs.onNext(0);
@@ -925,7 +936,7 @@ public class SerializedObserverTest {
     
     @Test
     public void testErrorReentry() {
-        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<>();
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
        
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
@@ -935,7 +946,8 @@ public class SerializedObserverTest {
                 super.onNext(v);
             }
         };
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<>(ts);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
+        sobs.onSubscribe(EmptySubscription.INSTANCE);
         serial.set(sobs);
         
         sobs.onNext(1);
@@ -945,7 +957,7 @@ public class SerializedObserverTest {
     }
     @Test
     public void testCompleteReentry() {
-        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<>();
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
        
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
@@ -955,7 +967,8 @@ public class SerializedObserverTest {
                 super.onNext(v);
             }
         };
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<>(ts);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
+        sobs.onSubscribe(EmptySubscription.INSTANCE);
         serial.set(sobs);
         
         sobs.onNext(1);

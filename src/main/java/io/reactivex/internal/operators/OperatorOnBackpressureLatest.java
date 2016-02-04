@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -47,15 +47,9 @@ public enum OperatorOnBackpressureLatest implements Operator<Object, Object> {
         
         volatile boolean cancelled;
         
-        // TODO contended padding?
-        volatile long requested;
-        static final AtomicLongFieldUpdater<BackpressureLatestSubscriber> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(BackpressureLatestSubscriber.class, "requested");
+        final AtomicLong requested = new AtomicLong();
         
-        // TODO contended padding?
-        volatile Object current;
-        static final AtomicReferenceFieldUpdater<BackpressureLatestSubscriber, Object> CURRENT =
-                AtomicReferenceFieldUpdater.newUpdater(BackpressureLatestSubscriber.class, Object.class, "current");
+        final AtomicReference<Object> current = new AtomicReference<Object>();
 
         public BackpressureLatestSubscriber(Subscriber<? super Object> actual) {
             this.actual = actual;
@@ -75,7 +69,7 @@ public enum OperatorOnBackpressureLatest implements Operator<Object, Object> {
         
         @Override
         public void onNext(Object t) {
-            CURRENT.lazySet(this, t);
+            current.lazySet(t);
             drain();
         }
         
@@ -98,7 +92,7 @@ public enum OperatorOnBackpressureLatest implements Operator<Object, Object> {
                 RxJavaPlugins.onError(new IllegalArgumentException("n > required but it was " + n));
                 return;
             }
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(requested, n);
             drain();
         }
         
@@ -108,7 +102,7 @@ public enum OperatorOnBackpressureLatest implements Operator<Object, Object> {
                 cancelled = true;
                 
                 if (getAndIncrement() == 0) {
-                    CURRENT.lazySet(this, null);
+                    current.lazySet(null);
                     s.cancel();
                 }
             }
@@ -122,15 +116,15 @@ public enum OperatorOnBackpressureLatest implements Operator<Object, Object> {
             int missed = 1;
             for (;;) {
                 
-                if (checkTerminated(done, current == null, a)) {
+                if (checkTerminated(done, current.get() == null, a)) {
                     return;
                 }
                 
-                long r = requested;
+                long r = requested.get();
                 
                 while (r != 0L) {
                     boolean d = done;
-                    Object v = CURRENT.getAndSet(this, null);
+                    Object v = current.getAndSet(null);
                     boolean empty = v == null;
                     
                     if (checkTerminated(d, empty, a)) {
@@ -144,10 +138,15 @@ public enum OperatorOnBackpressureLatest implements Operator<Object, Object> {
                     a.onNext(v);
                     
                     if (r != Long.MAX_VALUE) {
-                        REQUESTED.decrementAndGet(this);
+                        r--;
+                        requested.decrementAndGet();
                     }
                 }
-                
+
+                if (checkTerminated(done, current.get() == null, a)) {
+                    return;
+                }
+
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
@@ -157,7 +156,7 @@ public enum OperatorOnBackpressureLatest implements Operator<Object, Object> {
         
         boolean checkTerminated(boolean d, boolean empty, Subscriber<? super Object> a) {
             if (cancelled) {
-                CURRENT.lazySet(this, null);
+                current.lazySet(null);
                 s.cancel();
                 return true;
             }
@@ -165,7 +164,7 @@ public enum OperatorOnBackpressureLatest implements Operator<Object, Object> {
             if (d) {
                 Throwable e = error;
                 if (e != null) {
-                    CURRENT.lazySet(this, null);
+                    current.lazySet(null);
                     a.onError(e);
                     return true;
                 } else

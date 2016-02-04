@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,8 +18,8 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler;
+import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -40,8 +40,8 @@ public final class OperatorThrottleFirstTimed<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new DebounceTimedSubscriber<>(
-                new SerializedSubscriber<>(t), 
+        return new DebounceTimedSubscriber<T>(
+                new SerializedSubscriber<T>(t), 
                 timeout, unit, scheduler.createWorker());
     }
     
@@ -57,14 +57,17 @@ public final class OperatorThrottleFirstTimed<T> implements Operator<T, T> {
         
         Subscription s;
         
-        volatile Disposable timer;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<DebounceTimedSubscriber, Disposable> TIMER =
-                AtomicReferenceFieldUpdater.newUpdater(DebounceTimedSubscriber.class, Disposable.class, "timer");
+        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
-        static final Disposable NEW_TIMER = () -> { };
+        static final Disposable NEW_TIMER = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
         volatile boolean gate;
         
@@ -78,9 +81,9 @@ public final class OperatorThrottleFirstTimed<T> implements Operator<T, T> {
         }
         
         public void disposeTimer() {
-            Disposable d = timer;
+            Disposable d = timer.get();
             if (d != CANCELLED) {
-                d = TIMER.getAndSet(this, CANCELLED);
+                d = timer.getAndSet(CANCELLED);
                 if (d != CANCELLED && d != null) {
                     d.dispose();
                 }
@@ -119,14 +122,14 @@ public final class OperatorThrottleFirstTimed<T> implements Operator<T, T> {
                 }
                 
                 // FIXME should this be a periodic blocking or a value-relative blocking?
-                Disposable d = timer;
+                Disposable d = timer.get();
                 if (d != null) {
                     d.dispose();
                 }
                 
-                if (TIMER.compareAndSet(this, d, NEW_TIMER)) {
+                if (timer.compareAndSet(d, NEW_TIMER)) {
                     d = worker.schedule(this, timeout, unit);
-                    if (!TIMER.compareAndSet(this, NEW_TIMER, d)) {
+                    if (!timer.compareAndSet(NEW_TIMER, d)) {
                         d.dispose();
                     }
                 }

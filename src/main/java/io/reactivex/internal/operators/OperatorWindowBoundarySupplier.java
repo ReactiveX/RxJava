@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,13 +15,13 @@ package io.reactivex.internal.operators;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
-import java.util.function.Supplier;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable;
 import io.reactivex.Observable.Operator;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -41,7 +41,7 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super Observable<T>> t) {
-        return new WindowBoundaryMainSubscriber<>(new SerializedSubscriber<>(t), other, bufferSize);
+        return new WindowBoundaryMainSubscriber<T, B>(new SerializedSubscriber<Observable<T>>(t), other, bufferSize);
     }
     
     static final class WindowBoundaryMainSubscriber<T, B> 
@@ -53,28 +53,25 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
         
         Subscription s;
         
-        volatile Disposable boundary;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<WindowBoundaryMainSubscriber, Disposable> BOUNDARY =
-                AtomicReferenceFieldUpdater.newUpdater(WindowBoundaryMainSubscriber.class, Disposable.class, "boundary");
+        final AtomicReference<Disposable> boundary = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         UnicastSubject<T> window;
         
         static final Object NEXT = new Object();
         
-        volatile long windows;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<WindowBoundaryMainSubscriber> WINDOWS =
-                AtomicLongFieldUpdater.newUpdater(WindowBoundaryMainSubscriber.class, "windows");
+        final AtomicLong windows = new AtomicLong();
 
         public WindowBoundaryMainSubscriber(Subscriber<? super Observable<T>> actual, Supplier<? extends Publisher<B>> other,
                 int bufferSize) {
-            super(actual, new MpscLinkedQueue<>());
+            super(actual, new MpscLinkedQueue<Object>());
             this.other = other;
             this.bufferSize = bufferSize;
-            WINDOWS.lazySet(this, 1);
+            windows.lazySet(1);
         }
         
         @Override
@@ -123,10 +120,10 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
             
             window = w;
             
-            WindowBoundaryInnerSubscriber<T, B> inner = new WindowBoundaryInnerSubscriber<>(this);
+            WindowBoundaryInnerSubscriber<T, B> inner = new WindowBoundaryInnerSubscriber<T, B>(this);
             
-            if (BOUNDARY.compareAndSet(this, null, inner)) {
-                WINDOWS.getAndIncrement(this);
+            if (boundary.compareAndSet(null, inner)) {
+                windows.getAndIncrement();
                 s.request(Long.MAX_VALUE);
                 p.subscribe(inner);
                 return;
@@ -164,7 +161,7 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
                 drainLoop();
             }
             
-            if (WINDOWS.decrementAndGet(this) == 0) {
+            if (windows.decrementAndGet() == 0) {
                 dispose();
             }
             
@@ -181,7 +178,7 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
                 drainLoop();
             }
             
-            if (WINDOWS.decrementAndGet(this) == 0) {
+            if (windows.decrementAndGet() == 0) {
                 dispose();
             }
 
@@ -202,9 +199,9 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
         }
         
         void dispose() {
-            Disposable d = boundary;
+            Disposable d = boundary.get();
             if (d != CANCELLED) {
-                d = BOUNDARY.getAndSet(this, CANCELLED);
+                d = boundary.getAndSet(CANCELLED);
                 if (d != CANCELLED && d != null) {
                     d.dispose();
                 }
@@ -242,7 +239,7 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
                     if (o == NEXT) {
                         w.onComplete();
 
-                        if (WINDOWS.decrementAndGet(this) == 0) {
+                        if (windows.decrementAndGet() == 0) {
                             dispose();
                             return;
                         }
@@ -271,7 +268,7 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
                         
                         long r = requested();
                         if (r != 0L) {
-                            WINDOWS.getAndIncrement(this);
+                            windows.getAndIncrement();
                             
                             a.onNext(w);
                             if (r != Long.MAX_VALUE) {
@@ -286,16 +283,16 @@ public final class OperatorWindowBoundarySupplier<T, B> implements Operator<Obse
                         
                         window = w;
                         
-                        WindowBoundaryInnerSubscriber<T, B> b = new WindowBoundaryInnerSubscriber<>(this);
+                        WindowBoundaryInnerSubscriber<T, B> b = new WindowBoundaryInnerSubscriber<T, B>(this);
                         
-                        if (BOUNDARY.compareAndSet(this, boundary, b)) {
+                        if (boundary.compareAndSet(boundary.get(), b)) {
                             p.subscribe(b);
                         }
                         
                         continue;
                     }
                     
-                    w.onNext(NotificationLite.getValue(o));
+                    w.onNext(NotificationLite.<T>getValue(o));
                 }
                 
                 missed = leave(-missed);

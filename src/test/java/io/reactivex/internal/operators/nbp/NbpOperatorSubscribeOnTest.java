@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -36,7 +36,7 @@ public class NbpOperatorSubscribeOnTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch doneLatch = new CountDownLatch(1);
 
-        NbpTestSubscriber<Integer> NbpObserver = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> NbpObserver = new NbpTestSubscriber<Integer>();
 
         NbpObservable
         .create(new NbpOnSubscribe<Integer>() {
@@ -75,7 +75,7 @@ public class NbpOperatorSubscribeOnTest {
     @Test
     @Ignore("NbpOnSubscribe.subscribe can't throw")
     public void testThrownErrorHandling() {
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
         NbpObservable.create(new NbpOnSubscribe<String>() {
 
             @Override
@@ -90,7 +90,7 @@ public class NbpOperatorSubscribeOnTest {
 
     @Test
     public void testOnError() {
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
         NbpObservable.create(new NbpOnSubscribe<String>() {
 
             @Override
@@ -161,7 +161,7 @@ public class NbpOperatorSubscribeOnTest {
 
     @Test(timeout = 5000)
     public void testUnsubscribeInfiniteStream() throws InterruptedException {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
         NbpObservable.create(new NbpOnSubscribe<Integer>() {
 

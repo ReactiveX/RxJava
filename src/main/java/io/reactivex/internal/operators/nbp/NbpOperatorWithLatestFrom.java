@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,11 +14,11 @@
 package io.reactivex.internal.operators.nbp;
 
 import java.util.concurrent.atomic.*;
-import java.util.function.BiFunction;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -34,8 +34,8 @@ public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, 
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super R> t) {
-        NbpSerializedSubscriber<R> serial = new NbpSerializedSubscriber<>(t);
-        WithLatestFromSubscriber<T, U, R> wlf = new WithLatestFromSubscriber<>(serial, combiner);
+        final NbpSerializedSubscriber<R> serial = new NbpSerializedSubscriber<R>(t);
+        final WithLatestFromSubscriber<T, U, R> wlf = new WithLatestFromSubscriber<T, U, R>(serial, combiner);
         
         other.subscribe(new NbpSubscriber<U>() {
             @Override
@@ -69,17 +69,14 @@ public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, 
         final NbpSubscriber<? super R> actual;
         final BiFunction<? super T, ? super U, ? extends R> combiner;
         
-        volatile Disposable s;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<WithLatestFromSubscriber, Disposable> S =
-                AtomicReferenceFieldUpdater.newUpdater(WithLatestFromSubscriber.class, Disposable.class, "s");
+        final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
         
-        volatile Disposable other;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<WithLatestFromSubscriber, Disposable> OTHER =
-                AtomicReferenceFieldUpdater.newUpdater(WithLatestFromSubscriber.class, Disposable.class, "other");
+        final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         public WithLatestFromSubscriber(NbpSubscriber<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
             this.actual = actual;
@@ -87,11 +84,11 @@ public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, 
         }
         @Override
         public void onSubscribe(Disposable s) {
-            if (S.compareAndSet(this, null, s)) {
+            if (this.s.compareAndSet(null, s)) {
                 actual.onSubscribe(this);
             } else {
                 s.dispose();
-                if (s != CANCELLED) {
+                if (this.s.get() != CANCELLED) {
                     SubscriptionHelper.reportDisposableSet();
                 }
             }
@@ -127,14 +124,14 @@ public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, 
         
         @Override
         public void dispose() {
-            s.dispose();
+            s.get().dispose();
             cancelOther();
         }
         
         void cancelOther() {
-            Disposable o = other;
+            Disposable o = other.get();
             if (o != CANCELLED) {
-                o = OTHER.getAndSet(this, CANCELLED);
+                o = other.getAndSet(CANCELLED);
                 if (o != CANCELLED && o != null) {
                     o.dispose();
                 }
@@ -143,7 +140,7 @@ public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, 
         
         public boolean setOther(Disposable o) {
             for (;;) {
-                Disposable current = other;
+                Disposable current = other.get();
                 if (current == CANCELLED) {
                     o.dispose();
                     return false;
@@ -153,17 +150,17 @@ public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, 
                     o.dispose();
                     return false;
                 }
-                if (OTHER.compareAndSet(this, null, o)) {
+                if (other.compareAndSet(null, o)) {
                     return true;
                 }
             }
         }
         
         public void otherError(Throwable e) {
-            if (S.compareAndSet(this, null, CANCELLED)) {
+            if (this.s.compareAndSet(null, CANCELLED)) {
                 EmptyDisposable.error(e, actual);
             } else {
-                if (s != CANCELLED) {
+                if (this.s.get() != CANCELLED) {
                     dispose();
                     actual.onError(e);
                 } else {

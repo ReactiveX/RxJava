@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,11 +13,11 @@
 package io.reactivex.subjects;
 
 import java.util.concurrent.atomic.*;
-import java.util.function.IntFunction;
 
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.functions.IntFunction;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -42,11 +42,12 @@ public final class PublishSubject<T> extends Subject<T, T> {
     
     /**
      * Constructs a PublishSubject.
+     * @param <T> the value type
      * @return the new PublishSubject
      */
     public static <T> PublishSubject<T> create() {
-        State<T> state = new State<>();
-        return new PublishSubject<>(state);
+        State<T> state = new State<T>();
+        return new PublishSubject<T>(state);
     }
     
     /** Holds the terminal event and manages the array of subscribers. */
@@ -163,7 +164,8 @@ public final class PublishSubject<T> extends Subject<T, T> {
      * @param <T> the value type of the events
      */
     @SuppressWarnings("rawtypes")
-    static final class State<T> extends AtomicReference<Object> implements Publisher<T>, IntFunction<PublishSubscriber[]> {
+    static final class State<T> extends AtomicReference<Object> 
+    implements Publisher<T>, IntFunction<PublishSubscriber<T>[]> {
         /** */
         private static final long serialVersionUID = -2699311989055418316L;
         /** The completion token. */
@@ -176,21 +178,17 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
         /** The array of currently subscribed subscribers. */
         @SuppressWarnings("unchecked")
-        volatile PublishSubscriber<T>[] subscribers = EMPTY;
-        
-        /** Field updater for subscribers. */
-        static final AtomicReferenceFieldUpdater<State, PublishSubscriber[]> SUBSCRIBERS =
-                AtomicReferenceFieldUpdater.newUpdater(State.class, PublishSubscriber[].class, "subscribers");
+        final AtomicReference<PublishSubscriber<T>[]> subscribers = new AtomicReference<PublishSubscriber<T>[]>(EMPTY);
         
         @Override
         public void subscribe(Subscriber<? super T> t) {
-            PublishSubscriber<T> ps = new PublishSubscriber<>(t, this);
+            PublishSubscriber<T> ps = new PublishSubscriber<T>(t, this);
             t.onSubscribe(ps);
-            if (ps.cancelled == 0) {
+            if (!ps.cancelled.get()) {
                 if (add(ps)) {
                     // if cancellation happened while a successful add, the remove() didn't work
                     // so we need to do it again
-                    if (ps.cancelled != 0) {
+                    if (ps.cancelled.get()) {
                         remove(ps);
                     }
                 } else {
@@ -208,7 +206,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
          * @return the array of currently subscribed subscribers
          */
         PublishSubscriber<T>[] subscribers() {
-            return subscribers;
+            return subscribers.get();
         }
         
         /**
@@ -229,7 +227,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
         @SuppressWarnings("unchecked")
         PublishSubscriber<T>[] terminate(Object event) {
             if (compareAndSet(null, event)) {
-                return TerminalAtomicsHelper.terminate(SUBSCRIBERS, this, TERMINATED);
+                return TerminalAtomicsHelper.terminate(subscribers, TERMINATED);
             }
             return TERMINATED;
         }
@@ -240,20 +238,23 @@ public final class PublishSubject<T> extends Subject<T, T> {
          * @param ps the subscriber to add
          * @return true if successful, false if the subject has terminated
          */
+        @SuppressWarnings("unchecked")
         boolean add(PublishSubscriber<T> ps) {
-            return TerminalAtomicsHelper.add(SUBSCRIBERS, this, ps, TERMINATED, this);
+            return TerminalAtomicsHelper.add(subscribers, ps, TERMINATED, this);
         }
         
         /**
          * Atomically removes the given subscriber if it is subscribed to the subject.
          * @param ps the subject to remove
          */
+        @SuppressWarnings("unchecked")
         void remove(PublishSubscriber<T> ps) {
-            TerminalAtomicsHelper.remove(SUBSCRIBERS, this, ps, TERMINATED, EMPTY, this);
+            TerminalAtomicsHelper.remove(subscribers, ps, TERMINATED, EMPTY, this);
         }
         
+        @SuppressWarnings("unchecked")
         @Override
-        public PublishSubscriber[] apply(int value) {
+        public PublishSubscriber<T>[] apply(int value) {
             return new PublishSubscriber[value];
         }
     }
@@ -272,12 +273,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
         /** The subject state. */
         final State<T> state;
 
-        /** Indicates the cancelled state if not zero. */
-        volatile int cancelled;
-        /** Field updater for cancelled. */
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<PublishSubscriber> CANCELLED =
-                AtomicIntegerFieldUpdater.newUpdater(PublishSubscriber.class, "cancelled");
+        final AtomicBoolean cancelled = new AtomicBoolean();
         
         /**
          * Constructs a PublishSubscriber, wraps the actual subscriber and the state.
@@ -328,7 +324,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
         
         @Override
         public void cancel() {
-            if (cancelled == 0 && CANCELLED.compareAndSet(this, 0, 1)) {
+            if (!cancelled.get() && cancelled.compareAndSet(false, true)) {
                 state.remove(this);
             }
         }

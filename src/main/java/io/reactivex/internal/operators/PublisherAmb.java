@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -58,7 +58,7 @@ public final class PublisherAmb<T> implements Publisher<T> {
             return;
         }
 
-        AmbCoordinator<T> ac = new AmbCoordinator<>(s, count);
+        AmbCoordinator<T> ac = new AmbCoordinator<T>(s, count);
         ac.subscribe(sources);
     }
     
@@ -66,10 +66,7 @@ public final class PublisherAmb<T> implements Publisher<T> {
         final Subscriber<? super T> actual;
         final AmbInnerSubscriber<T>[] subscribers;
         
-        volatile int winner;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<AmbCoordinator> WINNER =
-                AtomicIntegerFieldUpdater.newUpdater(AmbCoordinator.class, "winner");
+        final AtomicInteger winner = new AtomicInteger();
         
         @SuppressWarnings("unchecked")
         public AmbCoordinator(Subscriber<? super T> actual, int count) {
@@ -81,13 +78,13 @@ public final class PublisherAmb<T> implements Publisher<T> {
             AmbInnerSubscriber<T>[] as = subscribers;
             int len = as.length;
             for (int i = 0; i < len; i++) {
-                as[i] = new AmbInnerSubscriber<>(this, i + 1, actual);
+                as[i] = new AmbInnerSubscriber<T>(this, i + 1, actual);
             }
-            WINNER.lazySet(this, 0); // release the contents of 'as'
+            winner.lazySet(0); // release the contents of 'as'
             actual.onSubscribe(this);
             
             for (int i = 0; i < len; i++) {
-                if (winner != 0) {
+                if (winner.get() != 0) {
                     return;
                 }
                 
@@ -101,7 +98,7 @@ public final class PublisherAmb<T> implements Publisher<T> {
                 return;
             }
             
-            int w = winner;
+            int w = winner.get();
             if (w > 0) {
                 subscribers[w - 1].request(n);
             } else
@@ -113,9 +110,16 @@ public final class PublisherAmb<T> implements Publisher<T> {
         }
         
         public boolean win(int index) {
-            int w = winner;
+            int w = winner.get();
             if (w == 0) {
-                if (WINNER.compareAndSet(this, 0, index)) {
+                if (winner.compareAndSet(0, index)) {
+                    AmbInnerSubscriber<T>[] a = subscribers;
+                    int n = a.length;
+                    for (int i = 0; i < n; i++) {
+                        if (i + 1 != index) {
+                            a[i].cancel();
+                        }
+                    }
                     return true;
                 }
                 return false;
@@ -125,8 +129,8 @@ public final class PublisherAmb<T> implements Publisher<T> {
         
         @Override
         public void cancel() {
-            if (winner != -1) {
-                WINNER.lazySet(this, -1);
+            if (winner.get() != -1) {
+                winner.lazySet(-1);
                 
                 for (AmbInnerSubscriber<T> a : subscribers) {
                     a.cancel();
@@ -144,10 +148,7 @@ public final class PublisherAmb<T> implements Publisher<T> {
         
         boolean won;
         
-        volatile long missedRequested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<AmbInnerSubscriber> MISSED_REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(AmbInnerSubscriber.class, "missedRequested");
+        final AtomicLong missedRequested = new AtomicLong();
         
         static final Subscription CANCELLED = new Subscription() {
             @Override
@@ -177,7 +178,7 @@ public final class PublisherAmb<T> implements Publisher<T> {
                 return;
             }
             
-            long r = MISSED_REQUESTED.getAndSet(this, 0L);
+            long r = missedRequested.getAndSet(0L);
             if (r != 0L) {
                 s.request(r);
             }
@@ -189,10 +190,13 @@ public final class PublisherAmb<T> implements Publisher<T> {
             if (s != null) {
                 s.request(n);
             } else {
-                BackpressureHelper.add(MISSED_REQUESTED, this, n);
+                if (SubscriptionHelper.validateRequest(n)) {
+                    return;
+                }
+                BackpressureHelper.add(missedRequested, n);
                 s = get();
                 if (s != null && s != CANCELLED) {
-                    long r = MISSED_REQUESTED.getAndSet(this, 0L);
+                    long r = missedRequested.getAndSet(0L);
                     if (r != 0L) {
                         s.request(r);
                     }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 import org.junit.Test;
 import org.mockito.*;
@@ -29,7 +28,9 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.*;
+import io.reactivex.subjects.ReplaySubject;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class ReplaySubjectTest {
@@ -67,7 +68,7 @@ public class ReplaySubjectTest {
         Subscriber<Object> observerB = TestHelper.mockSubscriber();
         Subscriber<Object> observerC = TestHelper.mockSubscriber();
         Subscriber<Object> observerD = TestHelper.mockSubscriber();
-        TestSubscriber<Object> ts = new TestSubscriber<>(observerA);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(observerA);
 
         channel.subscribe(ts);
         channel.subscribe(observerB);
@@ -218,7 +219,7 @@ public class ReplaySubjectTest {
         ReplaySubject<String> subject = ReplaySubject.create();
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         subject.subscribe(ts);
 
         subject.onNext("one");
@@ -249,7 +250,7 @@ public class ReplaySubjectTest {
     @Test(timeout = 2000)
     public void testNewSubscriberDoesntBlockExisting() throws InterruptedException {
 
-        final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<>();
+        final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<String>();
         Subscriber<String> observer1 = new Observer<String>() {
 
             @Override
@@ -270,7 +271,7 @@ public class ReplaySubjectTest {
 
         };
 
-        final AtomicReference<String> lastValueForSubscriber2 = new AtomicReference<>();
+        final AtomicReference<String> lastValueForSubscriber2 = new AtomicReference<String>();
         final CountDownLatch oneReceived = new CountDownLatch(1);
         final CountDownLatch makeSlow = new CountDownLatch(1);
         final CountDownLatch completed = new CountDownLatch(1);
@@ -535,7 +536,7 @@ public class ReplaySubjectTest {
 //        ReplaySubject<String> ps = ReplaySubject.create();
 //
 //        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<>();
+//        TestSubscriber<String> ts = new TestSubscriber<String>();
 //        ps.subscribe(ts);
 //
 //        try {
@@ -819,5 +820,92 @@ public class ReplaySubjectTest {
         
         assertArrayEquals(expected, rs.getValues());
         
+    }
+    
+    @Test
+    public void testBackpressureHonored() {
+        ReplaySubject<Integer> rs = ReplaySubject.create();
+        rs.onNext(1);
+        rs.onNext(2);
+        rs.onNext(3);
+        rs.onComplete();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        
+        rs.subscribe(ts);
+        
+        ts.request(1);
+        ts.assertValue(1);
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+        
+        
+        ts.request(1);
+        ts.assertValues(1, 2);
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+
+        ts.request(1);
+        ts.assertValues(1, 2, 3);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testBackpressureHonoredSizeBound() {
+        ReplaySubject<Integer> rs = ReplaySubject.createWithSize(100);
+        rs.onNext(1);
+        rs.onNext(2);
+        rs.onNext(3);
+        rs.onComplete();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        
+        rs.subscribe(ts);
+        
+        ts.request(1);
+        ts.assertValue(1);
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+        
+        
+        ts.request(1);
+        ts.assertValues(1, 2);
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+
+        ts.request(1);
+        ts.assertValues(1, 2, 3);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testBackpressureHonoredTimeBound() {
+        ReplaySubject<Integer> rs = ReplaySubject.createWithTime(1, TimeUnit.DAYS);
+        rs.onNext(1);
+        rs.onNext(2);
+        rs.onNext(3);
+        rs.onComplete();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        
+        rs.subscribe(ts);
+        
+        ts.request(1);
+        ts.assertValue(1);
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+        
+        
+        ts.request(1);
+        ts.assertValues(1, 2);
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+
+        ts.request(1);
+        ts.assertValues(1, 2, 3);
+        ts.assertComplete();
+        ts.assertNoErrors();
     }
 }

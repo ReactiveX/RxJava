@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,9 +13,8 @@
 
 package io.reactivex.internal.disposables;
 
-import java.util.function.Consumer;
-
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.util.*;
 
 /**
@@ -36,12 +35,11 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
         this.disposer = disposer;
     }
     
-    @SafeVarargs
     public SetCompositeResource(Consumer<? super T> disposer, T... initialResources) {
         this(disposer);
         int n = initialResources.length;
         if (n != 0) {
-            set = new OpenHashSet<>(n);
+            set = new OpenHashSet<T>(n);
             for (T r : initialResources) {
                 set.add(r);
             }
@@ -50,7 +48,7 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
     
     public SetCompositeResource(Consumer<? super T> disposer, Iterable<? extends T> initialResources) {
         this(disposer);
-        set = new OpenHashSet<>();
+        set = new OpenHashSet<T>();
         for (T r : initialResources) {
             set.add(r);
         }
@@ -59,7 +57,7 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
     /**
      * Adds a new resource to this composite or disposes it if the composite has been disposed.
      * @param newResource the new resource to add, not-null (not checked)
-     * @return
+     * @return true if the add succeeded, false if this container was disposed
      */
     @Override
     public boolean add(T newResource) {
@@ -68,7 +66,7 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
                 if (!disposed) {
                     OpenHashSet<T> a = set;
                     if (a == null) {
-                        a = new OpenHashSet<>(4);
+                        a = new OpenHashSet<T>(4);
                         set = a;
                     }
                     a.add(newResource);
@@ -98,7 +96,7 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
     /**
      * Removes the given resource if contained within this composite but doesn't call the disposer for it.
      * @param resource the resource to delete, not-null (not verified)
-     * @return
+     * @return true if the delete succeeded, false if this container was disposed
      */
     @Override
     public boolean delete(T resource) {
@@ -124,8 +122,13 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
             if (a == null) {
                 return 0;
             }
-            int[] c = new int[1];
-            a.forEach(v -> c[0]++);
+            final int[] c = new int[1];
+            a.forEach(new Consumer<T>() {
+                @Override
+                public void accept(T v) {
+                    c[0]++;
+                }
+            });
             return c[0];
         }
     }

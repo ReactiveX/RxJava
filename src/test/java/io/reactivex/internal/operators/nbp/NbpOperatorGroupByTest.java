@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -29,14 +28,21 @@ import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observables.nbp.NbpGroupedObservable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
+import io.reactivex.Optional;
 
 public class NbpOperatorGroupByTest {
 
-    final Function<String, Integer> length = String::length;
+    final Function<String, Integer> length = new Function<String, Integer>() {
+        @Override
+        public Integer apply(String s) {
+            return s.length();
+        }
+    };
 
     @Test
     public void testGroupBy() {
@@ -97,7 +103,7 @@ public class NbpOperatorGroupByTest {
 
         final AtomicInteger groupCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
         grouped.flatMap(new Function<NbpGroupedObservable<Integer, String>, NbpObservable<String>>() {
 
@@ -140,7 +146,7 @@ public class NbpOperatorGroupByTest {
 
     private static <K, V> Map<K, Collection<V>> toMap(NbpObservable<NbpGroupedObservable<K, V>> NbpObservable) {
 
-        final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<>();
+        final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
 
         NbpObservable.toBlocking().forEach(new Consumer<NbpGroupedObservable<K, V>>() {
 
@@ -550,7 +556,12 @@ public class NbpOperatorGroupByTest {
                         NbpObservable<Event> eventStream = eventGroupedObservable;
                         if (eventGroupedObservable.getKey() >= 2) {
                             // filter these
-                            eventStream = eventGroupedObservable.filter(t1 -> false);
+                            eventStream = eventGroupedObservable.filter(new Predicate<Event>() {
+                                @Override
+                                public boolean test(Event t1) {
+                                    return false;
+                                }
+                            });
                         }
 
                         return eventStream
@@ -582,7 +593,7 @@ public class NbpOperatorGroupByTest {
     @Test
     public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsAndThenComplete() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
-        final ArrayList<String> results = new ArrayList<>();
+        final ArrayList<String> results = new ArrayList<String>();
         NbpObservable.create(new NbpOnSubscribe<Integer>() {
 
             @Override
@@ -661,7 +672,7 @@ public class NbpOperatorGroupByTest {
     public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenSubscribesOnAndDelaysAndThenCompletes() throws InterruptedException {
         System.err.println("----------------------------------------------------------------------------------------------");
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
-        final ArrayList<String> results = new ArrayList<>();
+        final ArrayList<String> results = new ArrayList<String>();
         NbpObservable.create(new NbpOnSubscribe<Integer>() {
 
             @Override
@@ -753,7 +764,7 @@ public class NbpOperatorGroupByTest {
     @Test
     public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenObservesOnAndDelaysAndThenCompletes() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
-        final ArrayList<String> results = new ArrayList<>();
+        final ArrayList<String> results = new ArrayList<String>();
         NbpObservable.create(new NbpOnSubscribe<Integer>() {
 
             @Override
@@ -830,7 +841,7 @@ public class NbpOperatorGroupByTest {
 
     @Test
     public void testGroupsWithNestedSubscribeOn() throws InterruptedException {
-        final ArrayList<String> results = new ArrayList<>();
+        final ArrayList<String> results = new ArrayList<String>();
         NbpObservable.create(new NbpOnSubscribe<Integer>() {
 
             @Override
@@ -887,7 +898,7 @@ public class NbpOperatorGroupByTest {
 
     @Test
     public void testGroupsWithNestedObserveOn() throws InterruptedException {
-        final ArrayList<String> results = new ArrayList<>();
+        final ArrayList<String> results = new ArrayList<String>();
         NbpObservable.create(new NbpOnSubscribe<Integer>() {
 
             @Override
@@ -1014,7 +1025,7 @@ public class NbpOperatorGroupByTest {
     @Test
     public void testGroupByBackpressure() throws InterruptedException {
 
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
 
         NbpObservable.range(1, 4000)
                 .groupBy(IS_EVEN2)
@@ -1078,7 +1089,12 @@ public class NbpOperatorGroupByTest {
             return t1 * 2;
         }
     };
-    Function<Integer, Integer> identity = v -> v;
+    Function<Integer, Integer> identity = new Function<Integer, Integer>() {
+        @Override
+        public Integer apply(Integer v) {
+            return v;
+        }
+    };
 
     @Test
     public void normalBehavior() {
@@ -1118,22 +1134,25 @@ public class NbpOperatorGroupByTest {
         };
 
         NbpObservable<String> m = source.groupBy(keysel, valuesel)
-        .flatMap(g -> {
-            System.out.println("-----------> NEXT: " + g.getKey());
-            return g.take(2).map(new Function<String, String>() {
+        .flatMap(new Function<NbpGroupedObservable<String, String>, NbpObservable<String>>() {
+            @Override
+            public NbpObservable<String> apply(final NbpGroupedObservable<String, String> g) {
+                System.out.println("-----------> NEXT: " + g.getKey());
+                return g.take(2).map(new Function<String, String>() {
 
-                int count = 0;
+                    int count = 0;
 
-                @Override
-                public String apply(String v) {
-                    System.out.println(v);
-                    return g.getKey() + "-" + count++;
-                }
+                    @Override
+                    public String apply(String v) {
+                        System.out.println(v);
+                        return g.getKey() + "-" + count++;
+                    }
 
-            });
+                });
+            }
         });
 
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
         m.subscribe(ts);
         ts.awaitTerminalEvent();
         System.out.println("ts .get " + ts.values());
@@ -1149,7 +1168,7 @@ public class NbpOperatorGroupByTest {
 
         NbpObservable<Integer> m = source.groupBy(fail(0), dbl).flatMap(FLATTEN_INTEGER);
 
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         m.subscribe(ts);
         ts.awaitTerminalEvent();
         assertEquals(1, ts.errorCount());
@@ -1161,7 +1180,7 @@ public class NbpOperatorGroupByTest {
         NbpObservable<Integer> source = NbpObservable.just(0, 1, 2, 3, 4, 5, 6);
 
         NbpObservable<Integer> m = source.groupBy(identity, fail(0)).flatMap(FLATTEN_INTEGER);
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         m.subscribe(ts);
         ts.awaitTerminalEvent();
         assertEquals(1, ts.errorCount());
@@ -1175,7 +1194,7 @@ public class NbpOperatorGroupByTest {
 
         NbpObservable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);
 
-        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<Object>();
         m.subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
@@ -1189,7 +1208,7 @@ public class NbpOperatorGroupByTest {
     public void testExceptionIfSubscribeToChildMoreThanOnce() {
         NbpObservable<Integer> source = NbpObservable.just(0);
 
-        final AtomicReference<NbpGroupedObservable<Integer, Integer>> inner = new AtomicReference<>();
+        final AtomicReference<NbpGroupedObservable<Integer, Integer>> inner = new AtomicReference<NbpGroupedObservable<Integer, Integer>>();
 
         NbpObservable<NbpGroupedObservable<Integer, Integer>> m = source.groupBy(identity, dbl);
 
@@ -1219,7 +1238,7 @@ public class NbpOperatorGroupByTest {
 
         NbpObservable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);
 
-        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<Object>();
         m.subscribe(ts);
         ts.awaitTerminalEvent();
         assertEquals(1, ts.errorCount());
@@ -1228,7 +1247,7 @@ public class NbpOperatorGroupByTest {
 
     @Test
     public void testgroupByBackpressure() throws InterruptedException {
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
 
         NbpObservable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function<NbpGroupedObservable<Boolean, Integer>, NbpObservable<String>>() {
 
@@ -1285,7 +1304,7 @@ public class NbpOperatorGroupByTest {
     @Test
     public void testgroupByBackpressure2() throws InterruptedException {
 
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
 
         NbpObservable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function<NbpGroupedObservable<Boolean, Integer>, NbpObservable<String>>() {
 
@@ -1326,7 +1345,7 @@ public class NbpOperatorGroupByTest {
     @Test
     public void testGroupByWithNullKey() {
         final String[] key = new String[]{"uninitialized"};
-        final List<String> values = new ArrayList<>();
+        final List<String> values = new ArrayList<String>();
         NbpObservable.just("a", "b", "c").groupBy(new Function<String, String>() {
 
             @Override
@@ -1362,7 +1381,7 @@ public class NbpOperatorGroupByTest {
                     }
                 }
         );
-        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<Object>();
         
         o.groupBy(new Function<Integer, Integer>() {
 
@@ -1380,11 +1399,11 @@ public class NbpOperatorGroupByTest {
     @Test
     public void testGroupByShouldPropagateError() {
         final Throwable e = new RuntimeException("Oops");
-        final NbpTestSubscriber<Integer> inner1 = new NbpTestSubscriber<>();
-        final NbpTestSubscriber<Integer> inner2 = new NbpTestSubscriber<>();
+        final NbpTestSubscriber<Integer> inner1 = new NbpTestSubscriber<Integer>();
+        final NbpTestSubscriber<Integer> inner2 = new NbpTestSubscriber<Integer>();
 
         final NbpTestSubscriber<NbpGroupedObservable<Integer, Integer>> outer
-                = new NbpTestSubscriber<>(new NbpObserver<NbpGroupedObservable<Integer, Integer>>() {
+                = new NbpTestSubscriber<NbpGroupedObservable<Integer, Integer>>(new NbpObserver<NbpGroupedObservable<Integer, Integer>>() {
 
             @Override
             public void onComplete() {

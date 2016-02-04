@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,12 +17,12 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.LongConsumer;
 
 import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.functions.LongConsumer;
 
 public class OperatorDoOnRequestTest {
 
@@ -51,7 +51,7 @@ public class OperatorDoOnRequestTest {
 
     @Test
     public void testDoRequest() {
-        final List<Long> requests = new ArrayList<>();
+        final List<Long> requests = new ArrayList<Long>();
         Observable.range(1, 5)
         //
                 .doOnRequest(new LongConsumer() {

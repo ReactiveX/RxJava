@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,6 +20,7 @@ import java.util.List;
 import org.junit.Test;
 
 import io.reactivex.NbpObservable;
+import io.reactivex.functions.Supplier;
 import io.reactivex.nbp.NbpCovarianceTest.*;
 
 public class NbpMergeTests {
@@ -74,10 +75,15 @@ public class NbpMergeTests {
     @Test
     public void testMergeCovariance4() {
 
-        NbpObservable<Movie> o1 = NbpObservable.defer(() -> NbpObservable.just(
-                new HorrorMovie(),
-                new Movie()
-        ));
+        NbpObservable<Movie> o1 = NbpObservable.defer(new Supplier<NbpObservable<Movie>>() {
+            @Override
+            public NbpObservable<Movie> get() {
+                return NbpObservable.just(
+                        new HorrorMovie(),
+                        new Movie()
+                );
+            }
+        });
         
         NbpObservable<Media> o2 = NbpObservable.just(new Media(), new HorrorMovie());
 

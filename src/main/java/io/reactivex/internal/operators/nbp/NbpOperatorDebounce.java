@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,11 +14,11 @@
 package io.reactivex.internal.operators.nbp;
 
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.subscribers.nbp.NbpDisposableSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -33,7 +33,7 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> t) {
-        return new DebounceSubscriber<>(new NbpSerializedSubscriber<>(t), debounceSelector);
+        return new DebounceSubscriber<T, U>(new NbpSerializedSubscriber<T>(t), debounceSelector);
     }
     
     static final class DebounceSubscriber<T, U> 
@@ -45,12 +45,12 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
 
         Disposable s;
         
-        volatile Disposable debouncer;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<DebounceSubscriber, Disposable> DEBOUNCER =
-                AtomicReferenceFieldUpdater.newUpdater(DebounceSubscriber.class, Disposable.class, "debouncer");
+        final AtomicReference<Disposable> debouncer = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
         volatile long index;
         
@@ -81,7 +81,7 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
             long idx = index + 1;
             index = idx;
             
-            Disposable d = debouncer;
+            Disposable d = debouncer.get();
             if (d != null) {
                 d.dispose();
             }
@@ -102,9 +102,9 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
                 return;
             }
             
-            DebounceInnerSubscriber<T, U> dis = new DebounceInnerSubscriber<>(this, idx, t);
+            DebounceInnerSubscriber<T, U> dis = new DebounceInnerSubscriber<T, U>(this, idx, t);
             
-            if (DEBOUNCER.compareAndSet(this, d, dis)) {
+            if (debouncer.compareAndSet(d, dis)) {
                 p.subscribe(dis);
             }
         }
@@ -121,7 +121,7 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
                 return;
             }
             done = true;
-            Disposable d = debouncer;
+            Disposable d = debouncer.get();
             if (d != CANCELLED) {
                 @SuppressWarnings("unchecked")
                 DebounceInnerSubscriber<T, U> dis = (DebounceInnerSubscriber<T, U>)d;
@@ -138,9 +138,9 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
         }
         
         public void disposeDebouncer() {
-            Disposable d = debouncer;
+            Disposable d = debouncer.get();
             if (d != CANCELLED) {
-                d = DEBOUNCER.getAndSet(this, CANCELLED);
+                d = debouncer.getAndSet(CANCELLED);
                 if (d != CANCELLED && d != null) {
                     d.dispose();
                 }
@@ -160,10 +160,7 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
             
             boolean done;
             
-            volatile int once;
-            @SuppressWarnings("rawtypes")
-            static final AtomicIntegerFieldUpdater<DebounceInnerSubscriber> ONCE =
-                    AtomicIntegerFieldUpdater.newUpdater(DebounceInnerSubscriber.class, "once");
+            final AtomicBoolean once = new AtomicBoolean();
             
             public DebounceInnerSubscriber(DebounceSubscriber<T, U> parent, long index, T value) {
                 this.parent = parent;
@@ -182,7 +179,7 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
             }
             
             void emit() {
-                if (ONCE.compareAndSet(this, 0, 1)) {
+                if (once.compareAndSet(false, true)) {
                     parent.emit(index, value);
                 }
             }

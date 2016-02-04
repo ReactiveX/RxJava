@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,11 +13,11 @@
 
 package io.reactivex.internal.operators.nbp;
 
-import java.util.function.Function;
-
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOperatorOnErrorNext<T> implements NbpOperator<T, T> {
@@ -31,7 +31,7 @@ public final class NbpOperatorOnErrorNext<T> implements NbpOperator<T, T> {
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> t) {
-        OnErrorNextSubscriber<T> parent = new OnErrorNextSubscriber<>(t, nextSupplier, allowFatal);
+        OnErrorNextSubscriber<T> parent = new OnErrorNextSubscriber<T>(t, nextSupplier, allowFatal);
         t.onSubscribe(parent.arbiter);
         return parent;
     }
@@ -88,15 +88,14 @@ public final class NbpOperatorOnErrorNext<T> implements NbpOperator<T, T> {
             try {
                 p = nextSupplier.apply(t);
             } catch (Throwable e) {
-                t.addSuppressed(e);
-                actual.onError(t);
+                actual.onError(new CompositeException(e, t));
                 return;
             }
             
             if (p == null) {
                 NullPointerException npe = new NullPointerException("Observable is null");
-                t.addSuppressed(npe);
-                actual.onError(t);
+                npe.initCause(t);
+                actual.onError(npe);
                 return;
             }
             

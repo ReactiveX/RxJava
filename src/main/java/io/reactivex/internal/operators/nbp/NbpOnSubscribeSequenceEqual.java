@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,11 +15,11 @@ package io.reactivex.internal.operators.nbp;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
-import java.util.function.BiPredicate;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
+import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.disposables.ArrayCompositeResource;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 
@@ -39,7 +39,7 @@ public final class NbpOnSubscribeSequenceEqual<T> implements NbpOnSubscribe<Bool
     
     @Override
     public void accept(NbpSubscriber<? super Boolean> s) {
-        EqualCoordinator<T> ec = new EqualCoordinator<>(s, bufferSize, first, second, comparer);
+        EqualCoordinator<T> ec = new EqualCoordinator<T>(s, bufferSize, first, second, comparer);
         ec.subscribe();
     }
     
@@ -55,11 +55,6 @@ public final class NbpOnSubscribeSequenceEqual<T> implements NbpOnSubscribe<Bool
         
         volatile boolean cancelled;
         
-        volatile int once;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<EqualCoordinator> ONCE =
-                AtomicIntegerFieldUpdater.newUpdater(EqualCoordinator.class, "once");
-        
         public EqualCoordinator(NbpSubscriber<? super Boolean> actual, int bufferSize,
                 NbpObservable<? extends T> first, NbpObservable<? extends T> second,
                 BiPredicate<? super T, ? super T> comparer) {
@@ -70,9 +65,9 @@ public final class NbpOnSubscribeSequenceEqual<T> implements NbpOnSubscribe<Bool
             @SuppressWarnings("unchecked")
             EqualSubscriber<T>[] as = new EqualSubscriber[2];
             this.subscribers = as;
-            as[0] = new EqualSubscriber<>(this, 0, bufferSize);
-            as[1] = new EqualSubscriber<>(this, 1, bufferSize);
-            this.resources = new ArrayCompositeResource<>(2, Disposable::dispose);
+            as[0] = new EqualSubscriber<T>(this, 0, bufferSize);
+            as[1] = new EqualSubscriber<T>(this, 1, bufferSize);
+            this.resources = new ArrayCompositeResource<Disposable>(2, Disposables.consumeAndDispose());
         }
         
         boolean setSubscription(Disposable s, int index) {
@@ -217,7 +212,7 @@ public final class NbpOnSubscribeSequenceEqual<T> implements NbpOnSubscribe<Bool
         public EqualSubscriber(EqualCoordinator<T> parent, int index, int bufferSize) {
             this.parent = parent;
             this.index = index;
-            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
         }
         
         @Override

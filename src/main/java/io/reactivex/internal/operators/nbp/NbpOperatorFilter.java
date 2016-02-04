@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,10 +13,9 @@
 
 package io.reactivex.internal.operators.nbp;
 
-import java.util.function.Predicate;
-
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class NbpOperatorFilter<T> implements NbpOperator<T, T> {
@@ -27,7 +26,7 @@ public final class NbpOperatorFilter<T> implements NbpOperator<T, T> {
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> s) {
-        return new FilterSubscriber<>(s, predicate);
+        return new FilterSubscriber<T>(s, predicate);
     }
     
     static final class FilterSubscriber<T> implements NbpSubscriber<T> {

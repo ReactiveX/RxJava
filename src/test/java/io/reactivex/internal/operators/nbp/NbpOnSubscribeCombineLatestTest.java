@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.mockito.*;
@@ -31,6 +30,7 @@ import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.nbp.NbpPublishSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
+import io.reactivex.Optional;
 
 public class NbpOnSubscribeCombineLatestTest {
 
@@ -41,8 +41,11 @@ public class NbpOnSubscribeCombineLatestTest {
         NbpPublishSubject<String> w1 = NbpPublishSubject.create();
         NbpPublishSubject<String> w2 = NbpPublishSubject.create();
 
-        NbpObservable<String> combined = NbpObservable.combineLatest(w1, w2, (v1, v2) -> {
-            throw new RuntimeException("I don't work.");
+        NbpObservable<String> combined = NbpObservable.combineLatest(w1, w2, new BiFunction<String, String, String>() {
+            @Override
+            public String apply(String v1, String v2) {
+                throw new RuntimeException("I don't work.");
+            }
         });
         combined.subscribe(w);
 
@@ -214,28 +217,41 @@ public class NbpOnSubscribeCombineLatestTest {
     }
 
     private Function3<String, String, String, String> getConcat3StringsCombineLatestFunction() {
-        Function3<String, String, String, String> combineLatestFunction = (a1, a2, a3) -> {
-            if (a1 == null) {
-                a1 = "";
+        Function3<String, String, String, String> combineLatestFunction = new Function3<String, String, String, String>() {
+            @Override
+            public String apply(String a1, String a2, String a3) {
+                if (a1 == null) {
+                    a1 = "";
+                }
+                if (a2 == null) {
+                    a2 = "";
+                }
+                if (a3 == null) {
+                    a3 = "";
+                }
+                return a1 + a2 + a3;
             }
-            if (a2 == null) {
-                a2 = "";
-            }
-            if (a3 == null) {
-                a3 = "";
-            }
-            return a1 + a2 + a3;
         };
         return combineLatestFunction;
     }
 
     private BiFunction<String, Integer, String> getConcatStringIntegerCombineLatestFunction() {
-        BiFunction<String, Integer, String> combineLatestFunction = (s, i) -> getStringValue(s) + getStringValue(i);
+        BiFunction<String, Integer, String> combineLatestFunction = new BiFunction<String, Integer, String>() {
+            @Override
+            public String apply(String s, Integer i) {
+                return getStringValue(s) + getStringValue(i);
+            }
+        };
         return combineLatestFunction;
     }
 
     private Function3<String, Integer, int[], String> getConcatStringIntegerIntArrayCombineLatestFunction() {
-        return (s, i, iArray) -> getStringValue(s) + getStringValue(i) + getStringValue(iArray);
+        return new Function3<String, Integer, int[], String>() {
+            @Override
+            public String apply(String s, Integer i, int[] iArray) {
+                return getStringValue(s) + getStringValue(i) + getStringValue(iArray);
+            }
+        };
     }
 
     private static String getStringValue(Object o) {
@@ -250,7 +266,12 @@ public class NbpOnSubscribeCombineLatestTest {
         }
     }
 
-    BiFunction<Integer, Integer, Integer> or = (t1, t2) -> t1 | t2;
+    BiFunction<Integer, Integer, Integer> or = new BiFunction<Integer, Integer, Integer>() {
+        @Override
+        public Integer apply(Integer t1, Integer t2) {
+            return t1 | t2;
+        }
+    };
 
     @Test
     public void combineSimple() {
@@ -414,8 +435,8 @@ public class NbpOnSubscribeCombineLatestTest {
         };
         for (int i = 1; i <= n; i++) {
             System.out.println("test1ToNSources: " + i + " sources");
-            List<NbpObservable<Integer>> sources = new ArrayList<>();
-            List<Object> values = new ArrayList<>();
+            List<NbpObservable<Integer>> sources = new ArrayList<NbpObservable<Integer>>();
+            List<Object> values = new ArrayList<Object>();
             for (int j = 0; j < i; j++) {
                 sources.add(NbpObservable.just(j));
                 values.add(j);
@@ -445,8 +466,8 @@ public class NbpOnSubscribeCombineLatestTest {
         };
         for (int i = 1; i <= n; i++) {
             System.out.println("test1ToNSourcesScheduled: " + i + " sources");
-            List<NbpObservable<Integer>> sources = new ArrayList<>();
-            List<Object> values = new ArrayList<>();
+            List<NbpObservable<Integer>> sources = new ArrayList<NbpObservable<Integer>>();
+            List<Object> values = new ArrayList<Object>();
             for (int j = 0; j < i; j++) {
                 sources.add(NbpObservable.just(j).subscribeOn(Schedulers.io()));
                 values.add(j);
@@ -494,7 +515,12 @@ public class NbpOnSubscribeCombineLatestTest {
         NbpObservable<Integer> s2 = NbpObservable.just(2);
 
         NbpObservable<List<Integer>> result = NbpObservable.combineLatest(s1, s2, 
-                (t1, t2) -> Arrays.asList(t1, t2));
+                new BiFunction<Integer, Integer, List<Integer>>() {
+                    @Override
+                    public List<Integer> apply(Integer t1, Integer t2) {
+                        return Arrays.asList(t1, t2);
+                    }
+                });
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
 
@@ -512,7 +538,12 @@ public class NbpOnSubscribeCombineLatestTest {
         NbpObservable<Integer> s3 = NbpObservable.just(3);
 
         NbpObservable<List<Integer>> result = NbpObservable.combineLatest(s1, s2, s3,
-                (Function3<Integer, Integer, Integer, List<Integer>>) (t1, t2, t3) -> Arrays.asList(t1, t2, t3));
+                new Function3<Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer t1, Integer t2, Integer t3) {
+                return Arrays.asList(t1, t2, t3);
+            }
+        });
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
 
@@ -711,16 +742,24 @@ public class NbpOnSubscribeCombineLatestTest {
         final int SIZE = 2000;
         NbpObservable<Long> timer = NbpObservable.interval(0, 1, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.newThread())
-                .doOnEach(n -> {
-                        //                        System.out.println(n);
-                        if (count.incrementAndGet() >= SIZE) {
-                            latch.countDown();
-                        }
+                .doOnEach(new Consumer<Try<Optional<Long>>>() {
+                    @Override
+                    public void accept(Try<Optional<Long>> n) {
+                            //                        System.out.println(n);
+                            if (count.incrementAndGet() >= SIZE) {
+                                latch.countDown();
+                            }
+                    }
                 }).take(SIZE);
 
-        NbpTestSubscriber<Long> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Long> ts = new NbpTestSubscriber<Long>();
 
-        NbpObservable.combineLatest(timer, NbpObservable.<Integer> never(), (t1, t2) -> t1).subscribe(ts);
+        NbpObservable.combineLatest(timer, NbpObservable.<Integer> never(), new BiFunction<Long, Integer, Long>() {
+            @Override
+            public Long apply(Long t1, Integer t2) {
+                return t1;
+            }
+        }).subscribe(ts);
 
         if (!latch.await(SIZE + 1000, TimeUnit.MILLISECONDS)) {
             fail("timed out");

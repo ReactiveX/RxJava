@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,10 +14,10 @@ package io.reactivex.subjects;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.*;
-import java.util.function.IntFunction;
 
 import org.reactivestreams.*;
 
+import io.reactivex.functions.IntFunction;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -36,11 +36,12 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     
     /**
      * Constructs an empty AsyncSubject.
+     * @param <T> the observed and observable value type
      * @return the new AsyncSubject instance.
      */
     public static <T> AsyncSubject<T> create() {
-        State<T> state = new State<>();
-        return new AsyncSubject<>(state);
+        State<T> state = new State<T>();
+        return new AsyncSubject<T>(state);
     }
     
     /** The state holding onto the latest value or error and the array of subscribers. */
@@ -174,7 +175,8 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * @param <T> the value type
      */
     @SuppressWarnings("rawtypes")
-    static final class State<T> extends AtomicReference<Object> implements Publisher<T>, IntFunction<AsyncSubscription[]> {
+    static final class State<T> extends AtomicReference<Object> 
+    implements Publisher<T>, IntFunction<AsyncSubscription<T>[]> {
         
         /** */
         private static final long serialVersionUID = 2983503212425065796L;
@@ -186,17 +188,14 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         
         /** The array of current subscribers. */
         @SuppressWarnings("unchecked")
-        volatile AsyncSubscription<T>[] subscribers = EMPTY;
-        /** Field updater for subscribers. */
-        static final AtomicReferenceFieldUpdater<State, AsyncSubscription[]> SUBSCRIBERS =
-                AtomicReferenceFieldUpdater.newUpdater(State.class, AsyncSubscription[].class, "subscribers");
+        final AtomicReference<AsyncSubscription<T>[]> subscribers = new AtomicReference<AsyncSubscription<T>[]>(EMPTY);
         
         /**
          * Returns the array of current subscribers.
          * @return the array of current subscribers
          */
         public AsyncSubscription<T>[] subscribers() {
-            return subscribers;
+            return subscribers.get();
         }
 
         /**
@@ -205,7 +204,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
          */
         @SuppressWarnings("unchecked")
         public AsyncSubscription<T>[] terminate() {
-            return TerminalAtomicsHelper.terminate(SUBSCRIBERS, this, TERMINATED);
+            return TerminalAtomicsHelper.terminate(subscribers, TERMINATED);
         }
         
         /**
@@ -214,27 +213,30 @@ public final class AsyncSubject<T> extends Subject<T, T> {
          * @param as the AsyncSubscription to add
          * @return true if successful, false if the state has been terminated
          */
+        @SuppressWarnings("unchecked")
         boolean add(AsyncSubscription<T> as) {
-            return TerminalAtomicsHelper.add(SUBSCRIBERS, this, as, TERMINATED, this);
+            return TerminalAtomicsHelper.add(subscribers, as, TERMINATED, this);
         }
         
         /**
          * Atomically removes the given AsyncSubscription.
          * @param as the AsyncSubscription to remove
          */
+        @SuppressWarnings("unchecked")
         void remove(AsyncSubscription<T> as) {
-            TerminalAtomicsHelper.remove(SUBSCRIBERS, this, as, TERMINATED, EMPTY, this);
+            TerminalAtomicsHelper.remove(subscribers, as, TERMINATED, EMPTY, this);
         }
         
+        @SuppressWarnings("unchecked")
         @Override
-        public AsyncSubscription[] apply(int value) {
+        public AsyncSubscription<T>[] apply(int value) {
             return new AsyncSubscription[value];
         }
         
         @Override
         @SuppressWarnings("unchecked")
         public void subscribe(Subscriber<? super T> t) {
-            AsyncSubscription<T> as = new AsyncSubscription<>(t, this);
+            AsyncSubscription<T> as = new AsyncSubscription<T>(t, this);
             t.onSubscribe(as);
             
             if (add(as)) {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,13 +17,12 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.function.Function;
-
 import org.junit.*;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -136,7 +135,7 @@ public class OperatorOnErrorResumeNextViaObservableTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        TestSubscriber<String> ts = new TestSubscriber<>(observer, Long.MAX_VALUE);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer, Long.MAX_VALUE);
         observable.subscribe(ts);
 
         ts.awaitTerminalEvent();
@@ -190,7 +189,7 @@ public class OperatorOnErrorResumeNextViaObservableTest {
     
     @Test
     public void testBackpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(0, 100000)
                 .onErrorResumeNext(Observable.just(1))
                 .observeOn(Schedulers.computation())

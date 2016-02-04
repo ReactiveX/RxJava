@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -12,11 +12,10 @@
  */
 package io.reactivex.internal.operators;
 
-import java.util.function.*;
-
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.subscriptions.*;
@@ -47,7 +46,7 @@ public final class OperatorScanSeed<T, R> implements Operator<R, T> {
             return EmptySubscriber.INSTANCE;
         }
         
-        return new ScanSeedSubscriber<>(t, accumulator, r);
+        return new ScanSeedSubscriber<T, R>(t, accumulator, r);
     }
     
     static final class ScanSeedSubscriber<T, R> extends QueueDrainSubscriber<T, R, R> implements Subscription {
@@ -58,7 +57,7 @@ public final class OperatorScanSeed<T, R> implements Operator<R, T> {
         Subscription s;
         
         public ScanSeedSubscriber(Subscriber<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value) {
-            super(actual, new SpscArrayQueue<>(2));
+            super(actual, new SpscArrayQueue<R>(2));
             this.accumulator = accumulator;
             this.value = value;
             queue.offer(value);

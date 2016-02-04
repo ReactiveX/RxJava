@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -30,8 +30,8 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> t) {
-        NbpSerializedSubscriber<T> serial = new NbpSerializedSubscriber<>(t);
-        return new SamplePublisherSubscriber<>(serial, other);
+        NbpSerializedSubscriber<T> serial = new NbpSerializedSubscriber<T>(t);
+        return new SamplePublisherSubscriber<T>(serial, other);
     }
     
     static final class SamplePublisherSubscriber<T> extends AtomicReference<T> 
@@ -42,12 +42,12 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
         final NbpSubscriber<? super T> actual;
         final NbpObservable<?> sampler;
         
-        volatile Disposable other;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<SamplePublisherSubscriber, Disposable> OTHER =
-                AtomicReferenceFieldUpdater.newUpdater(SamplePublisherSubscriber.class, Disposable.class, "other");
+        final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         Disposable s;
         
@@ -64,8 +64,8 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
             
             this.s = s;
             actual.onSubscribe(this);
-            if (other == null) {
-                sampler.subscribe(new SamplerSubscriber<>(this));
+            if (other.get() == null) {
+                sampler.subscribe(new SamplerSubscriber<T>(this));
             }
             
         }
@@ -88,9 +88,9 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
         }
         
         void cancelOther() {
-            Disposable o = other;
+            Disposable o = other.get();
             if (o != CANCELLED) {
-                o = OTHER.getAndSet(this, CANCELLED);
+                o = other.getAndSet(CANCELLED);
                 if (o != CANCELLED && o != null) {
                     o.dispose();
                 }
@@ -98,8 +98,8 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
         }
         
         boolean setOther(Disposable o) {
-            if (other == null) {
-                if (OTHER.compareAndSet(this, null, o)) {
+            if (other.get() == null) {
+                if (other.compareAndSet(null, o)) {
                     return true;
                 }
                 o.dispose();

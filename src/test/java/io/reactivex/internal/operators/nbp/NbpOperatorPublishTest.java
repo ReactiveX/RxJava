@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,18 +18,19 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.junit.Test;
 
-import io.reactivex.NbpObservable;
+import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
-import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.operators.nbp.NbpOperatorPublish;
 import io.reactivex.observables.nbp.NbpConnectableObservable;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
+import io.reactivex.Observable;
 
 public class NbpOperatorPublishTest {
 
@@ -90,7 +91,12 @@ public class NbpOperatorPublishTest {
     public void testBackpressureFastSlow() {
         NbpConnectableObservable<Integer> is = NbpObservable.range(1, Observable.bufferSize() * 2).publish();
         NbpObservable<Integer> fast = is.observeOn(Schedulers.computation())
-        .doOnComplete(() -> System.out.println("^^^^^^^^^^^^^ completed FAST"));
+        .doOnComplete(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("^^^^^^^^^^^^^ completed FAST");
+            }
+        });
 
         NbpObservable<Integer> slow = is.observeOn(Schedulers.computation()).map(new Function<Integer, Integer>() {
             int c = 0;
@@ -116,7 +122,7 @@ public class NbpOperatorPublishTest {
 
         });
 
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.merge(fast, slow).subscribe(ts);
         is.connect();
         ts.awaitTerminalEvent();
@@ -136,7 +142,7 @@ public class NbpOperatorPublishTest {
             }
 
         });
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         xs.publish(new Function<NbpObservable<Integer>, NbpObservable<Integer>>() {
 
             @Override
@@ -163,7 +169,7 @@ public class NbpOperatorPublishTest {
     @Test
     public void testTakeUntilWithPublishedStream() {
         NbpObservable<Integer> xs = NbpObservable.range(0, Observable.bufferSize() * 2);
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpConnectableObservable<Integer> xsp = xs.publish();
         xsp.takeUntil(xsp.skipWhile(new Predicate<Integer>() {
 
@@ -199,7 +205,7 @@ public class NbpOperatorPublishTest {
         final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
         final AtomicBoolean child2Unsubscribed = new AtomicBoolean();
 
-        final NbpTestSubscriber<Integer> ts2 = new NbpTestSubscriber<>();
+        final NbpTestSubscriber<Integer> ts2 = new NbpTestSubscriber<Integer>();
 
         final NbpTestSubscriber<Integer> ts1 = new NbpTestSubscriber<Integer>() {
             @Override
@@ -247,7 +253,7 @@ public class NbpOperatorPublishTest {
         co.connect();
         // Emit 0
         scheduler.advanceTimeBy(15, TimeUnit.MILLISECONDS);
-        NbpTestSubscriber<Long> NbpSubscriber = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Long> NbpSubscriber = new NbpTestSubscriber<Long>();
         co.subscribe(NbpSubscriber);
         // Emit 1 and 2
         scheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS);
@@ -260,7 +266,7 @@ public class NbpOperatorPublishTest {
     public void testSubscribeAfterDisconnectThenConnect() {
         NbpConnectableObservable<Integer> source = NbpObservable.just(1).publish();
 
-        NbpTestSubscriber<Integer> ts1 = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts1 = new NbpTestSubscriber<Integer>();
 
         source.subscribe(ts1);
 
@@ -270,7 +276,7 @@ public class NbpOperatorPublishTest {
         ts1.assertNoErrors();
         ts1.assertTerminated();
 
-        NbpTestSubscriber<Integer> ts2 = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts2 = new NbpTestSubscriber<Integer>();
 
         source.subscribe(ts2);
 
@@ -288,7 +294,7 @@ public class NbpOperatorPublishTest {
     public void testNoSubscriberRetentionOnCompleted() {
         NbpOperatorPublish<Integer> source = (NbpOperatorPublish<Integer>)NbpObservable.just(1).publish();
 
-        NbpTestSubscriber<Integer> ts1 = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts1 = new NbpTestSubscriber<Integer>();
 
         source.unsafeSubscribe(ts1);
 
@@ -369,9 +375,9 @@ public class NbpOperatorPublishTest {
         NbpObservable<Integer> obs = co.observeOn(Schedulers.computation());
         for (int i = 0; i < 1000; i++) {
             for (int j = 1; j < 6; j++) {
-                List<NbpTestSubscriber<Integer>> tss = new ArrayList<>();
+                List<NbpTestSubscriber<Integer>> tss = new ArrayList<NbpTestSubscriber<Integer>>();
                 for (int k = 1; k < j; k++) {
-                    NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+                    NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
                     tss.add(ts);
                     obs.subscribe(ts);
                 }

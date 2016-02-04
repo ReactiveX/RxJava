@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -22,8 +22,8 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
     public static <T> NbpPublishSubject<T> create() {
-        State<T> state = new State<>();
-        return new NbpPublishSubject<>(state);
+        State<T> state = new State<T>();
+        return new NbpPublishSubject<T>(state);
     }
     
     final State<T> state;
@@ -34,7 +34,9 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
     
     @Override
     public void onSubscribe(Disposable d) {
-        // NbpSubjects never cancel the disposable
+        if (state.done) {
+            d.dispose();
+        }
     }
     
     @Override
@@ -54,7 +56,7 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
     
     @Override
     public boolean hasSubscribers() {
-        return state.subscribers.length != 0;
+        return state.subscribers.get().length != 0;
     }
     
     @Override
@@ -99,25 +101,23 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
         /** */
         private static final long serialVersionUID = 4876574210612691772L;
 
-        volatile NbpSubscriber<? super T>[] subscribers;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<State, NbpSubscriber[]> SUBSCRIBERS =
-                AtomicReferenceFieldUpdater.newUpdater(State.class, NbpSubscriber[].class, "subscribers");
+        final AtomicReference<NbpSubscriber<? super T>[]> subscribers = new AtomicReference<NbpSubscriber<? super T>[]>();
         
         @SuppressWarnings("rawtypes")
         static final NbpSubscriber[] EMPTY = new NbpSubscriber[0];
         @SuppressWarnings("rawtypes")
         static final NbpSubscriber[] TERMINATED = new NbpSubscriber[0];
 
-        boolean done;
+        volatile boolean done;
         
+        @SuppressWarnings("unchecked")
         public State() {
-            SUBSCRIBERS.lazySet(this, EMPTY);
+            subscribers.lazySet(EMPTY);
         }
         
         boolean add(NbpSubscriber<? super T> s) {
             for (;;) {
-                NbpSubscriber<? super T>[] a = subscribers;
+                NbpSubscriber<? super T>[] a = subscribers.get();
                 if (a == TERMINATED) {
                     return false;
                 }
@@ -128,7 +128,7 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = s;
                 
-                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return true;
                 }
             }
@@ -137,7 +137,7 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
         @SuppressWarnings("unchecked")
         void remove(NbpSubscriber<? super T> s) {
             for (;;) {
-                NbpSubscriber<? super T>[] a = subscribers;
+                NbpSubscriber<? super T>[] a = subscribers.get();
                 if (a == TERMINATED || a == EMPTY) {
                     return;
                 }
@@ -161,7 +161,7 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
                     System.arraycopy(a, 0, b, 0, j);
                     System.arraycopy(a, j + 1, b, j, n - j - 1);
                 }
-                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return;
                 }
             }
@@ -170,9 +170,9 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
         @SuppressWarnings("unchecked")
         NbpSubscriber<? super T>[] terminate(Object notification) {
             if (compareAndSet(null, notification)) {
-                NbpSubscriber<? super T>[] a = subscribers;
+                NbpSubscriber<? super T>[] a = subscribers.get();
                 if (a != TERMINATED) {
-                    return SUBSCRIBERS.getAndSet(this, TERMINATED);
+                    return subscribers.getAndSet(TERMINATED);
                 }
             }
             return TERMINATED;
@@ -187,14 +187,19 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
         }
         
         @Override
-        public void accept(NbpSubscriber<? super T> t) {
+        public void accept(final NbpSubscriber<? super T> t) {
             Object v = get();
             if (v != null) {
                 t.onSubscribe(EmptyDisposable.INSTANCE);
                 emit(t, v);
                 return;
             }
-            BooleanDisposable bd = new BooleanDisposable(() -> remove(t));
+            BooleanDisposable bd = new BooleanDisposable(new Runnable() {
+                @Override
+                public void run() {
+                    remove(t);
+                }
+            });
             t.onSubscribe(bd);
             if (add(t)) {
                 if (bd.isDisposed()) {
@@ -218,7 +223,11 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
             if (done) {
                 return;
             }
-            for (NbpSubscriber<? super T> v : subscribers) {
+            if (value == null) {
+                onError(new NullPointerException("The value is null"));
+                return;
+            }
+            for (NbpSubscriber<? super T> v : subscribers.get()) {
                 v.onNext(value);
             }
         }
@@ -230,6 +239,10 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
                 return;
             }
             done = true;
+            if (e == null) {
+                e = new NullPointerException();
+            }
+
             for (NbpSubscriber<? super T> v : terminate(NotificationLite.error(e))) {
                 v.onError(e);
             }

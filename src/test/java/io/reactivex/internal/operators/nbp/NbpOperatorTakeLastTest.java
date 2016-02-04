@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,13 +18,13 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
@@ -103,7 +103,7 @@ public class NbpOperatorTakeLastTest {
 
     @Test
     public void testBackpressure1() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.range(1, 100000).takeLast(1)
         .observeOn(Schedulers.newThread())
         .map(newSlowProcessor()).subscribe(ts);
@@ -114,7 +114,7 @@ public class NbpOperatorTakeLastTest {
 
     @Test
     public void testBackpressure2() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.range(1, 100000).takeLast(Observable.bufferSize() * 4)
         .observeOn(Schedulers.newThread()).map(newSlowProcessor()).subscribe(ts);
         ts.awaitTerminalEvent();
@@ -146,7 +146,12 @@ public class NbpOperatorTakeLastTest {
         assertEquals(0, NbpObservable
                 .empty()
                 .count()
-                .filter(v -> false)
+                .filter(new Predicate<Long>() {
+                    @Override
+                    public boolean test(Long v) {
+                        return false;
+                    }
+                })
                 .toList()
                 .toBlocking().single().size());
     }

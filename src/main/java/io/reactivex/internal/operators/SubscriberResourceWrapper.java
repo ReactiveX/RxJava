@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,11 +14,11 @@
 package io.reactivex.internal.operators;
 
 import java.util.concurrent.atomic.*;
-import java.util.function.Consumer;
 
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -29,10 +29,7 @@ public final class SubscriberResourceWrapper<T, R> extends AtomicReference<Objec
     final Subscriber<? super T> actual;
     final Consumer<? super R> disposer;
     
-    volatile Subscription subscription;
-    @SuppressWarnings("rawtypes")
-    static final AtomicReferenceFieldUpdater<SubscriberResourceWrapper, Subscription> SUBSCRIPTION =
-            AtomicReferenceFieldUpdater.newUpdater(SubscriberResourceWrapper.class, Subscription.class, "subscription");
+    final AtomicReference<Subscription> subscription = new AtomicReference<Subscription>();
     
     static final Subscription TERMINATED = new Subscription() {
         @Override
@@ -56,7 +53,7 @@ public final class SubscriberResourceWrapper<T, R> extends AtomicReference<Objec
     @Override
     public void onSubscribe(Subscription s) {
         for (;;) {
-            Subscription current = subscription;
+            Subscription current = subscription.get();
             if (current == TERMINATED) {
                 s.cancel();
                 return;
@@ -66,7 +63,7 @@ public final class SubscriberResourceWrapper<T, R> extends AtomicReference<Objec
                 SubscriptionHelper.reportSubscriptionSet();
                 return;
             }
-            if (SUBSCRIPTION.compareAndSet(this, null, s)) {
+            if (subscription.compareAndSet(null, s)) {
                 actual.onSubscribe(this);
                 return;
             }
@@ -95,15 +92,15 @@ public final class SubscriberResourceWrapper<T, R> extends AtomicReference<Objec
         if (SubscriptionHelper.validateRequest(n)) {
             return;
         }
-        subscription.request(n);
+        subscription.get().request(n);
     }
     
     @Override
     @SuppressWarnings("unchecked")
     public void dispose() {
-        Subscription s = subscription;
+        Subscription s = subscription.get();
         if (s != TERMINATED) {
-            s = SUBSCRIPTION.getAndSet(this, TERMINATED);
+            s = subscription.getAndSet(TERMINATED);
             if (s != TERMINATED && s != null) {
                 s.cancel();
             }

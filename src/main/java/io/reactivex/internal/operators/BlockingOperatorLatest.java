@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,12 +15,13 @@ package io.reactivex.internal.operators;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.Optional;
 import io.reactivex.internal.subscribers.DisposableSubscriber;
 import io.reactivex.internal.util.Exceptions;
 
@@ -35,6 +36,7 @@ public enum BlockingOperatorLatest {
      * Returns an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
      * been returned by the {@code Iterable}, then returns that item
      *
+     * @param <T> the value type
      * @param source
      *            the source {@code Observable}
      * @return an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
@@ -44,7 +46,7 @@ public enum BlockingOperatorLatest {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
-                LatestObserverIterator<T> lio = new LatestObserverIterator<>();
+                LatestObserverIterator<T> lio = new LatestObserverIterator<T>();
                 Observable.<T>fromPublisher(source).materialize().subscribe(lio);
                 return lio;
             }
@@ -55,15 +57,11 @@ public enum BlockingOperatorLatest {
     static final class LatestObserverIterator<T> extends DisposableSubscriber<Try<Optional<T>>> implements Iterator<T> {
         final Semaphore notify = new Semaphore(0);
         // observer's notification
-        volatile Try<Optional<T>> value;
-        /** Updater for the value field. */
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<LatestObserverIterator, Try> REFERENCE_UPDATER
-                = AtomicReferenceFieldUpdater.newUpdater(LatestObserverIterator.class, Try.class, "value");
+        final AtomicReference<Try<Optional<T>>> value = new AtomicReference<Try<Optional<T>>>();
 
         @Override
         public void onNext(Try<Optional<T>> args) {
-            boolean wasntAvailable = REFERENCE_UPDATER.getAndSet(this, args) == null;
+            boolean wasntAvailable = value.getAndSet(args) == null;
             if (wasntAvailable) {
                 notify.release();
             }
@@ -98,8 +96,7 @@ public enum BlockingOperatorLatest {
                         throw Exceptions.propagate(ex);
                     }
 
-                    @SuppressWarnings("unchecked")
-                    Try<Optional<T>> n = REFERENCE_UPDATER.getAndSet(this, null);
+                    Try<Optional<T>> n = value.getAndSet(null);
                     iNotif = n;
                     if (iNotif.hasError()) {
                         throw Exceptions.propagate(iNotif.error());

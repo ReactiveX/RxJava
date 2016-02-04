@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,11 +14,11 @@
 package io.reactivex.internal.subscribers.nbp;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.util.NbpQueueDrain;
+import io.reactivex.internal.util.*;
 
 /**
  * Abstract base class for subscribers that hold another subscriber, a queue
@@ -54,18 +54,18 @@ public abstract class NbpQueueDrainSubscriber<T, U, V> extends QueueDrainSubscri
     
     @Override
     public final boolean enter() {
-        return WIP.getAndIncrement(this) == 0;
+        return wip.getAndIncrement() == 0;
     }
     
     public final boolean fastEnter() {
-        return wip == 0 && WIP.compareAndSet(this, 0, 1);
+        return wip.get() == 0 && wip.compareAndSet(0, 1);
     }
     
     protected final void fastpathEmit(U value, boolean delayError, Disposable dispose) {
         final NbpSubscriber<? super V> s = actual;
         final Queue<U> q = queue;
         
-        if (wip == 0 && WIP.compareAndSet(this, 0, 1)) {
+        if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             accept(s, value);
             if (leave(-1) == 0) {
                 return;
@@ -76,7 +76,7 @@ public abstract class NbpQueueDrainSubscriber<T, U, V> extends QueueDrainSubscri
                 return;
             }
         }
-        drainLoop(q, s, delayError, dispose);
+        QueueDrainHelper.drainLoop(q, s, delayError, dispose, this);
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class NbpQueueDrainSubscriber<T, U, V> extends QueueDrainSubscri
         final NbpSubscriber<? super V> s = actual;
         final Queue<U> q = queue;
         
-        if (wip == 0 && WIP.compareAndSet(this, 0, 1)) {
+        if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             if (q.isEmpty()) {
                 accept(s, value);
                 if (leave(-1) == 0) {
@@ -103,7 +103,7 @@ public abstract class NbpQueueDrainSubscriber<T, U, V> extends QueueDrainSubscri
                 return;
             }
         }
-        drainLoop(q, s, delayError, disposable);
+        QueueDrainHelper.drainLoop(q, s, delayError, disposable, this);
     }
 
     @Override
@@ -113,12 +113,12 @@ public abstract class NbpQueueDrainSubscriber<T, U, V> extends QueueDrainSubscri
     
     @Override
     public final int leave(int m) {
-        return WIP.addAndGet(this, m);
+        return wip.addAndGet(m);
     }
     
     public void drain(boolean delayError, Disposable dispose) {
         if (enter()) {
-            drainLoop(queue, actual, delayError, dispose);
+            QueueDrainHelper.drainLoop(queue, actual, delayError, dispose, this);
         }
     }
 }
@@ -133,11 +133,9 @@ class QueueDrainSubscriberPad0 {
     volatile long p8, p9, p10, p11, p12, p13, p14, p15;
 }
 
-/** The WIP counter. */
+/** The wip counter. */
 class QueueDrainSubscriberWip extends QueueDrainSubscriberPad0 {
-    volatile int wip;
-    static final AtomicIntegerFieldUpdater<QueueDrainSubscriberWip> WIP =
-            AtomicIntegerFieldUpdater.newUpdater(QueueDrainSubscriberWip.class, "wip");
+    final AtomicInteger wip = new AtomicInteger();
 }
 
 /** Pads away the wip from the other fields. */

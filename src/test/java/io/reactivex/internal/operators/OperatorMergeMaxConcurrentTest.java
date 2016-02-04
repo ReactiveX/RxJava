@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -41,14 +41,14 @@ public class OperatorMergeMaxConcurrentTest {
     @Test
     public void testWhenMaxConcurrentIsOne() {
         for (int i = 0; i < 100; i++) {
-            List<Observable<String>> os = new ArrayList<>();
+            List<Observable<String>> os = new ArrayList<Observable<String>>();
             os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
             os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
             os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
 
             List<String> expected = Arrays.asList("one", "two", "three", "four", "five", "one", "two", "three", "four", "five", "one", "two", "three", "four", "five");
             Iterator<String> iter = Observable.merge(os, 1).toBlocking().iterator();
-            List<String> actual = new ArrayList<>();
+            List<String> actual = new ArrayList<String>();
             while (iter.hasNext()) {
                 actual.add(iter.next());
             }
@@ -64,8 +64,8 @@ public class OperatorMergeMaxConcurrentTest {
             int maxConcurrent = 2 + (times % 10);
             AtomicInteger subscriptionCount = new AtomicInteger(0);
 
-            List<Observable<String>> os = new ArrayList<>();
-            List<SubscriptionCheckObservable> scos = new ArrayList<>();
+            List<Observable<String>> os = new ArrayList<Observable<String>>();
+            List<SubscriptionCheckObservable> scos = new ArrayList<SubscriptionCheckObservable>();
             for (int i = 0; i < observableCount; i++) {
                 SubscriptionCheckObservable sco = new SubscriptionCheckObservable(subscriptionCount, maxConcurrent);
                 scos.add(sco);
@@ -73,7 +73,7 @@ public class OperatorMergeMaxConcurrentTest {
             }
 
             Iterator<String> iter = Observable.merge(os, maxConcurrent).toBlocking().iterator();
-            List<String> actual = new ArrayList<>();
+            List<String> actual = new ArrayList<String>();
             while (iter.hasNext()) {
                 actual.add(iter.next());
             }
@@ -125,7 +125,7 @@ public class OperatorMergeMaxConcurrentTest {
     @Test
     public void testMergeALotOfSourcesOneByOneSynchronously() {
         int n = 10000;
-        List<Observable<Integer>> sourceList = new ArrayList<>(n);
+        List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(n);
         for (int i = 0; i < n; i++) {
             sourceList.add(Observable.just(i));
         }
@@ -140,7 +140,7 @@ public class OperatorMergeMaxConcurrentTest {
     @Test
     public void testMergeALotOfSourcesOneByOneSynchronouslyTakeHalf() {
         int n = 10000;
-        List<Observable<Integer>> sourceList = new ArrayList<>(n);
+        List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(n);
         for (int i = 0; i < n; i++) {
             sourceList.add(Observable.just(i));
         }
@@ -156,9 +156,9 @@ public class OperatorMergeMaxConcurrentTest {
     @Test
     public void testSimple() {
         for (int i = 1; i < 100; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<>();
-            List<Observable<Integer>> sourceList = new ArrayList<>(i);
-            List<Integer> result = new ArrayList<>(i);
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
+            List<Integer> result = new ArrayList<Integer>(i);
             for (int j = 1; j <= i; j++) {
                 sourceList.add(Observable.just(j));
                 result.add(j);
@@ -174,9 +174,9 @@ public class OperatorMergeMaxConcurrentTest {
     @Test
     public void testSimpleOneLess() {
         for (int i = 2; i < 100; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<>();
-            List<Observable<Integer>> sourceList = new ArrayList<>(i);
-            List<Integer> result = new ArrayList<>(i);
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
+            List<Integer> result = new ArrayList<Integer>(i);
             for (int j = 1; j <= i; j++) {
                 sourceList.add(Observable.just(j));
                 result.add(j);
@@ -204,9 +204,9 @@ public class OperatorMergeMaxConcurrentTest {
     @Test(timeout = 10000)
     public void testSimpleAsync() {
         for (int i = 1; i < 50; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<>();
-            List<Observable<Integer>> sourceList = new ArrayList<>(i);
-            Set<Integer> expected = new HashSet<>(i);
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
+            Set<Integer> expected = new HashSet<Integer>(i);
             for (int j = 1; j <= i; j++) {
                 sourceList.add(Observable.just(j).subscribeOn(Schedulers.io()));
                 expected.add(j);
@@ -216,7 +216,7 @@ public class OperatorMergeMaxConcurrentTest {
         
             ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
             ts.assertNoErrors();
-            Set<Integer> actual = new HashSet<>(ts.values());
+            Set<Integer> actual = new HashSet<Integer>(ts.values());
             
             assertEquals(expected, actual);
         }
@@ -234,9 +234,9 @@ public class OperatorMergeMaxConcurrentTest {
             if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
                 break;
             }
-            TestSubscriber<Integer> ts = new TestSubscriber<>();
-            List<Observable<Integer>> sourceList = new ArrayList<>(i);
-            Set<Integer> expected = new HashSet<>(i);
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
+            Set<Integer> expected = new HashSet<Integer>(i);
             for (int j = 1; j <= i; j++) {
                 sourceList.add(Observable.just(j).subscribeOn(Schedulers.io()));
                 expected.add(j);
@@ -246,14 +246,14 @@ public class OperatorMergeMaxConcurrentTest {
         
             ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
             ts.assertNoErrors();
-            Set<Integer> actual = new HashSet<>(ts.values());
+            Set<Integer> actual = new HashSet<Integer>(ts.values());
             
             assertEquals(expected, actual);
         }
     }
     @Test(timeout = 5000)
     public void testBackpressureHonored() throws Exception {
-        List<Observable<Integer>> sourceList = new ArrayList<>(3);
+        List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(3);
         
         sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
         sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
@@ -283,13 +283,13 @@ public class OperatorMergeMaxConcurrentTest {
     }
     @Test(timeout = 5000)
     public void testTake() throws Exception {
-        List<Observable<Integer>> sourceList = new ArrayList<>(3);
+        List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(3);
         
         sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
         sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
         sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
         
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         Observable.merge(sourceList, 2).take(5).subscribe(ts);
         

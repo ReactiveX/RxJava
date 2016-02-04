@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,9 +19,10 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.functions.*;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorAnyTest {
@@ -29,7 +30,12 @@ public class OperatorAnyTest {
     @Test
     public void testAnyWithTwoItems() {
         Observable<Integer> w = Observable.just(1, 2);
-        Observable<Boolean> observable = w.any(v -> true);
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        });
 
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
         
@@ -59,7 +65,12 @@ public class OperatorAnyTest {
     @Test
     public void testAnyWithOneItem() {
         Observable<Integer> w = Observable.just(1);
-        Observable<Boolean> observable = w.any(v -> true);
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        });
 
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
@@ -89,7 +100,12 @@ public class OperatorAnyTest {
     @Test
     public void testAnyWithEmpty() {
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> observable = w.any(v -> true);
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        });
 
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
@@ -119,7 +135,12 @@ public class OperatorAnyTest {
     @Test
     public void testAnyWithPredicate1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Boolean> observable = w.any(t1 -> t1 < 2);
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t1) {
+                return t1 < 2;
+            }
+        });
 
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
@@ -134,7 +155,12 @@ public class OperatorAnyTest {
     @Test
     public void testExists1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Boolean> observable = w.any(t1 -> t1 < 2);
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t1) {
+                return t1 < 2;
+            }
+        });
 
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
@@ -149,7 +175,12 @@ public class OperatorAnyTest {
     @Test
     public void testAnyWithPredicate2() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Boolean> observable = w.any(t1 -> t1 < 1);
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t1) {
+                return t1 < 1;
+            }
+        });
 
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
@@ -165,7 +196,12 @@ public class OperatorAnyTest {
     public void testAnyWithEmptyAndPredicate() {
         // If the source is empty, always output false.
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> observable = w.any(t -> true);
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t) {
+                return true;
+            }
+        });
 
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
@@ -180,23 +216,38 @@ public class OperatorAnyTest {
     @Test
     public void testWithFollowingFirst() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
-        Observable<Boolean> anyEven = o.any(i -> i % 2 == 0);
+        Observable<Boolean> anyEven = o.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer i) {
+                return i % 2 == 0;
+            }
+        });
         
         assertTrue(anyEven.toBlocking().first());
     }
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.just(1).isEmpty()
-            .flatMap(t1 -> Observable.just(2).delay(500, TimeUnit.MILLISECONDS));
+            .flatMap(new Function<Boolean, Publisher<Integer>>() {
+                @Override
+                public Publisher<Integer> apply(Boolean t1) {
+                    return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
+                }
+            });
         
         assertEquals((Object)2, source.toBlocking().first());
     }
     
     @Test
     public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
-        TestSubscriber<Boolean> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>((Long)null);
         
-        Observable.just(1).any(t -> true)
+        Observable.just(1).any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t) {
+                return true;
+            }
+        })
         .subscribe(ts);
         
         ts.assertNoValues();
@@ -206,8 +257,13 @@ public class OperatorAnyTest {
     
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
-        TestSubscriber<Boolean> ts = new TestSubscriber<>(1L);
-        Observable.just(1).any(v -> true).subscribe(ts);
+        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(1L);
+        Observable.just(1).any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        }).subscribe(ts);
         
         ts.assertTerminated();
         ts.assertNoErrors();
@@ -217,11 +273,14 @@ public class OperatorAnyTest {
     
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
-        TestSubscriber<Boolean> ts = new TestSubscriber<>();
+        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
         
-        Observable.just("Boo!").any(v -> {
-            throw ex;
+        Observable.just("Boo!").any(new Predicate<String>() {
+            @Override
+            public boolean test(String v) {
+                throw ex;
+            }
         }).subscribe(ts);
         
         ts.assertTerminated();

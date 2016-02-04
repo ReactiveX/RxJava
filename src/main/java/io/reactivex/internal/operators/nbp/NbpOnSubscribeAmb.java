@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -59,7 +59,7 @@ public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
             return;
         }
 
-        AmbCoordinator<T> ac = new AmbCoordinator<>(s, count);
+        AmbCoordinator<T> ac = new AmbCoordinator<T>(s, count);
         ac.subscribe(sources);
     }
     
@@ -67,10 +67,7 @@ public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
         final NbpSubscriber<? super T> actual;
         final AmbInnerSubscriber<T>[] subscribers;
         
-        volatile int winner;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<AmbCoordinator> WINNER =
-                AtomicIntegerFieldUpdater.newUpdater(AmbCoordinator.class, "winner");
+        final AtomicInteger winner = new AtomicInteger();
         
         @SuppressWarnings("unchecked")
         public AmbCoordinator(NbpSubscriber<? super T> actual, int count) {
@@ -82,13 +79,13 @@ public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
             AmbInnerSubscriber<T>[] as = subscribers;
             int len = as.length;
             for (int i = 0; i < len; i++) {
-                as[i] = new AmbInnerSubscriber<>(this, i + 1, actual);
+                as[i] = new AmbInnerSubscriber<T>(this, i + 1, actual);
             }
-            WINNER.lazySet(this, 0); // release the contents of 'as'
+            winner.lazySet(0); // release the contents of 'as'
             actual.onSubscribe(this);
             
             for (int i = 0; i < len; i++) {
-                if (winner != 0) {
+                if (winner.get() != 0) {
                     return;
                 }
                 
@@ -97,9 +94,16 @@ public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
         }
         
         public boolean win(int index) {
-            int w = winner;
+            int w = winner.get();
             if (w == 0) {
-                if (WINNER.compareAndSet(this, 0, index)) {
+                if (winner.compareAndSet(0, index)) {
+                    AmbInnerSubscriber<T>[] a = subscribers;
+                    int n = a.length;
+                    for (int i = 0; i < n; i++) {
+                        if (i + 1 != index) {
+                            a[i].dispose();
+                        }
+                    }
                     return true;
                 }
                 return false;
@@ -109,8 +113,8 @@ public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
         
         @Override
         public void dispose() {
-            if (winner != -1) {
-                WINNER.lazySet(this, -1);
+            if (winner.get() != -1) {
+                winner.lazySet(-1);
                 
                 for (AmbInnerSubscriber<T> a : subscribers) {
                     a.dispose();
@@ -128,7 +132,10 @@ public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
         
         boolean won;
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         public AmbInnerSubscriber(AmbCoordinator<T> parent, int index, NbpSubscriber<? super T> actual) {
             this.parent = parent;

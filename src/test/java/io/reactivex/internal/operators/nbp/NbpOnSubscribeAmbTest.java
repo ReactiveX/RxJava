@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,13 +13,12 @@
 
 package io.reactivex.internal.operators.nbp;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -27,7 +26,9 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.*;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.*;
+import io.reactivex.subjects.nbp.NbpPublishSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
 public class NbpOnSubscribeAmbTest {
@@ -53,17 +54,24 @@ public class NbpOnSubscribeAmbTest {
                 
                 long delay = interval;
                 for (final String value : values) {
-                    parentSubscription.add(innerScheduler.schedule(() ->
-                            NbpSubscriber.onNext(value)
+                    parentSubscription.add(innerScheduler.schedule(new Runnable() {
+                        @Override
+                        public void run() {
+                            NbpSubscriber.onNext(value);
+                        }
+                    }
                     , delay, TimeUnit.MILLISECONDS));
                     delay += interval;
                 }
-                parentSubscription.add(innerScheduler.schedule(() -> {
-                        if (e == null) {
-                            NbpSubscriber.onComplete();
-                        } else {
-                            NbpSubscriber.onError(e);
-                        }
+                parentSubscription.add(innerScheduler.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                            if (e == null) {
+                                NbpSubscriber.onComplete();
+                            } else {
+                                NbpSubscriber.onError(e);
+                            }
+                    }
                 }, delay, TimeUnit.MILLISECONDS));
             }
         });
@@ -78,6 +86,7 @@ public class NbpOnSubscribeAmbTest {
         NbpObservable<String> observable3 = createObservable(new String[] {
                 "3", "33", "333", "3333" }, 3000, null);
 
+        @SuppressWarnings("unchecked")
         NbpObservable<String> o = NbpObservable.amb(observable1,
                 observable2, observable3);
 
@@ -106,6 +115,7 @@ public class NbpOnSubscribeAmbTest {
         NbpObservable<String> observable3 = createObservable(new String[] {},
                 3000, new IOException("fake exception"));
 
+        @SuppressWarnings("unchecked")
         NbpObservable<String> o = NbpObservable.amb(observable1,
                 observable2, observable3);
 
@@ -132,6 +142,7 @@ public class NbpOnSubscribeAmbTest {
         NbpObservable<String> observable3 = createObservable(new String[] {
                 "3" }, 3000, null);
 
+        @SuppressWarnings("unchecked")
         NbpObservable<String> o = NbpObservable.amb(observable1,
                 observable2, observable3);
 
@@ -144,10 +155,16 @@ public class NbpOnSubscribeAmbTest {
         inOrder.verifyNoMoreInteractions();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testSubscriptionOnlyHappensOnce() throws InterruptedException {
         final AtomicLong count = new AtomicLong();
-        Consumer<Disposable> incrementer = s -> count.incrementAndGet();
+        Consumer<Disposable> incrementer = new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable s) {
+                count.incrementAndGet();
+            }
+        };
         
         //this aync stream should emit first
         NbpObservable<Integer> o1 = NbpObservable.just(1).doOnSubscribe(incrementer)
@@ -155,7 +172,7 @@ public class NbpOnSubscribeAmbTest {
         //this stream emits second
         NbpObservable<Integer> o2 = NbpObservable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.amb(o1, o2).subscribe(ts);
         ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -169,14 +186,39 @@ public class NbpOnSubscribeAmbTest {
         // then second NbpObservable does not get subscribed to before first
         // subscription completes hence first NbpObservable emits result through
         // amb
-        int result = NbpObservable.just(1).doOnNext(t -> {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    //
-                }
+        int result = NbpObservable.just(1).doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer t) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        //
+                    }
+            }
         }).ambWith(NbpObservable.just(2)).toBlocking().single();
         assertEquals(1, result);
     }
-    
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testAmbCancelsOthers() {
+        NbpPublishSubject<Integer> source1 = NbpPublishSubject.create();
+        NbpPublishSubject<Integer> source2 = NbpPublishSubject.create();
+        NbpPublishSubject<Integer> source3 = NbpPublishSubject.create();
+        
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
+        
+        NbpObservable.amb(source1, source2, source3).subscribe(ts);
+        
+        assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
+        assertTrue("Source 2 doesn't have subscribers!", source2.hasSubscribers());
+        assertTrue("Source 3 doesn't have subscribers!", source3.hasSubscribers());
+        
+        source1.onNext(1);
+
+        assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
+        assertFalse("Source 2 still has subscribers!", source2.hasSubscribers());
+        assertFalse("Source 2 still has subscribers!", source3.hasSubscribers());
+        
+    }
 }

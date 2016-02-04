@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -32,7 +32,7 @@ public class OperatorUnsubscribeOnTest {
         UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
-            final AtomicReference<Thread> subscribeThread = new AtomicReference<>();
+            final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
             Observable<Integer> w = Observable.create(new Publisher<Integer>() {
 
                 @Override
@@ -45,7 +45,7 @@ public class OperatorUnsubscribeOnTest {
                 }
             });
 
-            TestSubscriber<Integer> observer = new TestSubscriber<>();
+            TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
             w.subscribeOn(UI_EVENT_LOOP).observeOn(Schedulers.computation()).unsubscribeOn(UI_EVENT_LOOP).subscribe(observer);
 
             observer.awaitTerminalEvent(1, TimeUnit.SECONDS);
@@ -76,7 +76,7 @@ public class OperatorUnsubscribeOnTest {
         UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
-            final AtomicReference<Thread> subscribeThread = new AtomicReference<>();
+            final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
             Observable<Integer> w = Observable.create(new Publisher<Integer>() {
 
                 @Override
@@ -89,7 +89,7 @@ public class OperatorUnsubscribeOnTest {
                 }
             });
 
-            TestSubscriber<Integer> observer = new TestSubscriber<>();
+            TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
             w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation()).unsubscribeOn(UI_EVENT_LOOP).subscribe(observer);
 
             observer.awaitTerminalEvent(1, TimeUnit.SECONDS);

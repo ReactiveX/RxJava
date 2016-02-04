@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.util;
 
-import java.util.function.*;
+import io.reactivex.functions.*;
 
 /**
  * A linked-array-list implementation that only supports appending and consumption.

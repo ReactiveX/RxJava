@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,9 +17,6 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 
-/**
- * 
- */
 public final class OperatorSkip<T> implements Operator<T, T> {
     final long n;
     public OperatorSkip(long n) {
@@ -28,7 +25,7 @@ public final class OperatorSkip<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> s) {
-        return new SkipSubscriber<>(s, n);
+        return new SkipSubscriber<T>(s, n);
     }
     
     static final class SkipSubscriber<T> implements Subscriber<T> {

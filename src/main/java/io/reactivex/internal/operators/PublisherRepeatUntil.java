@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,10 +14,10 @@
 package io.reactivex.internal.operators;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BooleanSupplier;
 
 import org.reactivestreams.*;
 
+import io.reactivex.functions.BooleanSupplier;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
 public final class PublisherRepeatUntil<T> implements Publisher<T> {
@@ -33,7 +33,7 @@ public final class PublisherRepeatUntil<T> implements Publisher<T> {
         SubscriptionArbiter sa = new SubscriptionArbiter();
         s.onSubscribe(sa);
         
-        RepeatSubscriber<T> rs = new RepeatSubscriber<>(s, until, sa, source);
+        RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, until, sa, source);
         rs.subscribeNext();
     }
     

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,8 +18,8 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler;
+import io.reactivex.Observable.Operator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -39,8 +39,8 @@ public final class OperatorSampleTimed<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        SerializedSubscriber<T> serial = new SerializedSubscriber<>(t);
-        return new SampleTimedSubscriber<>(serial, period, unit, scheduler);
+        SerializedSubscriber<T> serial = new SerializedSubscriber<T>(t);
+        return new SampleTimedSubscriber<T>(serial, period, unit, scheduler);
     }
     
     static final class SampleTimedSubscriber<T> extends AtomicReference<T> implements Subscriber<T>, Subscription, Runnable {
@@ -52,17 +52,14 @@ public final class OperatorSampleTimed<T> implements Operator<T, T> {
         final TimeUnit unit;
         final Scheduler scheduler;
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<SampleTimedSubscriber> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(SampleTimedSubscriber.class, "requested");
+        final AtomicLong requested = new AtomicLong();
 
-        volatile Disposable timer;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<SampleTimedSubscriber, Disposable> TIMER =
-                AtomicReferenceFieldUpdater.newUpdater(SampleTimedSubscriber.class, Disposable.class, "timer");
+        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
         
-        static final Disposable DISPOSED = () -> { };
+        static final Disposable DISPOSED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         Subscription s;
         
@@ -81,9 +78,9 @@ public final class OperatorSampleTimed<T> implements Operator<T, T> {
             
             this.s = s;
             actual.onSubscribe(this);
-            if (timer == null) {
+            if (timer.get() == null) {
                 Disposable d = scheduler.schedulePeriodicallyDirect(this, period, period, unit);
-                if (!TIMER.compareAndSet(this, null, d)) {
+                if (!timer.compareAndSet(null, d)) {
                     d.dispose();
                     return;
                 }
@@ -109,9 +106,9 @@ public final class OperatorSampleTimed<T> implements Operator<T, T> {
         }
         
         void cancelTimer() {
-            Disposable d = timer;
+            Disposable d = timer.get();
             if (d != DISPOSED) {
-                d = TIMER.getAndSet(this, DISPOSED);
+                d = timer.getAndSet(DISPOSED);
                 if (d != DISPOSED && d != null) {
                     d.dispose();
                 }
@@ -124,7 +121,7 @@ public final class OperatorSampleTimed<T> implements Operator<T, T> {
                 return;
             }
             
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(requested, n);
         }
         
         @Override
@@ -137,11 +134,11 @@ public final class OperatorSampleTimed<T> implements Operator<T, T> {
         public void run() {
             T value = getAndSet(null);
             if (value != null) {
-                long r = requested;
+                long r = requested.get();
                 if (r != 0L) {
                     actual.onNext(value);
                     if (r != Long.MAX_VALUE) {
-                        REQUESTED.decrementAndGet(this);
+                        requested.decrementAndGet();
                     }
                 } else {
                     cancel();

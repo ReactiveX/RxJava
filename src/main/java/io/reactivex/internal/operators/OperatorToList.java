@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,11 +14,11 @@
 package io.reactivex.internal.operators;
 
 import java.util.*;
-import java.util.function.Supplier;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.subscribers.CancelledSubscriber;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -26,7 +26,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class OperatorToList<T, U extends Collection<? super T>> implements Operator<U, T> {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    static final OperatorToList DEFAULT = new OperatorToList(ArrayList::new);
+    static final OperatorToList DEFAULT = new OperatorToList(new Supplier() {
+        @Override
+        public Object get() {
+            return new ArrayList<Object>();
+        }
+    });
     
     @SuppressWarnings("unchecked")
     public static <T> OperatorToList<T, List<T>> defaultInstance() {
@@ -48,7 +53,7 @@ public final class OperatorToList<T, U extends Collection<? super T>> implements
             EmptySubscription.error(e, t);
             return CancelledSubscriber.INSTANCE;
         }
-        return new ToListSubscriber<>(t, coll);
+        return new ToListSubscriber<T, U>(t, coll);
     }
     
     static final class ToListSubscriber<T, U extends Collection<? super T>> implements Subscriber<T>, Subscription {

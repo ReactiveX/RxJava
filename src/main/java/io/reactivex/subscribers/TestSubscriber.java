@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,6 +20,8 @@ import org.reactivestreams.*;
 
 import io.reactivex.Notification;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.subscribers.EmptySubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -57,19 +59,12 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     private volatile boolean cancelled;
 
     /** Holds the current subscription if any. */
-    private volatile Subscription subscription;
-    /** Updater for subscription. */
-    @SuppressWarnings("rawtypes")
-    private static final AtomicReferenceFieldUpdater<TestSubscriber, Subscription> SUBSCRIPTION =
-            AtomicReferenceFieldUpdater.newUpdater(TestSubscriber.class, Subscription.class, "subscription");
+    private final AtomicReference<Subscription> subscription = new AtomicReference<Subscription>();
     
     /** Holds the requested amount until a subscription arrives. */
-    @SuppressWarnings("unused")
-    private volatile long missedRequested;
-    /** Updater for subscription. */
-    @SuppressWarnings("rawtypes")
-    private static final AtomicLongFieldUpdater<TestSubscriber> MISSED_REQUESTED =
-            AtomicLongFieldUpdater.newUpdater(TestSubscriber.class, "missedRequested");
+    private final AtomicLong missedRequested = new AtomicLong();
+    
+    private boolean checkSubscriptionOnce;
     
     /** Indicates a cancelled subscription. */
     private static final Subscription CANCELLED = new Subscription() {
@@ -118,8 +113,8 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public TestSubscriber(Subscriber<? super T> actual, Long initialRequest) {
         this.actual = actual;
         this.initialRequest = initialRequest;
-        this.values = new ArrayList<>();
-        this.errors = new ArrayList<>();
+        this.values = new ArrayList<T>();
+        this.errors = new ArrayList<Throwable>();
         this.done = new CountDownLatch(1);
     }
     
@@ -131,10 +126,10 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
             errors.add(new NullPointerException("onSubscribe received a null Subscription"));
             return;
         }
-        if (!SUBSCRIPTION.compareAndSet(this, null, s)) {
+        if (!subscription.compareAndSet(null, s)) {
             s.cancel();
-            if (subscription != CANCELLED) {
-                errors.add(new NullPointerException("onSubscribe received multiple subscriptions: " + s));
+            if (subscription.get() != CANCELLED) {
+                errors.add(new IllegalStateException("onSubscribe received multiple subscriptions: " + s));
             }
             return;
         }
@@ -153,7 +148,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
             s.request(initialRequest);
         }
         
-        long mr = MISSED_REQUESTED.getAndSet(this, 0L);
+        long mr = missedRequested.getAndSet(0L);
         if (mr != 0L) {
             s.request(mr);
         }
@@ -161,6 +156,12 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     @Override
     public void onNext(T t) {
+        if (!checkSubscriptionOnce) {
+            checkSubscriptionOnce = true;
+            if (subscription.get() == null) {
+                errors.add(new IllegalStateException("onSubscribe not called in proper order"));
+            }
+        }
         lastThread = Thread.currentThread();
         values.add(t);
         
@@ -173,12 +174,18 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     @Override
     public void onError(Throwable t) {
+        if (!checkSubscriptionOnce) {
+            checkSubscriptionOnce = true;
+            if (subscription.get() == null) {
+                errors.add(new NullPointerException("onSubscribe not called in proper order"));
+            }
+        }
         try {
             lastThread = Thread.currentThread();
             errors.add(t);
 
             if (t == null) {
-                errors.add(new NullPointerException("onError received a null Subscription"));
+                errors.add(new IllegalStateException("onError received a null Subscription"));
             }
 
             actual.onError(t);
@@ -189,6 +196,12 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     @Override
     public void onComplete() {
+        if (!checkSubscriptionOnce) {
+            checkSubscriptionOnce = true;
+            if (subscription.get() == null) {
+                errors.add(new IllegalStateException("onSubscribe not called in proper order"));
+            }
+        }
         try {
             lastThread = Thread.currentThread();
             completions++;
@@ -204,14 +217,14 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (SubscriptionHelper.validateRequest(n)) {
             return;
         }
-        Subscription s = subscription;
+        Subscription s = subscription.get();
         if (s != null) {
             s.request(n);
         } else {
-            BackpressureHelper.add(MISSED_REQUESTED, this, n);
-            s = subscription;
+            BackpressureHelper.add(missedRequested, n);
+            s = subscription.get();
             if (s != null) {
-                long mr = MISSED_REQUESTED.getAndSet(this, 0L);
+                long mr = missedRequested.getAndSet(0L);
                 if (mr != 0L) {
                     s.request(mr);
                 }
@@ -223,9 +236,9 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public void cancel() {
         if (!cancelled) {
             cancelled = true;
-            Subscription s = subscription;
+            Subscription s = subscription.get();
             if (s != CANCELLED) {
-                s = SUBSCRIPTION.getAndSet(this, CANCELLED);
+                s = subscription.getAndSet(CANCELLED);
                 if (s != CANCELLED && s != null) {
                     s.cancel();
                 }
@@ -309,7 +322,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return true if this TestSubscriber received a subscription
      */
     public final boolean hasSubscription() {
-        return subscription != null;
+        return subscription.get() != null;
     }
     
     /**
@@ -354,13 +367,17 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      */
     private void fail(String prefix, String message, Iterable<? extends Throwable> errors) {
         AssertionError ae = new AssertionError(prefix + message);
-        errors.forEach(e -> {
+        CompositeException ce = new CompositeException();
+        for (Throwable e : errors) {
             if (e == null) {
-                ae.addSuppressed(new NullPointerException("Throwable was null!"));
+                ce.suppress(new NullPointerException("Throwable was null!"));
             } else {
-                ae.addSuppressed(e);
+                ce.suppress(e);
             }
-        });
+        };
+        if (!ce.isEmpty()) {
+            ae.initCause(ce);
+        }
         throw ae;
     }
     
@@ -432,7 +449,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         }
         int s = errors.size();
         if (s == 0) {
-            fail(prefix, "No errors", Collections.emptyList());
+            fail(prefix, "No errors", Collections.<Throwable>emptyList());
         }
         if (errors.contains(error)) {
             if (s != 1) {
@@ -455,11 +472,17 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         }
         int s = errors.size();
         if (s == 0) {
-            fail(prefix, "No errors", Collections.emptyList());
+            fail(prefix, "No errors", Collections.<Throwable>emptyList());
         }
         
-        boolean found = errors.stream()
-                .anyMatch(errorClass::isInstance);
+        boolean found = false;
+        
+        for (Throwable e : errors) {
+            if (errorClass.isInstance(e)) {
+                found = true;
+                break;
+            }
+        }
         
         if (found) {
             if (s != 1) {
@@ -525,7 +548,6 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @param values the values expected
      * @see #assertValueSet(Collection)
      */
-    @SafeVarargs
     public final void assertValues(T... values) {
         String prefix = "";
         if (done.getCount() != 0) {
@@ -641,7 +663,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
         }
-        if (subscription == null) {
+        if (subscription.get() == null) {
             fail(prefix, "Not subscribed!", errors);
         }
     }
@@ -654,7 +676,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
         }
-        if (subscription != null) {
+        if (subscription.get() != null) {
             fail(prefix, "Subscribed!", errors);
         } else
         if (!errors.isEmpty()) {
@@ -680,7 +702,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     /**
      * Awaits the specified amount of time or until this TestSubscriber 
      * receives an onError or onComplete events, whichever happens first.
-     * @param time the waiting time
+     * @param duration the waiting time
      * @param unit the time unit of the waiting time
      * @return true if the TestSubscriber terminated, false if timeout or interrupt happened
      */
@@ -700,12 +722,12 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         }
         int s = errors.size();
         if (s == 0) {
-            fail(prefix, "No errors", Collections.emptyList());
+            fail(prefix, "No errors", Collections.<Throwable>emptyList());
         } else
         if (s == 1) {
             Throwable e = errors.get(0);
             if (e == null) {
-                fail(prefix, "Error is null", Collections.emptyList());
+                fail(prefix, "Error is null", Collections.<Throwable>emptyList());
             }
             String errorMessage = e.getMessage();
             if (!Objects.equals(message, errorMessage)) {
@@ -725,13 +747,13 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<List<Object>> getEvents() {
-        List<List<Object>> result = new ArrayList<>();
+        List<List<Object>> result = new ArrayList<List<Object>>();
         
         result.add((List)values());
         
         result.add((List)errors());
         
-        List<Object> completeList = new ArrayList<>();
+        List<Object> completeList = new ArrayList<Object>();
         for (long i = 0; i < completions; i++) {
             completeList.add(Notification.complete());
         }

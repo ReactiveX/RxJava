@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -32,7 +32,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new TakeLastSubscriber<>(t, count);
+        return new TakeLastSubscriber<T>(t, count);
     }
     
     static final class TakeLastSubscriber<T> extends ArrayDeque<T> implements Subscriber<T>, Subscription {
@@ -45,15 +45,9 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
         volatile boolean done;
         volatile boolean cancelled;
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<TakeLastSubscriber> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(TakeLastSubscriber.class, "requested");
+        final AtomicLong requested = new AtomicLong();
         
-        volatile int wip;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<TakeLastSubscriber> WIP =
-                AtomicIntegerFieldUpdater.newUpdater(TakeLastSubscriber.class, "wip");
+        final AtomicInteger wip = new AtomicInteger();
         
         public TakeLastSubscriber(Subscriber<? super T> actual, int count) {
             this.actual = actual;
@@ -96,7 +90,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(requested, n);
             drain();
         }
         
@@ -107,9 +101,9 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
         }
         
         void drain() {
-            if (WIP.getAndIncrement(this) == 0) {
+            if (wip.getAndIncrement() == 0) {
                 Subscriber<? super T> a = actual;
-                long r = requested;
+                long r = requested.get();
                 do {
                     if (cancelled) {
                         return;
@@ -132,10 +126,10 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
                             e++;
                         }
                         if (!unbounded && e != 0L) {
-                            r = REQUESTED.addAndGet(this, -e);
+                            r = requested.addAndGet(-e);
                         }
                     }
-                } while (WIP.decrementAndGet(this) != 0);
+                } while (wip.decrementAndGet() != 0);
             }
         }
     }

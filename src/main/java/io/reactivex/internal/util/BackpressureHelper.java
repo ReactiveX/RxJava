@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -64,27 +64,6 @@ public enum BackpressureHelper {
             }
             long u = addCap(r, n);
             if (requested.compareAndSet(r, u)) {
-                return r;
-            }
-        }
-    }
-    
-    /**
-     * Atomically adds the positive value n to the value in the instance through the field updater and
-     * caps the result at Long.MAX_VALUE and returns the previous value.
-     * @param updater the field updater for the requested value
-     * @param instance the instance holding the requested value
-     * @param n the value to add, must be positive (not verified)
-     * @return the original value before the add
-     */
-    public static <T> long add(AtomicLongFieldUpdater<T> updater, T instance, long n) {
-        for (;;) {
-            long r = updater.get(instance);
-            if (r == Long.MAX_VALUE) {
-                return Long.MAX_VALUE;
-            }
-            long u = addCap(r, n);
-            if (updater.compareAndSet(instance, r, u)) {
                 return r;
             }
         }

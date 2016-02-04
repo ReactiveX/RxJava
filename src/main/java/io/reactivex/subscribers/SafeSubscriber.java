@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,6 +14,7 @@ package io.reactivex.subscribers;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.CompositeException;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -45,7 +46,7 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
             try {
                 s.cancel();
             } catch (Throwable e) {
-                ise.addSuppressed(e);
+                ise.initCause(e);
             }
             onError(ise);
             return;
@@ -64,7 +65,10 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
             try {
                 s.cancel();
             } catch (Throwable e1) {
-                e.addSuppressed(e1);
+                CompositeException ce = new CompositeException();
+                ce.suppress(e1);
+                ce.suppress(e);
+                e = ce;
             }
             RxJavaPlugins.onError(e);
         }
@@ -98,33 +102,29 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
         done = true;
         
         if (subscription == null) {
-            Throwable t2;
-            if (t == null) {
-                t2 = new NullPointerException("Subscription not set!");
-            } else {
-                t2 = t;
-                t2.addSuppressed(new NullPointerException("Subscription not set!"));
-            }
+            CompositeException t2 = new CompositeException(t, new NullPointerException("Subscription not set!"));
+            
             try {
                 actual.onSubscribe(EmptySubscription.INSTANCE);
             } catch (Throwable e) {
                 // can't call onError because the actual's state may be corrupt at this point
-                e.addSuppressed(t2);
+                t2.suppress(e);
                 
-                RxJavaPlugins.onError(e);
+                RxJavaPlugins.onError(t2);
                 return;
             }
             try {
                 actual.onError(t2);
             } catch (Throwable e) {
                 // if onError failed, all that's left is to report the error to plugins
-                e.addSuppressed(t2);
+                t2.suppress(e);
                 
-                RxJavaPlugins.onError(e);
+                RxJavaPlugins.onError(t2);
             }
             return;
         }
         
+        CompositeException t2 = null;
         if (t == null) {
             t = new NullPointerException();
         }
@@ -132,15 +132,19 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
         try {
             subscription.cancel();
         } catch (Throwable e) {
-            t.addSuppressed(e);
+            t2 = new CompositeException(e, t);
         }
 
         try {
-            actual.onError(t);
+            if (t2 != null) {
+                actual.onError(t2);
+            } else {
+                actual.onError(t);
+            }
         } catch (Throwable e) {
-            e.addSuppressed(t);
+            t2.suppress(e);
             
-            RxJavaPlugins.onError(e);
+            RxJavaPlugins.onError(t2);
         }
     }
     
@@ -162,9 +166,7 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
             try {
                 actual.onError(e);
             } catch (Throwable e1) {
-                e1.addSuppressed(e);
-                
-                RxJavaPlugins.onError(e1);
+                RxJavaPlugins.onError(new CompositeException(e1, e));
             }
             return;
         }

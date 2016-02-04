@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,12 +18,12 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
 
 import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
@@ -42,8 +42,8 @@ public class NbpOperatorWindowWithTimeTest {
 
     @Test
     public void testTimedAndCount() {
-        final List<String> list = new ArrayList<>();
-        final List<List<String>> lists = new ArrayList<>();
+        final List<String> list = new ArrayList<String>();
+        final List<List<String>> lists = new ArrayList<List<String>>();
 
         NbpObservable<String> source = NbpObservable.create(new NbpOnSubscribe<String>() {
             @Override
@@ -76,8 +76,8 @@ public class NbpOperatorWindowWithTimeTest {
 
     @Test
     public void testTimed() {
-        final List<String> list = new ArrayList<>();
-        final List<List<String>> lists = new ArrayList<>();
+        final List<String> list = new ArrayList<String>();
+        final List<List<String>> lists = new ArrayList<List<String>>();
 
         NbpObservable<String> source = NbpObservable.create(new NbpOnSubscribe<String>() {
             @Override
@@ -105,7 +105,7 @@ public class NbpOperatorWindowWithTimeTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<String>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -137,7 +137,7 @@ public class NbpOperatorWindowWithTimeTest {
                 stringObservable.subscribe(new NbpObserver<T>() {
                     @Override
                     public void onComplete() {
-                        lists.add(new ArrayList<>(list));
+                        lists.add(new ArrayList<T>(list));
                         list.clear();
                     }
 
@@ -159,8 +159,8 @@ public class NbpOperatorWindowWithTimeTest {
         NbpObservable<NbpObservable<Integer>> source = NbpObservable.range(1, 10)
                 .window(1, TimeUnit.MINUTES, scheduler, 3);
         
-        final List<Integer> list = new ArrayList<>();
-        final List<List<Integer>> lists = new ArrayList<>();
+        final List<Integer> list = new ArrayList<Integer>();
+        final List<List<Integer>> lists = new ArrayList<List<Integer>>();
         
         source.subscribe(observeWindow(list, lists));
         
@@ -177,25 +177,40 @@ public class NbpOperatorWindowWithTimeTest {
     
     @Test
     public void testTakeFlatMapCompletes() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
-        AtomicInteger wip = new AtomicInteger();
+        final AtomicInteger wip = new AtomicInteger();
         
         final int indicator = 999999999;
         
         NbpOperatorWindowWithSizeTest.hotStream()
         .window(300, TimeUnit.MILLISECONDS)
         .take(10)
-        .doOnComplete(() -> System.out.println("Main done!"))
+        .doOnComplete(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Main done!");
+            }
+        })
         .flatMap(new Function<NbpObservable<Integer>, NbpObservable<Integer>>() {
             @Override
             public NbpObservable<Integer> apply(NbpObservable<Integer> w) {
                 return w.startWith(indicator)
-                        .doOnComplete(() -> System.out.println("inner done: " + wip.incrementAndGet()))
+                        .doOnComplete(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.out.println("inner done: " + wip.incrementAndGet());
+                            }
+                        })
                         ;
             }
         })
-        .doOnNext(System.out::println)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer pv) {
+                System.out.println(pv);
+            }
+        })
         .subscribe(ts);
         
         ts.awaitTerminalEvent(5, TimeUnit.SECONDS);

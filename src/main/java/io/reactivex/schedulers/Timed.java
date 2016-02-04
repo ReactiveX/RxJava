@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,8 +13,9 @@
 
 package io.reactivex.schedulers;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.internal.functions.Objects;
 
 /**
  * Holds onto a value along with time information.
@@ -28,7 +29,7 @@ public final class Timed<T> {
     public Timed(T value, long time, TimeUnit unit) {
         this.value = value;
         this.time = time;
-        this.unit = Objects.requireNonNull(unit);
+        this.unit = Objects.requireNonNull(unit, "unit is null");
     }
     
     public T value() {

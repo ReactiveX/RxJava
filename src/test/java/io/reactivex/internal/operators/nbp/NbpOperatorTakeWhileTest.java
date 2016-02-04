@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,14 +17,13 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.function.Predicate;
-
 import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.subjects.nbp.*;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
@@ -224,7 +223,7 @@ public class NbpOperatorTakeWhileTest {
                 return t1 < 2;
             }
         });
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         source.unsafeSubscribe(ts);
         
@@ -236,7 +235,7 @@ public class NbpOperatorTakeWhileTest {
     
     @Test
     public void testErrorCauseIncludesLastValue() {
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
         NbpObservable.just("abc").takeWhile(new Predicate<String>() {
             @Override
             public boolean test(String t1) {

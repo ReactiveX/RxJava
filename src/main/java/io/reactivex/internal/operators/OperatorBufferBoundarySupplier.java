@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,16 +14,17 @@
 package io.reactivex.internal.operators;
 
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-import java.util.function.Supplier;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.SerializedSubscriber;
 
@@ -38,7 +39,7 @@ public final class OperatorBufferBoundarySupplier<T, U extends Collection<? supe
 
     @Override
     public Subscriber<? super T> apply(Subscriber<? super U> t) {
-        return new BufferBondarySupplierSubscriber<>(new SerializedSubscriber<>(t), bufferSupplier, boundarySupplier);
+        return new BufferBondarySupplierSubscriber<T, U, B>(new SerializedSubscriber<U>(t), bufferSupplier, boundarySupplier);
     }
     
     static final class BufferBondarySupplierSubscriber<T, U extends Collection<? super T>, B>
@@ -49,18 +50,18 @@ public final class OperatorBufferBoundarySupplier<T, U extends Collection<? supe
         
         Subscription s;
         
-        volatile Disposable other;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<BufferBondarySupplierSubscriber, Disposable> OTHER =
-                AtomicReferenceFieldUpdater.newUpdater(BufferBondarySupplierSubscriber.class, Disposable.class, "other");
+        final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
         
-        static final Disposable DISPOSED = () -> { };
+        static final Disposable DISPOSED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         U buffer;
         
         public BufferBondarySupplierSubscriber(Subscriber<? super U> actual, Supplier<U> bufferSupplier,
                 Supplier<? extends Publisher<B>> boundarySupplier) {
-            super(actual, new MpscLinkedQueue<>());
+            super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundarySupplier = boundarySupplier;
         }
@@ -111,8 +112,8 @@ public final class OperatorBufferBoundarySupplier<T, U extends Collection<? supe
                 return;
             }
             
-            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<>(this);
-            other = bs;
+            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
+            other.set(bs);
             
             actual.onSubscribe(this);
             
@@ -153,7 +154,7 @@ public final class OperatorBufferBoundarySupplier<T, U extends Collection<? supe
             queue.offer(b);
             done = true;
             if (enter()) {
-                drainMaxLoop(queue, actual, false, this);
+                QueueDrainHelper.drainMaxLoop(queue, actual, false, this, this);
             }
         }
         
@@ -176,9 +177,9 @@ public final class OperatorBufferBoundarySupplier<T, U extends Collection<? supe
         }
         
         void disposeOther() {
-            Disposable d = other;
+            Disposable d = other.get();
             if (d != DISPOSED) {
-                d = OTHER.getAndSet(this, DISPOSED);
+                d = other.getAndSet(DISPOSED);
                 if (d != DISPOSED && d != null) {
                     d.dispose();
                 }
@@ -187,7 +188,7 @@ public final class OperatorBufferBoundarySupplier<T, U extends Collection<? supe
         
         void next() {
             
-            Disposable o = other;
+            Disposable o = other.get();
             
             U next;
             
@@ -223,9 +224,9 @@ public final class OperatorBufferBoundarySupplier<T, U extends Collection<? supe
                 return;
             }
             
-            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<>(this);
+            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
             
-            if (!OTHER.compareAndSet(this, o, bs)) {
+            if (!other.compareAndSet(o, bs)) {
                 return;
             }
             

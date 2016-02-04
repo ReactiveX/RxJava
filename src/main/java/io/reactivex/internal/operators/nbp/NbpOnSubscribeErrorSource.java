@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,14 +13,10 @@
 
 package io.reactivex.internal.operators.nbp;
 
-import java.util.function.Supplier;
-
 import io.reactivex.NbpObservable.*;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
-/**
- * 
- */
 public final class NbpOnSubscribeErrorSource<T> implements NbpOnSubscribe<T> {
     final Supplier<? extends Throwable> errorSupplier;
     public NbpOnSubscribeErrorSource(Supplier<? extends Throwable> errorSupplier) {

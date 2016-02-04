@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,11 +14,12 @@
 package io.reactivex.internal.operators;
 
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
@@ -30,7 +31,7 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new OnErrorReturnSubscriber<>(t, valueSupplier);
+        return new OnErrorReturnSubscriber<T>(t, valueSupplier);
     }
     
     static final class OnErrorReturnSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
@@ -41,10 +42,8 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
         
         Subscription s;
         
-        volatile int state;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<OnErrorReturnSubscriber> STATE =
-                AtomicIntegerFieldUpdater.newUpdater(OnErrorReturnSubscriber.class, "state");
+        final AtomicInteger state = new AtomicInteger();
+        
         T value;
         
         volatile boolean done;
@@ -84,28 +83,28 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
             try {
                 v = valueSupplier.apply(t);
             } catch (Throwable e) {
-                STATE.lazySet(this, HAS_REQUEST_HAS_VALUE);
-                t.addSuppressed(e);
-                actual.onError(t);
+                state.lazySet(HAS_REQUEST_HAS_VALUE);
+                actual.onError(new CompositeException(e, t));
                 return;
             }
             
             if (v == null) {
-                STATE.lazySet(this, HAS_REQUEST_HAS_VALUE);
-                t.addSuppressed(new NullPointerException("The supplied value is null"));
-                actual.onError(t);
+                state.lazySet(HAS_REQUEST_HAS_VALUE);
+                NullPointerException npe = new NullPointerException("The supplied value is null");
+                npe.initCause(t);
+                actual.onError(npe);
                 return;
             }
             
             if (get() != 0L) {
-                STATE.lazySet(this, HAS_REQUEST_HAS_VALUE);
+                state.lazySet(HAS_REQUEST_HAS_VALUE);
                 actual.onNext(v);
                 actual.onComplete();
             } else {
                 for (;;) {
-                    int s = state;
+                    int s = state.get();
                     if (s == HAS_REQUEST_NO_VALUE) {
-                        if (STATE.compareAndSet(this, s, HAS_REQUEST_HAS_VALUE)) {
+                        if (state.compareAndSet(s, HAS_REQUEST_HAS_VALUE)) {
                             actual.onNext(v);
                             actual.onComplete();
                             return;
@@ -119,7 +118,7 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
                         return;
                     } else {
                         value = v;
-                        if (STATE.compareAndSet(this, s, NO_REQUEST_HAS_VALUE)) {
+                        if (state.compareAndSet(s, NO_REQUEST_HAS_VALUE)) {
                             return;
                         }
                     }
@@ -129,7 +128,7 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
         
         @Override
         public void onComplete() {
-            STATE.lazySet(this, HAS_REQUEST_HAS_VALUE);
+            state.lazySet(HAS_REQUEST_HAS_VALUE);
             actual.onComplete();
         }
         
@@ -141,9 +140,9 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
             BackpressureHelper.add(this, n);
             if (done) {
                 for (;;) {
-                    int s = state;
+                    int s = state.get();
                     if (s == NO_REQUEST_HAS_VALUE) {
-                        if (STATE.compareAndSet(this, s, HAS_REQUEST_HAS_VALUE)) {
+                        if (state.compareAndSet(s, HAS_REQUEST_HAS_VALUE)) {
                             T v = value;
                             value = null;
                             actual.onNext(v);
@@ -154,7 +153,7 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
                     if (s == HAS_REQUEST_NO_VALUE || s == HAS_REQUEST_HAS_VALUE) {
                         return;
                     } else
-                    if (STATE.compareAndSet(this, s, HAS_REQUEST_NO_VALUE)) {
+                    if (state.compareAndSet(s, HAS_REQUEST_NO_VALUE)) {
                         return;
                     }
                 }
@@ -165,7 +164,7 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
         
         @Override
         public void cancel() {
-            STATE.lazySet(this, HAS_REQUEST_HAS_VALUE);
+            state.lazySet(HAS_REQUEST_HAS_VALUE);
             s.cancel();
         }
     }

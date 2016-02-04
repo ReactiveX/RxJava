@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,13 +13,15 @@
 
 package io.reactivex.internal.subscriptions;
 
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.subscriptions.AsyncSubscription;
 
 public class AsyncSubscriptionTest {
     @Test
@@ -81,7 +83,7 @@ public class AsyncSubscriptionTest {
 
         assertTrue(as.setSubscription(s1));
         
-        assertSame(as.actual, s);
+        assertSame(as.actual.get(), s);
         
         verify(s1).cancel();
     }

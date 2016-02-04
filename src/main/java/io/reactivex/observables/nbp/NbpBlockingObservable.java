@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,20 +13,22 @@
 
 package io.reactivex.observables.nbp;
 
+import java.io.Closeable;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Consumer;
-import java.util.stream.*;
+import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.Optional;
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.nbp.*;
-import io.reactivex.internal.subscribers.*;
+import io.reactivex.internal.subscribers.BlockingSubscriber;
 import io.reactivex.internal.subscribers.nbp.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subscribers.nbp.NbpAsyncObserver;
 
 public final class NbpBlockingObservable<T> implements Iterable<T> {
     final NbpObservable<? extends T> o;
@@ -35,7 +37,7 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
     }
     
     public static <T> NbpBlockingObservable<T> from(NbpObservable<? extends T> source) {
-        return new NbpBlockingObservable<>(source);
+        return new NbpBlockingObservable<T>(source);
     }
     
     @Override
@@ -43,7 +45,6 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
         return iterate(o);
     }
     
-    @Override
     public void forEach(Consumer<? super T> action) {
         BlockingIterator<T> it = iterate(o);
         while (it.hasNext()) {
@@ -51,27 +52,42 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
                 action.accept(it.next());
             } catch (Throwable e) {
                 it.dispose();
-                throw e;
+                Exceptions.propagate(e);
             }
         }
     }
     
     static final <T> BlockingIterator<T> iterate(NbpObservable<? extends T> p) {
-        final BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
+        final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
 
-        NbpLambdaSubscriber<T> ls = new NbpLambdaSubscriber<>(
-            v -> queue.offer(NotificationLite.next(v)),
-            e -> queue.offer(NotificationLite.error(e)),
-            () -> queue.offer(NotificationLite.complete()),
-            s -> { }
+        NbpLambdaSubscriber<T> ls = new NbpLambdaSubscriber<T>(
+            new Consumer<T>() {
+                @Override
+                public void accept(T v) {
+                    queue.offer(NotificationLite.next(v));
+                }
+            },
+            new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable e) {
+                    queue.offer(NotificationLite.error(e));
+                }
+            },
+            new Runnable() {
+                @Override
+                public void run() {
+                    queue.offer(NotificationLite.complete());
+                }
+            },
+            Functions.emptyConsumer()
         );
         
         p.subscribe(ls);
         
-        return new BlockingIterator<>(queue, ls);
+        return new BlockingIterator<T>(queue, ls);
     }
     
-    static final class BlockingIterator<T> implements Iterator<T>, AutoCloseable, Disposable {
+    static final class BlockingIterator<T> implements Iterator<T>, Closeable, Disposable {
         final BlockingQueue<Object> queue;
         final Disposable resource;
         
@@ -125,7 +141,12 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
         }
         
         @Override
-        public void close() throws Exception {
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+        
+        @Override
+        public void close() {
             resource.dispose();
         }
         
@@ -135,60 +156,153 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
         }
     }
 
-    static <T> Stream<T> makeStream(Iterator<T> it, boolean parallel) {
-        Spliterator<T> s = Spliterators.spliteratorUnknownSize(it, 0);
-        Stream<T> st = StreamSupport.stream(s, parallel);
-        if (it instanceof BlockingIterator) {
-            
-            BlockingIterator<T> bit = (BlockingIterator<T>) it;
-            st = st.onClose(bit::dispose);
-        }
-        return st;
+    public Optional<T> firstOption() {
+        return firstOption(o);
     }
     
-    public Stream<T> stream() {
-        return makeStream(iterator(), false);
-    }
-
-    public Stream<T> parallelStream() {
-        return makeStream(iterator(), true);
-    }
-
-    public Optional<T> firstOption() {
-        return stream().findFirst();
+    static <T> Optional<T> firstOption(NbpObservable<? extends T> o) {
+        final AtomicReference<T> value = new AtomicReference<T>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final CountDownLatch cdl = new CountDownLatch(1);
+        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
+        
+        o.subscribe(new NbpSubscriber<T>() {
+            Disposable s;
+            @Override
+            public void onSubscribe(Disposable s) {
+                this.s = s;
+                mad.set(s);
+            }
+            
+            @Override
+            public void onNext(T t) {
+                s.dispose();
+                value.lazySet(t);
+                cdl.countDown();
+            }
+            
+            @Override
+            public void onError(Throwable t) {
+                error.lazySet(t);
+                cdl.countDown();
+            }
+            
+            @Override
+            public void onComplete() {
+                cdl.countDown();
+            }
+        });
+        
+        try {
+            cdl.await();
+        } catch (InterruptedException ex) {
+            mad.dispose();
+            Exceptions.propagate(ex);
+        }
+        
+        Throwable e = error.get();
+        if (e != null) {
+            Exceptions.propagate(e);
+        }
+        T v = value.get();
+        return v != null ? Optional.of(v) : Optional.<T>empty();
     }
     
     public T first() {
-        return firstOption().get();
+        Optional<T> o = firstOption();
+        if (o.isPresent()) {
+            return o.get();
+        }
+        throw new NoSuchElementException();
     }
     
     public T first(T defaultValue) {
-        return firstOption().orElse(defaultValue);
+        Optional<T> o = firstOption();
+        if (o.isPresent()) {
+            return o.get();
+        }
+        return defaultValue;
     }
     
     public Optional<T> lastOption() {
-        return stream().reduce((a, b) -> b);
+        return lastOption(o);
+    }
+    
+    static <T> Optional<T> lastOption(NbpObservable<? extends T> o) {
+        final AtomicReference<T> value = new AtomicReference<T>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final CountDownLatch cdl = new CountDownLatch(1);
+        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
+        
+        o.subscribe(new NbpSubscriber<T>() {
+            @Override
+            public void onSubscribe(Disposable s) {
+                mad.set(s);
+            }
+            
+            @Override
+            public void onNext(T t) {
+                value.lazySet(t);
+            }
+            
+            @Override
+            public void onError(Throwable t) {
+                error.lazySet(t);
+                cdl.countDown();
+            }
+            
+            @Override
+            public void onComplete() {
+                cdl.countDown();
+            }
+        });
+        
+        try {
+            cdl.await();
+        } catch (InterruptedException ex) {
+            mad.dispose();
+            Exceptions.propagate(ex);
+        }
+        
+        Throwable e = error.get();
+        if (e != null) {
+            Exceptions.propagate(e);
+        }
+        T v = value.get();
+        return v != null ? Optional.of(v) : Optional.<T>empty();
     }
     
     public T last() {
-        return lastOption().get();
+        Optional<T> o = lastOption();
+        if (o.isPresent()) {
+            return o.get();
+        }
+        throw new NoSuchElementException();
     }
     
     public T last(T defaultValue) {
-        return lastOption().orElse(defaultValue);
+        Optional<T> o = lastOption();
+        if (o.isPresent()) {
+            return o.get();
+        }
+        return defaultValue;
     }
     
     public T single() {
-        Iterator<T> it = iterate(o.single());
-        Optional<T> o = makeStream(it, false).findFirst();
-        return o.get();
+        Optional<T> o = firstOption(this.o.single());
+        if (o.isPresent()) {
+            return o.get();
+        }
+        throw new NoSuchElementException();
     }
     
     public T single(T defaultValue) {
         @SuppressWarnings("unchecked")
-        Iterator<T> it = iterate(((NbpObservable<T>)o).single(defaultValue));
-        Optional<T> o = makeStream(it, false).findFirst();
-        return o.orElse(defaultValue);
+        Optional<T> o = firstOption(((NbpObservable<T>)this.o).single(defaultValue));
+        if (o.isPresent()) {
+            return o.get();
+        }
+        return defaultValue;
     }
     
     public Iterable<T> mostRecent(T initialValue) {
@@ -203,38 +317,86 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
         return NbpBlockingOperatorLatest.latest(o);
     }
     
-    public CompletableFuture<T> toFuture() {
-        CompletableFuture<T> f = new CompletableFuture<>();
+    public Future<T> toFuture() {
+        final CountDownLatch cdl = new CountDownLatch(1);
+        final AtomicReference<T> value = new AtomicReference<T>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
         
-        NbpAsyncObserver<T> s = new NbpAsyncObserver<T>() {
+        o.subscribe(new NbpSubscriber<T>() {
+
             @Override
-            protected void onStart() {
-                f.whenComplete((v, e) -> {
-                    cancel();
-                });
+            public void onSubscribe(Disposable d) {
+                mad.set(d);
             }
-            
+
             @Override
-            public void onNext(T t) {
-                f.complete(t);
+            public void onNext(T v) {
+                value.lazySet(v);
             }
-            
+
             @Override
-            public void onError(Throwable t) {
-                f.completeExceptionally(t);
+            public void onError(Throwable e) {
+                error.lazySet(e);
+                cdl.countDown();
             }
-            
+
             @Override
             public void onComplete() {
-                if (!f.isDone()) {
-                    f.completeExceptionally(new NoSuchElementException());
-                }
+                cdl.countDown();
             }
+            
+        });
+        
+        return new Future<T>() {
+            
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                if (cdl.getCount() != 0) {
+                    mad.dispose();
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return mad.isDisposed();
+            }
+
+            @Override
+            public boolean isDone() {
+                return cdl.getCount() == 0 && !mad.isDisposed();
+            }
+
+            @Override
+            public T get() throws InterruptedException, ExecutionException {
+                if (cdl.getCount() != 0) {
+                    cdl.await();
+                }
+                Throwable e = error.get();
+                if (e != null) {
+                    throw new ExecutionException(e);
+                }
+                return value.get();
+            }
+
+            @Override
+            public T get(long timeout, TimeUnit unit)
+                    throws InterruptedException, ExecutionException, TimeoutException {
+                if (cdl.getCount() != 0) {
+                    if (!cdl.await(timeout, unit)) {
+                        throw new TimeoutException();
+                    }
+                }
+                Throwable e = error.get();
+                if (e != null) {
+                    throw new ExecutionException(e);
+                }
+                return value.get();
+            }
+            
         };
-        
-        o.takeLast(1).subscribe(s);
-        
-        return f;
     }
     
     private void awaitForComplete(CountDownLatch latch, Disposable subscription) {
@@ -262,12 +424,22 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
     public void run() {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] error = { null };
-        LambdaSubscriber<T> ls = new LambdaSubscriber<>(v -> { }, e -> {
-            error[0] = e;
-            cdl.countDown();
-        }, () -> {
-            cdl.countDown();
-        }, s -> s.request(Long.MAX_VALUE));
+        NbpLambdaSubscriber<T> ls = new NbpLambdaSubscriber<T>(
+            Functions.emptyConsumer(), 
+            new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable e) {
+                    error[0] = e;
+                    cdl.countDown();
+                }
+            }, new Runnable() {
+                @Override
+                public void run() {
+                    cdl.countDown();
+                }
+            }, Functions.emptyConsumer());
+        
+        o.subscribe(ls);
         
         awaitForComplete(cdl, ls);
         Throwable e = error[0];
@@ -287,9 +459,9 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
      * @param subscriber the subscriber to forward events and calls to in the current thread
      */
     public void subscribe(NbpSubscriber<? super T> subscriber) {
-        final BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
+        final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
         
-        NbpBlockingSubscriber<T> bs = new NbpBlockingSubscriber<>(queue);
+        NbpBlockingSubscriber<T> bs = new NbpBlockingSubscriber<T>(queue);
         
         o.subscribe(bs);
         
@@ -336,7 +508,7 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
      * @param onNext the callback action for each source value
      */
     public void subscribe(final Consumer<? super T> onNext) {
-        subscribe(onNext, RxJavaPlugins::onError, () -> { });
+        subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable());
     }
     
     /**
@@ -345,7 +517,7 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
      * @param onError the callback action for an error event
      */
     public void subscribe(final Consumer<? super T> onNext, final Consumer<? super Throwable> onError) {
-        subscribe(onNext, onError, () -> { });
+        subscribe(onNext, onError, Functions.emptyRunnable());
     }
     
     /**

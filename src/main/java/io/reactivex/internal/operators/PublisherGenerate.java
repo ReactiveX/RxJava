@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,10 +14,10 @@
 package io.reactivex.internal.operators;
 
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -45,7 +45,7 @@ public final class PublisherGenerate<T, S> implements Publisher<T> {
             return;
         }
         
-        s.onSubscribe(new GeneratorSubscription<>(s, generator, disposeState, state));
+        s.onSubscribe(new GeneratorSubscription<T, S>(s, generator, disposeState, state));
     }
     
     static final class GeneratorSubscription<T, S> 

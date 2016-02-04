@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -22,9 +22,6 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-/**
- * 
- */
 public final class OperatorTake<T> implements Operator<T, T> {
     final long limit;
     public OperatorTake(long limit) {
@@ -33,7 +30,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new TakeSubscriber<>(t, limit);
+        return new TakeSubscriber<T>(t, limit);
     }
     
     static final class TakeSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {

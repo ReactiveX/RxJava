@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -28,11 +28,12 @@ public class NbpErrorHandlingTests {
 
     /**
      * Test that an error from a user provided Observer.onNext is handled and emitted to the onError
+     * @throws InterruptedException if the test is interrupted
      */
     @Test
     public void testOnNextError() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> caughtError = new AtomicReference<>();
+        final AtomicReference<Throwable> caughtError = new AtomicReference<Throwable>();
         NbpObservable<Long> o = NbpObservable.interval(50, TimeUnit.MILLISECONDS);
         NbpSubscriber<Long> observer = new NbpObserver<Long>() {
 
@@ -63,11 +64,12 @@ public class NbpErrorHandlingTests {
     /**
      * Test that an error from a user provided Observer.onNext is handled and emitted to the onError
      * even when done across thread boundaries with observeOn
+     * @throws InterruptedException if the test is interrupted
      */
     @Test
     public void testOnNextErrorAcrossThread() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> caughtError = new AtomicReference<>();
+        final AtomicReference<Throwable> caughtError = new AtomicReference<Throwable>();
         NbpObservable<Long> o = NbpObservable.interval(50, TimeUnit.MILLISECONDS);
         NbpSubscriber<Long> observer = new NbpObserver<Long>() {
 

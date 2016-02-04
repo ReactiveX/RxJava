@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,10 +17,18 @@ import java.util.*;
 
 import org.junit.*;
 
+import io.reactivex.NbpObservable;
+import io.reactivex.functions.Function;
+
 public class NbpObservableTest {
     @Test
     public void testFlatMap() {
-        List<Integer> list = NbpObservable.range(1, 5).flatMap(v -> NbpObservable.range(v, 2)).getList();
+        List<Integer> list = NbpObservable.range(1, 5).flatMap(new Function<Integer, NbpObservable<Integer>>() {
+            @Override
+            public NbpObservable<Integer> apply(Integer v) {
+                return NbpObservable.range(v, 2);
+            }
+        }).getList();
         
         Assert.assertEquals(Arrays.asList(1, 2, 2, 3, 3, 4, 4, 5, 5, 6), list);
     }

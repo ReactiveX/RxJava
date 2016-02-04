@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -40,6 +40,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
     
     /**
      * Creates an UnicastSubject with an internal buffer capacity hint 16.
+     * @param <T> the value type
      * @return an UnicastSubject instance
      */
     public static <T> UnicastSubject<T> create() {
@@ -48,6 +49,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
     
     /**
      * Creates an UnicastSubject with the given internal buffer capacity hint.
+     * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
      * @return an UnicastSubject instance
      */
@@ -62,13 +64,14 @@ public final class UnicastSubject<T> extends Subject<T, T> {
      * <p>The callback, if not null, is called exactly once and
      * non-overlapped with any active replay.
      * 
+     * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
      * @param onCancelled the optional callback
      * @return an UnicastSubject instance
      */
     public static <T> UnicastSubject<T> create(int capacityHint, Runnable onCancelled) {
-        State<T> state = new State<>(capacityHint, onCancelled);
-        return new UnicastSubject<>(state);
+        State<T> state = new State<T>(capacityHint, onCancelled);
+        return new UnicastSubject<T>(state);
     }
 
     /** The subject state. */
@@ -98,10 +101,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         /** */
         private static final long serialVersionUID = -2744070795149472578L;
         /** Holds the current requested amount. */
-        volatile long requested;
-        /** Updater to the field requested. */
-        static final AtomicLongFieldUpdater<StateRequested> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(StateRequested.class, "requested");
+        final AtomicLong requested = new AtomicLong();
     }
     
     /** Pads away the requested counter. */
@@ -123,11 +123,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         final Queue<T> queue;
         
         /** The single subscriber. */
-        volatile Subscriber<? super T> subscriber;
-        /** Updater to the field subscriber. */
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<State, Subscriber> SUBSCRIBER =
-                AtomicReferenceFieldUpdater.newUpdater(State.class, Subscriber.class, "subscriber");
+        final AtomicReference<Subscriber<? super T>> subscriber = new AtomicReference<Subscriber<? super T>>();
         
         /** Indicates the single subscriber has cancelled. */
         volatile boolean cancelled;
@@ -141,11 +137,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         Throwable error;
 
         /** Set to 1 atomically for the first and only Subscriber. */
-        volatile int once;
-        /** Updater to field once. */
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<State> ONCE =
-                AtomicIntegerFieldUpdater.newUpdater(State.class, "once");
+        final AtomicBoolean once = new AtomicBoolean();
         
         /** 
          * Called when the Subscriber has called cancel.
@@ -161,14 +153,19 @@ public final class UnicastSubject<T> extends Subject<T, T> {
          */
         public State(int capacityHint, Runnable onCancelled) {
             this.onCancelled = onCancelled;
-            queue = new SpscLinkedArrayQueue<>(capacityHint);
+            queue = new SpscLinkedArrayQueue<T>(capacityHint);
         }
         
         @Override
         public void subscribe(Subscriber<? super T> s) {
-            if (once == 0 && ONCE.compareAndSet(this, 0, 1)) {
-                SUBSCRIBER.lazySet(this, s);
+            if (!once.get() && once.compareAndSet(false, true)) {
                 s.onSubscribe(this);
+                subscriber.lazySet(s); // full barrier in drain
+                if (cancelled) {
+                    subscriber.lazySet(null);
+                    return;
+                }
+                drain();
             } else {
                 if (done) {
                     Throwable e = error;
@@ -188,7 +185,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(requested, n);
             drain();
         }
         
@@ -216,7 +213,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
          * @param q the queue reference (avoid re-reading instance field).
          */
         void clear(Queue<?> q) {
-            SUBSCRIBER.lazySet(this, null);
+            subscriber.lazySet(null);
             q.clear();
             notifyOnCancelled();
         }
@@ -271,7 +268,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
             }
             
             final Queue<T> q = queue;
-            Subscriber<? super T> a = subscriber;
+            Subscriber<? super T> a = subscriber.get();
             int missed = 1;
             
             for (;;) {
@@ -287,7 +284,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                     boolean d = done;
                     boolean empty = q.isEmpty();
                     if (d && empty) {
-                        SUBSCRIBER.lazySet(this, null);
+                        subscriber.lazySet(null);
                         Throwable ex = error;
                         if (ex != null) {
                             a.onError(ex);
@@ -297,7 +294,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                         return;
                     }
                     
-                    long r = requested;
+                    long r = requested.get();
                     boolean unbounded = r == Long.MAX_VALUE;
                     long e = 0L;
                     
@@ -314,7 +311,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                         empty = v == null;
                         
                         if (d && empty) {
-                            SUBSCRIBER.lazySet(this, null);
+                            subscriber.lazySet(null);
                             Throwable ex = error;
                             if (ex != null) {
                                 a.onError(ex);
@@ -335,7 +332,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                     }
                     
                     if (e != 0 && !unbounded) {
-                        REQUESTED.getAndAdd(this, e);
+                        requested.getAndAdd(e);
                     }
                     
                 }
@@ -346,7 +343,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                 }
                 
                 if (a == null) {
-                    a = subscriber;
+                    a = subscriber.get();
                 }
             }
         }

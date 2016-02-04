@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -32,7 +32,7 @@ public final class PublisherSubscribeOn<T> implements Publisher<T> {
     }
     
     @Override
-    public void subscribe(Subscriber<? super T> s) {
+    public void subscribe(final Subscriber<? super T> s) {
         /*
          * TODO can't use the returned disposable because to dispose it,
          * one must set a Subscription on s on the current thread, but
@@ -40,13 +40,19 @@ public final class PublisherSubscribeOn<T> implements Publisher<T> {
          */
         if (requestOn) {
             Scheduler.Worker w = scheduler.createWorker();
-            SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<>(s, w);
-            w.schedule(() -> {
-                source.subscribe(sos);
+            final SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<T>(s, w);
+            w.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    source.subscribe(sos);
+                }
             });
         } else {
-            scheduler.scheduleDirect(() -> {
-                source.subscribe(s);
+            scheduler.scheduleDirect(new Runnable() {
+                @Override
+                public void run() {
+                    source.subscribe(s);
+                }
             });
         }
     }
@@ -98,15 +104,18 @@ public final class PublisherSubscribeOn<T> implements Publisher<T> {
         }
         
         @Override
-        public void request(long n) {
+        public void request(final long n) {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             if (Thread.currentThread() == get()) {
                 s.request(n);
             } else {
-                worker.schedule(() -> {
-                    s.request(n);
+                worker.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        s.request(n);
+                    }
                 });
             }
         }

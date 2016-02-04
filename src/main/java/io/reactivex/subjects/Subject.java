@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -44,7 +44,7 @@ public abstract class Subject<T, R> extends Observable<R> implements Processor<T
      * <p>The method is thread-safe.
      * @return true if the subject has reached a terminal state through an error event
      * @see #getThrowable()
-     * &see {@link #hasComplete()}
+     * @see #hasComplete()
      */
     public boolean hasThrowable() {
         throw new UnsupportedOperationException();
@@ -99,7 +99,7 @@ public abstract class Subject<T, R> extends Observable<R> implements Processor<T
         if (this instanceof SerializedSubject) {
             return this;
         }
-        return new SerializedSubject<>(this);
+        return new SerializedSubject<T, R>(this);
     }
     
     /** An empty array to avoid allocation in getValues(). */

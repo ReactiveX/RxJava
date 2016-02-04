@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -26,29 +26,26 @@ import io.reactivex.internal.util.Pow2;
 /**
  * A single-producer single-consumer array-backed queue which can allocate new arrays in case the consumer is slower
  * than the producer.
+ * @param <T> the contained value type
  */
 public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     static final int MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
-    protected volatile long producerIndex;
-    @SuppressWarnings("rawtypes")
-    static final AtomicLongFieldUpdater<SpscLinkedArrayQueue> PRODUCER_INDEX =
-            AtomicLongFieldUpdater.newUpdater(SpscLinkedArrayQueue.class, "producerIndex");
+    protected final AtomicLong producerIndex = new AtomicLong();
+    
     protected int producerLookAheadStep;
     protected long producerLookAhead;
     protected int producerMask;
     protected AtomicReferenceArray<Object> producerBuffer;
     protected int consumerMask;
     protected AtomicReferenceArray<Object> consumerBuffer;
-    protected volatile long consumerIndex;
-    @SuppressWarnings("rawtypes")
-    static final AtomicLongFieldUpdater<SpscLinkedArrayQueue> CONSUMER_INDEX =
-            AtomicLongFieldUpdater.newUpdater(SpscLinkedArrayQueue.class, "consumerIndex");
+    protected final AtomicLong consumerIndex = new AtomicLong();
+
     private static final Object HAS_NEXT = new Object();
 
     public SpscLinkedArrayQueue(final int bufferSize) {
         int p2capacity = Pow2.roundToPowerOfTwo(bufferSize);
         int mask = p2capacity - 1;
-        AtomicReferenceArray<Object> buffer = new AtomicReferenceArray<>(p2capacity + 1);
+        AtomicReferenceArray<Object> buffer = new AtomicReferenceArray<Object>(p2capacity + 1);
         producerBuffer = buffer;
         producerMask = mask;
         adjustLookAheadStep(p2capacity);
@@ -97,7 +94,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     private void resize(final AtomicReferenceArray<Object> oldBuffer, final long currIndex, final int offset, final T e,
             final long mask) {
         final int capacity = oldBuffer.length();
-        final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<>(capacity);
+        final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<Object>(capacity);
         producerBuffer = newBuffer;
         producerLookAhead = currIndex + mask - 1;
         soProducerIndex(currIndex + 1);// this ensures correctness on 32bit platforms
@@ -215,27 +212,27 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     }
 
     private long lvProducerIndex() {
-        return producerIndex;
+        return producerIndex.get();
     }
 
     private long lvConsumerIndex() {
-        return consumerIndex;
+        return consumerIndex.get();
     }
 
     private long lpProducerIndex() {
-        return producerIndex;
+        return producerIndex.get();
     }
 
     private long lpConsumerIndex() {
-        return consumerIndex;
+        return consumerIndex.get();
     }
 
     private void soProducerIndex(long v) {
-        PRODUCER_INDEX.lazySet(this, v);
+        producerIndex.lazySet(v);
     }
 
     private void soConsumerIndex(long v) {
-        CONSUMER_INDEX.lazySet(this, v);
+        consumerIndex.lazySet(v);
     }
 
     private static final int calcWrappedOffset(long index, int mask) {
@@ -315,13 +312,13 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     /**
      * Offer two elements at the same time.
      * <p>Don't use the regular offer() with this at all!
-     * @param first
-     * @param second
-     * @return
+     * @param first the first value, not null
+     * @param second the second value, not null
+     * @return true if the queue accepted the two new values
      */
     public boolean offer(T first, T second) {
         final AtomicReferenceArray<Object> buffer = producerBuffer;
-        final long p = producerIndex;
+        final long p = lvProducerIndex();
         final int m = producerMask;
         
         int pi = calcWrappedOffset(p + 2, m);
@@ -333,7 +330,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
             soElement(buffer, pi, first);
         } else {
             final int capacity = buffer.length();
-            final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<>(capacity);
+            final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<Object>(capacity);
             producerBuffer = newBuffer;
             
             pi = calcWrappedOffset(p, m);

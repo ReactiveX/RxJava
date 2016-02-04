@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -29,6 +28,7 @@ import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.nbp.NbpPublishSubject;
@@ -135,7 +135,7 @@ public class NbpOperatorTakeTest {
     @Ignore("take(0) is now empty() and doesn't even subscribe to the original source")
     public void testTakeZeroDoesntLeakError() {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
-        BooleanDisposable bs = new BooleanDisposable();
+        final BooleanDisposable bs = new BooleanDisposable();
         NbpObservable<String> source = NbpObservable.create(new NbpOnSubscribe<String>() {
             @Override
             public void accept(NbpSubscriber<? super String> NbpObserver) {
@@ -284,7 +284,7 @@ public class NbpOperatorTakeTest {
     @Test(timeout = 2000)
     public void testTakeObserveOn() {
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<>(o);
+        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<Object>(o);
         
         INFINITE_OBSERVABLE
         .observeOn(Schedulers.newThread()).take(1).subscribe(ts);
@@ -299,7 +299,7 @@ public class NbpOperatorTakeTest {
     
     @Test
     public void testInterrupt() throws InterruptedException {
-        final AtomicReference<Object> exception = new AtomicReference<>();
+        final AtomicReference<Object> exception = new AtomicReference<Object>();
         final CountDownLatch latch = new CountDownLatch(1);
         NbpObservable.just(1).subscribeOn(Schedulers.computation()).take(1)
         .subscribe(new Consumer<Integer>() {
@@ -342,11 +342,16 @@ public class NbpOperatorTakeTest {
     
     @Test
     public void testReentrantTake() {
-        NbpPublishSubject<Integer> source = NbpPublishSubject.create();
+        final NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
-        source.take(1).doOnNext(v -> source.onNext(2)).subscribe(ts);
+        source.take(1).doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) {
+                source.onNext(2);
+            }
+        }).subscribe(ts);
         
         source.onNext(1);
         

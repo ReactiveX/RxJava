@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -57,7 +57,7 @@ public class NbpOnSubscribeTimerTest {
 
     @Test
     public void testTimerPeriodically() {
-        NbpTestSubscriber<Long> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Long> ts = new NbpTestSubscriber<Long>();
         
         NbpObservable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler).subscribe(ts);
         
@@ -84,7 +84,7 @@ public class NbpOnSubscribeTimerTest {
     @Test
     public void testInterval() {
         NbpObservable<Long> w = NbpObservable.interval(1, TimeUnit.SECONDS, scheduler);
-        NbpTestSubscriber<Long> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Long> ts = new NbpTestSubscriber<Long>();
         w.subscribe(ts);
 
         ts.assertNoValues();
@@ -109,8 +109,8 @@ public class NbpOnSubscribeTimerTest {
     public void testWithMultipleSubscribersStartingAtSameTime() {
         NbpObservable<Long> w = NbpObservable.interval(1, TimeUnit.SECONDS, scheduler);
         
-        NbpTestSubscriber<Long> ts1 = new NbpTestSubscriber<>();
-        NbpTestSubscriber<Long> ts2 = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Long> ts1 = new NbpTestSubscriber<Long>();
+        NbpTestSubscriber<Long> ts2 = new NbpTestSubscriber<Long>();
         
         w.subscribe(ts1);
         w.subscribe(ts2);
@@ -146,7 +146,7 @@ public class NbpOnSubscribeTimerTest {
     public void testWithMultipleStaggeredSubscribers() {
         NbpObservable<Long> w = NbpObservable.interval(1, TimeUnit.SECONDS, scheduler);
         
-        NbpTestSubscriber<Long> ts1 = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Long> ts1 = new NbpTestSubscriber<Long>();
         
         w.subscribe(ts1);
 
@@ -154,7 +154,7 @@ public class NbpOnSubscribeTimerTest {
         
         scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
         
-        NbpTestSubscriber<Long> ts2 = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Long> ts2 = new NbpTestSubscriber<Long>();
         
         w.subscribe(ts2);
 
@@ -186,7 +186,7 @@ public class NbpOnSubscribeTimerTest {
     public void testWithMultipleStaggeredSubscribersAndPublish() {
         NbpConnectableObservable<Long> w = NbpObservable.interval(1, TimeUnit.SECONDS, scheduler).publish();
         
-        NbpTestSubscriber<Long> ts1 = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Long> ts1 = new NbpTestSubscriber<Long>();
         
         w.subscribe(ts1);
         w.connect();
@@ -195,7 +195,7 @@ public class NbpOnSubscribeTimerTest {
 
         scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
         
-        NbpTestSubscriber<Long> ts2 = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Long> ts2 = new NbpTestSubscriber<Long>();
         w.subscribe(ts2);
 
         ts1.assertValues(0L, 1L);

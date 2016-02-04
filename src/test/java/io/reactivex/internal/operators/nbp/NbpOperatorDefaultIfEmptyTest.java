@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -58,7 +58,7 @@ public class NbpOperatorDefaultIfEmptyTest {
     @Test
     @Ignore("Subscribers should not throw")
     public void testEmptyButClientThrows() {
-        NbpSubscriber<Integer> o = TestHelper.mockNbpSubscriber();
+        final NbpSubscriber<Integer> o = TestHelper.mockNbpSubscriber();
         
         NbpObservable.<Integer>empty().defaultIfEmpty(1).subscribe(new NbpObserver<Integer>() {
             @Override

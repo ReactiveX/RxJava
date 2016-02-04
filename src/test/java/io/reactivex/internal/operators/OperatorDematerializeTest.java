@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,8 +15,6 @@ package io.reactivex.internal.operators;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-
-import java.util.Optional;
 
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
@@ -94,7 +92,7 @@ public class OperatorDematerializeTest {
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<>(observer);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(observer);
         dematerialize.subscribe(ts);
 
         System.out.println(ts.errors());

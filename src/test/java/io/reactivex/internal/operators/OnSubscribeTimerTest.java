@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -57,7 +57,7 @@ public class OnSubscribeTimerTest {
 
     @Test
     public void testTimerPeriodically() {
-        TestSubscriber<Long> ts = new TestSubscriber<>();
+        TestSubscriber<Long> ts = new TestSubscriber<Long>();
         
         Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler).subscribe(ts);
         
@@ -84,7 +84,7 @@ public class OnSubscribeTimerTest {
     @Test
     public void testInterval() {
         Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
-        TestSubscriber<Long> ts = new TestSubscriber<>();
+        TestSubscriber<Long> ts = new TestSubscriber<Long>();
         w.subscribe(ts);
 
         ts.assertNoValues();
@@ -109,8 +109,8 @@ public class OnSubscribeTimerTest {
     public void testWithMultipleSubscribersStartingAtSameTime() {
         Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
         
-        TestSubscriber<Long> ts1 = new TestSubscriber<>();
-        TestSubscriber<Long> ts2 = new TestSubscriber<>();
+        TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
         
         w.subscribe(ts1);
         w.subscribe(ts2);
@@ -146,7 +146,7 @@ public class OnSubscribeTimerTest {
     public void testWithMultipleStaggeredSubscribers() {
         Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
         
-        TestSubscriber<Long> ts1 = new TestSubscriber<>();
+        TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
         
         w.subscribe(ts1);
 
@@ -154,7 +154,7 @@ public class OnSubscribeTimerTest {
         
         scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
         
-        TestSubscriber<Long> ts2 = new TestSubscriber<>();
+        TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
         
         w.subscribe(ts2);
 
@@ -186,7 +186,7 @@ public class OnSubscribeTimerTest {
     public void testWithMultipleStaggeredSubscribersAndPublish() {
         ConnectableObservable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler).publish();
         
-        TestSubscriber<Long> ts1 = new TestSubscriber<>();
+        TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
         
         w.subscribe(ts1);
         w.connect();
@@ -195,7 +195,7 @@ public class OnSubscribeTimerTest {
 
         scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
         
-        TestSubscriber<Long> ts2 = new TestSubscriber<>();
+        TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
         w.subscribe(ts2);
 
         ts1.assertValues(0L, 1L);

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,8 +16,8 @@ package io.reactivex.internal.operators.nbp;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.NbpObservable.*;
 import io.reactivex.Scheduler;
+import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -39,7 +39,7 @@ public final class NbpOperatorSkipLastTimed<T> implements NbpOperator<T, T> {
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> t) {
-        return new SkipLastTimedSubscriber<>(t, time, unit, scheduler, bufferSize, delayError);
+        return new SkipLastTimedSubscriber<T>(t, time, unit, scheduler, bufferSize, delayError);
     }
     
     static final class SkipLastTimedSubscriber<T> extends AtomicInteger implements NbpSubscriber<T>, Disposable {
@@ -64,7 +64,7 @@ public final class NbpOperatorSkipLastTimed<T> implements NbpOperator<T, T> {
             this.time = time;
             this.unit = unit;
             this.scheduler = scheduler;
-            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
             this.delayError = delayError;
         }
         

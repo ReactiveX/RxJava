@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,13 +18,13 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
 
 import org.junit.Test;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.BooleanDisposable;
+import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
@@ -32,7 +32,7 @@ public class NbpOperatorWindowWithSizeTest {
 
     private static <T> List<List<T>> toLists(NbpObservable<NbpObservable<T>> observables) {
 
-        final List<List<T>> lists = new ArrayList<>();
+        final List<List<T>> lists = new ArrayList<List<T>>();
         NbpObservable.concat(observables.map(new Function<NbpObservable<T>, NbpObservable<List<T>>>() {
             @Override
             public NbpObservable<List<T>> apply(NbpObservable<T> xs) {
@@ -103,7 +103,7 @@ public class NbpOperatorWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeNonOverlapping() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
         NbpObservable.merge(NbpObservable.range(1, 10000).doOnNext(new Consumer<Integer>() {
 
@@ -122,7 +122,7 @@ public class NbpOperatorWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeNonOverlappingAsyncSource() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
         NbpObservable.merge(NbpObservable.range(1, 100000)
                 .doOnNext(new Consumer<Integer>() {
@@ -146,7 +146,7 @@ public class NbpOperatorWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeOverlapping() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
         NbpObservable.merge(NbpObservable.range(1, 10000).doOnNext(new Consumer<Integer>() {
 
@@ -165,7 +165,7 @@ public class NbpOperatorWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeOverlappingAsyncSource() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
         NbpObservable.merge(NbpObservable.range(1, 100000)
                 .doOnNext(new Consumer<Integer>() {
@@ -178,7 +178,7 @@ public class NbpOperatorWindowWithSizeTest {
                 })
                 .observeOn(Schedulers.computation())
                 .window(5, 4)
-                .take(2))
+                .take(2), 128)
                 .subscribe(ts);
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
@@ -188,7 +188,7 @@ public class NbpOperatorWindowWithSizeTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<String>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -222,7 +222,7 @@ public class NbpOperatorWindowWithSizeTest {
     
     @Test
     public void testTakeFlatMapCompletes() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         final int indicator = 999999999;
         

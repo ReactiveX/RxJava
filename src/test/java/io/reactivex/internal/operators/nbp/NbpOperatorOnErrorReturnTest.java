@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,13 +18,13 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
@@ -35,7 +35,7 @@ public class NbpOperatorOnErrorReturnTest {
     public void testResumeNext() {
         TestObservable f = new TestObservable("one");
         NbpObservable<String> w = NbpObservable.create(f);
-        final AtomicReference<Throwable> capturedException = new AtomicReference<>();
+        final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
         NbpObservable<String> NbpObservable = w.onErrorReturn(new Function<Throwable, String>() {
 
@@ -71,7 +71,7 @@ public class NbpOperatorOnErrorReturnTest {
     public void testFunctionThrowsError() {
         TestObservable f = new TestObservable("one");
         NbpObservable<String> w = NbpObservable.create(f);
-        final AtomicReference<Throwable> capturedException = new AtomicReference<>();
+        final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
         NbpObservable<String> NbpObservable = w.onErrorReturn(new Function<Throwable, String>() {
 
@@ -130,7 +130,7 @@ public class NbpOperatorOnErrorReturnTest {
 
         @SuppressWarnings("unchecked")
         NbpObserver<String> NbpObserver = mock(NbpObserver.class);
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         NbpObservable.subscribe(ts);
         ts.awaitTerminalEvent();
 
@@ -144,7 +144,7 @@ public class NbpOperatorOnErrorReturnTest {
     
     @Test
     public void testBackpressure() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.range(0, 100000)
                 .onErrorReturn(new Function<Throwable, Integer>() {
 

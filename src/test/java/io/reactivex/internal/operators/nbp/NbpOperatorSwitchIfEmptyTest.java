@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -22,7 +22,8 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
-import io.reactivex.disposables.BooleanDisposable;
+import io.reactivex.disposables.*;
+import io.reactivex.functions.Consumer;
 
 
 public class NbpOperatorSwitchIfEmptyTest {
@@ -32,7 +33,12 @@ public class NbpOperatorSwitchIfEmptyTest {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final NbpObservable<Integer> o = NbpObservable.just(4)
                 .switchIfEmpty(NbpObservable.just(2)
-                .doOnSubscribe(s -> subscribed.set(true)));
+                .doOnSubscribe(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(Disposable s) {
+                        subscribed.set(true);
+                    }
+                }));
 
         assertEquals(4, o.toBlocking().single().intValue());
         assertFalse(subscribed.get());
@@ -49,7 +55,7 @@ public class NbpOperatorSwitchIfEmptyTest {
     @Test
     public void testSwitchTriggerUnsubscribe() throws Exception {
 
-        BooleanDisposable bs = new BooleanDisposable();
+        final BooleanDisposable bs = new BooleanDisposable();
         
         NbpObservable<Long> withProducer = NbpObservable.create(new NbpOnSubscribe<Long>() {
             @Override
@@ -92,7 +98,7 @@ public class NbpOperatorSwitchIfEmptyTest {
 
     @Test
     public void testSwitchShouldTriggerUnsubscribe() {
-        BooleanDisposable bs = new BooleanDisposable();
+        final BooleanDisposable bs = new BooleanDisposable();
         
         NbpObservable.create(new NbpOnSubscribe<Long>() {
             @Override

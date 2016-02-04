@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,8 +16,8 @@ package io.reactivex.internal.operators.nbp;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.NbpObservable.*;
 import io.reactivex.Scheduler;
+import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -43,7 +43,7 @@ public final class NbpOperatorObserveOn<T> implements NbpOperator<T, T> {
         
         Scheduler.Worker w = scheduler.createWorker();
         
-        return new ObserveOnSubscriber<>(t, w, delayError, bufferSize);
+        return new ObserveOnSubscriber<T>(t, w, delayError, bufferSize);
     }
     
     /**
@@ -78,7 +78,7 @@ public final class NbpOperatorObserveOn<T> implements NbpOperator<T, T> {
             this.worker = worker;
             this.delayError = delayError;
             this.bufferSize = bufferSize;
-            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
         }
         
         @Override

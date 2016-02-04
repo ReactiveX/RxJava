@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -56,19 +56,19 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
     
     @Override
     public final boolean enter() {
-        return WIP.getAndIncrement(this) == 0;
+        return wip.getAndIncrement() == 0;
     }
     
     public final boolean fastEnter() {
-        return wip == 0 && WIP.compareAndSet(this, 0, 1);
+        return wip.get() == 0 && wip.compareAndSet(0, 1);
     }
     
     protected final void fastpathEmit(U value, boolean delayError) {
         final Subscriber<? super V> s = actual;
         final Queue<U> q = queue;
         
-        if (wip == 0 && WIP.compareAndSet(this, 0, 1)) {
-            long r = requested;
+        if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
+            long r = requested.get();
             if (r != 0L) {
                 if (accept(s, value)) {
                     if (r != Long.MAX_VALUE) {
@@ -86,15 +86,15 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
                 return;
             }
         }
-        drainLoop(q, s, delayError);
+        QueueDrainHelper.drainLoop(q, s, delayError, this);
     }
 
     protected final void fastpathEmitMax(U value, boolean delayError, Disposable dispose) {
         final Subscriber<? super V> s = actual;
         final Queue<U> q = queue;
         
-        if (wip == 0 && WIP.compareAndSet(this, 0, 1)) {
-            long r = requested;
+        if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
+            long r = requested.get();
             if (r != 0L) {
                 if (accept(s, value)) {
                     if (r != Long.MAX_VALUE) {
@@ -115,15 +115,15 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
                 return;
             }
         }
-        drainMaxLoop(q, s, delayError, dispose);
+        QueueDrainHelper.drainMaxLoop(q, s, delayError, dispose, this);
     }
 
     protected final void fastpathOrderedEmitMax(U value, boolean delayError, Disposable dispose) {
         final Subscriber<? super V> s = actual;
         final Queue<U> q = queue;
         
-        if (wip == 0 && WIP.compareAndSet(this, 0, 1)) {
-            long r = requested;
+        if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
+            long r = requested.get();
             if (r != 0L) {
                 if (q.isEmpty()) {
                     if (accept(s, value)) {
@@ -149,7 +149,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
                 return;
             }
         }
-        drainMaxLoop(q, s, delayError, dispose);
+        QueueDrainHelper.drainMaxLoop(q, s, delayError, dispose, this);
     }
 
     /**
@@ -161,9 +161,9 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
         final Subscriber<? super V> s = actual;
         final Queue<U> q = queue;
         
-        if (wip == 0 && WIP.compareAndSet(this, 0, 1)) {
+        if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             if (q.isEmpty()) {
-                long r = requested;
+                long r = requested.get();
                 if (r != 0L) {
                     if (accept(s, value)) {
                         if (r != Long.MAX_VALUE) {
@@ -182,7 +182,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
                 return;
             }
         }
-        drainLoop(q, s, delayError);
+        QueueDrainHelper.drainLoop(q, s, delayError, this);
     }
 
     @Override
@@ -192,29 +192,29 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
     
     @Override
     public final int leave(int m) {
-        return WIP.addAndGet(this, m);
+        return wip.addAndGet(m);
     }
     
     @Override
     public final long requested() {
-        return requested;
+        return requested.get();
     }
     
     @Override
     public final long produced(long n) {
-        return REQUESTED.addAndGet(this, -n);
+        return requested.addAndGet(-n);
     }
     
     public final void requested(long n) {
         if (SubscriptionHelper.validateRequest(n)) {
             return;
         }
-        BackpressureHelper.add(REQUESTED, this, n);
+        BackpressureHelper.add(requested, n);
     }
     
     public void drain(boolean delayError) {
         if (enter()) {
-            drainLoop(queue, actual, delayError);
+            QueueDrainHelper.drainLoop(queue, actual, delayError, this);
         }
     }
 }
@@ -231,9 +231,7 @@ class QueueDrainSubscriberPad0 {
 
 /** The WIP counter. */
 class QueueDrainSubscriberWip extends QueueDrainSubscriberPad0 {
-    volatile int wip;
-    static final AtomicIntegerFieldUpdater<QueueDrainSubscriberWip> WIP =
-            AtomicIntegerFieldUpdater.newUpdater(QueueDrainSubscriberWip.class, "wip");
+    final AtomicInteger wip = new AtomicInteger();
 }
 
 /** Pads away the wip from the other fields. */
@@ -244,9 +242,7 @@ class QueueDrainSubscriberPad2 extends QueueDrainSubscriberWip {
 
 /** Contains the requested field. */
 class QueueDrainSubscriberPad3 extends QueueDrainSubscriberPad2 {
-    volatile long requested;
-    static final AtomicLongFieldUpdater<QueueDrainSubscriberPad3> REQUESTED =
-            AtomicLongFieldUpdater.newUpdater(QueueDrainSubscriberPad3.class, "requested");
+    final AtomicLong requested = new AtomicLong();
 }
 
 /** Pads away the requested from the other fields. */

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -21,10 +21,11 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Scheduler;
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.*;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Replays events to Subscribers.
@@ -43,7 +44,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         if (capacityHint <= 0) {
             throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
         }
-        ReplayBuffer<T> buffer = new UnboundedReplayBuffer<>(capacityHint);
+        ReplayBuffer<T> buffer = new UnboundedReplayBuffer<T>(capacityHint);
         return createWithBuffer(buffer);
     }
 
@@ -51,12 +52,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         if (size <= 0) {
             throw new IllegalArgumentException("size > 0 required but it was " + size);
         }
-        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<>(size);
+        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<T>(size);
         return createWithBuffer(buffer);
     }
 
     /* test */ static <T> ReplaySubject<T> createUnbounded() {
-        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<>(Integer.MAX_VALUE);
+        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<T>(Integer.MAX_VALUE);
         return createWithBuffer(buffer);
     }
 
@@ -69,18 +70,18 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     }
 
     public static <T> ReplaySubject<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int size) {
-        Objects.requireNonNull(unit);
-        Objects.requireNonNull(scheduler);
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
         if (size <= 0) {
             throw new IllegalArgumentException("size > 0 required but it was " + size);
         }
-        SizeAndTimeBoundReplayBuffer<T> buffer = new SizeAndTimeBoundReplayBuffer<>(size, maxAge, unit, scheduler);
+        SizeAndTimeBoundReplayBuffer<T> buffer = new SizeAndTimeBoundReplayBuffer<T>(size, maxAge, unit, scheduler);
         return createWithBuffer(buffer);
     }
     
     static <T> ReplaySubject<T> createWithBuffer(ReplayBuffer<T> buffer) {
-        State<T> state = new State<>(buffer);
-        return new ReplaySubject<>(state);
+        State<T> state = new State<T>(buffer);
+        return new ReplaySubject<T>(state);
     }
 
 
@@ -120,11 +121,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     @Override
     public boolean hasSubscribers() {
-        return state.subscribers.length != 0;
+        return state.subscribers.get().length != 0;
     }
 
     /* test */ int subscriberCount() {
-        return state.subscribers.length;
+        return state.subscribers.get().length;
     }
 
     @Override
@@ -175,10 +176,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         boolean done;
         
-        volatile ReplaySubscription<T>[] subscribers;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<State, ReplaySubscription[]> SUBSCRIBERS =
-                AtomicReferenceFieldUpdater.newUpdater(State.class, ReplaySubscription[].class, "subscribers");
+        final AtomicReference<ReplaySubscription<T>[]> subscribers;
         
         @SuppressWarnings("rawtypes")
         static final ReplaySubscription[] EMPTY = new ReplaySubscription[0];
@@ -186,14 +184,15 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @SuppressWarnings("rawtypes")
         static final ReplaySubscription[] TERMINATED = new ReplaySubscription[0];
         
+        @SuppressWarnings("unchecked")
         public State(ReplayBuffer<T> buffer) {
             this.buffer = buffer;
-            SUBSCRIBERS.lazySet(this, EMPTY);
+            this.subscribers = new AtomicReference<ReplaySubscription<T>[]>(EMPTY);
         }
         
         @Override
         public void subscribe(Subscriber<? super T> s) {
-            ReplaySubscription<T> rs = new ReplaySubscription<>(s, this);
+            ReplaySubscription<T> rs = new ReplaySubscription<T>(s, this);
             s.onSubscribe(rs);
             
             if (!rs.cancelled) {
@@ -209,7 +208,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         public boolean add(ReplaySubscription<T> rs) {
             for (;;) {
-                ReplaySubscription<T>[] a = subscribers;
+                ReplaySubscription<T>[] a = subscribers.get();
                 if (a == TERMINATED) {
                     return false;
                 }
@@ -218,7 +217,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 ReplaySubscription<T>[] b = new ReplaySubscription[len + 1];
                 System.arraycopy(a, 0, b, 0, len);
                 b[len] = rs;
-                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return true;
                 }
             }
@@ -227,7 +226,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @SuppressWarnings("unchecked")
         public void remove(ReplaySubscription<T> rs) {
             for (;;) {
-                ReplaySubscription<T>[] a = subscribers;
+                ReplaySubscription<T>[] a = subscribers.get();
                 if (a == TERMINATED || a == EMPTY) {
                     return;
                 }
@@ -251,7 +250,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     System.arraycopy(a, 0, b, 0, j);
                     System.arraycopy(a, j + 1, b, j, len - j - 1);
                 }
-                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return;
                 }
             }
@@ -260,7 +259,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @SuppressWarnings("unchecked")
         public ReplaySubscription<T>[] terminate(Object terminalValue) {
             if (compareAndSet(null, terminalValue)) {
-                return SUBSCRIBERS.getAndSet(this, TERMINATED);
+                return subscribers.getAndSet(TERMINATED);
             }
             return TERMINATED;
         }
@@ -283,7 +282,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             ReplayBuffer<T> b = buffer;
             b.add(t);
             
-            for (ReplaySubscription<T> rs : subscribers) {
+            for (ReplaySubscription<T> rs : subscribers.get()) {
                 b.replay(rs);
             }
         }
@@ -349,23 +348,21 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         Object index;
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<ReplaySubscription> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(ReplaySubscription.class, "requested");
+        final AtomicLong requested;
         
         volatile boolean cancelled;
         
         public ReplaySubscription(Subscriber<? super T> actual, State<T> state) {
             this.actual = actual;
             this.state = state;
+            this.requested = new AtomicLong();
         }
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(requested, n);
             state.buffer.replay(this);
         }
         
@@ -386,7 +383,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         volatile int size;
         
         public UnboundedReplayBuffer(int capacityHint) {
-            this.buffer = new ArrayList<>(capacityHint);
+            this.buffer = new ArrayList<Object>(capacityHint);
         }
         
         @Override
@@ -485,9 +482,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 }
 
                 int s = size;
-                long r = rs.requested;
+                long r = rs.requested.get();
                 boolean unbounded = r == Long.MAX_VALUE;
-                long e = 0;
+                long e = 0L;
                 
                 while (s != index) {
                     
@@ -515,7 +512,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     }
                     
                     if (r == 0) {
-                        r = rs.requested;
+                        r = rs.requested.get() + e;
                         if (r == 0) {
                             break;
                         }
@@ -527,8 +524,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     index++;
                 }
                 
-                if (!unbounded) {
-                    r = ReplaySubscription.REQUESTED.addAndGet(rs, e);
+                if (e != 0L) {
+                    if (!unbounded) {
+                        r = rs.requested.addAndGet(e);
+                    }
                 }
                 if (index != size && r != 0L) {
                     continue;
@@ -593,7 +592,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         public SizeBoundReplayBuffer(int maxSize) {
             this.maxSize = maxSize;
-            Node<Object> h = new Node<>(null);
+            Node<Object> h = new Node<Object>(null);
             this.tail = h;
             this.head = h;
         }
@@ -609,7 +608,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @Override
         public void add(T value) {
             Object o = value;
-            Node<Object> n = new Node<>(o);
+            Node<Object> n = new Node<Object>(o);
             Node<Object> t = tail;
 
             tail = n;
@@ -627,7 +626,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @Override
         public void addFinal(Object notificationLite) {
             Object o = notificationLite;
-            Node<Object> n = new Node<>(o);
+            Node<Object> n = new Node<Object>(o);
             Node<Object> t = tail;
 
             tail = n;
@@ -715,7 +714,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     return;
                 }
 
-                long r = rs.requested;
+                long r = rs.requested.get();
                 boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0;
                 
@@ -748,7 +747,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     }
                     
                     if (r == 0) {
-                        r = rs.requested;
+                        r = rs.requested.get() + e;
                         if (r == 0) {
                             break;
                         }
@@ -763,7 +762,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 
                 if (e != 0L) {
                     if (!unbounded) {
-                        r = ReplaySubscription.REQUESTED.addAndGet(rs, e);
+                        r = rs.requested.addAndGet(e);
                     }
                 }
                 
@@ -820,7 +819,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             this.maxAge = maxAge;
             this.unit = unit;
             this.scheduler = scheduler;
-            TimedNode<Object> h = new TimedNode<>(null, 0L);
+            TimedNode<Object> h = new TimedNode<Object>(null, 0L);
             this.tail = h;
             this.head = h;
         }
@@ -876,7 +875,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @Override
         public void add(T value) {
             Object o = value;
-            TimedNode<Object> n = new TimedNode<>(o, scheduler.now(unit));
+            TimedNode<Object> n = new TimedNode<Object>(o, scheduler.now(unit));
             TimedNode<Object> t = tail;
 
             tail = n;
@@ -894,7 +893,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @Override
         public void addFinal(Object notificationLite) {
             Object o = notificationLite;
-            TimedNode<Object> n = new TimedNode<>(o, Long.MAX_VALUE);
+            TimedNode<Object> n = new TimedNode<Object>(o, Long.MAX_VALUE);
             TimedNode<Object> t = tail;
 
             tail = n;
@@ -996,7 +995,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     return;
                 }
 
-                long r = rs.requested;
+                long r = rs.requested.get();
                 boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0;
                 
@@ -1029,7 +1028,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     }
                     
                     if (r == 0) {
-                        r = rs.requested;
+                        r = rs.requested.get() + e;
                         if (r == 0) {
                             break;
                         }
@@ -1044,7 +1043,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 
                 if (e != 0L) {
                     if (!unbounded) {
-                        r = ReplaySubscription.REQUESTED.addAndGet(rs, e);
+                        r = rs.requested.addAndGet(e);
                     }
                 }
                 

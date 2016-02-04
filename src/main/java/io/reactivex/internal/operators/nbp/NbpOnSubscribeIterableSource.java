@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,9 +19,6 @@ import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.BooleanDisposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
-/**
- *
- */
 public final class NbpOnSubscribeIterableSource<T> implements NbpOnSubscribe<T> {
     final Iterable<? extends T> source;
     public NbpOnSubscribeIterableSource(Iterable<? extends T> source) {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,12 +15,12 @@ package io.reactivex.schedulers;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.function.*;
-
 import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
+import io.reactivex.functions.*;
+import io.reactivex.schedulers.Schedulers;
 
 public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -66,7 +66,7 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
         SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
     
-    @Test(timeout = 30000)
+    @Test(timeout = 60000)
     public void testCancelledTaskRetention() throws InterruptedException {
         Worker w = Schedulers.io().createWorker();
         try {

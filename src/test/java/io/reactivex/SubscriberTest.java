@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -23,6 +23,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.subscribers.*;
 
 public class SubscriberTest {
@@ -32,7 +33,7 @@ public class SubscriberTest {
      */
     @Test
     public void testRequestFromFinalSubscribeWithRequestValue() {
-        TestSubscriber<String> s = new TestSubscriber<>((Long)null);
+        TestSubscriber<String> s = new TestSubscriber<String>((Long)null);
         s.request(10);
         final AtomicLong r = new AtomicLong();
         s.onSubscribe(new Subscription() {
@@ -56,7 +57,7 @@ public class SubscriberTest {
      */
     @Test
     public void testRequestFromFinalSubscribeWithoutRequestValue() {
-        TestSubscriber<String> s = new TestSubscriber<>();
+        TestSubscriber<String> s = new TestSubscriber<String>();
         final AtomicLong r = new AtomicLong();
         s.onSubscribe(new Subscription() {
 
@@ -76,29 +77,34 @@ public class SubscriberTest {
 
     @Test
     public void testRequestFromChainedOperator() {
-        TestSubscriber<String> s = new TestSubscriber<>();
-        Operator<String, String> o = s1 -> new Subscriber<String>() {
-
+        TestSubscriber<String> s = new TestSubscriber<String>();
+        Operator<String, String> o = new Operator<String, String>() {
             @Override
-            public void onSubscribe(Subscription a) {
-                s1.onSubscribe(a);
+            public Subscriber<? super String> apply(final Subscriber<? super String> s1) {
+                return new Subscriber<String>() {
+
+                    @Override
+                    public void onSubscribe(Subscription a) {
+                        s1.onSubscribe(a);
+                    }
+                    
+                    @Override
+                    public void onComplete() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(String t) {
+
+                    }
+
+                };
             }
-            
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(String t) {
-
-            }
-
         };
         s.request(10);
         Subscriber<? super String> ns = o.apply(s);
@@ -124,29 +130,34 @@ public class SubscriberTest {
 
     @Test
     public void testRequestFromDecoupledOperator() {
-        TestSubscriber<String> s = new TestSubscriber<>((Long)null);
-        Operator<String, String> o = s1 -> new Subscriber<String>() {
-
+        TestSubscriber<String> s = new TestSubscriber<String>((Long)null);
+        Operator<String, String> o = new Operator<String, String>() {
             @Override
-            public void onSubscribe(Subscription a) {
-                s1.onSubscribe(a);
+            public Subscriber<? super String> apply(final Subscriber<? super String> s1) {
+                return new Subscriber<String>() {
+
+                    @Override
+                    public void onSubscribe(Subscription a) {
+                        s1.onSubscribe(a);
+                    }
+                    
+                    @Override
+                    public void onComplete() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(String t) {
+
+                    }
+
+                };
             }
-            
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(String t) {
-
-            }
-
         };
         s.request(10);
         Subscriber<? super String> ns = o.apply(s);
@@ -172,50 +183,53 @@ public class SubscriberTest {
 
     @Test
     public void testRequestFromDecoupledOperatorThatRequestsN() {
-        TestSubscriber<String> s = new TestSubscriber<>();
+        TestSubscriber<String> s = new TestSubscriber<String>();
         final AtomicLong innerR = new AtomicLong();
-        Operator<String, String> o = child -> {
-            // we want to decouple the chain so set our own Producer on the child instead of it coming from the parent
-            child.onSubscribe(new Subscription() {
+        Operator<String, String> o = new Operator<String, String>() {
+            @Override
+            public Subscriber<? super String> apply(Subscriber<? super String> child) {
+                // we want to decouple the chain so set our own Producer on the child instead of it coming from the parent
+                child.onSubscribe(new Subscription() {
 
-                @Override
-                public void request(long n) {
-                    innerR.set(n);
-                }
-                
-                @Override
-                public void cancel() {
+                    @Override
+                    public void request(long n) {
+                        innerR.set(n);
+                    }
                     
-                }
+                    @Override
+                    public void cancel() {
+                        
+                    }
 
-            });
+                });
 
-            AsyncObserver<String> as = new AsyncObserver<String>() {
-                
-                @Override
-                protected void onStart() {
-                    // we request 99 up to the parent
-                    request(99);
-                }
-                
-                @Override
-                public void onComplete() {
+                AsyncObserver<String> as = new AsyncObserver<String>() {
+                    
+                    @Override
+                    protected void onStart() {
+                        // we request 99 up to the parent
+                        request(99);
+                    }
+                    
+                    @Override
+                    public void onComplete() {
 
-                }
+                    }
 
-                @Override
-                public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
 
-                }
+                    }
 
-                @Override
-                public void onNext(String t) {
+                    @Override
+                    public void onNext(String t) {
 
-                }
-                
-                
-            };
-            return as;
+                    }
+                    
+                    
+                };
+                return as;
+            }
         };
         s.request(10);
         Subscriber<? super String> ns = o.apply(s);
@@ -242,62 +256,77 @@ public class SubscriberTest {
 
     @Test
     public void testRequestToObservable() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Observable.<Integer>create(s -> s.onSubscribe(new Subscription() {
-
+        Observable.<Integer>create(new Publisher<Integer>() {
             @Override
-            public void request(long n) {
-                requested.set(n);
-            }
+            public void subscribe(Subscriber<? super Integer> s) {
+                s.onSubscribe(new Subscription() {
 
-            @Override
-            public void cancel() {
-                
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                    }
+
+                    @Override
+                    public void cancel() {
+                        
+                    }
+                });
             }
-        })).subscribe(ts);
+        }).subscribe(ts);
         assertEquals(3, requested.get());
     }
 
     @Test
     public void testRequestThroughMap() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Observable.<Integer>create(s -> s.onSubscribe(new Subscription() {
-
+        Observable.<Integer>create(new Publisher<Integer>() {
             @Override
-            public void request(long n) {
-                requested.set(n);
-            }
+            public void subscribe(Subscriber<? super Integer> s) {
+                s.onSubscribe(new Subscription() {
 
-            @Override
-            public void cancel() {
-                
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                    }
+
+                    @Override
+                    public void cancel() {
+                        
+                    }
+                });
             }
-        })).map(v -> v).subscribe(ts);
+        }).map(Functions.<Integer>identity()).subscribe(ts);
         assertEquals(3, requested.get());
     }
 
     @Test
     public void testRequestThroughTakeThatReducesRequest() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Observable.<Integer>create(s -> s.onSubscribe(new Subscription() {
-
+        Observable.<Integer>create(new Publisher<Integer>() {
             @Override
-            public void request(long n) {
-                requested.set(n);
-            }
+            public void subscribe(Subscriber<? super Integer> s) {
+                s.onSubscribe(new Subscription() {
 
-            @Override
-            public void cancel() {
-                
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                    }
+
+                    @Override
+                    public void cancel() {
+                        
+                    }
+                    
+                });
             }
-            
-        })).take(2).subscribe(ts);
+        }).take(2).subscribe(ts);
         
         // FIXME the take now requests Long.MAX_PATH if downstream requests at least the limit
         assertEquals(Long.MAX_VALUE, requested.get());
@@ -305,22 +334,27 @@ public class SubscriberTest {
 
     @Test
     public void testRequestThroughTakeWhereRequestIsSmallerThanTake() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Observable.<Integer>create(s -> s.onSubscribe(new Subscription() {
-
+        Observable.<Integer>create(new Publisher<Integer>() {
             @Override
-            public void request(long n) {
-                requested.set(n);
-            }
-            
-            @Override
-            public void cancel() {
-                
-            }
+            public void subscribe(Subscriber<? super Integer> s) {
+                s.onSubscribe(new Subscription() {
 
-        })).take(10).subscribe(ts);
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                    }
+                    
+                    @Override
+                    public void cancel() {
+                        
+                    }
+
+                });
+            }
+        }).take(10).subscribe(ts);
         assertEquals(3, requested.get());
     }
 
@@ -429,7 +463,7 @@ public class SubscriberTest {
     @Test
     public void testNegativeRequestThrowsIllegalArgumentException() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> exception = new AtomicReference<>();
+        final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
         Observable.just(1,2,3,4).subscribe(new Observer<Integer>() {
 
             @Override
@@ -460,7 +494,7 @@ public class SubscriberTest {
     
     @Test
     public void testOnStartRequestsAreAdditive() {
-        final List<Integer> list = new ArrayList<>();
+        final List<Integer> list = new ArrayList<Integer>();
         Observable.just(1,2,3,4,5).subscribe(new Observer<Integer>() {
             @Override
             public void onStart() {
@@ -487,7 +521,7 @@ public class SubscriberTest {
     
     @Test
     public void testOnStartRequestsAreAdditiveAndOverflowBecomesMaxValue() {
-        final List<Integer> list = new ArrayList<>();
+        final List<Integer> list = new ArrayList<Integer>();
         Observable.just(1,2,3,4,5).subscribe(new Observer<Integer>() {
             @Override
             public void onStart() {

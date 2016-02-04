@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,13 +17,13 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
+import io.reactivex.functions.*;
 import io.reactivex.subscribers.AsyncObserver;
 
 /**
@@ -37,6 +37,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
 
     /**
      * Bug report: https://github.com/ReactiveX/RxJava/issues/431
+     * @throws InterruptedException if the test is interrupted
      */
     @Test
     public final void testUnSubscribeForScheduler() throws InterruptedException {

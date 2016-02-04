@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,18 +13,6 @@
 
 package io.reactivex.functions;
 
-import java.util.function.Function;
-
-@FunctionalInterface
-public interface Function4<T1, T2, T3, T4, R> extends Function<Object[], R> {
+public interface Function4<T1, T2, T3, T4, R> {
     R apply(T1 t1, T2 t2, T3 t3, T4 t4);
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    default R apply(Object[] a) {
-        if (a.length != 4) {
-            throw new IllegalArgumentException("Array of size 4 expected but got " + a.length);
-        }
-        return apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3]);
-    }
 }

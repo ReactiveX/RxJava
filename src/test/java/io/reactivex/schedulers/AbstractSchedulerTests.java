@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -27,10 +26,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
+import io.reactivex.*;
+import io.reactivex.functions.*;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
-import io.reactivex.internal.subscriptions.*;
 
 /**
  * Base tests for all schedulers including Immediate/Current.
@@ -385,7 +385,7 @@ public abstract class AbstractSchedulerTests {
             }
         });
 
-        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<>();
+        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
         // this should call onNext concurrently
         o.subscribe(observer);
 
@@ -404,7 +404,7 @@ public abstract class AbstractSchedulerTests {
 
         Observable<String> o = Observable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
 
-        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<>();
+        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
 
         o.observeOn(scheduler).subscribe(observer);
 
@@ -439,7 +439,7 @@ public abstract class AbstractSchedulerTests {
                     }
                 });
 
-        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<>();
+        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
 
         o.subscribe(observer);
 
@@ -461,7 +461,7 @@ public abstract class AbstractSchedulerTests {
     private static class ConcurrentObserverValidator<T> extends Observer<T> {
 
         final AtomicInteger concurrentCounter = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         final CountDownLatch completed = new CountDownLatch(1);
 
         @Override

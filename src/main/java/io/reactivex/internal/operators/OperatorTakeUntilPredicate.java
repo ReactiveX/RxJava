@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,16 +13,12 @@
 
 package io.reactivex.internal.operators;
 
-import java.util.function.Predicate;
-
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.Predicate;
 import io.reactivex.plugins.RxJavaPlugins;
 
-/**
- * 
- */
 public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
     final Predicate<? super T> predicate;
     public OperatorTakeUntilPredicate(Predicate<? super T> predicate) {
@@ -31,7 +27,7 @@ public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> s) {
-        return new InnerSubscriber<>(s, predicate);
+        return new InnerSubscriber<T>(s, predicate);
     }
     
     static final class InnerSubscriber<T> implements Subscriber<T> {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,8 +18,8 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler;
+import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -40,8 +40,8 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new DebounceTimedSubscriber<>(
-                new SerializedSubscriber<>(t), 
+        return new DebounceTimedSubscriber<T>(
+                new SerializedSubscriber<T>(t), 
                 timeout, unit, scheduler.createWorker());
     }
     
@@ -56,14 +56,17 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
         
         Subscription s;
         
-        volatile Disposable timer;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<DebounceTimedSubscriber, Disposable> TIMER =
-                AtomicReferenceFieldUpdater.newUpdater(DebounceTimedSubscriber.class, Disposable.class, "timer");
+        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
-        static final Disposable NEW_TIMER = () -> { };
+        static final Disposable NEW_TIMER = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         volatile long index;
         
@@ -77,9 +80,9 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
         }
         
         public void disposeTimer() {
-            Disposable d = timer;
+            Disposable d = timer.get();
             if (d != CANCELLED) {
-                d = TIMER.getAndSet(this, CANCELLED);
+                d = timer.getAndSet(CANCELLED);
                 if (d != CANCELLED && d != null) {
                     d.dispose();
                 }
@@ -105,13 +108,13 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
             long idx = index + 1;
             index = idx;
             
-            Disposable d = timer;
+            Disposable d = timer.get();
             if (d != null) {
                 d.dispose();
             }
             
-            DebounceEmitter<T> de = new DebounceEmitter<>(t, idx, this);
-            if (!TIMER.compareAndSet(this, d, de)) {
+            DebounceEmitter<T> de = new DebounceEmitter<T>(t, idx, this);
+            if (!timer.compareAndSet(d, de)) {
                 return;
             }
                 
@@ -138,7 +141,7 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
             }
             done = true;
             
-            Disposable d = timer;
+            Disposable d = timer.get();
             if (d != CANCELLED) {
                 @SuppressWarnings("unchecked")
                 DebounceEmitter<T> de = (DebounceEmitter<T>)d;
@@ -186,16 +189,16 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
         /** */
         private static final long serialVersionUID = 6812032969491025141L;
 
-        static final Disposable DISPOSED = () -> { };
+        static final Disposable DISPOSED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         final T value;
         final long idx;
         final DebounceTimedSubscriber<T> parent;
         
-        volatile int once;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<DebounceEmitter> ONCE =
-                AtomicIntegerFieldUpdater.newUpdater(DebounceEmitter.class, "once");
+        final AtomicBoolean once = new AtomicBoolean();
 
         
         public DebounceEmitter(T value, long idx, DebounceTimedSubscriber<T> parent) {
@@ -210,7 +213,7 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
         }
         
         void emit() {
-            if (ONCE.compareAndSet(this, 0, 1)) {
+            if (once.compareAndSet(false, true)) {
                 parent.emit(idx, value, this);
             }
         }

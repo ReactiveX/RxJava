@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,13 +17,12 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.function.Function;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -47,7 +46,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(observer).onSubscribe(any());
+        verify(observer).onSubscribe((Subscription)any());
         verify(observer, times(1)).onNext("one");
         verify(observer, Mockito.never()).onNext("two");
         verify(observer, Mockito.never()).onNext("three");
@@ -75,7 +74,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(observer).onSubscribe(any());
+        verify(observer).onSubscribe((Subscription)any());
         verify(observer, times(1)).onNext("one");
         verify(observer, Mockito.never()).onNext("two");
         verify(observer, Mockito.never()).onNext("three");
@@ -103,7 +102,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(observer).onSubscribe(any());
+        verify(observer).onSubscribe((Subscription)any());
         verify(observer, times(1)).onNext("one");
         verify(observer, never()).onNext("two");
         verify(observer, never()).onNext("three");
@@ -131,7 +130,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(observer).onSubscribe(any());
+        verify(observer).onSubscribe((Subscription)any());
         verify(observer, times(1)).onNext("one");
         verify(observer, never()).onNext("two");
         verify(observer, never()).onNext("three");
@@ -188,7 +187,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
     
     @Test
     public void testBackpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(0, 100000)
                 .onExceptionResumeNext(Observable.just(1))
                 .observeOn(Schedulers.computation())

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -38,12 +38,11 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
     static final Subscription INITIAL = new Subscription() {
         @Override
         public void request(long n) {
-            
+            // deliberately no op
         }
         @Override
         public void cancel() {
-            // TODO Auto-generated method stub
-            
+            // deliberately no op
         }
     };
     
@@ -57,7 +56,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
     public FullArbiter(Subscriber<? super T> actual, Disposable resource, int capacity) {
         this.actual = actual;
         this.resource = resource;
-        this.queue = new SpscLinkedArrayQueue<>(capacity);
+        this.queue = new SpscLinkedArrayQueue<Object>(capacity);
         this.s = INITIAL;
     }
 
@@ -66,7 +65,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
         if (SubscriptionHelper.validateRequest(n)) {
             return;
         }
-        BackpressureHelper.add(MISSED_REQUESTED, this, n);
+        BackpressureHelper.add(missedRequested, n);
         queue.offer(REQUEST, REQUEST);
         drain();
     }
@@ -122,7 +121,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
     }
 
     void drain() {
-        if (WIP.getAndIncrement(this) != 0) {
+        if (wip.getAndIncrement() != 0) {
             return;
         }
         
@@ -144,7 +143,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
                 Object v = q.poll();
                 
                 if (o == REQUEST) {
-                    long mr = MISSED_REQUESTED.getAndSet(this, 0L);
+                    long mr = missedRequested.getAndSet(0L);
                     if (mr != 0L) {
                         requested = BackpressureHelper.addCap(requested, mr);
                         if (s != null) {
@@ -189,13 +188,13 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
                 } else {
                     long r = requested;
                     if (r != 0) {
-                        a.onNext(NotificationLite.getValue(v));
+                        a.onNext(NotificationLite.<T>getValue(v));
                         requested = r - 1;
                     }
                 }
             }
             
-            missed = WIP.addAndGet(this, -missed);
+            missed = wip.addAndGet(-missed);
             if (missed == 0) {
                 break;
             }
@@ -211,9 +210,7 @@ class FullArbiterPad0 {
 
 /** The work-in-progress counter. */
 class FullArbiterWip extends FullArbiterPad0 {
-    volatile int wip;
-    static final AtomicIntegerFieldUpdater<FullArbiterWip> WIP =
-    AtomicIntegerFieldUpdater.newUpdater(FullArbiterWip.class, "wip");
+    final AtomicInteger wip = new AtomicInteger();
 }
 
 /** Pads the wip counter away. */
@@ -224,9 +221,7 @@ class FullArbiterPad1 extends FullArbiterWip {
 
 /** The missed request counter. */
 class FullArbiterMissed extends FullArbiterPad1 {
-    volatile long missedRequested;
-    static final AtomicLongFieldUpdater<FullArbiterMissed> MISSED_REQUESTED =
-    AtomicLongFieldUpdater.newUpdater(FullArbiterMissed.class, "missedRequested");
+    final AtomicLong missedRequested = new AtomicLong();
 }
 
 /** Pads the missed request counter away. */

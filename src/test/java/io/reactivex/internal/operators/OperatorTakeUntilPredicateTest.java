@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,13 +16,12 @@ package io.reactivex.internal.operators;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.function.Predicate;
-
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Predicate;
 import io.reactivex.subscribers.TestSubscriber;
 ;
 
@@ -31,7 +30,12 @@ public class OperatorTakeUntilPredicateTest {
     public void takeEmpty() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
         
-        Observable.empty().takeUntil(v -> true).subscribe(o);
+        Observable.empty().takeUntil(new Predicate<Object>() {
+            @Override
+            public boolean test(Object v) {
+                return true;
+            }
+        }).subscribe(o);
         
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
@@ -41,7 +45,12 @@ public class OperatorTakeUntilPredicateTest {
     public void takeAll() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
         
-        Observable.just(1, 2).takeUntil(v -> false).subscribe(o);
+        Observable.just(1, 2).takeUntil(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return false;
+            }
+        }).subscribe(o);
         
         verify(o).onNext(1);
         verify(o).onNext(2);
@@ -52,7 +61,12 @@ public class OperatorTakeUntilPredicateTest {
     public void takeFirst() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
         
-        Observable.just(1, 2).takeUntil(v -> true).subscribe(o);
+        Observable.just(1, 2).takeUntil(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        }).subscribe(o);
         
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
@@ -63,7 +77,12 @@ public class OperatorTakeUntilPredicateTest {
     public void takeSome() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
         
-        Observable.just(1, 2, 3).takeUntil(t1 -> t1 == 2)
+        Observable.just(1, 2, 3).takeUntil(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t1) {
+                return t1 == 2;
+            }
+        })
         .subscribe(o);
         
         verify(o).onNext(1);
@@ -76,9 +95,13 @@ public class OperatorTakeUntilPredicateTest {
     public void functionThrows() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
         
-        Observable.just(1, 2, 3).takeUntil((Predicate<Integer>)(t1 -> {
-                throw new TestException("Forced failure");
-        })).subscribe(o);
+        Predicate<Integer> predicate = new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t1) {
+                    throw new TestException("Forced failure");
+            }
+        };
+        Observable.just(1, 2, 3).takeUntil(predicate).subscribe(o);
         
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
@@ -93,7 +116,12 @@ public class OperatorTakeUntilPredicateTest {
         Observable.just(1)
         .concatWith(Observable.<Integer>error(new TestException()))
         .concatWith(Observable.just(2))
-        .takeUntil(v -> false).subscribe(o);
+        .takeUntil(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return false;
+            }
+        }).subscribe(o);
         
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
@@ -102,9 +130,14 @@ public class OperatorTakeUntilPredicateTest {
     }
     @Test
     public void backpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>(5L);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5L);
         
-        Observable.range(1, 1000).takeUntil(v -> false).subscribe(ts);
+        Observable.range(1, 1000).takeUntil(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return false;
+            }
+        }).subscribe(ts);
         
         ts.assertNoErrors();
         ts.assertValues(1, 2, 3, 4, 5);
@@ -113,11 +146,15 @@ public class OperatorTakeUntilPredicateTest {
     
     @Test
     public void testErrorIncludesLastValueAsCause() {
-        TestSubscriber<String> ts = new TestSubscriber<>();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
         final TestException e = new TestException("Forced failure");
-        Observable.just("abc").takeUntil((Predicate<String>)(t -> {
-                throw e;
-        })).subscribe(ts);
+        Predicate<String> predicate = new Predicate<String>() {
+            @Override
+            public boolean test(String t) {
+                    throw e;
+            }
+        };
+        Observable.just("abc").takeUntil(predicate).subscribe(ts);
         
         ts.assertTerminated();
         ts.assertNotComplete();

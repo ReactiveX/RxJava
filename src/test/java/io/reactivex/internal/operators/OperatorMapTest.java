@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,13 +17,13 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.function.*;
 
 import org.junit.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Observable;
 import io.reactivex.TestHelper;
+import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 
 public class OperatorMapTest {
@@ -50,7 +50,12 @@ public class OperatorMapTest {
         Map<String, String> m2 = getMap("Two");
         Observable<Map<String, String>> observable = Observable.just(m1, m2);
 
-        Observable<String> m = observable.map(map -> map.get("firstName"));
+        Observable<String> m = observable.map(new Function<Map<String, String>, String>() {
+            @Override
+            public String apply(Map<String, String> map) {
+                return map.get("firstName");
+            }
+        });
         
         m.subscribe(stringObserver);
 
@@ -296,7 +301,7 @@ public class OperatorMapTest {
 //    }
 
     private static Map<String, String> getMap(String prefix) {
-        Map<String, String> m = new HashMap<>();
+        Map<String, String> m = new HashMap<String, String>();
         m.put("firstName", prefix + "First");
         m.put("lastName", prefix + "Last");
         return m;

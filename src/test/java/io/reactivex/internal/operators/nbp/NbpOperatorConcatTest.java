@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -28,6 +27,7 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.nbp.*;
@@ -60,7 +60,7 @@ public class NbpOperatorConcatTest {
 
         final NbpObservable<String> odds = NbpObservable.fromArray(o);
         final NbpObservable<String> even = NbpObservable.fromArray(e);
-        final List<NbpObservable<String>> list = new ArrayList<>();
+        final List<NbpObservable<String>> list = new ArrayList<NbpObservable<String>>();
         list.add(odds);
         list.add(even);
         NbpObservable<String> concat = NbpObservable.concat(NbpObservable.fromIterable(list));
@@ -105,8 +105,8 @@ public class NbpOperatorConcatTest {
     public void testSimpleAsyncConcat() {
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
 
-        TestObservable<String> o1 = new TestObservable<>("one", "two", "three");
-        TestObservable<String> o2 = new TestObservable<>("four", "five", "six");
+        TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
+        TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
 
         NbpObservable.concat(NbpObservable.create(o1), NbpObservable.create(o2)).subscribe(NbpObserver);
 
@@ -139,17 +139,18 @@ public class NbpOperatorConcatTest {
     
     /**
      * Test an async NbpObservable that emits more async Observables
+     * @throws InterruptedException if the test is interrupted
      */
     @Test
-    public void testNestedAsyncConcat() throws Throwable {
+    public void testNestedAsyncConcat() throws InterruptedException {
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
 
-        final TestObservable<String> o1 = new TestObservable<>("one", "two", "three");
-        final TestObservable<String> o2 = new TestObservable<>("four", "five", "six");
-        final TestObservable<String> o3 = new TestObservable<>("seven", "eight", "nine");
+        final TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
+        final TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
+        final TestObservable<String> o3 = new TestObservable<String>("seven", "eight", "nine");
         final CountDownLatch allowThird = new CountDownLatch(1);
 
-        final AtomicReference<Thread> parent = new AtomicReference<>();
+        final AtomicReference<Thread> parent = new AtomicReference<Thread>();
         final CountDownLatch parentHasStarted = new CountDownLatch(1);
         final CountDownLatch parentHasFinished = new CountDownLatch(1);
         
@@ -268,7 +269,8 @@ public class NbpOperatorConcatTest {
         final NbpObservable<String> even = NbpObservable.fromArray(e);
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        TestObservable<NbpObservable<String>> observableOfObservables = new TestObservable<>(callOnce, okToContinue, odds, even);
+        @SuppressWarnings("unchecked")
+        TestObservable<NbpObservable<String>> observableOfObservables = new TestObservable<NbpObservable<String>>(callOnce, okToContinue, odds, even);
         NbpObservable<String> concatF = NbpObservable.concat(NbpObservable.create(observableOfObservables));
         concatF.subscribe(NbpObserver);
         try {
@@ -300,13 +302,14 @@ public class NbpOperatorConcatTest {
 
     @Test
     public void testConcatConcurrentWithInfinity() {
-        final TestObservable<String> w1 = new TestObservable<>("one", "two", "three");
+        final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
         //This NbpObservable will send "hello" MAX_VALUE time.
-        final TestObservable<String> w2 = new TestObservable<>("hello", Integer.MAX_VALUE);
+        final TestObservable<String> w2 = new TestObservable<String>("hello", Integer.MAX_VALUE);
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
         
-        TestObservable<NbpObservable<String>> observableOfObservables = new TestObservable<>(NbpObservable.create(w1), NbpObservable.create(w2));
+        @SuppressWarnings("unchecked")
+        TestObservable<NbpObservable<String>> observableOfObservables = new TestObservable<NbpObservable<String>>(NbpObservable.create(w1), NbpObservable.create(w2));
         NbpObservable<String> concatF = NbpObservable.concat(NbpObservable.create(observableOfObservables));
 
         concatF.take(50).subscribe(NbpObserver);
@@ -334,8 +337,8 @@ public class NbpOperatorConcatTest {
         final CountDownLatch okToContinueW1 = new CountDownLatch(1);
         final CountDownLatch okToContinueW2 = new CountDownLatch(1);
 
-        final TestObservable<String> w1 = new TestObservable<>(null, okToContinueW1, "one", "two", "three");
-        final TestObservable<String> w2 = new TestObservable<>(null, okToContinueW2, "four", "five", "six");
+        final TestObservable<String> w1 = new TestObservable<String>(null, okToContinueW1, "one", "two", "three");
+        final TestObservable<String> w2 = new TestObservable<String>(null, okToContinueW2, "four", "five", "six");
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
         
@@ -385,11 +388,11 @@ public class NbpOperatorConcatTest {
     public void testConcatUnsubscribe() {
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        final TestObservable<String> w1 = new TestObservable<>("one", "two", "three");
-        final TestObservable<String> w2 = new TestObservable<>(callOnce, okToContinue, "four", "five", "six");
+        final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
+        final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
 
         final NbpObservable<String> concat = NbpObservable.concat(NbpObservable.create(w1), NbpObservable.create(w2));
 
@@ -427,13 +430,14 @@ public class NbpOperatorConcatTest {
     public void testConcatUnsubscribeConcurrent() {
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        final TestObservable<String> w1 = new TestObservable<>("one", "two", "three");
-        final TestObservable<String> w2 = new TestObservable<>(callOnce, okToContinue, "four", "five", "six");
+        final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
+        final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         
-        TestObservable<NbpObservable<String>> observableOfObservables = new TestObservable<>(NbpObservable.create(w1), NbpObservable.create(w2));
+        @SuppressWarnings("unchecked")
+        TestObservable<NbpObservable<String>> observableOfObservables = new TestObservable<NbpObservable<String>>(NbpObservable.create(w1), NbpObservable.create(w2));
         NbpObservable<String> concatF = NbpObservable.concat(NbpObservable.create(observableOfObservables));
 
         concatF.subscribe(ts);
@@ -466,8 +470,11 @@ public class NbpOperatorConcatTest {
 
     private static class TestObservable<T> implements NbpOnSubscribe<T> {
 
-        private final Disposable s = () -> {
-                subscribed = false;
+        private final Disposable s = new Disposable() {
+            @Override
+            public void dispose() {
+                    subscribed = false;
+            }
         };
         private final List<T> values;
         private Thread t = null;
@@ -479,12 +486,10 @@ public class NbpOperatorConcatTest {
         private final T seed;
         private final int size;
 
-        @SafeVarargs
         public TestObservable(T... values) {
             this(null, null, values);
         }
 
-        @SafeVarargs
         public TestObservable(CountDownLatch once, CountDownLatch okToContinue, T... values) {
             this.values = Arrays.asList(values);
             this.size = this.values.size();
@@ -587,7 +592,12 @@ public class NbpOperatorConcatTest {
     @Test
     public void concatVeryLongObservableOfObservables() {
         final int n = 10000;
-        NbpObservable<NbpObservable<Integer>> source = NbpObservable.range(0, n).map(NbpObservable::just);
+        NbpObservable<NbpObservable<Integer>> source = NbpObservable.range(0, n).map(new Function<Integer, NbpObservable<Integer>>() {
+            @Override
+            public NbpObservable<Integer> apply(Integer v) {
+                return NbpObservable.just(v);
+            }
+        });
         
         NbpObservable<List<Integer>> result = NbpObservable.concat(source).toList();
         
@@ -596,7 +606,7 @@ public class NbpOperatorConcatTest {
         
         result.subscribe(o);
 
-        List<Integer> list = new ArrayList<>(n);
+        List<Integer> list = new ArrayList<Integer>(n);
         for (int i = 0; i < n; i++) {
             list.add(i);
         }
@@ -607,7 +617,12 @@ public class NbpOperatorConcatTest {
     @Test
     public void concatVeryLongObservableOfObservablesTakeHalf() {
         final int n = 10000;
-        NbpObservable<NbpObservable<Integer>> source = NbpObservable.range(0, n).map(NbpObservable::just);
+        NbpObservable<NbpObservable<Integer>> source = NbpObservable.range(0, n).map(new Function<Integer, NbpObservable<Integer>>() {
+            @Override
+            public NbpObservable<Integer> apply(Integer v) {
+                return NbpObservable.just(v);
+            }
+        });
         
         NbpObservable<List<Integer>> result = NbpObservable.concat(source).take(n / 2).toList();
         
@@ -616,7 +631,7 @@ public class NbpOperatorConcatTest {
         
         result.subscribe(o);
 
-        List<Integer> list = new ArrayList<>(n);
+        List<Integer> list = new ArrayList<Integer>(n);
         for (int i = 0; i < n / 2; i++) {
             list.add(i);
         }
@@ -649,7 +664,7 @@ public class NbpOperatorConcatTest {
             
         });
         
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
         NbpObservable.concat(o, o).subscribe(ts);
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
@@ -719,7 +734,7 @@ public class NbpOperatorConcatTest {
             if (i % 1000 == 0) {
                 System.out.println("concatMapRangeAsyncLoop > " + i);
             }
-            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
             NbpObservable.range(0, 1000)
             .concatMap(new Function<Integer, NbpObservable<Integer>>() {
                 @Override

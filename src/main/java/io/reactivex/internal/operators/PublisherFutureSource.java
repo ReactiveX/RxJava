@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -32,7 +32,7 @@ public final class PublisherFutureSource<T> implements Publisher<T> {
     
     @Override
     public void subscribe(Subscriber<? super T> s) {
-        ScalarAsyncSubscription<T> sas = new ScalarAsyncSubscription<>(s);
+        ScalarAsyncSubscription<T> sas = new ScalarAsyncSubscription<T>(s);
         s.onSubscribe(sas);
         if (!sas.isComplete()) {
             T v;
@@ -46,7 +46,11 @@ public final class PublisherFutureSource<T> implements Publisher<T> {
             } finally {
                 future.cancel(true); // TODO ?? not sure about this
             }
-            sas.setValue(v);
+            if (v == null) {
+                s.onError(new NullPointerException("The future returned null"));
+            } else {
+                sas.setValue(v);
+            }
         }
     }
 }

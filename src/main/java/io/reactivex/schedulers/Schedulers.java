@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,7 @@
 
 package io.reactivex.schedulers;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Executor;
 
 import io.reactivex.Scheduler;
 import io.reactivex.internal.schedulers.*;
@@ -100,6 +100,7 @@ public final class Schedulers {
         newThread().shutdown();
         single().shutdown();
         trampoline().shutdown();
+        SchedulerPoolFactory.shutdown();
     }
     
     public static void start() {
@@ -108,5 +109,6 @@ public final class Schedulers {
         newThread().start();
         single().start();
         trampoline().start();
+        SchedulerPoolFactory.start();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,13 +17,13 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.function.Predicate;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.functions.Predicate;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorFilterTest {
@@ -52,6 +52,8 @@ public class OperatorFilterTest {
 
     /**
      * Make sure we are adjusting subscriber.request() for filtered items
+     * @throws InterruptedException if the test is interrupted
+     * @throws InterruptedException if the test is interrupted
      */
     @Test(timeout = 500)
     public void testWithBackpressure() throws InterruptedException {
@@ -98,6 +100,7 @@ public class OperatorFilterTest {
 
     /**
      * Make sure we are adjusting subscriber.request() for filtered items
+     * @throws InterruptedException if the test is interrupted
      */
     @Test(timeout = 500000)
     public void testWithBackpressure2() throws InterruptedException {

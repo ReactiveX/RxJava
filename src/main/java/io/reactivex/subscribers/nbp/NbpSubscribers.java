@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,11 +13,10 @@
 
 package io.reactivex.subscribers.nbp;
 
-import java.util.Objects;
-import java.util.function.Consumer;
-
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.functions.*;
 import io.reactivex.internal.subscribers.nbp.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -63,14 +62,14 @@ public final class NbpSubscribers {
     public static <T> NbpDisposableSubscriber<T> createDisposable(
             Consumer<? super T> onNext
     ) {
-        return createDisposable(onNext, RxJavaPlugins::onError, () -> { }, () -> { });
+        return createDisposable(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
     }
 
     public static <T> NbpDisposableSubscriber<T> createDisposable(
             Consumer<? super T> onNext,
             Consumer<? super Throwable> onError
     ) {
-        return createDisposable(onNext, onError, () -> { }, () -> { });
+        return createDisposable(onNext, onError, Functions.emptyRunnable(), Functions.emptyRunnable());
     }
 
     public static <T> NbpDisposableSubscriber<T> createDisposable(
@@ -78,19 +77,19 @@ public final class NbpSubscribers {
             Consumer<? super Throwable> onError,
             Runnable onComplete
     ) {
-        return createDisposable(onNext, onError, onComplete, () -> { });
+        return createDisposable(onNext, onError, onComplete, Functions.emptyRunnable());
     }
     
     public static <T> NbpDisposableSubscriber<T> createDisposable(
-            Consumer<? super T> onNext,
-            Consumer<? super Throwable> onError,
-            Runnable onComplete,
-            Runnable onStart
+            final Consumer<? super T> onNext,
+            final Consumer<? super Throwable> onError,
+            final Runnable onComplete,
+            final Runnable onStart
     ) {
-        Objects.requireNonNull(onNext);
-        Objects.requireNonNull(onError);
-        Objects.requireNonNull(onComplete);
-        Objects.requireNonNull(onStart);
+        Objects.requireNonNull(onNext, "onNext is null");
+        Objects.requireNonNull(onError, "onError is null");
+        Objects.requireNonNull(onComplete, "onComplete is null");
+        Objects.requireNonNull(onStart, "onStart is null");
         return new NbpDisposableSubscriber<T>() {
             boolean done;
             @Override
@@ -104,8 +103,8 @@ public final class NbpSubscribers {
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
-                        ex.addSuppressed(e);
                         RxJavaPlugins.onError(ex);
+                        RxJavaPlugins.onError(e);
                     }
                 }
             }
@@ -122,8 +121,8 @@ public final class NbpSubscribers {
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
-                        ex.addSuppressed(e);
                         RxJavaPlugins.onError(ex);
+                        RxJavaPlugins.onError(e);
                     }
                 }
             }
@@ -138,8 +137,8 @@ public final class NbpSubscribers {
                 try {
                     onError.accept(t);
                 } catch (Throwable ex) {
-                    ex.addSuppressed(t);
                     RxJavaPlugins.onError(ex);
+                    RxJavaPlugins.onError(t);
                 }
             }
             
@@ -161,14 +160,14 @@ public final class NbpSubscribers {
     public static <T> NbpSubscriber<T> create(
             Consumer<? super T> onNext
     ) {
-        return create(onNext, RxJavaPlugins::onError, () -> { }, s -> { });
+        return create(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyConsumer());
     }
 
     public static <T> NbpSubscriber<T> create(
             Consumer<? super T> onNext,
             Consumer<? super Throwable> onError
     ) {
-        return create(onNext, onError, () -> { }, s -> { });
+        return create(onNext, onError, Functions.emptyRunnable(), Functions.emptyConsumer());
     }
 
     public static <T> NbpSubscriber<T> create(
@@ -176,19 +175,19 @@ public final class NbpSubscribers {
             Consumer<? super Throwable> onError,
             Runnable onComplete
     ) {
-        return create(onNext, onError, onComplete, s -> { });
+        return create(onNext, onError, onComplete, Functions.emptyConsumer());
     }
     
     public static <T> NbpSubscriber<T> create(
-            Consumer<? super T> onNext,
-            Consumer<? super Throwable> onError,
-            Runnable onComplete,
-            Consumer<? super Disposable> onStart
+            final Consumer<? super T> onNext,
+            final Consumer<? super Throwable> onError,
+            final Runnable onComplete,
+            final Consumer<? super Disposable> onStart
     ) {
-        Objects.requireNonNull(onNext);
-        Objects.requireNonNull(onError);
-        Objects.requireNonNull(onComplete);
-        Objects.requireNonNull(onStart);
+        Objects.requireNonNull(onNext, "onNext is null");
+        Objects.requireNonNull(onError, "onError is null");
+        Objects.requireNonNull(onComplete, "onComplete is null");
+        Objects.requireNonNull(onStart, "onStart is null");
         return new NbpSubscriber<T>() {
             boolean done;
             
@@ -207,8 +206,8 @@ public final class NbpSubscribers {
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
-                        ex.addSuppressed(e);
                         RxJavaPlugins.onError(ex);
+                        RxJavaPlugins.onError(e);
                     }
                 }
             }
@@ -225,8 +224,8 @@ public final class NbpSubscribers {
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
-                        ex.addSuppressed(e);
                         RxJavaPlugins.onError(ex);
+                        RxJavaPlugins.onError(e);
                     }
                 }
             }
@@ -241,8 +240,8 @@ public final class NbpSubscribers {
                 try {
                     onError.accept(t);
                 } catch (Throwable ex) {
-                    ex.addSuppressed(t);
                     RxJavaPlugins.onError(ex);
+                    RxJavaPlugins.onError(t);
                 }
             }
             

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -27,7 +27,7 @@ import io.reactivex.subscribers.TestSubscriber;
 public class OperatorOnBackpressureLatestTest {
     @Test
     public void testSimple() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         Observable.range(1, 5).onBackpressureLatest().subscribe(ts);
         
@@ -37,7 +37,7 @@ public class OperatorOnBackpressureLatestTest {
     }
     @Test
     public void testSimpleError() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         Observable.range(1, 5).concatWith(Observable.<Integer>error(new TestException()))
         .onBackpressureLatest().subscribe(ts);
@@ -48,7 +48,7 @@ public class OperatorOnBackpressureLatestTest {
     }
     @Test
     public void testSimpleBackpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>(2L);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L);
         
         Observable.range(1, 5).onBackpressureLatest().subscribe(ts);
         
@@ -60,7 +60,7 @@ public class OperatorOnBackpressureLatestTest {
     @Test
     public void testSynchronousDrop() {
         PublishSubject<Integer> source = PublishSubject.create();
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
         
         source.onBackpressureLatest().subscribe(ts);
 
