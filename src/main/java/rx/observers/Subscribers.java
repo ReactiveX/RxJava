@@ -68,8 +68,8 @@ public final class Subscribers {
 
     /**
      * Creates a {@link Subscriber} that receives the emissions of any {@code Observable} it subscribes to via
-     * {@link Subscriber#onNext onNext} but ignores {@link Subscriber#onError onError} and
-     * {@link Subscriber#onCompleted onCompleted} notifications.
+     * {@link Subscriber#onNext onNext} but ignores {@link Subscriber#onCompleted onCompleted} notifications;
+     * it will throw an {@link OnErrorNotImplementedException} if {@link Subscriber#onError onError} is invoked.
      *
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
