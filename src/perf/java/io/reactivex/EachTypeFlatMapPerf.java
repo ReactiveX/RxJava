@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,10 +13,13 @@
 
 package io.reactivex;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
+import org.reactivestreams.Publisher;
+
+import io.reactivex.functions.Function;
 
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
@@ -44,48 +47,73 @@ public class EachTypeFlatMapPerf {
         bpRange = Observable.range(1, times);
         nbpRange = NbpObservable.range(1, times);
 
-        bpRangeMapJust = bpRange.flatMap(Observable::just);
-        nbpRangeMapJust = nbpRange.flatMap(NbpObservable::just);
+        bpRangeMapJust = bpRange.flatMap(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer v) {
+                return Observable.just(v);
+            }
+        });
+        nbpRangeMapJust = nbpRange.flatMap(new Function<Integer, NbpObservable<Integer>>() {
+            @Override
+            public NbpObservable<Integer> apply(Integer v) {
+                return NbpObservable.just(v);
+            }
+        });
         
-        bpRangeMapRange = bpRange.flatMap(v -> Observable.range(v, 2));
-        nbpRangeMapRange = nbpRange.flatMap(v -> NbpObservable.range(v, 2));
+        bpRangeMapRange = bpRange.flatMap(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer v) {
+                return Observable.range(v, 2);
+            }
+        });
+        nbpRangeMapRange = nbpRange.flatMap(new Function<Integer, NbpObservable<Integer>>() {
+            @Override
+            public NbpObservable<Integer> apply(Integer v) {
+                return NbpObservable.range(v, 2);
+            }
+        });
 
         singleJust = Single.just(1);
-        singleJustMapJust = singleJust.flatMap(Single::just);
+        singleJustMapJust = singleJust.flatMap(new Function<Integer, Single<Integer>>() {
+            @Override
+            public Single<Integer> apply(Integer v) {
+                return Single.just(v);
+            }
+        });
     }
     
     @Benchmark
     public void bpRange(Blackhole bh) {
-        bpRange.subscribe(new LatchedObserver<>(bh));
+        bpRange.subscribe(new LatchedObserver<Integer>(bh));
     }
     @Benchmark
     public void bpRangeMapJust(Blackhole bh) {
-        bpRangeMapJust.subscribe(new LatchedObserver<>(bh));
+        bpRangeMapJust.subscribe(new LatchedObserver<Integer>(bh));
     }
     @Benchmark
     public void bpRangeMapRange(Blackhole bh) {
-        bpRangeMapRange.subscribe(new LatchedObserver<>(bh));
+        bpRangeMapRange.subscribe(new LatchedObserver<Integer>(bh));
     }
 
     @Benchmark
     public void nbpRange(Blackhole bh) {
-        nbpRange.subscribe(new LatchedNbpObserver<>(bh));
+        nbpRange.subscribe(new LatchedNbpObserver<Integer>(bh));
     }
     @Benchmark
     public void nbpRangeMapJust(Blackhole bh) {
-        nbpRangeMapJust.subscribe(new LatchedNbpObserver<>(bh));
+        nbpRangeMapJust.subscribe(new LatchedNbpObserver<Integer>(bh));
     }
     @Benchmark
     public void nbpRangeMapRange(Blackhole bh) {
-        nbpRangeMapRange.subscribe(new LatchedNbpObserver<>(bh));
+        nbpRangeMapRange.subscribe(new LatchedNbpObserver<Integer>(bh));
     }
 
     @Benchmark
     public void singleJust(Blackhole bh) {
-        singleJust.subscribe(new LatchedSingleObserver<>(bh));
+        singleJust.subscribe(new LatchedSingleObserver<Integer>(bh));
     }
     @Benchmark
     public void singleJustMapJust(Blackhole bh) {
-        singleJustMapJust.subscribe(new LatchedSingleObserver<>(bh));
+        singleJustMapJust.subscribe(new LatchedSingleObserver<Integer>(bh));
     }
 }

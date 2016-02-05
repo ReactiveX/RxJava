@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,17 +13,16 @@
 
 package io.reactivex.internal.operators;
 
-import java.util.function.*;
-
 import org.junit.Test;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.*;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorMapNotificationTest {
     @Test
     public void testJust() {
-        TestSubscriber<Object> ts = new TestSubscriber<>();
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
         Observable.just(1)
         .flatMap(
                 new Function<Integer, Observable<Object>>() {

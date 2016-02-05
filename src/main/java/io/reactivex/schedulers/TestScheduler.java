@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.Objects;
 
 /**
  * A special, non thread-safe scheduler for testing operators that require
@@ -27,7 +28,7 @@ import io.reactivex.internal.disposables.EmptyDisposable;
  */
 public final class TestScheduler extends Scheduler {
     /** The ordered queue for the runnable tasks. */
-    private final Queue<TimedRunnable> queue = new PriorityQueue<>(11);
+    private final Queue<TimedRunnable> queue = new PriorityQueue<TimedRunnable>(11);
     /** The per-scheduler global order counter. */
     long counter;
 
@@ -53,9 +54,9 @@ public final class TestScheduler extends Scheduler {
         @Override
         public int compareTo(TimedRunnable o) {
             if (time == o.time) {
-                return Long.compare(count, o.count);
+                return Objects.compare(count, o.count);
             }
-            return Long.compare(time, o.time);
+            return Objects.compare(time, o.time);
         }
     }
 
@@ -140,7 +141,12 @@ public final class TestScheduler extends Scheduler {
             final TimedRunnable timedAction = new TimedRunnable(this, time + unit.toNanos(delayTime), run, counter++);
             queue.add(timedAction);
             
-            return () -> queue.remove(timedAction);
+            return new Disposable() {
+                @Override
+                public void dispose() {
+                    queue.remove(timedAction);
+                }
+            };
         }
 
         @Override
@@ -150,7 +156,12 @@ public final class TestScheduler extends Scheduler {
             }
             final TimedRunnable timedAction = new TimedRunnable(this, 0, run, counter++);
             queue.add(timedAction);
-            return () -> queue.remove(timedAction);
+            return new Disposable() {
+                @Override
+                public void dispose() {
+                    queue.remove(timedAction);
+                }
+            };
         }
 
         @Override

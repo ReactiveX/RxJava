@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler;
+import io.reactivex.Observable.Operator;
 import io.reactivex.schedulers.Timed;
 
 public final class OperatorTimeInterval<T> implements Operator<Timed<T>, T> {
@@ -32,7 +32,7 @@ public final class OperatorTimeInterval<T> implements Operator<Timed<T>, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super Timed<T>> t) {
-        return new TimeIntervalSubscriber<>(t, unit, scheduler);
+        return new TimeIntervalSubscriber<T>(t, unit, scheduler);
     }
     
     static final class TimeIntervalSubscriber<T> implements Subscriber<T> {
@@ -60,7 +60,7 @@ public final class OperatorTimeInterval<T> implements Operator<Timed<T>, T> {
             long last = lastTime;
             lastTime = now;
             long delta = now - last;
-            actual.onNext(new Timed<>(t, delta, unit));
+            actual.onNext(new Timed<T>(t, delta, unit));
         }
         
         @Override

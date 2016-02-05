@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 
 public class OperatorDoOnSubscribeTest {
@@ -28,8 +29,11 @@ public class OperatorDoOnSubscribeTest {
     @Test
     public void testDoOnSubscribe() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> o = Observable.just(1).doOnSubscribe(s -> {
-                count.incrementAndGet();
+        Observable<Integer> o = Observable.just(1).doOnSubscribe(new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription s) {
+                    count.incrementAndGet();
+            }
         });
 
         o.subscribe();
@@ -41,10 +45,16 @@ public class OperatorDoOnSubscribeTest {
     @Test
     public void testDoOnSubscribe2() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> o = Observable.just(1).doOnSubscribe(s -> {
-                count.incrementAndGet();
-        }).take(1).doOnSubscribe(s -> {
-                count.incrementAndGet();
+        Observable<Integer> o = Observable.just(1).doOnSubscribe(new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription s) {
+                    count.incrementAndGet();
+            }
+        }).take(1).doOnSubscribe(new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription s) {
+                    count.incrementAndGet();
+            }
         });
 
         o.subscribe();
@@ -56,7 +66,7 @@ public class OperatorDoOnSubscribeTest {
         final AtomicInteger onSubscribed = new AtomicInteger();
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();
-        final AtomicReference<Subscriber<? super Integer>> sref = new AtomicReference<>();
+        final AtomicReference<Subscriber<? super Integer>> sref = new AtomicReference<Subscriber<? super Integer>>();
         Observable<Integer> o = Observable.create(new Publisher<Integer>() {
 
             @Override
@@ -66,11 +76,17 @@ public class OperatorDoOnSubscribeTest {
                 sref.set(s);
             }
 
-        }).doOnSubscribe(s -> {
-                countBefore.incrementAndGet();
+        }).doOnSubscribe(new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription s) {
+                    countBefore.incrementAndGet();
+            }
         }).publish().refCount()
-        .doOnSubscribe(s -> {
-                countAfter.incrementAndGet();
+        .doOnSubscribe(new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription s) {
+                    countAfter.incrementAndGet();
+            }
         });
 
         o.subscribe();

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,15 +14,16 @@
 package io.reactivex.internal.operators.nbp;
 
 import java.util.Collection;
-import java.util.function.Supplier;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.nbp.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.subscribers.nbp.NbpSerializedSubscriber;
 
 public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? super T>, B> implements NbpOperator<U, T> {
@@ -36,7 +37,7 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
 
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super U> t) {
-        return new BufferExactBondarySubscriber<>(new NbpSerializedSubscriber<>(t), bufferSupplier, boundary);
+        return new BufferExactBondarySubscriber<T, U, B>(new NbpSerializedSubscriber<U>(t), bufferSupplier, boundary);
     }
     
     static final class BufferExactBondarySubscriber<T, U extends Collection<? super T>, B>
@@ -53,7 +54,7 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
         
         public BufferExactBondarySubscriber(NbpSubscriber<? super U> actual, Supplier<U> bufferSupplier,
                 NbpObservable<B> boundary) {
-            super(actual, new MpscLinkedQueue<>());
+            super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundary = boundary;
         }
@@ -84,7 +85,7 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
             }
             buffer = b;
             
-            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<>(this);
+            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
             other = bs;
             
             actual.onSubscribe(this);
@@ -124,7 +125,7 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
             queue.offer(b);
             done = true;
             if (enter()) {
-                drainLoop(queue, actual, false, this);
+                QueueDrainHelper.drainLoop(queue, actual, false, this, this);
             }
         }
         

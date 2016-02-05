@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.subscriptions;
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -25,13 +25,14 @@ package io.reactivex.internal.subscriptions;
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-import java.util.*;
+import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscription;
 
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -41,20 +42,16 @@ public final class SubscriptionArbiter extends AtomicInteger implements Subscrip
     /** */
     private static final long serialVersionUID = -2189523197179400958L;
     
-    final Queue<Subscription> missedSubscription = new MpscLinkedQueue<>();
+    final Queue<Subscription> missedSubscription = new MpscLinkedQueue<Subscription>();
     
     Subscription actual;
     long requested;
     
     volatile boolean cancelled;
 
-    volatile long missedRequested;
-    static final AtomicLongFieldUpdater<SubscriptionArbiter> MISSED_REQUESTED =
-            AtomicLongFieldUpdater.newUpdater(SubscriptionArbiter.class, "missedRequested");
+    final AtomicLong missedRequested = new AtomicLong();
     
-    volatile long missedProduced;
-    static final AtomicLongFieldUpdater<SubscriptionArbiter> MISSED_PRODUCED =
-            AtomicLongFieldUpdater.newUpdater(SubscriptionArbiter.class, "missedProduced");
+    final AtomicLong missedProduced = new AtomicLong();
 
     private long addRequested(long n) {
         long r = requested;
@@ -64,52 +61,84 @@ public final class SubscriptionArbiter extends AtomicInteger implements Subscrip
     }
     
     @Override
-    public void request(long n) {
+    public void request(final long n) {
         if (SubscriptionHelper.validateRequest(n)) {
             return;
         }
         if (cancelled) {
             return;
         }
-        QueueDrainHelper.queueDrainLoop(this, () -> {
+        
+        if (get() == 0 && compareAndSet(0, 1)) {
             addRequested(n);
             Subscription s = actual;
             if (s != null) {
                 s.request(n);
             }
-        }, () -> {
-            BackpressureHelper.add(MISSED_REQUESTED, this, n);
-        }, this::drain);
+            if (decrementAndGet() == 0) {
+                return;
+            }
+        } else {
+            BackpressureHelper.add(missedRequested, n);
+            if (getAndIncrement() != 0) {
+                return;
+            }
+        }
+        int missed = 1;
+        for (;;) {
+            SubscriptionArbiter.this.drain();
+            
+            missed = addAndGet(-missed);
+            if (missed == 0) {
+                return;
+            }
+        }
     }
 
-    public void produced(long n) {
+    public void produced(final long n) {
         if (n <= 0) {
             RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
             return;
         }
-        QueueDrainHelper.queueDrainLoop(this, () -> {
+        
+        if (get() == 0 && compareAndSet(0, 1)) {
             long r = requested;
-            if (r == Long.MAX_VALUE) {
+            if (r != Long.MAX_VALUE) {
+                long u = r - n;
+                if (u < 0L) {
+                    RxJavaPlugins.onError(new IllegalArgumentException("More produced than requested: " + u));
+                    u = 0;
+                }
+                requested = u;
+            }
+            if (decrementAndGet() == 0) {
                 return;
             }
-            long u = r - n;
-            if (u < 0L) {
-                RxJavaPlugins.onError(new IllegalArgumentException("More produced than requested: " + u));
-                u = 0;
+        } else {
+            BackpressureHelper.add(missedProduced, n);
+            if (getAndIncrement() != 0) {
+                return;
             }
-            requested = u;
-        }, () -> {
-            BackpressureHelper.add(MISSED_PRODUCED, this, n);
-        }, this::drain);
+        }
+        int missed = 1;
+        for (;;) {
+            SubscriptionArbiter.this.drain();
+            
+            missed = addAndGet(-missed);
+            if (missed == 0) {
+                return;
+            }
+        }
     }
     
-    public void setSubscription(Subscription s) {
-        Objects.requireNonNull(s);
+    public void setSubscription(final Subscription s) {
+        Objects.requireNonNull(s, "s is null");
         if (cancelled) {
             s.cancel();
             return;
         }
-        QueueDrainHelper.queueDrainLoop(this, () -> {
+        
+        if (get() == 0 && compareAndSet(0, 1)) {
             Subscription a = actual;
             if (a != null) {
                 a.cancel();
@@ -119,9 +148,24 @@ public final class SubscriptionArbiter extends AtomicInteger implements Subscrip
             if (r != 0L) {
                 s.request(r);
             }
-        }, () -> {
+            if (decrementAndGet() == 0) {
+                return;
+            }
+        } else {
             missedSubscription.offer(s);
-        }, this::drain);
+            if (getAndIncrement() != 0) {
+                return;
+            }
+        }
+        int missed = 1;
+        for (;;) {
+            SubscriptionArbiter.this.drain();
+            
+            missed = addAndGet(-missed);
+            if (missed == 0) {
+                return;
+            }
+        }
     }
     
     @Override
@@ -130,15 +174,30 @@ public final class SubscriptionArbiter extends AtomicInteger implements Subscrip
             return;
         }
         cancelled = true;
-        QueueDrainHelper.queueDrainLoop(this, () -> {
+        
+        if (get() == 0 && compareAndSet(0, 1)) {
             Subscription a = actual;
             if (a != null) {
                 actual = null;
                 a.cancel();
             }
-        }, () -> {
-            // nothing to queue
-        }, this::drain);
+            if (decrementAndGet() == 0) {
+                return;
+            }
+        } else {
+            if (getAndIncrement() != 0) {
+                return;
+            }
+        }
+        int missed = 1;
+        for (;;) {
+            SubscriptionArbiter.this.drain();
+            
+            missed = addAndGet(-missed);
+            if (missed == 0) {
+                return;
+            }
+        }
     }
     
     public boolean isCancelled() {
@@ -146,8 +205,8 @@ public final class SubscriptionArbiter extends AtomicInteger implements Subscrip
     }
     
     void drain() {
-        long mr = MISSED_REQUESTED.getAndSet(this, 0L);
-        long mp = MISSED_PRODUCED.getAndSet(this, 0L);
+        long mr = missedRequested.getAndSet(0L);
+        long mp = missedProduced.getAndSet(0L);
         Subscription ms = missedSubscription.poll();
         boolean c = cancelled;
         

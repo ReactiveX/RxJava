@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,8 +15,6 @@ package io.reactivex.internal.operators.nbp;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-
-import java.util.Optional;
 
 import org.junit.Test;
 
@@ -94,7 +92,7 @@ public class NbpOperatorDematerializeTest {
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>(NbpObserver);
         dematerialize.subscribe(ts);
 
         System.out.println(ts.errors());

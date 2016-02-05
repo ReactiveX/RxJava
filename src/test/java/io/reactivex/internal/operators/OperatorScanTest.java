@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,22 +13,22 @@
 
 package io.reactivex.internal.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.TestHelper;
+import io.reactivex.*;
+import io.reactivex.functions.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 
 public class OperatorScanTest {
 
@@ -110,7 +110,7 @@ public class OperatorScanTest {
     
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(1, 100).scan(0, new BiFunction<Integer, Integer, Integer>() {
 
             @Override
@@ -157,7 +157,7 @@ public class OperatorScanTest {
 
                     @Override
                     public void onError(Throwable e) {
-                        fail(e.getMessage());
+                        Assert.fail(e.getMessage());
                         e.printStackTrace();
                     }
 
@@ -198,7 +198,7 @@ public class OperatorScanTest {
 
                     @Override
                     public void onError(Throwable e) {
-                        fail(e.getMessage());
+                        Assert.fail(e.getMessage());
                         e.printStackTrace();
                     }
 
@@ -234,7 +234,7 @@ public class OperatorScanTest {
 
                     @Override
                     public void onError(Throwable e) {
-                        fail(e.getMessage());
+                        Assert.fail(e.getMessage());
                         e.printStackTrace();
                     }
 
@@ -259,7 +259,7 @@ public class OperatorScanTest {
 
                     @Override
                     public List<Integer> get() {
-                        return new ArrayList<>();
+                        return new ArrayList<Integer>();
                     }
                     
                 }, new BiConsumer<List<Integer>, Integer>() {
@@ -285,7 +285,7 @@ public class OperatorScanTest {
             }
 
         }).take(1);
-        TestSubscriber<Integer> subscriber = new TestSubscriber<>();
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
         o.subscribe(subscriber);
         subscriber.assertValue(0);
         subscriber.assertTerminated();
@@ -294,7 +294,7 @@ public class OperatorScanTest {
 
     @Test
     public void testScanShouldNotRequestZero() {
-        final AtomicReference<Subscription> producer = new AtomicReference<>();
+        final AtomicReference<Subscription> producer = new AtomicReference<Subscription>();
         Observable<Integer> o = Observable.create(new Publisher<Integer>() {
             @Override
             public void subscribe(final Subscriber<? super Integer> subscriber) {
@@ -343,7 +343,7 @@ public class OperatorScanTest {
     public void testInitialValueEmittedNoProducer() {
         PublishSubject<Integer> source = PublishSubject.create();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         source.scan(0, new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -361,7 +361,7 @@ public class OperatorScanTest {
     public void testInitialValueEmittedWithProducer() {
         Observable<Integer> source = Observable.never();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         source.scan(0, new BiFunction<Integer, Integer, Integer>() {
             @Override

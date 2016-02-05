@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -115,7 +115,7 @@ public class SerialDisposableTests {
         final int count = 10;
         final CountDownLatch end = new CountDownLatch(count);
 
-        final List<Thread> threads = new ArrayList<>();
+        final List<Thread> threads = new ArrayList<Thread>();
         for (int i = 0; i < count; i++) {
             final Thread t = new Thread() {
                 @Override
@@ -150,12 +150,12 @@ public class SerialDisposableTests {
     public void concurrentSetDisposableShouldNotInterleave()
             throws InterruptedException {
         final int count = 10;
-        final List<Disposable> subscriptions = new ArrayList<>();
+        final List<Disposable> subscriptions = new ArrayList<Disposable>();
 
         final CountDownLatch start = new CountDownLatch(1);
         final CountDownLatch end = new CountDownLatch(count);
 
-        final List<Thread> threads = new ArrayList<>();
+        final List<Thread> threads = new ArrayList<Thread>();
         for (int i = 0; i < count; i++) {
             final Disposable subscription = mock(Disposable.class);
             subscriptions.add(subscription);

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,18 +17,29 @@ import java.util.HashMap;
 
 import org.junit.Test;
 
+import io.reactivex.functions.*;
+import io.reactivex.nbp.NbpEventStream.Event;
+
 public class NbpScanTests {
 
     @Test
     public void testUnsubscribeScan() {
 
         NbpEventStream.getEventStream("HTTP-ClusterB", 20)
-        .scan(new HashMap<String, String>(), (accum, perInstanceEvent) -> {
-            accum.put("instance", perInstanceEvent.instanceId);
-            return accum;
+        .scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
+            @Override
+            public HashMap<String, String> apply(HashMap<String, String> accum, Event perInstanceEvent) {
+                accum.put("instance", perInstanceEvent.instanceId);
+                return accum;
+            }
         })
         .take(10)
         .toBlocking()
-        .forEach(System.out::println);
+        .forEach(new Consumer<HashMap<String, String>>() {
+            @Override
+            public void accept(HashMap<String, String> pv) {
+                System.out.println(pv);
+            }
+        });
     }
 }

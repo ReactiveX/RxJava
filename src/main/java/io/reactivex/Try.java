@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import java.util.Objects;
+import io.reactivex.internal.functions.Objects;
 
 /**
  * Container for either a value of type T or a Throwable.
@@ -34,12 +34,13 @@ public final class Try<T> {
     /**
      * Constructs a Try instance by wrapping the given value.
      * 
+     * @param <T> the value type
      * @param value the value to wrap 
      * @return the created Try instance
      */
     public static <T> Try<T> ofValue(T value) {
         // TODO ? Objects.requireNonNull(value);
-        return new Try<>(value, null);
+        return new Try<T>(value, null);
     }
     
     /**
@@ -47,11 +48,12 @@ public final class Try<T> {
      * 
      * <p>Null Throwables are replaced by NullPointerException instance in this Try.
      * 
+     * @param <T> the value type
      * @param e the exception to wrap
      * @return the new Try instance holding the exception
      */
     public static <T> Try<T> ofError(Throwable e) {
-        return new Try<>(null, e != null ? e : new NullPointerException());
+        return new Try<T>(null, e != null ? e : new NullPointerException());
     }
     
     /**

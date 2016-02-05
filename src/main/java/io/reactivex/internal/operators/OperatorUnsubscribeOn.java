@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,8 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler;
+import io.reactivex.Observable.Operator;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class OperatorUnsubscribeOn<T> implements Operator<T, T> {
@@ -29,7 +29,7 @@ public final class OperatorUnsubscribeOn<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new UnsubscribeSubscriber<>(t, scheduler);
+        return new UnsubscribeSubscriber<T>(t, scheduler);
     }
     
     static final class UnsubscribeSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
@@ -78,8 +78,11 @@ public final class OperatorUnsubscribeOn<T> implements Operator<T, T> {
         @Override
         public void cancel() {
             if (compareAndSet(false, true)) {
-                scheduler.scheduleDirect(() -> {
-                    s.cancel();
+                scheduler.scheduleDirect(new Runnable() {
+                    @Override
+                    public void run() {
+                        s.cancel();
+                    }
                 });
             }
         }

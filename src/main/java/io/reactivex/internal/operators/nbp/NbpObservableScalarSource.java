@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,17 +13,17 @@
 
 package io.reactivex.internal.operators.nbp;
 
-import java.util.function.Function;
-
 import io.reactivex.NbpObservable;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 /**
  * Represents a constant scalar value.
+ * @param <T> the value type
  */
 public final class NbpObservableScalarSource<T> extends NbpObservable<T> {
     private final T value;
-    public NbpObservableScalarSource(T value) {
+    public NbpObservableScalarSource(final T value) {
         super(new NbpOnSubscribe<T>() {
             @Override
             public void accept(NbpSubscriber<? super T> s) {
@@ -39,27 +39,30 @@ public final class NbpObservableScalarSource<T> extends NbpObservable<T> {
         return value;
     }
     
-    public <U> NbpOnSubscribe<U> scalarFlatMap(Function<? super T, ? extends NbpObservable<? extends U>> mapper) {
-        return s -> {
-            NbpObservable<? extends U> other;
-            try {
-                other = mapper.apply(value);
-            } catch (Throwable e) {
-                EmptyDisposable.error(e, s);
-                return;
-            }
-            if (other == null) {
-                EmptyDisposable.error(new NullPointerException("The publisher returned by the function is null"), s);
-                return;
-            }
-            if (other instanceof NbpObservableScalarSource) {
-                @SuppressWarnings("unchecked")
-                NbpObservableScalarSource<U> o = (NbpObservableScalarSource<U>)other;
-                s.onSubscribe(EmptyDisposable.INSTANCE);
-                s.onNext(o.value);
-                s.onComplete();
-            } else {
-                other.subscribe(s);
+    public <U> NbpOnSubscribe<U> scalarFlatMap(final Function<? super T, ? extends NbpObservable<? extends U>> mapper) {
+        return new NbpOnSubscribe<U>() {
+            @Override
+            public void accept(NbpSubscriber<? super U> s) {
+                NbpObservable<? extends U> other;
+                try {
+                    other = mapper.apply(value);
+                } catch (Throwable e) {
+                    EmptyDisposable.error(e, s);
+                    return;
+                }
+                if (other == null) {
+                    EmptyDisposable.error(new NullPointerException("The publisher returned by the function is null"), s);
+                    return;
+                }
+                if (other instanceof NbpObservableScalarSource) {
+                    @SuppressWarnings("unchecked")
+                    NbpObservableScalarSource<U> o = (NbpObservableScalarSource<U>)other;
+                    s.onSubscribe(EmptyDisposable.INSTANCE);
+                    s.onNext(o.value);
+                    s.onComplete();
+                } else {
+                    other.subscribe(s);
+                }
             }
         };
     }

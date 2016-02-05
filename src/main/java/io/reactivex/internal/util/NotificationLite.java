@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -91,6 +91,7 @@ public enum NotificationLite {
     
     /**
      * Converts a value into a notification value.
+     * @param <T> the actual value type
      * @param value the value to convert
      * @return the notification representing the value
      */
@@ -117,13 +118,18 @@ public enum NotificationLite {
     
     /**
      * Converts a Subscription into a notification value.
-     * @param e the Subscription to convert
+     * @param s the Subscription to convert
      * @return the notification representing the Subscription
      */
     public static Object subscription(Subscription s) {
         return new SubscriptionNotification(s);
     }
     
+    /**
+     * Converts a Disposable into a notification value.
+     * @param d the disposable to convert
+     * @return the notification representing the Disposable
+     */
     public static Object disposable(Disposable d) {
         return new DisposableNotification(d);
     }
@@ -161,6 +167,7 @@ public enum NotificationLite {
     
     /**
      * Extracts the value from the notification object
+     * @param <T> the expected value type when unwrapped
      * @param o the notification object
      * @return the extracted value
      */
@@ -194,6 +201,7 @@ public enum NotificationLite {
     /**
      * Calls the appropriate Subscriber method based on the type of the notification.
      * <p>Does not check for a subscription notification, see {@link #acceptFull(Object, Subscriber)}.
+     * @param <T> the expected value type when unwrapped
      * @param o the notification object
      * @param s the subscriber to call methods on
      * @return true if the notification was a terminal event (i.e., complete or error)
@@ -216,6 +224,7 @@ public enum NotificationLite {
     /**
      * Calls the appropriate NbpSubscriber method based on the type of the notification.
      * <p>Does not check for a subscription notification.
+     * @param <T> the expected value type when unwrapped
      * @param o the notification object
      * @param s the NbpSubscriber to call methods on
      * @return true if the notification was a terminal event (i.e., complete or error)
@@ -236,6 +245,7 @@ public enum NotificationLite {
 
     /**
      * Calls the appropriate Subscriber method based on the type of the notification.
+     * @param <T> the expected value type when unwrapped
      * @param o the notification object
      * @param s the subscriber to call methods on
      * @return true if the notification was a terminal event (i.e., complete or error)
@@ -261,6 +271,7 @@ public enum NotificationLite {
     
     /**
      * Calls the appropriate NbpSubscriber method based on the type of the notification.
+     * @param <T> the expected value type when unwrapped
      * @param o the notification object
      * @param s the subscriber to call methods on
      * @return true if the notification was a terminal event (i.e., complete or error)

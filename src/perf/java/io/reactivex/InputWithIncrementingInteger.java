@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,7 +18,8 @@ import java.util.Iterator;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.infra.Blackhole;
 import org.reactivestreams.*;
-import io.reactivex.internal.subscriptions.*;
+
+import io.reactivex.internal.subscriptions.EmptySubscription;
 
 /**
  * Exposes an Observable and Observer that increments n Integers and consumes them in a Blackhole.
@@ -77,7 +78,7 @@ public abstract class InputWithIncrementingInteger {
     }
 
     public LatchedObserver<Integer> newLatchedObserver() {
-        return new LatchedObserver<>(bh);
+        return new LatchedObserver<Integer>(bh);
     }
 
     public Subscriber<Integer> newSubscriber() {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -27,7 +27,7 @@ public final class OperatorSwitchIfEmpty<T> implements Operator<T, T> {
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
         // TODO Auto-generated method stub
-        SwitchIfEmptySubscriber<T> parent = new SwitchIfEmptySubscriber<>(t, other);
+        SwitchIfEmptySubscriber<T> parent = new SwitchIfEmptySubscriber<T>(t, other);
         t.onSubscribe(parent.arbiter);
         return parent;
     }

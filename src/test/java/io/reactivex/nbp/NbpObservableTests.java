@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,14 +20,14 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.Predicate;
 
 import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observables.nbp.NbpConnectableObservable;
 import io.reactivex.schedulers.*;
@@ -38,7 +38,12 @@ public class NbpObservableTests {
 
     NbpSubscriber<Number> w;
 
-    private static final Predicate<Integer> IS_EVEN = v -> v % 2 == 0;
+    private static final Predicate<Integer> IS_EVEN = new Predicate<Integer>() {
+        @Override
+        public boolean test(Integer v) {
+            return v % 2 == 0;
+        }
+    };
 
     @Before
     public void before() {
@@ -55,7 +60,7 @@ public class NbpObservableTests {
 
     @Test
     public void fromIterable() {
-        ArrayList<String> items = new ArrayList<>();
+        ArrayList<String> items = new ArrayList<String>();
         items.add("one");
         items.add("two");
         items.add("three");
@@ -124,7 +129,12 @@ public class NbpObservableTests {
 
     @Test
     public void testCountError() {
-        NbpObservable<String> o = NbpObservable.error(() -> new RuntimeException());
+        NbpObservable<String> o = NbpObservable.error(new Supplier<Throwable>() {
+            @Override
+            public Throwable get() {
+                return new RuntimeException();
+            }
+        });
         
         o.count().subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -190,7 +200,12 @@ public class NbpObservableTests {
     @Test
     public void testReduce() {
         NbpObservable<Integer> o = NbpObservable.just(1, 2, 3, 4);
-        o.reduce((t1, t2) -> t1 + t2)
+        o.reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        })
         .subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
@@ -203,9 +218,17 @@ public class NbpObservableTests {
     @Test(expected = NoSuchElementException.class)
     public void testReduceWithEmptyNbpObservable() {
         NbpObservable<Integer> o = NbpObservable.range(1, 0);
-        o.reduce((t1, t2) -> t1 + t2)
-        .toBlocking().forEach(t1 -> {
-            // do nothing ... we expect an exception instead
+        o.reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        })
+        .toBlocking().forEach(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer t1) {
+                // do nothing ... we expect an exception instead
+            }
         });
 
         fail("Expected an exception to be thrown");
@@ -219,7 +242,12 @@ public class NbpObservableTests {
     @Test
     public void testReduceWithEmptyNbpObservableAndSeed() {
         NbpObservable<Integer> o = NbpObservable.range(1, 0);
-        int value = o.reduce(1, (t1, t2) -> t1 + t2)
+        int value = o.reduce(1, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        })
                 .toBlocking().last();
 
         assertEquals(1, value);
@@ -228,7 +256,12 @@ public class NbpObservableTests {
     @Test
     public void testReduceWithInitialValue() {
         NbpObservable<Integer> o = NbpObservable.just(1, 2, 3, 4);
-        o.reduce(50, (t1, t2) -> t1 + t2)
+        o.reduce(50, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        })
         .subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
@@ -241,7 +274,10 @@ public class NbpObservableTests {
         NbpSubscriber<String> observer = TestHelper.mockNbpSubscriber();
 
         final RuntimeException re = new RuntimeException("bad impl");
-        NbpObservable<String> o = NbpObservable.create(s -> { throw re; });
+        NbpObservable<String> o = NbpObservable.create(new NbpOnSubscribe<String>() {
+            @Override
+            public void accept(NbpSubscriber<? super String> s) { throw re; }
+        });
         
         o.subscribe(observer);
         verify(observer, times(0)).onNext(anyString());
@@ -269,12 +305,13 @@ public class NbpObservableTests {
      * It is handled by the AtomicObserver that wraps the provided Observer.
      * 
      * Result: Passes (if AtomicObserver functionality exists)
+     * @throws InterruptedException if the test is interrupted
      */
     @Test
     public void testCustomNbpObservableWithErrorInObserverAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
         // FIXME custom built???
         NbpObservable.just("1", "2", "three", "4")
@@ -322,7 +359,7 @@ public class NbpObservableTests {
     @Test
     public void testCustomNbpObservableWithErrorInObserverSynchronous() {
         final AtomicInteger count = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
         // FIXME custom built???
         NbpObservable.just("1", "2", "three", "4")
@@ -365,9 +402,14 @@ public class NbpObservableTests {
     @Test
     public void testCustomNbpObservableWithErrorInNbpObservableSynchronous() {
         final AtomicInteger count = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         // FIXME custom built???
-        NbpObservable.just("1", "2").concatWith(NbpObservable.error(() -> new NumberFormatException()))
+        NbpObservable.just("1", "2").concatWith(NbpObservable.<String>error(new Supplier<Throwable>() {
+            @Override
+            public Throwable get() {
+                return new NumberFormatException();
+            }
+        }))
         .subscribe(new NbpObserver<String>() {
 
             @Override
@@ -399,21 +441,30 @@ public class NbpObservableTests {
     @Test
     public void testPublishLast() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
-        NbpConnectableObservable<String> connectable = NbpObservable.<String>create(observer -> {
-            observer.onSubscribe(EmptyDisposable.INSTANCE);
-            count.incrementAndGet();
-            new Thread(() -> {
-                observer.onNext("first");
-                observer.onNext("last");
-                observer.onComplete();
-            }).start();
+        NbpConnectableObservable<String> connectable = NbpObservable.<String>create(new NbpOnSubscribe<String>() {
+            @Override
+            public void accept(final NbpSubscriber<? super String> observer) {
+                observer.onSubscribe(EmptyDisposable.INSTANCE);
+                count.incrementAndGet();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        observer.onNext("first");
+                        observer.onNext("last");
+                        observer.onComplete();
+                    }
+                }).start();
+            }
         }).takeLast(1).publish();
 
         // subscribe once
         final CountDownLatch latch = new CountDownLatch(1);
-        connectable.subscribe(value -> {
-            assertEquals("last", value);
-            latch.countDown();
+        connectable.subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String value) {
+                assertEquals("last", value);
+                latch.countDown();
+            }
         });
 
         // subscribe twice
@@ -428,17 +479,20 @@ public class NbpObservableTests {
     @Test
     public void testReplay() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        NbpConnectableObservable<String> o = NbpObservable.<String>create(observer -> {
-                observer.onSubscribe(EmptyDisposable.INSTANCE);
-                new Thread(new Runnable() {
+        NbpConnectableObservable<String> o = NbpObservable.<String>create(new NbpOnSubscribe<String>() {
+            @Override
+            public void accept(final NbpSubscriber<? super String> observer) {
+                    observer.onSubscribe(EmptyDisposable.INSTANCE);
+                    new Thread(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        observer.onNext("one");
-                        observer.onComplete();
-                    }
-                }).start();
+                        @Override
+                        public void run() {
+                            counter.incrementAndGet();
+                            observer.onNext("one");
+                            observer.onComplete();
+                        }
+                    }).start();
+            }
         }).replay();
 
         // we connect immediately and it will emit the value
@@ -449,15 +503,21 @@ public class NbpObservableTests {
             final CountDownLatch latch = new CountDownLatch(2);
 
             // subscribe once
-            o.subscribe(v -> {
-                assertEquals("one", v);
-                latch.countDown();
+            o.subscribe(new Consumer<String>() {
+                @Override
+                public void accept(String v) {
+                    assertEquals("one", v);
+                    latch.countDown();
+                }
             });
 
             // subscribe again
-            o.subscribe(v -> {
-                assertEquals("one", v);
-                latch.countDown();
+            o.subscribe(new Consumer<String>() {
+                @Override
+                public void accept(String v) {
+                    assertEquals("one", v);
+                    latch.countDown();
+                }
             });
 
             if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -472,28 +532,40 @@ public class NbpObservableTests {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        NbpObservable<String> o = NbpObservable.<String>create(observer -> {
-                observer.onSubscribe(EmptyDisposable.INSTANCE);
-                new Thread(() -> {
-                    counter.incrementAndGet();
-                    observer.onNext("one");
-                    observer.onComplete();
-                }).start();
+        NbpObservable<String> o = NbpObservable.<String>create(new NbpOnSubscribe<String>() {
+            @Override
+            public void accept(final NbpSubscriber<? super String> observer) {
+                    observer.onSubscribe(EmptyDisposable.INSTANCE);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            counter.incrementAndGet();
+                            observer.onNext("one");
+                            observer.onComplete();
+                        }
+                    }).start();
+            }
         }).cache();
 
         // we then expect the following 2 subscriptions to get that same value
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(v -> {
-            assertEquals("one", v);
-            latch.countDown();
+        o.subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
         });
 
         // subscribe again
-        o.subscribe(v -> {
-            assertEquals("one", v);
-            latch.countDown();
+        o.subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -505,28 +577,40 @@ public class NbpObservableTests {
     @Test
     public void testCacheWithCapacity() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        NbpObservable<String> o = NbpObservable.<String>create(observer -> {
-            observer.onSubscribe(EmptyDisposable.INSTANCE);
-            new Thread(() -> {
-                counter.incrementAndGet();
-                observer.onNext("one");
-                observer.onComplete();
-            }).start();
+        NbpObservable<String> o = NbpObservable.<String>create(new NbpOnSubscribe<String>() {
+            @Override
+            public void accept(final NbpSubscriber<? super String> observer) {
+                observer.onSubscribe(EmptyDisposable.INSTANCE);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        counter.incrementAndGet();
+                        observer.onNext("one");
+                        observer.onComplete();
+                    }
+                }).start();
+            }
         }).cache(1);
 
         // we then expect the following 2 subscriptions to get that same value
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(v -> {
-            assertEquals("one", v);
-            latch.countDown();
+        o.subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
         });
 
         // subscribe again
-        o.subscribe(v -> {
-            assertEquals("one", v);
-            latch.countDown();
+        o.subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -571,17 +655,23 @@ public class NbpObservableTests {
     @Ignore("Subscribers can't throw")
     public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> exception = new AtomicReference<>();
-        NbpObservable.create(observer -> {
-            new Thread(() -> {
-                try {
-                    observer.onError(new Error("failure"));
-                } catch (Throwable e) {
-                    // without an onError handler it has to just throw on whatever thread invokes it
-                    exception.set(e);
-                }
-                latch.countDown();
-            }).start();
+        final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
+        NbpObservable.create(new NbpOnSubscribe<Object>() {
+            @Override
+            public void accept(final NbpSubscriber<? super Object> observer) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            observer.onError(new Error("failure"));
+                        } catch (Throwable e) {
+                            // without an onError handler it has to just throw on whatever thread invokes it
+                            exception.set(e);
+                        }
+                        latch.countDown();
+                    }
+                }).start();
+            }
         }).subscribe();
         // wait for exception
         latch.await(3000, TimeUnit.MILLISECONDS);
@@ -592,7 +682,7 @@ public class NbpObservableTests {
     @Test
     public void testTakeWithErrorInObserver() {
         final AtomicInteger count = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         NbpObservable.just("1", "2", "three", "4").take(3)
         .safeSubscribe(new NbpObserver<String>() {
 
@@ -643,9 +733,9 @@ public class NbpObservableTests {
 
     @Test
     public void testOfTypeWithPolymorphism() {
-        ArrayList<Integer> l1 = new ArrayList<>();
+        ArrayList<Integer> l1 = new ArrayList<Integer>();
         l1.add(1);
-        LinkedList<Integer> l2 = new LinkedList<>();
+        LinkedList<Integer> l2 = new LinkedList<Integer>();
         l2.add(2);
 
         @SuppressWarnings("rawtypes")
@@ -798,7 +888,17 @@ public class NbpObservableTests {
     @Test
     public void testCollectToList() {
         NbpObservable<List<Integer>> o = NbpObservable.just(1, 2, 3)
-        .collect(ArrayList::new, (list, v) -> list.add(v));
+        .collect(new Supplier<List<Integer>>() {
+            @Override
+            public List<Integer> get() {
+                return new ArrayList<Integer>();
+            }
+        }, new BiConsumer<List<Integer>, Integer>() {
+            @Override
+            public void accept(List<Integer> list, Integer v) {
+                list.add(v);
+            }
+        });
         
         List<Integer> list =  o.toBlocking().last();
 
@@ -818,34 +918,42 @@ public class NbpObservableTests {
 
     @Test
     public void testCollectToString() {
-        String value = NbpObservable.just(1, 2, 3).collect(StringBuilder::new, 
-            (sb, v) -> {
-            if (sb.length() > 0) {
-                sb.append("-");
+        String value = NbpObservable.just(1, 2, 3).collect(new Supplier<StringBuilder>() {
+            @Override
+            public StringBuilder get() {
+                return new StringBuilder();
             }
-            sb.append(v);
-        }).toBlocking().last().toString();
+        }, 
+            new BiConsumer<StringBuilder, Integer>() {
+                @Override
+                public void accept(StringBuilder sb, Integer v) {
+                if (sb.length() > 0) {
+                    sb.append("-");
+                }
+                sb.append(v);
+      }
+            }).toBlocking().last().toString();
 
         assertEquals("1-2-3", value);
     }
     
     @Test
     public void testMergeWith() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.just(1).mergeWith(NbpObservable.just(2)).subscribe(ts);
         ts.assertValues(1, 2);
     }
     
     @Test
     public void testConcatWith() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.just(1).concatWith(NbpObservable.just(2)).subscribe(ts);
         ts.assertValues(1, 2);
     }
     
     @Test
     public void testAmbWith() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.just(1).ambWith(NbpObservable.just(2)).subscribe(ts);
         ts.assertValue(1);
     }
@@ -868,9 +976,19 @@ public class NbpObservableTests {
         for (int i = 0;i < expectedCount; i++) {
             NbpObservable
                     .just(Boolean.TRUE, Boolean.FALSE)
-                    .takeWhile(v -> v)
+                    .takeWhile(new Predicate<Boolean>() {
+                        @Override
+                        public boolean test(Boolean v) {
+                            return v;
+                        }
+                    })
                     .toList()
-                    .doOnNext(booleans -> count.incrementAndGet())
+                    .doOnNext(new Consumer<List<Boolean>>() {
+                        @Override
+                        public void accept(List<Boolean> booleans) {
+                            count.incrementAndGet();
+                        }
+                    })
                     .subscribe();
         }
         assertEquals(expectedCount, count.get());
@@ -878,8 +996,18 @@ public class NbpObservableTests {
     
     @Test
     public void testCompose() {
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
-        NbpObservable.just(1, 2, 3).compose(t1 ->t1.map(String::valueOf))
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
+        NbpObservable.just(1, 2, 3).compose(new Function<NbpObservable<Integer>, NbpObservable<String>>() {
+            @Override
+            public NbpObservable<String> apply(NbpObservable<Integer> t1) {
+                return t1.map(new Function<Integer, String>() {
+                    @Override
+                    public String apply(Integer v) {
+                        return String.valueOf(v);
+                    }
+                });
+            }
+        })
         .subscribe(ts);
         ts.assertTerminated();
         ts.assertNoErrors();
@@ -919,7 +1047,7 @@ public class NbpObservableTests {
 // FIXME this test doesn't make sense 
 //    @Test // cf. https://github.com/ReactiveX/RxJava/issues/2599
 //    public void testSubscribingSubscriberAsObserverMaintainsSubscriptionChain() {
-//        NbpTestSubscriber<Object> subscriber = new NbpTestSubscriber<>();
+//        NbpTestSubscriber<Object> subscriber = new NbpTestSubscriber<T>();
 //        Subscription subscription = NbpObservable.just("event").subscribe((Observer<Object>) subscriber);
 //        subscription.unsubscribe();
 //
@@ -947,14 +1075,17 @@ public class NbpObservableTests {
     
     @Test
     public void testExtend() {
-        final NbpTestSubscriber<Object> subscriber = new NbpTestSubscriber<>();
+        final NbpTestSubscriber<Object> subscriber = new NbpTestSubscriber<Object>();
         final Object value = new Object();
-        NbpObservable.just(value).to(onSubscribe -> {
-                onSubscribe.subscribe(subscriber);
-                subscriber.assertNoErrors();
-                subscriber.assertComplete();
-                subscriber.assertValue(value);
-                return subscriber.values().get(0);
-            });
+        NbpObservable.just(value).to(new Function<NbpObservable<Object>, Object>() {
+            @Override
+            public Object apply(NbpObservable<Object> onSubscribe) {
+                    onSubscribe.subscribe(subscriber);
+                    subscriber.assertNoErrors();
+                    subscriber.assertComplete();
+                    subscriber.assertValue(value);
+                    return subscriber.values().get(0);
+                }
+        });
     }
 }

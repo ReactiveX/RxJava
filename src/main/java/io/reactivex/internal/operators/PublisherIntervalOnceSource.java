@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -49,10 +49,16 @@ public final class PublisherIntervalOnceSource implements Publisher<Long> {
 
         final Subscriber<? super Long> actual;
         
-        static final Disposable DISPOSED = () -> { };
+        static final Disposable DISPOSED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
 
         /** This state tells the setResource not to call dispose since the run is finishing anyway. */
-        static final Disposable DONE = () -> { };
+        static final Disposable DONE = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         volatile boolean requested;
         

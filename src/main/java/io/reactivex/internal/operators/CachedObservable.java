@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -35,6 +35,7 @@ public final class CachedObservable<T> extends Observable<T> {
 
     /**
      * Creates a cached Observable with a default capacity hint of 16.
+     * @param <T> the value type
      * @param source the source Observable to cache
      * @return the CachedObservable instance
      */
@@ -44,6 +45,7 @@ public final class CachedObservable<T> extends Observable<T> {
     
     /**
      * Creates a cached Observable with the given capacity hint.
+     * @param <T> the value type
      * @param source the source Observable to cache
      * @param capacityHint the hint for the internal buffer size
      * @return the CachedObservable instance
@@ -52,9 +54,9 @@ public final class CachedObservable<T> extends Observable<T> {
         if (capacityHint < 1) {
             throw new IllegalArgumentException("capacityHint > 0 required");
         }
-        CacheState<T> state = new CacheState<>(source, capacityHint);
-        CachedSubscribe<T> onSubscribe = new CachedSubscribe<>(state);
-        return new CachedObservable<>(onSubscribe, state);
+        CacheState<T> state = new CacheState<T>(source, capacityHint);
+        CachedSubscribe<T> onSubscribe = new CachedSubscribe<T>(state);
+        return new CachedObservable<T>(onSubscribe, state);
     }
     
     /**
@@ -119,7 +121,7 @@ public final class CachedObservable<T> extends Observable<T> {
             super(capacityHint);
             this.source = source;
             this.producers = EMPTY;
-            this.connection = new SerialResource<>(Subscription::cancel);
+            this.connection = new SerialResource<Subscription>(SubscriptionHelper.consumeAndCancel());
         }
         /**
          * Adds a ReplayProducer to the producers array atomically.
@@ -235,7 +237,7 @@ public final class CachedObservable<T> extends Observable<T> {
         @Override
         public void subscribe(Subscriber<? super T> t) {
             // we can connect first because we replay everything anyway
-            ReplaySubscription<T> rp = new ReplaySubscription<>(t, state);
+            ReplaySubscription<T> rp = new ReplaySubscription<T>(t, state);
             state.addProducer(rp);
             
             t.onSubscribe(rp);
@@ -308,8 +310,8 @@ public final class CachedObservable<T> extends Observable<T> {
         }
         /**
          * Updates the request count to reflect values have been produced.
-         * @param n
-         * @return
+         * @param n the produced amount
+         * @return the current requested amount
          */
         public long produced(long n) {
             return addAndGet(-n);

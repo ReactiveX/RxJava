@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -12,10 +12,9 @@
  */
 package io.reactivex.internal.operators.nbp;
 
-import java.util.function.*;
-
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.subscribers.nbp.NbpCancelledSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -40,7 +39,12 @@ public final class NbpOperatorCollect<T, U> implements NbpOperator<U, T> {
             return NbpCancelledSubscriber.INSTANCE;
         }
         
-        return new CollectSubscriber<>(t, u, collector);
+        if (u == null) {
+            EmptyDisposable.error(new NullPointerException("The inital supplier returned a null value"), t);
+            return NbpCancelledSubscriber.INSTANCE;
+        }
+        
+        return new CollectSubscriber<T, U>(t, u, collector);
     }
     
     static final class CollectSubscriber<T, U> implements NbpSubscriber<T> {

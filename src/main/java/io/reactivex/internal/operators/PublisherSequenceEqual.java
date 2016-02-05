@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,10 +15,10 @@ package io.reactivex.internal.operators;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
-import java.util.function.BiPredicate;
 
 import org.reactivestreams.*;
 
+import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.disposables.ArrayCompositeResource;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -40,7 +40,7 @@ public final class PublisherSequenceEqual<T> implements Publisher<Boolean> {
     
     @Override
     public void subscribe(Subscriber<? super Boolean> s) {
-        EqualCoordinator<T> ec = new EqualCoordinator<>(s, bufferSize, first, second, comparer);
+        EqualCoordinator<T> ec = new EqualCoordinator<T>(s, bufferSize, first, second, comparer);
         ec.subscribe();
     }
     
@@ -56,10 +56,7 @@ public final class PublisherSequenceEqual<T> implements Publisher<Boolean> {
         
         volatile boolean cancelled;
         
-        volatile int once;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<EqualCoordinator> ONCE =
-                AtomicIntegerFieldUpdater.newUpdater(EqualCoordinator.class, "once");
+        final AtomicBoolean once = new AtomicBoolean();
         
         public EqualCoordinator(Subscriber<? super Boolean> actual, int bufferSize,
                 Publisher<? extends T> first, Publisher<? extends T> second,
@@ -71,9 +68,9 @@ public final class PublisherSequenceEqual<T> implements Publisher<Boolean> {
             @SuppressWarnings("unchecked")
             EqualSubscriber<T>[] as = new EqualSubscriber[2];
             this.subscribers = as;
-            as[0] = new EqualSubscriber<>(this, 0, bufferSize);
-            as[1] = new EqualSubscriber<>(this, 1, bufferSize);
-            this.resources = new ArrayCompositeResource<>(2, Subscription::cancel);
+            as[0] = new EqualSubscriber<T>(this, 0, bufferSize);
+            as[1] = new EqualSubscriber<T>(this, 1, bufferSize);
+            this.resources = new ArrayCompositeResource<Subscription>(2, SubscriptionHelper.consumeAndCancel());
         }
         
         boolean setSubscription(Subscription s, int index) {
@@ -91,7 +88,7 @@ public final class PublisherSequenceEqual<T> implements Publisher<Boolean> {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            if (ONCE.compareAndSet(this, 0, 1)) {
+            if (once.compareAndSet(false, true)) {
                 EqualSubscriber<T>[] as = subscribers;
                 first.subscribe(as[0]);
                 second.subscribe(as[1]);
@@ -242,9 +239,9 @@ public final class PublisherSequenceEqual<T> implements Publisher<Boolean> {
             this.index = index;
             Queue<T> q;
             if (Pow2.isPowerOfTwo(bufferSize)) {
-                q = new SpscArrayQueue<>(bufferSize);
+                q = new SpscArrayQueue<T>(bufferSize);
             } else {
-                q = new SpscExactArrayQueue<>(bufferSize);
+                q = new SpscExactArrayQueue<T>(bufferSize);
             }
             this.queue = q;
         }

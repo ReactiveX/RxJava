@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,18 +16,18 @@ package io.reactivex.internal.operators.nbp;
 import static org.junit.Assert.*;
 
 import java.util.concurrent.atomic.*;
-import java.util.function.Consumer;
 
 import org.junit.Test;
 
 import io.reactivex.NbpObservable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
 public class NbpOperatorTakeLastOneTest {
 
     @Test
     public void testLastOfManyReturnsLast() {
-        NbpTestSubscriber<Integer> s = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> s = new NbpTestSubscriber<Integer>();
         NbpObservable.range(1, 10).takeLast(1).subscribe(s);
         s.assertValue(10);
         s.assertNoErrors();
@@ -38,7 +38,7 @@ public class NbpOperatorTakeLastOneTest {
 
     @Test
     public void testLastOfEmptyReturnsEmpty() {
-        NbpTestSubscriber<Object> s = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Object> s = new NbpTestSubscriber<Object>();
         NbpObservable.empty().takeLast(1).subscribe(s);
         s.assertNoValues();
         s.assertNoErrors();
@@ -49,7 +49,7 @@ public class NbpOperatorTakeLastOneTest {
 
     @Test
     public void testLastOfOneReturnsLast() {
-        NbpTestSubscriber<Integer> s = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> s = new NbpTestSubscriber<Integer>();
         NbpObservable.just(1).takeLast(1).subscribe(s);
         s.assertValue(1);
         s.assertNoErrors();

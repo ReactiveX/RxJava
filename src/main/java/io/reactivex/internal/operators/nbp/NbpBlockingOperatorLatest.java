@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,9 +15,10 @@ package io.reactivex.internal.operators.nbp;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
+import io.reactivex.Optional;
 import io.reactivex.internal.subscribers.nbp.NbpDisposableSubscriber;
 import io.reactivex.internal.util.Exceptions;
 
@@ -32,6 +33,7 @@ public enum NbpBlockingOperatorLatest {
      * Returns an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
      * been returned by the {@code Iterable}, then returns that item
      *
+     * @param <T> the value type
      * @param source
      *            the source {@code Observable}
      * @return an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
@@ -41,7 +43,7 @@ public enum NbpBlockingOperatorLatest {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
-                NbpLatestObserverIterator<T> lio = new NbpLatestObserverIterator<>();
+                NbpLatestObserverIterator<T> lio = new NbpLatestObserverIterator<T>();
                 
                 @SuppressWarnings("unchecked")
                 NbpObservable<Try<Optional<T>>> materialized = ((NbpObservable<T>)source).materialize();
@@ -56,15 +58,11 @@ public enum NbpBlockingOperatorLatest {
     static final class NbpLatestObserverIterator<T> extends NbpDisposableSubscriber<Try<Optional<T>>> implements Iterator<T> {
         final Semaphore notify = new Semaphore(0);
         // observer's notification
-        volatile Try<Optional<T>> value;
-        /** Updater for the value field. */
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<NbpLatestObserverIterator, Try> REFERENCE_UPDATER
-                = AtomicReferenceFieldUpdater.newUpdater(NbpLatestObserverIterator.class, Try.class, "value");
+        final AtomicReference<Try<Optional<T>>> value = new AtomicReference<Try<Optional<T>>>();
 
         @Override
         public void onNext(Try<Optional<T>> args) {
-            boolean wasntAvailable = REFERENCE_UPDATER.getAndSet(this, args) == null;
+            boolean wasntAvailable = value.getAndSet(args) == null;
             if (wasntAvailable) {
                 notify.release();
             }
@@ -99,8 +97,7 @@ public enum NbpBlockingOperatorLatest {
                         throw Exceptions.propagate(ex);
                     }
 
-                    @SuppressWarnings("unchecked")
-                    Try<Optional<T>> n = REFERENCE_UPDATER.getAndSet(this, null);
+                    Try<Optional<T>> n = value.getAndSet(null);
                     iNotif = n;
                     if (iNotif.hasError()) {
                         throw Exceptions.propagate(iNotif.error());

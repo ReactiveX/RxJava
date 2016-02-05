@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,12 +14,13 @@
 package io.reactivex.subjects;
 
 import java.lang.reflect.Array;
-import java.util.Objects;
 import java.util.concurrent.atomic.*;
-import java.util.concurrent.locks.StampedLock;
+import java.util.concurrent.locks.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.functions.Predicate;
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -27,16 +28,16 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class BehaviorSubject<T> extends Subject<T, T> {
 
     public static <T> BehaviorSubject<T> create() {
-        State<T> state = new State<>();
-        return new BehaviorSubject<>(state);
+        State<T> state = new State<T>();
+        return new BehaviorSubject<T>(state);
     }
     
     // TODO a plain create() would create a method ambiguity with Observable.create with javac
     public static <T> BehaviorSubject<T> createDefault(T defaultValue) {
-        Objects.requireNonNull(defaultValue);
-        State<T> state = new State<>();
+        Objects.requireNonNull(defaultValue, "defaultValue is null");
+        State<T> state = new State<T>();
         state.lazySet(defaultValue);
-        return new BehaviorSubject<>(state);
+        return new BehaviorSubject<T>(state);
     }
     
     final State<T> state;
@@ -74,12 +75,12 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     @Override
     public boolean hasSubscribers() {
-        return state.subscribers.length != 0;
+        return state.subscribers.get().length != 0;
     }
     
     
     /* test support*/ int subscriberCount() {
-        return state.subscribers.length;
+        return state.subscribers.get().length;
     }
 
     @Override
@@ -147,11 +148,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
         boolean done;
         
-        volatile BehaviorSubscription<T>[] subscribers;
-        
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<State, BehaviorSubscription[]> SUBSCRIBERS =
-                AtomicReferenceFieldUpdater.newUpdater(State.class, BehaviorSubscription[].class, "subscribers");
+        final AtomicReference<BehaviorSubscription<T>[]> subscribers;
         
         @SuppressWarnings("rawtypes")
         static final BehaviorSubscription[] EMPTY = new BehaviorSubscription[0];
@@ -161,16 +158,21 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
         long index;
         
-        final StampedLock lock;
+        final ReadWriteLock lock;
+        final Lock readLock;
+        final Lock writeLock;
         
+        @SuppressWarnings("unchecked")
         public State() {
-            this.lock = new StampedLock();
-            SUBSCRIBERS.lazySet(this, EMPTY);
+            this.lock = new ReentrantReadWriteLock();
+            this.readLock = lock.readLock();
+            this.writeLock = lock.writeLock();
+            this.subscribers = new AtomicReference<BehaviorSubscription<T>[]>(EMPTY);
         }
         
         public boolean add(BehaviorSubscription<T> rs) {
             for (;;) {
-                BehaviorSubscription<T>[] a = subscribers;
+                BehaviorSubscription<T>[] a = subscribers.get();
                 if (a == TERMINATED) {
                     return false;
                 }
@@ -179,7 +181,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                 BehaviorSubscription<T>[] b = new BehaviorSubscription[len + 1];
                 System.arraycopy(a, 0, b, 0, len);
                 b[len] = rs;
-                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return true;
                 }
             }
@@ -188,7 +190,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         @SuppressWarnings("unchecked")
         public void remove(BehaviorSubscription<T> rs) {
             for (;;) {
-                BehaviorSubscription<T>[] a = subscribers;
+                BehaviorSubscription<T>[] a = subscribers.get();
                 if (a == TERMINATED || a == EMPTY) {
                     return;
                 }
@@ -212,7 +214,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                     System.arraycopy(a, 0, b, 0, j);
                     System.arraycopy(a, j + 1, b, j, len - j - 1);
                 }
-                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return;
                 }
             }
@@ -221,9 +223,9 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         @SuppressWarnings("unchecked")
         public BehaviorSubscription<T>[] terminate(Object terminalValue) {
             
-            BehaviorSubscription<T>[] a = subscribers;
+            BehaviorSubscription<T>[] a = subscribers.get();
             if (a != TERMINATED) {
-                a = SUBSCRIBERS.getAndSet(this, TERMINATED);
+                a = subscribers.getAndSet(TERMINATED);
                 if (a != TERMINATED) {
                     // either this or atomics with lots of allocation
                     setCurrent(terminalValue);
@@ -235,7 +237,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         
         @Override
         public void subscribe(Subscriber<? super T> s) {
-            BehaviorSubscription<T> bs = new BehaviorSubscription<>(s, this);
+            BehaviorSubscription<T> bs = new BehaviorSubscription<T>(s, this);
             s.onSubscribe(bs);
             if (!bs.cancelled) {
                 if (add(bs)) {
@@ -265,12 +267,12 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         }
         
         void setCurrent(Object o) {
-            long stamp = lock.writeLock();
+            writeLock.lock();
             try {
                 index++;
                 lazySet(o);
             } finally {
-                lock.unlockWrite(stamp);
+                writeLock.unlock();
             }
         }
         
@@ -281,7 +283,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             }
             Object o = NotificationLite.next(t);
             setCurrent(o);
-            for (BehaviorSubscription<T> bs : subscribers) {
+            for (BehaviorSubscription<T> bs : subscribers.get()) {
                 bs.emitNext(o, index);
             }
         }
@@ -312,7 +314,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         }
     }
     
-    static final class BehaviorSubscription<T> extends AtomicLong implements Subscription {
+    static final class BehaviorSubscription<T> extends AtomicLong implements Subscription, Predicate<Object> {
         /** */
         private static final long serialVersionUID = 3293175281126227086L;
         
@@ -366,19 +368,14 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                 }
                 
                 State<T> s = state;
-                StampedLock lock = s.lock;
                 
-                long stamp = lock.tryOptimisticRead();
-                index = s.index;
-                o = s.get();
-                if (!lock.validate(stamp)) {
-                    stamp = lock.readLock();
-                    try {
-                        index = s.index;
-                        o = s.get();
-                    } finally {
-                        lock.unlockRead(stamp);
-                    }
+                Lock readLock = s.readLock;
+                readLock.lock();
+                try {
+                    index = s.index;
+                    o = s.get();
+                } finally {
+                    readLock.unlock();
                 }
                 
                 emitting = o != null;
@@ -386,7 +383,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             }
             
             if (o != null) {
-                if (emit(o)) {
+                if (test(o)) {
                     return;
                 }
             
@@ -409,7 +406,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                     if (emitting) {
                         AppendOnlyLinkedArrayList<Object> q = queue;
                         if (q == null) {
-                            q = new AppendOnlyLinkedArrayList<>(4);
+                            q = new AppendOnlyLinkedArrayList<Object>(4);
                             queue = q;
                         }
                         q.add(value);
@@ -420,10 +417,11 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                 fastPath = true;
             }
 
-            emit(value);
+            test(value);
         }
 
-        boolean emit(Object o) {
+        @Override
+        public boolean test(Object o) {
             if (cancelled) {
                 return true;
             }
@@ -441,7 +439,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             
             long r = get();
             if (r != 0L) {
-                actual.onNext(NotificationLite.getValue(o));
+                actual.onNext(NotificationLite.<T>getValue(o));
                 if (r != Long.MAX_VALUE) {
                     decrementAndGet();
                 }
@@ -467,7 +465,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                     queue = null;
                 }
                 
-                q.forEachWhile(this::emit);
+                q.forEachWhile(this);
             }
         }
     }

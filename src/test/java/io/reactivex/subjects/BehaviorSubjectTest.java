@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 import org.junit.*;
 import org.mockito.*;
@@ -27,7 +26,9 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class BehaviorSubjectTest {
@@ -127,7 +128,7 @@ public class BehaviorSubjectTest {
         Subscriber<Object> observerB = TestHelper.mockSubscriber();
         Subscriber<Object> observerC = TestHelper.mockSubscriber();
 
-        TestSubscriber<Object> ts = new TestSubscriber<>(observerA);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(observerA);
         
         channel.subscribe(ts);
         channel.subscribe(observerB);
@@ -358,7 +359,7 @@ public class BehaviorSubjectTest {
 //        BehaviorSubject<String> ps = BehaviorSubject.create();
 //
 //        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<>();
+//        TestSubscriber<String> ts = new TestSubscriber<String>();
 //        ps.subscribe(ts);
 //
 //        try {
@@ -423,7 +424,7 @@ public class BehaviorSubjectTest {
                     }
                 });
                 
-                final AtomicReference<Object> o = new AtomicReference<>();
+                final AtomicReference<Object> o = new AtomicReference<Object>();
                 
                 rs.subscribeOn(s).observeOn(Schedulers.io())
                 .subscribe(new Observer<Object>() {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,15 +13,16 @@
 
 package io.reactivex.internal.subscriptions;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * 
+ * A Subscription that coordinates the emission of a single value set asynchronously.
+ * @param <T> the value type
  */
 public final class ScalarAsyncSubscription<T> extends AtomicInteger implements Subscription {
     /** */
@@ -66,7 +67,7 @@ public final class ScalarAsyncSubscription<T> extends AtomicInteger implements S
     }
     
     public void setValue(T v) {
-        Objects.requireNonNull(v);
+        Objects.requireNonNull(v, "v is null");
         
         for (;;) {
             int state = get();

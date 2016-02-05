@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,11 +15,11 @@ package io.reactivex.internal.operators;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.subscribers.EmptySubscriber;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -38,13 +38,13 @@ public final class OperatorBuffer<T, U extends Collection<? super T>> implements
     @Override
     public Subscriber<? super T> apply(Subscriber<? super U> t) {
         if (skip == count) {
-            BufferExactSubscriber<T, U> bes = new BufferExactSubscriber<>(t, count, bufferSupplier);
+            BufferExactSubscriber<T, U> bes = new BufferExactSubscriber<T, U>(t, count, bufferSupplier);
             if (bes.createBuffer()) {
                 return bes;
             }
             return EmptySubscriber.INSTANCE;
         }
-        return new BufferSkipSubscriber<>(t, count, skip, bufferSupplier);
+        return new BufferSkipSubscriber<T, U>(t, count, skip, bufferSupplier);
     }
     
     static final class BufferExactSubscriber<T, U extends Collection<? super T>> implements Subscriber<T>, Subscription {
@@ -169,7 +169,7 @@ public final class OperatorBuffer<T, U extends Collection<? super T>> implements
             this.count = count;
             this.skip = skip;
             this.bufferSupplier = bufferSupplier;
-            this.buffers = new ArrayDeque<>();
+            this.buffers = new ArrayDeque<U>();
         }
 
         @Override

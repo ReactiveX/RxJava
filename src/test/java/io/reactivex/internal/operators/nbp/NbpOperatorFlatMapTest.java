@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,13 +20,14 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
 
 import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
@@ -301,16 +302,22 @@ public class NbpOperatorFlatMapTest {
     }
 
     private static <T> NbpObservable<T> composer(NbpObservable<T> source, final AtomicInteger subscriptionCount, final int m) {
-        return source.doOnSubscribe(s -> {
-                int n = subscriptionCount.getAndIncrement();
-                if (n >= m) {
-                    Assert.fail("Too many subscriptions! " + (n + 1));
-                }
-        }).doOnComplete(() -> {
-                int n = subscriptionCount.decrementAndGet();
-                if (n < 0) {
-                    Assert.fail("Too many unsubscriptions! " + (n - 1));
-                }
+        return source.doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable s) {
+                    int n = subscriptionCount.getAndIncrement();
+                    if (n >= m) {
+                        Assert.fail("Too many subscriptions! " + (n + 1));
+                    }
+            }
+        }).doOnComplete(new Runnable() {
+            @Override
+            public void run() {
+                    int n = subscriptionCount.decrementAndGet();
+                    if (n < 0) {
+                        Assert.fail("Too many unsubscriptions! " + (n - 1));
+                    }
+            }
         });
     }
 
@@ -327,13 +334,13 @@ public class NbpOperatorFlatMapTest {
             }
         }, m);
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         source.subscribe(ts);
         
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        Set<Integer> expected = new HashSet<>(Arrays.asList(
+        Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
                 10, 11, 20, 21, 30, 31, 40, 41, 50, 51, 60, 61, 70, 71, 80, 81, 90, 91, 100, 101
         ));
         Assert.assertEquals(expected.size(), ts.valueCount());
@@ -357,13 +364,13 @@ public class NbpOperatorFlatMapTest {
             }
         }, m);
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         source.subscribe(ts);
         
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        Set<Integer> expected = new HashSet<>(Arrays.asList(
+        Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
                 1010, 1011, 2020, 2021, 3030, 3031, 4040, 4041, 5050, 5051, 
                 6060, 6061, 7070, 7071, 8080, 8081, 9090, 9091, 10100, 10101
         ));
@@ -403,9 +410,10 @@ public class NbpOperatorFlatMapTest {
         NbpObservable<Integer> source = NbpObservable.fromIterable(Arrays.asList(10, 20, 30));
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<>(o);
+        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<Object>(o);
 
-        source.flatMap(just(onNext), just(onError), just0(onCompleted), m).subscribe(ts);
+        Function<Throwable, NbpObservable<Integer>> just = just(onError);
+        source.flatMap(just(onNext), just, just0(onCompleted), m).subscribe(ts);
         
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -428,7 +436,7 @@ public class NbpOperatorFlatMapTest {
             if (i % 10 == 0) {
                 System.out.println("flatMapRangeAsyncLoop > " + i);
             }
-            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
             NbpObservable.range(0, 1000)
             .flatMap(new Function<Integer, NbpObservable<Integer>>() {
                 @Override
@@ -465,7 +473,7 @@ public class NbpOperatorFlatMapTest {
             if (i % 10 == 0) {
                 System.out.println("flatMapRangeAsyncLoop > " + i);
             }
-            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
             NbpObservable.range(0, 1000)
             .flatMap(new Function<Integer, NbpObservable<Integer>>() {
                 final Random rnd = new Random();
@@ -489,7 +497,7 @@ public class NbpOperatorFlatMapTest {
             ts.assertNoErrors();
             List<Integer> list = ts.values();
             if (list.size() < 1000) {
-                Set<Integer> set = new HashSet<>(list);
+                Set<Integer> set = new HashSet<Integer>(list);
                 for (int j = 0; j < 1000; j++) {
                     if (!set.contains(j)) {
                         System.out.println(j + " missing");
@@ -503,7 +511,7 @@ public class NbpOperatorFlatMapTest {
     @Test
     public void flatMapIntPassthruAsync() {
         for (int i = 0;i < 1000; i++) {
-            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
             
             NbpObservable.range(1, 1000).flatMap(new Function<Integer, NbpObservable<Integer>>() {
                 @Override
@@ -521,7 +529,7 @@ public class NbpOperatorFlatMapTest {
     @Test
     public void flatMapTwoNestedSync() {
         for (final int n : new int[] { 1, 1000, 1000000 }) {
-            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
     
             NbpObservable.just(1, 2).flatMap(new Function<Integer, NbpObservable<Integer>>() {
                 @Override

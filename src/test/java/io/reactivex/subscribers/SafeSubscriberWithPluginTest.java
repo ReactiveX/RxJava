@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,16 +13,16 @@
 
 package io.reactivex.subscribers;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 import org.junit.*;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.exceptions.*;
+import io.reactivex.functions.Consumer;
 import io.reactivex.plugins.RxJavaPlugins;
-
-import static org.junit.Assert.*;
 
 public class SafeSubscriberWithPluginTest {
     private final class SubscriptionCancelThrows implements Subscription {
@@ -52,7 +52,7 @@ public class SafeSubscriberWithPluginTest {
                 throw new TestException();
             }
         };
-        SafeSubscriber<Integer> safe = new SafeSubscriber<>(ts);
+        SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
         try {
             safe.onComplete();
             Assert.fail();
@@ -70,7 +70,7 @@ public class SafeSubscriberWithPluginTest {
                 throw new OnErrorNotImplementedException(new TestException());
             }
         };
-        SafeSubscriber<Integer> safe = new SafeSubscriber<>(ts);
+        SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
         
         try {
             safe.onComplete();
@@ -85,8 +85,11 @@ public class SafeSubscriberWithPluginTest {
     @Test(expected = OnCompleteFailedException.class)
     @Ignore("Subscribers can't throw")
     public void testPluginException() {
-        RxJavaPlugins.setErrorHandler(e -> {
-            throw new RuntimeException();
+        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) {
+                throw new RuntimeException();
+            }
         });
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
@@ -95,7 +98,7 @@ public class SafeSubscriberWithPluginTest {
                 throw new TestException();
             }
         };
-        SafeSubscriber<Integer> safe = new SafeSubscriber<>(ts);
+        SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
         
         safe.onComplete();
     }
@@ -113,8 +116,8 @@ public class SafeSubscriberWithPluginTest {
             }
         });
         
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
-        SafeSubscriber<Integer> safe = new SafeSubscriber<>(ts);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
         safe.onSubscribe(new SubscriptionCancelThrows());
         
         safe.onError(new TestException());
@@ -139,7 +142,7 @@ public class SafeSubscriberWithPluginTest {
                 throw new OnErrorNotImplementedException(e);
             }
         };
-        SafeSubscriber<Integer> safe = new SafeSubscriber<>(ts);
+        SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
         safe.onSubscribe(new SubscriptionCancelThrows());
         
         safe.onError(new TestException());
@@ -164,7 +167,7 @@ public class SafeSubscriberWithPluginTest {
                 throw new RuntimeException(e);
             }
         };
-        SafeSubscriber<Integer> safe = new SafeSubscriber<>(ts);
+        SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
         
         safe.onError(new TestException());
     }
@@ -187,7 +190,7 @@ public class SafeSubscriberWithPluginTest {
                 throw new RuntimeException(e);
             }
         };
-        SafeSubscriber<Integer> safe = new SafeSubscriber<>(ts);
+        SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
         safe.onSubscribe(new SubscriptionCancelThrows());
         
         safe.onError(new TestException());
@@ -211,7 +214,7 @@ public class SafeSubscriberWithPluginTest {
                 throw new RuntimeException(e);
             }
         };
-        SafeSubscriber<Integer> safe = new SafeSubscriber<>(ts);
+        SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
         safe.onSubscribe(new SubscriptionCancelThrows());
         
         safe.onError(new TestException());
@@ -236,7 +239,7 @@ public class SafeSubscriberWithPluginTest {
             }
         };
         final RuntimeException ex = new RuntimeException();
-        SafeSubscriber<Integer> safe = new SafeSubscriber<>(ts);
+        SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
         safe.onSubscribe(new Subscription() {
             @Override
             public void cancel() {
@@ -262,8 +265,11 @@ public class SafeSubscriberWithPluginTest {
     @Ignore("Subscribers can't throw")
     public void testPluginErrorHandlerReceivesExceptionFromFailingUnsubscribeAfterCompletionThrows() {
         final AtomicInteger calls = new AtomicInteger();
-        RxJavaPlugins.setErrorHandler(e -> {
-                calls.incrementAndGet();
+        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) {
+                    calls.incrementAndGet();
+            }
         });
         
         final AtomicInteger errors = new AtomicInteger();
@@ -279,7 +285,7 @@ public class SafeSubscriberWithPluginTest {
                 errors.incrementAndGet();
             }
         };
-        SafeSubscriber<Integer> safe = new SafeSubscriber<>(ts);
+        SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
         safe.onSubscribe(new SubscriptionCancelThrows());
         
         try {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -59,7 +59,7 @@ public class OperatorDefaultIfEmptyTest {
     @Test
     @Ignore("Subscribers should not throw")
     public void testEmptyButClientThrows() {
-        Subscriber<Integer> o = TestHelper.mockSubscriber();
+        final Subscriber<Integer> o = TestHelper.mockSubscriber();
         
         Observable.<Integer>empty().defaultIfEmpty(1).subscribe(new Observer<Integer>() {
             @Override
@@ -85,7 +85,7 @@ public class OperatorDefaultIfEmptyTest {
     
     @Test
     public void testBackpressureEmpty() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
         Observable.<Integer>empty().defaultIfEmpty(1).subscribe(ts);
         ts.assertNoValues();
         ts.assertNotTerminated();
@@ -97,7 +97,7 @@ public class OperatorDefaultIfEmptyTest {
     
     @Test
     public void testBackpressureNonEmpty() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
         Observable.just(1,2,3).defaultIfEmpty(1).subscribe(ts);
         ts.assertNoValues();
         ts.assertNotTerminated();

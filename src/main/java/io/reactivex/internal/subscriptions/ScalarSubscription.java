@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,8 @@ import org.reactivestreams.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * 
+ * A Subscription that holds a constant value and emits it only when requested.
+ * @param <T> the value type
  */
 public final class ScalarSubscription<T> extends AtomicBoolean implements Subscription {
     /** */

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -54,14 +54,13 @@ public final class IOScheduler extends Scheduler implements SchedulerLifecycle {
 
         CachedWorkerPool(long keepAliveTime, TimeUnit unit) {
             this.keepAliveTime = unit != null ? unit.toNanos(keepAliveTime) : 0L;
-            this.expiringWorkerQueue = new ConcurrentLinkedQueue<>();
-            this.allWorkers = new SetCompositeResource<>(Disposable::dispose);
+            this.expiringWorkerQueue = new ConcurrentLinkedQueue<ThreadWorker>();
+            this.allWorkers = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
 
             ScheduledExecutorService evictor = null;
             Future<?> task = null;
             if (unit != null) {
                 evictor = Executors.newScheduledThreadPool(1, EVICTOR_THREAD_FACTORY);
-                ((ScheduledThreadPoolExecutor)evictor).setRemoveOnCancelPolicy(true);
                 try {
                     task = evictor.scheduleWithFixedDelay(
                             new Runnable() {
@@ -148,7 +147,7 @@ public final class IOScheduler extends Scheduler implements SchedulerLifecycle {
     }
     
     public IOScheduler() {
-        this.pool = new AtomicReference<>(NONE);
+        this.pool = new AtomicReference<CachedWorkerPool>(NONE);
         start();
     }
     
@@ -186,20 +185,18 @@ public final class IOScheduler extends Scheduler implements SchedulerLifecycle {
         private final SetCompositeResource<Disposable> tasks;
         private final CachedWorkerPool pool;
         private final ThreadWorker threadWorker;
-        @SuppressWarnings("unused")
-        volatile int once;
-        static final AtomicIntegerFieldUpdater<EventLoopWorker> ONCE_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(EventLoopWorker.class, "once");
+
+        final AtomicBoolean once = new AtomicBoolean();
 
         EventLoopWorker(CachedWorkerPool pool) {
             this.pool = pool;
-            this.tasks = new SetCompositeResource<>(Disposable::dispose);
+            this.tasks = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
             this.threadWorker = pool.get();
         }
 
         @Override
         public void dispose() {
-            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
+            if (once.compareAndSet(false, true)) {
                 tasks.dispose();
 
                 // releasing the pool should be the last action

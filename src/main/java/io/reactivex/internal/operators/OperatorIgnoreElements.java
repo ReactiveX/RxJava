@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -25,7 +25,7 @@ public enum OperatorIgnoreElements implements Operator<Object, Object> {
     }
     
     @Override
-    public Subscriber<? super Object> apply(Subscriber<? super Object> t) {
+    public Subscriber<? super Object> apply(final Subscriber<? super Object> t) {
         return new Subscriber<Object>() {
             @Override
             public void onSubscribe(Subscription s) {

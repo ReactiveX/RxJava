@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,10 +14,10 @@
 package io.reactivex.internal.operators.nbp;
 
 import java.util.concurrent.atomic.*;
-import java.util.function.Consumer;
 
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class NbpSubscriberResourceWrapper<T, R> extends AtomicReference<Object> implements NbpSubscriber<T>, Disposable {
@@ -27,12 +27,12 @@ public final class NbpSubscriberResourceWrapper<T, R> extends AtomicReference<Ob
     final NbpSubscriber<? super T> actual;
     final Consumer<? super R> disposer;
     
-    volatile Disposable subscription;
-    @SuppressWarnings("rawtypes")
-    static final AtomicReferenceFieldUpdater<NbpSubscriberResourceWrapper, Disposable> SUBSCRIPTION =
-            AtomicReferenceFieldUpdater.newUpdater(NbpSubscriberResourceWrapper.class, Disposable.class, "subscription");
+    final AtomicReference<Disposable> subscription = new AtomicReference<Disposable>();
     
-    static final Disposable TERMINATED = () -> { };
+    static final Disposable TERMINATED = new Disposable() {
+        @Override
+        public void dispose() { }
+    };
     
     public NbpSubscriberResourceWrapper(NbpSubscriber<? super T> actual, Consumer<? super R> disposer) {
         this.actual = actual;
@@ -42,7 +42,7 @@ public final class NbpSubscriberResourceWrapper<T, R> extends AtomicReference<Ob
     @Override
     public void onSubscribe(Disposable s) {
         for (;;) {
-            Disposable current = subscription;
+            Disposable current = subscription.get();
             if (current == TERMINATED) {
                 s.dispose();
                 return;
@@ -52,7 +52,7 @@ public final class NbpSubscriberResourceWrapper<T, R> extends AtomicReference<Ob
                 SubscriptionHelper.reportDisposableSet();
                 return;
             }
-            if (SUBSCRIPTION.compareAndSet(this, null, s)) {
+            if (subscription.compareAndSet(null, s)) {
                 actual.onSubscribe(this);
                 return;
             }
@@ -79,9 +79,9 @@ public final class NbpSubscriberResourceWrapper<T, R> extends AtomicReference<Ob
     @Override
     @SuppressWarnings("unchecked")
     public void dispose() {
-        Disposable s = subscription;
+        Disposable s = subscription.get();
         if (s != TERMINATED) {
-            s = SUBSCRIPTION.getAndSet(this, TERMINATED);
+            s = subscription.getAndSet(TERMINATED);
             if (s != TERMINATED && s != null) {
                 s.dispose();
             }

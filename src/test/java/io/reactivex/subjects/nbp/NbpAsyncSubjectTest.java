@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,14 +19,15 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 import org.junit.*;
 import org.mockito.*;
 
-import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.TestHelper;
+import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Consumer;
+import io.reactivex.subjects.nbp.NbpAsyncSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
 public class NbpAsyncSubjectTest {
@@ -145,7 +146,7 @@ public class NbpAsyncSubjectTest {
         NbpAsyncSubject<String> subject = NbpAsyncSubject.create();
 
         NbpSubscriber<String> observer = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(observer);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(observer);
         subject.subscribe(ts);
 
         subject.onNext("one");
@@ -194,7 +195,7 @@ public class NbpAsyncSubjectTest {
          */
         for (int i = 0; i < 50; i++) {
             final NbpAsyncSubject<String> subject = NbpAsyncSubject.create();
-            final AtomicReference<String> value1 = new AtomicReference<>();
+            final AtomicReference<String> value1 = new AtomicReference<String>();
 
             subject.subscribe(new Consumer<String>() {
 
@@ -252,7 +253,7 @@ public class NbpAsyncSubjectTest {
     private static class SubjectSubscriberThread extends Thread {
 
         private final NbpAsyncSubject<String> subject;
-        private final AtomicReference<String> value = new AtomicReference<>();
+        private final AtomicReference<String> value = new AtomicReference<String>();
 
         public SubjectSubscriberThread(NbpAsyncSubject<String> subject) {
             this.subject = subject;
@@ -276,7 +277,7 @@ public class NbpAsyncSubjectTest {
 //        NbpAsyncSubject<String> ps = NbpAsyncSubject.create();
 //
 //        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<>();
+//        TestSubscriber<String> ts = new TestSubscriber<String>();
 //        ps.subscribe(ts);
 //
 //        try {
@@ -300,7 +301,7 @@ public class NbpAsyncSubjectTest {
 //
 //        ps.subscribe();
 //        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<>();
+//        TestSubscriber<String> ts = new TestSubscriber<String>();
 //        ps.subscribe(ts);
 //        ps.subscribe();
 //        ps.subscribe();

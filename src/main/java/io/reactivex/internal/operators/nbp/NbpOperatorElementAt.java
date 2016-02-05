@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -26,7 +26,7 @@ public final class NbpOperatorElementAt<T> implements NbpOperator<T, T> {
     }
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> t) {
-        return new ElementAtSubscriber<>(t, index, defaultValue);
+        return new ElementAtSubscriber<T>(t, index, defaultValue);
     }
     
     static final class ElementAtSubscriber<T> implements NbpSubscriber<T> {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler;
+import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
@@ -45,12 +45,12 @@ public final class OperatorDelay<T> implements Operator<T, T> {
         if (delayError) {
             s = (Subscriber<T>)t;
         } else {
-            s = new SerializedSubscriber<>(t);
+            s = new SerializedSubscriber<T>(t);
         }
         
         Scheduler.Worker w = scheduler.createWorker();
         
-        return new DelaySubscriber<>(s, delay, unit, w, delayError);
+        return new DelaySubscriber<T>(s, delay, unit, w, delayError);
     }
     
     static final class DelaySubscriber<T> implements Subscriber<T>, Subscription {
@@ -81,18 +81,26 @@ public final class OperatorDelay<T> implements Operator<T, T> {
         }
         
         @Override
-        public void onNext(T t) {
-            w.schedule(() -> actual.onNext(t), delay, unit);
+        public void onNext(final T t) {
+            w.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    actual.onNext(t);
+                }
+            }, delay, unit);
         }
         
         @Override
-        public void onError(Throwable t) {
+        public void onError(final Throwable t) {
             if (delayError) {
-                w.schedule(() -> {
-                    try {
-                        actual.onError(t);
-                    } finally {
-                        w.dispose();
+                w.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            actual.onError(t);
+                        } finally {
+                            w.dispose();
+                        }
                     }
                 }, delay, unit);
             } else {
@@ -102,11 +110,14 @@ public final class OperatorDelay<T> implements Operator<T, T> {
         
         @Override
         public void onComplete() {
-            w.schedule(() -> {
-                try {
-                    actual.onComplete();
-                } finally {
-                    w.dispose();
+            w.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        actual.onComplete();
+                    } finally {
+                        w.dispose();
+                    }
                 }
             }, delay, unit);
         }

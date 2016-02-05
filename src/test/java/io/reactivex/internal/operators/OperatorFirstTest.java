@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,13 +17,13 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.NoSuchElementException;
-import java.util.function.Predicate;
 
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.functions.Predicate;
 
 public class OperatorFirstTest {
 
@@ -127,7 +127,12 @@ public class OperatorFirstTest {
     @Test
     public void testFirstWithPredicate() {
         Observable<Integer> observable = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(t1 -> t1 % 2 == 0)
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                })
                 .first();
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -142,7 +147,12 @@ public class OperatorFirstTest {
     @Test
     public void testFirstWithPredicateAndOneElement() {
         Observable<Integer> observable = Observable.just(1, 2)
-                .filter(t1 -> t1 % 2 == 0)
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                })
                 .first();
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -157,7 +167,12 @@ public class OperatorFirstTest {
     @Test
     public void testFirstWithPredicateAndEmpty() {
         Observable<Integer> observable = Observable.just(1)
-                .filter(t1 -> t1 % 2 == 0)
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                })
                 .first();
         
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -213,7 +228,12 @@ public class OperatorFirstTest {
     @Test
     public void testFirstOrDefaultWithPredicate() {
         Observable<Integer> observable = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(t1 -> t1 % 2 == 0)
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                })
                 .first(8);
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -228,7 +248,12 @@ public class OperatorFirstTest {
     @Test
     public void testFirstOrDefaultWithPredicateAndOneElement() {
         Observable<Integer> observable = Observable.just(1, 2)
-                .filter(t1 -> t1 % 2 == 0)
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                })
                 .first(4);
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -243,7 +268,12 @@ public class OperatorFirstTest {
     @Test
     public void testFirstOrDefaultWithPredicateAndEmpty() {
         Observable<Integer> observable = Observable.just(1)
-                .filter(t1 -> t1 % 2 == 0)
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                })
                 .first(2);
         
         Subscriber<Integer> observer = TestHelper.mockSubscriber();

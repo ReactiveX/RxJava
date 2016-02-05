@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,14 +14,16 @@
 package io.reactivex.internal.operators;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.functions.*;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorAllTest {
@@ -32,10 +34,15 @@ public class OperatorAllTest {
 
         Subscriber <Boolean> observer = TestHelper.mockSubscriber();
         
-        obs.all(s -> s.length() == 3)
+        obs.all(new Predicate<String>() {
+            @Override
+            public boolean test(String s) {
+                return s.length() == 3;
+            }
+        })
         .subscribe(observer);
 
-        verify(observer).onSubscribe(any());
+        verify(observer).onSubscribe((Subscription)any());
         verify(observer).onNext(true);
         verify(observer).onComplete();
         verifyNoMoreInteractions(observer);
@@ -47,10 +54,15 @@ public class OperatorAllTest {
 
         Subscriber <Boolean> observer = TestHelper.mockSubscriber();
 
-        obs.all(s -> s.length() == 3)
+        obs.all(new Predicate<String>() {
+            @Override
+            public boolean test(String s) {
+                return s.length() == 3;
+            }
+        })
         .subscribe(observer);
 
-        verify(observer).onSubscribe(any());
+        verify(observer).onSubscribe((Subscription)any());
         verify(observer).onNext(false);
         verify(observer).onComplete();
         verifyNoMoreInteractions(observer);
@@ -62,10 +74,15 @@ public class OperatorAllTest {
 
         Subscriber <Boolean> observer = TestHelper.mockSubscriber();
 
-        obs.all(s -> s.length() == 3)
+        obs.all(new Predicate<String>() {
+            @Override
+            public boolean test(String s) {
+                return s.length() == 3;
+            }
+        })
         .subscribe(observer);
 
-        verify(observer).onSubscribe(any());
+        verify(observer).onSubscribe((Subscription)any());
         verify(observer).onNext(true);
         verify(observer).onComplete();
         verifyNoMoreInteractions(observer);
@@ -78,10 +95,15 @@ public class OperatorAllTest {
 
         Subscriber <Boolean> observer = TestHelper.mockSubscriber();
 
-        obs.all(s -> s.length() == 3)
+        obs.all(new Predicate<String>() {
+            @Override
+            public boolean test(String s) {
+                return s.length() == 3;
+            }
+        })
         .subscribe(observer);
 
-        verify(observer).onSubscribe(any());
+        verify(observer).onSubscribe((Subscription)any());
         verify(observer).onError(error);
         verifyNoMoreInteractions(observer);
     }
@@ -89,23 +111,43 @@ public class OperatorAllTest {
     @Test
     public void testFollowingFirst() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
-        Observable<Boolean> allOdd = o.all(i -> i % 2 == 1);
+        Observable<Boolean> allOdd = o.all(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer i) {
+                return i % 2 == 1;
+            }
+        });
         
         assertFalse(allOdd.toBlocking().first());
     }
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.just(1)
-            .all(t1 -> false)
-            .flatMap(t1 -> Observable.just(2).delay(500, TimeUnit.MILLISECONDS));
+            .all(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer t1) {
+                    return false;
+                }
+            })
+            .flatMap(new Function<Boolean, Publisher<Integer>>() {
+                @Override
+                public Publisher<Integer> apply(Boolean t1) {
+                    return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
+                }
+            });
         
         assertEquals((Object)2, source.toBlocking().first());
     }
     
     @Test
     public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
-        TestSubscriber<Boolean> ts = new TestSubscriber<>((Long)null);
-        Observable.empty().all(t1 -> false).subscribe(ts);
+        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>((Long)null);
+        Observable.empty().all(new Predicate<Object>() {
+            @Override
+            public boolean test(Object t1) {
+                return false;
+            }
+        }).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -114,9 +156,14 @@ public class OperatorAllTest {
     
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
-        TestSubscriber<Boolean> ts = new TestSubscriber<>(1L);
+        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(1L);
         
-        Observable.empty().all(t -> false).subscribe(ts);
+        Observable.empty().all(new Predicate<Object>() {
+            @Override
+            public boolean test(Object t) {
+                return false;
+            }
+        }).subscribe(ts);
         
         ts.assertTerminated();
         ts.assertNoErrors();
@@ -127,12 +174,15 @@ public class OperatorAllTest {
     
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
-        TestSubscriber<Boolean> ts = new TestSubscriber<>();
+        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>();
         
         final IllegalArgumentException ex = new IllegalArgumentException();
         
-        Observable.just("Boo!").all(v -> {
-            throw ex;
+        Observable.just("Boo!").all(new Predicate<String>() {
+            @Override
+            public boolean test(String v) {
+                throw ex;
+            }
         })
         .subscribe(ts);
         

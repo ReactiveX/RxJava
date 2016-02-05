@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,11 +13,11 @@
 package io.reactivex.internal.operators;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -29,7 +29,7 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super Boolean> t) {
-        return new AllSubscriber<>(t, predicate);
+        return new AllSubscriber<T>(t, predicate);
     }
     
     static final class AllSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {

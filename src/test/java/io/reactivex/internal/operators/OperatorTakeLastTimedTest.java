@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -24,8 +24,9 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorTakeLastTimedTest {
 
@@ -199,5 +200,41 @@ public class OperatorTakeLastTimedTest {
 
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testContinuousDelivery() {
+        TestScheduler scheduler = Schedulers.test();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        ps.takeLast(1000, TimeUnit.MILLISECONDS, scheduler).subscribe(ts);
+        
+        ps.onNext(1);
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+        ps.onNext(2);
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+        ps.onNext(3);
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+        ps.onNext(4);
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+        ps.onComplete();
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+
+        ts.assertNoValues();
+        
+        ts.request(1);
+        
+        ts.assertValue(3);
+        
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+        ts.request(1);
+        
+        ts.assertValues(3, 4);
+        ts.assertComplete();
+        ts.assertNoErrors();
+        
     }
 }

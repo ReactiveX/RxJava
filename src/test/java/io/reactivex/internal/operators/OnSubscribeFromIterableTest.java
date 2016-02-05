@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -27,7 +27,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
+import io.reactivex.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -114,13 +114,13 @@ public class OnSubscribeFromIterableTest {
 
     @Test
     public void testBackpressureViaRequest() {
-        ArrayList<Integer> list = new ArrayList<>(Observable.bufferSize());
+        ArrayList<Integer> list = new ArrayList<Integer>(Observable.bufferSize());
         for (int i = 1; i <= Observable.bufferSize() + 1; i++) {
             list.add(i);
         }
         Observable<Integer> o = Observable.fromIterable(list);
         
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
         
         ts.assertNoValues();
         ts.request(1);
@@ -140,7 +140,7 @@ public class OnSubscribeFromIterableTest {
     public void testNoBackpressure() {
         Observable<Integer> o = Observable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
         
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
         
         ts.assertNoValues();
         ts.request(Long.MAX_VALUE); // infinite
@@ -156,7 +156,7 @@ public class OnSubscribeFromIterableTest {
         Observable<Integer> o = Observable.fromIterable(Arrays.asList(1, 2, 3));
         
         for (int i = 0; i < 10; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<>();
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             
             o.subscribe(ts);
             

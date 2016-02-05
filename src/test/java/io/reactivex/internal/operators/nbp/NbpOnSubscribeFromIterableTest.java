@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -112,7 +112,7 @@ public class NbpOnSubscribeFromIterableTest {
     public void testNoBackpressure() {
         NbpObservable<Integer> o = NbpObservable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         o.subscribe(ts);
         
@@ -125,7 +125,7 @@ public class NbpOnSubscribeFromIterableTest {
         NbpObservable<Integer> o = NbpObservable.fromIterable(Arrays.asList(1, 2, 3));
         
         for (int i = 0; i < 10; i++) {
-            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
             
             o.subscribe(ts);
             

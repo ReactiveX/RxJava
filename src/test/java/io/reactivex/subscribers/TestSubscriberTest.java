@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -28,8 +28,10 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.exceptions.*;
+import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class TestSubscriberTest {
 
@@ -39,7 +41,7 @@ public class TestSubscriberTest {
     @Test
     public void testAssert() {
         Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriber<Integer> o = new TestSubscriber<>();
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
         o.assertValues(1, 2);
@@ -50,7 +52,7 @@ public class TestSubscriberTest {
     @Test
     public void testAssertNotMatchCount() {
         Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriber<Integer> o = new TestSubscriber<>();
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
         thrown.expect(AssertionError.class);
@@ -65,7 +67,7 @@ public class TestSubscriberTest {
     @Test
     public void testAssertNotMatchValue() {
         Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriber<Integer> o = new TestSubscriber<>();
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
         thrown.expect(AssertionError.class);
@@ -81,7 +83,7 @@ public class TestSubscriberTest {
     @Test
     public void testAssertTerminalEventNotReceived() {
         PublishSubject<Integer> p = PublishSubject.create();
-        TestSubscriber<Integer> o = new TestSubscriber<>();
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         p.subscribe(o);
 
         p.onNext(1);
@@ -101,7 +103,7 @@ public class TestSubscriberTest {
         Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
         Subscriber<Integer> mockObserver = TestHelper.mockSubscriber();
 
-        oi.subscribe(new TestSubscriber<>(mockObserver));
+        oi.subscribe(new TestSubscriber<Integer>(mockObserver));
 
         InOrder inOrder = inOrder(mockObserver);
         inOrder.verify(mockObserver, times(1)).onNext(1);
@@ -114,7 +116,7 @@ public class TestSubscriberTest {
     public void testWrappingMockWhenUnsubscribeInvolved() {
         Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(2);
         Subscriber<Integer> mockObserver = TestHelper.mockSubscriber();
-        oi.subscribe(new TestSubscriber<>(mockObserver));
+        oi.subscribe(new TestSubscriber<Integer>(mockObserver));
 
         InOrder inOrder = inOrder(mockObserver);
         inOrder.verify(mockObserver, times(1)).onNext(1);
@@ -126,14 +128,14 @@ public class TestSubscriberTest {
     @Test
     public void testAssertError() {
         RuntimeException e = new RuntimeException("Oops");
-        TestSubscriber<Object> subscriber = new TestSubscriber<>();
+        TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
         Observable.error(e).subscribe(subscriber);
         subscriber.assertError(e);
     }
     
     @Test
     public void testAwaitTerminalEventWithDuration() {
-        TestSubscriber<Object> ts = new TestSubscriber<>();
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
         Observable.just(1).subscribe(ts);
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
         ts.assertTerminated();
@@ -141,7 +143,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testAwaitTerminalEventWithDurationAndUnsubscribeOnTimeout() {
-        TestSubscriber<Object> ts = new TestSubscriber<>();
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
         final AtomicBoolean unsub = new AtomicBoolean(false);
         Observable.just(1)
         //
@@ -160,26 +162,28 @@ public class TestSubscriberTest {
 
     @Test(expected = NullPointerException.class)
     public void testNullDelegate1() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Observer<Integer>)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Observer<Integer>)null);
         ts.onComplete();
     }
     
     @Test(expected = NullPointerException.class)
     public void testNullDelegate2() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Subscriber<Integer>)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Subscriber<Integer>)null);
         ts.onComplete();
     }
     
     @Test(expected = NullPointerException.class)
     public void testNullDelegate3() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Subscriber<Integer>)null, null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Subscriber<Integer>)null, null);
         ts.onComplete();
     }
     
     @Test
     public void testDelegate1() {
-        TestSubscriber<Integer> to = new TestSubscriber<>();
-        TestSubscriber<Integer> ts = new TestSubscriber<>(to);
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+        to.onSubscribe(EmptySubscription.INSTANCE);
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(to);
         ts.onComplete();
         
         to.assertTerminated();
@@ -187,8 +191,8 @@ public class TestSubscriberTest {
     
     @Test
     public void testDelegate2() {
-        TestSubscriber<Integer> ts1 = new TestSubscriber<>();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<>(ts1);
+        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(ts1);
         ts2.onComplete();
         
         ts1.assertComplete();
@@ -196,21 +200,21 @@ public class TestSubscriberTest {
     
     @Test
     public void testDelegate3() {
-        TestSubscriber<Integer> ts1 = new TestSubscriber<>();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<>(ts1, null);
+        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(ts1, null);
         ts2.onComplete();
         ts1.assertComplete();
     }
     
     @Test
     public void testUnsubscribed() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         assertFalse(ts.isCancelled());
     }
     
     @Test
     public void testNoErrors() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onError(new TestException());
         try {
             ts.assertNoErrors();
@@ -223,7 +227,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testNotCompleted() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         try {
             ts.assertComplete();
         } catch (AssertionError ex) {
@@ -235,7 +239,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testMultipleCompletions() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onComplete();
         ts.onComplete();
         try {
@@ -249,7 +253,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testCompleted() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onComplete();
         try {
             ts.assertNotComplete();
@@ -262,7 +266,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testMultipleCompletions2() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onComplete();
         ts.onComplete();
         try {
@@ -276,15 +280,22 @@ public class TestSubscriberTest {
     
     @Test
     public void testMultipleErrors() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(EmptySubscription.INSTANCE);
         ts.onError(new TestException());
         ts.onError(new TestException());
         try {
             ts.assertNoErrors();
         } catch (AssertionError ex) {
-            if (ex.getSuppressed().length != 2) {
+            Throwable e = ex.getCause();
+            if (!(e instanceof CompositeException)) {
                 fail("Multiple Error present but the reported error doesn't have a composite cause!");
             }
+            CompositeException ce = (CompositeException)e;
+            if (ce.size() != 2) {
+                ce.printStackTrace();
+            }
+            assertEquals(2, ce.size());
             // expected
             return;
         }
@@ -293,15 +304,19 @@ public class TestSubscriberTest {
     
     @Test
     public void testMultipleErrors2() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(EmptySubscription.INSTANCE);
         ts.onError(new TestException());
         ts.onError(new TestException());
         try {
             ts.assertError(TestException.class);
         } catch (AssertionError ex) {
-            if (ex.getSuppressed().length != 2) {
+            Throwable e = ex.getCause();
+            if (!(e instanceof CompositeException)) {
                 fail("Multiple Error present but the reported error doesn't have a composite cause!");
             }
+            CompositeException ce = (CompositeException)e;
+            assertEquals(2, ce.size());
             // expected
             return;
         }
@@ -310,15 +325,19 @@ public class TestSubscriberTest {
     
     @Test
     public void testMultipleErrors3() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(EmptySubscription.INSTANCE);
         ts.onError(new TestException());
         ts.onError(new TestException());
         try {
             ts.assertError(new TestException());
         } catch (AssertionError ex) {
-            if (ex.getSuppressed().length != 2) {
+            Throwable e = ex.getCause();
+            if (!(e instanceof CompositeException)) {
                 fail("Multiple Error present but the reported error doesn't have a composite cause!");
             }
+            CompositeException ce = (CompositeException)e;
+            assertEquals(2, ce.size());
             // expected
             return;
         }
@@ -327,7 +346,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testDifferentError() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onError(new TestException());
         try {
             ts.assertError(new TestException());
@@ -340,7 +359,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testDifferentError2() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onError(new RuntimeException());
         try {
             ts.assertError(new TestException());
@@ -353,7 +372,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testDifferentError3() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onError(new RuntimeException());
         try {
             ts.assertError(TestException.class);
@@ -366,7 +385,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testNoError() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         try {
             ts.assertError(TestException.class);
         } catch (AssertionError ex) {
@@ -378,7 +397,7 @@ public class TestSubscriberTest {
 
     @Test
     public void testNoError2() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         try {
             ts.assertError(new TestException());
         } catch (AssertionError ex) {
@@ -390,7 +409,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testInterruptTerminalEventAwait() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         final Thread t0 = Thread.currentThread();
         Worker w = Schedulers.computation().createWorker();
@@ -418,7 +437,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testInterruptTerminalEventAwaitTimed() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         final Thread t0 = Thread.currentThread();
         Worker w = Schedulers.computation().createWorker();
@@ -447,7 +466,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testInterruptTerminalEventAwaitAndUnsubscribe() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         final Thread t0 = Thread.currentThread();
         Worker w = Schedulers.computation().createWorker();
@@ -471,7 +490,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testNoTerminalEventBut1Completed() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         ts.onComplete();
         
@@ -485,7 +504,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testNoTerminalEventBut1Error() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         ts.onError(new TestException());
         
@@ -499,7 +518,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testNoTerminalEventBut1Error1Completed() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         ts.onComplete();
         ts.onError(new TestException());
@@ -514,7 +533,8 @@ public class TestSubscriberTest {
     
     @Test
     public void testNoTerminalEventBut2Errors() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(EmptySubscription.INSTANCE);
         
         ts.onError(new TestException());
         ts.onError(new TestException());
@@ -524,15 +544,18 @@ public class TestSubscriberTest {
             fail("Failed to report there were terminal event(s)!");
         } catch (AssertionError ex) {
             // expected
-            if (ex.getSuppressed().length != 2) {
-                fail("Did not report a composite exception cause: " + ex.getCause());
+            Throwable e = ex.getCause();
+            if (!(e instanceof CompositeException)) {
+                fail("Multiple Error present but the reported error doesn't have a composite cause!");
             }
+            CompositeException ce = (CompositeException)e;
+            assertEquals(2, ce.size());
         }
     }
     
     @Test
     public void testNoValues() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onNext(1);
         
         try {
@@ -545,7 +568,7 @@ public class TestSubscriberTest {
     
     @Test
     public void testValueCount() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onNext(1);
         ts.onNext(2);
         
@@ -565,7 +588,7 @@ public class TestSubscriberTest {
                 throw new TestException();
             }
         };
-        TestSubscriber<Integer> ts = new TestSubscriber<>(to);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(to);
         
         try {
             ts.onComplete();
@@ -584,7 +607,7 @@ public class TestSubscriberTest {
                 throw new TestException();
             }
         };
-        TestSubscriber<Integer> ts = new TestSubscriber<>(to);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(to);
         
         try {
             ts.onError(new RuntimeException());

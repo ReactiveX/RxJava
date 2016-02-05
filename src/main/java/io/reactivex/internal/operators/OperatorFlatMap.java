@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,20 +15,17 @@ package io.reactivex.internal.operators;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.exceptions.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 
-/**
- * 
- */
 public final class OperatorFlatMap<T, U> implements Operator<U, T> {
     final Function<? super T, ? extends Publisher<? extends U>> mapper;
     final boolean delayErrors;
@@ -46,7 +43,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super U> t) {
-        return new MergeSubscriber<>(t, mapper, delayErrors, maxConcurrency, bufferSize);
+        return new MergeSubscriber<T, U>(t, mapper, delayErrors, maxConcurrency, bufferSize);
     }
     
     static final class MergeSubscriber<T, U> extends AtomicInteger implements Subscription, Subscriber<T> {
@@ -63,34 +60,28 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
         
         volatile boolean done;
         
-        volatile Queue<Throwable> errors;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<MergeSubscriber, Queue> ERRORS =
-                AtomicReferenceFieldUpdater.newUpdater(MergeSubscriber.class, Queue.class, "errors");
+        final AtomicReference<Queue<Throwable>> errors = new AtomicReference<Queue<Throwable>>();
         
-        static final Queue<Throwable> ERRORS_CLOSED = new RejectingQueue<>();
+        static final Queue<Throwable> ERRORS_CLOSED = new RejectingQueue<Throwable>();
         
         volatile boolean cancelled;
         
-        volatile InnerSubscriber<?, ?>[] subscribers;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<MergeSubscriber, InnerSubscriber[]> SUBSCRIBERS =
-                AtomicReferenceFieldUpdater.newUpdater(MergeSubscriber.class, InnerSubscriber[].class, "subscribers");
+        final AtomicReference<InnerSubscriber<?, ?>[]> subscribers = new AtomicReference<InnerSubscriber<?, ?>[]>();
         
         static final InnerSubscriber<?, ?>[] EMPTY = new InnerSubscriber<?, ?>[0];
         
         static final InnerSubscriber<?, ?>[] CANCELLED = new InnerSubscriber<?, ?>[0];
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<MergeSubscriber> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(MergeSubscriber.class, "requested");
+        final AtomicLong requested = new AtomicLong();
         
         Subscription s;
         
         long uniqueId;
         long lastId;
         int lastIndex;
+        
+        int scalarEmitted;
+        final int scalarLimit;
         
         public MergeSubscriber(Subscriber<? super U> actual, Function<? super T, ? extends Publisher<? extends U>> mapper,
                 boolean delayErrors, int maxConcurrency, int bufferSize) {
@@ -99,7 +90,8 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
             this.delayErrors = delayErrors;
             this.maxConcurrency = maxConcurrency;
             this.bufferSize = bufferSize;
-            SUBSCRIBERS.lazySet(this, EMPTY);
+            this.scalarLimit = Math.max(1, maxConcurrency >> 1);
+            subscribers.lazySet(EMPTY);
         }
         
         @Override
@@ -134,7 +126,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
             if (p instanceof ObservableScalarSource) {
                 tryEmitScalar(((ObservableScalarSource<? extends U>)p).value());
             } else {
-                InnerSubscriber<T, U> inner = new InnerSubscriber<>(this, uniqueId++);
+                InnerSubscriber<T, U> inner = new InnerSubscriber<T, U>(this, uniqueId++);
                 addInner(inner);
                 p.subscribe(inner);
             }
@@ -142,7 +134,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
         
         void addInner(InnerSubscriber<T, U> inner) {
             for (;;) {
-                InnerSubscriber<?, ?>[] a = subscribers;
+                InnerSubscriber<?, ?>[] a = subscribers.get();
                 if (a == CANCELLED) {
                     inner.dispose();
                     return;
@@ -151,7 +143,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
                 InnerSubscriber<?, ?>[] b = new InnerSubscriber[n + 1];
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = inner;
-                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return;
                 }
             }
@@ -159,7 +151,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
         
         void removeInner(InnerSubscriber<T, U> inner) {
             for (;;) {
-                InnerSubscriber<?, ?>[] a = subscribers;
+                InnerSubscriber<?, ?>[] a = subscribers.get();
                 if (a == CANCELLED || a == EMPTY) {
                     return;
                 }
@@ -182,7 +174,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
                     System.arraycopy(a, 0, b, 0, j);
                     System.arraycopy(a, j + 1, b, j, n - j - 1);
                 }
-                if (SUBSCRIBERS.compareAndSet(this, a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return;
                 }
             }
@@ -192,12 +184,12 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
             Queue<U> q = queue;
             if (q == null) {
                 if (maxConcurrency == Integer.MAX_VALUE) {
-                    q = new SpscLinkedArrayQueue<>(bufferSize);
+                    q = new SpscLinkedArrayQueue<U>(bufferSize);
                 } else {
                     if (Pow2.isPowerOfTwo(maxConcurrency)) {
-                        q = new SpscArrayQueue<>(maxConcurrency);
+                        q = new SpscArrayQueue<U>(maxConcurrency);
                     } else {
-                        q = new SpscExactArrayQueue<>(maxConcurrency);
+                        q = new SpscExactArrayQueue<U>(maxConcurrency);
                     }
                 }
                 queue = q;
@@ -207,14 +199,16 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
         
         void tryEmitScalar(U value) {
             if (get() == 0 && compareAndSet(0, 1)) {
-                long r = requested;
+                long r = requested.get();
                 if (r != 0L) {
                     actual.onNext(value);
                     if (r != Long.MAX_VALUE) {
-                        REQUESTED.decrementAndGet(this);
+                        requested.decrementAndGet();
                     }
-                    if (maxConcurrency != Integer.MAX_VALUE && !cancelled) {
-                        s.request(1);
+                    if (maxConcurrency != Integer.MAX_VALUE && !cancelled
+                            && ++scalarEmitted == scalarLimit) {
+                        scalarEmitted = 0;
+                        s.request(scalarLimit);
                     }
                 } else {
                     Queue<U> q = getMainQueue();
@@ -242,7 +236,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
         Queue<U> getInnerQueue(InnerSubscriber<T, U> inner) {
             Queue<U> q = inner.queue;
             if (q == null) {
-                q = new SpscArrayQueue<>(bufferSize);
+                q = new SpscArrayQueue<U>(bufferSize);
                 inner.queue = q;
             }
             return q;
@@ -250,11 +244,11 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
         
         void tryEmit(U value, InnerSubscriber<T, U> inner) {
             if (get() == 0 && compareAndSet(0, 1)) {
-                long r = requested;
+                long r = requested.get();
                 if (r != 0L) {
                     actual.onNext(value);
                     if (r != Long.MAX_VALUE) {
-                        REQUESTED.decrementAndGet(this);
+                        requested.decrementAndGet();
                     }
                     inner.requestMore(1);
                 } else {
@@ -270,7 +264,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
             } else {
                 Queue<U> q = inner.queue;
                 if (q == null) {
-                    q = new SpscArrayQueue<>(bufferSize);
+                    q = new SpscArrayQueue<U>(bufferSize);
                     inner.queue = q;
                 }
                 if (!q.offer(value)) {
@@ -310,7 +304,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(requested, n);
             drain();
         }
         
@@ -340,7 +334,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
                 }
                 Queue<U> svq = queue;
                 
-                long r = requested;
+                long r = requested.get();
                 boolean unbounded = r == Long.MAX_VALUE;
                 
                 long replenishMain = 0;
@@ -368,7 +362,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
                             if (unbounded) {
                                 r = Long.MAX_VALUE;
                             } else {
-                                r = REQUESTED.addAndGet(this, -scalarEmission);
+                                r = requested.addAndGet(-scalarEmission);
                             }
                         }
                         if (r == 0L || o == null) {
@@ -379,11 +373,11 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
 
                 boolean d = done;
                 svq = queue;
-                InnerSubscriber<?, ?>[] inner = subscribers;
+                InnerSubscriber<?, ?>[] inner = subscribers.get();
                 int n = inner.length;
                 
                 if (d && (svq == null || svq.isEmpty()) && n == 0) {
-                    Queue<Throwable> e = errors;
+                    Queue<Throwable> e = errors.get();
                     if (e == null || e.isEmpty()) {
                         child.onComplete();
                     } else {
@@ -447,7 +441,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
                             }
                             if (produced != 0L) {
                                 if (!unbounded) {
-                                    r = REQUESTED.addAndGet(this, -produced);
+                                    r = requested.addAndGet(-produced);
                                 } else {
                                     r = Long.MAX_VALUE;
                                 }
@@ -499,7 +493,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
                 unsubscribe();
                 return true;
             }
-            Queue<Throwable> e = errors;
+            Queue<Throwable> e = errors.get();
             if (!delayErrors && (e != null && !e.isEmpty())) {
                 try {
                     reportError(e);
@@ -512,6 +506,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
         }
         
         void reportError(Queue<Throwable> q) {
+            CompositeException composite = null;
             Throwable ex = null;
             
             Throwable t;
@@ -520,20 +515,27 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
                 if (count == 0) {
                     ex = t;
                 } else {
-                    ex.addSuppressed(t);
+                    if (composite == null) {
+                        composite = new CompositeException(ex);
+                    }
+                    composite.suppress(t);
                 }
                 
                 count++;
             }
-            actual.onError(ex);
+            if (composite != null) {
+                actual.onError(composite);
+            } else {
+                actual.onError(ex);
+            }
         }
         
         void unsubscribe() {
-            InnerSubscriber<?, ?>[] a = subscribers;
+            InnerSubscriber<?, ?>[] a = subscribers.get();
             if (a != CANCELLED) {
-                a = SUBSCRIBERS.getAndSet(this, CANCELLED);
+                a = subscribers.getAndSet(CANCELLED);
                 if (a != CANCELLED) {
-                    ERRORS.getAndSet(this, ERRORS_CLOSED);
+                    errors.getAndSet(ERRORS_CLOSED);
                     for (InnerSubscriber<?, ?> inner : a) {
                         inner.dispose();
                     }
@@ -543,12 +545,12 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
         
         Queue<Throwable> getErrorQueue() {
             for (;;) {
-                Queue<Throwable> q = errors;
+                Queue<Throwable> q = errors.get();
                 if (q != null) {
                     return q;
                 }
-                q = new MpscLinkedQueue<>();
-                if (ERRORS.compareAndSet(this, null, q)) {
+                q = new MpscLinkedQueue<Throwable>();
+                if (errors.compareAndSet(null, q)) {
                     return q;
                 }
             }
@@ -657,7 +659,7 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
 
         @Override
         public Iterator<T> iterator() {
-            return Collections.emptyIterator();
+            return Collections.<T>emptyList().iterator();
         }
 
         @Override
@@ -666,4 +668,5 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
         }
         
     }
+
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -21,9 +21,6 @@ import io.reactivex.internal.subscribers.ConditionalSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-/**
- * 
- */
 public final class PublisherArraySource<T> implements Publisher<T> {
     final T[] array;
     public PublisherArraySource(T[] array) {
@@ -36,9 +33,9 @@ public final class PublisherArraySource<T> implements Publisher<T> {
     public void subscribe(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
             ConditionalSubscriber<? super T> cs = (ConditionalSubscriber<? super T>) s;
-            s.onSubscribe(new ConditionalArraySourceSubscription<>(array, cs));
+            s.onSubscribe(new ConditionalArraySourceSubscription<T>(array, cs));
         } else {
-            s.onSubscribe(new ArraySourceSubscription<>(array, s));
+            s.onSubscribe(new ArraySourceSubscription<T>(array, s));
         }
     }
     
@@ -74,7 +71,12 @@ public final class PublisherArraySource<T> implements Publisher<T> {
                             return;
                         }
                         for (int j = i; j < len; j++) {
-                            s.onNext(a[j]);
+                            T t = a[j];
+                            if (t == null) {
+                                s.onError(new NullPointerException("The " + j + "th array element is null"));
+                                return;
+                            }
+                            s.onNext(t);
                             if (cancelled) {
                                 return;
                             }
@@ -87,7 +89,12 @@ public final class PublisherArraySource<T> implements Publisher<T> {
                         return;
                     }
                     while (r != 0 && i < len) {
-                        s.onNext(a[i]);
+                        T t = a[i];
+                        if (t == null) {
+                            s.onError(new NullPointerException("The " + i + "th array element is null"));
+                            return;
+                        }
+                        s.onNext(t);
                         if (cancelled) {
                             return;
                         }
@@ -144,7 +151,12 @@ public final class PublisherArraySource<T> implements Publisher<T> {
                             return;
                         }
                         for (int j = i; j < len; j++) {
-                            s.onNext(a[j]);
+                            T t = a[j];
+                            if (t == null) {
+                                s.onError(new NullPointerException("The " + j + "th array element is null"));
+                                return;
+                            }
+                            s.onNext(t);
                             if (cancelled) {
                                 return;
                             }

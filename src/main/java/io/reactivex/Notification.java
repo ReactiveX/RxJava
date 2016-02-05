@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import java.util.*;
+import io.reactivex.internal.functions.Objects;
 
 /**
  * Utility class to help construct notification objects.
@@ -23,7 +23,7 @@ public final class Notification {
         throw new IllegalStateException();
     }
     
-    static final Try<Optional<?>> COMPLETE = Try.ofValue(Optional.empty());
+    static final Try<Optional<Object>> COMPLETE = Try.ofValue(Optional.<Object>empty());
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Try<Optional<T>> complete() {
@@ -36,7 +36,7 @@ public final class Notification {
     }
     
     public static <T> Try<Optional<T>> next(T value) {
-        Objects.requireNonNull(value); // TODO this coud instead return an error of NPE
+        Objects.requireNonNull(value, "value is null"); // TODO this coud instead return an error of NPE
         return Try.ofValue(Optional.of(value));
     }
     

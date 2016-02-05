@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,10 +14,11 @@
 package io.reactivex.internal.operators;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -55,13 +56,14 @@ public final class PublisherUsing<T, D> implements Publisher<T> {
             try {
                 disposer.accept(resource);
             } catch (Throwable ex) {
-                e.addSuppressed(ex);
+                EmptySubscription.error(new CompositeException(ex, e), s);
+                return;
             }
             EmptySubscription.error(e, s);
             return;
         }
         
-        UsingSubscriber<T, D> us = new UsingSubscriber<>(s, resource, disposer, eager);
+        UsingSubscriber<T, D> us = new UsingSubscriber<T, D>(s, resource, disposer, eager);
         
         source.subscribe(us);
     }
@@ -101,16 +103,21 @@ public final class PublisherUsing<T, D> implements Publisher<T> {
         @Override
         public void onError(Throwable t) {
             if (eager) {
+                Throwable innerError = null;
                 if (compareAndSet(false, true)) {
                     try {
                         disposer.accept(resource);
                     } catch (Throwable e) {
-                        t.addSuppressed(e);
+                        innerError = e;
                     }
                 }
                 
                 s.cancel();
-                actual.onError(t);
+                if (innerError != null) {
+                    actual.onError(new CompositeException(innerError, t));
+                } else {
+                    actual.onError(t);
+                }
             } else {
                 actual.onError(t);
                 s.cancel();

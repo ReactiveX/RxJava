@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,8 +16,8 @@ package io.reactivex.internal.subscribers.nbp;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.Notification;
+import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.util.NotificationLite;
 
@@ -25,7 +25,10 @@ public final class NbpBlockingSubscriber<T> extends AtomicReference<Disposable> 
     /** */
     private static final long serialVersionUID = -4875965440900746268L;
 
-    static final Disposable CANCELLED = () -> { };
+    static final Disposable CANCELLED = new Disposable() {
+        @Override
+        public void dispose() { }
+    };
     
     public static final Object TERMINATED = new Object();
 

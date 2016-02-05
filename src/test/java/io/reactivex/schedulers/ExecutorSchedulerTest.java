@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -24,7 +24,9 @@ import org.junit.*;
 import io.reactivex.Scheduler;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.schedulers.RxThreadFactory;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.schedulers.*;
+import io.reactivex.schedulers.Schedulers;
 
 public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -62,7 +64,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         
         System.out.printf("Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
 
-        int n = 500 * 1000;
+        int n = 100 * 1000;
         if (periodic) {
             final CountDownLatch cdl = new CountDownLatch(n);
             final Runnable action = new Runnable() {
@@ -85,7 +87,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
                 if (i % 50000 == 0) {
                     System.out.println("  -> still scheduling: " + i);
                 }
-                w.schedule(() -> { }, 1, TimeUnit.DAYS);
+                w.schedule(Functions.emptyRunnable(), 1, TimeUnit.DAYS);
             }
         }
         
@@ -96,7 +98,13 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         w.dispose();
         
         System.out.println("Wait before second GC");
-        Thread.sleep(1000 + 2000);
+        System.out.println("JDK 6 purge is N log N because it removes and shifts one by one");
+        int t = (int)(n * Math.log(n) / 100) + SchedulerPoolFactory.PURGE_PERIOD_SECONDS * 1000;
+        while (t > 0) {
+            System.out.printf("  >> Waiting for purge: %.2f s remaining%n", t / 1000d);
+            Thread.sleep(1000);
+            t -= 1000;
+        }
         
         System.out.println("Second GC");
         System.gc();
@@ -112,7 +120,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         }
     }
     
-    @Test(timeout = 30000)
+    @Test(timeout = 60000)
     public void testCancelledTaskRetention() throws InterruptedException {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         Scheduler s = Schedulers.from(exec);
@@ -137,7 +145,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     
     /** A simple executor which queues tasks and executes them one-by-one if executeOne() is called. */
     static final class TestExecutor implements Executor {
-        final ConcurrentLinkedQueue<Runnable> queue = new ConcurrentLinkedQueue<>();
+        final ConcurrentLinkedQueue<Runnable> queue = new ConcurrentLinkedQueue<Runnable>();
         @Override
         public void execute(Runnable command) {
             queue.offer(command);
@@ -219,7 +227,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 //        };
 //        ExecutorWorker w = (ExecutorWorker)Schedulers.from(e).createWorker();
 //        
-//        w.schedule(() -> { }, 50, TimeUnit.MILLISECONDS);
+//        w.schedule(Functions.emptyRunnable(), 50, TimeUnit.MILLISECONDS);
 //        
 //        assertTrue(w.tasks.hasSubscriptions());
 //        
@@ -238,7 +246,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 //        };
 //        ExecutorWorker w = (ExecutorWorker)Schedulers.from(e).createWorker();
 //        
-//        Disposable s = w.schedule(() -> { }, 1, TimeUnit.DAYS);
+//        Disposable s = w.schedule(Functions.emptyRunnable(), 1, TimeUnit.DAYS);
 //        
 //        assertTrue(w.tasks.hasSubscriptions());
 //        

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,17 +19,17 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.TestHelper;
+import io.reactivex.*;
+import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 
 public class OperatorTakeLastTest {
 
@@ -106,7 +106,7 @@ public class OperatorTakeLastTest {
 
     @Test
     public void testBackpressure1() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(1, 100000).takeLast(1)
         .observeOn(Schedulers.newThread())
         .map(newSlowProcessor()).subscribe(ts);
@@ -117,7 +117,7 @@ public class OperatorTakeLastTest {
 
     @Test
     public void testBackpressure2() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(1, 100000).takeLast(Observable.bufferSize() * 4)
         .observeOn(Schedulers.newThread()).map(newSlowProcessor()).subscribe(ts);
         ts.awaitTerminalEvent();
@@ -149,7 +149,12 @@ public class OperatorTakeLastTest {
         assertEquals(0, Observable
                 .empty()
                 .count()
-                .filter(v -> false)
+                .filter(new Predicate<Long>() {
+                    @Override
+                    public boolean test(Long v) {
+                        return false;
+                    }
+                })
                 .toList()
                 .toBlocking().single().size());
     }
@@ -288,7 +293,7 @@ public class OperatorTakeLastTest {
     
     @Test(timeout=10000)
     public void testRequestOverflow() {
-        final List<Integer> list = new ArrayList<>();
+        final List<Integer> list = new ArrayList<Integer>();
         Observable.range(1, 100).takeLast(50).subscribe(new Observer<Integer>() {
 
             @Override

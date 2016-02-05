@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,11 +14,13 @@ package io.reactivex.subscribers.nbp;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.*;
 
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.Notification;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.subscribers.nbp.NbpEmptySubscriber;
 
 /**
@@ -52,14 +54,16 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
     private volatile boolean cancelled;
 
     /** Holds the current subscription if any. */
-    private volatile Disposable subscription;
-    /** Updater for subscription. */
-    @SuppressWarnings("rawtypes")
-    private static final AtomicReferenceFieldUpdater<NbpTestSubscriber, Disposable> SUBSCRIPTION =
-            AtomicReferenceFieldUpdater.newUpdater(NbpTestSubscriber.class, Disposable.class, "subscription");
+    private final AtomicReference<Disposable> subscription = new AtomicReference<Disposable>();
     
     /** Indicates a cancelled subscription. */
-    private static final Disposable CANCELLED = () -> { };
+    private static final Disposable CANCELLED = new Disposable() {
+        @Override
+        public void dispose() { }
+    };
+
+    private boolean checkSubscriptionOnce;
+
     /**
      * Constructs a non-forwarding TestSubscriber with an initial request value of Long.MAX_VALUE.
      */
@@ -73,8 +77,8 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
      */
     public NbpTestSubscriber(NbpSubscriber<? super T> actual) {
         this.actual = actual;
-        this.values = new ArrayList<>();
-        this.errors = new ArrayList<>();
+        this.values = new ArrayList<T>();
+        this.errors = new ArrayList<Throwable>();
         this.done = new CountDownLatch(1);
     }
     
@@ -86,9 +90,9 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
             errors.add(new NullPointerException("onSubscribe received a null Subscription"));
             return;
         }
-        if (!SUBSCRIPTION.compareAndSet(this, null, s)) {
+        if (!subscription.compareAndSet(null, s)) {
             s.dispose();
-            if (subscription != CANCELLED) {
+            if (subscription.get() != CANCELLED) {
                 errors.add(new NullPointerException("onSubscribe received multiple subscriptions: " + s));
             }
             return;
@@ -107,6 +111,13 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
     
     @Override
     public void onNext(T t) {
+        if (!checkSubscriptionOnce) {
+            checkSubscriptionOnce = true;
+            if (subscription.get() == null) {
+                errors.add(new IllegalStateException("onSubscribe not called in proper order"));
+            }
+        }
+
         lastThread = Thread.currentThread();
         values.add(t);
         
@@ -119,6 +130,13 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
     
     @Override
     public void onError(Throwable t) {
+        if (!checkSubscriptionOnce) {
+            checkSubscriptionOnce = true;
+            if (subscription.get() == null) {
+                errors.add(new IllegalStateException("onSubscribe not called in proper order"));
+            }
+        }
+
         try {
             lastThread = Thread.currentThread();
             errors.add(t);
@@ -135,6 +153,13 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
     
     @Override
     public void onComplete() {
+        if (!checkSubscriptionOnce) {
+            checkSubscriptionOnce = true;
+            if (subscription.get() == null) {
+                errors.add(new IllegalStateException("onSubscribe not called in proper order"));
+            }
+        }
+
         try {
             lastThread = Thread.currentThread();
             completions++;
@@ -157,9 +182,9 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
     public final void dispose() {
         if (!cancelled) {
             cancelled = true;
-            Disposable s = subscription;
+            Disposable s = subscription.get();
             if (s != CANCELLED) {
-                s = SUBSCRIPTION.getAndSet(this, CANCELLED);
+                s = subscription.getAndSet(CANCELLED);
                 if (s != CANCELLED && s != null) {
                     s.dispose();
                 }
@@ -275,13 +300,17 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
      */
     private void fail(String prefix, String message, Iterable<? extends Throwable> errors) {
         AssertionError ae = new AssertionError(prefix + message);
-        errors.forEach(e -> {
+        CompositeException ce = new CompositeException();
+        for (Throwable e : errors) {
             if (e == null) {
-                ae.addSuppressed(new NullPointerException("Throwable was null!"));
+                ce.suppress(new NullPointerException("Throwable was null!"));
             } else {
-                ae.addSuppressed(e);
+                ce.suppress(e);
             }
-        });
+        };
+        if (!ce.isEmpty()) {
+            ae.initCause(ce);
+        }
         throw ae;
     }
     
@@ -353,7 +382,7 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
         }
         int s = errors.size();
         if (s == 0) {
-            fail(prefix, "No errors", Collections.emptyList());
+            fail(prefix, "No errors", Collections.<Throwable>emptyList());
         }
         if (errors.contains(error)) {
             if (s != 1) {
@@ -376,11 +405,17 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
         }
         int s = errors.size();
         if (s == 0) {
-            fail(prefix, "No errors", Collections.emptyList());
+            fail(prefix, "No errors", Collections.<Throwable>emptyList());
         }
         
-        boolean found = errors.stream()
-                .anyMatch(errorClass::isInstance);
+        boolean found = false;
+        
+        for (Throwable e : errors) {
+            if (errorClass.isInstance(e)) {
+                found = true;
+                break;
+            }
+        }
         
         if (found) {
             if (s != 1) {
@@ -446,7 +481,6 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
      * @param values the values expected
      * @see #assertValueSet(Collection)
      */
-    @SafeVarargs
     public final void assertValues(T... values) {
         String prefix = "";
         if (done.getCount() != 0) {
@@ -601,7 +635,7 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
     /**
      * Awaits the specified amount of time or until this TestSubscriber 
      * receives an onError or onComplete events, whichever happens first.
-     * @param time the waiting time
+     * @param duration the waiting time
      * @param unit the time unit of the waiting time
      * @return true if the TestSubscriber terminated, false if timeout or interrupt happened
      */
@@ -621,12 +655,12 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
         }
         int s = errors.size();
         if (s == 0) {
-            fail(prefix, "No errors", Collections.emptyList());
+            fail(prefix, "No errors", Collections.<Throwable>emptyList());
         } else
         if (s == 1) {
             Throwable e = errors.get(0);
             if (e == null) {
-                fail(prefix, "Error is null", Collections.emptyList());
+                fail(prefix, "Error is null", Collections.<Throwable>emptyList());
             }
             String errorMessage = e.getMessage();
             if (!Objects.equals(message, errorMessage)) {
@@ -646,13 +680,13 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<List<Object>> getEvents() {
-        List<List<Object>> result = new ArrayList<>();
+        List<List<Object>> result = new ArrayList<List<Object>>();
         
         result.add((List)values());
         
         result.add((List)errors());
         
-        List<Object> completeList = new ArrayList<>();
+        List<Object> completeList = new ArrayList<Object>();
         for (long i = 0; i < completions; i++) {
             completeList.add(Notification.complete());
         }

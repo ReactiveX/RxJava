@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,9 +15,10 @@ package io.reactivex.internal.operators.nbp;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
+import io.reactivex.Optional;
 import io.reactivex.internal.subscribers.nbp.NbpDisposableSubscriber;
 import io.reactivex.internal.util.Exceptions;
 
@@ -32,6 +33,7 @@ public enum NbpBlockingOperatorNext {
      * Returns an {@code Iterable} that blocks until the {@code Observable} emits another item, then returns
      * that item.
      *
+     * @param <T> the value type
      * @param items
      *            the {@code Observable} to observe
      * @return an {@code Iterable} that behaves like a blocking version of {@code items}
@@ -40,8 +42,8 @@ public enum NbpBlockingOperatorNext {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
-                NbpNextObserver<T> nextObserver = new NbpNextObserver<>();
-                return new NextIterator<>(items, nextObserver);
+                NbpNextObserver<T> nextObserver = new NbpNextObserver<T>();
+                return new NextIterator<T>(items, nextObserver);
             }
         };
 
@@ -140,12 +142,8 @@ public enum NbpBlockingOperatorNext {
     }
 
     private static class NbpNextObserver<T> extends NbpDisposableSubscriber<Try<Optional<T>>> {
-        private final BlockingQueue<Try<Optional<T>>> buf = new ArrayBlockingQueue<>(1);
-        @SuppressWarnings("unused")
-        volatile int waiting;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<NbpNextObserver> WAITING_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(NbpNextObserver.class, "waiting");
+        private final BlockingQueue<Try<Optional<T>>> buf = new ArrayBlockingQueue<Try<Optional<T>>>(1);
+        final AtomicInteger waiting = new AtomicInteger();
 
         @Override
         public void onComplete() {
@@ -160,7 +158,7 @@ public enum NbpBlockingOperatorNext {
         @Override
         public void onNext(Try<Optional<T>> args) {
 
-            if (WAITING_UPDATER.getAndSet(this, 0) == 1 || !isOnNext(args)) {
+            if (waiting.getAndSet(0) == 1 || !isOnNext(args)) {
                 Try<Optional<T>> toOffer = args;
                 while (!buf.offer(toOffer)) {
                     Try<Optional<T>> concurrentItem = buf.poll();
@@ -179,7 +177,7 @@ public enum NbpBlockingOperatorNext {
             return buf.take();
         }
         void setWaiting(int value) {
-            waiting = value;
+            waiting.set(value);
         }
     }
     

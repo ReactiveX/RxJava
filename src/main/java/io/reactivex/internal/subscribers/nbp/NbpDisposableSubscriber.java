@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.subscribers.nbp;
 
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
@@ -25,18 +25,18 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  * @param <T>
  */
 public abstract class NbpDisposableSubscriber<T> implements NbpSubscriber<T>, Disposable {
-    volatile Disposable s;
-    @SuppressWarnings("rawtypes")
-    static final AtomicReferenceFieldUpdater<NbpDisposableSubscriber, Disposable> S =
-            AtomicReferenceFieldUpdater.newUpdater(NbpDisposableSubscriber.class, Disposable.class, "s");
+    final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
     
-    static final Disposable CANCELLED = () -> { };
+    static final Disposable CANCELLED = new Disposable() {
+        @Override
+        public void dispose() { }
+    };
     
     @Override
     public final void onSubscribe(Disposable s) {
-        if (!S.compareAndSet(this, null, s)) {
+        if (!this.s.compareAndSet(null, s)) {
             s.dispose();
-            if (this.s != CANCELLED) {
+            if (this.s.get() != CANCELLED) {
                 SubscriptionHelper.reportSubscriptionSet();
             }
             return;
@@ -53,9 +53,9 @@ public abstract class NbpDisposableSubscriber<T> implements NbpSubscriber<T>, Di
     
     @Override
     public final void dispose() {
-        Disposable a = s;
+        Disposable a = s.get();
         if (a != CANCELLED) {
-            a = S.getAndSet(this, CANCELLED);
+            a = s.getAndSet(CANCELLED);
             if (a != CANCELLED && a != null) {
                 a.dispose();
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,20 +20,21 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.functions.Function3;
+import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.Optional;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 
 public class OperatorZipTest {
     BiFunction<String, String, String> concat2Strings;
@@ -66,7 +67,7 @@ public class OperatorZipTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testCollectionSizeDifferentThanFunction() {
-        Function<Object[], String> zipr = getConcatStringIntegerIntArrayZipr();
+        Function<Object[], String> zipr = Functions.toFunction(getConcatStringIntegerIntArrayZipr());
         //Function3<String, Integer, int[], String>
 
         /* define a Subscriber to receive aggregated events */
@@ -349,7 +350,7 @@ public class OperatorZipTest {
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
 
         Observable.zip(r1, r2, zipr2).subscribe(ts);
 
@@ -767,7 +768,7 @@ public class OperatorZipTest {
                     }
                 });
 
-        final ArrayList<String> list = new ArrayList<>();
+        final ArrayList<String> list = new ArrayList<String>();
         os.subscribe(new Consumer<String>() {
 
             @Override
@@ -794,7 +795,7 @@ public class OperatorZipTest {
                     }
                 }).take(5);
 
-        TestSubscriber<String> ts = new TestSubscriber<>();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
         os.subscribe(ts);
 
         ts.awaitTerminalEvent();
@@ -819,7 +820,7 @@ public class OperatorZipTest {
                     }
                 });
 
-        final ArrayList<String> list = new ArrayList<>();
+        final ArrayList<String> list = new ArrayList<String>();
         os.subscribe(new Observer<String>() {
 
             @Override
@@ -865,7 +866,7 @@ public class OperatorZipTest {
 
         });
 
-        final ArrayList<String> list = new ArrayList<>();
+        final ArrayList<String> list = new ArrayList<String>();
         o.subscribe(new Consumer<String>() {
 
             @Override
@@ -914,7 +915,7 @@ public class OperatorZipTest {
 
         });
 
-        final ArrayList<String> list = new ArrayList<>();
+        final ArrayList<String> list = new ArrayList<String>();
         o.subscribe(new Consumer<String>() {
 
             @Override
@@ -943,7 +944,7 @@ public class OperatorZipTest {
 
         });
 
-        final ArrayList<String> list = new ArrayList<>();
+        final ArrayList<String> list = new ArrayList<String>();
         o.subscribe(new Consumer<String>() {
 
             @Override
@@ -970,7 +971,7 @@ public class OperatorZipTest {
             }
         });
 
-        TestSubscriber<Object> ts = new TestSubscriber<>();
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
         o.subscribe(ts);
         ts.awaitTerminalEvent(200, TimeUnit.MILLISECONDS);
         ts.assertNoValues();
@@ -1004,7 +1005,7 @@ public class OperatorZipTest {
         Observable<Integer> o1 = createInfiniteObservable(generatedA);
         Observable<Integer> o2 = createInfiniteObservable(generatedB);
 
-        TestSubscriber<String> ts = new TestSubscriber<>();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
 
             @Override
@@ -1028,7 +1029,7 @@ public class OperatorZipTest {
         Observable<Integer> o1 = createInfiniteObservable(generatedA).subscribeOn(Schedulers.computation());
         Observable<Integer> o2 = createInfiniteObservable(generatedB).subscribeOn(Schedulers.computation());
 
-        TestSubscriber<String> ts = new TestSubscriber<>();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
 
             @Override
@@ -1052,7 +1053,7 @@ public class OperatorZipTest {
         Observable<Integer> o1 = createInfiniteObservable(generatedA).take(Observable.bufferSize() * 2);
         Observable<Integer> o2 = createInfiniteObservable(generatedB).take(Observable.bufferSize() * 2);
 
-        TestSubscriber<String> ts = new TestSubscriber<>();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
 
             @Override
@@ -1077,7 +1078,7 @@ public class OperatorZipTest {
         Observable<Integer> o1 = createInfiniteObservable(generatedA).subscribeOn(Schedulers.computation());
         Observable<Integer> o2 = createInfiniteObservable(generatedB).subscribeOn(Schedulers.computation());
 
-        TestSubscriber<String> ts = new TestSubscriber<>();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
 
             @Override
@@ -1102,7 +1103,7 @@ public class OperatorZipTest {
         Observable<Integer> o1 = createInfiniteObservable(generatedA);
         Observable<Integer> o2 = createInfiniteObservable(generatedB);
 
-        TestSubscriber<String> ts = new TestSubscriber<>();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
 
             @Override
@@ -1173,7 +1174,7 @@ public class OperatorZipTest {
 
             @Override
             public void subscribe(final Subscriber<? super Integer> o) {
-                BooleanSubscription bs = new BooleanSubscription();
+                final BooleanSubscription bs = new BooleanSubscription();
                 o.onSubscribe(bs);
                 Thread t = new Thread(new Runnable() {
 
@@ -1217,7 +1218,7 @@ public class OperatorZipTest {
                         return i1 + i2;
                     }
                 });
-        List<Integer> expected = new ArrayList<>();
+        List<Integer> expected = new ArrayList<Integer>();
         for (int i = 0; i < 1026; i++) {
             expected.add(i * 3);
         }
@@ -1273,7 +1274,7 @@ public class OperatorZipTest {
     @Test
     public void testZipRequest1() {
         Observable<Integer> src = Observable.just(1).subscribeOn(Schedulers.computation());
-        TestSubscriber<Integer> ts = new TestSubscriber<>(1L);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
         
         Observable.zip(src, src, new BiFunction<Integer, Integer, Integer>() {
             @Override

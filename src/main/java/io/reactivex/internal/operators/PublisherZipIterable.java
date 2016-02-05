@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,10 +14,10 @@
 package io.reactivex.internal.operators;
 
 import java.util.Iterator;
-import java.util.function.BiFunction;
 
 import org.reactivestreams.*;
 
+import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -64,7 +64,7 @@ public final class PublisherZipIterable<T, U, V> implements Publisher<V> {
             return;
         }
         
-        source.subscribe(new ZipIterableSubscriber<>(t, it, zipper));
+        source.subscribe(new ZipIterableSubscriber<T, U, V>(t, it, zipper));
     }
     
     static final class ZipIterableSubscriber<T, U, V> implements Subscriber<T> {

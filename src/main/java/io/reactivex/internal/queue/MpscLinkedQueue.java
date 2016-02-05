@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,12 +20,13 @@ package io.reactivex.internal.queue;
 
 /**
  * A multi-producer single consumer unbounded queue.
+ * @param <T> the contained value type
  */
 public final class MpscLinkedQueue<T> extends BaseLinkedQueue<T> {
 
     public MpscLinkedQueue() {
         super();
-        LinkedQueueNode<T> node = new LinkedQueueNode<>();
+        LinkedQueueNode<T> node = new LinkedQueueNode<T>();
         spConsumerNode(node);
         xchgProducerNode(node);// this ensures correct construction: StoreLoad
     }
@@ -42,12 +43,11 @@ public final class MpscLinkedQueue<T> extends BaseLinkedQueue<T> {
      * This works because each producer is guaranteed to 'plant' a new node and link the old node. No 2 producers can
      * get the same producer node as part of XCHG guarantee.
      * 
-     * @see MessagePassingQueue#offer(Object)
      * @see java.util.Queue#offer(java.lang.Object)
      */
     @Override
     public final boolean offer(final T nextValue) {
-        final LinkedQueueNode<T> nextNode = new LinkedQueueNode<>(nextValue);
+        final LinkedQueueNode<T> nextNode = new LinkedQueueNode<T>(nextValue);
         final LinkedQueueNode<T> prevProducerNode = xchgProducerNode(nextNode);
         // Should a producer thread get interrupted here the chain WILL be broken until that thread is resumed
         // and completes the store in prev.next.
@@ -68,7 +68,6 @@ public final class MpscLinkedQueue<T> extends BaseLinkedQueue<T> {
      * This means the consumerNode.value is always null, which is also the starting point for the queue. Because null
      * values are not allowed to be offered this is the only node with it's value set to null at any one time.
      * 
-     * @see MessagePassingQueue#poll()
      * @see java.util.Queue#poll()
      */
     @Override

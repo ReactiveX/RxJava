@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,23 +13,23 @@
 
 package io.reactivex.internal.operators;
 
-import java.util.function.Function;
-
 import org.reactivestreams.*;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.*;
 
 /**
  * Represents a constant scalar value.
+ * @param <T> the value type
  */
 public final class ObservableScalarSource<T> extends Observable<T> {
     private final T value;
-    public ObservableScalarSource(T value) {
+    public ObservableScalarSource(final T value) {
         super(new Publisher<T>() {
             @Override
             public void subscribe(Subscriber<? super T> s) {
-                s.onSubscribe(new ScalarSubscription<>(s, value));
+                s.onSubscribe(new ScalarSubscription<T>(s, value));
             }
         });
         this.value = value;
@@ -39,20 +39,23 @@ public final class ObservableScalarSource<T> extends Observable<T> {
         return value;
     }
     
-    public <U> Publisher<U> scalarFlatMap(Function<? super T, ? extends Publisher<? extends U>> mapper) {
-        return s -> {
-            Publisher<? extends U> other;
-            try {
-                other = mapper.apply(value);
-            } catch (Throwable e) {
-                EmptySubscription.error(e, s);
-                return;
+    public <U> Publisher<U> scalarFlatMap(final Function<? super T, ? extends Publisher<? extends U>> mapper) {
+        return new Publisher<U>() {
+            @Override
+            public void subscribe(Subscriber<? super U> s) {
+                Publisher<? extends U> other;
+                try {
+                    other = mapper.apply(value);
+                } catch (Throwable e) {
+                    EmptySubscription.error(e, s);
+                    return;
+                }
+                if (other == null) {
+                    EmptySubscription.error(new NullPointerException("The publisher returned by the function is null"), s);
+                    return;
+                }
+                other.subscribe(s);
             }
-            if (other == null) {
-                EmptySubscription.error(new NullPointerException("The publisher returned by the function is null"), s);
-                return;
-            }
-            other.subscribe(s);
         };
     }
 }

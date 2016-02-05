@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -34,7 +34,7 @@ public class NbpStartWithTests {
 
     @Test
     public void startWithIterable() {
-        List<String> li = new ArrayList<>();
+        List<String> li = new ArrayList<String>();
         li.add("alpha");
         li.add("beta");
         List<String> values = NbpObservable.just("one", "two").startWith(li).toList().toBlocking().single();
@@ -47,7 +47,7 @@ public class NbpStartWithTests {
 
     @Test
     public void startWithObservable() {
-        List<String> li = new ArrayList<>();
+        List<String> li = new ArrayList<String>();
         li.add("alpha");
         li.add("beta");
         List<String> values = NbpObservable.just("one", "two")

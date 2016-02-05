@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -22,9 +22,6 @@ import io.reactivex.internal.disposables.ArrayCompositeResource;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-/**
- * 
- */
 public final class OperatorTakeUntil<T, U> implements Operator<T, T> {
     final Publisher<? extends U> other;
     public OperatorTakeUntil(Publisher<? extends U> other) {
@@ -32,11 +29,11 @@ public final class OperatorTakeUntil<T, U> implements Operator<T, T> {
     }
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> child) {
-        SerializedSubscriber<T> serial = new SerializedSubscriber<>(child);
+        final SerializedSubscriber<T> serial = new SerializedSubscriber<T>(child);
         
-        ArrayCompositeResource<Subscription> frc = new ArrayCompositeResource<>(2, Subscription::cancel);
+        final ArrayCompositeResource<Subscription> frc = new ArrayCompositeResource<Subscription>(2, SubscriptionHelper.consumeAndCancel());
         
-        TakeUntilSubscriber<T> tus = new TakeUntilSubscriber<>(serial, frc); 
+        final TakeUntilSubscriber<T> tus = new TakeUntilSubscriber<T>(serial, frc); 
         
         other.subscribe(new Subscriber<U>() {
             @Override

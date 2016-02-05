@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,12 +13,12 @@
 
 package io.reactivex.observables.nbp;
 
-import java.util.function.Consumer;
-
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.nbp.*;
 
 /**
@@ -55,14 +55,19 @@ public abstract class NbpConnectableObservable<T> extends NbpObservable<T> {
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
      * {@link Observable} to its {@link Subscriber}s.
      * <p>
-     * To disconnect from a synchronous source, use the {@link #connect(java.util.function.Consumer)} method.
+     * To disconnect from a synchronous source, use the {@link #connect(Consumer)} method.
      *
      * @return the subscription representing the connection
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
     public final Disposable connect() {
-        Disposable[] connection = new Disposable[1];
-        connect(d -> connection[0] = d);
+        final Disposable[] connection = new Disposable[1];
+        connect(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable d) {
+                connection[0] = d;
+            }
+        });
         return connection[0];
     }
 
@@ -74,7 +79,7 @@ public abstract class NbpConnectableObservable<T> extends NbpObservable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>
      */
     public NbpObservable<T> refCount() {
-        return create(new NbpOnSubscribeRefCount<>(this));
+        return create(new NbpOnSubscribeRefCount<T>(this));
     }
 
     /**
@@ -98,7 +103,7 @@ public abstract class NbpConnectableObservable<T> extends NbpObservable<T> {
      *         when the specified number of Subscribers subscribe to it
      */
     public NbpObservable<T> autoConnect(int numberOfSubscribers) {
-        return autoConnect(numberOfSubscribers, c -> { });
+        return autoConnect(numberOfSubscribers, Functions.emptyConsumer());
     }
     
     /**
@@ -120,6 +125,6 @@ public abstract class NbpConnectableObservable<T> extends NbpObservable<T> {
             this.connect(connection);
             return this;
         }
-        return create(new NbpOnSubscribeAutoConnect<>(this, numberOfSubscribers, connection));
+        return create(new NbpOnSubscribeAutoConnect<T>(this, numberOfSubscribers, connection));
     }
 }

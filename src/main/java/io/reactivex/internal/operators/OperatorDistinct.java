@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,12 +13,14 @@
 
 package io.reactivex.internal.operators;
 
-import java.util.*;
-import java.util.function.*;
+import java.util.Collection;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.functions.*;
+import io.reactivex.internal.functions.*;
 import io.reactivex.internal.subscribers.CancelledSubscriber;
 import io.reactivex.internal.subscriptions.*;
 
@@ -31,38 +33,50 @@ public final class OperatorDistinct<T, K> implements Operator<T, T> {
         this.keySelector = keySelector;
     }
     
-    public static <T, K> OperatorDistinct<T, K> withCollection(Function<? super T, K> keySelector, Supplier<? extends Collection<? super K>> collectionSupplier) {
-        Supplier<? extends Predicate<? super K>> p = () -> {
-            Collection<? super K> coll = collectionSupplier.get();
-            
-            return t -> {
-                if (t == null) {
-                    coll.clear();
-                    return true;
-                }
-                return coll.add(t);
-            };
+    public static <T, K> OperatorDistinct<T, K> withCollection(Function<? super T, K> keySelector, final Supplier<? extends Collection<? super K>> collectionSupplier) {
+        Supplier<? extends Predicate<? super K>> p = new Supplier<Predicate<K>>() {
+            @Override
+            public Predicate<K> get() {
+                final Collection<? super K> coll = collectionSupplier.get();
+                
+                return new Predicate<K>() {
+                    @Override
+                    public boolean test(K t) {
+                        if (t == null) {
+                            coll.clear();
+                            return true;
+                        }
+                        return coll.add(t);
+                    }
+                };
+            }
         };
         
-        return new OperatorDistinct<>(keySelector, p);
+        return new OperatorDistinct<T, K>(keySelector, p);
     }
     
     static final OperatorDistinct<Object, Object> UNTIL_CHANGED;
     static {
-        Supplier<? extends Predicate<? super Object>> p = () -> {
-            Object[] last = { null };
-            
-            return t -> {
-                if (t == null) {
-                    last[0] = null;
-                    return true;
-                }
-                Object o = last[0];
-                last[0] = t;
-                return !Objects.equals(o, t);
-            };
+        Supplier<? extends Predicate<? super Object>> p = new Supplier<Predicate<Object>>() {
+            @Override
+            public Predicate<Object> get() {
+                final Object[] last = { null };
+                
+                return new Predicate<Object>() {
+                    @Override
+                    public boolean test(Object t) {
+                        if (t == null) {
+                            last[0] = null;
+                            return true;
+                        }
+                        Object o = last[0];
+                        last[0] = t;
+                        return !Objects.equals(o, t);
+                    }
+                };
+            }
         };
-        UNTIL_CHANGED = new OperatorDistinct<>(v -> v, p);
+        UNTIL_CHANGED = new OperatorDistinct<Object, Object>(Functions.identity(), p);
     }
     
     @SuppressWarnings("unchecked")
@@ -71,20 +85,26 @@ public final class OperatorDistinct<T, K> implements Operator<T, T> {
     }
 
     public static <T, K> OperatorDistinct<T, K> untilChanged(Function<? super T, K> keySelector) {
-        Supplier<? extends Predicate<? super K>> p = () -> {
-            Object[] last = { null };
-            
-            return t -> {
-                if (t == null) {
-                    last[0] = null;
-                    return true;
-                }
-                Object o = last[0];
-                last[0] = t;
-                return !Objects.equals(o, t);
-            };
+        Supplier<? extends Predicate<? super K>> p = new Supplier<Predicate<K>>() {
+            @Override
+            public Predicate<K> get() {
+                final Object[] last = { null };
+                
+                return new Predicate<K>() {
+                    @Override
+                    public boolean test(K t) {
+                        if (t == null) {
+                            last[0] = null;
+                            return true;
+                        }
+                        Object o = last[0];
+                        last[0] = t;
+                        return !Objects.equals(o, t);
+                    }
+                };
+            }
         };
-        return new OperatorDistinct<>(keySelector, p);
+        return new OperatorDistinct<T, K>(keySelector, p);
     }
 
     
@@ -103,7 +123,7 @@ public final class OperatorDistinct<T, K> implements Operator<T, T> {
             return CancelledSubscriber.INSTANCE;
         }
         
-        return new DistinctSubscriber<>(t, keySelector, coll);
+        return new DistinctSubscriber<T, K>(t, keySelector, coll);
     }
     
     static final class DistinctSubscriber<T, K> implements Subscriber<T> {
@@ -168,8 +188,7 @@ public final class OperatorDistinct<T, K> implements Operator<T, T> {
             try {
                 predicate.test(null); // special case: poison pill
             } catch (Throwable e) {
-                t.addSuppressed(e);
-                actual.onError(t);
+                actual.onError(new CompositeException(e, t));
                 return;
             }
             actual.onError(t);

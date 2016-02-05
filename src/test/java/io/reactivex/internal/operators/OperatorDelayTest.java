@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,15 +19,16 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Optional;
 import io.reactivex.Observable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
@@ -216,7 +217,7 @@ public class OperatorDelayTest {
         Observable<Integer> result = Observable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        TestSubscriber<Object> ts = new TestSubscriber<>(o);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
 
         result.subscribe(ts);
         ts.dispose();
@@ -230,7 +231,7 @@ public class OperatorDelayTest {
     @Test
     public void testDelayWithObservableNormal1() {
         PublishSubject<Integer> source = PublishSubject.create();
-        final List<PublishSubject<Integer>> delays = new ArrayList<>();
+        final List<PublishSubject<Integer>> delays = new ArrayList<PublishSubject<Integer>>();
         final int n = 10;
         for (int i = 0; i < n; i++) {
             PublishSubject<Integer> delay = PublishSubject.create();
@@ -581,7 +582,7 @@ public class OperatorDelayTest {
         int n = 3;
 
         PublishSubject<Integer> source = PublishSubject.create();
-        final List<PublishSubject<Integer>> subjects = new ArrayList<>();
+        final List<PublishSubject<Integer>> subjects = new ArrayList<PublishSubject<Integer>>();
         for (int i = 0; i < n; i++) {
             subjects.add(PublishSubject.<Integer> create());
         }
@@ -629,7 +630,7 @@ public class OperatorDelayTest {
             }
 
         });
-        TestSubscriber<Integer> observer = new TestSubscriber<>();
+        TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
         delayed.subscribe(observer);
         // all will be delivered after 500ms since range does not delay between them
         scheduler.advanceTimeBy(500L, TimeUnit.MILLISECONDS);
@@ -638,7 +639,7 @@ public class OperatorDelayTest {
 
     @Test
     public void testBackpressureWithTimedDelay() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(1, Observable.bufferSize() * 2)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
@@ -666,7 +667,7 @@ public class OperatorDelayTest {
     
     @Test
     public void testBackpressureWithSubscriptionTimedDelay() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(1, Observable.bufferSize() * 2)
                 .delaySubscription(100, TimeUnit.MILLISECONDS)
                 .delay(100, TimeUnit.MILLISECONDS)
@@ -695,7 +696,7 @@ public class OperatorDelayTest {
 
     @Test
     public void testBackpressureWithSelectorDelay() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(1, Observable.bufferSize() * 2)
                 .delay(new Function<Integer, Observable<Long>>() {
 
@@ -730,7 +731,7 @@ public class OperatorDelayTest {
 
     @Test
     public void testBackpressureWithSelectorDelayAndSubscriptionDelay() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(1, Observable.bufferSize() * 2)
                 .delay(new Supplier<Observable<Long>>() {
 
@@ -775,7 +776,7 @@ public class OperatorDelayTest {
         
         PublishSubject<Integer> ps = PublishSubject.create();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         ps.delay(1, TimeUnit.SECONDS, test).subscribe(ts);
         
@@ -791,4 +792,82 @@ public class OperatorDelayTest {
         ts.assertError(TestException.class);
         ts.assertNotComplete();
     }
+    public void testDelaySupplierSimple() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+        
+        Observable<Integer> source = Observable.range(1, 5);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.delaySubscription(new Supplier<Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> get() {
+                return ps;
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ps.onNext(1);
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testDelaySupplierCompletes() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+        
+        Observable<Integer> source = Observable.range(1, 5);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.delaySubscription(new Supplier<Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> get() {
+                return ps;
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        // FIXME should this complete the source instead of consuming it?
+        ps.onComplete();
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testDelaySupplierErrors() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+        
+        Observable<Integer> source = Observable.range(1, 5);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.delaySubscription(new Supplier<Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> get() {
+                return ps;
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ps.onError(new TestException());
+        
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(TestException.class);
+    }
+
 }

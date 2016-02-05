@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -31,6 +31,7 @@ public enum BlockingOperatorMostRecent {
     /**
      * Returns an {@code Iterable} that always returns the item most recently emitted by the {@code Observable}.
      *
+     * @param <T> the value type
      * @param source
      *            the source {@code Observable}
      * @param initialValue
@@ -43,7 +44,7 @@ public enum BlockingOperatorMostRecent {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
-                MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<>(initialValue);
+                MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
 
                 /**
                  * Subscribe instead of unsafeSubscribe since this is the final subscribe in the chain
@@ -81,7 +82,7 @@ public enum BlockingOperatorMostRecent {
         /**
          * The {@link Iterator} return is not thread safe. In other words don't call {@link Iterator#hasNext()} in one
          * thread expect {@link Iterator#next()} called from a different thread to work.
-         * @return
+         * @return the Iterator
          */
         public Iterator<T> getIterable() {
             return new Iterator<T>() {

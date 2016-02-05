@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,14 +17,21 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import io.reactivex.Observable;
 import io.reactivex.CovarianceTest.*;
+import io.reactivex.functions.BiFunction;
 
 public class ReduceTests {
 
     @Test
     public void reduceInts() {
         Observable<Integer> o = Observable.just(1, 2, 3);
-        int value = o.reduce((t1, t2) -> t1 + t2).toBlocking().single();
+        int value = o.reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        }).toBlocking().single();
 
         assertEquals(6, value);
     }
@@ -34,9 +41,19 @@ public class ReduceTests {
     public void reduceWithObjects() {
         Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
 
-        Observable<Movie> reduceResult = horrorMovies.scan((t1, t2) -> t2).takeLast(1);
+        Observable<Movie> reduceResult = horrorMovies.scan(new BiFunction<Movie, Movie, Movie>() {
+            @Override
+            public Movie apply(Movie t1, Movie t2) {
+                return t2;
+            }
+        }).takeLast(1);
 
-        Observable<Movie> reduceResult2 = horrorMovies.reduce((t1, t2) -> t2);
+        Observable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
+            @Override
+            public Movie apply(Movie t1, Movie t2) {
+                return t2;
+            }
+        });
     }
 
     /**
@@ -49,7 +66,12 @@ public class ReduceTests {
     public void reduceWithCovariantObjects() {
         Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
 
-        Observable<Movie> reduceResult2 = horrorMovies.reduce((t1, t2) -> t2);
+        Observable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
+            @Override
+            public Movie apply(Movie t1, Movie t2) {
+                return t2;
+            }
+        });
     }
 
     /**
@@ -69,7 +91,12 @@ public class ReduceTests {
      */
     public void libraryFunctionActingOnMovieObservables(Observable<Movie> obs) {
 
-        obs.reduce((t1, t2) -> t2);
+        obs.reduce(new BiFunction<Movie, Movie, Movie>() {
+            @Override
+            public Movie apply(Movie t1, Movie t2) {
+                return t2;
+            }
+        });
     }
 
 }

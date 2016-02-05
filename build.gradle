@@ -8,8 +8,8 @@ description = 'RxJava: Reactive Extensions for the JVM – a library for composi
 apply plugin: 'rxjava-project'
 apply plugin: 'java'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
 
 dependencies {
     compile 'org.reactivestreams:reactive-streams:1.0.0'

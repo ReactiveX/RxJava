@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,6 +16,8 @@ package io.reactivex.nbp;
 import java.util.*;
 
 import io.reactivex.NbpObservable;
+import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -27,20 +29,23 @@ public final class NbpEventStream {
     }
     public static NbpObservable<Event> getEventStream(final String type, final int numInstances) {
         
-        return NbpObservable.<Event>generate(s -> {
-            s.onNext(randomEvent(type, numInstances));
-            try {
-                // slow it down somewhat
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                s.onError(e);
+        return NbpObservable.<Event>generate(new Consumer<NbpSubscriber<Event>>() {
+            @Override
+            public void accept(NbpSubscriber<Event> s) {
+                s.onNext(randomEvent(type, numInstances));
+                try {
+                    // slow it down somewhat
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    s.onError(e);
+                }
             }
         }).subscribeOn(Schedulers.newThread());
     }
 
     public static Event randomEvent(String type, int numInstances) {
-        Map<String, Object> values = new LinkedHashMap<>();
+        Map<String, Object> values = new LinkedHashMap<String, Object>();
         values.put("count200", randomIntFrom0to(4000));
         values.put("count4xx", randomIntFrom0to(300));
         values.put("count5xx", randomIntFrom0to(500));

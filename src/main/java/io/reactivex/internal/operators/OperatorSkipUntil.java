@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -31,11 +31,11 @@ public final class OperatorSkipUntil<T, U> implements Operator<T, T> {
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> child) {
         
-        SerializedSubscriber<T> serial = new SerializedSubscriber<>(child);
+        final SerializedSubscriber<T> serial = new SerializedSubscriber<T>(child);
         
-        ArrayCompositeResource<Subscription> frc = new ArrayCompositeResource<>(2, Subscription::cancel);
+        final ArrayCompositeResource<Subscription> frc = new ArrayCompositeResource<Subscription>(2, SubscriptionHelper.consumeAndCancel());
         
-        SkipUntilSubscriber<T> sus = new SkipUntilSubscriber<>(serial, frc);
+        final SkipUntilSubscriber<T> sus = new SkipUntilSubscriber<T>(serial, frc);
         
         other.subscribe(new Subscriber<U>() {
             Subscription s;

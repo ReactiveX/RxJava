@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,6 +16,7 @@ package io.reactivex.schedulers;
 import org.junit.*;
 
 import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 
 public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -42,7 +43,7 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 //        try {
 //            final CountDownLatch run = new CountDownLatch(1);
 //            final CountDownLatch done = new CountDownLatch(1);
-//            final AtomicReference<Throwable> exception = new AtomicReference<>();
+//            final AtomicReference<Throwable> exception = new AtomicReference<T>();
 //            final AtomicBoolean interruptFlag = new AtomicBoolean();
 //            
 //            ScheduledRunnable sa = (ScheduledRunnable)worker.schedule(new Runnable() {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,15 +14,16 @@
 package io.reactivex.internal.operators;
 
 import java.util.Collection;
-import java.util.function.Supplier;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
 
 public final class OperatorBufferExactBoundary<T, U extends Collection<? super T>, B> implements Operator<U, T> {
@@ -36,7 +37,7 @@ public final class OperatorBufferExactBoundary<T, U extends Collection<? super T
 
     @Override
     public Subscriber<? super T> apply(Subscriber<? super U> t) {
-        return new BufferExactBondarySubscriber<>(new SerializedSubscriber<>(t), bufferSupplier, boundary);
+        return new BufferExactBondarySubscriber<T, U, B>(new SerializedSubscriber<U>(t), bufferSupplier, boundary);
     }
     
     static final class BufferExactBondarySubscriber<T, U extends Collection<? super T>, B>
@@ -53,7 +54,7 @@ public final class OperatorBufferExactBoundary<T, U extends Collection<? super T
         
         public BufferExactBondarySubscriber(Subscriber<? super U> actual, Supplier<U> bufferSupplier,
                 Publisher<B> boundary) {
-            super(actual, new MpscLinkedQueue<>());
+            super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundary = boundary;
         }
@@ -84,7 +85,7 @@ public final class OperatorBufferExactBoundary<T, U extends Collection<? super T
             }
             buffer = b;
             
-            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<>(this);
+            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
             other = bs;
             
             actual.onSubscribe(this);
@@ -126,7 +127,7 @@ public final class OperatorBufferExactBoundary<T, U extends Collection<? super T
             queue.offer(b);
             done = true;
             if (enter()) {
-                drainMaxLoop(queue, actual, false, this);
+                QueueDrainHelper.drainMaxLoop(queue, actual, false, this, this);
             }
         }
         

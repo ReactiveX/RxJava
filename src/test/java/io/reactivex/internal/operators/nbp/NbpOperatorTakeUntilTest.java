@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -188,7 +188,7 @@ public class NbpOperatorTakeUntilTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         NbpPublishSubject<Integer> until = NbpPublishSubject.create();
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         source.takeUntil(until).unsafeSubscribe(ts);
 
@@ -213,7 +213,7 @@ public class NbpOperatorTakeUntilTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         NbpPublishSubject<Integer> until = NbpPublishSubject.create();
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         source.takeUntil(until).unsafeSubscribe(ts);
 
@@ -236,7 +236,7 @@ public class NbpOperatorTakeUntilTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         NbpPublishSubject<Integer> until = NbpPublishSubject.create();
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         source.takeUntil(until).take(1).unsafeSubscribe(ts);
 

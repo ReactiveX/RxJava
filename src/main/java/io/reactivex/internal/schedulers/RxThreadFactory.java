@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -31,5 +31,10 @@ public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
         Thread t = new Thread(r, prefix + incrementAndGet());
         t.setDaemon(true);
         return t;
+    }
+    
+    @Override
+    public String toString() {
+        return "RxThreadFactory[" + prefix + "]";
     }
 }

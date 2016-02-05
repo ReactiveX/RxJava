@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,13 +17,13 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.function.Function;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
@@ -47,7 +47,7 @@ public class NbpOperatorOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(NbpObserver).onSubscribe(any());
+        verify(NbpObserver).onSubscribe((Disposable)any());
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, Mockito.never()).onNext("two");
         verify(NbpObserver, Mockito.never()).onNext("three");
@@ -75,7 +75,7 @@ public class NbpOperatorOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(NbpObserver).onSubscribe(any());
+        verify(NbpObserver).onSubscribe((Disposable)any());
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, Mockito.never()).onNext("two");
         verify(NbpObserver, Mockito.never()).onNext("three");
@@ -103,7 +103,7 @@ public class NbpOperatorOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(NbpObserver).onSubscribe(any());
+        verify(NbpObserver).onSubscribe((Disposable)any());
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, never()).onNext("two");
         verify(NbpObserver, never()).onNext("three");
@@ -131,7 +131,7 @@ public class NbpOperatorOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(NbpObserver).onSubscribe(any());
+        verify(NbpObserver).onSubscribe((Disposable)any());
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, never()).onNext("two");
         verify(NbpObserver, never()).onNext("three");
@@ -188,7 +188,7 @@ public class NbpOperatorOnExceptionResumeNextViaObservableTest {
     
     @Test
     public void testBackpressure() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.range(0, 100000)
                 .onExceptionResumeNext(NbpObservable.just(1))
                 .observeOn(Schedulers.computation())

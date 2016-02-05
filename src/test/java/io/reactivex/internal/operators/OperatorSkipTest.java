@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,12 +20,13 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.LongConsumer;
 
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.functions.LongConsumer;
+import io.reactivex.internal.operators.OperatorSkip;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorSkipTest {
@@ -142,7 +143,7 @@ public class OperatorSkipTest {
     @Test
     public void testBackpressureMultipleSmallAsyncRequests() throws InterruptedException {
         final AtomicLong requests = new AtomicLong(0);
-        TestSubscriber<Long> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
         Observable.interval(100, TimeUnit.MILLISECONDS)
                 .doOnRequest(new LongConsumer() {
                     @Override
@@ -163,7 +164,7 @@ public class OperatorSkipTest {
     
     @Test
     public void testRequestOverflowDoesNotOccur() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>(Long.MAX_VALUE-1);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(Long.MAX_VALUE-1);
         Observable.range(1, 10).skip(5).subscribe(ts);
         ts.assertTerminated();
         ts.assertComplete();

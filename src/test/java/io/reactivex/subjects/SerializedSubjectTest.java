@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -24,8 +24,8 @@ public class SerializedSubjectTest {
 
     @Test
     public void testBasic() {
-        SerializedSubject<String, String> subject = new SerializedSubject<>(PublishSubject.<String> create());
-        TestSubscriber<String> ts = new TestSubscriber<>();
+        SerializedSubject<String, String> subject = new SerializedSubject<String, String>(PublishSubject.<String> create());
+        TestSubscriber<String> ts = new TestSubscriber<String>();
         subject.subscribe(ts);
         subject.onNext("hello");
         subject.onComplete();

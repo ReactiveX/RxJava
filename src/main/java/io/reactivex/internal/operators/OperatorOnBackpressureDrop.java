@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,18 +14,19 @@
 package io.reactivex.internal.operators;
 
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
 public final class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
     
     private static final OperatorOnBackpressureDrop<Object> DEFAULT =
-            new OperatorOnBackpressureDrop<>(v -> { });
+            new OperatorOnBackpressureDrop<Object>(Functions.emptyConsumer());
     
     @SuppressWarnings("unchecked")
     public static <T> OperatorOnBackpressureDrop<T> instance() {
@@ -40,7 +41,7 @@ public final class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new BackpressureDropSubscriber<>(t, onDrop);
+        return new BackpressureDropSubscriber<T>(t, onDrop);
     }
     
     static final class BackpressureDropSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {

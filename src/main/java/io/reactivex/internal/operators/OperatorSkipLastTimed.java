@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,8 +18,8 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler;
+import io.reactivex.Observable.Operator;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -41,7 +41,7 @@ public final class OperatorSkipLastTimed<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new SkipLastTimedSubscriber<>(t, time, unit, scheduler, bufferSize, delayError);
+        return new SkipLastTimedSubscriber<T>(t, time, unit, scheduler, bufferSize, delayError);
     }
     
     static final class SkipLastTimedSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
@@ -56,10 +56,7 @@ public final class OperatorSkipLastTimed<T> implements Operator<T, T> {
         
         Subscription s;
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<SkipLastTimedSubscriber> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(SkipLastTimedSubscriber.class, "requested");
+        final AtomicLong requested = new AtomicLong();
         
         volatile boolean cancelled;
         
@@ -71,7 +68,7 @@ public final class OperatorSkipLastTimed<T> implements Operator<T, T> {
             this.time = time;
             this.unit = unit;
             this.scheduler = scheduler;
-            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
             this.delayError = delayError;
         }
         
@@ -114,7 +111,7 @@ public final class OperatorSkipLastTimed<T> implements Operator<T, T> {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(requested, n);
             drain();
         }
         
@@ -150,7 +147,7 @@ public final class OperatorSkipLastTimed<T> implements Operator<T, T> {
                     return;
                 }
                 
-                long r = requested;
+                long r = requested.get();
                 boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0L;
                 
@@ -199,7 +196,7 @@ public final class OperatorSkipLastTimed<T> implements Operator<T, T> {
                 
                 if (e != 0L) {
                     if (!unbounded) {
-                        REQUESTED.addAndGet(this, e);
+                        requested.addAndGet(e);
                     }
                 }
                 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,8 +13,9 @@
 
 package io.reactivex.subjects;
 
-import org.reactivestreams.Subscription;
+import org.reactivestreams.*;
 
+import io.reactivex.functions.Predicate;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -39,8 +40,13 @@ import io.reactivex.plugins.RxJavaPlugins;
      * Constructor that wraps an actual subject.
      * @param actual the subject wrapped
      */
-    public SerializedSubject(Subject<T, R> actual) {
-        super(actual::subscribe);
+    public SerializedSubject(final Subject<T, R> actual) {
+        super(new Publisher<R>() {
+            @Override
+            public void subscribe(Subscriber<? super R> s) {
+                actual.subscribe(s);
+            }
+        });
         this.actual = actual;
     }
     
@@ -56,7 +62,7 @@ import io.reactivex.plugins.RxJavaPlugins;
             if (emitting) {
                 AppendOnlyLinkedArrayList<Object> q = queue;
                 if (q == null) {
-                    q = new AppendOnlyLinkedArrayList<>(4);
+                    q = new AppendOnlyLinkedArrayList<Object>(4);
                     queue = q;
                 }
                 q.add(NotificationLite.subscription(s));
@@ -80,7 +86,7 @@ import io.reactivex.plugins.RxJavaPlugins;
             if (emitting) {
                 AppendOnlyLinkedArrayList<Object> q = queue;
                 if (q == null) {
-                    q = new AppendOnlyLinkedArrayList<>(4);
+                    q = new AppendOnlyLinkedArrayList<Object>(4);
                     queue = q;
                 }
                 q.add(NotificationLite.next(t));
@@ -108,7 +114,7 @@ import io.reactivex.plugins.RxJavaPlugins;
                 if (emitting) {
                     AppendOnlyLinkedArrayList<Object> q = queue;
                     if (q == null) {
-                        q = new AppendOnlyLinkedArrayList<>(4);
+                        q = new AppendOnlyLinkedArrayList<Object>(4);
                         queue = q;
                     }
                     q.setFirst(NotificationLite.error(t));
@@ -138,7 +144,7 @@ import io.reactivex.plugins.RxJavaPlugins;
             if (emitting) {
                 AppendOnlyLinkedArrayList<Object> q = queue;
                 if (q == null) {
-                    q = new AppendOnlyLinkedArrayList<>(4);
+                    q = new AppendOnlyLinkedArrayList<Object>(4);
                     queue = q;
                 }
                 q.add(NotificationLite.complete());
@@ -161,9 +167,16 @@ import io.reactivex.plugins.RxJavaPlugins;
                 }
                 queue = null;
             }
-            q.forEachWhile(this::accept);
+            q.forEachWhile(consumer);
         }
     }
+    
+    final Predicate<Object> consumer = new Predicate<Object>() {
+        @Override
+        public boolean test(Object v) {
+            return SerializedSubject.this.accept(v);
+        }
+    };
     
     /** Delivers the notification to the actual subscriber. */
     boolean accept(Object o) {

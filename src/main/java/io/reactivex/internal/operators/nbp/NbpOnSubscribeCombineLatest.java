@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,11 +15,12 @@ package io.reactivex.internal.operators.nbp;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -68,7 +69,7 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
             return;
         }
         
-        LatestCoordinator<T, R> lc = new LatestCoordinator<>(s, combiner, count, bufferSize, delayError);
+        LatestCoordinator<T, R> lc = new LatestCoordinator<T, R>(s, combiner, count, bufferSize, delayError);
         lc.subscribe(sources);
     }
     
@@ -88,11 +89,7 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
         
         volatile boolean done;
         
-        volatile Throwable error;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<LatestCoordinator, Throwable> ERROR =
-                AtomicReferenceFieldUpdater.newUpdater(LatestCoordinator.class, Throwable.class, "error");
-        
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
         int active;
         int complete;
@@ -108,14 +105,14 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
             this.delayError = delayError;
             this.latest = new Object[count];
             this.subscribers = new CombinerSubscriber[count];
-            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
         }
         
         public void subscribe(NbpObservable<? extends T>[] sources) {
             NbpSubscriber<T>[] as = subscribers;
             int len = as.length;
             for (int i = 0; i < len; i++) {
-                as[i] = new CombinerSubscriber<>(this, i);
+                as[i] = new CombinerSubscriber<T, R>(this, i);
             }
             lazySet(0); // release array contents
             actual.onSubscribe(this);
@@ -184,7 +181,7 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
                     if (value != null && f) {
                         queue.offer(cs, latest.clone());
                     } else
-                    if (value == null && error != null) {
+                    if (value == null && error.get() != null) {
                         done = true; // if this source completed without a value
                     }
                 } else {
@@ -247,6 +244,13 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
                         return;
                     }
                     
+                    if (v == null) {
+                        cancelled = true;
+                        cancel(q);
+                        a.onError(new NullPointerException("The combiner returned a null"));
+                        return;
+                    }
+                    
                     a.onNext(v);
                 }
                 
@@ -267,7 +271,7 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
                 if (delayError) {
                     if (empty) {
                         clear(queue);
-                        Throwable e = error;
+                        Throwable e = error.get();
                         if (e != null) {
                             a.onError(e);
                         } else {
@@ -276,7 +280,7 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
                         return true;
                     }
                 } else {
-                    Throwable e = error;
+                    Throwable e = error.get();
                     if (e != null) {
                         cancel(q);
                         a.onError(e);
@@ -294,12 +298,14 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
         
         void onError(Throwable e) {
             for (;;) {
-                Throwable curr = error;
-                if (curr != null) {
-                    e.addSuppressed(curr);
+                Throwable curr = error.get();
+                if (curr instanceof CompositeException) {
+                    CompositeException ce = new CompositeException((CompositeException)curr);
+                    ce.suppress(e);
+                    e = ce;
                 }
                 Throwable next = e;
-                if (ERROR.compareAndSet(this, curr, next)) {
+                if (error.compareAndSet(curr, next)) {
                     return;
                 }
             }
@@ -312,12 +318,12 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
         
         boolean done;
         
-        volatile Disposable s;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<CombinerSubscriber, Disposable> S =
-                AtomicReferenceFieldUpdater.newUpdater(CombinerSubscriber.class, Disposable.class, "s");
+        final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         public CombinerSubscriber(LatestCoordinator<T, R> parent, int index) {
             this.parent = parent;
@@ -326,9 +332,9 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (!S.compareAndSet(this, null, s)) {
+            if (!this.s.compareAndSet(null, s)) {
                 s.dispose();
-                if (s != CANCELLED) {
+                if (this.s.get() != CANCELLED) {
                     SubscriptionHelper.reportDisposableSet();
                 }
                 return;
@@ -365,9 +371,9 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
         
         @Override
         public void dispose() {
-            Disposable a = s;
+            Disposable a = s.get();
             if (a != CANCELLED) {
-                a = S.getAndSet(this, CANCELLED);
+                a = s.getAndSet(CANCELLED);
                 if (a != CANCELLED && a != null) {
                     a.dispose();
                 }

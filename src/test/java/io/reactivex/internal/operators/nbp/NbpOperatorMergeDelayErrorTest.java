@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -25,7 +25,7 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
@@ -194,7 +194,7 @@ public class NbpOperatorMergeDelayErrorTest {
 
         assertNotNull(w.e);
         
-        assertEquals(1, w.e.getSuppressed().length);
+        assertEquals(2, ((CompositeException)w.e).size());
         
 //        if (w.e instanceof CompositeException) {
 //            assertEquals(2, ((CompositeException) w.e).getExceptions().size());
@@ -251,7 +251,7 @@ public class NbpOperatorMergeDelayErrorTest {
     public void testMergeList() {
         final NbpObservable<String> o1 = NbpObservable.create(new TestSynchronousObservable());
         final NbpObservable<String> o2 = NbpObservable.create(new TestSynchronousObservable());
-        List<NbpObservable<String>> listOfObservables = new ArrayList<>();
+        List<NbpObservable<String>> listOfObservables = new ArrayList<NbpObservable<String>>();
         listOfObservables.add(o1);
         listOfObservables.add(o2);
 
@@ -487,7 +487,7 @@ public class NbpOperatorMergeDelayErrorTest {
 
     @Test
     public void testErrorInParentObservable() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.mergeDelayError(
                 NbpObservable.just(NbpObservable.just(1), NbpObservable.just(2))
                         .startWith(NbpObservable.<Integer> error(new RuntimeException()))
@@ -516,7 +516,7 @@ public class NbpOperatorMergeDelayErrorTest {
     
             NbpSubscriber<String> stringObserver = TestHelper.mockNbpSubscriber();
             
-            NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(stringObserver);
+            NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(stringObserver);
             NbpObservable<String> m = NbpObservable.mergeDelayError(parentObservable);
             m.subscribe(ts);
             System.out.println("testErrorInParentObservableDelayed | " + i);

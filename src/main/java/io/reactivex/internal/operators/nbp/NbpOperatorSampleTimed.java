@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,8 +16,8 @@ package io.reactivex.internal.operators.nbp;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.NbpObservable.*;
 import io.reactivex.Scheduler;
+import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.subscribers.nbp.NbpSerializedSubscriber;
@@ -36,8 +36,8 @@ public final class NbpOperatorSampleTimed<T> implements NbpOperator<T, T> {
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> t) {
-        NbpSerializedSubscriber<T> serial = new NbpSerializedSubscriber<>(t);
-        return new SampleTimedSubscriber<>(serial, period, unit, scheduler);
+        NbpSerializedSubscriber<T> serial = new NbpSerializedSubscriber<T>(t);
+        return new SampleTimedSubscriber<T>(serial, period, unit, scheduler);
     }
     
     static final class SampleTimedSubscriber<T> extends AtomicReference<T> implements NbpSubscriber<T>, Disposable, Runnable {
@@ -49,12 +49,12 @@ public final class NbpOperatorSampleTimed<T> implements NbpOperator<T, T> {
         final TimeUnit unit;
         final Scheduler scheduler;
         
-        volatile Disposable timer;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<SampleTimedSubscriber, Disposable> TIMER =
-                AtomicReferenceFieldUpdater.newUpdater(SampleTimedSubscriber.class, Disposable.class, "timer");
+        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
         
-        static final Disposable DISPOSED = () -> { };
+        static final Disposable DISPOSED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         Disposable s;
         
@@ -73,9 +73,9 @@ public final class NbpOperatorSampleTimed<T> implements NbpOperator<T, T> {
             
             this.s = s;
             actual.onSubscribe(this);
-            if (timer == null) {
+            if (timer.get() == null) {
                 Disposable d = scheduler.schedulePeriodicallyDirect(this, period, period, unit);
-                if (!TIMER.compareAndSet(this, null, d)) {
+                if (!timer.compareAndSet(null, d)) {
                     d.dispose();
                     return;
                 }
@@ -100,9 +100,9 @@ public final class NbpOperatorSampleTimed<T> implements NbpOperator<T, T> {
         }
         
         void cancelTimer() {
-            Disposable d = timer;
+            Disposable d = timer.get();
             if (d != DISPOSED) {
-                d = TIMER.getAndSet(this, DISPOSED);
+                d = timer.getAndSet(DISPOSED);
                 if (d != DISPOSED && d != null) {
                     d.dispose();
                 }

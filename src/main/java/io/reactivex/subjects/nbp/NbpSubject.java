@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -98,7 +98,7 @@ public abstract class NbpSubject<T, R> extends NbpObservable<R> implements NbpSu
         if (this instanceof NbpSerializedSubject) {
             return this;
         }
-        return new NbpSerializedSubject<>(this);
+        return new NbpSerializedSubject<T, R>(this);
     }
     
     /** An empty array to avoid allocation in getValues(). */

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,10 +15,10 @@ package io.reactivex.internal.operators;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import org.reactivestreams.*;
 
+import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.internal.util.*;
@@ -68,7 +68,7 @@ public final class PublisherZip<T, R> implements Publisher<R> {
             return;
         }
         
-        ZipCoordinator<T, R> zc = new ZipCoordinator<>(s, zipper, count, delayError);
+        ZipCoordinator<T, R> zc = new ZipCoordinator<T, R>(s, zipper, count, delayError);
         zc.subscribe(sources, bufferSize);
     }
     
@@ -81,10 +81,7 @@ public final class PublisherZip<T, R> implements Publisher<R> {
         final Object[] row;
         final boolean delayError;
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<ZipCoordinator> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(ZipCoordinator.class, "requested");
+        final AtomicLong requested = new AtomicLong();
 
         volatile boolean cancelled;
         
@@ -103,10 +100,10 @@ public final class PublisherZip<T, R> implements Publisher<R> {
             ZipSubscriber<T, R>[] s = subscribers;
             int len = s.length;
             for (int i = 0; i < len; i++) {
-                s[i] = new ZipSubscriber<>(this, bufferSize);
+                s[i] = new ZipSubscriber<T, R>(this, bufferSize);
             }
             // this makes sure the contents of the subscribers array is visible
-            REQUESTED.lazySet(this, 0);
+            requested.lazySet(0);
             actual.onSubscribe(this);
             for (int i = 0; i < len; i++) {
                 if (cancelled) {
@@ -122,7 +119,7 @@ public final class PublisherZip<T, R> implements Publisher<R> {
                 RxJavaPlugins.onError(new IllegalArgumentException("n > required but it was " + n));
                 return;
             }
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(requested, n);
             drain();
         }
         
@@ -157,7 +154,7 @@ public final class PublisherZip<T, R> implements Publisher<R> {
             
             for (;;) {
 
-                long r = requested;
+                long r = requested.get();
                 boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0;
                 
@@ -199,6 +196,12 @@ public final class PublisherZip<T, R> implements Publisher<R> {
                         return;
                     }
                     
+                    if (v == null) {
+                        clear();
+                        a.onError(new NullPointerException("The zipper returned null"));
+                        return;
+                    }
+                    
                     a.onNext(v);
                     
                     r--;
@@ -207,7 +210,7 @@ public final class PublisherZip<T, R> implements Publisher<R> {
                 
                 if (e != 0) {
                     if (!unbounded) {
-                        REQUESTED.addAndGet(this, -e);
+                        requested.addAndGet(-e);
                     }
                     for (ZipSubscriber<T, R> z : zs) {
                         z.request(e);
@@ -269,10 +272,7 @@ public final class PublisherZip<T, R> implements Publisher<R> {
         volatile boolean done;
         Throwable error;
         
-        volatile Subscription s;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<ZipSubscriber, Subscription> S =
-                AtomicReferenceFieldUpdater.newUpdater(ZipSubscriber.class, Subscription.class, "s");
+        final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
         
         Subscription cachedS;
         
@@ -293,9 +293,9 @@ public final class PublisherZip<T, R> implements Publisher<R> {
             this.bufferSize = bufferSize;
             Queue<T> q;
             if (Pow2.isPowerOfTwo(bufferSize)) {
-                q = new SpscArrayQueue<>(bufferSize);
+                q = new SpscArrayQueue<T>(bufferSize);
             } else {
-                q = new SpscExactArrayQueue<>(bufferSize);
+                q = new SpscExactArrayQueue<T>(bufferSize);
             }
             this.queue = q;
         }
@@ -303,7 +303,7 @@ public final class PublisherZip<T, R> implements Publisher<R> {
         public void onSubscribe(Subscription s) {
             
             for (;;) {
-                Subscription current = this.s;
+                Subscription current = this.s.get();
                 if (current == CANCELLED) {
                     s.cancel();
                     return;
@@ -313,7 +313,7 @@ public final class PublisherZip<T, R> implements Publisher<R> {
                     RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
                     return;
                 }
-                if (S.compareAndSet(this, null, s)) {
+                if (this.s.compareAndSet(null, s)) {
                     lazySet(bufferSize);
                     s.request(bufferSize);
                     return;
@@ -327,12 +327,12 @@ public final class PublisherZip<T, R> implements Publisher<R> {
         @Override
         public void onNext(T t) {
             if (t == null) {
-                s.cancel();
+                s.get().cancel();
                 onError(new NullPointerException());
                 return;
             }
             if (!queue.offer(t)) {
-                s.cancel();
+                s.get().cancel();
                 onError(new IllegalStateException("Queue full?!"));
                 return;
             }
@@ -357,16 +357,16 @@ public final class PublisherZip<T, R> implements Publisher<R> {
             lazySet(BackpressureHelper.addCap(get(), n));
             // this method is only called if s is no longer null;
             if (cachedS == null) {
-                cachedS = s;
+                cachedS = s.get();
             }
             cachedS.request(n);
         }
         
         @Override
         public void cancel() {
-            Subscription s = this.s;
+            Subscription s = this.s.get();
             if (s != CANCELLED) {
-                s = S.getAndSet(this, CANCELLED);
+                s = this.s.getAndSet(CANCELLED);
                 if (s != CANCELLED && s != null) {
                     s.cancel();
                 }

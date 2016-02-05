@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -32,8 +32,8 @@ public final class OperatorSamplePublisher<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        SerializedSubscriber<T> serial = new SerializedSubscriber<>(t);
-        return new SamplePublisherSubscriber<>(serial, other);
+        SerializedSubscriber<T> serial = new SerializedSubscriber<T>(t);
+        return new SamplePublisherSubscriber<T>(serial, other);
     }
     
     static final class SamplePublisherSubscriber<T> extends AtomicReference<T> implements Subscriber<T>, Subscription {
@@ -43,15 +43,9 @@ public final class OperatorSamplePublisher<T> implements Operator<T, T> {
         final Subscriber<? super T> actual;
         final Publisher<?> sampler;
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<SamplePublisherSubscriber> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(SamplePublisherSubscriber.class, "requested");
+        final AtomicLong requested = new AtomicLong();
 
-        volatile Subscription other;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<SamplePublisherSubscriber, Subscription> OTHER =
-                AtomicReferenceFieldUpdater.newUpdater(SamplePublisherSubscriber.class, Subscription.class, "other");
+        final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
         
         static final Subscription CANCELLED = new Subscription() {
             @Override
@@ -80,8 +74,8 @@ public final class OperatorSamplePublisher<T> implements Operator<T, T> {
             
             this.s = s;
             actual.onSubscribe(this);
-            if (other == null) {
-                sampler.subscribe(new SamplerSubscriber<>(this));
+            if (other.get() == null) {
+                sampler.subscribe(new SamplerSubscriber<T>(this));
                 s.request(Long.MAX_VALUE);
             }
             
@@ -105,9 +99,9 @@ public final class OperatorSamplePublisher<T> implements Operator<T, T> {
         }
         
         void cancelOther() {
-            Subscription o = other;
+            Subscription o = other.get();
             if (o != CANCELLED) {
-                o = OTHER.getAndSet(this, CANCELLED);
+                o = other.getAndSet(CANCELLED);
                 if (o != CANCELLED && o != null) {
                     o.cancel();
                 }
@@ -115,8 +109,8 @@ public final class OperatorSamplePublisher<T> implements Operator<T, T> {
         }
         
         boolean setOther(Subscription o) {
-            if (other == null) {
-                if (OTHER.compareAndSet(this, null, o)) {
+            if (other.get() == null) {
+                if (other.compareAndSet(null, o)) {
                     return true;
                 }
                 o.cancel();
@@ -130,7 +124,7 @@ public final class OperatorSamplePublisher<T> implements Operator<T, T> {
                 return;
             }
             
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(requested, n);
         }
         
         @Override
@@ -152,11 +146,11 @@ public final class OperatorSamplePublisher<T> implements Operator<T, T> {
         public void emit() {
             T value = getAndSet(null);
             if (value != null) {
-                long r = requested;
+                long r = requested.get();
                 if (r != 0L) {
                     actual.onNext(value);
                     if (r != Long.MAX_VALUE) {
-                        REQUESTED.decrementAndGet(this);
+                        requested.decrementAndGet();
                     }
                 } else {
                     cancel();

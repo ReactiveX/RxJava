@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,11 +14,11 @@
 package io.reactivex.internal.operators;
 
 import java.util.concurrent.atomic.*;
-import java.util.function.BiFunction;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.SerializedSubscriber;
@@ -33,8 +33,8 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super R> t) {
-        SerializedSubscriber<R> serial = new SerializedSubscriber<>(t);
-        WithLatestFromSubscriber<T, U, R> wlf = new WithLatestFromSubscriber<>(serial, combiner);
+        final SerializedSubscriber<R> serial = new SerializedSubscriber<R>(t);
+        final WithLatestFromSubscriber<T, U, R> wlf = new WithLatestFromSubscriber<T, U, R>(serial, combiner);
         
         other.subscribe(new Subscriber<U>() {
             @Override
@@ -70,15 +70,9 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T> {
         final Subscriber<? super R> actual;
         final BiFunction<? super T, ? super U, ? extends R> combiner;
         
-        volatile Subscription s;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<WithLatestFromSubscriber, Subscription> S =
-                AtomicReferenceFieldUpdater.newUpdater(WithLatestFromSubscriber.class, Subscription.class, "s");
+        final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
         
-        volatile Subscription other;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<WithLatestFromSubscriber, Subscription> OTHER =
-                AtomicReferenceFieldUpdater.newUpdater(WithLatestFromSubscriber.class, Subscription.class, "other");
+        final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
         
         static final Subscription CANCELLED = new Subscription() {
             @Override
@@ -98,11 +92,11 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T> {
         }
         @Override
         public void onSubscribe(Subscription s) {
-            if (S.compareAndSet(this, null, s)) {
+            if (this.s.compareAndSet(null, s)) {
                 actual.onSubscribe(this);
             } else {
                 s.cancel();
-                if (s != CANCELLED) {
+                if (this.s.get() != CANCELLED) {
                     SubscriptionHelper.reportSubscriptionSet();
                 }
             }
@@ -138,19 +132,19 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T> {
         
         @Override
         public void request(long n) {
-            s.request(n);
+            s.get().request(n);
         }
         
         @Override
         public void cancel() {
-            s.cancel();
+            s.get().cancel();
             cancelOther();
         }
         
         void cancelOther() {
-            Subscription o = other;
+            Subscription o = other.get();
             if (o != CANCELLED) {
-                o = OTHER.getAndSet(this, CANCELLED);
+                o = other.getAndSet(CANCELLED);
                 if (o != CANCELLED && o != null) {
                     o.cancel();
                 }
@@ -159,7 +153,7 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T> {
         
         public boolean setOther(Subscription o) {
             for (;;) {
-                Subscription current = other;
+                Subscription current = other.get();
                 if (current == CANCELLED) {
                     o.cancel();
                     return false;
@@ -169,14 +163,14 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T> {
                     o.cancel();
                     return false;
                 }
-                if (OTHER.compareAndSet(this, null, o)) {
+                if (other.compareAndSet(null, o)) {
                     return true;
                 }
             }
         }
         
         public void otherError(Throwable e) {
-            if (S.compareAndSet(this, null, CANCELLED)) {
+            if (s.compareAndSet(null, CANCELLED)) {
                 EmptySubscription.error(e, actual);
             } else {
                 if (s != CANCELLED) {

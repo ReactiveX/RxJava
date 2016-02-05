@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,8 +15,8 @@ package io.reactivex.internal.operators.nbp;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.NbpObservable.*;
 import io.reactivex.Scheduler;
+import io.reactivex.NbpObservable.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -44,12 +44,12 @@ public final class NbpOperatorDelay<T> implements NbpOperator<T, T> {
         if (delayError) {
             s = (NbpSubscriber<T>)t;
         } else {
-            s = new NbpSerializedSubscriber<>(t);
+            s = new NbpSerializedSubscriber<T>(t);
         }
         
         Scheduler.Worker w = scheduler.createWorker();
         
-        return new DelaySubscriber<>(s, delay, unit, w, delayError);
+        return new DelaySubscriber<T>(s, delay, unit, w, delayError);
     }
     
     static final class DelaySubscriber<T> implements NbpSubscriber<T>, Disposable {
@@ -80,18 +80,26 @@ public final class NbpOperatorDelay<T> implements NbpOperator<T, T> {
         }
         
         @Override
-        public void onNext(T t) {
-            w.schedule(() -> actual.onNext(t), delay, unit);
+        public void onNext(final T t) {
+            w.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    actual.onNext(t);
+                }
+            }, delay, unit);
         }
         
         @Override
-        public void onError(Throwable t) {
+        public void onError(final Throwable t) {
             if (delayError) {
-                w.schedule(() -> {
-                    try {
-                        actual.onError(t);
-                    } finally {
-                        w.dispose();
+                w.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            actual.onError(t);
+                        } finally {
+                            w.dispose();
+                        }
                     }
                 }, delay, unit);
             } else {
@@ -101,11 +109,14 @@ public final class NbpOperatorDelay<T> implements NbpOperator<T, T> {
         
         @Override
         public void onComplete() {
-            w.schedule(() -> {
-                try {
-                    actual.onComplete();
-                } finally {
-                    w.dispose();
+            w.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        actual.onComplete();
+                    } finally {
+                        w.dispose();
+                    }
                 }
             }, delay, unit);
         }

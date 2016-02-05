@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,14 +16,13 @@ package io.reactivex.internal.operators;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.*;
 
-import java.util.function.BiPredicate;
-
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.BiPredicate;
 
 public class OperatorSequenceEqualTest {
 

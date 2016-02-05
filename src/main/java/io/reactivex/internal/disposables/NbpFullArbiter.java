@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.disposables;
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
@@ -32,7 +32,10 @@ public final class NbpFullArbiter<T> extends FullArbiterPad1 implements Disposab
     final SpscLinkedArrayQueue<Object> queue;
 
     volatile Disposable s;
-    static final Disposable INITIAL = () -> { };
+    static final Disposable INITIAL = new Disposable() {
+        @Override
+        public void dispose() { }
+    };
     
     
     Disposable resource;
@@ -42,7 +45,7 @@ public final class NbpFullArbiter<T> extends FullArbiterPad1 implements Disposab
     public NbpFullArbiter(NbpSubscriber<? super T> actual, Disposable resource, int capacity) {
         this.actual = actual;
         this.resource = resource;
-        this.queue = new SpscLinkedArrayQueue<>(capacity);
+        this.queue = new SpscLinkedArrayQueue<Object>(capacity);
         this.s = INITIAL;
     }
 
@@ -97,7 +100,7 @@ public final class NbpFullArbiter<T> extends FullArbiterPad1 implements Disposab
     }
 
     void drain() {
-        if (WIP.getAndIncrement(this) != 0) {
+        if (wip.getAndIncrement() != 0) {
             return;
         }
         
@@ -149,11 +152,11 @@ public final class NbpFullArbiter<T> extends FullArbiterPad1 implements Disposab
                         a.onComplete();
                     }
                 } else {
-                    a.onNext(NotificationLite.getValue(v));
+                    a.onNext(NotificationLite.<T>getValue(v));
                 }
             }
             
-            missed = WIP.addAndGet(this, -missed);
+            missed = wip.addAndGet(-missed);
             if (missed == 0) {
                 break;
             }
@@ -169,9 +172,7 @@ class FullArbiterPad0 {
 
 /** The work-in-progress counter. */
 class FullArbiterWip extends FullArbiterPad0 {
-    volatile int wip;
-    static final AtomicIntegerFieldUpdater<FullArbiterWip> WIP =
-    AtomicIntegerFieldUpdater.newUpdater(FullArbiterWip.class, "wip");
+    final AtomicInteger wip = new AtomicInteger();
 }
 
 /** Pads the wip counter away. */

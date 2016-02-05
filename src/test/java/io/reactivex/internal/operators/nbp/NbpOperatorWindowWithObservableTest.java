@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,13 +19,13 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Supplier;
 import io.reactivex.subjects.nbp.NbpPublishSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
@@ -38,7 +38,7 @@ public class NbpOperatorWindowWithObservableTest {
 
         final NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
 
-        final List<NbpSubscriber<Object>> values = new ArrayList<>();
+        final List<NbpSubscriber<Object>> values = new ArrayList<NbpSubscriber<Object>>();
 
         NbpSubscriber<NbpObservable<Integer>> wo = new NbpObserver<NbpObservable<Integer>>() {
             @Override
@@ -96,7 +96,7 @@ public class NbpOperatorWindowWithObservableTest {
 
         final NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
 
-        final List<NbpSubscriber<Object>> values = new ArrayList<>();
+        final List<NbpSubscriber<Object>> values = new ArrayList<NbpSubscriber<Object>>();
 
         NbpSubscriber<NbpObservable<Integer>> wo = new NbpObserver<NbpObservable<Integer>>() {
             @Override
@@ -152,7 +152,7 @@ public class NbpOperatorWindowWithObservableTest {
 
         final NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
 
-        final List<NbpSubscriber<Object>> values = new ArrayList<>();
+        final List<NbpSubscriber<Object>> values = new ArrayList<NbpSubscriber<Object>>();
 
         NbpSubscriber<NbpObservable<Integer>> wo = new NbpObserver<NbpObservable<Integer>>() {
             @Override
@@ -202,7 +202,7 @@ public class NbpOperatorWindowWithObservableTest {
 
         final NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
 
-        final List<NbpSubscriber<Object>> values = new ArrayList<>();
+        final List<NbpSubscriber<Object>> values = new ArrayList<NbpSubscriber<Object>>();
 
         NbpSubscriber<NbpObservable<Integer>> wo = new NbpObserver<NbpObservable<Integer>>() {
             @Override
@@ -290,7 +290,7 @@ public class NbpOperatorWindowWithObservableTest {
             }
         };
         
-        NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<NbpObservable<Integer>>();
         source.window(boundary).unsafeSubscribe(ts);
         
         assertFalse(ts.isCancelled());
@@ -307,7 +307,7 @@ public class NbpOperatorWindowWithObservableTest {
             }
         };
         
-        NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<NbpObservable<Integer>>();
         source.window(boundaryFunc).subscribe(ts);
         
         assertTrue(source.hasSubscribers());
@@ -333,7 +333,7 @@ public class NbpOperatorWindowWithObservableTest {
             }
         };
         
-        NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<NbpObservable<Integer>>();
         source.window(boundaryFunc).subscribe(ts);
         
         assertTrue(source.hasSubscribers());
@@ -361,7 +361,7 @@ public class NbpOperatorWindowWithObservableTest {
             }
         };
         
-        NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<NbpObservable<Integer>>();
         source.window(boundaryFunc).subscribe(ts);
         
         assertTrue(source.hasSubscribers());
@@ -392,7 +392,7 @@ public class NbpOperatorWindowWithObservableTest {
             }
         };
         
-        NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<NbpObservable<Integer>>();
         source.window(boundaryFunc).subscribe(ts);
         
         source.onNext(1);

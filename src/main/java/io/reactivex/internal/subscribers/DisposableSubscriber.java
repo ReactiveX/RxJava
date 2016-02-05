@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.subscribers;
 
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
@@ -26,10 +26,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  * @param <T>
  */
 public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposable {
-    volatile Subscription s;
-    @SuppressWarnings("rawtypes")
-    static final AtomicReferenceFieldUpdater<DisposableSubscriber, Subscription> S =
-            AtomicReferenceFieldUpdater.newUpdater(DisposableSubscriber.class, Subscription.class, "s");
+    final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
     
     static final Subscription CANCELLED = new Subscription() {
         @Override
@@ -45,9 +42,9 @@ public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposab
     
     @Override
     public final void onSubscribe(Subscription s) {
-        if (!S.compareAndSet(this, null, s)) {
+        if (!this.s.compareAndSet(null, s)) {
             s.cancel();
-            if (this.s != CANCELLED) {
+            if (this.s.get() != CANCELLED) {
                 SubscriptionHelper.reportSubscriptionSet();
             }
             return;
@@ -56,15 +53,15 @@ public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposab
     }
     
     protected final Subscription subscription() {
-        return s;
+        return s.get();
     }
     
     protected void onStart() {
-        s.request(Long.MAX_VALUE);
+        s.get().request(Long.MAX_VALUE);
     }
     
     protected final void request(long n) {
-        s.request(n);
+        s.get().request(n);
     }
     
     protected final void cancel() {
@@ -72,14 +69,14 @@ public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposab
     }
     
     public final boolean isDisposed() {
-        return s == CANCELLED;
+        return s.get() == CANCELLED;
     }
     
     @Override
     public final void dispose() {
-        Subscription a = s;
+        Subscription a = s.get();
         if (a != CANCELLED) {
-            a = S.getAndSet(this, CANCELLED);
+            a = s.getAndSet(CANCELLED);
             if (a != CANCELLED && a != null) {
                 a.cancel();
             }

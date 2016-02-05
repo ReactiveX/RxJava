@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,12 +13,12 @@
 
 package io.reactivex.subscribers.nbp;
 
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.*;
 
 import io.reactivex.NbpObservable.NbpSubscriber;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.ListCompositeResource;
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 /**
@@ -34,17 +34,16 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  */
 public abstract class NbpAsyncObserver<T> implements NbpSubscriber<T>, Disposable {
     /** The active subscription. */
-    private volatile Disposable s;
-    /** Updater of s. */
-    @SuppressWarnings("rawtypes")
-    private static final AtomicReferenceFieldUpdater<NbpAsyncObserver, Disposable> S =
-            AtomicReferenceFieldUpdater.newUpdater(NbpAsyncObserver.class, Disposable.class, "s");
+    private final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
     /** The resource composite, can be null. */
     private final ListCompositeResource<Disposable> resources;
     
     /** The cancelled subscription indicator. */
-    private static final Disposable CANCELLED = () -> { };
+    private static final Disposable CANCELLED = new Disposable() {
+        @Override
+        public void dispose() { }
+    };
     
     /**
      * Constructs an AsyncObserver with resource support.
@@ -58,7 +57,7 @@ public abstract class NbpAsyncObserver<T> implements NbpSubscriber<T>, Disposabl
      * @param withResources true if resource support should be on.
      */
     public NbpAsyncObserver(boolean withResources) {
-        this.resources = withResources ? new ListCompositeResource<>(Disposable::dispose) : null;
+        this.resources = withResources ? new ListCompositeResource<Disposable>(Disposables.consumeAndDispose()) : null;
     }
 
     /**
@@ -75,7 +74,7 @@ public abstract class NbpAsyncObserver<T> implements NbpSubscriber<T>, Disposabl
      * @see #supportsResources()
      */
     public final void add(Disposable resource) {
-        Objects.requireNonNull(resource);
+        Objects.requireNonNull(resource, "resource is null");
         if (resources != null) {
             add(resource);
         } else {
@@ -95,9 +94,9 @@ public abstract class NbpAsyncObserver<T> implements NbpSubscriber<T>, Disposabl
     
     @Override
     public final void onSubscribe(Disposable s) {
-        if (!S.compareAndSet(this, null, s)) {
+        if (!this.s.compareAndSet(null, s)) {
             s.dispose();
-            if (s != CANCELLED) {
+            if (this.s.get() != CANCELLED) {
                 SubscriptionHelper.reportDisposableSet();
             }
             return;
@@ -123,9 +122,9 @@ public abstract class NbpAsyncObserver<T> implements NbpSubscriber<T>, Disposabl
      * case the main Disposable will be immediately disposed.
      */
     protected final void cancel() {
-        Disposable a = s;
+        Disposable a = s.get();
         if (a != CANCELLED) {
-            a = S.getAndSet(this, CANCELLED);
+            a = s.getAndSet(CANCELLED);
             if (a != CANCELLED && a != null) {
                 a.dispose();
                 if (resources != null) {

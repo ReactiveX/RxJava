@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,13 +14,12 @@
 package io.reactivex.internal.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.mockito.*;
@@ -28,8 +27,9 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.observables.GroupedObservable;
 import io.reactivex.schedulers.Schedulers;
@@ -61,11 +61,11 @@ public class OperatorRetryTest {
             }
             
         });
-        TestSubscriber<String> ts = new TestSubscriber<>(consumer);
-        producer.retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(consumer);
+        producer.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
 
             @Override
-            public Observable<?> apply(Observable<? extends Throwable> attempts) {
+            public Observable<Object> apply(Observable<? extends Throwable> attempts) {
                 // Worker w = Schedulers.computation().createWorker();
                 return attempts
                     .map(new Function<Throwable, Tuple>() {
@@ -78,13 +78,14 @@ public class OperatorRetryTest {
                         public Tuple apply(Tuple t, Tuple n) {
                             return new Tuple(t.count + n.count, n.n);
                         }})
-                    .flatMap(new Function<Tuple, Observable<Long>>() {
+                    .flatMap(new Function<Tuple, Observable<Object>>() {
                         @Override
-                        public Observable<Long> apply(Tuple t) {
+                        public Observable<Object> apply(Tuple t) {
                             System.out.println("Retry # "+t.count);
                             return t.count > 20 ? 
-                                Observable.<Long>error(t.n) :
-                                Observable.timer(t.count *1L, TimeUnit.MILLISECONDS);
+                                Observable.<Object>error(t.n) :
+                                Observable.timer(t.count *1L, TimeUnit.MILLISECONDS)
+                                .cast(Object.class);
                     }});
             }
         }).subscribe(ts);
@@ -114,7 +115,7 @@ public class OperatorRetryTest {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         int NUM_RETRIES = 20;
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
-        origin.retry().unsafeSubscribe(new TestSubscriber<>(observer));
+        origin.retry().unsafeSubscribe(new TestSubscriber<String>(observer));
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -133,19 +134,24 @@ public class OperatorRetryTest {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         int NUM_RETRIES = 2;
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
-        TestSubscriber<String> subscriber = new TestSubscriber<>(observer);
-        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<Integer>>() {
+        TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
+        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
             @Override
-            public Observable<Integer> apply(Observable<? extends Throwable> t1) {
+            public Observable<Object> apply(Observable<? extends Throwable> t1) {
                 return t1.observeOn(Schedulers.computation()).map(new Function<Throwable, Integer>() {
                     @Override
                     public Integer apply(Throwable t1) {
                         return 1;
                     }
-                }).startWith(1);
+                }).startWith(1).cast(Object.class);
             }
         })
-        .doOnError(Throwable::printStackTrace)
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) {
+                e.printStackTrace();
+            }
+        })
         .subscribe(subscriber);
 
         subscriber.awaitTerminalEvent();
@@ -166,16 +172,16 @@ public class OperatorRetryTest {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         int NUM_RETRIES = 2;
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
-        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
+        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
             @Override
-            public Observable<?> apply(Observable<? extends Throwable> t1) {
+            public Observable<Object> apply(Observable<? extends Throwable> t1) {
                 return t1.map(new Function<Throwable, Integer>() {
 
                     @Override
                     public Integer apply(Throwable t1) {
                         return 0;
                     }
-                }).startWith(0);
+                }).startWith(0).cast(Object.class);
             }
         }).subscribe(observer);
 
@@ -195,10 +201,10 @@ public class OperatorRetryTest {
     public void testOnCompletedFromNotificationHandler() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         Observable<String> origin = Observable.create(new FuncWithErrors(1));
-        TestSubscriber<String> subscriber = new TestSubscriber<>(observer);
-        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
+        TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
+        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
             @Override
-            public Observable<?> apply(Observable<? extends Throwable> t1) {
+            public Observable<Object> apply(Observable<? extends Throwable> t1) {
                 return Observable.empty();
             }
         }).subscribe(subscriber);
@@ -216,9 +222,9 @@ public class OperatorRetryTest {
     public void testOnErrorFromNotificationHandler() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         Observable<String> origin = Observable.create(new FuncWithErrors(2));
-        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
+        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
             @Override
-            public Observable<?> apply(Observable<? extends Throwable> t1) {
+            public Observable<Object> apply(Observable<? extends Throwable> t1) {
                 return Observable.error(new RuntimeException());
             }
         }).subscribe(observer);
@@ -246,13 +252,13 @@ public class OperatorRetryTest {
         };
 
         int first = Observable.create(onSubscribe)
-                .retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
+                .retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
                     @Override
-                    public Observable<?> apply(Observable<? extends Throwable> attempt) {
-                        return attempt.zipWith(Observable.just(1), new BiFunction<Throwable, Integer, Void>() {
+                    public Observable<Object> apply(Observable<? extends Throwable> attempt) {
+                        return attempt.zipWith(Observable.just(1), new BiFunction<Throwable, Integer, Object>() {
                             @Override
-                            public Void apply(Throwable o, Integer integer) {
-                                return null;
+                            public Object apply(Throwable o, Integer integer) {
+                                return 0;
                             }
                         });
                     }
@@ -490,7 +496,7 @@ public class OperatorRetryTest {
     public void testSourceObservableCallsUnsubscribe() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
-        final TestSubscriber<String> ts = new TestSubscriber<>();
+        final TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Publisher<String> onSubscribe = new Publisher<String>() {
             @Override
@@ -521,7 +527,7 @@ public class OperatorRetryTest {
     public void testSourceObservableRetry1() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
-        final TestSubscriber<String> ts = new TestSubscriber<>();
+        final TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Publisher<String> onSubscribe = new Publisher<String>() {
             @Override
@@ -540,7 +546,7 @@ public class OperatorRetryTest {
     public void testSourceObservableRetry0() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
-        final TestSubscriber<String> ts = new TestSubscriber<>();
+        final TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Publisher<String> onSubscribe = new Publisher<String>() {
             @Override
@@ -615,7 +621,10 @@ public class OperatorRetryTest {
 
         protected Subscriber<T> target;
 
-        /** Wrap existing Observer */
+        /** 
+         * Wrap existing Observer
+         * @param target the target subscriber 
+         */
         public AsyncObserver(Subscriber<T> target) {
             this.target = target;
         }
@@ -659,7 +668,7 @@ public class OperatorRetryTest {
         SlowObservable so = new SlowObservable(100, 0);
         Observable<Long> o = Observable.create(so).retry(5);
 
-        AsyncObserver<Long> async = new AsyncObserver<>(observer);
+        AsyncObserver<Long> async = new AsyncObserver<Long>(observer);
 
         o.subscribe(async);
 
@@ -684,7 +693,7 @@ public class OperatorRetryTest {
         SlowObservable so = new SlowObservable(100, 10);
         Observable<Long> o = Observable.create(so).timeout(80, TimeUnit.MILLISECONDS).retry(5);
 
-        AsyncObserver<Long> async = new AsyncObserver<>(observer);
+        AsyncObserver<Long> async = new AsyncObserver<Long>(observer);
 
         o.subscribe(async);
 
@@ -706,7 +715,7 @@ public class OperatorRetryTest {
             for (int i = 0; i < 400; i++) {
                 Subscriber<String> observer = TestHelper.mockSubscriber();
                 Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
-                TestSubscriber<String> ts = new TestSubscriber<>(observer);
+                TestSubscriber<String> ts = new TestSubscriber<String>(observer);
                 origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
                 ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
                 
@@ -737,7 +746,7 @@ public class OperatorRetryTest {
                 }
 
                 final AtomicInteger timeouts = new AtomicInteger();
-                final Map<Integer, List<String>> data = new ConcurrentHashMap<>();
+                final Map<Integer, List<String>> data = new ConcurrentHashMap<Integer, List<String>>();
 
                 int m = 5000;
                 final CountDownLatch cdl = new CountDownLatch(m);
@@ -749,11 +758,11 @@ public class OperatorRetryTest {
                             final AtomicInteger nexts = new AtomicInteger();
                             try {
                                 Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
-                                TestSubscriber<String> ts = new TestSubscriber<>();
+                                TestSubscriber<String> ts = new TestSubscriber<String>();
                                 origin.retry()
                                 .observeOn(Schedulers.computation()).unsafeSubscribe(ts);
                                 ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
-                                List<String> onNextEvents = new ArrayList<>(ts.values());
+                                List<String> onNextEvents = new ArrayList<String>(ts.values());
                                 if (onNextEvents.size() != NUM_RETRIES + 2) {
                                     for (Throwable t : ts.errors()) {
                                         onNextEvents.add(t.toString());
@@ -850,7 +859,7 @@ public class OperatorRetryTest {
                 return t1.take(1);
             }
         })
-        .unsafeSubscribe(new TestSubscriber<>(observer));
+        .unsafeSubscribe(new TestSubscriber<String>(observer));
         
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -894,7 +903,7 @@ public class OperatorRetryTest {
                 return t1.take(1);
             }
         })
-        .unsafeSubscribe(new TestSubscriber<>(observer));
+        .unsafeSubscribe(new TestSubscriber<String>(observer));
         
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts

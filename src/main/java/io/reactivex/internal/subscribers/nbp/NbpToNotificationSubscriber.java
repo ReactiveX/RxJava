@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,12 +13,10 @@
 
 package io.reactivex.internal.subscribers.nbp;
 
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class NbpToNotificationSubscriber<T> implements NbpSubscriber<T> {
@@ -44,13 +42,13 @@ public final class NbpToNotificationSubscriber<T> implements NbpSubscriber<T> {
             s.dispose();
             onError(new NullPointerException());
         } else {
-            consumer.accept(Try.ofValue(Optional.of(t)));
+            consumer.accept(Try.ofValue(Optional.<Object>of(t)));
         }
     }
     
     @Override
     public void onError(Throwable t) {
-        consumer.accept(Try.ofError(t));
+        consumer.accept(Try.<Optional<Object>>ofError(t));
     }
     
     @Override

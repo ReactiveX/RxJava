@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -48,7 +48,7 @@ public class NbpOperatorTimeoutTests {
     @Test
     public void shouldNotTimeoutIfOnNextWithinTimeout() {
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         
         withTimeout.subscribe(ts);
         
@@ -63,7 +63,7 @@ public class NbpOperatorTimeoutTests {
     @Test
     public void shouldNotTimeoutIfSecondOnNextWithinTimeout() {
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         
         withTimeout.subscribe(ts);
         
@@ -80,7 +80,7 @@ public class NbpOperatorTimeoutTests {
     @Test
     public void shouldTimeoutIfOnNextNotWithinTimeout() {
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         
         withTimeout.subscribe(ts);
         
@@ -92,7 +92,7 @@ public class NbpOperatorTimeoutTests {
     @Test
     public void shouldTimeoutIfSecondOnNextNotWithinTimeout() {
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         withTimeout.subscribe(NbpObserver);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
@@ -105,7 +105,7 @@ public class NbpOperatorTimeoutTests {
     @Test
     public void shouldCompleteIfUnderlyingComletes() {
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         withTimeout.subscribe(NbpObserver);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onComplete();
@@ -118,7 +118,7 @@ public class NbpOperatorTimeoutTests {
     @Test
     public void shouldErrorIfUnderlyingErrors() {
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         withTimeout.subscribe(NbpObserver);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onError(new UnsupportedOperationException());
@@ -133,7 +133,7 @@ public class NbpOperatorTimeoutTests {
         NbpObservable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -156,7 +156,7 @@ public class NbpOperatorTimeoutTests {
         NbpObservable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -179,7 +179,7 @@ public class NbpOperatorTimeoutTests {
         NbpObservable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -202,7 +202,7 @@ public class NbpOperatorTimeoutTests {
         NbpObservable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -233,7 +233,7 @@ public class NbpOperatorTimeoutTests {
         final CountDownLatch timeoutSetuped = new CountDownLatch(1);
 
         final NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        final NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
 
         new Thread(new Runnable() {
 
@@ -285,7 +285,7 @@ public class NbpOperatorTimeoutTests {
         NbpObservable<String> observableWithTimeout = never.timeout(1000, TimeUnit.MILLISECONDS, testScheduler);
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         observableWithTimeout.subscribe(ts);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
@@ -316,7 +316,7 @@ public class NbpOperatorTimeoutTests {
                 testScheduler);
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         observableWithTimeout.subscribe(ts);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
@@ -347,7 +347,7 @@ public class NbpOperatorTimeoutTests {
                 testScheduler);
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
         observableWithTimeout.subscribe(ts);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);

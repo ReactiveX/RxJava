@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,8 +15,8 @@ package io.reactivex.internal.operators.nbp;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.NbpObservable.*;
 import io.reactivex.Scheduler;
+import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
@@ -28,7 +28,7 @@ public final class NbpOperatorUnsubscribeOn<T> implements NbpOperator<T, T> {
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> t) {
-        return new UnsubscribeSubscriber<>(t, scheduler);
+        return new UnsubscribeSubscriber<T>(t, scheduler);
     }
     
     static final class UnsubscribeSubscriber<T> extends AtomicBoolean implements NbpSubscriber<T>, Disposable {
@@ -72,8 +72,11 @@ public final class NbpOperatorUnsubscribeOn<T> implements NbpOperator<T, T> {
         @Override
         public void dispose() {
             if (compareAndSet(false, true)) {
-                scheduler.scheduleDirect(() -> {
-                    s.dispose();
+                scheduler.scheduleDirect(new Runnable() {
+                    @Override
+                    public void run() {
+                        s.dispose();
+                    }
                 });
             }
         }

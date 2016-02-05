@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -95,7 +95,7 @@ public class NbpOperatorSkipLastTest {
     @Test
     public void testSkipLastWithBackpressure() {
         NbpObservable<Integer> o = NbpObservable.range(0, Observable.bufferSize() * 2).skipLast(Observable.bufferSize() + 10);
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         o.observeOn(Schedulers.computation()).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,10 +13,10 @@
 
 package io.reactivex.internal.operators.nbp;
 
-import java.util.function.Function;
-
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class NbpOperatorOnErrorReturn<T> implements NbpOperator<T, T> {
@@ -27,7 +27,7 @@ public final class NbpOperatorOnErrorReturn<T> implements NbpOperator<T, T> {
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> t) {
-        return new OnErrorReturnSubscriber<>(t, valueSupplier);
+        return new OnErrorReturnSubscriber<T>(t, valueSupplier);
     }
     
     static final class OnErrorReturnSubscriber<T> implements NbpSubscriber<T> {
@@ -64,14 +64,14 @@ public final class NbpOperatorOnErrorReturn<T> implements NbpOperator<T, T> {
             try {
                 v = valueSupplier.apply(t);
             } catch (Throwable e) {
-                t.addSuppressed(e);
-                actual.onError(t);
+                actual.onError(new CompositeException(e, t));
                 return;
             }
             
             if (v == null) {
-                t.addSuppressed(new NullPointerException("The supplied value is null"));
-                actual.onError(t);
+                NullPointerException e = new NullPointerException("The supplied value is null");
+                e.initCause(t);
+                actual.onError(e);
                 return;
             }
             

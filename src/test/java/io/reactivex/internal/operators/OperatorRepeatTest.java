@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -28,6 +27,7 @@ import org.reactivestreams.*;
 import io.reactivex.Observable;
 import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -161,7 +161,7 @@ public class OperatorRepeatTest {
                 .repeat(3)
                 .distinct();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         src.subscribe(ts);
         
@@ -173,8 +173,8 @@ public class OperatorRepeatTest {
     /** Issue #2844: wrong target of request. */
     @Test(timeout = 3000)
     public void testRepeatRetarget() {
-        final List<Integer> concatBase = new ArrayList<>();
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        final List<Integer> concatBase = new ArrayList<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.just(1, 2)
         .repeat(5)
         .concatMap(new Function<Integer, Observable<Integer>>() {

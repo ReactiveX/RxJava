@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -59,11 +59,12 @@ public final class PublisherIntervalSource implements Publisher<Long> {
         
         volatile boolean cancelled;
         
-        static final Disposable DISPOSED = () -> { };
+        static final Disposable DISPOSED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
-        volatile Disposable resource;
-        static final AtomicReferenceFieldUpdater<IntervalSubscriber, Disposable> RESOURCE =
-                AtomicReferenceFieldUpdater.newUpdater(IntervalSubscriber.class, Disposable.class, "resource");
+        final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
         
         public IntervalSubscriber(Subscriber<? super Long> actual) {
             this.actual = actual;
@@ -87,9 +88,9 @@ public final class PublisherIntervalSource implements Publisher<Long> {
         }
         
         void disposeResource() {
-            Disposable d = resource;
+            Disposable d = resource.get();
             if (d != DISPOSED) {
-                d = RESOURCE.getAndSet(this, DISPOSED);
+                d = resource.getAndSet(DISPOSED);
                 if (d != DISPOSED && d != null) {
                     d.dispose();
                 }
@@ -119,7 +120,7 @@ public final class PublisherIntervalSource implements Publisher<Long> {
         
         public void setResource(Disposable d) {
             for (;;) {
-                Disposable current = resource;
+                Disposable current = resource.get();
                 if (current == DISPOSED) {
                     d.dispose();
                     return;
@@ -128,7 +129,7 @@ public final class PublisherIntervalSource implements Publisher<Long> {
                     RxJavaPlugins.onError(new IllegalStateException("Resource already set!"));
                     return;
                 }
-                if (RESOURCE.compareAndSet(this, null, d)) {
+                if (resource.compareAndSet(null, d)) {
                     return;
                 }
             }

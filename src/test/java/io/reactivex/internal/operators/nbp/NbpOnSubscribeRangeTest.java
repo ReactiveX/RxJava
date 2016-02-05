@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.functions.Consumer;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
 public class NbpOnSubscribeRangeTest {
@@ -47,7 +48,12 @@ public class NbpOnSubscribeRangeTest {
         
         final AtomicInteger count = new AtomicInteger();
         
-        NbpObservable.range(1, 1000).doOnNext(t1 -> count.incrementAndGet())
+        NbpObservable.range(1, 1000).doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer t1) {
+                count.incrementAndGet();
+            }
+        })
         .take(3).subscribe(NbpObserver);
 
         verify(NbpObserver, times(1)).onNext(1);
@@ -86,14 +92,14 @@ public class NbpOnSubscribeRangeTest {
 
     @Test
     public void testNoBackpressure() {
-        ArrayList<Integer> list = new ArrayList<>(Observable.bufferSize() * 2);
+        ArrayList<Integer> list = new ArrayList<Integer>(Observable.bufferSize() * 2);
         for (int i = 1; i <= Observable.bufferSize() * 2 + 1; i++) {
             list.add(i);
         }
 
         NbpObservable<Integer> o = NbpObservable.range(1, list.size());
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         o.subscribe(ts);
         
@@ -130,7 +136,7 @@ public class NbpOnSubscribeRangeTest {
     
     @Test(timeout = 1000)
     public void testNearMaxValueWithoutBackpressure() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.range(Integer.MAX_VALUE - 1, 2).subscribe(ts);
         
         ts.assertComplete();

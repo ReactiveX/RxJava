@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,9 +19,6 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.ScalarAsyncSubscription;
 
-/**
- *
- */
 public final class PublisherScalarAsyncSource<T> implements Publisher<T> {
     final Callable<? extends T> callable;
     public PublisherScalarAsyncSource(Callable<? extends T> callable) {
@@ -29,7 +26,7 @@ public final class PublisherScalarAsyncSource<T> implements Publisher<T> {
     }
     @Override
     public void subscribe(Subscriber<? super T> s) {
-        ScalarAsyncSubscription<T> sub = new ScalarAsyncSubscription<>(s);
+        ScalarAsyncSubscription<T> sub = new ScalarAsyncSubscription<T>(s);
         s.onSubscribe(sub);
         if (sub.isComplete()) {
             return;

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,7 +16,7 @@ package io.reactivex.internal.operators;
 import java.nio.channels.CancelledKeyException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
@@ -54,20 +54,20 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super Observable<T>> t) {
-        SerializedSubscriber<Observable<T>> actual = new SerializedSubscriber<>(t);
+        SerializedSubscriber<Observable<T>> actual = new SerializedSubscriber<Observable<T>>(t);
         
         if (timespan == timeskip) {
             if (maxSize == Long.MAX_VALUE) {
-                return new WindowExactUnboundedSubscriber<>(
+                return new WindowExactUnboundedSubscriber<T>(
                         actual, 
                         timespan, unit, scheduler, bufferSize);
             }
-            return new WindowExactBoundedSubscriber<>(
+            return new WindowExactBoundedSubscriber<T>(
                         actual,
                         timespan, unit, scheduler, 
                         bufferSize, maxSize, restartTimerOnMaxSize);
         }
-        return new WindowSkipSubscriber<>(actual,
+        return new WindowSkipSubscriber<T>(actual,
                 timespan, timeskip, unit, scheduler.createWorker(), bufferSize);
     }
     
@@ -85,12 +85,12 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
         
         UnicastSubject<T> window;
 
-        volatile Disposable timer;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<WindowExactUnboundedSubscriber, Disposable> TIMER =
-                AtomicReferenceFieldUpdater.newUpdater(WindowExactUnboundedSubscriber.class, Disposable.class, "timer");
+        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         static final Object NEXT = new Object();
         
@@ -98,7 +98,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
         
         public WindowExactUnboundedSubscriber(Subscriber<? super Observable<T>> actual, long timespan, TimeUnit unit,
                 Scheduler scheduler, int bufferSize) {
-            super(actual, new MpscLinkedQueue<>());
+            super(actual, new MpscLinkedQueue<Object>());
             this.timespan = timespan;
             this.unit = unit;
             this.scheduler = scheduler;
@@ -132,7 +132,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
             
             if (!cancelled) {
                 Disposable d = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
-                if (!TIMER.compareAndSet(this, null, d)) {
+                if (!timer.compareAndSet(null, d)) {
                     d.dispose();
                     return;
                 }
@@ -196,9 +196,9 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
         @Override
         public void dispose() {
             selfCancel = true;
-            Disposable d = timer;
+            Disposable d = timer.get();
             if (d != CANCELLED) {
-                d = TIMER.getAndSet(this, CANCELLED);
+                d = timer.getAndSet(CANCELLED);
                 if (d != CANCELLED && d != null) {
                     d.dispose();
                 }
@@ -282,7 +282,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
                         continue;
                     }
                     
-                    w.onNext(NotificationLite.getValue(o));
+                    w.onNext(NotificationLite.<T>getValue(o));
                 }
                 
                 missed = leave(-missed);
@@ -323,18 +323,18 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
         
         volatile boolean terminated;
         
-        volatile Disposable timer;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<WindowExactBoundedSubscriber, Disposable> TIMER =
-                AtomicReferenceFieldUpdater.newUpdater(WindowExactBoundedSubscriber.class, Disposable.class, "timer");
+        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         public WindowExactBoundedSubscriber(
                 Subscriber<? super Observable<T>> actual, 
                 long timespan, TimeUnit unit, Scheduler scheduler, 
                 int bufferSize, long maxSize, boolean restartTimerOnMaxSize) {
-            super(actual, new MpscLinkedQueue<>());
+            super(actual, new MpscLinkedQueue<Object>());
             this.timespan = timespan;
             this.unit = unit;
             this.scheduler = scheduler;
@@ -385,7 +385,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
                 d = scheduler.schedulePeriodicallyDirect(consumerIndexHolder, timespan, timespan, unit);
             }
             
-            if (!TIMER.compareAndSet(this, null, d)) {
+            if (!timer.compareAndSet(null, d)) {
                 d.dispose();
                 return;
             }
@@ -420,12 +420,12 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
                             produced(1);
                         }
                         if (restartTimerOnMaxSize) {
-                            timer.dispose();
+                            Disposable tm = timer.get();
                             
-                            Disposable tm = timer;
+                            tm.dispose();
                             Disposable task = worker.schedulePeriodically(
                                     new ConsumerIndexHolder(producerIndex, this), timespan, timespan, unit);
-                            if (!TIMER.compareAndSet(this, tm, task)) {
+                            if (!timer.compareAndSet(tm, task)) {
                                 task.dispose();
                             }
                         }
@@ -490,9 +490,9 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
         @Override
         public void dispose() {
             selfCancel = true;
-            Disposable d = timer;
+            Disposable d = timer.get();
             if (d != CANCELLED) {
-                d = TIMER.getAndSet(this, CANCELLED);
+                d = timer.getAndSet(CANCELLED);
                 if (d != CANCELLED && d != null) {
                     d.dispose();
                 }
@@ -569,7 +569,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
                         continue;
                     }
                     
-                    w.onNext(NotificationLite.getValue(o));
+                    w.onNext(NotificationLite.<T>getValue(o));
                     long c = count + 1;
                     
                     if (c >= maxSize) {
@@ -589,12 +589,12 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
                             }
                             
                             if (restartTimerOnMaxSize) {
-                                timer.dispose();
+                                Disposable tm = timer.get();
+                                tm.dispose();
                                 
-                                Disposable tm = timer;
                                 Disposable task = worker.schedulePeriodically(
                                         new ConsumerIndexHolder(producerIndex, this), timespan, timespan, unit);
-                                if (!TIMER.compareAndSet(this, tm, task)) {
+                                if (!timer.compareAndSet(tm, task)) {
                                     task.dispose();
                                 }
                             }
@@ -664,13 +664,13 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
         public WindowSkipSubscriber(Subscriber<? super Observable<T>> actual,
                 long timespan, long timeskip, TimeUnit unit, 
                 Worker worker, int bufferSize) {
-            super(actual, new MpscLinkedQueue<>());
+            super(actual, new MpscLinkedQueue<Object>());
             this.timespan = timespan;
             this.timeskip = timeskip;
             this.unit = unit;
             this.worker = worker;
             this.bufferSize = bufferSize;
-            this.windows = new LinkedList<>();
+            this.windows = new LinkedList<UnicastSubject<T>>();
         }
         
         @Override
@@ -689,15 +689,18 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
             
             long r = requested();
             if (r != 0L) {
-                UnicastSubject<T> w = UnicastSubject.create(bufferSize);
+                final UnicastSubject<T> w = UnicastSubject.create(bufferSize);
                 windows.add(w);
                 
                 actual.onNext(w);
                 if (r != Long.MAX_VALUE) {
                     produced(1);
                 }
-                worker.schedule(() -> {
-                    complete(w);
+                worker.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        complete(w);
+                    }
                 }, timespan, unit);
                 
                 worker.schedulePeriodically(this, timeskip, timeskip, unit);
@@ -776,7 +779,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
         }
         
         void complete(UnicastSubject<T> w) {
-            queue.offer(new SubjectWork<>(w, false));
+            queue.offer(new SubjectWork<T>(w, false));
             if (enter()) {
                 drainLoop();
             }
@@ -839,15 +842,18 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
                             
                             long r = requested();
                             if (r != 0L) {
-                                UnicastSubject<T> w = UnicastSubject.create(bufferSize);
+                                final UnicastSubject<T> w = UnicastSubject.create(bufferSize);
                                 ws.add(w);
                                 a.onNext(w);
                                 if (r != Long.MAX_VALUE) {
                                     produced(1);
                                 }
                                 
-                                worker.schedule(() -> {
-                                    complete(w);
+                                worker.schedule(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        complete(w);
+                                    }
                                 }, timespan, unit);
                             } else {
                                 a.onError(new IllegalStateException("Can't emit window due to lack of requests"));
@@ -864,7 +870,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
                     }
                     
                     for (UnicastSubject<T> w : ws) {
-                        w.onNext(NotificationLite.getValue(v));
+                        w.onNext(NotificationLite.<T>getValue(v));
                     }
                 }
                 
@@ -880,7 +886,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
 
             UnicastSubject<T> w = UnicastSubject.create(bufferSize);
             
-            SubjectWork<T> sw = new SubjectWork<>(w, true);
+            SubjectWork<T> sw = new SubjectWork<T>(w, true);
             if (!cancelled) {
                 queue.offer(sw);
             }

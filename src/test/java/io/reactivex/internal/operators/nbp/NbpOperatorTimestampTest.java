@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -50,9 +50,9 @@ public class NbpOperatorTimestampTest {
 
         InOrder inOrder = inOrder(NbpObserver);
 
-        inOrder.verify(NbpObserver, times(1)).onNext(new Timed<>(1, 0, TimeUnit.MILLISECONDS));
-        inOrder.verify(NbpObserver, times(1)).onNext(new Timed<>(2, 100, TimeUnit.MILLISECONDS));
-        inOrder.verify(NbpObserver, times(1)).onNext(new Timed<>(3, 200, TimeUnit.MILLISECONDS));
+        inOrder.verify(NbpObserver, times(1)).onNext(new Timed<Integer>(1, 0, TimeUnit.MILLISECONDS));
+        inOrder.verify(NbpObserver, times(1)).onNext(new Timed<Integer>(2, 100, TimeUnit.MILLISECONDS));
+        inOrder.verify(NbpObserver, times(1)).onNext(new Timed<Integer>(3, 200, TimeUnit.MILLISECONDS));
 
         verify(NbpObserver, never()).onError(any(Throwable.class));
         verify(NbpObserver, never()).onComplete();
@@ -74,9 +74,9 @@ public class NbpOperatorTimestampTest {
 
         InOrder inOrder = inOrder(NbpObserver);
 
-        inOrder.verify(NbpObserver, times(1)).onNext(new Timed<>(1, 0, TimeUnit.MILLISECONDS));
-        inOrder.verify(NbpObserver, times(1)).onNext(new Timed<>(2, 0, TimeUnit.MILLISECONDS));
-        inOrder.verify(NbpObserver, times(1)).onNext(new Timed<>(3, 200, TimeUnit.MILLISECONDS));
+        inOrder.verify(NbpObserver, times(1)).onNext(new Timed<Integer>(1, 0, TimeUnit.MILLISECONDS));
+        inOrder.verify(NbpObserver, times(1)).onNext(new Timed<Integer>(2, 0, TimeUnit.MILLISECONDS));
+        inOrder.verify(NbpObserver, times(1)).onNext(new Timed<Integer>(3, 200, TimeUnit.MILLISECONDS));
 
         verify(NbpObserver, never()).onError(any(Throwable.class));
         verify(NbpObserver, never()).onComplete();

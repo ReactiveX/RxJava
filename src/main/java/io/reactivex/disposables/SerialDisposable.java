@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,11 +19,11 @@ public final class SerialDisposable implements Disposable {
     final SerialResource<Disposable> resource;
     
     public SerialDisposable() {
-        this.resource = new SerialResource<>(Disposable::dispose);
+        this.resource = new SerialResource<Disposable>(Disposables.consumeAndDispose());
     }
     
     public SerialDisposable(Disposable initialDisposable) {
-        this.resource = new SerialResource<>(Disposable::dispose, initialDisposable);
+        this.resource = new SerialResource<Disposable>(Disposables.consumeAndDispose(), initialDisposable);
     }
 
     

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,11 +15,11 @@ package io.reactivex.internal.operators.nbp;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -68,7 +68,7 @@ public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
             return;
         }
         
-        ZipCoordinator<T, R> zc = new ZipCoordinator<>(s, zipper, count, delayError);
+        ZipCoordinator<T, R> zc = new ZipCoordinator<T, R>(s, zipper, count, delayError);
         zc.subscribe(sources, bufferSize);
     }
     
@@ -98,7 +98,7 @@ public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
             ZipSubscriber<T, R>[] s = subscribers;
             int len = s.length;
             for (int i = 0; i < len; i++) {
-                s[i] = new ZipSubscriber<>(this, bufferSize);
+                s[i] = new ZipSubscriber<T, R>(this, bufferSize);
             }
             // this makes sure the contents of the subscribers array is visible
             this.lazySet(0);
@@ -180,6 +180,12 @@ public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
                         return;
                     }
                     
+                    if (v == null) {
+                        clear();
+                        a.onError(new NullPointerException("The zipper returned a null value"));
+                        return;
+                    }
+                    
                     a.onNext(v);
                 }
                 
@@ -235,22 +241,22 @@ public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
         volatile boolean done;
         Throwable error;
         
-        volatile Disposable s;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<ZipSubscriber, Disposable> S =
-                AtomicReferenceFieldUpdater.newUpdater(ZipSubscriber.class, Disposable.class, "s");
+        final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         public ZipSubscriber(ZipCoordinator<T, R> parent, int bufferSize) {
             this.parent = parent;
-            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
         }
         @Override
         public void onSubscribe(Disposable s) {
             
             for (;;) {
-                Disposable current = this.s;
+                Disposable current = this.s.get();
                 if (current == CANCELLED) {
                     s.dispose();
                     return;
@@ -260,7 +266,7 @@ public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
                     RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
                     return;
                 }
-                if (S.compareAndSet(this, null, s)) {
+                if (this.s.compareAndSet(null, s)) {
                     return;
                 } else {
                     s.dispose();
@@ -272,12 +278,12 @@ public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
         @Override
         public void onNext(T t) {
             if (t == null) {
-                s.dispose();
+                s.get().dispose();
                 onError(new NullPointerException());
                 return;
             }
             if (!queue.offer(t)) {
-                s.dispose();
+                s.get().dispose();
                 onError(new IllegalStateException("Queue full?!"));
                 return;
             }
@@ -299,9 +305,9 @@ public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
         
         @Override
         public void dispose() {
-            Disposable s = this.s;
+            Disposable s = this.s.get();
             if (s != CANCELLED) {
-                s = S.getAndSet(this, CANCELLED);
+                s = this.s.getAndSet(CANCELLED);
                 if (s != CANCELLED && s != null) {
                     s.dispose();
                 }

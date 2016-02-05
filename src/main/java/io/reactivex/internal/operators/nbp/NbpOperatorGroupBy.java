@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,10 +16,10 @@ package io.reactivex.internal.operators.nbp;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -40,7 +40,7 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super NbpGroupedObservable<K, V>> t) {
-        return new GroupBySubscriber<>(t, keySelector, valueSelector, bufferSize, delayError);
+        return new GroupBySubscriber<T, K, V>(t, keySelector, valueSelector, bufferSize, delayError);
     }
     
     public static final class GroupBySubscriber<T, K, V> extends AtomicInteger implements NbpSubscriber<T>, Disposable {
@@ -58,10 +58,7 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
         
         Disposable s;
         
-        volatile int cancelled;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<GroupBySubscriber> CANCELLED =
-                AtomicIntegerFieldUpdater.newUpdater(GroupBySubscriber.class, "cancelled");
+        final AtomicBoolean cancelled = new AtomicBoolean();
 
         public GroupBySubscriber(NbpSubscriber<? super NbpGroupedObservable<K, V>> actual, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
             this.actual = actual;
@@ -69,7 +66,7 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
             this.valueSelector = valueSelector;
             this.bufferSize = bufferSize;
             this.delayError = delayError;
-            this.groups = new ConcurrentHashMap<>();
+            this.groups = new ConcurrentHashMap<Object, GroupedUnicast<K, V>>();
             this.lazySet(1);
         }
         
@@ -99,7 +96,7 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
             if (group == null) {
                 // if the main has been cancelled, stop creating groups
                 // and skip this value
-                if (cancelled != 0) {
+                if (cancelled.get()) {
                     return;
                 }
                 
@@ -119,13 +116,19 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
                 onError(e);
                 return;
             }
+            
+            if (v == null) {
+                s.dispose();
+                onError(new NullPointerException("The value supplied is null"));
+                return;
+            }
 
             group.onNext(v);
         }
         
         @Override
         public void onError(Throwable t) {
-            List<GroupedUnicast<K, V>> list = new ArrayList<>(groups.values());
+            List<GroupedUnicast<K, V>> list = new ArrayList<GroupedUnicast<K, V>>(groups.values());
             groups.clear();
             
             for (GroupedUnicast<K, V> e : list) {
@@ -137,7 +140,7 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
         
         @Override
         public void onComplete() {
-            List<GroupedUnicast<K, V>> list = new ArrayList<>(groups.values());
+            List<GroupedUnicast<K, V>> list = new ArrayList<GroupedUnicast<K, V>>(groups.values());
             groups.clear();
             
             for (GroupedUnicast<K, V> e : list) {
@@ -151,7 +154,7 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
         public void dispose() {
             // cancelling the main source means we don't want any more groups
             // but running groups still require new values
-            if (CANCELLED.compareAndSet(this, 0, 1)) {
+            if (cancelled.compareAndSet(false, true)) {
                 if (decrementAndGet() == 0) {
                     s.dispose();
                 }
@@ -170,8 +173,8 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
     static final class GroupedUnicast<K, T> extends NbpGroupedObservable<K, T> {
         
         public static <T, K> GroupedUnicast<K, T> createWith(K key, int bufferSize, GroupBySubscriber<?, K, T> parent, boolean delayError) {
-            State<T, K> state = new State<>(bufferSize, parent, key, delayError);
-            return new GroupedUnicast<>(key, state);
+            State<T, K> state = new State<T, K>(bufferSize, parent, key, delayError);
+            return new GroupedUnicast<K, T>(key, state);
         }
         
         final State<T, K> state;
@@ -206,18 +209,12 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
         volatile boolean done;
         Throwable error;
         
-        volatile int cancelled;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<State> CANCELLED =
-                AtomicIntegerFieldUpdater.newUpdater(State.class, "cancelled");
+        final AtomicBoolean cancelled = new AtomicBoolean();
         
-        volatile NbpSubscriber<? super T> actual;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<State, NbpSubscriber> ACTUAL =
-                AtomicReferenceFieldUpdater.newUpdater(State.class, NbpSubscriber.class, "actual");
+        final AtomicReference<NbpSubscriber<? super T>> actual = new AtomicReference<NbpSubscriber<? super T>>();
         
         public State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) {
-            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
             this.parent = parent;
             this.key = key;
             this.delayError = delayError;
@@ -225,7 +222,7 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
         
         @Override
         public void dispose() {
-            if (CANCELLED.compareAndSet(this, 0, 1)) {
+            if (cancelled.compareAndSet(false, true)) {
                 if (getAndIncrement() == 0) {
                     parent.cancel(key);
                 }
@@ -234,7 +231,7 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
         
         @Override
         public void accept(NbpSubscriber<? super T> s) {
-            if (ACTUAL.compareAndSet(this, null, s)) {
+            if (actual.compareAndSet(null, s)) {
                 s.onSubscribe(this);
                 drain();
             } else {
@@ -271,7 +268,7 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
             
             final Queue<T> q = queue;
             final boolean delayError = this.delayError;
-            NbpSubscriber<? super T> a = actual;
+            NbpSubscriber<? super T> a = actual.get();
             for (;;) {
                 if (a != null) {
                     if (checkTerminated(done, q.isEmpty(), a, delayError)) {
@@ -300,13 +297,13 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<NbpGrouped
                     break;
                 }
                 if (a == null) {
-                    a = actual;
+                    a = actual.get();
                 }
             }
         }
         
         boolean checkTerminated(boolean d, boolean empty, NbpSubscriber<? super T> a, boolean delayError) {
-            if (cancelled != 0) {
+            if (cancelled.get()) {
                 queue.clear();
                 parent.cancel(key);
                 return true;

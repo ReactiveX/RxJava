@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import org.junit.Test;
 import org.mockito.*;
@@ -27,7 +26,9 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.schedulers.TestScheduler;
 
 public class TestSchedulerTest {
 
@@ -183,7 +184,7 @@ public class TestSchedulerTest {
             poller = Observable.create(new Publisher<Object>() {
                 @Override
                 public void subscribe(final Subscriber<? super Object> aSubscriber) {
-                    BooleanSubscription bs = new BooleanSubscription();
+                    final BooleanSubscription bs = new BooleanSubscription();
                     aSubscriber.onSubscribe(bs);
                     inner.schedule(new Runnable() {
                         @Override

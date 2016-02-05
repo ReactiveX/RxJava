@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,6 +19,7 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.NbpObservable;
+import io.reactivex.NbpObservable.*;
 import io.reactivex.nbp.NbpCovarianceTest.*;
 
 public class NbpConcatTests {
@@ -60,6 +61,7 @@ public class NbpConcatTests {
         NbpObservable<String> o2 = NbpObservable.just("three", "four");
         NbpObservable<String> o3 = NbpObservable.just("five", "six");
 
+        @SuppressWarnings("unchecked")
         Iterable<NbpObservable<String>> is = Arrays.asList(o1, o2, o3);
 
         List<String> values = NbpObservable.concat(NbpObservable.fromIterable(is)).toList().toBlocking().single();
@@ -142,11 +144,14 @@ public class NbpConcatTests {
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
         
-        NbpObservable<Movie> o1 = NbpObservable.create(o -> {
-                o.onNext(horrorMovie1);
-                o.onNext(movie);
-                //                o.onNext(new Media()); // correctly doesn't compile
-                o.onComplete();
+        NbpObservable<Movie> o1 = NbpObservable.create(new NbpOnSubscribe<Movie>() {
+            @Override
+            public void accept(NbpSubscriber<? super Movie> o) {
+                    o.onNext(horrorMovie1);
+                    o.onNext(movie);
+                    //                o.onNext(new Media()); // correctly doesn't compile
+                    o.onComplete();
+            }
         });
 
         NbpObservable<Media> o2 = NbpObservable.just(media, horrorMovie2);

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,13 +13,12 @@
 
 package io.reactivex.internal.operators.nbp;
 
-import java.util.Optional;
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.*;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscribers.nbp.NbpToNotificationSubscriber;
 import io.reactivex.subjects.nbp.NbpBehaviorSubject;
 
@@ -39,16 +38,21 @@ public final class NbpOnSubscribeRedo<T> implements NbpOnSubscribe<T> {
         // FIXE use BehaviorSubject? (once available)
         NbpBehaviorSubject<Try<Optional<Object>>> subject = NbpBehaviorSubject.create();
         
-        RedoSubscriber<T> parent = new RedoSubscriber<>(s, subject, source);
+        final RedoSubscriber<T> parent = new RedoSubscriber<T>(s, subject, source);
 
         s.onSubscribe(parent.arbiter);
 
         NbpObservable<?> action = manager.apply(subject);
         
-        action.subscribe(new NbpToNotificationSubscriber<>(parent::handle));
+        action.subscribe(new NbpToNotificationSubscriber<Object>(new Consumer<Try<Optional<Object>>>() {
+            @Override
+            public void accept(Try<Optional<Object>> o) {
+                parent.handle(o);
+            }
+        }));
         
         // trigger first subscription
-        parent.handle(Notification.next(0));
+        parent.handle(Notification.<Object>next(0));
     }
     
     static final class RedoSubscriber<T> extends AtomicBoolean implements NbpSubscriber<T> {
@@ -59,10 +63,7 @@ public final class NbpOnSubscribeRedo<T> implements NbpOnSubscribe<T> {
         final NbpObservable<? extends T> source;
         final MultipleAssignmentDisposable arbiter;
         
-        volatile int wip;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<RedoSubscriber> WIP =
-                AtomicIntegerFieldUpdater.newUpdater(RedoSubscriber.class, "wip");
+        final AtomicInteger wip = new AtomicInteger();
         
         public RedoSubscriber(NbpSubscriber<? super T> actual, NbpBehaviorSubject<Try<Optional<Object>>> subject, NbpObservable<? extends T> source) {
             this.actual = actual;
@@ -85,7 +86,7 @@ public final class NbpOnSubscribeRedo<T> implements NbpOnSubscribe<T> {
         @Override
         public void onError(Throwable t) {
             if (compareAndSet(false, true)) {
-                subject.onNext(Try.ofError(t));
+                subject.onNext(Try.<Optional<Object>>ofError(t));
             }
         }
         
@@ -106,7 +107,7 @@ public final class NbpOnSubscribeRedo<T> implements NbpOnSubscribe<T> {
                     
                     if (o.isPresent()) {
                         
-                        if (WIP.getAndIncrement(this) == 0) {
+                        if (wip.getAndIncrement() == 0) {
                             int missed = 1;
                             for (;;) {
                                 if (arbiter.isDisposed()) {
@@ -114,7 +115,7 @@ public final class NbpOnSubscribeRedo<T> implements NbpOnSubscribe<T> {
                                 }
                                 source.subscribe(this);
                             
-                                missed = WIP.addAndGet(this, -missed);
+                                missed = wip.addAndGet(-missed);
                                 if (missed == 0) {
                                     break;
                                 }

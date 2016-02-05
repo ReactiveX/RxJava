@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -28,7 +28,7 @@ public final class NbpOperatorTakeLast<T> implements NbpOperator<T, T> {
 
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> t) {
-        return new TakeLastSubscriber<>(t, count);
+        return new TakeLastSubscriber<T>(t, count);
     }
     
     static final class TakeLastSubscriber<T> extends ArrayDeque<T> implements NbpSubscriber<T>, Disposable {

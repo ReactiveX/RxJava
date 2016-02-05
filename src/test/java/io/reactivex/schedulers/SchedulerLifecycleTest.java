@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class SchedulerLifecycleTest {
     @Test
@@ -31,7 +32,7 @@ public class SchedulerLifecycleTest {
         System.out.println("testShutdown >> Giving time threads to spin-up");
         Thread.sleep(500);
         
-        Set<Thread> rxThreads = new HashSet<>();
+        Set<Thread> rxThreads = new HashSet<Thread>();
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("Rx")) {
                 rxThreads.add(t);
@@ -108,7 +109,7 @@ public class SchedulerLifecycleTest {
         System.out.println("testStartIdempotence >> giving some time");
         Thread.sleep(500);
         
-        Set<Thread> rxThreads = new HashSet<>();
+        Set<Thread> rxThreads = new HashSet<Thread>();
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("Rx")) {
                 rxThreads.add(t);
@@ -120,7 +121,7 @@ public class SchedulerLifecycleTest {
         System.out.println("testStartIdempotence >> giving some time again");
         Thread.sleep(500);
         
-        Set<Thread> rxThreads2 = new HashSet<>();
+        Set<Thread> rxThreads2 = new HashSet<Thread>();
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("Rx")) {
                 rxThreads2.add(t);

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -30,13 +30,9 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
     /** */
     private static final long serialVersionUID = 7028635084060361255L;
     
-    volatile Subscription actual;
-    static final AtomicReferenceFieldUpdater<AsyncSubscription, Subscription> ACTUAL =
-            AtomicReferenceFieldUpdater.newUpdater(AsyncSubscription.class, Subscription.class, "actual");
+    final AtomicReference<Subscription> actual;
 
-    volatile Disposable resource;
-    static final AtomicReferenceFieldUpdater<AsyncSubscription, Disposable> RESOURCE =
-            AtomicReferenceFieldUpdater.newUpdater(AsyncSubscription.class, Disposable.class, "resource");
+    final AtomicReference<Disposable> resource;
     
     static final Subscription CANCELLED = new Subscription() {
         @Override
@@ -67,16 +63,18 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
     };
     
     public AsyncSubscription() {
-        
+        resource = new AtomicReference<Disposable>();
+        actual = new AtomicReference<Subscription>();
     }
     
     public AsyncSubscription(Disposable resource) {
-        RESOURCE.lazySet(this, resource);
+        this();
+        this.resource.lazySet(resource);
     }
     
     @Override
     public void request(long n) {
-        Subscription s = actual;
+        Subscription s = actual.get();
         if (s != null) {
             s.request(n);
         } else {
@@ -84,7 +82,7 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
                 return;
             }
             BackpressureHelper.add(this, n);
-            s = actual;
+            s = actual.get();
             if (s != null) {
                 long mr = getAndSet(0L);
                 if (mr != 0L) {
@@ -96,17 +94,17 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
     
     @Override
     public void cancel() {
-        Subscription s = actual;
+        Subscription s = actual.get();
         if (s != CANCELLED) {
-            s = ACTUAL.getAndSet(this, CANCELLED);
+            s = actual.getAndSet(CANCELLED);
             if (s != CANCELLED && s != null) {
                 s.cancel();
             }
         }
         
-        Disposable d = resource;
+        Disposable d = resource.get();
         if (d != DISPOSED) {
-            d = RESOURCE.getAndSet(this, DISPOSED);
+            d = resource.getAndSet(DISPOSED);
             if (d != CANCELLED && d != null) {
                 d.dispose();
             }
@@ -126,14 +124,14 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
      */
     public boolean setResource(Disposable r) {
         for (;;) {
-            Disposable d = resource;
+            Disposable d = resource.get();
             if (d == DISPOSED) {
                 if (r != null) {
                     r.dispose();
                 }
                 return false;
             }
-            if (RESOURCE.compareAndSet(this, d, r)) {
+            if (resource.compareAndSet(d, r)) {
                 if (d != null) {
                     d.dispose();
                 }
@@ -149,14 +147,14 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
      */
     public boolean replaceResource(Disposable r) {
         for (;;) {
-            Disposable d = resource;
+            Disposable d = resource.get();
             if (d == DISPOSED) {
                 if (r != null) {
                     r.dispose();
                 }
                 return false;
             }
-            if (RESOURCE.compareAndSet(this, d, r)) {
+            if (resource.compareAndSet(d, r)) {
                 return true;
             }
         }
@@ -169,7 +167,7 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
      */
     public boolean setSubscription(Subscription s) {
         for (;;) {
-            Subscription a = actual;
+            Subscription a = actual.get();
             if (a == CANCELLED) {
                 s.cancel();
                 return false;
@@ -179,7 +177,7 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
                 SubscriptionHelper.reportSubscriptionSet();
                 return true;
             }
-            if (ACTUAL.compareAndSet(this, null, s)) {
+            if (actual.compareAndSet(null, s)) {
                 long mr = getAndSet(0L);
                 if (mr != 0L) {
                     s.request(mr);

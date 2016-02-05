@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,10 +15,11 @@ package io.reactivex.internal.operators;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -67,7 +68,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
             return;
         }
         
-        LatestCoordinator<T, R> lc = new LatestCoordinator<>(s, combiner, count, bufferSize, delayError);
+        LatestCoordinator<T, R> lc = new LatestCoordinator<T, R>(s, combiner, count, bufferSize, delayError);
         lc.subscribe(sources);
     }
     
@@ -87,16 +88,9 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
         
         volatile boolean done;
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<LatestCoordinator> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(LatestCoordinator.class, "requested");
+        final AtomicLong requested = new AtomicLong();
 
-        volatile Throwable error;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<LatestCoordinator, Throwable> ERROR =
-                AtomicReferenceFieldUpdater.newUpdater(LatestCoordinator.class, Throwable.class, "error");
-        
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
         int active;
         int complete;
@@ -112,14 +106,14 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
             this.delayError = delayError;
             this.latest = new Object[count];
             this.subscribers = new CombinerSubscriber[count];
-            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
         }
         
         public void subscribe(Publisher<? extends T>[] sources) {
             Subscriber<T>[] as = subscribers;
             int len = as.length;
             for (int i = 0; i < len; i++) {
-                as[i] = new CombinerSubscriber<>(this, i);
+                as[i] = new CombinerSubscriber<T, R>(this, i);
             }
             lazySet(0); // release array contents
             actual.onSubscribe(this);
@@ -136,7 +130,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
             if (SubscriptionHelper.validateRequest(n)) {
                 return;
             }
-            BackpressureHelper.add(REQUESTED, this, n);
+            BackpressureHelper.add(requested, n);
             drain();
         }
         
@@ -197,7 +191,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
                     if (value != null && f) {
                         queue.offer(cs, latest.clone());
                     } else
-                    if (value == null && error != null) {
+                    if (value == null && error.get() != null) {
                         done = true; // if this source completed without a value
                     }
                 } else {
@@ -226,7 +220,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
                     return;
                 }
                 
-                long r = requested;
+                long r = requested.get();
                 boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0L;
                 
@@ -265,6 +259,13 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
                         return;
                     }
                     
+                    if (v == null) {
+                        cancelled = true;
+                        cancel(q);
+                        a.onError(new NullPointerException("The combiner returned a null"));
+                        return;
+                    }
+                    
                     a.onNext(v);
                     
                     cs.request(1);
@@ -275,7 +276,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
                 
                 if (e != 0L) {
                     if (!unbounded) {
-                        REQUESTED.addAndGet(this, e);
+                        requested.addAndGet(e);
                     }
                 }
                 
@@ -296,7 +297,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
                 if (delayError) {
                     if (empty) {
                         clear(queue);
-                        Throwable e = error;
+                        Throwable e = error.get();
                         if (e != null) {
                             a.onError(e);
                         } else {
@@ -305,7 +306,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
                         return true;
                     }
                 } else {
-                    Throwable e = error;
+                    Throwable e = error.get();
                     if (e != null) {
                         cancel(q);
                         a.onError(e);
@@ -323,12 +324,14 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
         
         void onError(Throwable e) {
             for (;;) {
-                Throwable curr = error;
+                Throwable curr = error.get();
                 if (curr != null) {
-                    e.addSuppressed(curr);
+                    CompositeException ex = new CompositeException();
+                    ex.suppress(curr);
+                    e = ex;
                 }
                 Throwable next = e;
-                if (ERROR.compareAndSet(this, curr, next)) {
+                if (error.compareAndSet(curr, next)) {
                     return;
                 }
             }
@@ -341,10 +344,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
         
         boolean done;
         
-        volatile Subscription s;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<CombinerSubscriber, Subscription> S =
-                AtomicReferenceFieldUpdater.newUpdater(CombinerSubscriber.class, Subscription.class, "s");
+        final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
         
         static final Subscription CANCELLED = new Subscription() {
             @Override
@@ -365,9 +365,9 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (!S.compareAndSet(this, null, s)) {
+            if (!this.s.compareAndSet(null, s)) {
                 s.cancel();
-                if (s != CANCELLED) {
+                if (this.s.get() != CANCELLED) {
                     SubscriptionHelper.reportSubscriptionSet();
                 }
                 return;
@@ -405,14 +405,14 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
         
         @Override
         public void request(long n) {
-            s.request(n);
+            s.get().request(n);
         }
         
         @Override
         public void cancel() {
-            Subscription a = s;
+            Subscription a = s.get();
             if (a != CANCELLED) {
-                a = S.getAndSet(this, CANCELLED);
+                a = s.getAndSet(CANCELLED);
                 if (a != CANCELLED && a != null) {
                     a.cancel();
                 }

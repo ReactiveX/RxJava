@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,9 +16,6 @@ package io.reactivex.internal.operators.nbp;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.BooleanDisposable;
 
-/**
- * 
- */
 public final class NbpOnSubscribeArraySource<T> implements NbpOnSubscribe<T> {
     final T[] array;
     public NbpOnSubscribeArraySource(T[] array) {
@@ -37,7 +34,12 @@ public final class NbpOnSubscribeArraySource<T> implements NbpOnSubscribe<T> {
         int n = a.length;
         
         for (int i = 0; i < n && !bd.isDisposed(); i++) {
-            s.onNext(a[i]);
+            T value = a[i];
+            if (value == null) {
+                s.onError(new NullPointerException("The " + i + "th element is null"));
+                return;
+            }
+            s.onNext(value);
         }
         if (!bd.isDisposed()) {
             s.onComplete();

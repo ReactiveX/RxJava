@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,11 +14,11 @@ package io.reactivex.internal.operators.nbp;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -33,10 +33,10 @@ public final class NbpOperatorConcatMap<T, U> implements NbpOperator<U, T> {
     }
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super U> s) {
-        NbpSerializedSubscriber<U> ssub = new NbpSerializedSubscriber<>(s);
+        NbpSerializedSubscriber<U> ssub = new NbpSerializedSubscriber<U>(s);
         SerialDisposable sa = new SerialDisposable();
         ssub.onSubscribe(sa);
-        return new SourceSubscriber<>(ssub, sa, mapper, bufferSize);
+        return new SourceSubscriber<T, U>(ssub, sa, mapper, bufferSize);
     }
     
     static final class SourceSubscriber<T, U> extends AtomicInteger implements NbpSubscriber<T> {
@@ -61,8 +61,8 @@ public final class NbpOperatorConcatMap<T, U> implements NbpOperator<U, T> {
             this.sa = sa;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
-            this.inner = new InnerSubscriber<>(actual, sa, this);
-            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
+            this.inner = new InnerSubscriber<U>(actual, sa, this);
+            this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
         }
         @Override
         public void onSubscribe(Disposable s) {
@@ -137,6 +137,13 @@ public final class NbpOperatorConcatMap<T, U> implements NbpOperator<U, T> {
                 actual.onError(e);
                 return;
             }
+            
+            if (p == null) {
+                cancel();
+                actual.onError(new NullPointerException("The NbpObservable returned is null"));
+                return;
+            }
+            
             index++;
             // this is not RS but since our Subscriber doesn't hold state by itself,
             // subscribing it to each source is safe and saves allocation

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,10 +14,10 @@
 package io.reactivex.internal.operators.nbp;
 
 import java.util.*;
-import java.util.function.Supplier;
 
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.subscribers.nbp.NbpCancelledSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -26,7 +26,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class NbpOperatorToList<T, U extends Collection<? super T>> implements NbpOperator<U, T> {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    static final NbpOperatorToList DEFAULT = new NbpOperatorToList(ArrayList::new);
+    static final NbpOperatorToList DEFAULT = new NbpOperatorToList(new Supplier() {
+        @Override
+        public Object get() {
+            return new ArrayList();
+        }
+    });
     
     @SuppressWarnings("unchecked")
     public static <T> NbpOperatorToList<T, List<T>> defaultInstance() {
@@ -48,7 +53,7 @@ public final class NbpOperatorToList<T, U extends Collection<? super T>> impleme
             EmptyDisposable.error(e, t);
             return NbpCancelledSubscriber.INSTANCE;
         }
-        return new ToListSubscriber<>(t, coll);
+        return new ToListSubscriber<T, U>(t, coll);
     }
     
     static final class ToListSubscriber<T, U extends Collection<? super T>> implements NbpSubscriber<T> {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
+import io.reactivex.Observable;
 import io.reactivex.internal.schedulers.SingleScheduler;
 import io.reactivex.schedulers.Schedulers;
 
@@ -48,16 +49,16 @@ public class RangePerf {
     
     @Benchmark
     public Object rangeSync(Blackhole bh) {
-        LatchedObserver<Integer> lo = new LatchedObserver<>(bh);
+        LatchedObserver<Integer> lo = new LatchedObserver<Integer>(bh);
         
         range.subscribe(lo);
         
         return lo;
     }
 
-    @Benchmark
+//    @Benchmark
     public void rangeAsync(Blackhole bh) throws Exception {
-        LatchedObserver<Integer> lo = new LatchedObserver<>(bh);
+        LatchedObserver<Integer> lo = new LatchedObserver<Integer>(bh);
         
         rangeAsync.subscribe(lo);
         
@@ -68,9 +69,9 @@ public class RangePerf {
         }
     }
 
-    @Benchmark
+//    @Benchmark
     public void rangePipeline(Blackhole bh) throws Exception {
-        LatchedObserver<Integer> lo = new LatchedObserver<>(bh);
+        LatchedObserver<Integer> lo = new LatchedObserver<Integer>(bh);
         
         rangeAsyncPipeline.subscribe(lo);
         

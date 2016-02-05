@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,14 +19,15 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.mockito.*;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
+import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class PublishSubjectTest {
@@ -61,7 +62,7 @@ public class PublishSubjectTest {
         Subscriber<Object> observerB = TestHelper.mockSubscriber();
         Subscriber<Object> observerC = TestHelper.mockSubscriber();
 
-        TestSubscriber<Object> ts = new TestSubscriber<>(observerA);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(observerA);
         
         channel.subscribe(ts);
         channel.subscribe(observerB);
@@ -170,7 +171,7 @@ public class PublishSubjectTest {
         PublishSubject<String> subject = PublishSubject.create();
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         subject.subscribe(ts);
 
         subject.onNext("one");
@@ -205,7 +206,7 @@ public class PublishSubjectTest {
         final AtomicInteger countChildren = new AtomicInteger();
         final AtomicInteger countTotal = new AtomicInteger();
 
-        final ArrayList<String> list = new ArrayList<>();
+        final ArrayList<String> list = new ArrayList<String>();
 
         s.flatMap(new Function<Integer, Observable<String>>() {
 
@@ -256,7 +257,7 @@ public class PublishSubjectTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         Subscriber<Integer> o1 = TestHelper.mockSubscriber();
-        TestSubscriber<Integer> ts = new TestSubscriber<>(o1);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(o1);
         ps.subscribe(ts);
 
         // emit
@@ -274,7 +275,7 @@ public class PublishSubjectTest {
         ps.onNext(2);
 
         Subscriber<Integer> o2 = TestHelper.mockSubscriber();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<>(o2);
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(o2);
         ps.subscribe(ts2);
 
         // emit
@@ -338,7 +339,7 @@ public class PublishSubjectTest {
 //        PublishSubject<String> ps = PublishSubject.create();
 //
 //        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<>();
+//        TestSubscriber<String> ts = new TestSubscriber<String>();
 //        ps.subscribe(ts);
 //
 //        try {

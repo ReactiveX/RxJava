@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,17 +14,18 @@
 package io.reactivex.internal.operators;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.function.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.SetCompositeResource;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.SerializedSubscriber;
 
@@ -42,8 +43,8 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super U> t) {
-        return new BufferBoundarySubscriber<>(
-                new SerializedSubscriber<>(t),
+        return new BufferBoundarySubscriber<T, U, Open, Close>(
+                new SerializedSubscriber<U>(t),
                 bufferOpen, bufferClose, bufferSupplier
                 );
     }
@@ -59,21 +60,18 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
         
         final List<U> buffers;
         
-        volatile int windows;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<BufferBoundarySubscriber> WINDOWS =
-                AtomicIntegerFieldUpdater.newUpdater(BufferBoundarySubscriber.class, "windows");
+        final AtomicInteger windows = new AtomicInteger();
 
         public BufferBoundarySubscriber(Subscriber<? super U> actual, 
                 Publisher<? extends Open> bufferOpen,
                 Function<? super Open, ? extends Publisher<? extends Close>> bufferClose,
                 Supplier<U> bufferSupplier) {
-            super(actual, new MpscLinkedQueue<>());
+            super(actual, new MpscLinkedQueue<U>());
             this.bufferOpen = bufferOpen;
             this.bufferClose = bufferClose;
             this.bufferSupplier = bufferSupplier;
-            this.buffers = new LinkedList<>();
-            this.resources = new SetCompositeResource<>(Disposable::dispose);
+            this.buffers = new LinkedList<U>();
+            this.resources = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
         }
         @Override
         public void onSubscribe(Subscription s) {
@@ -82,12 +80,12 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
             }
             this.s = s;
             
-            BufferOpenSubscriber<T, U, Open, Close> bos = new BufferOpenSubscriber<>(this);
+            BufferOpenSubscriber<T, U, Open, Close> bos = new BufferOpenSubscriber<T, U, Open, Close>(this);
             resources.add(bos);
 
             actual.onSubscribe(this);
             
-            WINDOWS.lazySet(this, 1);
+            windows.lazySet(1);
             bufferOpen.subscribe(bos);
             
             s.request(Long.MAX_VALUE);
@@ -114,7 +112,7 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
         
         @Override
         public void onComplete() {
-            if (WINDOWS.decrementAndGet(this) == 0) {
+            if (windows.decrementAndGet() == 0) {
                 complete();
             }
         }
@@ -122,7 +120,7 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
         void complete() {
             List<U> list;
             synchronized (this) {
-                list = new ArrayList<>(buffers);
+                list = new ArrayList<U>(buffers);
                 buffers.clear();
             }
             
@@ -132,7 +130,7 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
             }
             done = true;
             if (enter()) {
-                drainMaxLoop(q, actual, false, this);
+                QueueDrainHelper.drainMaxLoop(q, actual, false, this, this);
             }
         }
         
@@ -204,17 +202,17 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
                 buffers.add(b);
             }
             
-            BufferCloseSubscriber<T, U, Open, Close> bcs = new BufferCloseSubscriber<>(b, this);
+            BufferCloseSubscriber<T, U, Open, Close> bcs = new BufferCloseSubscriber<T, U, Open, Close>(b, this);
             resources.add(bcs);
             
-            WINDOWS.getAndIncrement(this);
+            windows.getAndIncrement();
             
             p.subscribe(bcs);
         }
         
         void openFinished(Disposable d) {
             if (resources.remove(d)) {
-                if (WINDOWS.decrementAndGet(this) == 0) {
+                if (windows.decrementAndGet() == 0) {
                     complete();
                 }
             }
@@ -232,7 +230,7 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
             }
             
             if (resources.remove(d)) {
-                if (WINDOWS.decrementAndGet(this) == 0) {
+                if (windows.decrementAndGet() == 0) {
                     complete();
                 }
             }

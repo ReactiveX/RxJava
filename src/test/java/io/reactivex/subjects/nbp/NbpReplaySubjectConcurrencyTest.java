@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,16 +18,16 @@ import static org.junit.Assert.assertEquals;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
-import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subjects.nbp.NbpReplaySubject;
+import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
 public class NbpReplaySubjectConcurrencyTest {
 
@@ -199,7 +199,7 @@ public class NbpReplaySubjectConcurrencyTest {
         }
 
         // assert all threads got the same results
-        List<Long> sums = new ArrayList<>();
+        List<Long> sums = new ArrayList<Long>();
         for (List<Long> values : listOfListsOfValues) {
             long v = 0;
             for (long l : values) {
@@ -232,7 +232,7 @@ public class NbpReplaySubjectConcurrencyTest {
     public void testSubscribeCompletionRaceCondition() {
         for (int i = 0; i < 50; i++) {
             final NbpReplaySubject<String> subject = NbpReplaySubject.create();
-            final AtomicReference<String> value1 = new AtomicReference<>();
+            final AtomicReference<String> value1 = new AtomicReference<String>();
 
             subject.subscribe(new Consumer<String>() {
 
@@ -294,8 +294,8 @@ public class NbpReplaySubjectConcurrencyTest {
     public void testRaceForTerminalState() {
         final List<Integer> expected = Arrays.asList(1);
         for (int i = 0; i < 100000; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<>();
-            Observable.just(1).subscribeOn(Schedulers.computation()).cache().subscribe(ts);
+            NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
+            NbpObservable.just(1).subscribeOn(Schedulers.computation()).cache().subscribe(ts);
             ts.awaitTerminalEvent();
             ts.assertValueSequence(expected);
             ts.assertTerminated();
@@ -305,7 +305,7 @@ public class NbpReplaySubjectConcurrencyTest {
     private static class SubjectObserverThread extends Thread {
 
         private final NbpReplaySubject<String> subject;
-        private final AtomicReference<String> value = new AtomicReference<>();
+        private final AtomicReference<String> value = new AtomicReference<String>();
 
         public SubjectObserverThread(NbpReplaySubject<String> subject) {
             this.subject = subject;
@@ -348,7 +348,7 @@ public class NbpReplaySubjectConcurrencyTest {
                     }
                 });
                 
-                final AtomicReference<Object> o = new AtomicReference<>();
+                final AtomicReference<Object> o = new AtomicReference<Object>();
                 
                 rs.subscribeOn(s).observeOn(Schedulers.io())
                 .subscribe(new NbpObserver<Object>() {

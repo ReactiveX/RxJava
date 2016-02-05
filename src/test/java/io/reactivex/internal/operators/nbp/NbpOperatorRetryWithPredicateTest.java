@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -30,6 +29,7 @@ import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.subjects.nbp.NbpPublishSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
@@ -233,7 +233,7 @@ public class NbpOperatorRetryWithPredicateTest {
                 .create(so)
                 .retry(retry5);
 
-        NbpOperatorRetryTest.AsyncObserver<Long> async = new NbpOperatorRetryTest.AsyncObserver<>(NbpObserver);
+        NbpOperatorRetryTest.AsyncObserver<Long> async = new NbpOperatorRetryTest.AsyncObserver<Long>(NbpObserver);
 
         o.subscribe(async);
 
@@ -260,7 +260,7 @@ public class NbpOperatorRetryWithPredicateTest {
                 .timeout(80, TimeUnit.MILLISECONDS)
                 .retry(retry5);
 
-        NbpOperatorRetryTest.AsyncObserver<Long> async = new NbpOperatorRetryTest.AsyncObserver<>(NbpObserver);
+        NbpOperatorRetryTest.AsyncObserver<Long> async = new NbpOperatorRetryTest.AsyncObserver<Long>(NbpObserver);
 
         o.subscribe(async);
 
@@ -276,7 +276,7 @@ public class NbpOperatorRetryWithPredicateTest {
     
     @Test
     public void testIssue2826() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         final RuntimeException e = new RuntimeException("You shall not pass");
         final AtomicInteger c = new AtomicInteger();
         NbpObservable.just(1).map(new Function<Integer, Integer>() {
@@ -309,7 +309,7 @@ public class NbpOperatorRetryWithPredicateTest {
     
     @Test
     public void testIssue3008RetryWithPredicate() {
-        final List<Long> list = new CopyOnWriteArrayList<>();
+        final List<Long> list = new CopyOnWriteArrayList<Long>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
         NbpObservable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>(){
             @Override
@@ -337,7 +337,7 @@ public class NbpOperatorRetryWithPredicateTest {
     
     @Test
     public void testIssue3008RetryInfinite() {
-        final List<Long> list = new CopyOnWriteArrayList<>();
+        final List<Long> list = new CopyOnWriteArrayList<Long>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
         NbpObservable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>(){
             @Override

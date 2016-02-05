@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -21,20 +21,20 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.TestHelper;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 
 public class OperatorRetryWithPredicateTest {
     BiPredicate<Integer, Throwable> retryTwice = new BiPredicate<Integer, Throwable>() {
@@ -235,7 +235,7 @@ public class OperatorRetryWithPredicateTest {
                 .create(so)
                 .retry(retry5);
 
-        OperatorRetryTest.AsyncObserver<Long> async = new OperatorRetryTest.AsyncObserver<>(observer);
+        OperatorRetryTest.AsyncObserver<Long> async = new OperatorRetryTest.AsyncObserver<Long>(observer);
 
         o.subscribe(async);
 
@@ -262,7 +262,7 @@ public class OperatorRetryWithPredicateTest {
                 .timeout(80, TimeUnit.MILLISECONDS)
                 .retry(retry5);
 
-        OperatorRetryTest.AsyncObserver<Long> async = new OperatorRetryTest.AsyncObserver<>(observer);
+        OperatorRetryTest.AsyncObserver<Long> async = new OperatorRetryTest.AsyncObserver<Long>(observer);
 
         o.subscribe(async);
 
@@ -278,7 +278,7 @@ public class OperatorRetryWithPredicateTest {
     
     @Test
     public void testIssue2826() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final RuntimeException e = new RuntimeException("You shall not pass");
         final AtomicInteger c = new AtomicInteger();
         Observable.just(1).map(new Function<Integer, Integer>() {
@@ -311,7 +311,7 @@ public class OperatorRetryWithPredicateTest {
     
     @Test
     public void testIssue3008RetryWithPredicate() {
-        final List<Long> list = new CopyOnWriteArrayList<>();
+        final List<Long> list = new CopyOnWriteArrayList<Long>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
         Observable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>(){
             @Override
@@ -339,7 +339,7 @@ public class OperatorRetryWithPredicateTest {
     
     @Test
     public void testIssue3008RetryInfinite() {
-        final List<Long> list = new CopyOnWriteArrayList<>();
+        final List<Long> list = new CopyOnWriteArrayList<Long>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
         Observable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>(){
             @Override
@@ -363,7 +363,7 @@ public class OperatorRetryWithPredicateTest {
     
     @Test
     public void testBackpressure() {
-        final List<Long> requests = new ArrayList<>();
+        final List<Long> requests = new ArrayList<Long>();
         
         Observable<Integer> source = Observable
                 .just(1)
@@ -375,7 +375,7 @@ public class OperatorRetryWithPredicateTest {
                     }
                 });
         
-        TestSubscriber<Integer> ts = new TestSubscriber<>(3L);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3L);
         source
         .retry(new BiPredicate<Integer, Throwable>() {
             @Override

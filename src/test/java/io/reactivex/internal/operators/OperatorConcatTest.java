@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -30,6 +29,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.BooleanDisposable;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
@@ -62,7 +62,7 @@ public class OperatorConcatTest {
 
         final Observable<String> odds = Observable.fromArray(o);
         final Observable<String> even = Observable.fromArray(e);
-        final List<Observable<String>> list = new ArrayList<>();
+        final List<Observable<String>> list = new ArrayList<Observable<String>>();
         list.add(odds);
         list.add(even);
         Observable<String> concat = Observable.concat(Observable.fromIterable(list));
@@ -107,8 +107,8 @@ public class OperatorConcatTest {
     public void testSimpleAsyncConcat() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
 
-        TestObservable<String> o1 = new TestObservable<>("one", "two", "three");
-        TestObservable<String> o2 = new TestObservable<>("four", "five", "six");
+        TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
+        TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
 
         Observable.concat(Observable.create(o1), Observable.create(o2)).subscribe(observer);
 
@@ -141,17 +141,18 @@ public class OperatorConcatTest {
     
     /**
      * Test an async Observable that emits more async Observables
+     * @throws InterruptedException if the test is interrupted
      */
     @Test
-    public void testNestedAsyncConcat() throws Throwable {
+    public void testNestedAsyncConcat() throws InterruptedException {
         Subscriber<String> observer = TestHelper.mockSubscriber();
 
-        final TestObservable<String> o1 = new TestObservable<>("one", "two", "three");
-        final TestObservable<String> o2 = new TestObservable<>("four", "five", "six");
-        final TestObservable<String> o3 = new TestObservable<>("seven", "eight", "nine");
+        final TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
+        final TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
+        final TestObservable<String> o3 = new TestObservable<String>("seven", "eight", "nine");
         final CountDownLatch allowThird = new CountDownLatch(1);
 
-        final AtomicReference<Thread> parent = new AtomicReference<>();
+        final AtomicReference<Thread> parent = new AtomicReference<Thread>();
         final CountDownLatch parentHasStarted = new CountDownLatch(1);
         final CountDownLatch parentHasFinished = new CountDownLatch(1);
         
@@ -279,7 +280,8 @@ public class OperatorConcatTest {
         final Observable<String> even = Observable.fromArray(e);
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        TestObservable<Observable<String>> observableOfObservables = new TestObservable<>(callOnce, okToContinue, odds, even);
+        @SuppressWarnings("unchecked")
+        TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(callOnce, okToContinue, odds, even);
         Observable<String> concatF = Observable.concat(Observable.create(observableOfObservables));
         concatF.subscribe(observer);
         try {
@@ -311,13 +313,14 @@ public class OperatorConcatTest {
 
     @Test
     public void testConcatConcurrentWithInfinity() {
-        final TestObservable<String> w1 = new TestObservable<>("one", "two", "three");
+        final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
         //This observable will send "hello" MAX_VALUE time.
-        final TestObservable<String> w2 = new TestObservable<>("hello", Integer.MAX_VALUE);
+        final TestObservable<String> w2 = new TestObservable<String>("hello", Integer.MAX_VALUE);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         
-        TestObservable<Observable<String>> observableOfObservables = new TestObservable<>(Observable.create(w1), Observable.create(w2));
+        @SuppressWarnings("unchecked")
+        TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.create(w1), Observable.create(w2));
         Observable<String> concatF = Observable.concat(Observable.create(observableOfObservables));
 
         concatF.take(50).subscribe(observer);
@@ -345,8 +348,8 @@ public class OperatorConcatTest {
         final CountDownLatch okToContinueW1 = new CountDownLatch(1);
         final CountDownLatch okToContinueW2 = new CountDownLatch(1);
 
-        final TestObservable<String> w1 = new TestObservable<>(null, okToContinueW1, "one", "two", "three");
-        final TestObservable<String> w2 = new TestObservable<>(null, okToContinueW2, "four", "five", "six");
+        final TestObservable<String> w1 = new TestObservable<String>(null, okToContinueW1, "one", "two", "three");
+        final TestObservable<String> w2 = new TestObservable<String>(null, okToContinueW2, "four", "five", "six");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         
@@ -396,11 +399,11 @@ public class OperatorConcatTest {
     public void testConcatUnsubscribe() {
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        final TestObservable<String> w1 = new TestObservable<>("one", "two", "three");
-        final TestObservable<String> w2 = new TestObservable<>(callOnce, okToContinue, "four", "five", "six");
+        final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
+        final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer, null);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer, null);
 
         final Observable<String> concat = Observable.concat(Observable.create(w1), Observable.create(w2));
 
@@ -438,13 +441,14 @@ public class OperatorConcatTest {
     public void testConcatUnsubscribeConcurrent() {
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        final TestObservable<String> w1 = new TestObservable<>("one", "two", "three");
-        final TestObservable<String> w2 = new TestObservable<>(callOnce, okToContinue, "four", "five", "six");
+        final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
+        final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer, null);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer, null);
         
-        TestObservable<Observable<String>> observableOfObservables = new TestObservable<>(Observable.create(w1), Observable.create(w2));
+        @SuppressWarnings("unchecked")
+        TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.create(w1), Observable.create(w2));
         Observable<String> concatF = Observable.concat(Observable.create(observableOfObservables));
 
         concatF.subscribe(ts);
@@ -499,12 +503,10 @@ public class OperatorConcatTest {
         private final T seed;
         private final int size;
 
-        @SafeVarargs
         public TestObservable(T... values) {
             this(null, null, values);
         }
 
-        @SafeVarargs
         public TestObservable(CountDownLatch once, CountDownLatch okToContinue, T... values) {
             this.values = Arrays.asList(values);
             this.size = this.values.size();
@@ -607,7 +609,12 @@ public class OperatorConcatTest {
     @Test
     public void concatVeryLongObservableOfObservables() {
         final int n = 10000;
-        Observable<Observable<Integer>> source = Observable.range(0, n).map(Observable::just);
+        Observable<Observable<Integer>> source = Observable.range(0, n).map(new Function<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Integer v) {
+                return Observable.just(v);
+            }
+        });
         
         Observable<List<Integer>> result = Observable.concat(source).toList();
         
@@ -616,7 +623,7 @@ public class OperatorConcatTest {
         
         result.subscribe(o);
 
-        List<Integer> list = new ArrayList<>(n);
+        List<Integer> list = new ArrayList<Integer>(n);
         for (int i = 0; i < n; i++) {
             list.add(i);
         }
@@ -627,7 +634,12 @@ public class OperatorConcatTest {
     @Test
     public void concatVeryLongObservableOfObservablesTakeHalf() {
         final int n = 10000;
-        Observable<Observable<Integer>> source = Observable.range(0, n).map(Observable::just);
+        Observable<Observable<Integer>> source = Observable.range(0, n).map(new Function<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Integer v) {
+                return Observable.just(v);
+            }
+        });
         
         Observable<List<Integer>> result = Observable.concat(source).take(n / 2).toList();
         
@@ -636,7 +648,7 @@ public class OperatorConcatTest {
         
         result.subscribe(o);
 
-        List<Integer> list = new ArrayList<>(n);
+        List<Integer> list = new ArrayList<Integer>(n);
         for (int i = 0; i < n / 2; i++) {
             list.add(i);
         }
@@ -656,7 +668,7 @@ public class OperatorConcatTest {
     
     @Test
     public void testInnerBackpressureWithAlignedBoundaries() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(0, Observable.bufferSize() * 2)
                 .concatWith(Observable.range(0, Observable.bufferSize() * 2))
                 .observeOn(Schedulers.computation()) // observeOn has a backpressured RxRingBuffer
@@ -675,7 +687,7 @@ public class OperatorConcatTest {
      */
     @Test
     public void testInnerBackpressureWithoutAlignedBoundaries() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(0, (Observable.bufferSize() * 2) + 10)
                 .concatWith(Observable.range(0, (Observable.bufferSize() * 2) + 10))
                 .observeOn(Schedulers.computation()) // observeOn has a backpressured RxRingBuffer
@@ -701,7 +713,7 @@ public class OperatorConcatTest {
             
         });
         
-        TestSubscriber<String> ts = new TestSubscriber<>();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable.concat(o, o).subscribe(ts);
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
@@ -796,7 +808,7 @@ public class OperatorConcatTest {
             if (i % 1000 == 0) {
                 System.out.println("concatMapRangeAsyncLoop > " + i);
             }
-            TestSubscriber<Integer> ts = new TestSubscriber<>();
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             Observable.range(0, 1000)
             .concatMap(new Function<Integer, Observable<Integer>>() {
                 @Override

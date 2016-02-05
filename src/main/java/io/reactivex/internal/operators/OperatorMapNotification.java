@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,11 +14,11 @@
 package io.reactivex.internal.operators;
 
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
@@ -38,7 +38,7 @@ public final class OperatorMapNotification<T, R> implements Operator<Publisher<?
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super Publisher<? extends R>> t) {
-        return new MapNotificationSubscriber<>(t, onNextMapper, onErrorMapper, onCompleteSupplier);
+        return new MapNotificationSubscriber<T, R>(t, onNextMapper, onErrorMapper, onCompleteSupplier);
     }
     
     static final class MapNotificationSubscriber<T, R>
@@ -58,10 +58,7 @@ public final class OperatorMapNotification<T, R> implements Operator<Publisher<?
         
         volatile boolean done;
 
-        volatile int state;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<MapNotificationSubscriber> STATE =
-                AtomicIntegerFieldUpdater.newUpdater(MapNotificationSubscriber.class, "state");
+        final AtomicInteger state = new AtomicInteger();
         
         static final int NO_REQUEST_NO_VALUE = 0;
         static final int NO_REQUEST_HAS_VALUE = 1;
@@ -157,9 +154,9 @@ public final class OperatorMapNotification<T, R> implements Operator<Publisher<?
                 actual.onComplete();
             } else {
                 for (;;) {
-                    int s = state;
+                    int s = state.get();
                     if (s == HAS_REQUEST_NO_VALUE) {
-                        if (STATE.compareAndSet(this, HAS_REQUEST_NO_VALUE, HAS_REQUEST_HAS_VALUE)) {
+                        if (state.compareAndSet(HAS_REQUEST_NO_VALUE, HAS_REQUEST_HAS_VALUE)) {
                             actual.onNext(p);
                             actual.onComplete();
                         }
@@ -168,7 +165,7 @@ public final class OperatorMapNotification<T, R> implements Operator<Publisher<?
                     if (s == NO_REQUEST_NO_VALUE) {
                         value = p;
                         done = true;
-                        if (STATE.compareAndSet(this, NO_REQUEST_NO_VALUE, NO_REQUEST_HAS_VALUE)) {
+                        if (state.compareAndSet(NO_REQUEST_NO_VALUE, NO_REQUEST_HAS_VALUE)) {
                             return;
                         }
                     } else
@@ -188,13 +185,13 @@ public final class OperatorMapNotification<T, R> implements Operator<Publisher<?
             BackpressureHelper.add(this, n);
             if (done) {
                 for (;;) {
-                    int s = state;
+                    int s = state.get();
                     
                     if (s == HAS_REQUEST_NO_VALUE || s == HAS_REQUEST_HAS_VALUE) {
                         return;
                     } else
                     if (s == NO_REQUEST_HAS_VALUE) {
-                        if (STATE.compareAndSet(this, NO_REQUEST_HAS_VALUE, HAS_REQUEST_HAS_VALUE)) {
+                        if (state.compareAndSet(NO_REQUEST_HAS_VALUE, HAS_REQUEST_HAS_VALUE)) {
                             Publisher<? extends R> p = value;
                             value = null;
                             actual.onNext(p);
@@ -202,7 +199,7 @@ public final class OperatorMapNotification<T, R> implements Operator<Publisher<?
                         }
                         return;
                     } else
-                    if (STATE.compareAndSet(this, NO_REQUEST_NO_VALUE, HAS_REQUEST_NO_VALUE)) {
+                    if (state.compareAndSet(NO_REQUEST_NO_VALUE, HAS_REQUEST_NO_VALUE)) {
                         return;
                     }
                 }
@@ -213,7 +210,7 @@ public final class OperatorMapNotification<T, R> implements Operator<Publisher<?
         
         @Override
         public void cancel() {
-            STATE.lazySet(this, HAS_REQUEST_HAS_VALUE);
+            state.lazySet(HAS_REQUEST_HAS_VALUE);
             s.cancel();
         }
     }

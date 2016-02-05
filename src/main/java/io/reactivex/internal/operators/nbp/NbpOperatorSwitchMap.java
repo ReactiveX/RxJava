@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,16 +15,16 @@ package io.reactivex.internal.operators.nbp;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
-import java.util.function.Function;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.NbpObservable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.Pow2;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
@@ -38,7 +38,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
     
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super R> t) {
-        return new SwitchMapSubscriber<>(t, mapper, bufferSize);
+        return new SwitchMapSubscriber<T, R>(t, mapper, bufferSize);
     }
     
     static final class SwitchMapSubscriber<T, R> extends AtomicInteger implements NbpSubscriber<T>, Disposable {
@@ -56,14 +56,11 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
         
         Disposable s;
         
-        volatile SwitchMapInnerSubscriber<T, R> active;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<SwitchMapSubscriber, SwitchMapInnerSubscriber> ACTIVE =
-                AtomicReferenceFieldUpdater.newUpdater(SwitchMapSubscriber.class, SwitchMapInnerSubscriber.class, "active");
+        final AtomicReference<SwitchMapInnerSubscriber<T, R>> active = new AtomicReference<SwitchMapInnerSubscriber<T, R>>();
         
         static final SwitchMapInnerSubscriber<Object, Object> CANCELLED;
         static {
-            CANCELLED = new SwitchMapInnerSubscriber<>(null, -1L, 1);
+            CANCELLED = new SwitchMapInnerSubscriber<Object, Object>(null, -1L, 1);
             CANCELLED.cancel();
         }
         
@@ -89,7 +86,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
             long c = unique + 1;
             unique = c;
             
-            SwitchMapInnerSubscriber<T, R> inner = active;
+            SwitchMapInnerSubscriber<T, R> inner = active.get();
             if (inner != null) {
                 inner.cancel();
             }
@@ -109,14 +106,14 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
                 return;
             }
             
-            SwitchMapInnerSubscriber<T, R> nextInner = new SwitchMapInnerSubscriber<>(this, c, bufferSize);
+            SwitchMapInnerSubscriber<T, R> nextInner = new SwitchMapInnerSubscriber<T, R>(this, c, bufferSize);
             
             for (;;) {
-                inner = active;
+                inner = active.get();
                 if (inner == CANCELLED) {
                     break;
                 }
-                if (ACTIVE.compareAndSet(this, inner, nextInner)) {
+                if (active.compareAndSet(inner, nextInner)) {
                     p.subscribe(nextInner);
                     break;
                 }
@@ -154,9 +151,9 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
         
         @SuppressWarnings("unchecked")
         void disposeInner() {
-            SwitchMapInnerSubscriber<T, R> a = active;
+            SwitchMapInnerSubscriber<T, R> a = active.get();
             if (a != CANCELLED) {
-                a = ACTIVE.getAndSet(this, CANCELLED);
+                a = active.getAndSet((SwitchMapInnerSubscriber<T, R>)CANCELLED);
                 if (a != CANCELLED && a != null) {
                     s.dispose();
                 }
@@ -186,13 +183,13 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
                         a.onError(err);
                         return;
                     } else
-                    if (active == null) {
+                    if (active.get() == null) {
                         a.onComplete();
                         return;
                     }
                 }
                 
-                SwitchMapInnerSubscriber<T, R> inner = active;
+                SwitchMapInnerSubscriber<T, R> inner = active.get();
 
                 if (inner != null) {
                     Queue<R> q = inner.queue;
@@ -206,7 +203,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
                             return;
                         } else
                         if (q.isEmpty()) {
-                            ACTIVE.compareAndSet(this, inner, null);
+                            active.compareAndSet(inner, null);
                             continue;
                         }
                     }
@@ -221,7 +218,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
                         if (cancelled) {
                             return;
                         }
-                        if (inner != active) {
+                        if (inner != active.get()) {
                             retry = true;
                             break;
                         }
@@ -234,7 +231,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
                                 return;
                             } else
                             if (empty) {
-                                ACTIVE.compareAndSet(this, inner, null);
+                                active.compareAndSet(inner, null);
                                 retry = true;
                                 break;
                             }
@@ -293,7 +290,10 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
         volatile boolean done;
         Throwable error;
         
-        static final Disposable CANCELLED = () -> { };
+        static final Disposable CANCELLED = new Disposable() {
+            @Override
+            public void dispose() { }
+        };
         
         public SwitchMapInnerSubscriber(SwitchMapSubscriber<T, R> parent, long index, int bufferSize) {
             this.parent = parent;
@@ -301,9 +301,9 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
             this.bufferSize = bufferSize;
             Queue<R> q;
             if (Pow2.isPowerOfTwo(bufferSize)) {
-                q = new SpscArrayQueue<>(bufferSize);
+                q = new SpscArrayQueue<R>(bufferSize);
             } else {
-                q = new SpscExactArrayQueue<>(bufferSize);
+                q = new SpscExactArrayQueue<R>(bufferSize);
             }
             this.queue = q;
         }

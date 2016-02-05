@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -12,11 +12,10 @@
  */
 package io.reactivex.internal.operators;
 
-import java.util.function.*;
-
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscribers.CancelledSubscriber;
 import io.reactivex.internal.subscriptions.*;
 
@@ -39,8 +38,12 @@ public final class OperatorCollect<T, U> implements Operator<U, T> {
             EmptySubscription.error(e, t);
             return CancelledSubscriber.INSTANCE;
         }
+        if (u == null) {
+            EmptySubscription.error(new NullPointerException("The initial value supplied is null"), t);
+            return CancelledSubscriber.INSTANCE;
+        }
         
-        return new CollectSubscriber<>(t, u, collector);
+        return new CollectSubscriber<T, U>(t, u, collector);
     }
     
     static final class CollectSubscriber<T, U> implements Subscriber<T>, Subscription {

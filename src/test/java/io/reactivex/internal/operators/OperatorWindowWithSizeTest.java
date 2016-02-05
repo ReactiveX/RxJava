@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,23 +20,23 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.reactivestreams.*;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.TestHelper;
+import io.reactivex.*;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 
 public class OperatorWindowWithSizeTest {
 
     private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {
 
-        final List<List<T>> lists = new ArrayList<>();
+        final List<List<T>> lists = new ArrayList<List<T>>();
         Observable.concat(observables.map(new Function<Observable<T>, Observable<List<T>>>() {
             @Override
             public Observable<List<T>> apply(Observable<T> xs) {
@@ -107,7 +107,7 @@ public class OperatorWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeNonOverlapping() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 10000).doOnNext(new Consumer<Integer>() {
 
@@ -126,7 +126,7 @@ public class OperatorWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeNonOverlappingAsyncSource() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 100000)
                 .doOnNext(new Consumer<Integer>() {
@@ -150,7 +150,7 @@ public class OperatorWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeOverlapping() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 10000).doOnNext(new Consumer<Integer>() {
 
@@ -169,7 +169,7 @@ public class OperatorWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeOverlappingAsyncSource() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 100000)
                 .doOnNext(new Consumer<Integer>() {
@@ -182,7 +182,7 @@ public class OperatorWindowWithSizeTest {
                 })
                 .observeOn(Schedulers.computation())
                 .window(5, 4)
-                .take(2))
+                .take(2), 128)
                 .subscribe(ts);
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
@@ -192,7 +192,7 @@ public class OperatorWindowWithSizeTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<String>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -203,7 +203,7 @@ public class OperatorWindowWithSizeTest {
     public void testBackpressureOuter() {
         Observable<Observable<Integer>> source = Observable.range(1, 10).window(3);
         
-        final List<Integer> list = new ArrayList<>();
+        final List<Integer> list = new ArrayList<Integer>();
         
         final Subscriber<Integer> o = TestHelper.mockSubscriber();
         
@@ -271,7 +271,7 @@ public class OperatorWindowWithSizeTest {
     
     @Test
     public void testTakeFlatMapCompletes() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
         final int indicator = 999999999;
         
@@ -290,9 +290,10 @@ public class OperatorWindowWithSizeTest {
         ts.assertValueCount(22);
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void testBackpressureOuterInexact() {
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>((Long)null);
         
         Observable.range(1, 5).window(2, 1)
         .map(new Function<Observable<Integer>, Observable<List<Integer>>>() {
@@ -300,7 +301,12 @@ public class OperatorWindowWithSizeTest {
             public Observable<List<Integer>> apply(Observable<Integer> t) {
                 return t.toList();
             }
-        }).concatMap(v -> v)
+        }).concatMap(new Function<Observable<List<Integer>>, Publisher<List<Integer>>>() {
+            @Override
+            public Publisher<List<Integer>> apply(Observable<List<Integer>> v) {
+                return v;
+            }
+        })
         .subscribe(ts);
         
         ts.assertNoErrors();

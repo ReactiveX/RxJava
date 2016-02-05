@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -18,9 +18,6 @@ import java.util.concurrent.Callable;
 import io.reactivex.NbpObservable.*;
 import io.reactivex.disposables.BooleanDisposable;
 
-/**
- *
- */
 public final class NbpOnSubscribeScalarAsyncSource<T> implements NbpOnSubscribe<T> {
     final Callable<? extends T> callable;
     public NbpOnSubscribeScalarAsyncSource(Callable<? extends T> callable) {
@@ -45,7 +42,11 @@ public final class NbpOnSubscribeScalarAsyncSource<T> implements NbpOnSubscribe<
         if (bd.isDisposed()) {
             return;
         }
-        s.onNext(value);
-        s.onComplete();
+        if (value != null) {
+            s.onNext(value);
+            s.onComplete();
+        } else {
+            s.onError(new NullPointerException("Callable returned null"));
+        }
     }
 }

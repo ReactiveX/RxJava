@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -47,7 +47,7 @@ public class OperatorTimeoutTests {
     @Test
     public void shouldNotTimeoutIfOnNextWithinTimeout() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         
         withTimeout.subscribe(ts);
         
@@ -62,7 +62,7 @@ public class OperatorTimeoutTests {
     @Test
     public void shouldNotTimeoutIfSecondOnNextWithinTimeout() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         
         withTimeout.subscribe(ts);
         
@@ -79,7 +79,7 @@ public class OperatorTimeoutTests {
     @Test
     public void shouldTimeoutIfOnNextNotWithinTimeout() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         
         withTimeout.subscribe(ts);
         
@@ -91,7 +91,7 @@ public class OperatorTimeoutTests {
     @Test
     public void shouldTimeoutIfSecondOnNextNotWithinTimeout() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
@@ -104,7 +104,7 @@ public class OperatorTimeoutTests {
     @Test
     public void shouldCompleteIfUnderlyingComletes() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onComplete();
@@ -117,7 +117,7 @@ public class OperatorTimeoutTests {
     @Test
     public void shouldErrorIfUnderlyingErrors() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onError(new UnsupportedOperationException());
@@ -132,7 +132,7 @@ public class OperatorTimeoutTests {
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -155,7 +155,7 @@ public class OperatorTimeoutTests {
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -178,7 +178,7 @@ public class OperatorTimeoutTests {
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -201,7 +201,7 @@ public class OperatorTimeoutTests {
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -232,7 +232,7 @@ public class OperatorTimeoutTests {
         final CountDownLatch timeoutSetuped = new CountDownLatch(1);
 
         final Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        final TestSubscriber<String> ts = new TestSubscriber<String>(observer);
 
         new Thread(new Runnable() {
 
@@ -284,7 +284,7 @@ public class OperatorTimeoutTests {
         Observable<String> observableWithTimeout = never.timeout(1000, TimeUnit.MILLISECONDS, testScheduler);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         observableWithTimeout.subscribe(ts);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
@@ -315,7 +315,7 @@ public class OperatorTimeoutTests {
                 testScheduler);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         observableWithTimeout.subscribe(ts);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
@@ -346,7 +346,7 @@ public class OperatorTimeoutTests {
                 testScheduler);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<>(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
         observableWithTimeout.subscribe(ts);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);

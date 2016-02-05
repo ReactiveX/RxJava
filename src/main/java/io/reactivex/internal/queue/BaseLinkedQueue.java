@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -25,8 +25,8 @@ abstract class BaseLinkedQueue<E> extends AbstractQueue<E> {
     private final AtomicReference<LinkedQueueNode<E>> producerNode;
     private final AtomicReference<LinkedQueueNode<E>> consumerNode;
     public BaseLinkedQueue() {
-        producerNode = new AtomicReference<>();
-        consumerNode = new AtomicReference<>();
+        producerNode = new AtomicReference<LinkedQueueNode<E>>();
+        consumerNode = new AtomicReference<LinkedQueueNode<E>>();
     }
     protected final LinkedQueueNode<E> lvProducerNode() {
         return producerNode.get();
@@ -84,8 +84,6 @@ abstract class BaseLinkedQueue<E> extends AbstractQueue<E> {
      * Queue is empty when producerNode is the same as consumerNode. An alternative implementation would be to observe
      * the producerNode.value is null, which also means an empty queue because only the consumerNode.value is allowed to
      * be null.
-     * 
-     * @see MessagePassingQueue#isEmpty()
      */
     @Override
     public final boolean isEmpty() {

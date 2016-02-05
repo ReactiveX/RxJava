@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,13 +13,12 @@
 
 package io.reactivex.internal.operators;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -27,7 +26,9 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.*;
+import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OnSubscribeAmbTest {
@@ -47,7 +48,7 @@ public class OnSubscribeAmbTest {
 
             @Override
             public void subscribe(final Subscriber<? super String> subscriber) {
-                CompositeDisposable parentSubscription = new CompositeDisposable();
+                final CompositeDisposable parentSubscription = new CompositeDisposable();
                 
                 subscriber.onSubscribe(new Subscription() {
                     @Override
@@ -63,17 +64,24 @@ public class OnSubscribeAmbTest {
                 
                 long delay = interval;
                 for (final String value : values) {
-                    parentSubscription.add(innerScheduler.schedule(() ->
-                            subscriber.onNext(value)
+                    parentSubscription.add(innerScheduler.schedule(new Runnable() {
+                        @Override
+                        public void run() {
+                            subscriber.onNext(value);
+                        }
+                    }
                     , delay, TimeUnit.MILLISECONDS));
                     delay += interval;
                 }
-                parentSubscription.add(innerScheduler.schedule(() -> {
-                        if (e == null) {
-                            subscriber.onComplete();
-                        } else {
-                            subscriber.onError(e);
-                        }
+                parentSubscription.add(innerScheduler.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                            if (e == null) {
+                                subscriber.onComplete();
+                            } else {
+                                subscriber.onError(e);
+                            }
+                    }
                 }, delay, TimeUnit.MILLISECONDS));
             }
         });
@@ -88,6 +96,7 @@ public class OnSubscribeAmbTest {
         Observable<String> observable3 = createObservable(new String[] {
                 "3", "33", "333", "3333" }, 3000, null);
 
+        @SuppressWarnings("unchecked")
         Observable<String> o = Observable.amb(observable1,
                 observable2, observable3);
 
@@ -117,6 +126,7 @@ public class OnSubscribeAmbTest {
         Observable<String> observable3 = createObservable(new String[] {},
                 3000, new IOException("fake exception"));
 
+        @SuppressWarnings("unchecked")
         Observable<String> o = Observable.amb(observable1,
                 observable2, observable3);
 
@@ -144,6 +154,7 @@ public class OnSubscribeAmbTest {
         Observable<String> observable3 = createObservable(new String[] {
                 "3" }, 3000, null);
 
+        @SuppressWarnings("unchecked")
         Observable<String> o = Observable.amb(observable1,
                 observable2, observable3);
 
@@ -157,9 +168,10 @@ public class OnSubscribeAmbTest {
         inOrder.verifyNoMoreInteractions();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testProducerRequestThroughAmb() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
         ts.request(3);
         final AtomicLong requested1 = new AtomicLong();
         final AtomicLong requested2 = new AtomicLong();
@@ -210,7 +222,7 @@ public class OnSubscribeAmbTest {
 
     @Test
     public void testBackpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.range(0, Observable.bufferSize() * 2)
                 .ambWith(Observable.range(0, Observable.bufferSize() * 2))
                 .observeOn(Schedulers.computation()) // observeOn has a backpressured RxRingBuffer
@@ -223,10 +235,16 @@ public class OnSubscribeAmbTest {
     }
     
     
+    @SuppressWarnings("unchecked")
     @Test
     public void testSubscriptionOnlyHappensOnce() throws InterruptedException {
         final AtomicLong count = new AtomicLong();
-        Consumer<Subscription> incrementer = s -> count.incrementAndGet();
+        Consumer<Subscription> incrementer = new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription s) {
+                count.incrementAndGet();
+            }
+        };
         
         //this aync stream should emit first
         Observable<Integer> o1 = Observable.just(1).doOnSubscribe(incrementer)
@@ -234,7 +252,7 @@ public class OnSubscribeAmbTest {
         //this stream emits second
         Observable<Integer> o2 = Observable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.amb(o1, o2).subscribe(ts);
         ts.request(1);
         ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
@@ -242,6 +260,7 @@ public class OnSubscribeAmbTest {
         assertEquals(2, count.get());
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void testSecondaryRequestsPropagatedToChildren() throws InterruptedException {
         //this aync stream should emit first
@@ -250,7 +269,7 @@ public class OnSubscribeAmbTest {
         //this stream emits second
         Observable<Integer> o2 = Observable.fromArray(4, 5, 6)
                 .delay(200, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
-        TestSubscriber<Integer> ts = new TestSubscriber<>(1L);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
         
         Observable.amb(o1, o2).subscribe(ts);
         // before first emission request 20 more
@@ -268,14 +287,39 @@ public class OnSubscribeAmbTest {
         // then second observable does not get subscribed to before first
         // subscription completes hence first observable emits result through
         // amb
-        int result = Observable.just(1).doOnNext(t -> {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    //
-                }
+        int result = Observable.just(1).doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer t) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        //
+                    }
+            }
         }).ambWith(Observable.just(2)).toBlocking().single();
         assertEquals(1, result);
     }
-    
+ 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testAmbCancelsOthers() {
+        PublishSubject<Integer> source1 = PublishSubject.create();
+        PublishSubject<Integer> source2 = PublishSubject.create();
+        PublishSubject<Integer> source3 = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        Observable.amb(source1, source2, source3).subscribe(ts);
+        
+        assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
+        assertTrue("Source 2 doesn't have subscribers!", source2.hasSubscribers());
+        assertTrue("Source 3 doesn't have subscribers!", source3.hasSubscribers());
+        
+        source1.onNext(1);
+
+        assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
+        assertFalse("Source 2 still has subscribers!", source2.hasSubscribers());
+        assertFalse("Source 2 still has subscribers!", source3.hasSubscribers());
+        
+    }
 }

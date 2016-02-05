@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.reactivestreams.*;
 
-
 import io.reactivex.*;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -36,7 +36,12 @@ public class OperatorSwitchIfEmptyTest {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final Observable<Integer> observable = Observable.just(4)
                 .switchIfEmpty(Observable.just(2)
-                .doOnSubscribe(s -> subscribed.set(true)));
+                .doOnSubscribe(new Consumer<Subscription>() {
+                    @Override
+                    public void accept(Subscription s) {
+                        subscribed.set(true);
+                    }
+                }));
 
         assertEquals(4, observable.toBlocking().single().intValue());
         assertFalse(subscribed.get());
@@ -81,7 +86,7 @@ public class OperatorSwitchIfEmptyTest {
     @Test
     public void testSwitchTriggerUnsubscribe() throws Exception {
 
-        BooleanSubscription bs = new BooleanSubscription();
+        final BooleanSubscription bs = new BooleanSubscription();
         
         Observable<Long> withProducer = Observable.create(new Publisher<Long>() {
             @Override
@@ -124,7 +129,7 @@ public class OperatorSwitchIfEmptyTest {
 
     @Test
     public void testSwitchShouldTriggerUnsubscribe() {
-        BooleanSubscription bs = new BooleanSubscription();
+        final BooleanSubscription bs = new BooleanSubscription();
         
         Observable.create(new Publisher<Long>() {
             @Override
@@ -139,7 +144,7 @@ public class OperatorSwitchIfEmptyTest {
     @Test
     public void testSwitchRequestAlternativeObservableWithBackpressure() {
 
-        TestSubscriber<Integer> ts = new TestSubscriber<>(1L);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
         
         Observable.<Integer>empty().switchIfEmpty(Observable.just(1, 2, 3)).subscribe(ts);
         
@@ -152,7 +157,7 @@ public class OperatorSwitchIfEmptyTest {
     }
     @Test
     public void testBackpressureNoRequest() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
         Observable.<Integer>empty().switchIfEmpty(Observable.just(1, 2, 3)).subscribe(ts);
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -160,7 +165,7 @@ public class OperatorSwitchIfEmptyTest {
     
     @Test
     public void testBackpressureOnFirstObservable() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
         Observable.just(1,2,3).switchIfEmpty(Observable.just(4, 5, 6)).subscribe(ts);
         ts.assertNotComplete();
         ts.assertNoErrors();
@@ -169,7 +174,7 @@ public class OperatorSwitchIfEmptyTest {
     
     @Test(timeout = 10000)
     public void testRequestsNotLost() throws InterruptedException {
-        final TestSubscriber<Long> ts = new TestSubscriber<>((Long)null);
+        final TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
         Observable.create(new Publisher<Long>() {
 
             @Override

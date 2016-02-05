@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,12 +15,12 @@ package io.reactivex.internal.operators;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
+import io.reactivex.functions.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.NotificationLite;
@@ -43,12 +43,14 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
 
     /**
      * Creates a OperatorPublish instance to publish values of the given source observable.
+     * @param <T> the source value type
      * @param source the source observable
+     * @param bufferSize the size of the prefetch buffer
      * @return the connectable observable
      */
-    public static <T> ConnectableObservable<T> create(Observable<? extends T> source, int bufferSize) {
+    public static <T> ConnectableObservable<T> create(Observable<? extends T> source, final int bufferSize) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
-        final AtomicReference<PublishSubscriber<T>> curr = new AtomicReference<>();
+        final AtomicReference<PublishSubscriber<T>> curr = new AtomicReference<PublishSubscriber<T>>();
         Publisher<T> onSubscribe = new Publisher<T>() {
             @Override
             public void subscribe(Subscriber<? super T> child) {
@@ -60,7 +62,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                     // if there isn't one or it is unsubscribed
                     if (r == null || r.isDisposed()) {
                         // create a new subscriber to source
-                        PublishSubscriber<T> u = new PublishSubscriber<>(curr, bufferSize);
+                        PublishSubscriber<T> u = new PublishSubscriber<T>(curr, bufferSize);
                         // let's try setting it as the current subscriber-to-source
                         if (!curr.compareAndSet(r, u)) {
                             // didn't work, maybe someone else did it or the current subscriber 
@@ -72,7 +74,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                     }
                     
                     // create the backpressure-managing producer for this child
-                    InnerProducer<T> inner = new InnerProducer<>(r, child);
+                    InnerProducer<T> inner = new InnerProducer<T>(r, child);
                     /*
                      * Try adding it to the current subscriber-to-source, add is atomic in respect 
                      * to other adds and the termination of the subscriber-to-source.
@@ -113,19 +115,27 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 }
             }
         };
-        return new OperatorPublish<>(onSubscribe, source, curr, bufferSize);
+        return new OperatorPublish<T>(onSubscribe, source, curr, bufferSize);
     }
 
     public static <T, R> Observable<R> create(final Observable<? extends T> source, 
-            final Function<? super Observable<T>, ? extends Publisher<R>> selector, int bufferSize) {
-        return create(sr -> {
-            ConnectableObservable<T> op = create(source, bufferSize);
-            
-            SubscriberResourceWrapper<R, Disposable> srw = new SubscriberResourceWrapper<>(sr, Disposable::dispose);
-            
-            selector.apply(op).subscribe(srw);
-            
-            op.connect(srw::setResource);
+            final Function<? super Observable<T>, ? extends Publisher<R>> selector, final int bufferSize) {
+        return create(new Publisher<R>() {
+            @Override
+            public void subscribe(Subscriber<? super R> sr) {
+                ConnectableObservable<T> op = create(source, bufferSize);
+                
+                final SubscriberResourceWrapper<R, Disposable> srw = new SubscriberResourceWrapper<R, Disposable>(sr, Disposables.consumeAndDispose());
+                
+                selector.apply(op).subscribe(srw);
+                
+                op.connect(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(Disposable r) {
+                        srw.setResource(r);
+                    }
+                });
+            }
         });
     }
 
@@ -148,7 +158,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
             // if there is none yet or the current has unsubscribed
             if (ps == null || ps.isDisposed()) {
                 // create a new subscriber-to-source
-                PublishSubscriber<T> u = new PublishSubscriber<>(current, bufferSize);
+                PublishSubscriber<T> u = new PublishSubscriber<T>(current, bufferSize);
                 // try setting it as the current subscriber-to-source
                 if (!current.compareAndSet(ps, u)) {
                     // did not work, perhaps a new subscriber arrived 
@@ -210,9 +220,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         /** Guarded by this. */
         boolean missed;
         
-        volatile Subscription s;
-        static final AtomicReferenceFieldUpdater<PublishSubscriber, Subscription> S =
-                AtomicReferenceFieldUpdater.newUpdater(PublishSubscriber.class, Subscription.class, "s");
+        final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
         
         static final Subscription CANCELLED = new Subscription() {
             @Override
@@ -227,9 +235,9 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         };
         
         public PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
-            this.queue = new SpscArrayQueue<>(bufferSize);
+            this.queue = new SpscArrayQueue<Object>(bufferSize);
             
-            this.producers = new AtomicReference<>(EMPTY);
+            this.producers = new AtomicReference<InnerProducer[]>(EMPTY);
             this.current = current;
             this.shouldConnect = new AtomicBoolean();
             this.bufferSize = bufferSize;
@@ -242,9 +250,9 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 if (ps != TERMINATED) {
                     current.compareAndSet(PublishSubscriber.this, null);
                     
-                    Subscription a = s;
+                    Subscription a = s.get();
                     if (a != CANCELLED) {
-                        a = S.getAndSet(this, CANCELLED);
+                        a = s.getAndSet(CANCELLED);
                         if (a != CANCELLED && a != null) {
                             a.cancel();
                         }
@@ -259,9 +267,9 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (!S.compareAndSet(this, null, s)) {
+            if (!this.s.compareAndSet(null, s)) {
                 s.cancel();
-                if (this.s != CANCELLED) {
+                if (this.s.get() != CANCELLED) {
                     SubscriptionHelper.reportSubscriptionSet();
                 }
                 return;
@@ -549,7 +557,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                                 return;
                             }
                             // otherwise, just ask for a new value
-                            s.request(1);
+                            s.get().request(1);
                             // and retry emitting to potential new child-subscribers
                             continue;
                         }
@@ -597,7 +605,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                         
                         // if we did emit at least one element, request more to replenish the queue
                         if (d > 0) {
-                            s.request(d);
+                            s.get().request(d);
                         }
                         // if we have requests but not an empty queue after emission
                         // let's try again to see if more requests/child-subscribers are 
@@ -638,8 +646,6 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
     /**
      * A Producer and Subscription that manages the request and unsubscription state of a
      * child subscriber in thread-safe manner.
-     * We use AtomicLong as a base class to save on extra allocation of an AtomicLong and also
-     * save the overhead of the AtomicIntegerFieldUpdater.
      * @param <T> the value type
      */
     static final class InnerProducer<T> extends AtomicLong implements Subscription, Disposable {

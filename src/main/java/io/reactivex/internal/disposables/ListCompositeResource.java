@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,9 +14,9 @@
 package io.reactivex.internal.disposables;
 
 import java.util.LinkedList;
-import java.util.function.Consumer;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * A linked-list-based composite resource with custom disposer callback.
@@ -36,12 +36,11 @@ public final class ListCompositeResource<T> implements CompositeResource<T>, Dis
         this.disposer = disposer;
     }
     
-    @SafeVarargs
     public ListCompositeResource(Consumer<? super T> disposer, T... initialResources) {
         this(disposer);
         int n = initialResources.length;
         if (n != 0) {
-            list = new LinkedList<>();
+            list = new LinkedList<T>();
             for (T r : initialResources) {
                 list.add(r);
             }
@@ -50,7 +49,7 @@ public final class ListCompositeResource<T> implements CompositeResource<T>, Dis
     
     public ListCompositeResource(Consumer<? super T> disposer, Iterable<? extends T> initialResources) {
         this(disposer);
-        list = new LinkedList<>();
+        list = new LinkedList<T>();
         for (T r : initialResources) {
             list.add(r);
         }
@@ -59,7 +58,7 @@ public final class ListCompositeResource<T> implements CompositeResource<T>, Dis
     /**
      * Adds a new resource to this composite or disposes it if the composite has been disposed.
      * @param newResource the new resource to add, not-null (not checked)
-     * @return
+     * @return false if the container is disposed
      */
     @Override
     public boolean add(T newResource) {
@@ -68,7 +67,7 @@ public final class ListCompositeResource<T> implements CompositeResource<T>, Dis
                 if (!disposed) {
                     LinkedList<T> a = list;
                     if (a == null) {
-                        a = new LinkedList<>();
+                        a = new LinkedList<T>();
                         list = a;
                     }
                     a.add(newResource);
@@ -84,7 +83,7 @@ public final class ListCompositeResource<T> implements CompositeResource<T>, Dis
      * Removes the given resource from this composite and calls the disposer if the resource
      * was indeed in the composite.
      * @param resource the resource to remove, not-null (not verified)
-     * @return
+     * @return false if the resource was not in this container
      */
     @Override
     public boolean remove(T resource) {
@@ -98,7 +97,7 @@ public final class ListCompositeResource<T> implements CompositeResource<T>, Dis
     /**
      * Removes the given resource if contained within this composite but doesn't call the disposer for it.
      * @param resource the resource to delete, not-null (not verified)
-     * @return
+     * @return false if the resource was not in this container
      */
     @Override
     public boolean delete(T resource) {
@@ -131,7 +130,9 @@ public final class ListCompositeResource<T> implements CompositeResource<T>, Dis
                 list = null;
             }
             if (s != null) {
-                s.forEach(disposer);
+                for (T t : s) {
+                    disposer.accept(t);
+                }
             }
         }
     }

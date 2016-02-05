@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@ package io.reactivex.nbp;
 
 import static io.reactivex.NbpObservable.combineLatest;
 
-import java.util.function.*;
-
 import org.junit.*;
 
 import io.reactivex.NbpObservable;
+import io.reactivex.functions.*;
 import io.reactivex.nbp.NbpCovarianceTest.*;
 import io.reactivex.subjects.nbp.NbpBehaviorSubject;
 
@@ -43,11 +42,26 @@ public class NbpCombineLatestTests {
         NbpObservable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine);
     }
 
-    BiFunction<Media, Rating, ExtendedResult> combine = (m, r) -> new ExtendedResult();
+    BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {
+        @Override
+        public ExtendedResult apply(Media m, Rating r) {
+            return new ExtendedResult();
+        }
+    };
 
-    Consumer<Result> action = t1 -> System.out.println("Result: " + t1);
+    Consumer<Result> action = new Consumer<Result>() {
+        @Override
+        public void accept(Result t1) {
+            System.out.println("Result: " + t1);
+        }
+    };
 
-    Consumer<ExtendedResult> extendedAction = t1 -> System.out.println("Result: " + t1);
+    Consumer<ExtendedResult> extendedAction = new Consumer<ExtendedResult>() {
+        @Override
+        public void accept(ExtendedResult t1) {
+            System.out.println("Result: " + t1);
+        }
+    };
 
     @Ignore
     @Test
@@ -62,6 +76,11 @@ public class NbpCombineLatestTests {
                         return bool1 == null ? null : bool2;
                     }
                 });
-        combined.subscribe(aBoolean -> Assert.assertNull(aBoolean));
+        combined.subscribe(new Consumer<Boolean>() {
+            @Override
+            public void accept(Boolean aBoolean) {
+                Assert.assertNull(aBoolean);
+            }
+        });
     }
 }

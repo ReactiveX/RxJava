@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,14 +13,12 @@
 
 package io.reactivex.internal.operators;
 
-import java.util.Optional;
-
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.Observable.Operator;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.Try;
 
 public enum OperatorDematerialize implements Operator<Object, Try<Optional<Object>>> {
     INSTANCE;
@@ -32,7 +30,7 @@ public enum OperatorDematerialize implements Operator<Object, Try<Optional<Objec
     
     @Override
     public Subscriber<? super Try<Optional<Object>>> apply(Subscriber<? super Object> t) {
-        return new DematerializeSubscriber<>(t);
+        return new DematerializeSubscriber<Object>(t);
     }
     
     static final class DematerializeSubscriber<T> implements Subscriber<Try<Optional<T>>> {

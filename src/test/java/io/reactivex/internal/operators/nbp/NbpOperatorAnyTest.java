@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.functions.*;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
 public class NbpOperatorAnyTest {
@@ -29,7 +30,12 @@ public class NbpOperatorAnyTest {
     @Test
     public void testAnyWithTwoItems() {
         NbpObservable<Integer> w = NbpObservable.just(1, 2);
-        NbpObservable<Boolean> NbpObservable = w.any(v -> true);
+        NbpObservable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        });
 
         NbpSubscriber<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
         
@@ -59,7 +65,12 @@ public class NbpOperatorAnyTest {
     @Test
     public void testAnyWithOneItem() {
         NbpObservable<Integer> w = NbpObservable.just(1);
-        NbpObservable<Boolean> NbpObservable = w.any(v -> true);
+        NbpObservable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        });
 
         NbpSubscriber<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
 
@@ -89,7 +100,12 @@ public class NbpOperatorAnyTest {
     @Test
     public void testAnyWithEmpty() {
         NbpObservable<Integer> w = NbpObservable.empty();
-        NbpObservable<Boolean> NbpObservable = w.any(v -> true);
+        NbpObservable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        });
 
         NbpSubscriber<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
 
@@ -119,7 +135,12 @@ public class NbpOperatorAnyTest {
     @Test
     public void testAnyWithPredicate1() {
         NbpObservable<Integer> w = NbpObservable.just(1, 2, 3);
-        NbpObservable<Boolean> NbpObservable = w.any(t1 -> t1 < 2);
+        NbpObservable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t1) {
+                return t1 < 2;
+            }
+        });
 
         NbpSubscriber<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
 
@@ -134,7 +155,12 @@ public class NbpOperatorAnyTest {
     @Test
     public void testExists1() {
         NbpObservable<Integer> w = NbpObservable.just(1, 2, 3);
-        NbpObservable<Boolean> NbpObservable = w.any(t1 -> t1 < 2);
+        NbpObservable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t1) {
+                return t1 < 2;
+            }
+        });
 
         NbpSubscriber<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
 
@@ -149,7 +175,12 @@ public class NbpOperatorAnyTest {
     @Test
     public void testAnyWithPredicate2() {
         NbpObservable<Integer> w = NbpObservable.just(1, 2, 3);
-        NbpObservable<Boolean> NbpObservable = w.any(t1 -> t1 < 1);
+        NbpObservable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t1) {
+                return t1 < 1;
+            }
+        });
 
         NbpSubscriber<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
 
@@ -165,7 +196,12 @@ public class NbpOperatorAnyTest {
     public void testAnyWithEmptyAndPredicate() {
         // If the source is empty, always output false.
         NbpObservable<Integer> w = NbpObservable.empty();
-        NbpObservable<Boolean> NbpObservable = w.any(t -> true);
+        NbpObservable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t) {
+                return true;
+            }
+        });
 
         NbpSubscriber<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
 
@@ -180,25 +216,38 @@ public class NbpOperatorAnyTest {
     @Test
     public void testWithFollowingFirst() {
         NbpObservable<Integer> o = NbpObservable.fromArray(1, 3, 5, 6);
-        NbpObservable<Boolean> anyEven = o.any(i -> i % 2 == 0);
+        NbpObservable<Boolean> anyEven = o.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer i) {
+                return i % 2 == 0;
+            }
+        });
         
         assertTrue(anyEven.toBlocking().first());
     }
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         NbpObservable<Integer> source = NbpObservable.just(1).isEmpty()
-            .flatMap(t1 -> NbpObservable.just(2).delay(500, TimeUnit.MILLISECONDS));
+            .flatMap(new Function<Boolean, NbpObservable<Integer>>() {
+                @Override
+                public NbpObservable<Integer> apply(Boolean t1) {
+                    return NbpObservable.just(2).delay(500, TimeUnit.MILLISECONDS);
+                }
+            });
         
         assertEquals((Object)2, source.toBlocking().first());
     }
     
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
-        NbpTestSubscriber<Boolean> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Boolean> ts = new NbpTestSubscriber<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
         
-        NbpObservable.just("Boo!").any(v -> {
-            throw ex;
+        NbpObservable.just("Boo!").any(new Predicate<String>() {
+            @Override
+            public boolean test(String v) {
+                throw ex;
+            }
         }).subscribe(ts);
         
         ts.assertTerminated();

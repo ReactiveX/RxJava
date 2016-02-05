@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,15 +19,15 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
+import io.reactivex.*;
+import io.reactivex.functions.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
 
 public class OperatorSingleTest {
 
@@ -117,7 +117,7 @@ public class OperatorSingleTest {
     
     @Test
     public void testSingleDoesNotRequestMoreThanItNeedsIf1Then2Requested() {
-        final List<Long> requests = new ArrayList<>();
+        final List<Long> requests = new ArrayList<Long>();
         Observable.just(1)
         //
                 .doOnRequest(new LongConsumer() {
@@ -157,7 +157,7 @@ public class OperatorSingleTest {
     
     @Test
     public void testSingleDoesNotRequestMoreThanItNeedsIf3Requested() {
-        final List<Long> requests = new ArrayList<>();
+        final List<Long> requests = new ArrayList<Long>();
         Observable.just(1)
         //
                 .doOnRequest(new LongConsumer() {
@@ -196,7 +196,7 @@ public class OperatorSingleTest {
     
     @Test
     public void testSingleRequestsExactlyWhatItNeedsIf1Requested() {
-        final List<Long> requests = new ArrayList<>();
+        final List<Long> requests = new ArrayList<Long>();
         Observable.just(1)
         //
                 .doOnRequest(new LongConsumer() {
@@ -342,7 +342,12 @@ public class OperatorSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicate() {
         Observable<Integer> observable = Observable.just(1, 2)
-                .filter(t1 -> t1 % 2 == 0)
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                })
                 .single(4);
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -357,7 +362,12 @@ public class OperatorSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateAndTooManyElements() {
         Observable<Integer> observable = Observable.just(1, 2, 3, 4)
-                .filter(t1 -> t1 % 2 == 0)
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                })
                 .single(6);
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -372,7 +382,12 @@ public class OperatorSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateAndEmpty() {
         Observable<Integer> observable = Observable.just(1)
-                .filter(t1 -> t1 % 2 == 0)
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                })
                 .single(2);
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -421,7 +436,12 @@ public class OperatorSingleTest {
     public void testIssue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
-        Observable<Integer> reduced = source.reduce((i1, i2) -> i1 + i2);
+        Observable<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer i1, Integer i2) {
+                return i1 + i2;
+            }
+        });
 
         Integer r = reduced.toBlocking().first();
         assertEquals(21, r.intValue());

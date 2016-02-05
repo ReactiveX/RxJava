@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -21,7 +21,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class NbpOperatorSingle<T> implements NbpOperator<T, T> {
     
-    static final NbpOperatorSingle<Object> NO_DEFAULT = new NbpOperatorSingle<>(null);
+    static final NbpOperatorSingle<Object> NO_DEFAULT = new NbpOperatorSingle<Object>(null);
     
     @SuppressWarnings("unchecked")
     public static <T> NbpOperatorSingle<T> instanceNoDefault() {
@@ -34,7 +34,7 @@ public final class NbpOperatorSingle<T> implements NbpOperator<T, T> {
     }
     @Override
     public NbpSubscriber<? super T> apply(NbpSubscriber<? super T> t) {
-        return new SingleElementSubscriber<>(t, defaultValue);
+        return new SingleElementSubscriber<T>(t, defaultValue);
     }
     
     static final class SingleElementSubscriber<T> implements NbpSubscriber<T> {

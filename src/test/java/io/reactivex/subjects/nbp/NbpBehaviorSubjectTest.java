@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 import org.junit.*;
 import org.mockito.*;
@@ -27,7 +26,9 @@ import org.mockito.*;
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.nbp.NbpBehaviorSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
 public class NbpBehaviorSubjectTest {
@@ -127,7 +128,7 @@ public class NbpBehaviorSubjectTest {
         NbpSubscriber<Object> observerB = TestHelper.mockNbpSubscriber();
         NbpSubscriber<Object> observerC = TestHelper.mockNbpSubscriber();
 
-        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<>(observerA);
+        NbpTestSubscriber<Object> ts = new NbpTestSubscriber<Object>(observerA);
         
         channel.subscribe(ts);
         channel.subscribe(observerB);
@@ -358,7 +359,7 @@ public class NbpBehaviorSubjectTest {
 //        NbpBehaviorSubject<String> ps = NbpBehaviorSubject.create();
 //
 //        ps.subscribe();
-//        TestNbpSubscriber<String> ts = new TestNbpSubscriber<>();
+//        TestNbpSubscriber<String> ts = new TestNbpSubscriber<T>();
 //        ps.subscribe(ts);
 //
 //        try {
@@ -423,7 +424,7 @@ public class NbpBehaviorSubjectTest {
                     }
                 });
                 
-                final AtomicReference<Object> o = new AtomicReference<>();
+                final AtomicReference<Object> o = new AtomicReference<Object>();
                 
                 rs.subscribeOn(s).observeOn(Schedulers.io())
                 .subscribe(new NbpObserver<Object>() {

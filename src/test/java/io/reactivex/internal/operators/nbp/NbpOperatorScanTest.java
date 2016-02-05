@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,12 +19,12 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
 
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.functions.*;
 import io.reactivex.subjects.nbp.NbpPublishSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
@@ -108,7 +108,7 @@ public class NbpOperatorScanTest {
     
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         NbpObservable.range(1, 100).scan(0, new BiFunction<Integer, Integer, Integer>() {
 
             @Override
@@ -175,7 +175,7 @@ public class NbpOperatorScanTest {
 
                     @Override
                     public List<Integer> get() {
-                        return new ArrayList<>();
+                        return new ArrayList<Integer>();
                     }
                     
                 }, new BiConsumer<List<Integer>, Integer>() {
@@ -201,7 +201,7 @@ public class NbpOperatorScanTest {
             }
 
         }).take(1);
-        NbpTestSubscriber<Integer> NbpSubscriber = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> NbpSubscriber = new NbpTestSubscriber<Integer>();
         o.subscribe(NbpSubscriber);
         NbpSubscriber.assertValue(0);
         NbpSubscriber.assertTerminated();
@@ -212,7 +212,7 @@ public class NbpOperatorScanTest {
     public void testInitialValueEmittedNoProducer() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         source.scan(0, new BiFunction<Integer, Integer, Integer>() {
             @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,8 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-import java.util.function.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -30,6 +29,7 @@ import io.reactivex.NbpObservable.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.operators.nbp.NbpOperatorReplay.*;
 import io.reactivex.observables.nbp.NbpConnectableObservable;
@@ -531,8 +531,8 @@ public class NbpOperatorReplayTest {
         replay.subscribe(spiedSubscriberAfterConnect);
         replay.subscribe(spiedSubscriberAfterConnect);
 
-        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe(any());
-        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe(any());
+        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe((Disposable)any());
+        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe((Disposable)any());
 
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
@@ -579,8 +579,8 @@ public class NbpOperatorReplayTest {
         replay.connect();
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect).onSubscribe(any());
-        verify(mockObserverAfterConnect).onSubscribe(any());
+        verify(mockObserverBeforeConnect).onSubscribe((Disposable)any());
+        verify(mockObserverAfterConnect).onSubscribe((Disposable)any());
 
         mockScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
         
@@ -637,8 +637,8 @@ public class NbpOperatorReplayTest {
         replay.connect();
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect).onSubscribe(any());
-        verify(mockObserverAfterConnect).onSubscribe(any());
+        verify(mockObserverBeforeConnect).onSubscribe((Disposable)any());
+        verify(mockObserverAfterConnect).onSubscribe((Disposable)any());
         
         
         mockScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
@@ -712,14 +712,14 @@ public class NbpOperatorReplayTest {
 
     @Test
     public void testBoundedReplayBuffer() {
-        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<>();
+        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>();
         buf.addLast(new Node(1));
         buf.addLast(new Node(2));
         buf.addLast(new Node(3));
         buf.addLast(new Node(4));
         buf.addLast(new Node(5));
         
-        List<Integer> values = new ArrayList<>();
+        List<Integer> values = new ArrayList<Integer>();
         buf.collect(values);
         
         Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5), values);
@@ -743,8 +743,8 @@ public class NbpOperatorReplayTest {
     @Test
     public void testTimedAndSizedTruncation() {
         TestScheduler test = Schedulers.test();
-        SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<>(2, 2000, TimeUnit.MILLISECONDS, test);
-        List<Integer> values = new ArrayList<>();
+        SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<Integer>(2, 2000, TimeUnit.MILLISECONDS, test);
+        List<Integer> values = new ArrayList<Integer>();
         
         buf.next(1);
         test.advanceTimeBy(1, TimeUnit.SECONDS);
@@ -781,7 +781,7 @@ public class NbpOperatorReplayTest {
     public void testColdReplayNoBackpressure() {
         NbpObservable<Integer> source = NbpObservable.range(0, 1000).replay().autoConnect();
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         
         source.subscribe(ts);
 
@@ -859,7 +859,7 @@ public class NbpOperatorReplayTest {
     
     @Test
     public void testTake() {
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
 
         NbpObservable<Integer> cached = NbpObservable.range(1, 100).replay().autoConnect();
         cached.take(10).subscribe(ts);
@@ -875,7 +875,7 @@ public class NbpOperatorReplayTest {
     public void testAsync() {
         NbpObservable<Integer> source = NbpObservable.range(1, 10000);
         for (int i = 0; i < 100; i++) {
-            NbpTestSubscriber<Integer> ts1 = new NbpTestSubscriber<>();
+            NbpTestSubscriber<Integer> ts1 = new NbpTestSubscriber<Integer>();
             
             NbpObservable<Integer> cached = source.replay().autoConnect();
             
@@ -886,7 +886,7 @@ public class NbpOperatorReplayTest {
             ts1.assertTerminated();
             assertEquals(10000, ts1.values().size());
             
-            NbpTestSubscriber<Integer> ts2 = new NbpTestSubscriber<>();
+            NbpTestSubscriber<Integer> ts2 = new NbpTestSubscriber<Integer>();
             cached.observeOn(Schedulers.computation()).subscribe(ts2);
             
             ts2.awaitTerminalEvent(2, TimeUnit.SECONDS);
@@ -904,14 +904,14 @@ public class NbpOperatorReplayTest {
         
         NbpObservable<Long> output = cached.observeOn(Schedulers.computation());
         
-        List<NbpTestSubscriber<Long>> list = new ArrayList<>(100);
+        List<NbpTestSubscriber<Long>> list = new ArrayList<NbpTestSubscriber<Long>>(100);
         for (int i = 0; i < 100; i++) {
-            NbpTestSubscriber<Long> ts = new NbpTestSubscriber<>();
+            NbpTestSubscriber<Long> ts = new NbpTestSubscriber<Long>();
             list.add(ts);
             output.skip(i * 10).take(10).subscribe(ts);
         }
 
-        List<Long> expected = new ArrayList<>();
+        List<Long> expected = new ArrayList<Long>();
         for (int i = 0; i < 10; i++) {
             expected.add((long)(i - 10));
         }
@@ -945,7 +945,7 @@ public class NbpOperatorReplayTest {
             }
         });
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         firehose.replay().autoConnect().observeOn(Schedulers.computation()).takeLast(100).subscribe(ts);
         
         ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
@@ -962,14 +962,14 @@ public class NbpOperatorReplayTest {
                 .replay().autoConnect();
         
         
-        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>();
         source.subscribe(ts);
         
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts.assertNotComplete();
         Assert.assertEquals(1, ts.errors().size());
         
-        NbpTestSubscriber<Integer> ts2 = new NbpTestSubscriber<>();
+        NbpTestSubscriber<Integer> ts2 = new NbpTestSubscriber<Integer>();
         source.subscribe(ts2);
         
         ts2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);

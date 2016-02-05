@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -27,7 +26,7 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Function3;
+import io.reactivex.functions.*;
 import io.reactivex.subjects.nbp.NbpPublishSubject;
 
 public class NbpOperatorZipIterableTest {
@@ -332,7 +331,12 @@ public class NbpOperatorZipIterableTest {
 
     }
     
-    Consumer<String> printer = System.out::println;
+    Consumer<String> printer = new Consumer<String>() {
+        @Override
+        public void accept(String pv) {
+            System.out.println(pv);
+        }
+    };
 
     static final class SquareStr implements Function<Integer, String> {
         final AtomicInteger counter = new AtomicInteger();

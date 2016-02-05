@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -20,21 +20,21 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 
 import org.junit.Test;
 import org.mockito.*;
 
 import io.reactivex.*;
 import io.reactivex.NbpObservable.*;
-import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observables.nbp.NbpGroupedObservable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.nbp.NbpPublishSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
+import io.reactivex.Observable;
 
 public class NbpOperatorRetryTest {
 
@@ -61,11 +61,11 @@ public class NbpOperatorRetryTest {
             }
             
         });
-        NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(consumer);
-        producer.retryWhen(new Function<NbpObservable<? extends Throwable>, NbpObservable<?>>() {
+        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(consumer);
+        producer.retryWhen(new Function<NbpObservable<? extends Throwable>, NbpObservable<Object>>() {
 
             @Override
-            public NbpObservable<?> apply(NbpObservable<? extends Throwable> attempts) {
+            public NbpObservable<Object> apply(NbpObservable<? extends Throwable> attempts) {
                 // Worker w = Schedulers.computation().createWorker();
                 return attempts
                     .map(new Function<Throwable, Tuple>() {
@@ -85,7 +85,7 @@ public class NbpOperatorRetryTest {
                             return t.count > 20 ? 
                                 NbpObservable.<Long>error(t.n) :
                                 NbpObservable.timer(t.count *1L, TimeUnit.MILLISECONDS);
-                    }});
+                    }}).cast(Object.class);
             }
         }).subscribe(ts);
         ts.awaitTerminalEvent();
@@ -114,7 +114,7 @@ public class NbpOperatorRetryTest {
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
         int NUM_RETRIES = 20;
         NbpObservable<String> origin = NbpObservable.create(new FuncWithErrors(NUM_RETRIES));
-        origin.retry().unsafeSubscribe(new NbpTestSubscriber<>(NbpObserver));
+        origin.retry().unsafeSubscribe(new NbpTestSubscriber<String>(NbpObserver));
 
         InOrder inOrder = inOrder(NbpObserver);
         // should show 3 attempts
@@ -133,19 +133,26 @@ public class NbpOperatorRetryTest {
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
         int NUM_RETRIES = 2;
         NbpObservable<String> origin = NbpObservable.create(new FuncWithErrors(NUM_RETRIES));
-        NbpTestSubscriber<String> NbpSubscriber = new NbpTestSubscriber<>(NbpObserver);
-        origin.retryWhen(new Function<NbpObservable<? extends Throwable>, NbpObservable<Integer>>() {
+        NbpTestSubscriber<String> NbpSubscriber = new NbpTestSubscriber<String>(NbpObserver);
+        origin.retryWhen(new Function<NbpObservable<? extends Throwable>, NbpObservable<Object>>() {
             @Override
-            public NbpObservable<Integer> apply(NbpObservable<? extends Throwable> t1) {
-                return t1.observeOn(Schedulers.computation()).map(new Function<Throwable, Integer>() {
+            public NbpObservable<Object> apply(NbpObservable<? extends Throwable> t1) {
+                return t1
+                .observeOn(Schedulers.computation())
+                .map(new Function<Throwable, Object>() {
                     @Override
-                    public Integer apply(Throwable t1) {
+                    public Object apply(Throwable t1) {
                         return 1;
                     }
                 }).startWith(1);
             }
         })
-        .doOnError(Throwable::printStackTrace)
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) {
+                e.printStackTrace();
+            }
+        })
         .subscribe(NbpSubscriber);
 
         NbpSubscriber.awaitTerminalEvent();
@@ -166,16 +173,16 @@ public class NbpOperatorRetryTest {
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
         int NUM_RETRIES = 2;
         NbpObservable<String> origin = NbpObservable.create(new FuncWithErrors(NUM_RETRIES));
-        origin.retryWhen(new Function<NbpObservable<? extends Throwable>, NbpObservable<?>>() {
+        origin.retryWhen(new Function<NbpObservable<? extends Throwable>, NbpObservable<Object>>() {
             @Override
-            public NbpObservable<?> apply(NbpObservable<? extends Throwable> t1) {
+            public NbpObservable<Object> apply(NbpObservable<? extends Throwable> t1) {
                 return t1.map(new Function<Throwable, Integer>() {
 
                     @Override
                     public Integer apply(Throwable t1) {
                         return 0;
                     }
-                }).startWith(0);
+                }).startWith(0).cast(Object.class);
             }
         }).subscribe(NbpObserver);
 
@@ -195,7 +202,7 @@ public class NbpOperatorRetryTest {
     public void testOnCompletedFromNotificationHandler() {
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
         NbpObservable<String> origin = NbpObservable.create(new FuncWithErrors(1));
-        NbpTestSubscriber<String> NbpSubscriber = new NbpTestSubscriber<>(NbpObserver);
+        NbpTestSubscriber<String> NbpSubscriber = new NbpTestSubscriber<String>(NbpObserver);
         origin.retryWhen(new Function<NbpObservable<? extends Throwable>, NbpObservable<?>>() {
             @Override
             public NbpObservable<?> apply(NbpObservable<? extends Throwable> t1) {
@@ -423,8 +430,11 @@ public class NbpOperatorRetryTest {
             @Override
             public void accept(NbpSubscriber<? super String> s) {
                 subsCount.incrementAndGet();
-                s.onSubscribe(() -> {
-                        subsCount.decrementAndGet();
+                s.onSubscribe(new Disposable() {
+                    @Override
+                    public void dispose() {
+                            subsCount.decrementAndGet();
+                    }
                 });
                 
             }
@@ -443,7 +453,7 @@ public class NbpOperatorRetryTest {
     public void testSourceObservableCallsUnsubscribe() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
-        final NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+        final NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
 
         NbpOnSubscribe<String> onSubscribe = new NbpOnSubscribe<String>() {
             @Override
@@ -474,7 +484,7 @@ public class NbpOperatorRetryTest {
     public void testSourceObservableRetry1() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
-        final NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+        final NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
 
         NbpOnSubscribe<String> onSubscribe = new NbpOnSubscribe<String>() {
             @Override
@@ -493,7 +503,7 @@ public class NbpOperatorRetryTest {
     public void testSourceObservableRetry0() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
-        final NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+        final NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
 
         NbpOnSubscribe<String> onSubscribe = new NbpOnSubscribe<String>() {
             @Override
@@ -524,9 +534,12 @@ public class NbpOperatorRetryTest {
         @Override
         public void accept(final NbpSubscriber<? super Long> NbpSubscriber) {
             final AtomicBoolean terminate = new AtomicBoolean(false);
-            NbpSubscriber.onSubscribe(() -> {
-                    terminate.set(true);
-                    active.decrementAndGet();
+            NbpSubscriber.onSubscribe(new Disposable() {
+                @Override
+                public void dispose() {
+                        terminate.set(true);
+                        active.decrementAndGet();
+                }
             });
             efforts.getAndIncrement();
             active.getAndIncrement();
@@ -559,7 +572,10 @@ public class NbpOperatorRetryTest {
 
         protected NbpSubscriber<T> target;
 
-        /** Wrap existing NbpObserver */
+        /** 
+         * Wrap existing NbpObserver
+         * @param target the target nbp subscriber 
+         */
         public AsyncObserver(NbpSubscriber<T> target) {
             this.target = target;
         }
@@ -602,7 +618,7 @@ public class NbpOperatorRetryTest {
         SlowObservable so = new SlowObservable(100, 0);
         NbpObservable<Long> o = NbpObservable.create(so).retry(5);
 
-        AsyncObserver<Long> async = new AsyncObserver<>(NbpObserver);
+        AsyncObserver<Long> async = new AsyncObserver<Long>(NbpObserver);
 
         o.subscribe(async);
 
@@ -627,7 +643,7 @@ public class NbpOperatorRetryTest {
         SlowObservable so = new SlowObservable(100, 10);
         NbpObservable<Long> o = NbpObservable.create(so).timeout(80, TimeUnit.MILLISECONDS).retry(5);
 
-        AsyncObserver<Long> async = new AsyncObserver<>(NbpObserver);
+        AsyncObserver<Long> async = new AsyncObserver<Long>(NbpObserver);
 
         o.subscribe(async);
 
@@ -649,7 +665,7 @@ public class NbpOperatorRetryTest {
             for (int i = 0; i < 400; i++) {
                 NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
                 NbpObservable<String> origin = NbpObservable.create(new FuncWithErrors(NUM_RETRIES));
-                NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
+                NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>(NbpObserver);
                 origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
                 ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
                 
@@ -680,7 +696,7 @@ public class NbpOperatorRetryTest {
                 }
 
                 final AtomicInteger timeouts = new AtomicInteger();
-                final Map<Integer, List<String>> data = new ConcurrentHashMap<>();
+                final Map<Integer, List<String>> data = new ConcurrentHashMap<Integer, List<String>>();
 
                 int m = 5000;
                 final CountDownLatch cdl = new CountDownLatch(m);
@@ -692,11 +708,11 @@ public class NbpOperatorRetryTest {
                             final AtomicInteger nexts = new AtomicInteger();
                             try {
                                 NbpObservable<String> origin = NbpObservable.create(new FuncWithErrors(NUM_RETRIES));
-                                NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
+                                NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
                                 origin.retry()
                                 .observeOn(Schedulers.computation()).unsafeSubscribe(ts);
                                 ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
-                                List<String> onNextEvents = new ArrayList<>(ts.values());
+                                List<String> onNextEvents = new ArrayList<String>(ts.values());
                                 if (onNextEvents.size() != NUM_RETRIES + 2) {
                                     for (Throwable t : ts.errors()) {
                                         onNextEvents.add(t.toString());
@@ -793,7 +809,7 @@ public class NbpOperatorRetryTest {
                 return t1.take(1);
             }
         })
-        .unsafeSubscribe(new NbpTestSubscriber<>(NbpObserver));
+        .unsafeSubscribe(new NbpTestSubscriber<String>(NbpObserver));
         
         InOrder inOrder = inOrder(NbpObserver);
         // should show 3 attempts
@@ -837,7 +853,7 @@ public class NbpOperatorRetryTest {
                 return t1.take(1);
             }
         })
-        .unsafeSubscribe(new NbpTestSubscriber<>(NbpObserver));
+        .unsafeSubscribe(new NbpTestSubscriber<String>(NbpObserver));
         
         InOrder inOrder = inOrder(NbpObserver);
         // should show 3 attempts

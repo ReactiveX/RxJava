@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -13,11 +13,10 @@
 
 package io.reactivex.internal.operators;
 
-import java.util.function.BiFunction;
-
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class OperatorScan<T> implements Operator<T, T> {
@@ -28,7 +27,7 @@ public final class OperatorScan<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new ScanSubscriber<>(t, accumulator);
+        return new ScanSubscriber<T>(t, accumulator);
     }
     
     static final class ScanSubscriber<T> implements Subscriber<T> {
