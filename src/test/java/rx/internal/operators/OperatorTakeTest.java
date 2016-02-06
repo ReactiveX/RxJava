@@ -438,4 +438,21 @@ public class OperatorTakeTest {
         ts.assertNoErrors();
         ts.assertCompleted();
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void takeNegative() {
+        Observable.range(1, 1000 * 1000 * 1000).take(-1);
+    }
+
+    @Test(timeout = 1000)
+    public void takeZero() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        Observable.range(1, 1000 * 1000 * 1000).take(0).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
 }

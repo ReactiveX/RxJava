@@ -36,6 +36,9 @@ public final class OperatorTake<T> implements Operator<T, T> {
     final int limit;
 
     public OperatorTake(int limit) {
+        if (limit < 0) {
+            throw new IllegalArgumentException("limit >= 0 required but it was " + limit);
+        }
         this.limit = limit;
     }
 
