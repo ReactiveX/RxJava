@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.junit.Test;
+import org.junit.*;
 
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.CompositeDisposable;
@@ -109,10 +109,10 @@ public class SchedulerLifecycleTest {
         System.out.println("testStartIdempotence >> giving some time");
         Thread.sleep(500);
         
-        Set<Thread> rxThreads = new HashSet<Thread>();
+        Set<Thread> rxThreadsBefore = new HashSet<Thread>();
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("Rx")) {
-                rxThreads.add(t);
+                rxThreadsBefore.add(t);
                 System.out.println("testStartIdempotence >> " + t);
             }
         }
@@ -121,14 +121,17 @@ public class SchedulerLifecycleTest {
         System.out.println("testStartIdempotence >> giving some time again");
         Thread.sleep(500);
         
-        Set<Thread> rxThreads2 = new HashSet<Thread>();
+        Set<Thread> rxThreadsAfter = new HashSet<Thread>();
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("Rx")) {
-                rxThreads2.add(t);
+                rxThreadsAfter.add(t);
                 System.out.println("testStartIdempotence >>>> " + t);
             }
         }
+
+        // cached threads may get dropped between the two checks
+        rxThreadsAfter.removeAll(rxThreadsBefore);
         
-        assertEquals(rxThreads, rxThreads2);
+        Assert.assertTrue("Some new threads appeared: " + rxThreadsAfter, rxThreadsAfter.isEmpty());
     }
 }
