@@ -4,6 +4,8 @@ If you would like to contribute code you can do so through GitHub by forking the
 
 When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible.
 
+[See How To Contribute wiki page for more details](https://github.com/ReactiveX/RxJava/wiki/How-to-Contribute)
+
 ## License
 
 By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/ReactiveX/RxJava/blob/master/LICENSE
