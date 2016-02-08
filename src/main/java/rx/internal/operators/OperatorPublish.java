@@ -81,7 +81,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                          */
                         continue;
                         /*
-                         * Note: although technically corrent, concurrent disconnects can cause 
+                         * Note: although technically correct, concurrent disconnects can cause 
                          * unexpected behavior such as child subscribers never receiving anything 
                          * (unless connected again). An alternative approach, similar to 
                          * PublishSubject would be to immediately terminate such child 
@@ -309,7 +309,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 if (producers.compareAndSet(c, u)) {
                     return true;
                 }
-                // if failed, some other operation succeded (another add, remove or termination)
+                // if failed, some other operation succeeded (another add, remove or termination)
                 // so retry
             }
         }
@@ -398,7 +398,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                                 ip.child.onCompleted();
                             }
                         } finally {
-                            // we explicitely unsubscribe/disconnect from the upstream
+                            // we explicitly unsubscribe/disconnect from the upstream
                             // after we sent out the terminal event to child subscribers
                             unsubscribe();
                         }
@@ -418,7 +418,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                             ip.child.onError(t);
                         }
                     } finally {
-                        // we explicitely unsubscribe/disconnect from the upstream
+                        // we explicitly unsubscribe/disconnect from the upstream
                         // after we sent out the terminal event to child subscribers
                         unsubscribe();
                     }
@@ -637,7 +637,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         /**
          * Indicates this child has not yet requested any value. We pretend we don't
          * see such child subscribers in dispatch() to allow other child subscribers who
-         * have requested to make progress. In a concurrent subscription scennario,
+         * have requested to make progress. In a concurrent subscription scenario,
          * one can't be sure when a subscription happens exactly so this virtual shift
          * should not cause any problems.
          */
@@ -685,7 +685,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 }
                 // try setting the new request value
                 if (compareAndSet(r, u)) {
-                    // if successful, notify the parent dispacher this child can receive more
+                    // if successful, notify the parent dispatcher this child can receive more
                     // elements
                     parent.dispatch();
                     return;
@@ -725,7 +725,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 }
                 // try updating the request value
                 if (compareAndSet(r, u)) {
-                    // and return the udpated value
+                    // and return the updated value
                     return u;
                 }
                 // otherwise, some concurrent activity happened and we need to retry
