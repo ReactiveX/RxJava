@@ -2211,6 +2211,65 @@ public class Observable<T> {
         return source.lift(OperatorMerge.<T>instance(true, maxConcurrent));
     }
 
+   /**
+     * Flattens an Iterable of Observables into one Observable, in a way that allows an Observer to receive all
+     * successfully emitted items from each of the source Observables without being interrupted by an error
+     * notification from one of them.
+     * <p>
+     * This behaves like {@link #merge(Observable)} except that if any of the merged Observables notify of an
+     * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
+     * error notification until all of the merged Observables have finished emitting items.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
+     * invoke the {@code onError} method of its Observers once.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param sequences
+     *            the Iterable of Observables
+     * @return an Observable that emits items that are the result of flattening the items emitted by the
+     *         Observables in the Iterable
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    public static <T> Observable<T> mergeDelayError(Iterable<? extends Observable<? extends T>> sequences) {
+        return mergeDelayError(from(sequences));
+    }
+
+   /**
+     * Flattens an Iterable of Observables into one Observable, in a way that allows an Observer to receive all
+     * successfully emitted items from each of the source Observables without being interrupted by an error
+     * notification from one of them, while limiting the number of concurrent subscriptions to these Observables.
+     * <p>
+     * This behaves like {@link #merge(Observable)} except that if any of the merged Observables notify of an
+     * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
+     * error notification until all of the merged Observables have finished emitting items.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
+     * invoke the {@code onError} method of its Observers once.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param sequences
+     *            the Iterable of Observables
+     * @param maxConcurrent
+     *            the maximum number of Observables that may be subscribed to concurrently
+     * @return an Observable that emits items that are the result of flattening the items emitted by the
+     *         Observables in the Iterable
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    public static <T> Observable<T> mergeDelayError(Iterable<? extends Observable<? extends T>> sequences, int maxConcurrent) {
+        return mergeDelayError(from(sequences), maxConcurrent);
+    }
+
+
     /**
      * Flattens two Observables into one Observable, in a way that allows an Observer to receive all
      * successfully emitted items from each of the source Observables without being interrupted by an error
