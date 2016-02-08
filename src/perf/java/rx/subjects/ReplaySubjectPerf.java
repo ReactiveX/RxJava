@@ -70,9 +70,11 @@ public class ReplaySubjectPerf {
                 sum.incrementAndGet();
             }
         });
+        
         for (int i = 0; i < input.nextRuns; i++) {
             subject.onNext("Response");
         }
+        
         subject.onCompleted();
         latch.await();
         bh.consume(sum);
@@ -95,6 +97,7 @@ public class ReplaySubjectPerf {
         for (int i = 0; i < input.nextRuns; i++) {
             subject.onNext("Response");
         }
+        
         subject.onCompleted();
 
         subject.subscribe(new Observer<Object>() {
