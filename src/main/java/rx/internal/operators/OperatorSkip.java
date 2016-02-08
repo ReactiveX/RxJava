@@ -31,6 +31,9 @@ public final class OperatorSkip<T> implements Observable.Operator<T, T> {
     final int toSkip;
 
     public OperatorSkip(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("n >= 0 required but it was " + n);
+        }
         this.toSkip = n;
     }
 

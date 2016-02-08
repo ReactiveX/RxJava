@@ -1333,4 +1333,24 @@ public class OperatorMergeTest {
         ts.assertValue(0);
         ts.assertCompleted();
     }
+
+    @Test
+    public void negativeMaxConcurrent() {
+        try {
+            Observable.merge(Arrays.asList(Observable.just(1), Observable.just(2)), -1);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            assertEquals("maxConcurrent > 0 required but it was -1", e.getMessage());
+        }
+    }
+
+    @Test
+    public void zeroMaxConcurrent() {
+        try {
+            Observable.merge(Arrays.asList(Observable.just(1), Observable.just(2)), 0);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            assertEquals("maxConcurrent > 0 required but it was 0", e.getMessage());
+        }
+    }
 }
