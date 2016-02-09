@@ -12,55 +12,26 @@
  */
 package rx;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.junit.Test;
-
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import rx.Single.OnSubscribe;
 import rx.exceptions.CompositeException;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.functions.Func3;
-import rx.functions.Func4;
-import rx.functions.Func5;
-import rx.functions.Func6;
-import rx.functions.Func7;
-import rx.functions.Func8;
-import rx.functions.Func9;
-import rx.functions.FuncN;
-import rx.schedulers.TestScheduler;
-import rx.singles.BlockingSingle;
+import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+import rx.schedulers.TestScheduler;
+import rx.singles.BlockingSingle;
 import rx.subscriptions.Subscriptions;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 public class SingleTest {
 
@@ -721,11 +692,11 @@ public class SingleTest {
 
     @Test
     public void testToObservable() {
-    	Observable<String> a = Single.just("a").toObservable();
-    	TestSubscriber<String> ts = TestSubscriber.create();
-    	a.subscribe(ts);
-    	ts.assertValue("a");
-    	ts.assertCompleted();
+        Observable<String> a = Single.just("a").toObservable();
+        TestSubscriber<String> ts = TestSubscriber.create();
+        a.subscribe(ts);
+        ts.assertValue("a");
+        ts.assertCompleted();
     }
 
     @Test
@@ -1014,7 +985,7 @@ public class SingleTest {
         Callable<Single<String>> singleFactory = mock(Callable.class);
 
         String[] values = {"1", "2", "3"};
-        final Single[] singles = new Single[]{Single.just(values[0]), Single.just(values[1]), Single.just(values[2])};
+        final Single[] singles = new Single[] {Single.just(values[0]), Single.just(values[1]), Single.just(values[2])};
 
         final AtomicInteger singleFactoryCallsCounter = new AtomicInteger();
 
@@ -1027,7 +998,7 @@ public class SingleTest {
 
         Single<String> deferredSingle = Single.defer(singleFactory);
 
-        for (int i = 0; i < singles.length; i ++) {
+        for (int i = 0; i < singles.length; i++) {
             TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
 
             deferredSingle.subscribe(testSubscriber);
@@ -1074,8 +1045,8 @@ public class SingleTest {
         Action0 action = mock(Action0.class);
 
         Single<String> single = Single
-            .just("test")
-            .doOnUnsubscribe(action);
+                .just("test")
+                .doOnUnsubscribe(action);
 
         verifyZeroInteractions(action);
 
@@ -1093,8 +1064,8 @@ public class SingleTest {
         Action0 action = mock(Action0.class);
 
         Single<Object> single = Single
-            .error(new RuntimeException("test"))
-            .doOnUnsubscribe(action);
+                .error(new RuntimeException("test"))
+                .doOnUnsubscribe(action);
 
         verifyZeroInteractions(action);
 
@@ -1112,13 +1083,13 @@ public class SingleTest {
         Action0 action = mock(Action0.class);
 
         Single<Object> single = Single
-            .create(new OnSubscribe<Object>() {
-                @Override
-                public void call(SingleSubscriber<? super Object> singleSubscriber) {
-                    // Broken Single that never ends itself (simulates long computation in one thread).
-                }
-            })
-            .doOnUnsubscribe(action);
+                .create(new OnSubscribe<Object>() {
+                    @Override
+                    public void call(SingleSubscriber<? super Object> singleSubscriber) {
+                        // Broken Single that never ends itself (simulates long computation in one thread).
+                    }
+                })
+                .doOnUnsubscribe(action);
 
         TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
         Subscription subscription = single.subscribe(testSubscriber);
@@ -1199,7 +1170,7 @@ public class SingleTest {
         TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
 
         Single
-                .<String>error(new RuntimeException("test exception"))
+                .<String> error(new RuntimeException("test exception"))
                 .onErrorResumeNext(Single.just("fallback"))
                 .subscribe(testSubscriber);
 
@@ -1247,5 +1218,139 @@ public class SingleTest {
         assertEquals(2, singlesArray.length);
         assertSame(s1, singlesArray[0]);
         assertSame(s2, singlesArray[1]);
+    }
+
+    @Test(timeout = 2000)
+    public void testRetry() {
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+        final TestSubscriber<Integer> retryCounter = new TestSubscriber<Integer>();
+
+        final int retryCount = 100;
+        Callable<String> callable = new Callable<String>() {
+
+            @Override
+            public String call() throws Exception {
+                int errors = retryCounter.getOnErrorEvents().size();
+                if (errors < retryCount) {
+                    Exception exception = new Exception();
+                    retryCounter.onError(exception);
+                    throw exception;
+                }
+                return null;
+            }
+
+        };
+
+        Single.fromCallable(callable)
+                .retry()
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertCompleted();
+        int numberOfErrors = retryCounter.getOnErrorEvents().size();
+        assertEquals(retryCount, numberOfErrors);
+    }
+
+    @Test(timeout = 2000)
+    public void testRetryWithCount() {
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+        final TestSubscriber<Integer> retryCounter = new TestSubscriber<Integer>();
+
+        final int retryCount = 100;
+        Callable<String> callable = new Callable<String>() {
+
+            @Override
+            public String call() throws Exception {
+                int errors = retryCounter.getOnErrorEvents().size();
+                if (errors < retryCount) {
+                    Exception exception = new Exception();
+                    retryCounter.onError(exception);
+                    throw exception;
+                }
+
+                return null;
+            }
+        };
+
+        Single.fromCallable(callable)
+                .retry(retryCount)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertCompleted();
+        int numberOfErrors = retryCounter.getOnErrorEvents().size();
+        assertEquals(retryCount, numberOfErrors);
+    }
+
+    @Test
+    public void testRetryWithPredicate() {
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+        final TestSubscriber<Integer> retryCounter = new TestSubscriber<Integer>();
+
+        final int retryCount = 100;
+        Callable<String> callable = new Callable<String>() {
+
+            @Override
+            public String call() throws Exception {
+                int errors = retryCounter.getOnErrorEvents().size();
+                if (errors < retryCount) {
+                    IOException exception = new IOException();
+                    retryCounter.onError(exception);
+                    throw exception;
+                }
+                return null;
+            }
+        };
+
+        Single.fromCallable(callable)
+                .retry(new Func2<Integer, Throwable, Boolean>() {
+                    @Override
+                    public Boolean call(Integer integer, Throwable throwable) {
+                        return throwable instanceof IOException;
+                    }
+                })
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertCompleted();
+        int numberOfErrors = retryCounter.getOnErrorEvents().size();
+        assertEquals(retryCount, numberOfErrors);
+    }
+
+    @Test
+    public void testRetryWhen() {
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+        final TestSubscriber<Integer> retryCounter = new TestSubscriber<Integer>();
+
+        final int retryCount = 100;
+
+        Callable<String> callable = new Callable<String>() {
+
+            @Override
+            public String call() throws Exception {
+                int errors = retryCounter.getOnErrorEvents().size();
+                if (errors < retryCount) {
+                    IOException exception = new IOException();
+                    retryCounter.onError(exception);
+                    throw exception;
+                }
+                return null;
+            }
+        };
+
+        Single.fromCallable(callable)
+                .retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
+                    @Override
+                    public Observable<?> call(Observable<? extends Throwable> observable) {
+
+                        return observable.flatMap(new Func1<Throwable, Observable<?>>() {
+                            @Override
+                            public Observable<?> call(Throwable throwable) {
+                                return throwable instanceof IOException ? Observable.just(null) : Observable.error(throwable);
+                            }
+                        });
+                    }
+                })
+                .subscribe(testSubscriber);
+
+        int numberOfErrors = retryCounter.getOnErrorEvents().size();
+        assertEquals(retryCount, numberOfErrors);
     }
 }
