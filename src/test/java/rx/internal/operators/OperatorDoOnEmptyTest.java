@@ -88,7 +88,7 @@ public final class OperatorDoOnEmptyTest {
 
         source.onNext(2);
 
-        assertTrue(!source.hasObservers());
+        assertFalse(source.hasObservers());
 
         subscription.unsubscribe();
 
