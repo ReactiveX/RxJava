@@ -68,10 +68,10 @@ public final class OperatorOnErrorResumeNextViaObservable<T> implements Operator
             public void onError(Throwable e) {
                 if (done) {
                     Exceptions.throwIfFatal(e);
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     return;
                 }
                 done = true;
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                 unsubscribe();
                 resumeSequence.unsafeSubscribe(child);
             }

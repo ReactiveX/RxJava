@@ -72,11 +72,11 @@ public final class OperatorOnExceptionResumeNextViaObservable<T> implements Oper
             public void onError(Throwable e) {
                 if (done) {
                     Exceptions.throwIfFatal(e);
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     return;
                 }
                 done = true;
                 if (e instanceof Exception) {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     unsubscribe();
                     resumeSequence.unsafeSubscribe(child);
                 } else {
