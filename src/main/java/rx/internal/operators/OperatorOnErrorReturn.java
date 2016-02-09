@@ -69,11 +69,11 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
             public void onError(Throwable e) {
                 if (done) {
                     Exceptions.throwIfFatal(e);
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     return;
                 }
                 done = true;
                 try {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     unsubscribe();
                     T result = resultFunction.call(e);
                     child.onNext(result);

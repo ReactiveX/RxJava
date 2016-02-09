@@ -70,11 +70,11 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
             public void onError(Throwable e) {
                 if (done) {
                     Exceptions.throwIfFatal(e);
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     return;
                 }
                 done = true;
                 try {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     unsubscribe();
                     Subscriber<T> next = new Subscriber<T>() {
                         @Override
