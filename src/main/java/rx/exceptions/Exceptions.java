@@ -21,11 +21,13 @@ import rx.Observer;
 import rx.annotations.Experimental;
 
 /**
- * @warn javadoc class description missing
+ * Utility class with methods to wrap checked exceptions and
+ * manage fatal and regular exception delivery.
  */
 public final class Exceptions {
+    /** Utility class, no instances. */
     private Exceptions() {
-
+        throw new IllegalStateException("No instances!");
     }
 
     /**
