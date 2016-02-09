@@ -30,12 +30,14 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.exceptions.TestException;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class OperatorOnErrorResumeNextViaFunctionTest {
 
@@ -344,4 +346,35 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
     }
+
+    @Test
+    public void normalBackpressure() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        ps.onErrorResumeNext(new Func1<Throwable, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Throwable v) {
+                return Observable.range(3, 2);
+            }
+        }).subscribe(ts);
+        
+        ts.requestMore(2);
+        
+        ps.onNext(1);
+        ps.onNext(2);
+        ps.onError(new TestException("Forced failure"));
+
+        ts.assertValues(1, 2);
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+
+        ts.requestMore(2);
+        
+        ts.assertValues(1, 2, 3, 4);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
 }

@@ -1411,7 +1411,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     public final Single<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) {
-        return lift(new OperatorOnErrorReturn<T>(resumeFunction));
+        return lift(OperatorOnErrorResumeNextViaFunction.withSingle(resumeFunction));
     }
 
     /**
