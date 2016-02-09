@@ -17,21 +17,17 @@ package rx.internal.operators;
 
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
+import rx.exceptions.TestException;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class OperatorOnExceptionResumeNextViaObservableTest {
 
@@ -264,5 +260,30 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
             t.start();
             System.out.println("done starting TestObservable thread");
         }
+    }
+    
+    @Test
+    public void normalBackpressure() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        ps.onExceptionResumeNext(Observable.range(3, 2)).subscribe(ts);
+        
+        ts.requestMore(2);
+        
+        ps.onNext(1);
+        ps.onNext(2);
+        ps.onError(new TestException("Forced failure"));
+
+        ts.assertValues(1, 2);
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+
+        ts.requestMore(2);
+        
+        ts.assertValues(1, 2, 3, 4);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 }
