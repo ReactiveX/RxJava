@@ -16,7 +16,16 @@
 package rx;
 
 /**
- * @warn javadoc description missing
+ * Interface that establishes a request-channel between an Observable and a Subscriber and allows
+ * the Subscriber to request a certain amount of items from the Observable (otherwise known as
+ * backpressure).
+ * 
+ * <p>The request amount only affects calls to {@link Subscriber#onNext(Object)}; onError and onCompleted may appear without
+ * requrests.
+ * 
+ * <p>However, backpressure is somewhat optional in RxJava 1.x and Subscribers may not
+ * receive a Producer via their {@link Subscriber#setProducer(Producer)} method and will run
+ * in unbounded mode. Depending on the chain of operators, this can lead to {@link rx.exceptions.MissingBackpressureException}.
  */
 public interface Producer {
 
@@ -36,6 +45,7 @@ public interface Producer {
      *
      * @param n the maximum number of items you want this Producer to produce, or {@code Long.MAX_VALUE} if you
      *          want the Producer to produce items at its own pace
+     * @throws IllegalArgumentException if the request amount is negative
      */
     void request(long n);
 
