@@ -1,12 +1,12 @@
 buildscript {
   repositories { jcenter() }
-  dependencies { classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:2.2.3' }
+  dependencies { classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:4.0.0' }
 }
 
 description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
 
-apply plugin: 'rxjava-project'
 apply plugin: 'java'
+apply plugin: 'nebula.rxjava-project'
 
 dependencies {
     testCompile 'junit:junit-dep:4.10'
