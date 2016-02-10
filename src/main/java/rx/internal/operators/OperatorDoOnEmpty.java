@@ -31,6 +31,7 @@ public final class OperatorDoOnEmpty<T> implements Observable.Operator<T, T> {
                         onEmpty.call();
                     } catch (Throwable e) {
                         Exceptions.throwOrReport(e,this);
+                        return;
                     }
                 }
                 child.onCompleted();
