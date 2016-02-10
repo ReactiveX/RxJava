@@ -16,12 +16,14 @@
 
 package rx.internal.operators;
 
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.*;
 
 import rx.*;
 import rx.Completable.*;
+import rx.exceptions.CompositeException;
+import rx.Observable;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.CompositeSubscription;
 
@@ -197,19 +199,18 @@ public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe
      * @return the Throwable containing all other Throwables as suppressed
      */
     public static Throwable collectErrors(Queue<Throwable> q) {
-        Throwable ex = null;
+        List<Throwable> list = new ArrayList<Throwable>();
         
         Throwable t;
-        int count = 0;
         while ((t = q.poll()) != null) {
-            if (count == 0) {
-                ex = t;
-            } else {
-                ex.addSuppressed(t);
-            }
-            
-            count++;
+            list.add(t);
         }
-        return ex;
+        if (list.isEmpty()) {
+            return null;
+        }
+        if (list.size() == 1) {
+            return list.get(0);
+        }
+        return new CompositeException(list);
     }
 }
