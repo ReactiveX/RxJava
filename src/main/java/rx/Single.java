@@ -1368,7 +1368,9 @@ public class Single<T> {
         if (this instanceof ScalarSynchronousSingle) {
             return ((ScalarSynchronousSingle<T>)this).scalarScheduleOn(scheduler);
         }
-        return lift(new OperatorObserveOn<T>(scheduler));
+        // Note that since Single emits onSuccess xor onError, 
+        // there is no cut-ahead possible like with regular Observable sequences.
+        return lift(new OperatorObserveOn<T>(scheduler, false));
     }
 
     /**
