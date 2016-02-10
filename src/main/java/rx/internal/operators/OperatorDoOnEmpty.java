@@ -30,7 +30,7 @@ public final class OperatorDoOnEmpty<T> implements Observable.Operator<T, T> {
                     try {
                         onEmpty.call();
                     } catch (Throwable e) {
-                        Exceptions.throwIfFatal(e);
+                        Exceptions.throwOrReport(e,this);
                     }
                 }
                 child.onCompleted();
