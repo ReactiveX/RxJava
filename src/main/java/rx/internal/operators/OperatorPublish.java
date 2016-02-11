@@ -117,19 +117,46 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
 
     public static <T, R> Observable<R> create(final Observable<? extends T> source, 
             final Func1<? super Observable<T>, ? extends Observable<R>> selector) {
+        return create(source, selector, false);
+    }
+    
+    public static <T, R> Observable<R> create(final Observable<? extends T> source, 
+            final Func1<? super Observable<T>, ? extends Observable<R>> selector, final boolean delayError) {
         return create(new OnSubscribe<R>() {
             @Override
             public void call(final Subscriber<? super R> child) {
-                ConnectableObservable<T> op = create(source);
+                final OnSubscribePublishMulticast<T> op = new OnSubscribePublishMulticast<T>(RxRingBuffer.SIZE, delayError);
                 
-                selector.call(op).unsafeSubscribe(child);
-                
-                op.connect(new Action1<Subscription>() {
+                Subscriber<R> subscriber = new Subscriber<R>() {
                     @Override
-                    public void call(Subscription t1) {
-                        child.add(t1);
+                    public void onNext(R t) {
+                        child.onNext(t);
                     }
-                });
+                    
+                    @Override
+                    public void onError(Throwable e) {
+                        op.unsubscribe();
+                        child.onError(e);
+                    }
+                    
+                    @Override
+                    public void onCompleted() {
+                        op.unsubscribe();
+                        child.onCompleted();
+                    }
+                    
+                    @Override
+                    public void setProducer(Producer p) {
+                        child.setProducer(p);
+                    }
+                };
+
+                child.add(op);
+                child.add(subscriber);
+                
+                selector.call(Observable.create(op)).unsafeSubscribe(subscriber);
+                
+                source.unsafeSubscribe(op.subscriber());
             }
         });
     }
