@@ -938,8 +938,7 @@ public class Completable {
                                 try {
                                     disposer.call(resource);
                                 } catch (Throwable ex) {
-                                    ex.addSuppressed(e);
-                                    e = ex;
+                                    e = new CompositeException(Arrays.asList(e, ex));
                                 }
                             }
                         }
@@ -1298,8 +1297,7 @@ public class Completable {
                         try {
                             onError.call(e);
                         } catch (Throwable ex) {
-                            ex.addSuppressed(e);
-                            e = ex;
+                            e = new CompositeException(Arrays.asList(e, ex));
                         }
                         
                         s.onError(e);
@@ -1619,8 +1617,7 @@ public class Completable {
                         try {
                             b = predicate.call(e);
                         } catch (Throwable ex) {
-                            e.addSuppressed(ex);
-                            s.onError(e);
+                            e = new CompositeException(Arrays.asList(e, ex));
                             return;
                         }
                         
@@ -1669,15 +1666,15 @@ public class Completable {
                         try {
                             c = errorMapper.call(e);
                         } catch (Throwable ex) {
-                            ex.addSuppressed(e);
-                            s.onError(ex);
+                            e = new CompositeException(Arrays.asList(e, ex));
+                            s.onError(e);
                             return;
                         }
                         
                         if (c == null) {
                             NullPointerException npe = new NullPointerException("The completable returned is null");
-                            npe.addSuppressed(e);
-                            s.onError(npe);
+                            e = new CompositeException(Arrays.asList(e, npe));
+                            s.onError(e);
                             return;
                         }
                         
@@ -1900,7 +1897,7 @@ public class Completable {
                 try {
                     onError.call(e);
                 } catch (Throwable ex) {
-                    e.addSuppressed(ex);
+                    e = new CompositeException(Arrays.asList(e, ex));
                     ERROR_HANDLER.handleError(e);
                 }
             }
