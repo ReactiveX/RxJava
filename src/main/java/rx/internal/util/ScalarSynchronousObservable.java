@@ -23,7 +23,6 @@ import rx.functions.*;
 import rx.internal.producers.SingleProducer;
 import rx.internal.schedulers.EventLoopsScheduler;
 import rx.observers.Subscribers;
-import rx.schedulers.Schedulers;
 
 /**
  * An Observable that emits a single constant scalar value to Subscribers.
@@ -34,19 +33,6 @@ import rx.schedulers.Schedulers;
  * @param <T> the value type
  */
 public final class ScalarSynchronousObservable<T> extends Observable<T> {
-
-    /**
-     * We expect the Schedulers.computation() to return an EventLoopsScheduler all the time.
-     */
-    static final Func1<Action0, Subscription> COMPUTATION_ONSCHEDULE = new Func1<Action0, Subscription>() {
-        final EventLoopsScheduler els = (EventLoopsScheduler)Schedulers.computation();
-        
-        @Override
-        public Subscription call(Action0 t) {
-            return els.scheduleDirect(t);
-        }
-    };
-
     /**
      * Indicates that the Producer used by this Observable should be fully
      * threadsafe. It is possible, but unlikely that multiple concurrent
@@ -115,7 +101,13 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
     public Observable<T> scalarScheduleOn(final Scheduler scheduler) {
         final Func1<Action0, Subscription> onSchedule;
         if (scheduler instanceof EventLoopsScheduler) {
-            onSchedule = COMPUTATION_ONSCHEDULE;
+            final EventLoopsScheduler els = (EventLoopsScheduler) scheduler;
+            onSchedule = new Func1<Action0, Subscription>() {
+                @Override
+                public Subscription call(Action0 a) {
+                    return els.scheduleDirect(a);
+                }
+            };
         } else {
             onSchedule = new Func1<Action0, Subscription>() {
                 @Override
