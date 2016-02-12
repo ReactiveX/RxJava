@@ -1581,4 +1581,224 @@ public class OperatorGroupByTest {
         ts2.assertNotCompleted();
     }
 
+    @Test
+    public void testGroupedObservableCollection() {
+
+        final TestSubscriber<List<Integer>> inner1 = new TestSubscriber<List<Integer>>();
+        final TestSubscriber<List<Integer>> inner2 = new TestSubscriber<List<Integer>>();
+
+        TestSubscriber<List<Observable<List<Integer>>>> outer = new TestSubscriber<List<Observable<List<Integer>>>>(new Subscriber<List<Observable<List<Integer>>>>() {
+
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(List<Observable<List<Integer>>> o) {
+                o.get(0).subscribe(inner1);
+                o.get(1).subscribe(inner2);
+            }
+        });
+
+
+
+
+        Observable.range(0, 10)
+                .groupBy(new Func1<Integer, Boolean>() {
+                    @Override
+                    public Boolean call(Integer pair) {
+                        return pair % 2 == 1;
+                    }
+                })
+                .map(new Func1<GroupedObservable<Boolean, Integer>, Observable<List<Integer>>>() {
+                    @Override
+                    public Observable<List<Integer>> call(GroupedObservable<Boolean, Integer> oddOrEven) {
+                        return oddOrEven.toList();
+                    }
+                })
+                .toList()
+                .subscribe(outer);
+
+        inner1.assertNoErrors();
+        inner1.assertCompleted();
+        inner2.assertNoErrors();
+        inner2.assertCompleted();
+
+        inner1.assertReceivedOnNext(Arrays.asList(Arrays.asList(0,2,4,6,8)));
+        inner2.assertReceivedOnNext(Arrays.asList(Arrays.asList(1,3,5,7,9)));
+
+        outer.assertNoErrors();
+        outer.assertCompleted();
+        outer.assertValueCount(1);
+
+    }
+
+    @Test
+    public void testCollectedGroups() {
+
+        final TestSubscriber<List<Integer>> inner1 = new TestSubscriber<List<Integer>>();
+        final TestSubscriber<List<Integer>> inner2 = new TestSubscriber<List<Integer>>();
+
+        final List<TestSubscriber<List<Integer>>> inners = Arrays.asList(inner1, inner2);
+
+        TestSubscriber<Observable<List<Integer>>> outer = new TestSubscriber<Observable<List<Integer>>>(new Subscriber<Observable<List<Integer>>>() {
+            int toInner;
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Observable<List<Integer>> o) {
+                o.subscribe(inners.get(toInner++));
+            }
+        });
+
+
+
+
+        Observable.range(0, 10)
+                  .groupBy(new Func1<Integer, Boolean>() {
+                      @Override
+                      public Boolean call(Integer pair) {
+                          return pair % 2 == 1;
+                      }
+                  })
+                  .map(new Func1<GroupedObservable<Boolean,Integer>, Observable<List<Integer>>>() {
+                      @Override
+                      public Observable<List<Integer>> call(GroupedObservable<Boolean, Integer> booleanIntegerGroupedObservable) {
+                          return booleanIntegerGroupedObservable.toList();
+                      }
+                  })
+                  .subscribe(outer);
+
+        inner1.assertNoErrors();
+        inner1.assertCompleted();
+
+        inner1.assertReceivedOnNext(Arrays.asList(Arrays.asList(0,2,4,6,8)));
+        inner2.assertReceivedOnNext(Arrays.asList(Arrays.asList(1,3,5,7,9)));
+
+        outer.assertNoErrors();
+        outer.assertCompleted();
+        outer.assertValueCount(2);
+
+    }
+
+    @Test
+    public void testMappedCollectedGroups() {
+        // This is a little contrived.
+        final TestSubscriber<Integer> inner1 = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> inner2 = new TestSubscriber<Integer>();
+
+        TestSubscriber<Map<Integer, Observable<Integer>>> outer = new TestSubscriber<Map<Integer, Observable<Integer>>>(new Subscriber<Map<Integer, Observable<Integer>>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Map<Integer, Observable<Integer>> integerObservableMap) {
+                integerObservableMap.get(0).subscribe(inner1);
+                integerObservableMap.get(1).subscribe(inner2);
+            }
+        });
+
+        Observable<Map<Integer, Observable<Integer>>> mapObservable = Observable.range(0, 10)
+                                                                                                .groupBy(new Func1<Integer, Integer>() {
+                                                                                                    @Override
+                                                                                                    public Integer call(Integer pair) {
+                                                                                                        return pair % 2;
+                                                                                                    }
+                                                                                                })
+                                                                                                .toMap(new Func1<GroupedObservable<Integer, Integer>, Integer>() {
+                                                                                                           @Override
+                                                                                                           public Integer call(GroupedObservable<Integer, Integer> group) {
+                                                                                                               return group.getKey();
+                                                                                                           }
+                                                                                                       },
+                                                                                                       new Func1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
+                                                                                                           @Override
+                                                                                                           public Observable<Integer> call(GroupedObservable<Integer, Integer> integerGroup) {
+                                                                                                               return integerGroup.map(
+                                                                                                                       new Func1<Integer, Integer>() {
+                                                                                                                           @Override
+                                                                                                                           public Integer call(Integer integer) {
+                                                                                                                               return integer * 10;
+                                                                                                                           }
+                                                                                                                       });
+                                                                                                           }
+                                                                                                       }
+                                                                                                );
+
+        mapObservable.subscribe(outer);
+
+        inner1.assertNoErrors();
+        inner1.assertCompleted();
+
+        inner1.assertReceivedOnNext(Arrays.asList(0,20,40,60,80));
+        inner2.assertReceivedOnNext(Arrays.asList(10,30,50,70,90));
+
+        outer.assertNoErrors();
+        outer.assertCompleted();
+        outer.assertValueCount(1);
+
+    }
+
+    @Test
+    public void testSkippedGroup() {
+
+        final TestSubscriber<Integer> inner1 = new TestSubscriber<Integer>();
+
+        TestSubscriber<GroupedObservable<Integer, Integer>> outer = new TestSubscriber<GroupedObservable<Integer, Integer>>(new Subscriber<GroupedObservable<Integer, Integer>>() {
+
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(GroupedObservable<Integer, Integer> o) {
+                if (o.getKey() == 1) {
+                    o.subscribe(inner1);
+                }
+            }
+        });
+
+
+
+
+        Observable.range(0, 10)
+                  .groupBy(new Func1<Integer, Integer>() {
+                      @Override
+                      public Integer call(Integer pair) {
+                          return pair % 2;
+                      }
+                  })
+                  .subscribe(outer);
+
+        inner1.assertNoErrors();
+        inner1.assertCompleted();
+
+        inner1.assertReceivedOnNext(Arrays.asList(1,3,5,7,9));
+
+        outer.assertNoErrors();
+        outer.assertCompleted();
+        outer.assertValueCount(2);
+
+    }
 }
