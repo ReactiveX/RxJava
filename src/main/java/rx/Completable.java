@@ -1222,9 +1222,20 @@ public class Completable {
      * @param onComplete the callback to call when this emits an onComplete event
      * @return the new Completable instance
      * @throws NullPointerException if onComplete is null
+     * @deprecated Use {@link #doOnCompleted(Action0)} instead.
      */
-    public final Completable doOnComplete(Action0 onComplete) {
-        return doOnLifecycle(Actions.empty(), Actions.empty(), onComplete, Actions.empty(), Actions.empty());
+    @Deprecated public final Completable doOnComplete(Action0 onComplete) {
+        return doOnCompleted(onComplete);
+    }
+
+    /**
+     * Returns a Completable which calls the given onCompleted callback if this Completable completes.
+     * @param onCompleted the callback to call when this emits an onComplete event
+     * @return the new Completable instance
+     * @throws NullPointerException if onComplete is null
+     */
+    public final Completable doOnCompleted(Action0 onCompleted) {
+        return doOnLifecycle(Actions.empty(), Actions.empty(), onCompleted, Actions.empty(), Actions.empty());
     }
     
     /**
