@@ -15,16 +15,12 @@
  */
 package rx.internal.operators;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.*;
 
 import rx.*;
 import rx.Observable.Operator;
-import rx.exceptions.*;
+import rx.exceptions.Exceptions;
 import rx.functions.*;
-import rx.internal.producers.ProducerArbiter;
-import rx.internal.util.unsafe.*;
 
 /**
  * Applies a function of your choosing to every item emitted by an {@code Observable}, and emits the results of
@@ -45,203 +41,167 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
     }
 
     @Override
-    public Subscriber<? super T> call(final Subscriber<? super R> o) {
-        final ProducerArbiter pa = new ProducerArbiter();
-        
-        MapNotificationSubscriber subscriber = new MapNotificationSubscriber(pa, o);
-        o.add(subscriber);
-        subscriber.init();
-        return subscriber;
+    public Subscriber<? super T> call(final Subscriber<? super R> child) {
+        final MapNotificationSubscriber<T, R> parent = new MapNotificationSubscriber<T, R>(child, onNext, onError, onCompleted);
+        child.add(parent);
+        child.setProducer(new Producer() {
+            @Override
+            public void request(long n) {
+                parent.requestInner(n);
+            }
+        });
+        return parent;
     }
     
-    final class MapNotificationSubscriber extends Subscriber<T> {
-        private final Subscriber<? super R> o;
-        private final ProducerArbiter pa;
-        final SingleEmitter<R> emitter;
-
-        MapNotificationSubscriber(ProducerArbiter pa, Subscriber<? super R> o) {
-            this.pa = pa;
-            this.o = o;
-            this.emitter = new SingleEmitter<R>(o, pa, this);
-        }
+    static final class MapNotificationSubscriber<T, R> extends Subscriber<T> {
         
-        void init() {
-            o.setProducer(emitter);
-        }
+        final Subscriber<? super R> actual;
+        
+        final Func1<? super T, ? extends R> onNext;
+        
+        final Func1<? super Throwable, ? extends R> onError;
+        
+        final Func0<? extends R> onCompleted;
+        
+        final AtomicLong requested;
 
-        @Override
-        public void setProducer(Producer producer) {
-            pa.setProducer(producer);
-        }
+        final AtomicLong missedRequested;
 
-        @Override
-        public void onCompleted() {
-            try {
-                emitter.offerAndComplete(onCompleted.call());
-            } catch (Throwable e) {
-                Exceptions.throwOrReport(e, o);
-            }
-        }
+        final AtomicReference<Producer> producer;
 
-        @Override
-        public void onError(Throwable e) {
-            try {
-                emitter.offerAndComplete(onError.call(e));
-            } catch (Throwable e2) {
-                Exceptions.throwOrReport(e2, o);
-            }
+        long produced;
+        
+        R value;
+        
+        static final long COMPLETED_FLAG = Long.MIN_VALUE;
+        static final long REQUESTED_MASK = Long.MAX_VALUE;
+        
+        public MapNotificationSubscriber(Subscriber<? super R> actual, Func1<? super T, ? extends R> onNext,
+                Func1<? super Throwable, ? extends R> onError, Func0<? extends R> onCompleted) {
+            this.actual = actual;
+            this.onNext = onNext;
+            this.onError = onError;
+            this.onCompleted = onCompleted;
+            this.requested = new AtomicLong();
+            this.missedRequested = new AtomicLong();
+            this.producer = new AtomicReference<Producer>();
         }
 
         @Override
         public void onNext(T t) {
             try {
-                emitter.offer(onNext.call(t));
-            } catch (Throwable e) {
-                Exceptions.throwOrReport(e, o, t);
+                produced++;
+                actual.onNext(onNext.call(t));
+            } catch (Throwable ex) {
+                Exceptions.throwOrReport(ex, actual, t);
             }
         }
-    }
-    static final class SingleEmitter<T> extends AtomicLong implements Producer, Subscription {
-        /** */
-        private static final long serialVersionUID = -249869671366010660L;
-        final NotificationLite<T> nl;
-        final Subscriber<? super T> child;
-        final Producer producer;
-        final Subscription cancel;
-        final Queue<Object> queue;
-        volatile boolean complete;
-        /** Guarded by this. */
-        boolean emitting;
-        /** Guarded by this. */
-        boolean missed;
         
-        public SingleEmitter(Subscriber<? super T> child, Producer producer, Subscription cancel) {
-            this.child = child;
-            this.producer = producer;
-            this.cancel = cancel;
-            this.queue = UnsafeAccess.isUnsafeAvailable() 
-                    ? new SpscArrayQueue<Object>(2) 
-                    : new ConcurrentLinkedQueue<Object>();
-                    
-            this.nl = NotificationLite.instance();
-        }
         @Override
-        public void request(long n) {
-            for (;;) {
-                long r = get();
-                if (r < 0) {
-                    return;
-                }
-                long u = r + n;
-                if (u < 0) {
-                    u = Long.MAX_VALUE;
-                }
-                if (compareAndSet(r, u)) {
-                    producer.request(n);
-                    drain();
-                    return;
-                }
-            }
-        }
-        
-        void produced(long n) {
-            for (;;) {
-                long r = get();
-                if (r < 0) {
-                    return;
-                }
-                long u = r - n;
-                if (u < 0) {
-                    throw new IllegalStateException("More produced (" + n + ") than requested (" + r + ")");
-                }
-                if (compareAndSet(r, u)) {
-                    return;
-                }
-            }
-        }
-        
-        public void offer(T value) {
-            if (!queue.offer(value)) {
-                child.onError(new MissingBackpressureException());
-                unsubscribe();
-            } else {
-                drain();
-            }
-        }
-        public void offerAndComplete(T value) {
-            if (!this.queue.offer(value)) {
-                child.onError(new MissingBackpressureException());
-                unsubscribe();
-            } else {
-                this.complete = true;
-                drain();
-            }
-        }
-        
-        void drain() {
-            synchronized (this) {
-                if (emitting) {
-                    missed = true;
-                    return;
-                }
-                emitting = true;
-                missed = false;
-            }
-            boolean skipFinal = false;
+        public void onError(Throwable e) {
+            accountProduced();
             try {
-                for (;;) {
-                    
-                    long r = get();
-                    boolean c = complete;
-                    boolean empty = queue.isEmpty();
-                    
-                    if (c && empty) {
-                        child.onCompleted();
-                        skipFinal = true;
-                        return;
-                    } else
-                    if (r > 0) {
-                        Object v = queue.poll();
-                        if (v != null) {
-                            child.onNext(nl.getValue(v));
-                            produced(1);
-                        } else
-                        if (c) {
-                            child.onCompleted();
-                            skipFinal = true;
-                            return;
-                        }
-                    }
-                    
-                    synchronized (this) {
-                        if (!missed) {
-                            skipFinal = true;
-                            emitting = false;
-                            return;
-                        }
-                        missed = false;
-                    }
-                }
-            } finally {
-                if (!skipFinal) {
-                    synchronized (this) {
-                        emitting = false;
-                    }
-                }
+                value = onError.call(e);
+            } catch (Throwable ex) {
+                Exceptions.throwOrReport(ex, actual, e);
+            }
+            tryEmit();
+        }
+        
+        @Override
+        public void onCompleted() {
+            accountProduced();
+            try {
+                value = onCompleted.call();
+            } catch (Throwable ex) {
+                Exceptions.throwOrReport(ex, actual);
+            }
+            tryEmit();
+        }
+        
+        void accountProduced() {
+            long p = produced;
+            if (p != 0L && producer.get() != null) {
+                BackpressureUtils.produced(requested, p);
             }
         }
         
         @Override
-        public boolean isUnsubscribed() {
-            return get() < 0;
+        public void setProducer(Producer p) {
+            if (producer.compareAndSet(null, p)) {
+                long r = missedRequested.getAndSet(0L);
+                if (r != 0L) {
+                    p.request(r);
+                }
+            } else {
+                throw new IllegalStateException("Producer already set!");
+            }
         }
-        @Override
-        public void unsubscribe() {
-            long r = get();
-            if (r != Long.MIN_VALUE) {
-                r = getAndSet(Long.MIN_VALUE);
-                if (r != Long.MIN_VALUE) {
-                    cancel.unsubscribe();
+        
+        void tryEmit() {
+            for (;;) {
+                long r = requested.get();
+                if ((r & COMPLETED_FLAG) != 0) {
+                    break;
+                }
+                if (requested.compareAndSet(r, r | COMPLETED_FLAG)) {
+                    if (r != 0 || producer.get() == null) {
+                        if (!actual.isUnsubscribed()) {
+                            actual.onNext(value);
+                        }
+                        if (!actual.isUnsubscribed()) {
+                            actual.onCompleted();
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+        
+        void requestInner(long n) {
+            if (n < 0L) {
+                throw new IllegalArgumentException("n >= 0 required but it was " + n);
+            }
+            if (n == 0L) {
+                return;
+            }
+            for (;;) {
+                long r = requested.get();
+                
+                if ((r & COMPLETED_FLAG) != 0L) {
+                    long v = r & REQUESTED_MASK;
+                    long u = BackpressureUtils.addCap(v, n) | COMPLETED_FLAG;
+                    if (requested.compareAndSet(r, u)) {
+                        if (v == 0L) {
+                            if (!actual.isUnsubscribed()) {
+                                actual.onNext(value);
+                            }
+                            if (!actual.isUnsubscribed()) {
+                                actual.onCompleted();
+                            }
+                        }
+                        return;
+                    }
+                } else {
+                    long u = BackpressureUtils.addCap(r, n);
+                    if (requested.compareAndSet(r, u)) {
+                        break;
+                    }
+                }
+            }
+            
+            AtomicReference<Producer> localProducer = producer;
+            Producer actualProducer = localProducer.get();
+            if (actualProducer != null) {
+                actualProducer.request(n);
+            } else {
+                BackpressureUtils.getAndAddRequest(missedRequested, n);
+                actualProducer = localProducer.get();
+                if (actualProducer != null) {
+                    long r = missedRequested.getAndSet(0L);
+                    if (r != 0L) {
+                        actualProducer.request(r);
+                    }
                 }
             }
         }
