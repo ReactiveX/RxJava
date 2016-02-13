@@ -1715,40 +1715,41 @@ public class OperatorGroupByTest {
             }
         });
 
-        Observable<Map<Integer, Observable<Integer>>> mapObservable = Observable.range(0, 10)
-                                                                                                .groupBy(new Func1<Integer, Integer>() {
-                                                                                                    @Override
-                                                                                                    public Integer call(Integer pair) {
-                                                                                                        return pair % 2;
-                                                                                                    }
-                                                                                                })
-                                                                                                .toMap(new Func1<GroupedObservable<Integer, Integer>, Integer>() {
-                                                                                                           @Override
-                                                                                                           public Integer call(GroupedObservable<Integer, Integer> group) {
-                                                                                                               return group.getKey();
-                                                                                                           }
-                                                                                                       },
-                                                                                                       new Func1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
-                                                                                                           @Override
-                                                                                                           public Observable<Integer> call(GroupedObservable<Integer, Integer> integerGroup) {
-                                                                                                               return integerGroup.map(
-                                                                                                                       new Func1<Integer, Integer>() {
-                                                                                                                           @Override
-                                                                                                                           public Integer call(Integer integer) {
-                                                                                                                               return integer * 10;
-                                                                                                                           }
-                                                                                                                       });
-                                                                                                           }
-                                                                                                       }
-                                                                                                );
+        Observable<Map<Integer, Observable<Integer>>> mapObservable =
+                Observable.range(0, 10)
+                        .groupBy(new Func1<Integer, Integer>() {
+                            @Override
+                            public Integer call(Integer pair) {
+                                return pair % 2;
+                            }
+                        })
+                        .toMap(new Func1<GroupedObservable<Integer, Integer>, Integer>() {
+                                   @Override
+                                   public Integer call(GroupedObservable<Integer, Integer> group) {
+                                       return group.getKey();
+                                   }
+                               },
+                                new Func1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
+                                    @Override
+                                    public Observable<Integer> call(GroupedObservable<Integer, Integer> integerGroup) {
+                                        return integerGroup.map(
+                                                new Func1<Integer, Integer>() {
+                                                    @Override
+                                                    public Integer call(Integer integer) {
+                                                        return integer * 10;
+                                                    }
+                                                });
+                                    }
+                                }
+                        );
 
         mapObservable.subscribe(outer);
 
         inner1.assertNoErrors();
         inner1.assertCompleted();
 
-        inner1.assertReceivedOnNext(Arrays.asList(0,20,40,60,80));
-        inner2.assertReceivedOnNext(Arrays.asList(10,30,50,70,90));
+        inner1.assertReceivedOnNext(Arrays.asList(0, 20, 40, 60, 80));
+        inner2.assertReceivedOnNext(Arrays.asList(10, 30, 50, 70, 90));
 
         outer.assertNoErrors();
         outer.assertCompleted();
