@@ -18,6 +18,19 @@ dependencies {
 
 javadoc {
     exclude "**/rx/internal/**"
+    exclude "**/test/**"
+    exclude "**/perf/**"
+    options {
+        windowTitle = "RxJava Javadoc ${project.version}"
+    }
+    // Clear the following options to make the docs consitent with the old format
+    options.addStringOption('top').value = ''
+    options.addStringOption('doctitle').value = ''
+    options.addStringOption('header').value = ''
+    if (JavaVersion.current().isJava7()) {
+        // "./gradle/stylesheet.css" only supports Java 7
+        options.addStringOption('stylesheetfile', rootProject.file('./gradle/stylesheet.css').toString())
+    }
 }
 
 // support for snapshot/final releases with the various branches RxJava uses
