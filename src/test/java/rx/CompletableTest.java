@@ -1673,10 +1673,10 @@ public class CompletableTest {
     }
     
     @Test(timeout = 1000)
-    public void doOnCompleteNormal() {
+    public void doOnCompletedNormal() {
         final AtomicInteger calls = new AtomicInteger();
         
-        Completable c = normal.completable.doOnComplete(new Action0() {
+        Completable c = normal.completable.doOnCompleted(new Action0() {
             @Override
             public void call() {
                 calls.getAndIncrement();
@@ -1689,10 +1689,10 @@ public class CompletableTest {
     }
     
     @Test(timeout = 1000)
-    public void doOnCompleteError() {
+    public void doOnCompletedError() {
         final AtomicInteger calls = new AtomicInteger();
         
-        Completable c = error.completable.doOnComplete(new Action0() {
+        Completable c = error.completable.doOnCompleted(new Action0() {
             @Override
             public void call() {
                 calls.getAndIncrement();
@@ -1710,13 +1710,13 @@ public class CompletableTest {
     }
     
     @Test(expected = NullPointerException.class)
-    public void doOnCompleteNull() {
-        normal.completable.doOnComplete(null);
+    public void doOnCompletedNull() {
+        normal.completable.doOnCompleted(null);
     }
     
     @Test(timeout = 1000, expected = TestException.class)
-    public void doOnCompleteThrows() {
-        Completable c = normal.completable.doOnComplete(new Action0() {
+    public void doOnCompletedThrows() {
+        Completable c = normal.completable.doOnCompleted(new Action0() {
             @Override
             public void call() { throw new TestException(); }
         });
@@ -2469,7 +2469,7 @@ public class CompletableTest {
         
         Completable c = normal.completable
                 .delay(100, TimeUnit.MILLISECONDS)
-                .doOnComplete(new Action0() {
+                .doOnCompleted(new Action0() {
                     @Override
                     public void call() {
                         complete.set(true);
@@ -2489,7 +2489,7 @@ public class CompletableTest {
         
         Completable c = normal.completable
                 .delay(200, TimeUnit.MILLISECONDS)
-                .doOnComplete(new Action0() {
+                .doOnCompleted(new Action0() {
                     @Override
                     public void call() {
                         complete.set(true);
