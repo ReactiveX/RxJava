@@ -1828,12 +1828,13 @@ public class Completable {
         subscribe(new CompletableSubscriber() {
             @Override
             public void onCompleted() {
-                // nothing to do
+                mad.unsubscribe();
             }
             
             @Override
             public void onError(Throwable e) {
                 ERROR_HANDLER.handleError(e);
+                mad.unsubscribe();
             }
             
             @Override
@@ -1864,11 +1865,13 @@ public class Completable {
                 } catch (Throwable e) {
                     ERROR_HANDLER.handleError(e);
                 }
+                mad.unsubscribe();
             }
             
             @Override
             public void onError(Throwable e) {
                 ERROR_HANDLER.handleError(e);
+                mad.unsubscribe();
             }
             
             @Override
@@ -1900,7 +1903,9 @@ public class Completable {
                     onComplete.call();
                 } catch (Throwable e) {
                     onError(e);
+                    return;
                 }
+                mad.unsubscribe();
             }
             
             @Override
@@ -1911,6 +1916,7 @@ public class Completable {
                     e = new CompositeException(Arrays.asList(e, ex));
                     ERROR_HANDLER.handleError(e);
                 }
+                mad.unsubscribe();
             }
             
             @Override
