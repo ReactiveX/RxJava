@@ -5132,7 +5132,39 @@ public class Observable<T> {
         if (capacityHint < 1) {
             throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
         }
-        return lift(new OperatorEagerConcatMap<T, R>(mapper, capacityHint));
+        return lift(new OperatorEagerConcatMap<T, R>(mapper, capacityHint, Integer.MAX_VALUE));
+    }
+
+    /**
+     * Maps a sequence of values into Observables and concatenates these Observables eagerly into a single
+     * Observable.
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * source Observables. The operator buffers the values emitted by these Observables and then drains them in
+     * order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream, however, due to the eagerness requirement, sources
+     *      are subscribed to in unbounded mode and their values are queued up in an unbounded buffer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the value type
+     * @param mapper the function that maps a sequence of values into a sequence of Observables that will be
+     *               eagerly concatenated
+     * @param capacityHint hints about the number of expected source sequence values
+     * @param maxConcurrent the maximum number of concurrent subscribed observables
+     * @return
+     * @warn javadoc fails to describe the return value
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+
+    @Experimental
+    public final <R> Observable<R> concatMapEager(Func1<? super T, ? extends Observable<? extends R>> mapper, int capacityHint, int maxConcurrent) {
+        if (capacityHint < 1) {
+            throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
+        }
+        return lift(new OperatorEagerConcatMap<T, R>(mapper, capacityHint, maxConcurrent));
     }
     
     /**
