@@ -3604,4 +3604,142 @@ public class CompletableTest {
         assertTrue(listEx.get(1).toString(), listEx.get(1) instanceof TestException);
     }
 
+    @Test
+    public void subscribeReportsUnsubscribed() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        Subscription completableSubscription = completable.subscribe();
+        
+        stringSubject.onCompleted();
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isUnsubscribed());
+    }
+
+    @Test
+    public void subscribeReportsUnsubscribedOnError() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        Subscription completableSubscription = completable.subscribe();
+        
+        stringSubject.onError(new TestException());
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isUnsubscribed());
+    }
+
+    @Test
+    public void subscribeActionReportsUnsubscribed() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        Subscription completableSubscription = completable.subscribe(Actions.empty());
+        
+        stringSubject.onCompleted();
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isUnsubscribed());
+    }
+
+    @Test
+    public void subscribeActionReportsUnsubscribedAfter() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        final AtomicReference<Subscription> subscriptionRef = new AtomicReference<Subscription>();
+        Subscription completableSubscription = completable.subscribe(new Action0() {
+            @Override
+            public void call() {
+                if (subscriptionRef.get().isUnsubscribed()) {
+                    subscriptionRef.set(null);
+                }
+            }
+        });
+        subscriptionRef.set(completableSubscription);
+        
+        stringSubject.onCompleted();
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isUnsubscribed());
+        assertNotNull("Unsubscribed before the call to onCompleted", subscriptionRef.get());
+    }
+
+    @Test
+    public void subscribeActionReportsUnsubscribedOnError() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        Subscription completableSubscription = completable.subscribe(Actions.empty());
+        
+        stringSubject.onError(new TestException());
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isUnsubscribed());
+    }
+
+    @Test
+    public void subscribeAction2ReportsUnsubscribed() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        Subscription completableSubscription = completable.subscribe(Actions.empty(), Actions.empty());
+        
+        stringSubject.onCompleted();
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isUnsubscribed());
+    }
+
+    @Test
+    public void subscribeAction2ReportsUnsubscribedOnError() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        Subscription completableSubscription = completable.subscribe(Actions.empty(), Actions.empty());
+        
+        stringSubject.onError(new TestException());
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isUnsubscribed());
+    }
+
+    @Test
+    public void subscribeAction2ReportsUnsubscribedAfter() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        final AtomicReference<Subscription> subscriptionRef = new AtomicReference<Subscription>();
+        Subscription completableSubscription = completable.subscribe(Actions.empty(), new Action0() {
+            @Override
+            public void call() {
+                if (subscriptionRef.get().isUnsubscribed()) {
+                    subscriptionRef.set(null);
+                }
+            }
+        });
+        subscriptionRef.set(completableSubscription);
+        
+        stringSubject.onCompleted();
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isUnsubscribed());
+        assertNotNull("Unsubscribed before the call to onCompleted", subscriptionRef.get());
+    }
+
+    @Test
+    public void subscribeAction2ReportsUnsubscribedOnErrorAfter() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        final AtomicReference<Subscription> subscriptionRef = new AtomicReference<Subscription>();
+        Subscription completableSubscription = completable.subscribe(new Action1<Throwable>() {
+            @Override
+            public void call(Throwable e) {
+                if (subscriptionRef.get().isUnsubscribed()) {
+                    subscriptionRef.set(null);
+                }
+            }
+        }, Actions.empty());
+        subscriptionRef.set(completableSubscription);
+        
+        stringSubject.onError(new TestException());
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isUnsubscribed());
+        assertNotNull("Unsubscribed before the call to onError", subscriptionRef.get());
+    }
+
 }
