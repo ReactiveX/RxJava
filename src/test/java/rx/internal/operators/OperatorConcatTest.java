@@ -82,6 +82,34 @@ public class OperatorConcatTest {
 
         verify(observer, times(7)).onNext(anyString());
     }
+    
+    @Test
+    public void testConcatMapIterable() {
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+
+        final String[] l = { "a", "b", "c", "d", "e" };
+        
+        Func1<List<String>,List<String>> identity = new Func1<List<String>, List<String>>() {
+			@Override
+			public List<String> call(List<String> t) {
+				return t;
+			}
+		};
+
+        final Observable<List<String>> listObs = Observable.just(Arrays.asList(l));
+        final Observable<String> concatMap = listObs.concatMapIterable(identity);
+        
+        concatMap.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("a");
+        inOrder.verify(observer, times(1)).onNext("b");
+        inOrder.verify(observer, times(1)).onNext("c");
+        inOrder.verify(observer, times(1)).onNext("d");
+        inOrder.verify(observer, times(1)).onNext("e");
+        inOrder.verify(observer, times(1)).onCompleted();
+    }
 
     @Test
     public void testConcatObservableOfObservables() {
