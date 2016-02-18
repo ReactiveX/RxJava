@@ -6319,7 +6319,7 @@ public class Observable<T> {
      * encountered.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code onExceptionResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param resumeSequence
