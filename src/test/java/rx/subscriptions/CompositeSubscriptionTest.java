@@ -15,20 +15,19 @@
  */
 package rx.subscriptions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Test;
+import rx.Subscription;
+import rx.exceptions.CompositeException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-
-import rx.Subscription;
-import rx.exceptions.CompositeException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CompositeSubscriptionTest {
 
@@ -324,17 +323,18 @@ public class CompositeSubscriptionTest {
         // we should have only unsubscribed once
         assertEquals(1, counter.get());
     }
+
     @Test
     public void testTryRemoveIfNotIn() {
         CompositeSubscription csub = new CompositeSubscription();
-        
+
         CompositeSubscription csub1 = new CompositeSubscription();
         CompositeSubscription csub2 = new CompositeSubscription();
-        
+
         csub.add(csub1);
         csub.remove(csub1);
         csub.add(csub2);
-        
+
         csub.remove(csub1); // try removing again
     }
 
@@ -342,6 +342,123 @@ public class CompositeSubscriptionTest {
     public void testAddingNullSubscriptionIllegal() {
         CompositeSubscription csub = new CompositeSubscription();
         csub.add(null);
+    }
+
+    @Test
+    public void testAddAll() {
+        final AtomicInteger counter = new AtomicInteger();
+        CompositeSubscription s = new CompositeSubscription();
+        s.addAll(new Subscription() {
+            @Override
+            public void unsubscribe() {
+                counter.incrementAndGet();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
+            }
+        }, new Subscription() {
+            @Override
+            public void unsubscribe() {
+                counter.incrementAndGet();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
+            }
+        }, new Subscription() {
+            @Override
+            public void unsubscribe() {
+                counter.incrementAndGet();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
+            }
+        }, new Subscription() {
+            @Override
+            public void unsubscribe() {
+                counter.incrementAndGet();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return false;
+            }
+        });
+
+        s.unsubscribe();
+
+        assertEquals(4, counter.get());
+    }
+
+    @Test(timeout = 1000)
+    public void testAddAllConcurrent() throws InterruptedException {
+        final AtomicInteger counter = new AtomicInteger();
+        final CompositeSubscription s = new CompositeSubscription();
+
+        final int count = 10;
+        final CountDownLatch start = new CountDownLatch(1);
+        final CountDownLatch end = new CountDownLatch(10);
+        final List<Thread> threads = new ArrayList<Thread>();
+        for (int i = 0; i < count; i++) {
+            final Thread t = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        start.await();
+                        s.addAll(new Subscription() {
+                            @Override
+                            public void unsubscribe() {
+                                counter.incrementAndGet();
+                            }
+
+                            @Override
+                            public boolean isUnsubscribed() {
+                                return false;
+                            }
+                        }, new Subscription() {
+                            @Override
+                            public void unsubscribe() {
+                                counter.incrementAndGet();
+                            }
+
+                            @Override
+                            public boolean isUnsubscribed() {
+                                return false;
+                            }
+                        }, new Subscription() {
+                            @Override
+                            public void unsubscribe() {
+                                counter.incrementAndGet();
+                            }
+
+                            @Override
+                            public boolean isUnsubscribed() {
+                                return false;
+                            }
+                        });
+                        end.countDown();
+                    } catch (final InterruptedException e) {
+                        fail(e.getMessage());
+                    }
+                }
+            };
+            t.start();
+            threads.add(t);
+        }
+
+        start.countDown();
+        end.await();
+        s.unsubscribe();
+        for (final Thread t : threads) {
+            t.join();
+        }
+
+        assertEquals(30, counter.get());
     }
 
 }

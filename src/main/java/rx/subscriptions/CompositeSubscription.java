@@ -15,15 +15,15 @@
  */
 package rx.subscriptions;
 
+import rx.Subscription;
+import rx.exceptions.Exceptions;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import rx.Subscription;
-import rx.exceptions.*;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed together.
@@ -54,7 +54,7 @@ public final class CompositeSubscription implements Subscription {
      * well.
      *
      * @param s
-     *          the {@link Subscription} to add
+     *         the {@link Subscription} to add
      */
     public void add(final Subscription s) {
         if (s.isUnsubscribed()) {
@@ -76,11 +76,43 @@ public final class CompositeSubscription implements Subscription {
     }
 
     /**
+     * Adds collection of {@link Subscription} to this {@code CompositeSubscription} if the
+     * {@code CompositeSubscription} is not yet unsubscribed. If the {@code CompositeSubscription} <em>is</em>
+     * unsubscribed, {@code addAll} will indicate this by explicitly unsubscribing all {@code Subscription} in collection as
+     * well.
+     *
+     * @param subscriptions
+     *         the collection of {@link Subscription} to add
+     */
+    public void addAll(final Subscription... subscriptions) {
+        if (!unsubscribed) {
+            synchronized (this) {
+                if (!unsubscribed) {
+                    if (this.subscriptions == null) {
+                        this.subscriptions = new HashSet<Subscription>(subscriptions.length);
+                    }
+
+                    for (Subscription s : subscriptions) {
+                        if (!s.isUnsubscribed()) {
+                            this.subscriptions.add(s);
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+
+        for (Subscription s : subscriptions) {
+            s.unsubscribe();
+        }
+    }
+
+    /**
      * Removes a {@link Subscription} from this {@code CompositeSubscription}, and unsubscribes the
      * {@link Subscription}.
      *
      * @param s
-     *          the {@link Subscription} to remove
+     *         the {@link Subscription} to remove
      */
     public void remove(final Subscription s) {
         if (!unsubscribed) {
