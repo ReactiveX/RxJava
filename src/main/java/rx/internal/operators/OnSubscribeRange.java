@@ -25,108 +25,110 @@ import rx.Observable.OnSubscribe;
  */
 public final class OnSubscribeRange implements OnSubscribe<Integer> {
 
-    private final int start;
-    private final int end;
+    private final int startIndex;
+    private final int endIndex;
 
     public OnSubscribeRange(int start, int end) {
-        this.start = start;
-        this.end = end;
+        this.startIndex = start;
+        this.endIndex = end;
     }
 
     @Override
-    public void call(final Subscriber<? super Integer> o) {
-        o.setProducer(new RangeProducer(o, start, end));
+    public void call(final Subscriber<? super Integer> childSubscriber) {
+        childSubscriber.setProducer(new RangeProducer(childSubscriber, startIndex, endIndex));
     }
 
     private static final class RangeProducer extends AtomicLong implements Producer {
         /** */
         private static final long serialVersionUID = 4114392207069098388L;
         
-        private final Subscriber<? super Integer> o;
-        private final int end;
-        private long index;
+        private final Subscriber<? super Integer> childSubscriber;
+        private final int endOfRange;
+        private long currentIndex;
 
-        RangeProducer(Subscriber<? super Integer> o, int start, int end) {
-            this.o = o;
-            this.index = start;
-            this.end = end;
+        RangeProducer(Subscriber<? super Integer> childSubscriber, int startIndex, int endIndex) {
+            this.childSubscriber = childSubscriber;
+            this.currentIndex = startIndex;
+            this.endOfRange = endIndex;
         }
 
         @Override
-        public void request(long n) {
+        public void request(long requestedAmount) {
             if (get() == Long.MAX_VALUE) {
                 // already started with fast-path
                 return;
             }
-            if (n == Long.MAX_VALUE && compareAndSet(0L, Long.MAX_VALUE)) {
+            if (requestedAmount == Long.MAX_VALUE && compareAndSet(0L, Long.MAX_VALUE)) {
                 // fast-path without backpressure
                 fastpath();
-            } else if (n > 0L) {
-                long c = BackpressureUtils.getAndAddRequest(this, n);
+            } else if (requestedAmount > 0L) {
+                long c = BackpressureUtils.getAndAddRequest(this, requestedAmount);
                 if (c == 0L) {
                     // backpressure is requested
-                    slowpath(n);
+                    slowpath(requestedAmount);
                 }
             }
         }
 
         /**
-         * 
+         * Emits as many values as requested or remaining from the range, whichever is smaller.
          */
-        void slowpath(long r) {
-            long idx = index;
-            while (true) {
-                /*
-                 * This complicated logic is done to avoid touching the volatile `index` and `requested` values
-                 * during the loop itself. If they are touched during the loop the performance is impacted significantly.
-                 */
-                long fs = end - idx + 1;
-                long e = Math.min(fs, r);
-                final boolean complete = fs <= r;
-
-                fs = e + idx;
-                final Subscriber<? super Integer> o = this.o;
+        void slowpath(long requestedAmount) {
+            long emitted = 0L;
+            long endIndex = endOfRange + 1L;
+            long index = currentIndex;
+            
+            final Subscriber<? super Integer> childSubscriber = this.childSubscriber;
+            
+            for (;;) {
                 
-                for (long i = idx; i != fs; i++) {
-                    if (o.isUnsubscribed()) {
+                while (emitted != requestedAmount && index != endIndex) {
+                    if (childSubscriber.isUnsubscribed()) {
                         return;
                     }
-                    o.onNext((int) i);
+                    
+                    childSubscriber.onNext((int)index);
+                    
+                    index++;
+                    emitted++;
                 }
                 
-                if (complete) {
-                    if (o.isUnsubscribed()) {
-                        return;
-                    }
-                    o.onCompleted();
+                if (childSubscriber.isUnsubscribed()) {
                     return;
                 }
                 
-                idx = fs;
-                index = fs;
-                
-                r = addAndGet(-e);
-                if (r == 0L) {
-                    // we're done emitting the number requested so return
+                if (index == endIndex) {
+                    childSubscriber.onCompleted();
                     return;
+                }
+                
+                requestedAmount = get();
+                
+                if (requestedAmount == emitted) {
+                    currentIndex = index;
+                    requestedAmount = addAndGet(-emitted);
+                    if (requestedAmount == 0L) {
+                        break;
+                    }
+                    emitted = 0L;
                 }
             }
         }
 
         /**
-         * 
+         * Emits all remaining values without decrementing the requested amount.
          */
         void fastpath() {
-            final long end = this.end + 1L;
-            final Subscriber<? super Integer> o = this.o;
-            for (long i = index; i != end; i++) {
-                if (o.isUnsubscribed()) {
+            final long endIndex = this.endOfRange + 1L;
+            final Subscriber<? super Integer> childSubscriber = this.childSubscriber;
+            for (long index = currentIndex; index != endIndex; index++) {
+                if (childSubscriber.isUnsubscribed()) {
                     return;
                 }
-                o.onNext((int) i);
+                childSubscriber.onNext((int) index);
             }
-            if (!o.isUnsubscribed()) {
-                o.onCompleted();
+            if (!childSubscriber.isUnsubscribed()) {
+                childSubscriber.onCompleted();
             }
         }
     }
