@@ -798,6 +798,7 @@ public class OnSubscribeCombineLatestTest {
         final AtomicInteger count = new AtomicInteger();
         final int SIZE = 2000;
         Observable<Long> timer = Observable.interval(0, 1, TimeUnit.MILLISECONDS)
+                .onBackpressureBuffer()
                 .observeOn(Schedulers.newThread())
                 .doOnEach(new Action1<Notification<? super Long>>() {
 

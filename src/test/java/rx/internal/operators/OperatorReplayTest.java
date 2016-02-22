@@ -46,6 +46,7 @@ import rx.functions.Func1;
 import rx.internal.operators.OperatorReplay.BoundedReplayBuffer;
 import rx.internal.operators.OperatorReplay.Node;
 import rx.internal.operators.OperatorReplay.SizeAndTimeBoundReplayBuffer;
+import rx.internal.util.PlatformDependent;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -1051,7 +1052,13 @@ public class OperatorReplayTest {
     
     @Test
     public void testNoMissingBackpressureException() {
-        final int m = 4 * 1000 * 1000;
+        final int m;
+        if (PlatformDependent.isAndroid()) {
+            m = 500 * 1000;
+        } else {
+            m = 4 * 1000 * 1000;
+        }
+        
         Observable<Integer> firehose = Observable.create(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t) {
