@@ -268,8 +268,12 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
                 if (producer != null) {
                     throw new IllegalStateException("Can't set more than one Producer!");
                 }
+                mr = missedRequested;
                 // request one less because of the initial value, this happens once
-                mr = missedRequested - 1;
+                // and is performed only if the request is not at MAX_VALUE already
+                if (mr != Long.MAX_VALUE) {
+                    mr -= 1;
+                }
                 missedRequested = 0L;
                 producer = p;
             }
