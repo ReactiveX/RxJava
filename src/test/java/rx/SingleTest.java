@@ -1357,252 +1357,28 @@ public class SingleTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void takeUntilSuccess() {
-        Subscription sSource = mock(Subscription.class);
-        Subscription sOther = mock(Subscription.class);
-        TestSingle source = new TestSingle(sSource);
-        TestSingle other = new TestSingle(sOther);
-
-        TestSubscriber<String> result = new TestSubscriber<String>();
-        Single<String> stringSingle = Single.create(source).takeUntil(Single.create(other));
-        stringSingle.subscribe(result);
-        other.sendOnSuccess("one");
-
-        result.assertError(CancellationException.class);
-        verify(sSource).unsubscribe();
-        verify(sOther).unsubscribe();
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void takeUntilSourceSuccess() {
-        Subscription sSource = mock(Subscription.class);
-        Subscription sOther = mock(Subscription.class);
-        TestSingle source = new TestSingle(sSource);
-        TestSingle other = new TestSingle(sOther);
-
-        TestSubscriber<String> result = new TestSubscriber<String>();
-        Single<String> stringSingle = Single.create(source).takeUntil(Single.create(other));
-        stringSingle.subscribe(result);
-        source.sendOnSuccess("one");
-
-        result.assertValue("one");
-        verify(sSource).unsubscribe();
-        verify(sOther).unsubscribe();
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void takeUntilNext() {
-        Subscription sSource = mock(Subscription.class);
-        Subscription sOther = mock(Subscription.class);
-        TestSingle source = new TestSingle(sSource);
-        TestObservable other = new TestObservable(sOther);
-
-        TestSubscriber<String> result = new TestSubscriber<String>();
-        Single<String> stringSingle = Single.create(source).takeUntil(Observable.create(other));
-        stringSingle.subscribe(result);
-        other.sendOnNext("one");
-
-        result.assertError(CancellationException.class);
-        verify(sSource).unsubscribe();
-        verify(sOther).unsubscribe();
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void takeUntilSourceSuccessObservable() {
-        Subscription sSource = mock(Subscription.class);
-        Subscription sOther = mock(Subscription.class);
-        TestSingle source = new TestSingle(sSource);
-        TestObservable other = new TestObservable(sOther);
-
-        TestSubscriber<String> result = new TestSubscriber<String>();
-        Single<String> stringSingle = Single.create(source).takeUntil(Observable.create(other));
-        stringSingle.subscribe(result);
-        source.sendOnSuccess("one");
-
-        result.assertValue("one");
-        verify(sSource).unsubscribe();
-        verify(sOther).unsubscribe();
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void takeUntilSourceError() {
-        Subscription sSource = mock(Subscription.class);
-        Subscription sOther = mock(Subscription.class);
-        TestSingle source = new TestSingle(sSource);
-        TestSingle other = new TestSingle(sOther);
-        Throwable error = new Throwable();
-
-        TestSubscriber<String> result = new TestSubscriber<String>();
-        Single<String> stringSingle = Single.create(source).takeUntil(Single.create(other));
-        stringSingle.subscribe(result);
-        source.sendOnError(error);
-
-        result.assertError(error);
-        verify(sSource).unsubscribe();
-        verify(sOther).unsubscribe();
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void takeUntilSourceErrorObservable() {
-        Subscription sSource = mock(Subscription.class);
-        Subscription sOther = mock(Subscription.class);
-        TestSingle source = new TestSingle(sSource);
-        TestObservable other = new TestObservable(sOther);
-        Throwable error = new Throwable();
-
-        TestSubscriber<String> result = new TestSubscriber<String>();
-        Single<String> stringSingle = Single.create(source).takeUntil(Observable.create(other));
-        stringSingle.subscribe(result);
-        source.sendOnError(error);
-
-        result.assertError(error);
-        verify(sSource).unsubscribe();
-        verify(sOther).unsubscribe();
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void takeUntilOtherError() {
-        Subscription sSource = mock(Subscription.class);
-        Subscription sOther = mock(Subscription.class);
-        TestSingle source = new TestSingle(sSource);
-        TestSingle other = new TestSingle(sOther);
-        Throwable error = new Throwable();
-
-        TestSubscriber<String> result = new TestSubscriber<String>();
-        Single<String> stringSingle = Single.create(source).takeUntil(Single.create(other));
-        stringSingle.subscribe(result);
-        other.sendOnError(error);
-
-        result.assertError(error);
-        verify(sSource).unsubscribe();
-        verify(sOther).unsubscribe();
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void takeUntilOtherErrorObservable() {
-        Subscription sSource = mock(Subscription.class);
-        Subscription sOther = mock(Subscription.class);
-        TestSingle source = new TestSingle(sSource);
-        TestObservable other = new TestObservable(sOther);
-        Throwable error = new Throwable();
-
-        TestSubscriber<String> result = new TestSubscriber<String>();
-        Single<String> stringSingle = Single.create(source).takeUntil(Observable.create(other));
-        stringSingle.subscribe(result);
-        other.sendOnError(error);
-
-        result.assertError(error);
-        verify(sSource).unsubscribe();
-        verify(sOther).unsubscribe();
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void takeUntilOtherCompleted() {
-        Subscription sSource = mock(Subscription.class);
-        Subscription sOther = mock(Subscription.class);
-        TestSingle source = new TestSingle(sSource);
-        TestObservable other = new TestObservable(sOther);
-
-        TestSubscriber<String> result = new TestSubscriber<String>();
-        Single<String> stringSingle = Single.create(source).takeUntil(Observable.create(other));
-        stringSingle.subscribe(result);
-        other.sendOnCompleted();
-
-        result.assertError(CancellationException.class);
-        verify(sSource).unsubscribe();
-        verify(sOther).unsubscribe();
-
-    }
-
-    private static class TestObservable implements Observable.OnSubscribe<String> {
-
-        Observer<? super String> observer = null;
-        Subscription s;
-
-        public TestObservable(Subscription s) {
-            this.s = s;
-        }
-
-        /* used to simulate subscription */
-        public void sendOnCompleted() {
-            observer.onCompleted();
-        }
-
-        /* used to simulate subscription */
-        public void sendOnNext(String value) {
-            observer.onNext(value);
-        }
-
-        /* used to simulate subscription */
-        public void sendOnError(Throwable e) {
-            observer.onError(e);
-        }
-
-        @Override
-        public void call(Subscriber<? super String> observer) {
-            this.observer = observer;
-            observer.add(s);
-        }
-    }
-
-    private static class TestSingle implements Single.OnSubscribe<String> {
-
-        SingleSubscriber<? super String> subscriber = null;
-        Subscription s;
-
-        public TestSingle(Subscription s) {
-            this.s = s;
-        }
-
-        /* used to simulate subscription */
-        public void sendOnSuccess(String value) {
-            subscriber.onSuccess(value);
-        }
-
-        /* used to simulate subscription */
-        public void sendOnError(Throwable e) {
-            subscriber.onError(e);
-        }
-
-        @Override
-        public void call(SingleSubscriber<? super String> observer) {
-            this.subscriber = observer;
-            observer.add(s);
-        }
-    }
-
-    @Test
-    public void takeUntilFires() {
+    public void takeUntilCompletableFires() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        source.take(1).toSingle().takeUntil(until.take(1).toSingle()).unsafeSubscribe(ts);
+        source.take(1).toSingle().takeUntil(until.toCompletable()).unsafeSubscribe(ts);
 
         assertTrue(source.hasObservers());
         assertTrue(until.hasObservers());
 
-        until.onNext(1);
+        until.onCompleted();
 
         ts.assertError(CancellationException.class);
 
-        assertFalse("Source still has observers", source.hasObservers());
-        assertFalse("Until still has observers", until.hasObservers());
-        assertFalse("TestSubscriber is unsubscribed", ts.isUnsubscribed());
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
     }
 
     @Test
-    public void takeUntilFiresObservable() {
+    public void takeUntilObservableFires() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 
@@ -1617,13 +1393,78 @@ public class SingleTest {
 
         ts.assertError(CancellationException.class);
 
-        assertFalse("Source still has observers", source.hasObservers());
-        assertFalse("Until still has observers", until.hasObservers());
-        assertFalse("TestSubscriber is unsubscribed", ts.isUnsubscribed());
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
     }
 
     @Test
-    public void takeUntilDownstreamUnsubscribes() {
+    public void takeUntilSingleFires() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.take(1).toSingle()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        until.onNext(1);
+
+        ts.assertError(CancellationException.class);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilObservableCompletes() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.take(1)).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        until.onCompleted();
+
+        ts.assertError(CancellationException.class);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilSourceUnsubscribes_withCompletable() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.toCompletable()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        source.onNext(1);
+
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertTerminalEvent();
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilSourceUnsubscribes_withObservable() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 
@@ -1640,13 +1481,13 @@ public class SingleTest {
         ts.assertNoErrors();
         ts.assertTerminalEvent();
 
-        assertFalse("Source still has observers", source.hasObservers());
-        assertFalse("Until still has observers", until.hasObservers());
-        assertFalse("TestSubscriber is unsubscribed", ts.isUnsubscribed());
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
     }
 
     @Test
-    public void takeUntilDownstreamUnsubscribesObservable() {
+    public void takeUntilSourceUnsubscribes_withSingle() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 
@@ -1663,54 +1504,144 @@ public class SingleTest {
         ts.assertNoErrors();
         ts.assertTerminalEvent();
 
-        assertFalse("Source still has observers", source.hasObservers());
-        assertFalse("Until still has observers", until.hasObservers());
-        assertFalse("TestSubscriber is unsubscribed", ts.isUnsubscribed());
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
     }
 
     @Test
-    public void takeUntilSimple() {
-        PublishSubject<String> stringSubject = PublishSubject.create();
-        Single<String> single = stringSubject.toSingle();
+    public void takeUntilSourceErrorUnsubscribes_withCompletable() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
 
-        Subscription singleSubscription = single.takeUntil(Single.just("Hello")).subscribe(
-                new Action1<String>() {
-                    @Override
-                    public void call(String s) {
-                        fail();
-                    }
-                },
-                new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        assertTrue(throwable instanceof CancellationException);
-                    }
-                }
-        );
-        assertTrue(singleSubscription.isUnsubscribed());
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.toCompletable()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        Exception e = new Exception();
+        source.onError(e);
+
+        ts.assertNoValues();
+        ts.assertError(e);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
     }
 
     @Test
-    public void takeUntilObservable() {
-        PublishSubject<String> stringSubject = PublishSubject.create();
-        Single<String> single = stringSubject.toSingle();
-        PublishSubject<String> otherSubject = PublishSubject.create();
+    public void takeUntilSourceErrorUnsubscribes_withObservable() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
 
-        Subscription singleSubscription = single.takeUntil(otherSubject.asObservable()).subscribe(
-                new Action1<String>() {
-                    @Override
-                    public void call(String s) {
-                        fail();
-                    }
-                },
-                new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        assertTrue(throwable instanceof CancellationException);
-                    }
-                }
-        );
-        otherSubject.onNext("Hello");
-        assertTrue(singleSubscription.isUnsubscribed());
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        source.onError(new Throwable());
+
+        ts.assertNoValues();
+        ts.assertError(Throwable.class);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilSourceErrorUnsubscribes_withSingle() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.take(1).toSingle()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        source.onError(new Throwable());
+
+        ts.assertNoValues();
+        ts.assertError(Throwable.class);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilError_withCompletable_shouldMatch() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.toCompletable()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        Exception e = new Exception();
+        until.onError(e);
+
+        ts.assertNoValues();
+        ts.assertError(e);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilError_withObservable_shouldMatch() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.asObservable()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        Exception e = new Exception();
+        until.onError(e);
+
+        ts.assertNoValues();
+        ts.assertError(e);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilError_withSingle_shouldMatch() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.take(1).toSingle()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        Exception e = new Exception();
+        until.onError(e);
+
+        ts.assertNoValues();
+        ts.assertError(e);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
     }
 }

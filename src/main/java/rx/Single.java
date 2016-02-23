@@ -1803,6 +1803,79 @@ public class Single<T> {
     }
 
     /**
+     * Returns a Single that emits the item emitted by the source Single until a Completable terminates. Upon
+     * termination of {@code other}, this will emit a {@link CancellationException} rather than go to
+     * {@link SingleSubscriber#onSuccess(Object)}.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code takeUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other
+     *            the Completable whose termination will cause {@code takeUntil} to emit the item from the source
+     *            Single
+     * @return a Single that emits the item emitted by the source Single until such time as {@code other} terminates.
+     * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
+     */
+    public final Single<T> takeUntil(final Completable other) {
+        return lift(new Operator<T, T>() {
+            @Override
+            public Subscriber<? super T> call(Subscriber<? super T> child) {
+                final Subscriber<T> serial = new SerializedSubscriber<T>(child, false);
+
+                final Subscriber<T> main = new Subscriber<T>(serial, false) {
+                    @Override
+                    public void onNext(T t) {
+                        serial.onNext(t);
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        try {
+                            serial.onError(e);
+                        } finally {
+                            serial.unsubscribe();
+                        }
+                    }
+                    @Override
+                    public void onCompleted() {
+                        try {
+                            serial.onCompleted();
+                        } finally {
+                            serial.unsubscribe();
+                        }
+                    }
+                };
+
+                final Completable.CompletableSubscriber so = new Completable.CompletableSubscriber() {
+                    @Override
+                    public void onCompleted() {
+                        onError(new CancellationException("Stream was canceled before emitting a terminal event."));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        main.onError(e);
+                    }
+
+                    @Override
+                    public void onSubscribe(Subscription d) {
+                        serial.add(d);
+                    }
+                };
+
+                serial.add(main);
+                child.add(serial);
+
+                other.subscribe(so);
+
+                return main;
+            }
+        });
+    }
+
+    /**
      * Returns a Single that emits the item emitted by the source Single until an Observable emits an item. Upon
      * emission of an item from {@code other}, this will emit a {@link CancellationException} rather than go to
      * {@link SingleSubscriber#onSuccess(Object)}.
