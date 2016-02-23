@@ -15,6 +15,12 @@ package rx;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+
 import rx.Single.OnSubscribe;
 import rx.exceptions.CompositeException;
 import rx.functions.*;
@@ -22,12 +28,8 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.singles.BlockingSingle;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
@@ -1352,5 +1354,294 @@ public class SingleTest {
 
         int numberOfErrors = retryCounter.getOnErrorEvents().size();
         assertEquals(retryCount, numberOfErrors);
+    }
+
+    @Test
+    public void takeUntilCompletableFires() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.toCompletable()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        until.onCompleted();
+
+        ts.assertError(CancellationException.class);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilObservableFires() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.take(1)).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        until.onNext(1);
+
+        ts.assertError(CancellationException.class);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilSingleFires() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.take(1).toSingle()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        until.onNext(1);
+
+        ts.assertError(CancellationException.class);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilObservableCompletes() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.take(1)).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        until.onCompleted();
+
+        ts.assertError(CancellationException.class);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilSourceUnsubscribes_withCompletable() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.toCompletable()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        source.onNext(1);
+
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertTerminalEvent();
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilSourceUnsubscribes_withObservable() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        source.onNext(1);
+
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertTerminalEvent();
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilSourceUnsubscribes_withSingle() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.take(1).toSingle()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        source.onNext(1);
+
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertTerminalEvent();
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilSourceErrorUnsubscribes_withCompletable() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.toCompletable()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        Exception e = new Exception();
+        source.onError(e);
+
+        ts.assertNoValues();
+        ts.assertError(e);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilSourceErrorUnsubscribes_withObservable() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        source.onError(new Throwable());
+
+        ts.assertNoValues();
+        ts.assertError(Throwable.class);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilSourceErrorUnsubscribes_withSingle() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.take(1).toSingle()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        source.onError(new Throwable());
+
+        ts.assertNoValues();
+        ts.assertError(Throwable.class);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilError_withCompletable_shouldMatch() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.toCompletable()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        Exception e = new Exception();
+        until.onError(e);
+
+        ts.assertNoValues();
+        ts.assertError(e);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilError_withObservable_shouldMatch() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.asObservable()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        Exception e = new Exception();
+        until.onError(e);
+
+        ts.assertNoValues();
+        ts.assertError(e);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
+    }
+
+    @Test
+    public void takeUntilError_withSingle_shouldMatch() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        source.take(1).toSingle().takeUntil(until.take(1).toSingle()).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        Exception e = new Exception();
+        until.onError(e);
+
+        ts.assertNoValues();
+        ts.assertError(e);
+
+        assertFalse(source.hasObservers());
+        assertFalse(until.hasObservers());
+        assertFalse(ts.isUnsubscribed());
     }
 }
