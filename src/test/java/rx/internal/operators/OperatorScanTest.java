@@ -451,4 +451,22 @@ public class OperatorScanTest {
             }
         });
     }
+    
+    @Test
+    public void scanShouldPassUpstreamARequestForMaxValue() {
+        final List<Long> requests = new ArrayList<Long>();
+        Observable.just(1,2,3).doOnRequest(new Action1<Long>() {
+            @Override
+            public void call(Long n) {
+                requests.add(n);
+            }
+        })
+        .scan(new Func2<Integer,Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return 0;
+            }}).count().subscribe();
+        
+        assertEquals(Arrays.asList(Long.MAX_VALUE), requests);
+    }
 }
