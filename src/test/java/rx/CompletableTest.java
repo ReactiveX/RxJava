@@ -2700,7 +2700,64 @@ public class CompletableTest {
         
         Assert.assertTrue(name.get().startsWith("RxComputation"));
     }
-    
+
+    @Test
+    public void subscribeEmptyOnError() {
+        expectUncaughtTestException(new Action0() {
+            @Override public void call() {
+                error.completable.subscribe();
+            }
+        });
+    }
+
+    @Test
+    public void subscribeOneActionOnError() {
+        expectUncaughtTestException(new Action0() {
+            @Override
+            public void call() {
+                error.completable.subscribe(new Action0() {
+                    @Override
+                    public void call() {
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void subscribeOneActionThrowFromOnCompleted() {
+        expectUncaughtTestException(new Action0() {
+            @Override
+            public void call() {
+                normal.completable.subscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        throw new TestException();
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void subscribeTwoActionsThrowFromOnError() {
+        expectUncaughtTestException(new Action0() {
+            @Override
+            public void call() {
+                error.completable.subscribe(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throw new TestException();
+                    }
+                }, new Action0() {
+                    @Override
+                    public void call() {
+                    }
+                });
+            }
+        });
+    }
+
     @Test(timeout = 1000)
     public void timeoutEmitError() {
         Throwable e = Completable.never().timeout(100, TimeUnit.MILLISECONDS).get();
@@ -3740,6 +3797,26 @@ public class CompletableTest {
         
         assertTrue("Not unsubscribed?", completableSubscription.isUnsubscribed());
         assertNotNull("Unsubscribed before the call to onError", subscriptionRef.get());
+    }
+
+    private static void expectUncaughtTestException(Action0 action) {
+        Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
+        CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(handler);
+        try {
+            action.call();
+            assertEquals("Should have received exactly 1 exception", 1, handler.count);
+            Throwable caught = handler.caught;
+            while (caught != null) {
+                if (caught instanceof TestException) break;
+                if (caught == caught.getCause()) break;
+                caught = caught.getCause();
+            }
+            assertTrue("A TestException should have been delivered to the handler",
+                    caught instanceof TestException);
+        } finally {
+            Thread.setDefaultUncaughtExceptionHandler(originalHandler);
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package rx.schedulers;
 
+import rx.CapturingUncaughtExceptionHandler;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -84,19 +85,6 @@ final class SchedulerTests {
             assertEquals("Our error should have been delivered to the observer", error, cause);
         } finally {
             Thread.setDefaultUncaughtExceptionHandler(originalHandler);
-        }
-    }
-
-    private static final class CapturingUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
-        int count = 0;
-        Throwable caught;
-        CountDownLatch completed = new CountDownLatch(1);
-
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            count++;
-            caught = e;
-            completed.countDown();
         }
     }
 

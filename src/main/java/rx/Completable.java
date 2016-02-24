@@ -1835,6 +1835,7 @@ public class Completable {
             public void onError(Throwable e) {
                 ERROR_HANDLER.handleError(e);
                 mad.unsubscribe();
+                deliverUncaughtException(e);
             }
             
             @Override
@@ -1864,14 +1865,17 @@ public class Completable {
                     onComplete.call();
                 } catch (Throwable e) {
                     ERROR_HANDLER.handleError(e);
+                    deliverUncaughtException(e);
+                } finally {
+                    mad.unsubscribe();
                 }
-                mad.unsubscribe();
             }
             
             @Override
             public void onError(Throwable e) {
                 ERROR_HANDLER.handleError(e);
                 mad.unsubscribe();
+                deliverUncaughtException(e);
             }
             
             @Override
@@ -1915,8 +1919,10 @@ public class Completable {
                 } catch (Throwable ex) {
                     e = new CompositeException(Arrays.asList(e, ex));
                     ERROR_HANDLER.handleError(e);
+                    deliverUncaughtException(e);
+                } finally {
+                    mad.unsubscribe();
                 }
-                mad.unsubscribe();
             }
             
             @Override
@@ -1927,7 +1933,12 @@ public class Completable {
         
         return mad;
     }
-    
+
+    private static void deliverUncaughtException(Throwable e) {
+        Thread thread = Thread.currentThread();
+        thread.getUncaughtExceptionHandler().uncaughtException(thread, e);
+    }
+
     /**
      * Subscribes the given CompletableSubscriber to this Completable instance.
      * @param s the CompletableSubscriber, not null
