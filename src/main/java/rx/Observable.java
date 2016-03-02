@@ -96,6 +96,77 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that respects the back-pressure semantics. When the returned Observable is 
+     * subscribed to it will initiate the given {@link SyncOnSubscribe}'s life cycle for 
+     * generating events. 
+     * 
+     * <p><b>Note:</b> the {@code SyncOnSubscribe} provides a generic way to fulfill data by iterating 
+     * over a (potentially stateful) function (e.g. reading data off of a channel, a parser, ). If your 
+     * data comes directly from an asyrchronous/potentially concurrent source then consider using the 
+     * {@link Observable#create(AsyncOnSubscribe) asynchronous overload}.
+     * 
+     * <p>
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/create-sync.png" alt="">
+     * <p>
+     * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a> for detailed
+     * information.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <T>
+     *            the type of the items that this Observable emits
+     * @param syncOnSubscribe
+     *            an implementation of {@link SyncOnSubscribe}. There are many static creation methods 
+     *            on the class for convenience.  
+     * @return an Observable that, when a {@link Subscriber} subscribes to it, will execute the specified
+     *         function
+     * @see {@link SyncOnSubscribe} {@code static create*} methods
+     * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public static <S, T> Observable<T> create(SyncOnSubscribe<S, T> syncOnSubscribe) {
+        return new Observable<T>(hook.onCreate(syncOnSubscribe));
+    }
+
+    /**
+     * Returns an Observable that respects the back-pressure semantics. When the returned Observable is 
+     * subscribed to it will initiate the given {@link AsyncOnSubscribe}'s life cycle for 
+     * generating events. 
+     * 
+     * <p><b>Note:</b> the {@code AsyncOnSubscribe} is useful for observable sources of data that are 
+     * necessarily asynchronous (RPC, external services, etc). Typically most use cases can be solved 
+     * with the {@link Observable#create(SyncOnSubscribe) synchronous overload}.
+     * 
+     * <p>
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/create-async.png" alt="">
+     * <p>
+     * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a> for detailed
+     * information.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <T>
+     *            the type of the items that this Observable emits
+     * @param asyncOnSubscribe
+     *            an implementation of {@link AsyncOnSubscribe}. There are many static creation methods 
+     *            on the class for convenience. 
+     * @return an Observable that, when a {@link Subscriber} subscribes to it, will execute the specified
+     *         function
+     * @see {@link AsyncOnSubscribe AsyncOnSubscribe} {@code static create*} methods
+     * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public static <S, T> Observable<T> create(AsyncOnSubscribe<S, T> asyncOnSubscribe) {
+        return new Observable<T>(hook.onCreate(asyncOnSubscribe));
+    }
+
+    /**
      * Invoked when Observable.subscribe is called.
      */
     public interface OnSubscribe<T> extends Action1<Subscriber<? super T>> {

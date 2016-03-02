@@ -106,10 +106,10 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @param next
      *            produces data to the downstream subscriber (see
      *            {@link #next(Object, long, Observer) next(S, long, Observer)})
-     * @return an OnSubscribe that emits data in a protocol compatible with back-pressure.
+     * @return an AsyncOnSubscribe that emits data in a protocol compatible with back-pressure.
      */
     @Experimental
-    public static <S, T> OnSubscribe<T> createSingleState(Func0<? extends S> generator, 
+    public static <S, T> AsyncOnSubscribe<S, T> createSingleState(Func0<? extends S> generator, 
             final Action3<? super S, Long, ? super Observer<Observable<? extends T>>> next) {
         Func3<S, Long, ? super Observer<Observable<? extends T>>, S> nextFunc = 
                 new Func3<S, Long, Observer<Observable<? extends T>>, S>() {
@@ -134,11 +134,11 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      *            {@link #next(Object, long, Observer) next(S, long, Observer)})
      * @param onUnsubscribe
      *            clean up behavior (see {@link #onUnsubscribe(Object) onUnsubscribe(S)})
-     * @return an OnSubscribe that emits data downstream in a protocol compatible with
+     * @return an AsyncOnSubscribe that emits data downstream in a protocol compatible with
      *         back-pressure.
      */
     @Experimental
-    public static <S, T> OnSubscribe<T> createSingleState(Func0<? extends S> generator, 
+    public static <S, T> AsyncOnSubscribe<S, T> createSingleState(Func0<? extends S> generator, 
             final Action3<? super S, Long, ? super Observer<Observable<? extends T>>> next, 
             final Action1<? super S> onUnsubscribe) {
         Func3<S, Long, Observer<Observable<? extends T>>, S> nextFunc = 
@@ -162,11 +162,11 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      *            {@link #next(Object, long, Observer) next(S, long, Observer)})
      * @param onUnsubscribe
      *            clean up behavior (see {@link #onUnsubscribe(Object) onUnsubscribe(S)})
-     * @return an OnSubscribe that emits data downstream in a protocol compatible with
+     * @return an AsyncOnSubscribe that emits data downstream in a protocol compatible with
      *         back-pressure.
      */
     @Experimental
-    public static <S, T> OnSubscribe<T> createStateful(Func0<? extends S> generator, 
+    public static <S, T> AsyncOnSubscribe<S, T> createStateful(Func0<? extends S> generator, 
             Func3<? super S, Long, ? super Observer<Observable<? extends T>>, ? extends S> next, 
             Action1<? super S> onUnsubscribe) {
         return new AsyncOnSubscribeImpl<S, T>(generator, next, onUnsubscribe);
@@ -181,11 +181,11 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @param next
      *            produces data to the downstream subscriber (see
      *            {@link #next(Object, long, Observer) next(S, long, Observer)})
-     * @return an OnSubscribe that emits data downstream in a protocol compatible with
+     * @return an AsyncOnSubscribe that emits data downstream in a protocol compatible with
      *         back-pressure.
      */
     @Experimental
-    public static <S, T> OnSubscribe<T> createStateful(Func0<? extends S> generator, 
+    public static <S, T> AsyncOnSubscribe<S, T> createStateful(Func0<? extends S> generator, 
             Func3<? super S, Long, ? super Observer<Observable<? extends T>>, ? extends S> next) {
         return new AsyncOnSubscribeImpl<S, T>(generator, next);
     }
@@ -200,11 +200,11 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @param next
      *            produces data to the downstream subscriber (see
      *            {@link #next(Object, long, Observer) next(S, long, Observer)})
-     * @return an OnSubscribe that emits data downstream in a protocol compatible with
+     * @return an AsyncOnSubscribe that emits data downstream in a protocol compatible with
      *         back-pressure.
      */
     @Experimental
-    public static <T> OnSubscribe<T> createStateless(final Action2<Long, ? super Observer<Observable<? extends T>>> next) {
+    public static <T> AsyncOnSubscribe<Void, T> createStateless(final Action2<Long, ? super Observer<Observable<? extends T>>> next) {
         Func3<Void, Long, Observer<Observable<? extends T>>, Void> nextFunc = 
                 new Func3<Void, Long, Observer<Observable<? extends T>>, Void>() {
                     @Override
@@ -227,11 +227,11 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      *            {@link #next(Object, long, Observer) next(S, long, Observer)})
      * @param onUnsubscribe
      *            clean up behavior (see {@link #onUnsubscribe(Object) onUnsubscribe(S)})
-     * @return an OnSubscribe that emits data downstream in a protocol compatible with
+     * @return an AsyncOnSubscribe that emits data downstream in a protocol compatible with
      *         back-pressure.
      */
     @Experimental
-    public static <T> OnSubscribe<T> createStateless(final Action2<Long, ? super Observer<Observable<? extends T>>> next, 
+    public static <T> AsyncOnSubscribe<Void, T> createStateless(final Action2<Long, ? super Observer<Observable<? extends T>>> next, 
             final Action0 onUnsubscribe) {
         Func3<Void, Long, Observer<Observable<? extends T>>, Void> nextFunc = 
                 new Func3<Void, Long, Observer<Observable<? extends T>>, Void>() {
