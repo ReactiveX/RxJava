@@ -879,6 +879,43 @@ public class SingleTest {
     }
 
     @Test
+    public void doOnSubscribeShouldInvokeAction() {
+        Action0 action = mock(Action0.class);
+        Single<Integer> single = Single.just(1).doOnSubscribe(action);
+
+        verifyZeroInteractions(action);
+
+        single.subscribe();
+        single.subscribe();
+
+        verify(action, times(2)).call();
+    }
+
+    @Test
+    public void doOnSubscribeShouldInvokeActionBeforeSubscriberSubscribes() {
+        final List<String> callSequence = new ArrayList<String>(2);
+
+        Single<Integer> single = Single.create(new OnSubscribe<Integer>() {
+            @Override
+            public void call(SingleSubscriber<? super Integer> singleSubscriber) {
+                callSequence.add("onSubscribe");
+                singleSubscriber.onSuccess(1);
+            }
+        }).doOnSubscribe(new Action0() {
+            @Override
+            public void call() {
+                callSequence.add("doOnSubscribe");
+            }
+        });
+
+        single.subscribe();
+
+        assertEquals(2, callSequence.size());
+        assertEquals("doOnSubscribe", callSequence.get(0));
+        assertEquals("onSubscribe", callSequence.get(1));
+    }
+
+    @Test
     public void delayWithSchedulerShouldDelayCompletion() {
         TestScheduler scheduler = new TestScheduler();
         Single<Integer> single = Single.just(1).delay(100, TimeUnit.DAYS, scheduler);

@@ -2251,6 +2251,28 @@ public class Single<T> {
     }
 
     /**
+     * Modifies the source {@code Single} so that it invokes the given action when it is subscribed from
+     * its subscribers. Each subscription will result in an invocation of the given action except when the
+     * source {@code Single} is reference counted, in which case the source {@code Single} will invoke
+     * the given action for the first subscription.
+     * <p>
+     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnSubscribe.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param subscribe
+     *            the action that gets called when an observer subscribes to this {@code Single}
+     * @return the source {@code Single} modified so as to call this Action when appropriate
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     */
+    @Experimental
+    public final Single<T> doOnSubscribe(final Action0 subscribe) {
+        return lift(new OperatorDoOnSubscribe<T>(subscribe));
+    }
+
+    /**
      * Returns an Single that emits the items emitted by the source Single shifted forward in time by a
      * specified delay. Error notifications from the source Single are not delayed.
      * <p>
