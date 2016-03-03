@@ -33,8 +33,12 @@ public final class OperatorDoOnEmpty<T> implements Observable.Operator<T, T> {
                         Exceptions.throwOrReport(e,this);
                         return;
                     }
+                    if (!isUnsubscribed()) {
+                        child.onCompleted();
+                    }
+                } else {
+                    child.onCompleted();
                 }
-                child.onCompleted();
                 done = true;
             }
 
