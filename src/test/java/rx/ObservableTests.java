@@ -1108,7 +1108,9 @@ public class ObservableTests {
             subject.subscribe();
             subject.materialize().toBlocking().first();
 
-            Thread.sleep(1000); // the uncaught exception comes after the terminal event reaches toBlocking
+            for (int i = 0; i < 20 && err.get() == null; i++) {
+                Thread.sleep(100); // the uncaught exception comes after the terminal event reaches toBlocking
+            }
             
             assertNotNull("UncaughtExceptionHandler didn't get anything.", err.get());
             
