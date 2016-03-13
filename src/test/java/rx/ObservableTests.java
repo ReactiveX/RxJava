@@ -1099,16 +1099,17 @@ public class ObservableTests {
                 }
             }).get();
             
+            subject.subscribe();
+
             Observable.error(new RuntimeException("oops"))
                 .materialize()
                 .delay(1, TimeUnit.SECONDS, s)
                 .dematerialize()
                 .subscribe(subject);
     
-            subject.subscribe();
             subject.materialize().toBlocking().first();
 
-            for (int i = 0; i < 20 && err.get() == null; i++) {
+            for (int i = 0; i < 50 && err.get() == null; i++) {
                 Thread.sleep(100); // the uncaught exception comes after the terminal event reaches toBlocking
             }
             
