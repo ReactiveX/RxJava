@@ -1598,6 +1598,30 @@ public class Single<T> {
     }
 
     /**
+     * Subscribes an Observer to this single and returns a Subscription that allows
+     * unsubscription.
+     * 
+     * @param observer the Observer to subscribe
+     * @return the Subscription that allows unsubscription 
+     */
+    public final Subscription subscribe(final Observer<? super T> observer) {
+        if (observer == null) {
+            throw new NullPointerException("observer is null");
+        }
+        return subscribe(new SingleSubscriber<T>() {
+            @Override
+            public void onSuccess(T value) {
+                observer.onNext(value);
+                observer.onCompleted();
+            }
+            @Override
+            public void onError(Throwable error) {
+                observer.onError(error);
+            }
+        });
+    }
+    
+    /**
      * Subscribes to a Single and provides a Subscriber that implements functions to handle the item the Single
      * emits or any error notification it issues.
      * <p>
@@ -2539,6 +2563,77 @@ public class Single<T> {
      */
     public final Single<T> retryWhen(final Func1<Observable<? extends Throwable>, ? extends Observable<?>> notificationHandler) {
         return toObservable().retryWhen(notificationHandler).toSingle();
+    }
+
+    /**
+     * Constructs an Single that creates a dependent resource object which is disposed of on unsubscription.
+     * <p>
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param resourceFactory
+     *            the factory function to create a resource object that depends on the Single
+     * @param singleFactory
+     *            the factory function to create a Single
+     * @param disposeAction
+     *            the function that will dispose of the resource
+     * @return the Single whose lifetime controls the lifetime of the dependent resource object
+     * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
+     */
+    @Experimental
+    public static <T, Resource> Single<T> using(
+            final Func0<Resource> resourceFactory,
+            final Func1<? super Resource, ? extends Single<? extends T>> observableFactory,
+            final Action1<? super Resource> disposeAction) {
+        return using(resourceFactory, observableFactory, disposeAction, false);
+    }
+    
+    /**
+     * Constructs an Single that creates a dependent resource object which is disposed of just before 
+     * termination if you have set {@code disposeEagerly} to {@code true} and unsubscription does not occur
+     * before termination. Otherwise resource disposal will occur on unsubscription.  Eager disposal is
+     * particularly appropriate for a synchronous Single that resuses resources. {@code disposeAction} will
+     * only be called once per subscription.
+     * <p>
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @warn "Backpressure Support" section missing from javadoc
+     * @param resourceFactory
+     *            the factory function to create a resource object that depends on the Single
+     * @param singleFactory
+     *            the factory function to create a Single
+     * @param disposeAction
+     *            the function that will dispose of the resource
+     * @param disposeEagerly
+     *            if {@code true} then disposal will happen either on unsubscription or just before emission of 
+     *            a terminal event ({@code onComplete} or {@code onError}).
+     * @return the Single whose lifetime controls the lifetime of the dependent resource object
+     * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
+     * @Experimental The behavior of this can change at any time.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public static <T, Resource> Single<T> using(
+            final Func0<Resource> resourceFactory,
+            final Func1<? super Resource, ? extends Single<? extends T>> singleFactory,
+            final Action1<? super Resource> disposeAction, boolean disposeEagerly) {
+        if (resourceFactory == null) {
+            throw new NullPointerException("resourceFactory is null");
+        }
+        if (singleFactory == null) {
+            throw new NullPointerException("singleFactory is null");
+        }
+        if (disposeAction == null) {
+            throw new NullPointerException("disposeAction is null");
+        }
+        return create(new SingleOnSubscribeUsing<T, Resource>(resourceFactory, singleFactory, disposeAction, disposeEagerly));
     }
 
 }

@@ -12,28 +12,27 @@
  */
 package rx;
 
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
 import rx.Single.OnSubscribe;
-import rx.exceptions.CompositeException;
+import rx.exceptions.*;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
-import rx.schedulers.TestScheduler;
+import rx.schedulers.*;
 import rx.singles.BlockingSingle;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
 
 public class SingleTest {
 
@@ -1680,5 +1679,39 @@ public class SingleTest {
         assertFalse(source.hasObservers());
         assertFalse(until.hasObservers());
         assertFalse(ts.isUnsubscribed());
+    }
+    
+    @Test
+    public void subscribeWithObserver() {
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o = mock(Observer.class);
+        
+        Single.just(1).subscribe(o);
+        
+        verify(o).onNext(1);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void subscribeWithObserverAndGetError() {
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o = mock(Observer.class);
+        
+        Single.<Integer>error(new TestException()).subscribe(o);
+        
+        verify(o, never()).onNext(anyInt());
+        verify(o, never()).onCompleted();
+        verify(o).onError(any(TestException.class));
+    }
+    
+    @Test
+    public void subscribeWithNullObserver() {
+        try {
+            Single.just(1).subscribe((Observer<Integer>)null);
+            fail("Failed to throw NullPointerException");
+        } catch (NullPointerException ex) {
+            assertEquals("observer is null", ex.getMessage());
+        }
     }
 }
