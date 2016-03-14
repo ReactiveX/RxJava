@@ -5888,6 +5888,9 @@ public class Observable<T> {
     /**
      * Returns an Observable that correlates two Observables when they overlap in time and groups the results.
      * <p>
+     * There are no guarantees in what order the items get combined when multiple
+     * items from one or both source Observables overlap.
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupJoin.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -5958,6 +5961,9 @@ public class Observable<T> {
 
     /**
      * Correlates the items emitted by two Observables based on overlapping durations.
+     * <p>
+     * There are no guarantees in what order the items get combined when multiple
+     * items from one or both source Observables overlap.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/join_.png" alt="">
      * <dl>
