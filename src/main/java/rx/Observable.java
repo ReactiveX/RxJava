@@ -3722,6 +3722,116 @@ public class Observable<T> {
     }
 
     /**
+     * Buffers the elements into continuous, non-overlapping Lists where the boundary is
+     * determined by a predicate receiving each item, after being buffered, and returns true to
+     * indicate a new buffer should start.
+     * 
+     * <p>
+     * The operator won't return an empty first or last buffer.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator supports backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param predicate the Func1 that receives each item, after being buffered, and should
+     * return true to indicate a new buffer has to start.
+     * @return the new Observable instance
+     * @see #bufferWhile(Func1)
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
+     *        with the release number)
+     */
+    @Experimental
+    public final Observable<List<T>> bufferUntil(Func1<? super T, Boolean> predicate) {
+        return bufferUntil(predicate, 10);
+    }
+
+    /**
+     * Buffers the elements into continuous, non-overlapping Lists where the boundary is
+     * determined by a predicate receiving each item, after being buffered, and returns true to
+     * indicate a new buffer should start.
+     * 
+     * <p>
+     * The operator won't return an empty first or last buffer.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator supports backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param predicate the Func1 that receives each item, after being buffered, and should
+     * return true to indicate a new buffer has to start.
+     * @param capacityHint the expected number of items in each buffer
+     * @return the new Observable instance
+     * @see #bufferWhile(Func1)
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
+     *        with the release number)
+     */
+    @Experimental
+    public final Observable<List<T>> bufferUntil(Func1<? super T, Boolean> predicate, int capacityHint) {
+        return lift(new OperatorBufferPredicateBoundary<T>(predicate, RxRingBuffer.SIZE, capacityHint, true));
+    }
+
+    /**
+     * Buffers the elements into continuous, non-overlapping Lists where the boundary is
+     * determined by a predicate receiving each item, before or after being buffered, and returns true to
+     * indicate a new buffer should start.
+     * 
+     * <p>
+     * The operator won't return an empty first or last buffer.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator supports backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param predicate the Func1 that receives each item, before being buffered, and should
+     * return true to indicate a new buffer has to start.
+     * @return the new Observable instance
+     * @see #bufferWhile(Func1)
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
+     *        with the release number)
+     */
+    @Experimental
+    public final Observable<List<T>> bufferWhile(Func1<? super T, Boolean> predicate) {
+        return bufferWhile(predicate, 10);
+    }
+
+    /**
+     * Buffers the elements into continuous, non-overlapping Lists where the boundary is
+     * determined by a predicate receiving each item, before being buffered, and returns true to
+     * indicate a new buffer should start.
+     * 
+     * <p>
+     * The operator won't return an empty first or last buffer.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator supports backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param predicate the Func1 that receives each item, before being buffered, and should
+     * return true to indicate a new buffer has to start.
+     * @param capacityHint the expected number of items in each buffer
+     * @return the new Observable instance
+     * @see #bufferWhile(Func1)
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
+     *        with the release number)
+     */
+    @Experimental
+    public final Observable<List<T>> bufferWhile(Func1<? super T, Boolean> predicate, int capacityHint) {
+        return lift(new OperatorBufferPredicateBoundary<T>(predicate, RxRingBuffer.SIZE, capacityHint, false));
+    }
+
+    /**
      * Caches the emissions from the source Observable and replays them in order to any subsequent Subscribers.
      * This method has similar behavior to {@link #replay} except that this auto-subscribes to the source
      * Observable rather than returning a {@link ConnectableObservable} for which you must call
