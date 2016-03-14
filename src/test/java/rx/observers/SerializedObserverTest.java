@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
@@ -27,7 +27,9 @@ import org.junit.*;
 import org.mockito.*;
 
 import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Observer;
 import rx.exceptions.TestException;
 import rx.schedulers.Schedulers;
 
@@ -255,74 +257,62 @@ public class SerializedObserverTest {
      * 
      * @throws InterruptedException
      */
-    @Ignore
-    // this is non-deterministic ... haven't figured out what's wrong with the test yet (benjchristensen: July 2014)
     @Test
     public void testNotificationDelay() throws InterruptedException {
-        ExecutorService tp1 = Executors.newFixedThreadPool(1);
-        ExecutorService tp2 = Executors.newFixedThreadPool(1);
+        final ExecutorService tp1 = Executors.newFixedThreadPool(1);
         try {
-            int n = 10;
+            int n = 10000;
             for (int i = 0; i < n; i++) {
-                final CountDownLatch firstOnNext = new CountDownLatch(1);
-                final CountDownLatch onNextCount = new CountDownLatch(2);
-                final CountDownLatch latch = new CountDownLatch(1);
-                final CountDownLatch running = new CountDownLatch(2);
-
-                TestSubscriber<String> to = new TestSubscriber<String>(new Observer<String>() {
-
+                
+                @SuppressWarnings("unchecked")
+                final Observer<Integer>[] os = new Observer[1];
+                
+                final List<Thread> threads = new ArrayList<Thread>();
+                
+                final Observer<Integer> o = new SerializedObserver<Integer>(new Observer<Integer>() {
+                    boolean first;
                     @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(String t) {
-                        firstOnNext.countDown();
-                        // force it to take time when delivering so the second one is enqueued
-                        try {
-                            latch.await();
-                        } catch (InterruptedException e) {
+                    public void onNext(Integer t) {
+                        threads.add(Thread.currentThread());
+                        if (!first) {
+                            first = true;
+                            try {
+                                tp1.submit(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        os[0].onNext(2);
+                                    }
+                                }).get();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
-
+                    
+                    @Override
+                    public void onError(Throwable e) { 
+                        e.printStackTrace();
+                    }
+                    
+                    @Override
+                    public void onCompleted() { 
+                        
+                    }
                 });
-                Observer<String> o = serializedObserver(to);
-
-                Future<?> f1 = tp1.submit(new OnNextThread(o, 1, onNextCount, running));
-                Future<?> f2 = tp2.submit(new OnNextThread(o, 1, onNextCount, running));
-
-                running.await(); // let one of the OnNextThread actually run before proceeding
                 
-                firstOnNext.await();
-
-                Thread t1 = to.getLastSeenThread();
-                System.out.println("first onNext on thread: " + t1);
-
-                latch.countDown();
-
-                waitOnThreads(f1, f2);
-                // not completed yet
-
-                assertEquals(2, to.getOnNextEvents().size());
-
-                Thread t2 = to.getLastSeenThread();
-                System.out.println("second onNext on thread: " + t2);
-
-                assertSame(t1, t2);
-
-                System.out.println(to.getOnNextEvents());
-                o.onCompleted();
-                System.out.println(to.getOnNextEvents());
+                os[0] = o;
+                
+                o.onNext(1);
+                
+                System.out.println(threads);
+                assertEquals(2, threads.size());
+                
+                assertSame(threads.get(0), threads.get(1));
             }
         } finally {
             tp1.shutdown();
-            tp2.shutdown();
         }
     }
 
