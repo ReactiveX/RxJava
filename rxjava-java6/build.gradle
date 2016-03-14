@@ -1,0 +1,12 @@
+buildscript {
+    repositories { jcenter() }
+    dependencies { classpath 'me.tatarka:gradle-retrolambda:3.2.5' }
+}
+
+apply plugin: 'me.tatarka.retrolambda'
+
+sourceSets {
+    main { java.source project(':rxjava').sourceSets.main.java }
+    perf { java.source project(':rxjava').sourceSets.perf.java }
+    test { java.source project(':rxjava').sourceSets.test.java }
+}

@@ -1,0 +1,15 @@
+buildscript {
+    repositories { jcenter() }
+    dependencies { classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.0.0' }
+}
+
+apply plugin: 'ru.vyarus.animalsniffer'
+
+dependencies {
+    signature 'org.codehaus.mojo.signature:java16-sun:1.10@signature'
+}
+
+animalsniffer {
+    toolVersion = '1.15'
+    ignoreFailures = false
+}

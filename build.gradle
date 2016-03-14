@@ -5,13 +5,16 @@ buildscript {
 
 description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
 
-apply plugin: 'java'
 apply plugin: 'nebula.rxjava-project'
 
-sourceCompatibility = JavaVersion.VERSION_1_6
-targetCompatibility = JavaVersion.VERSION_1_6
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'nebula.rxjava-project'
 
-dependencies {
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+
+  dependencies {
     compile 'org.reactivestreams:reactive-streams:1.0.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
@@ -19,22 +22,23 @@ dependencies {
     perfCompile 'org.openjdk.jmh:jmh-core:1.10.5'
     perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.10.5'
     // perfCompile 'org.reactivex:rxjava:1.0.14'
-}
+  }
 
-javadoc {
+  javadoc {
     exclude "**/io/reactivex/internal/**"
-}
+  }
 
-// support for snapshot/final releases with the various branches RxJava uses
-nebulaRelease {
+  // support for snapshot/final releases with the various branches RxJava uses
+  nebulaRelease {
     addReleaseBranchPattern(/\d+\.\d+\.\d+/)
     addReleaseBranchPattern('HEAD')
-}
+  }
 
-if (project.hasProperty('release.useLastTag')) {
+  if (project.hasProperty('release.useLastTag')) {
     tasks.prepare.enabled = false
-}
+  }
 
-test{
-     maxHeapSize = "2g"
+  test{
+    maxHeapSize = "2g"
+  }
 }
