@@ -2814,7 +2814,36 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
      */
     public static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
-        return sequenceOfSequences.lift(OperatorSwitch.<T>instance());
+        return sequenceOfSequences.lift(OperatorSwitch.<T>instance(false));
+    }
+
+    /**
+     * Converts an Observable that emits Observables into an Observable that emits the items emitted by the
+     * most recently emitted of those Observables and delays any exception until all Observables terminate.
+     * <p>
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.png" alt="">
+     * <p>
+     * {@code switchOnNext} subscribes to an Observable that emits Observables. Each time it observes one of
+     * these emitted Observables, the Observable returned by {@code switchOnNext} begins emitting the items
+     * emitted by that Observable. When a new Observable is emitted, {@code switchOnNext} stops emitting items
+     * from the earlier-emitted Observable and begins emitting items from the new one.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <T> the item type
+     * @param sequenceOfSequences
+     *            the source Observable that emits Observables
+     * @return an Observable that emits the items emitted by the Observable most recently emitted by the source
+     *         Observable
+     * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
+     * @Experimental The behavior of this can change at any time.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public static <T> Observable<T> switchOnNextDelayError(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
+        return sequenceOfSequences.lift(OperatorSwitch.<T>instance(true));
     }
 
     /**
@@ -8635,6 +8664,30 @@ public class Observable<T> {
      */
     public final <R> Observable<R> switchMap(Func1<? super T, ? extends Observable<? extends R>> func) {
         return switchOnNext(map(func));
+    }
+
+    /**
+     * Returns a new Observable by applying a function that you supply to each item emitted by the source
+     * Observable that returns an Observable, and then emitting the items emitted by the most recently emitted
+     * of these Observables and delays any error until all Observables terminate.
+     * <p>
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param func
+     *            a function that, when applied to an item emitted by the source Observable, returns an
+     *            Observable
+     * @return an Observable that emits the items emitted by the Observable returned from applying {@code func} to the most recently emitted item emitted by the source Observable
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @Experimental The behavior of this can change at any time.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public final <R> Observable<R> switchMapDelayError(Func1<? super T, ? extends Observable<? extends R>> func) {
+        return switchOnNextDelayError(map(func));
     }
 
     /**

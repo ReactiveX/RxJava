@@ -15,38 +15,25 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 
+import rx.*;
 import rx.Observable;
 import rx.Observer;
-import rx.Producer;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.exceptions.TestException;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import rx.exceptions.*;
+import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
+import rx.subjects.PublishSubject;
 
 public class OperatorSwitchTest {
 
@@ -667,8 +654,140 @@ public class OperatorSwitchTest {
         ts.requestMore(Long.MAX_VALUE - 1);
         ts.awaitTerminalEvent();
         assertTrue(ts.getOnNextEvents().size() > 0);
-        assertEquals(5, (int) requests.size());
+        assertEquals(5, requests.size());
         assertEquals(Long.MAX_VALUE, (long) requests.get(requests.size()-1));
+    }
+
+    @Test
+    public void mainError() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        source.switchMapDelayError(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return Observable.range(v, 2);
+            }
+        }).subscribe(ts);
+        
+        source.onNext(1);
+        source.onNext(2);
+        source.onError(new TestException());
+        
+        ts.assertValues(1, 2, 2, 3);
+        ts.assertError(TestException.class);
+        ts.assertNotCompleted();
+    }
+
+    @Test
+    public void innerError() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(0, 3).switchMapDelayError(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return v == 1 ? Observable.<Integer>error(new TestException()) : Observable.range(v, 2);
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(0, 1, 2, 3);
+        ts.assertError(TestException.class);
+        ts.assertNotCompleted();
+    }
+
+    @Test
+    public void innerAllError() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(0, 3).switchMapDelayError(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return Observable.range(v, 2).concatWith(Observable.<Integer>error(new TestException()));
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(0, 1, 1, 2, 2, 3);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+        
+        List<Throwable> exceptions = ((CompositeException)ts.getOnErrorEvents().get(0)).getExceptions();
+        
+        assertEquals(3, exceptions.size());
+        
+        for (Throwable ex : exceptions) {
+            assertTrue(ex.toString(), ex instanceof TestException);
+        }
+    }
+
+    @Test
+    public void backpressure() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        Observable.range(0, 3).switchMapDelayError(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return Observable.range(v, 2);
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(2, 3);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void backpressureWithSwitch() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        source.switchMapDelayError(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return Observable.range(v, 2);
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(1);
+        
+        source.onNext(0);
+        
+        ts.assertValues(0);
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        source.onNext(1);
+
+        ts.assertValues(0);
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(1);
+        
+        ts.assertValues(0, 1);
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+
+        source.onNext(2);
+
+        ts.requestMore(2);
+
+        source.onCompleted();
+        
+        ts.assertValues(0, 1, 2, 3);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 
 }
