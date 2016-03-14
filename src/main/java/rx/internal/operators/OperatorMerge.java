@@ -237,6 +237,9 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             if (t == null) {
                 return;
             }
+            if (t == Observable.empty()) {
+                emitEmpty();
+            } else
             if (t instanceof ScalarSynchronousObservable) {
                 tryEmit(((ScalarSynchronousObservable<? extends T>)t).get());
             } else {
@@ -244,6 +247,16 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 addInner(inner);
                 t.unsafeSubscribe(inner);
                 emit();
+            }
+        }
+        
+        void emitEmpty() {
+            int produced = scalarEmissionCount + 1;
+            if (produced == scalarEmissionLimit) {
+                scalarEmissionCount = 0;
+                this.requestMore(produced);
+            } else {
+                scalarEmissionCount = produced;
             }
         }
         

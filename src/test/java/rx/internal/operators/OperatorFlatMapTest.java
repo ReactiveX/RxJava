@@ -29,6 +29,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.exceptions.TestException;
 import rx.functions.*;
+import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -544,4 +545,109 @@ public class OperatorFlatMapTest {
             ts.assertValueCount(n * 2);
         }
     }
+    
+    @Test
+    public void justEmptyMixture() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(0, 4 * RxRingBuffer.SIZE)
+        .flatMap(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return (v & 1) == 0 ? Observable.<Integer>empty() : Observable.just(v);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValueCount(2 * RxRingBuffer.SIZE);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        
+        int j = 1;
+        for (Integer v : ts.getOnNextEvents()) {
+            Assert.assertEquals(j, v.intValue());
+            
+            j += 2;
+        }
+    }
+
+    @Test
+    public void rangeEmptyMixture() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(0, 4 * RxRingBuffer.SIZE)
+        .flatMap(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return (v & 1) == 0 ? Observable.<Integer>empty() : Observable.range(v, 2);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValueCount(4 * RxRingBuffer.SIZE);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        
+        int j = 1;
+        List<Integer> list = ts.getOnNextEvents();
+        for (int i = 0; i < list.size(); i += 2) {
+            Assert.assertEquals(j, list.get(i).intValue());
+            Assert.assertEquals(j + 1, list.get(i + 1).intValue());
+            
+            j += 2;
+        }
+    }
+
+    @Test
+    public void justEmptyMixtureMaxConcurrent() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(0, 4 * RxRingBuffer.SIZE)
+        .flatMap(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return (v & 1) == 0 ? Observable.<Integer>empty() : Observable.just(v);
+            }
+        }, 16)
+        .subscribe(ts);
+        
+        ts.assertValueCount(2 * RxRingBuffer.SIZE);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        
+        int j = 1;
+        for (Integer v : ts.getOnNextEvents()) {
+            Assert.assertEquals(j, v.intValue());
+            
+            j += 2;
+        }
+    }
+
+    @Test
+    public void rangeEmptyMixtureMaxConcurrent() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(0, 4 * RxRingBuffer.SIZE)
+        .flatMap(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return (v & 1) == 0 ? Observable.<Integer>empty() : Observable.range(v, 2);
+            }
+        }, 16)
+        .subscribe(ts);
+        
+        ts.assertValueCount(4 * RxRingBuffer.SIZE);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        
+        int j = 1;
+        List<Integer> list = ts.getOnNextEvents();
+        for (int i = 0; i < list.size(); i += 2) {
+            Assert.assertEquals(j, list.get(i).intValue());
+            Assert.assertEquals(j + 1, list.get(i + 1).intValue());
+            
+            j += 2;
+        }
+    }
+
 }
