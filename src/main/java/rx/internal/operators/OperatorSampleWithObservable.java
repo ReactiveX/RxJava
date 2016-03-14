@@ -66,7 +66,7 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
 
             @Override
             public void onCompleted() {
-                // onNext(null); // emit the very last value?
+                onNext(null);
                 s.onCompleted();
                 // no need to null check, main is assigned before any of the two gets subscribed
                 main.get().unsubscribe();
@@ -88,7 +88,7 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
 
             @Override
             public void onCompleted() {
-                // samplerSub.onNext(null); // emit the very last value?
+                samplerSub.onNext(null);
                 s.onCompleted();
 
                 samplerSub.unsubscribe();
