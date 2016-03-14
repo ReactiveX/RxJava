@@ -922,8 +922,9 @@ public class Observable<T> {
      *         {@code observables}, one after the other, without interleaving them
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> concat(Observable<? extends Observable<? extends T>> observables) {
-        return observables.lift(OperatorConcat.<T>instance());
+        return observables.concatMap((Func1)UtilityFunctions.identity());
     }
 
     /**
@@ -1156,6 +1157,45 @@ public class Observable<T> {
      */
     public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
         return concat(just(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+    }
+
+    /**
+     * Concatenates the Observable sequence of Observables into a single sequence by subscribing to each inner Observable,
+     * one after the other, one at a time and delays any errors till the all inner and the outer Observables terminate.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>{@code concatDelayError} fully supports backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param sources the Observable sequence of Observables
+     * @return the new Observable with the concatenating behavior
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Experimental
+    public static <T> Observable<T> concatDelayError(Observable<? extends Observable<? extends T>> sources) {
+        return sources.concatMapDelayError((Func1)UtilityFunctions.identity());
+    }
+
+    /**
+     * Concatenates the Iterable sequence of Observables into a single sequence by subscribing to each Observable,
+     * one after the other, one at a time and delays any errors till the all inner Observables terminate.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>{@code concatDelayError} fully supports backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param sources the Iterable sequence of Observables
+     * @return the new Observable with the concatenating behavior
+     */
+    @Experimental
+    public static <T> Observable<T> concatDelayError(Iterable<? extends Observable<? extends T>> sources) {
+        return concatDelayError(from(sources));
     }
 
     /**
@@ -3957,7 +3997,37 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     public final <R> Observable<R> concatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
-        return concat(map(func));
+        if (this instanceof ScalarSynchronousObservable) {
+            ScalarSynchronousObservable<T> scalar = (ScalarSynchronousObservable<T>) this;
+            return scalar.scalarFlatMap(func);
+        }
+        return create(new OnSubscribeConcatMap<T, R>(this, func, 2, OnSubscribeConcatMap.IMMEDIATE));
+    }
+    
+    /**
+     * Maps each of the items into an Observable, subscribes to them one after the other,
+     * one at a time and emits their values in order
+     * while delaying any error from either this or any of the inner Observables
+     * till all of them terminate.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>{@code concatMapDelayError} fully supports backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <R> the result value type
+     * @param func the function that maps the items of this Observable into the inner Observables.
+     * @return the new Observable instance with the concatenation behavior
+     */
+    @Experimental
+    public final <R> Observable<R> concatMapDelayError(Func1<? super T, ? extends Observable<?extends R>> func) {
+        if (this instanceof ScalarSynchronousObservable) {
+            ScalarSynchronousObservable<T> scalar = (ScalarSynchronousObservable<T>) this;
+            return scalar.scalarFlatMap(func);
+        }
+        return create(new OnSubscribeConcatMap<T, R>(this, func, 2, OnSubscribeConcatMap.END));
     }
     
     /**

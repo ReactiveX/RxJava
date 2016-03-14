@@ -15,15 +15,10 @@
  */
 package rx.exceptions;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
+
+import rx.annotations.Experimental;
 
 /**
  * Represents an exception that is a composite of one or more other exceptions. A {@code CompositeException}
@@ -71,6 +66,34 @@ public final class CompositeException extends RuntimeException {
 
     public CompositeException(Collection<? extends Throwable> errors) {
         this(null, errors);
+    }
+
+    /**
+     * Constructs a CompositeException instance with the supplied initial Throwables.
+     * @param errors the array of Throwables
+     */
+    @Experimental
+    public CompositeException(Throwable... errors) {
+        Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
+        List<Throwable> _exceptions = new ArrayList<Throwable>();
+        if (errors != null) {
+            for (Throwable ex : errors) {
+                if (ex instanceof CompositeException) {
+                    deDupedExceptions.addAll(((CompositeException) ex).getExceptions());
+                } else 
+                if (ex != null) {
+                    deDupedExceptions.add(ex);
+                } else {
+                    deDupedExceptions.add(new NullPointerException());
+                }
+            }
+        } else {
+            deDupedExceptions.add(new NullPointerException());
+        }
+
+        _exceptions.addAll(deDupedExceptions);
+        this.exceptions = Collections.unmodifiableList(_exceptions);
+        this.message = exceptions.size() + " exceptions occurred. ";
     }
 
     /**
