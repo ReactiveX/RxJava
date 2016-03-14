@@ -29,6 +29,7 @@ import org.mockito.*;
 import rx.*;
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
@@ -954,5 +955,107 @@ public class OnSubscribeCombineLatestTest {
             throw new RuntimeException();
         }
 
-    }; 
+    };
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void firstJustError() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.combineLatestDelayError(
+                Arrays.asList(Observable.just(1), Observable.<Integer>error(new TestException())),
+                new FuncN<Integer>() {
+                    @Override
+                    public Integer call(Object... args) {
+                        return ((Integer)args[0]) + ((Integer)args[1]);
+                    }
+                }
+        ).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void secondJustError() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.combineLatestDelayError(
+                Arrays.asList(Observable.<Integer>error(new TestException()), Observable.just(1)),
+                new FuncN<Integer>() {
+                    @Override
+                    public Integer call(Object... args) {
+                        return ((Integer)args[0]) + ((Integer)args[1]);
+                    }
+                }
+        ).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void oneErrors() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.combineLatestDelayError(
+                Arrays.asList(Observable.just(10).concatWith(Observable.<Integer>error(new TestException())), Observable.just(1)),
+                new FuncN<Integer>() {
+                    @Override
+                    public Integer call(Object... args) {
+                        return ((Integer)args[0]) + ((Integer)args[1]);
+                    }
+                }
+        ).subscribe(ts);
+        
+        ts.assertValues(11);
+        ts.assertError(TestException.class);
+        ts.assertNotCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void twoErrors() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.combineLatestDelayError(
+                Arrays.asList(Observable.just(1), Observable.just(10).concatWith(Observable.<Integer>error(new TestException()))),
+                new FuncN<Integer>() {
+                    @Override
+                    public Integer call(Object... args) {
+                        return ((Integer)args[0]) + ((Integer)args[1]);
+                    }
+                }
+        ).subscribe(ts);
+        
+        ts.assertValues(11);
+        ts.assertError(TestException.class);
+        ts.assertNotCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bothError() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.combineLatestDelayError(
+                Arrays.asList(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), 
+                        Observable.just(10).concatWith(Observable.<Integer>error(new TestException()))),
+                new FuncN<Integer>() {
+                    @Override
+                    public Integer call(Object... args) {
+                        return ((Integer)args[0]) + ((Integer)args[1]);
+                    }
+                }
+        ).subscribe(ts);
+        
+        ts.assertValues(11);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+    }
+
 }
