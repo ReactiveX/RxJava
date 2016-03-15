@@ -18,6 +18,7 @@ package rx.exceptions;
 import java.util.*;
 
 import rx.Observer;
+import rx.SingleSubscriber;
 import rx.annotations.Experimental;
 
 /**
@@ -188,6 +189,7 @@ public final class Exceptions {
         Exceptions.throwIfFatal(t);
         o.onError(OnErrorThrowable.addValueAsLastCause(t, value));
     }
+
     /**
      * Forwards a fatal exception or reports it to the given Observer.
      * @param t the exception
@@ -198,5 +200,18 @@ public final class Exceptions {
     public static void throwOrReport(Throwable t, Observer<?> o) {
         Exceptions.throwIfFatal(t);
         o.onError(t);
+    }
+
+    /**
+     * Forwards a fatal exception or reports it to the given Observer.
+     *
+     * @param throwable the exception.
+     * @param subscriber the subscriber to report to.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number).
+     */
+    @Experimental
+    public static void throwOrReport(Throwable throwable, SingleSubscriber<?> subscriber) {
+        Exceptions.throwIfFatal(throwable);
+        subscriber.onError(throwable);
     }
 }
