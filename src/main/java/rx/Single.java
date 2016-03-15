@@ -1436,6 +1436,39 @@ public class Single<T> {
     }
 
     /**
+     * Instructs a Single to pass control to another Single rather than invoking {@link Observer#onError}
+     * if it encounters an error.
+     * <p/>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
+     * <p/>
+     * By default, when a Single encounters an error that prevents it from emitting the expected item to its
+     * {@link Observer}, the Single invokes its Observer's {@code onError} method, and then quits without
+     * invoking any more of its Observer's methods. The {@code onErrorResumeNext} method changes this
+     * behavior. If you pass a function that returns a Single ({@code resumeFunction}) to a Single's
+     * {@code onErrorResumeNext} method, if the original Single encounters an error, instead of invoking its
+     * Observer's {@code onError} method, it will instead relinquish control to the Single returned from
+     * {@code resumeFunction}, which will invoke the Observer's {@link Observer#onNext onNext} method if it
+     * is able to do so. In such a case, because no Single necessarily invokes {@code onError}, the Observer
+     * may never know that an error happened.
+     * <p/>
+     * You can use this to prevent errors from propagating or to supply fallback data should errors be
+     * encountered.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param resumeFunction
+     *            a function that returns a Single that will take control if the source Single encounters an
+     *            error
+     * @return the original Single, with appropriately modified behavior
+     * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
+     */
+    public final Single<T> onErrorResumeNext(final Func1<Throwable, ? extends Single<? extends T>> resumeFunction) {
+        return new Single<T>(new SingleOperatorOnErrorResumeNextViaFunction<T>(this, resumeFunction));
+    }
+
+    /**
      * Subscribes to a Single but ignore its emission or notification.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
