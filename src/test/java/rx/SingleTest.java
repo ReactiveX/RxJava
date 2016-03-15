@@ -1220,10 +1220,74 @@ public class SingleTest {
         try {
             Single
                     .just("value")
-                    .onErrorResumeNext(null);
+                    .onErrorResumeNext((Single<String>)null);
             fail();
         } catch (NullPointerException expected) {
             assertEquals("resumeSingleInCaseOfError must not be null", expected.getMessage());
+        }
+    }
+
+    @Test
+    public void onErrorResumeNextViaFunctionShouldNotInterruptSuccessfulSingle() {
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Single
+                .just("success")
+                .onErrorResumeNext(new Func1<Throwable, Single<String>>() {
+                    @Override
+                    public Single<String> call(Throwable t) {
+                        return Single.just("fail");
+                    }
+                })
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValue("success");
+    }
+
+    @Test
+    public void onErrorResumeNextViaFunctionShouldResumeWithPassedSingleInCaseOfError() {
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Single
+                .<String> error(new RuntimeException("test exception"))
+                .onErrorResumeNext(new Func1<Throwable, Single<String>>() {
+                    @Override
+                    public Single<String> call(Throwable t) {
+                        return Single.just("fallback");
+                    }
+                })
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValue("fallback");
+    }
+
+    @Test
+    public void onErrorResumeNextViaFunctionShouldCatchExceptionThrownByFunction() {
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+        final RuntimeException expected = new RuntimeException();
+
+        Single
+                .<String> error(new RuntimeException("test exception"))
+                .onErrorResumeNext(new Func1<Throwable, Single<String>>() {
+                    @Override
+                    public Single<String> call(Throwable t) {
+                        throw expected;
+                    }
+                })
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertError(expected);
+    }
+
+    @Test
+    public void onErrorResumeNextViaFunctionShouldPreventNullSingle() {
+        try {
+            Single
+                    .just("value")
+                    .onErrorResumeNext((Func1<Throwable, Single<String>>)null);
+            fail();
+        } catch (NullPointerException expected) {
+            assertEquals("resumeFunction must not be null", expected.getMessage());
         }
     }
 
