@@ -291,6 +291,7 @@ public class OperatorWindowWithSizeTest {
         Assert.assertFalse(ts.getOnNextEvents().isEmpty());
     }
     
+    @Ignore("Requires #3678")
     @Test
     @SuppressWarnings("unchecked")
     public void testBackpressureOuterInexact() {

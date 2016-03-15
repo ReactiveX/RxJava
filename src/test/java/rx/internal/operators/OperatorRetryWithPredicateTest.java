@@ -393,6 +393,6 @@ public class OperatorRetryWithPredicateTest {
         assertEquals(Arrays.asList(3L, 2L, 1L), requests);
         ts.assertValues(1, 1, 1);
         ts.assertNotCompleted();
-        ts.assertNoErrors();
+        ts.assertError(TestException.class);
     }
 }

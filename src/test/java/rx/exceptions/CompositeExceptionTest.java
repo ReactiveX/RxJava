@@ -168,7 +168,7 @@ public class CompositeExceptionTest {
     
     @Test
     public void testNullCollection() {
-        CompositeException composite = new CompositeException(null);
+        CompositeException composite = new CompositeException((List<Throwable>)null);
         composite.getCause();
         composite.printStackTrace();
     }
