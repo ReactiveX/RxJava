@@ -183,15 +183,10 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             // less frequently (usually after each RxRingBuffer.SIZE elements)
             
             for (;;) {
-                if (checkTerminated(finished, q.isEmpty(), localChild, q)) {
-                    return;
-                }
-
                 long requestAmount = requested.get();
-                boolean unbounded = requestAmount == Long.MAX_VALUE;
                 long currentEmission = 0L;
                 
-                while (requestAmount != 0L) {
+                while (requestAmount != currentEmission) {
                     boolean done = finished;
                     Object v = q.poll();
                     boolean empty = v == null;
@@ -205,14 +200,19 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                     }
                     
                     localChild.onNext(localOn.getValue(v));
-                    
-                    requestAmount--;
-                    currentEmission--;
+
+                    currentEmission++;
                     emitted++;
                 }
                 
-                if (currentEmission != 0L && !unbounded) {
-                    requested.addAndGet(currentEmission);
+                if (requestAmount == currentEmission) {
+                    if (checkTerminated(finished, q.isEmpty(), localChild, q)) {
+                        return;
+                    }
+                }
+                
+                if (currentEmission != 0L) {
+                    BackpressureUtils.produced(requested, currentEmission);
                 }
                 
                 missed = counter.addAndGet(-missed);
