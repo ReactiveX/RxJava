@@ -54,11 +54,14 @@ import rx.subscriptions.*;
         final ConcurrentLinkedQueue<ScheduledAction> queue; 
         final AtomicInteger wip;
         
+        final ScheduledExecutorService service;
+        
         public ExecutorSchedulerWorker(Executor executor) {
             this.executor = executor;
             this.queue = new ConcurrentLinkedQueue<ScheduledAction>();
             this.wip = new AtomicInteger();
             this.tasks = new CompositeSubscription();
+            this.service = GenericScheduledExecutorService.getInstance();
         }
 
         @Override
@@ -107,12 +110,6 @@ import rx.subscriptions.*;
             }
             if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
-            }
-            ScheduledExecutorService service;
-            if (executor instanceof ScheduledExecutorService) {
-                service = (ScheduledExecutorService)executor;
-            } else {
-                service = GenericScheduledExecutorService.getInstance();
             }
             
             final MultipleAssignmentSubscription first = new MultipleAssignmentSubscription();

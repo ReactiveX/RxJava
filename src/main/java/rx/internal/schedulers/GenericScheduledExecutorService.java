@@ -31,24 +31,29 @@ import rx.schedulers.*;
  * the work asynchronously on the appropriate {@link Scheduler} implementation. This means for example that you would not use this approach
  * along with {@link TrampolineScheduler} or {@link ImmediateScheduler}.
  */
-public final class GenericScheduledExecutorService implements SchedulerLifecycle{
+public final class GenericScheduledExecutorService implements SchedulerLifecycle {
 
     private static final String THREAD_NAME_PREFIX = "RxScheduledExecutorPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
 
-    private static final ScheduledExecutorService NONE;
+    private static final ScheduledExecutorService[] NONE = new ScheduledExecutorService[0];
+
+    private static final ScheduledExecutorService SHUTDOWN;
     static {
-        NONE = Executors.newScheduledThreadPool(0);
-        NONE.shutdownNow();
+        SHUTDOWN = Executors.newScheduledThreadPool(0);
+        SHUTDOWN.shutdown();
     }
 
     /* Schedulers needs acces to this in order to work with the lifecycle. */
     public final static GenericScheduledExecutorService INSTANCE = new GenericScheduledExecutorService();
     
-    private final AtomicReference<ScheduledExecutorService> executor;
+    private final AtomicReference<ScheduledExecutorService[]> executor;
 
+    /** We don't use atomics with this because thread-assignment is random anyway. */
+    private static int roundRobin;
+    
     private GenericScheduledExecutorService() {
-        executor = new AtomicReference<ScheduledExecutorService>(NONE);
+        executor = new AtomicReference<ScheduledExecutorService[]>(NONE);
         start();
     }
 
@@ -63,39 +68,60 @@ public final class GenericScheduledExecutorService implements SchedulerLifecycle
             count = 8;
         }
         
-        ScheduledExecutorService exec = Executors.newScheduledThreadPool(count, THREAD_FACTORY);
-        if (executor.compareAndSet(NONE, exec)) {
-            if (!NewThreadWorker.tryEnableCancelPolicy(exec)) {
-                if (exec instanceof ScheduledThreadPoolExecutor) {
-                    NewThreadWorker.registerExecutor((ScheduledThreadPoolExecutor)exec);
+        // A multi-threaded executor can reorder tasks, having a set of them
+        // and handing one of those out on getInstance() ensures a proper order
+        
+        ScheduledExecutorService[] execs = new ScheduledExecutorService[count];
+        for (int i = 0; i < count; i++) {
+            execs[i] = Executors.newScheduledThreadPool(1, THREAD_FACTORY);
+        }
+        if (executor.compareAndSet(NONE, execs)) {
+            for (ScheduledExecutorService exec : execs) {
+                if (!NewThreadWorker.tryEnableCancelPolicy(exec)) {
+                    if (exec instanceof ScheduledThreadPoolExecutor) {
+                        NewThreadWorker.registerExecutor((ScheduledThreadPoolExecutor)exec);
+                    }
                 }
             }
         } else {
-            exec.shutdownNow();
+            for (ScheduledExecutorService exec : execs) {
+                exec.shutdownNow();
+            }
         }
     }
     
     @Override
     public void shutdown() {
         for (;;) {
-            ScheduledExecutorService exec = executor.get();
-            if (exec == NONE) {
+            ScheduledExecutorService[] execs = executor.get();
+            if (execs == NONE) {
                 return;
             }
-            if (executor.compareAndSet(exec, NONE)) {
-                NewThreadWorker.deregisterExecutor(exec);
-                exec.shutdownNow();
+            if (executor.compareAndSet(execs, NONE)) {
+                for (ScheduledExecutorService exec : execs) {
+                    NewThreadWorker.deregisterExecutor(exec);
+                    exec.shutdownNow();
+                }
                 return;
             }
         }
     }
     
     /**
-     * See class Javadoc for information on what this is for and how to use.
+     * Returns one of the single-threaded ScheduledExecutorService helper executors.
      * 
      * @return {@link ScheduledExecutorService} for generic use.
      */
     public static ScheduledExecutorService getInstance() {
-        return INSTANCE.executor.get();
+        ScheduledExecutorService[] execs = INSTANCE.executor.get();
+        if (execs == NONE) {
+            return SHUTDOWN;
+        }
+        int r = roundRobin + 1;
+        if (r >= execs.length) {
+            r = 0;
+        }
+        roundRobin = r;
+        return execs[r];
     }
 }
