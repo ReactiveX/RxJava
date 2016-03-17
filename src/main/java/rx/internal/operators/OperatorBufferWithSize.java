@@ -15,16 +15,13 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.*;
 
+import rx.*;
 import rx.Observable;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Subscriber;
-import rx.exceptions.Exceptions;
+import rx.exceptions.MissingBackpressureException;
 
 /**
  * This operation takes
@@ -66,167 +63,274 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super List<T>> child) {
-        if (count == skip) {
-            return new Subscriber<T>(child) {
-                List<T> buffer;
+        if (skip == count) {
+            BufferExact<T> parent = new BufferExact<T>(child, count);
+            
+            child.add(parent);
+            child.setProducer(parent.createProducer());
+            
+            return parent;
+        }
+        if (skip > count) {
+            BufferSkip<T> parent = new BufferSkip<T>(child, count, skip);
+            
+            child.add(parent);
+            child.setProducer(parent.createProducer());
+            
+            return parent;
+        }
+        BufferOverlap<T> parent = new BufferOverlap<T>(child, count, skip);
+        
+        child.add(parent);
+        child.setProducer(parent.createProducer());
+        
+        return parent;
+    }
+    
+    static final class BufferExact<T> extends Subscriber<T> {
+        final Subscriber<? super List<T>> actual;
+        final int count;
 
+        List<T> buffer;
+        
+        public BufferExact(Subscriber<? super List<T>> actual, int count) {
+            this.actual = actual;
+            this.count = count;
+            this.request(0L);
+        }
+        
+        @Override
+        public void onNext(T t) {
+            List<T> b = buffer;
+            if (b == null) {
+                b = new ArrayList<T>(count);
+                buffer = b;
+            }
+            
+            b.add(t);
+            
+            if (b.size() == count) {
+                buffer = null;
+                actual.onNext(b);
+            }
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            buffer = null;
+            actual.onError(e);
+        }
+        
+        @Override
+        public void onCompleted() {
+            List<T> b = buffer;
+            if (b != null) {
+                actual.onNext(b);
+            }
+            actual.onCompleted();
+        }
+        
+        Producer createProducer() {
+            return new Producer() {
                 @Override
-                public void setProducer(final Producer producer) {
-                    child.setProducer(new Producer() {
-
-                        private volatile boolean infinite = false;
-
-                        @Override
-                        public void request(long n) {
-                            if (infinite) {
-                                return;
-                            }
-                            if (n >= Long.MAX_VALUE / count) {
-                                // n == Long.MAX_VALUE or n * count >= Long.MAX_VALUE
-                                infinite = true;
-                                producer.request(Long.MAX_VALUE);
-                            } else {
-                                producer.request(n * count);
-                            }
-                        }
-                    });
-                }
-
-                @Override
-                public void onNext(T t) {
-                    if (buffer == null) {
-                        buffer = new ArrayList<T>(count);
+                public void request(long n) {
+                    if (n < 0L) {
+                        throw new IllegalArgumentException("n >= required but it was " + n);
                     }
-                    buffer.add(t);
-                    if (buffer.size() == count) {
-                        List<T> oldBuffer = buffer;
-                        buffer = null;
-                        child.onNext(oldBuffer);
+                    if (n != 0L) {
+                        long u = BackpressureUtils.multiplyCap(n, count);
+                        BufferExact.this.request(u);
                     }
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    buffer = null;
-                    child.onError(e);
-                }
-
-                @Override
-                public void onCompleted() {
-                    List<T> oldBuffer = buffer;
-                    buffer = null;
-                    if (oldBuffer != null) {
-                        try {
-                            child.onNext(oldBuffer);
-                        } catch (Throwable t) {
-                            Exceptions.throwOrReport(t, this);
-                            return;
-                        }
-                    }
-                    child.onCompleted();
                 }
             };
         }
-        return new Subscriber<T>(child) {
-            final List<List<T>> chunks = new LinkedList<List<T>>();
-            int index;
+    }
+    
+    static final class BufferSkip<T> extends Subscriber<T> {
+        final Subscriber<? super List<T>> actual;
+        final int count;
+        final int skip;
+        
+        long index;
+        
+        List<T> buffer;
 
-            @Override
-            public void setProducer(final Producer producer) {
-                child.setProducer(new Producer() {
-
-                    private volatile boolean firstRequest = true;
-                    private volatile boolean infinite = false;
-
-                    private void requestInfinite() {
-                        infinite = true;
-                        producer.request(Long.MAX_VALUE);
-                    }
-
-                    @Override
-                    public void request(long n) {
-                        if (n == 0) {
-                            return;
-                        }
-                        if (n < 0) {
-                            throw new IllegalArgumentException("request a negative number: " + n);
-                        }
-                        if (infinite) {
-                            return;
-                        }
-                        if (n == Long.MAX_VALUE) {
-                            requestInfinite();
-                        } else {
-                            if (firstRequest) {
-                                firstRequest = false;
-                                if (n - 1 >= (Long.MAX_VALUE - count) / skip) {
-                                    // count + skip * (n - 1) >= Long.MAX_VALUE
-                                    requestInfinite();
-                                    return;
-                                }
-                                // count = 5, skip = 2, n = 3
-                                // * * * * *
-                                //     * * * * *
-                                //         * * * * *
-                                // request = 5 + 2 * ( 3 - 1)
-                                producer.request(count + skip * (n - 1));
-                            } else {
-                                if (n >= Long.MAX_VALUE / skip) {
-                                    // skip * n >= Long.MAX_VALUE
-                                    requestInfinite();
-                                    return;
-                                }
-                                // count = 5, skip = 2, n = 3
-                                // (* * *) * *
-                                // (    *) * * * *
-                                //           * * * * *
-                                // request = skip * n
-                                // "()" means the items already emitted before this request
-                                producer.request(skip * n);
-                            }
-                        }
-                    }
-                });
+        public BufferSkip(Subscriber<? super List<T>> actual, int count, int skip) {
+            this.actual = actual;
+            this.count = count;
+            this.skip = skip;
+            this.request(0L);
+        }
+        
+        @Override
+        public void onNext(T t) {
+            long i = index;
+            List<T> b = buffer;
+            if (i == 0) {
+                b = new ArrayList<T>(count);
+                buffer = b;
             }
-
-            @Override
-            public void onNext(T t) {
-                if (index++ % skip == 0) {
-                    chunks.add(new ArrayList<T>(count));
-                }
+            i++;
+            if (i == skip) {
+                index = 0;
+            } else {
+                index = i;
+            }
+            
+            if (b != null) {
+                b.add(t);
                 
-                Iterator<List<T>> it = chunks.iterator();
-                while (it.hasNext()) {
-                    List<T> chunk = it.next();
-                    chunk.add(t);
-                    if (chunk.size() == count) {
-                        it.remove();
-                        child.onNext(chunk);
-                    }
+                if (b.size() == count) {
+                    buffer = null;
+                    actual.onNext(b);
                 }
             }
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            buffer = null;
+            actual.onError(e);
+        }
+        
+        @Override
+        public void onCompleted() {
+            List<T> b = buffer;
+            if (b != null) {
+                buffer = null;
+                actual.onNext(b);
+            }
+            actual.onCompleted();
+        }
+        
+        Producer createProducer() {
+            return new BufferSkipProducer();
+        }
+        
+        final class BufferSkipProducer
+        extends AtomicBoolean
+        implements Producer {
+            /** */
+            private static final long serialVersionUID = 3428177408082367154L;
 
             @Override
-            public void onError(Throwable e) {
-                chunks.clear();
-                child.onError(e);
-            }
-            @Override
-            public void onCompleted() {
-                try {
-                    for (List<T> chunk : chunks) {
-                        try {
-                            child.onNext(chunk);
-                        } catch (Throwable t) {
-                            Exceptions.throwOrReport(t, this);
-                            return;
-                        }
+            public void request(long n) {
+                if (n < 0) {
+                    throw new IllegalArgumentException("n >= 0 required but it was " + n);
+                }
+                if (n != 0) {
+                    BufferSkip<T> parent = BufferSkip.this;
+                    if (!get() && compareAndSet(false, true)) {
+                        long u = BackpressureUtils.multiplyCap(n, parent.count);
+                        long v = BackpressureUtils.multiplyCap(parent.skip - parent.count, n - 1);
+                        long w = BackpressureUtils.addCap(u, v);
+                        parent.request(w);
+                    } else {
+                        long u = BackpressureUtils.multiplyCap(n, parent.skip);
+                        parent.request(u);
                     }
-                    child.onCompleted();
-                } finally {
-                    chunks.clear();
                 }
             }
-        };
+        }
+    }
+    
+    static final class BufferOverlap<T> extends Subscriber<T> {
+        final Subscriber<? super List<T>> actual;
+        final int count;
+        final int skip;
+        
+        long index;
+        
+        final ArrayDeque<List<T>> queue;
+        
+        final AtomicLong requested;
+        
+        long produced;
+
+        public BufferOverlap(Subscriber<? super List<T>> actual, int count, int skip) {
+            this.actual = actual;
+            this.count = count;
+            this.skip = skip;
+            this.queue = new ArrayDeque<List<T>>();
+            this.requested = new AtomicLong();
+            this.request(0L);
+        }
+
+        @Override
+        public void onNext(T t) {
+            long i = index;
+            if (i == 0) {
+                List<T> b = new ArrayList<T>(count);
+                queue.offer(b);
+            }
+            i++;
+            if (i == skip) {
+                index = 0;
+            } else {
+                index = i;
+            }
+            
+            for (List<T> list : queue) {
+                list.add(t);
+            }
+            
+            List<T> b = queue.peek();
+            if (b != null && b.size() == count) {
+                queue.poll();
+                produced++;
+                actual.onNext(b);
+            }
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            queue.clear();
+            
+            actual.onError(e);
+        }
+        
+        @Override
+        public void onCompleted() {
+            long p = produced;
+            
+            if (p != 0L) {
+                if (p > requested.get()) {
+                    actual.onError(new MissingBackpressureException("More produced than requested? " + p));
+                    return;
+                }
+                requested.addAndGet(-p);
+            }
+            
+            BackpressureUtils.postCompleteDone(requested, queue, actual);
+        }
+        
+        Producer createProducer() {
+            return new BufferOverlapProducer();
+        }
+        
+        final class BufferOverlapProducer extends AtomicBoolean implements Producer {
+
+            /** */
+            private static final long serialVersionUID = -4015894850868853147L;
+
+            @Override
+            public void request(long n) {
+                BufferOverlap<T> parent = BufferOverlap.this;
+                if (BackpressureUtils.postCompleteRequest(parent.requested, n, parent.queue, parent.actual)) {
+                    if (n != 0L) {
+                        if (!get() && compareAndSet(false, true)) {
+                            long u = BackpressureUtils.multiplyCap(parent.skip, n - 1);
+                            long v = BackpressureUtils.addCap(u, parent.count);
+                            
+                            parent.request(v);
+                        } else {
+                            long u = BackpressureUtils.multiplyCap(parent.skip, n);
+                            parent.request(u);
+                        }
+                    }
+                }
+            }
+            
+        }
     }
 }

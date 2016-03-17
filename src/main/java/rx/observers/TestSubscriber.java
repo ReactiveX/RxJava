@@ -25,14 +25,13 @@ import rx.exceptions.CompositeException;
 /**
  * A {@code TestSubscriber} is a variety of {@link Subscriber} that you can use for unit testing, to perform
  * assertions, inspect received events, or wrap a mocked {@code Subscriber}.
+ * @param <T> the value type
  */
 public class TestSubscriber<T> extends Subscriber<T> {
 
     private final TestObserver<T> testObserver;
     private final CountDownLatch latch = new CountDownLatch(1);
     private volatile Thread lastSeenThread;
-    /** Holds the initial request value. */
-    private final long initialRequest;
     /** The shared no-op observer. */
     private static final Observer<Object> INERT = new Observer<Object>() {
 
@@ -78,7 +77,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
             throw new NullPointerException();
         }
         this.testObserver = new TestObserver<T>(delegate);
-        this.initialRequest = initialRequest;
+        if (initialRequest >= 0L) {
+            this.request(initialRequest);
+        }
     }
 
     /**
@@ -112,6 +113,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
 
     /**
      * Factory method to construct a TestSubscriber with an initial request of Long.MAX_VALUE and no delegation.
+     * @param <T> the value type
      * @return the created TestSubscriber instance
      * @since 1.1.0
      */
@@ -121,6 +123,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     
     /**
      * Factory method to construct a TestSubscriber with the given initial request amount and no delegation.
+     * @param <T> the value type
      * @param initialRequest the initial request amount, negative values revert to the default unbounded mode
      * @return the created TestSubscriber instance
      * @since 1.1.0
@@ -132,6 +135,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     /**
      * Factory method to construct a TestSubscriber which delegates events to the given Observer and
      * issues the given initial request amount.
+     * @param <T> the value type
      * @param delegate the observer to delegate events to
      * @param initialRequest the initial request amount, negative values revert to the default unbounded mode
      * @return the created TestSubscriber instance
@@ -145,6 +149,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     /**
      * Factory method to construct a TestSubscriber which delegates events to the given Observer and
      * an issues an initial request of Long.MAX_VALUE.
+     * @param <T> the value type
      * @param delegate the observer to delegate events to
      * @return the created TestSubscriber instance
      * @throws NullPointerException if delegate is null
@@ -157,6 +162,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     /**
      * Factory method to construct a TestSubscriber which delegates events to the given Subscriber and
      * an issues an initial request of Long.MAX_VALUE.
+     * @param <T> the value type
      * @param delegate the subscriber to delegate events to
      * @return the created TestSubscriber instance
      * @throws NullPointerException if delegate is null
@@ -166,13 +172,6 @@ public class TestSubscriber<T> extends Subscriber<T> {
         return new TestSubscriber<T>(delegate);
     }
     
-    @Override
-    public void onStart() {
-        if (initialRequest >= 0) {
-            requestMore(initialRequest);
-        }
-    }
-
     /**
      * Notifies the Subscriber that the {@code Observable} has finished sending push-based notifications.
      * <p>
