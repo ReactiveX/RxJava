@@ -29,6 +29,7 @@ import rx.observers.SafeSubscriber;
 import rx.observers.SerializedSubscriber;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaSingleExecutionHook;
 import rx.schedulers.Schedulers;
 import rx.singles.BlockingSingle;
 import rx.subscriptions.Subscriptions;
@@ -101,7 +102,7 @@ public class Single<T> {
         this.onSubscribe = f;
     }
 
-    static final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
+    static RxJavaSingleExecutionHook hook = RxJavaPlugins.getInstance().getSingleExecutionHook();
 
     /**
      * Returns a Single that will execute the specified function when a {@link SingleSubscriber} executes it or
@@ -130,7 +131,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
      */
     public static <T> Single<T> create(OnSubscribe<T> f) {
-        return new Single<T>(f); // TODO need hook 
+        return new Single<T>(hook.onCreate(f));
     }
 
     /**
@@ -1607,14 +1608,12 @@ public class Single<T> {
      * @param subscriber
      *            the Subscriber that will handle the emission or notification from the Single
      */
-    public final void unsafeSubscribe(Subscriber<? super T> subscriber) {
+    public final Subscription unsafeSubscribe(Subscriber<? super T> subscriber) {
         try {
             // new Subscriber so onStart it
             subscriber.onStart();
-            // TODO add back the hook
-            //            hook.onSubscribeStart(this, onSubscribe).call(subscriber);
-            onSubscribe.call(subscriber);
-            hook.onSubscribeReturn(subscriber);
+            hook.onSubscribeStart(this, onSubscribe).call(subscriber);
+            return hook.onSubscribeReturn(subscriber);
         } catch (Throwable e) {
             // special handling for certain Throwable/Error/Exception types
             Exceptions.throwIfFatal(e);
@@ -1631,6 +1630,7 @@ public class Single<T> {
                 // TODO why aren't we throwing the hook's return value.
                 throw r;
             }
+            return Subscriptions.unsubscribed();
         }
     }
 
@@ -1722,9 +1722,7 @@ public class Single<T> {
         // The code below is exactly the same an unsafeSubscribe but not used because it would add a sigificent depth to alreay huge call stacks.
         try {
             // allow the hook to intercept and/or decorate
-            // TODO add back the hook
-            //            hook.onSubscribeStart(this, onSubscribe).call(subscriber);
-            onSubscribe.call(subscriber);
+            hook.onSubscribeStart(this, onSubscribe).call(subscriber);
             return hook.onSubscribeReturn(subscriber);
         } catch (Throwable e) {
             // special handling for certain Throwable/Error/Exception types

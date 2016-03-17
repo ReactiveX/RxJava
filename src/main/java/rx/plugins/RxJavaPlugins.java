@@ -50,6 +50,7 @@ public class RxJavaPlugins {
 
     private final AtomicReference<RxJavaErrorHandler> errorHandler = new AtomicReference<RxJavaErrorHandler>();
     private final AtomicReference<RxJavaObservableExecutionHook> observableExecutionHook = new AtomicReference<RxJavaObservableExecutionHook>();
+    private final AtomicReference<RxJavaSingleExecutionHook> singleExecutionHook = new AtomicReference<RxJavaSingleExecutionHook>();
     private final AtomicReference<RxJavaSchedulersHook> schedulersHook = new AtomicReference<RxJavaSchedulersHook>();
 
     /**
@@ -68,6 +69,7 @@ public class RxJavaPlugins {
     /* package accessible for unit tests */void reset() {
         INSTANCE.errorHandler.set(null);
         INSTANCE.observableExecutionHook.set(null);
+        INSTANCE.singleExecutionHook.set(null);
         INSTANCE.schedulersHook.set(null);
     }
 
@@ -153,6 +155,48 @@ public class RxJavaPlugins {
     public void registerObservableExecutionHook(RxJavaObservableExecutionHook impl) {
         if (!observableExecutionHook.compareAndSet(null, impl)) {
             throw new IllegalStateException("Another strategy was already registered: " + observableExecutionHook.get());
+        }
+    }
+
+    /**
+     * Retrieves the instance of {@link RxJavaSingleExecutionHook} to use based on order of precedence as
+     * defined in {@link RxJavaPlugins} class header.
+     * <p>
+     * Override the default by calling {@link #registerSingleExecutionHook(RxJavaSingleExecutionHook)}
+     * or by setting the property {@code rxjava.plugin.RxJavaSingleExecutionHook.implementation} with the
+     * full classname to load.
+     *
+     * @return {@link RxJavaSingleExecutionHook} implementation to use
+     */
+    public RxJavaSingleExecutionHook getSingleExecutionHook() {
+        if (singleExecutionHook.get() == null) {
+            // check for an implementation from System.getProperty first
+            Object impl = getPluginImplementationViaProperty(RxJavaSingleExecutionHook.class, System.getProperties());
+            if (impl == null) {
+                // nothing set via properties so initialize with default
+                singleExecutionHook.compareAndSet(null, RxJavaSingleExecutionHookDefault.getInstance());
+                // we don't return from here but call get() again in case of thread-race so the winner will always get returned
+            } else {
+                // we received an implementation from the system property so use it
+                singleExecutionHook.compareAndSet(null, (RxJavaSingleExecutionHook) impl);
+            }
+        }
+        return singleExecutionHook.get();
+    }
+
+    /**
+     * Register an {@link RxJavaSingleExecutionHook} implementation as a global override of any injected or
+     * default implementations.
+     *
+     * @param impl
+     *            {@link RxJavaSingleExecutionHook} implementation
+     * @throws IllegalStateException
+     *             if called more than once or after the default was initialized (if usage occurs before trying
+     *             to register)
+     */
+    public void registerSingleExecutionHook(RxJavaSingleExecutionHook impl) {
+        if (!singleExecutionHook.compareAndSet(null, impl)) {
+            throw new IllegalStateException("Another strategy was already registered: " + singleExecutionHook.get());
         }
     }
 

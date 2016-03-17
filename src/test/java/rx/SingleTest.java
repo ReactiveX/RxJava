@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -28,13 +29,27 @@ import org.mockito.stubbing.Answer;
 import rx.Single.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.*;
+import rx.observers.SafeSubscriber;
 import rx.observers.TestSubscriber;
 import rx.schedulers.*;
+import rx.plugins.RxJavaPluginsTest;
+import rx.plugins.RxJavaSingleExecutionHook;
+import rx.schedulers.Schedulers;
+import rx.schedulers.TestScheduler;
 import rx.singles.BlockingSingle;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
 public class SingleTest {
+
+    private static RxJavaSingleExecutionHook hookSpy;
+
+    @Before
+    public void setUp() throws Exception {
+        hookSpy = spy(
+                new RxJavaPluginsTest.RxJavaSingleExecutionHookTestImpl());
+        Single.hook = hookSpy;
+    }
 
     @Test
     public void testHelloWorld() {
@@ -357,6 +372,83 @@ public class SingleTest {
 
         Single.just("A").mergeWith(Single.just("B")).subscribe(ts);
         ts.assertReceivedOnNext(Arrays.asList("A", "B"));
+    }
+
+    @Test
+    public void testHookCreate() {
+        OnSubscribe subscriber = mock(OnSubscribe.class);
+        Single.create(subscriber);
+
+        verify(hookSpy, times(1)).onCreate(subscriber);
+    }
+
+    @Test
+    public void testHookSubscribeStart() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Single<String> single = Single.create(new OnSubscribe<String>() {
+            @Override public void call(SingleSubscriber<? super String> s) {
+                s.onSuccess("Hello");
+            }
+        });
+        single.subscribe(ts);
+
+        verify(hookSpy, times(1)).onSubscribeStart(eq(single), any(Observable.OnSubscribe.class));
+    }
+
+    @Test
+    public void testHookUnsafeSubscribeStart() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Single<String> single = Single.create(new OnSubscribe<String>() {
+            @Override public void call(SingleSubscriber<? super String> s) {
+                s.onSuccess("Hello");
+            }
+        });
+        single.unsafeSubscribe(ts);
+
+        verify(hookSpy, times(1)).onSubscribeStart(eq(single), any(Observable.OnSubscribe.class));
+    }
+
+    @Test
+    public void testHookSubscribeReturn() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Single<String> single = Single.create(new OnSubscribe<String>() {
+            @Override public void call(SingleSubscriber<? super String> s) {
+                s.onSuccess("Hello");
+            }
+        });
+        single.subscribe(ts);
+
+        verify(hookSpy, times(1)).onSubscribeReturn(any(SafeSubscriber.class));
+    }
+
+    @Test
+    public void testHookUnsafeSubscribeReturn() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Single<String> single = Single.create(new OnSubscribe<String>() {
+            @Override public void call(SingleSubscriber<? super String> s) {
+                s.onSuccess("Hello");
+            }
+        });
+        single.unsafeSubscribe(ts);
+
+        verify(hookSpy, times(1)).onSubscribeReturn(ts);
+    }
+
+    @Test
+    public void testReturnUnsubscribedWhenHookThrowsError() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Single<String> single = Single.create(new OnSubscribe<String>() {
+            @Override public void call(SingleSubscriber<? super String> s) {
+                throw new RuntimeException("Exception");
+            }
+        });
+        Subscription subscription = single.unsafeSubscribe(ts);
+
+        assertTrue(subscription.isUnsubscribed());
     }
 
     @Test
@@ -1745,14 +1837,14 @@ public class SingleTest {
         assertFalse(until.hasObservers());
         assertFalse(ts.isUnsubscribed());
     }
-    
+
     @Test
     public void subscribeWithObserver() {
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
-        
+
         Single.just(1).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
@@ -1762,14 +1854,14 @@ public class SingleTest {
     public void subscribeWithObserverAndGetError() {
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
-        
+
         Single.<Integer>error(new TestException()).subscribe(o);
-        
+
         verify(o, never()).onNext(anyInt());
         verify(o, never()).onCompleted();
         verify(o).onError(any(TestException.class));
     }
-    
+
     @Test
     public void subscribeWithNullObserver() {
         try {

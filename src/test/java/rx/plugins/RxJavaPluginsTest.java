@@ -16,6 +16,7 @@
 package rx.plugins;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -105,6 +106,15 @@ public class RxJavaPluginsTest {
         p.registerObservableExecutionHook(new RxJavaObservableExecutionHookTestImpl());
         RxJavaObservableExecutionHook impl = p.getObservableExecutionHook();
         assertTrue(impl instanceof RxJavaObservableExecutionHookTestImpl);
+    }
+
+    @Test
+    public void testSingleExecutionHookViaRegisterMethod() {
+        RxJavaPlugins p = new RxJavaPlugins();
+        RxJavaSingleExecutionHook customHook = mock(RxJavaSingleExecutionHook.class);
+        p.registerSingleExecutionHook(customHook);
+        RxJavaSingleExecutionHook impl = p.getSingleExecutionHook();
+        assertSame(impl, customHook);
     }
 
     @Test
@@ -235,6 +245,11 @@ public class RxJavaPluginsTest {
 
     // inside test so it is stripped from Javadocs
     public static class RxJavaObservableExecutionHookTestImpl extends RxJavaObservableExecutionHook {
+        // just use defaults
+    }
+
+    // inside test so it is stripped from Javadocs
+    public static class RxJavaSingleExecutionHookTestImpl extends RxJavaSingleExecutionHook {
         // just use defaults
     }
 
