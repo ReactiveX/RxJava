@@ -42,12 +42,9 @@ public enum BlockingOperatorNext {
      * @return an {@code Iterable} that behaves like a blocking version of {@code items}
      */
     public static <T> Iterable<T> next(final Publisher<? extends T> items) {
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                NextObserver<T> nextObserver = new NextObserver<>();
-                return new NextIterator<>(items, nextObserver);
-            }
+        return () -> {
+            NextObserver<T> nextObserver = new NextObserver<>();
+            return new NextIterator<>(items, nextObserver);
         };
 
     }

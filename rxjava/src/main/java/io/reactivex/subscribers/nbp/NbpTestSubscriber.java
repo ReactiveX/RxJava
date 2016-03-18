@@ -57,10 +57,7 @@ public class NbpTestSubscriber<T> implements NbpSubscriber<T>, Disposable {
     private final AtomicReference<Disposable> subscription = new AtomicReference<>();
     
     /** Indicates a cancelled subscription. */
-    private static final Disposable CANCELLED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
+    private static final Disposable CANCELLED = () -> { };
 
     private boolean checkSubscriptionOnce;
 

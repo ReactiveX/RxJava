@@ -47,10 +47,7 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
         
         final AtomicReference<Disposable> debouncer = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
 
         volatile long index;
         

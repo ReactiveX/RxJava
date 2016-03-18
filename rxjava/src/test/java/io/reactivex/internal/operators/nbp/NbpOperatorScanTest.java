@@ -36,14 +36,7 @@ public class NbpOperatorScanTest {
 
         NbpObservable<Integer> o = NbpObservable.just(1, 2, 3);
 
-        NbpObservable<String> m = o.scan("", new BiFunction<String, Integer, String>() {
-
-            @Override
-            public String apply(String s, Integer n) {
-                return s + n.toString();
-            }
-
-        });
+        NbpObservable<String> m = o.scan("", (s, n) -> s + n.toString());
         m.subscribe(NbpObserver);
 
         verify(NbpObserver, never()).onError(any(Throwable.class));
@@ -62,14 +55,7 @@ public class NbpOperatorScanTest {
 
         NbpObservable<Integer> o = NbpObservable.just(1, 2, 3);
 
-        NbpObservable<Integer> m = o.scan(new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        });
+        NbpObservable<Integer> m = o.scan((t1, t2) -> t1 + t2);
         m.subscribe(NbpObserver);
 
         verify(NbpObserver, never()).onError(any(Throwable.class));
@@ -88,14 +74,7 @@ public class NbpOperatorScanTest {
 
         NbpObservable<Integer> o = NbpObservable.just(1);
 
-        NbpObservable<Integer> m = o.scan(new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        });
+        NbpObservable<Integer> m = o.scan((t1, t2) -> t1 + t2);
         m.subscribe(NbpObserver);
 
         verify(NbpObserver, never()).onError(any(Throwable.class));
@@ -109,21 +88,9 @@ public class NbpOperatorScanTest {
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
-        NbpObservable.range(1, 100).scan(0, new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        }).filter(new Predicate<Integer>() {
-
-            @Override
-            public boolean test(Integer t1) {
-                // this will cause request(1) when 0 is emitted
-                return t1 > 0;
-            }
-            
+        NbpObservable.range(1, 100).scan(0, (t1, t2) -> t1 + t2).filter(t1 -> {
+            // this will cause request(1) when 0 is emitted
+            return t1 > 0;
         }).subscribe(ts);
         
         assertEquals(100, ts.values().size());
@@ -133,14 +100,7 @@ public class NbpOperatorScanTest {
     public void testNoBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         NbpObservable.range(1, 100)
-                .scan(0, new BiFunction<Integer, Integer, Integer>() {
-
-                    @Override
-                    public Integer apply(Integer t1, Integer t2) {
-                        return t1 + t2;
-                    }
-
-                })
+                .scan(0, (t1, t2) -> t1 + t2)
                 .subscribe(new NbpObserver<Integer>() {
 
                     @Override
@@ -170,22 +130,8 @@ public class NbpOperatorScanTest {
      */
     @Test
     public void testSeedFactory() {
-        NbpObservable<List<Integer>> o = NbpObservable.range(1, 10)
-                .collect(new Supplier<List<Integer>>() {
-
-                    @Override
-                    public List<Integer> get() {
-                        return new ArrayList<>();
-                    }
-                    
-                }, new BiConsumer<List<Integer>, Integer>() {
-
-                    @Override
-                    public void accept(List<Integer> list, Integer t2) {
-                        list.add(t2);
-                    }
-
-                }).takeLast(1);
+        NbpObservable<ArrayList<Integer>> o = NbpObservable.range(1, 10)
+                .collect(ArrayList<Integer>::new, List<Integer>::add).takeLast(1);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.toBlocking().single());
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.toBlocking().single());
@@ -193,14 +139,7 @@ public class NbpOperatorScanTest {
 
     @Test
     public void testScanWithRequestOne() {
-        NbpObservable<Integer> o = NbpObservable.just(1, 2).scan(0, new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        }).take(1);
+        NbpObservable<Integer> o = NbpObservable.just(1, 2).scan(0, (t1, t2) -> t1 + t2).take(1);
         NbpTestSubscriber<Integer> NbpSubscriber = new NbpTestSubscriber<>();
         o.subscribe(NbpSubscriber);
         NbpSubscriber.assertValue(0);
@@ -214,12 +153,7 @@ public class NbpOperatorScanTest {
         
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         
-        source.scan(0, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        }).subscribe(ts);
+        source.scan(0, (t1, t2) -> t1 + t2).subscribe(ts);
         
         ts.assertNoErrors();
         ts.assertNotComplete();

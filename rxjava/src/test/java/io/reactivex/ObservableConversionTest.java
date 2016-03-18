@@ -74,19 +74,17 @@ public class ObservableConversionTest {
         }
 
         public CylonDetectorObservable<String> DESTROY() {
-            return boop(new Function<T, String>() {
-                @Override
-                public String apply(T t) {
-                    Object cylon = ((Jail) t).cylon;
-                    throwOutTheAirlock(cylon);
-                    if (t instanceof Jail) {
-                        String name = cylon.toString();
-                        return "Cylon '" + name + "' has been destroyed";
-                    }
-                    else {
-                        return "Cylon 'anonymous' has been destroyed";
-                    }
-                }});
+            return boop(t -> {
+                Object cylon = ((Jail) t).cylon;
+                throwOutTheAirlock(cylon);
+                if (t instanceof Jail) {
+                    String name = cylon.toString();
+                    return "Cylon '" + name + "' has been destroyed";
+                }
+                else {
+                    return "Cylon 'anonymous' has been destroyed";
+                }
+            });
         }
         
         private static void throwOutTheAirlock(Object cylon) {
@@ -159,33 +157,13 @@ public class ObservableConversionTest {
         List<Object> crewOfBattlestarGalactica = Arrays.asList(new Object[] {"William Adama", "Laura Roslin", "Lee Adama", new Cylon()});
         
         Observable.fromIterable(crewOfBattlestarGalactica)
-            .doOnNext(new Consumer<Object>() {
-                @Override
-                public void accept(Object pv) {
-                    System.out.println(pv);
-                }
-            })
+            .doOnNext(System.out::println)
             .to(new ConvertToCylonDetector<>())
-            .beep(new Predicate<Object>() {
-                @Override
-                public boolean test(Object t) {
-                    return t instanceof Cylon;
-                }
-            })
-            .boop(new Function<Object, Object>() {
-                @Override
-                public Object apply(Object cylon) {
-                    return new Jail(cylon);
-                }
-            })
+            .beep(t -> t instanceof Cylon)
+            .boop(Jail::new)
             .DESTROY()
             .x(new ConvertToObservable<>())
-            .reduce("Cylon Detector finished. Report:\n", new BiFunction<String, String, String>() {
-                @Override
-                public String apply(String a, String n) {
-                    return a + n + "\n";
-                }
-            })
+            .reduce("Cylon Detector finished. Report:\n", (a, n) -> a + n + "\n")
             .subscribe(subscriber);
         
         subscriber.assertNoErrors();
@@ -197,45 +175,34 @@ public class ObservableConversionTest {
         final AtomicReference<Throwable> thrown = new AtomicReference<>(null);
         final AtomicBoolean isFinished = new AtomicBoolean(false);
         ConcurrentLinkedQueue<? extends Integer> queue = Observable.range(0,5)
-                .flatMap(new Function<Integer, Publisher<Integer>>() {
-                    @Override
-                    public Publisher<Integer> apply(final Integer i) {
-                        return Observable.range(0, 5)
-                                .observeOn(Schedulers.io())
-                                .map(new Function<Integer, Integer>() {
-                                    @Override
-                                    public Integer apply(Integer k) {
-                                        try {
-                                            Thread.sleep(System.currentTimeMillis() % 100);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                        return i + k;
-                                    }
-                                });
-                    }
-                })
-                    .to(new Function<Observable<Integer>, ConcurrentLinkedQueue<Integer>>() {
-                        @Override
-                        public ConcurrentLinkedQueue<Integer> apply(Observable<Integer> onSubscribe) {
-                            final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<>();
-                            onSubscribe.subscribe(new Observer<Integer>(){
-                                @Override
-                                public void onComplete() {
-                                    isFinished.set(true);
-                                }
-     
-                                @Override
-                                public void onError(Throwable e) {
-                                    thrown.set(e);
-                                }
-     
-                                @Override
-                                public void onNext(Integer t) {
-                                    q.add(t);
-                                }});
-                            return q;
-                        }
+                .flatMap(i -> Observable.range(0, 5)
+                        .observeOn(Schedulers.io())
+                        .map(k -> {
+                            try {
+                                Thread.sleep(System.currentTimeMillis() % 100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            return i + k;
+                        }))
+                    .to(onSubscribe -> {
+                        final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<>();
+                        onSubscribe.subscribe(new Observer<Integer>(){
+                            @Override
+                            public void onComplete() {
+                                isFinished.set(true);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                thrown.set(e);
+                            }
+
+                            @Override
+                            public void onNext(Integer t) {
+                                q.add(t);
+                            }});
+                        return q;
                     });
         
         int x = 0;

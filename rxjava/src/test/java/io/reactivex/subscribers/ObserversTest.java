@@ -77,10 +77,7 @@ public class ObserversTest {
     }
     @Test(expected = NullPointerException.class)
     public void testCreate2Null() {
-        Consumer<Throwable> throwAction = new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) { }
-        };
+        Consumer<Throwable> throwAction = e -> { };
         Observers.create(null, throwAction);
     }
     @Test(expected = NullPointerException.class)
@@ -106,27 +103,14 @@ public class ObserversTest {
     @Test
     public void testCreate1Value() {
         final AtomicInteger value = new AtomicInteger();
-        Consumer<Integer> action = new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                value.set(t);
-            }
-        };
-        Observers.create(action).onNext(1);
+        Observers.create(value::set).onNext(1);
         
         assertEquals(1, value.get());
     }
     @Test
     public void testCreate2Value() {
         final AtomicInteger value = new AtomicInteger();
-        Consumer<Integer> action = new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                value.set(t);
-            }
-        };
-        Consumer<Throwable> throwAction = Functions.emptyConsumer();
-        Observers.create(action, throwAction).onNext(1);
+        Observers.create(value::set, Functions.emptyConsumer()).onNext(1);
         
         assertEquals(1, value.get());
     }
@@ -134,14 +118,7 @@ public class ObserversTest {
     @Test
     public void testCreate3Value() {
         final AtomicInteger value = new AtomicInteger();
-        Consumer<Integer> action = new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                value.set(t);
-            }
-        };
-        Consumer<Throwable> throwAction = Functions.emptyConsumer();
-        Observers.create(action, throwAction, Functions.emptyRunnable()).onNext(1);
+        Observers.create(value::set, Functions.emptyConsumer(), Functions.emptyRunnable()).onNext(1);
         
         assertEquals(1, value.get());
     }
@@ -149,14 +126,8 @@ public class ObserversTest {
     @Test
     public void testError2() {
         final AtomicReference<Throwable> value = new AtomicReference<>();
-        Consumer<Throwable> action = new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t) {
-                value.set(t);
-            }
-        };
         TestException exception = new TestException();
-        Observers.create(Functions.emptyConsumer(), action).onError(exception);
+        Observers.create(Functions.emptyConsumer(), value::set).onError(exception);
         
         assertEquals(exception, value.get());
     }
@@ -164,14 +135,8 @@ public class ObserversTest {
     @Test
     public void testError3() {
         final AtomicReference<Throwable> value = new AtomicReference<>();
-        Consumer<Throwable> action = new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t) {
-                value.set(t);
-            }
-        };
         TestException exception = new TestException();
-        Observers.create(Functions.emptyConsumer(), action, Functions.emptyRunnable()).onError(exception);
+        Observers.create(Functions.emptyConsumer(), value::set, Functions.emptyRunnable()).onError(exception);
         
         assertEquals(exception, value.get());
     }

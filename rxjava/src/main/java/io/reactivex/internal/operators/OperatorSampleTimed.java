@@ -56,10 +56,7 @@ public final class OperatorSampleTimed<T> implements Operator<T, T> {
 
         final AtomicReference<Disposable> timer = new AtomicReference<>();
         
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable DISPOSED = () -> { };
         
         Subscription s;
         

@@ -113,46 +113,31 @@ public class NbpOperatorWindowWithTimeTest {
     }
 
     private <T> void push(final NbpSubscriber<T> NbpObserver, final T value, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> NbpObserver.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final NbpSubscriber<?> NbpObserver, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(NbpObserver::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> Consumer<NbpObservable<T>> observeWindow(final List<T> list, final List<List<T>> lists) {
-        return new Consumer<NbpObservable<T>>() {
+        return stringObservable -> stringObservable.subscribe(new NbpObserver<T>() {
             @Override
-            public void accept(NbpObservable<T> stringObservable) {
-                stringObservable.subscribe(new NbpObserver<T>() {
-                    @Override
-                    public void onComplete() {
-                        lists.add(new ArrayList<>(list));
-                        list.clear();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        fail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(T args) {
-                        list.add(args);
-                    }
-                });
+            public void onComplete() {
+                lists.add(new ArrayList<>(list));
+                list.clear();
             }
-        };
+
+            @Override
+            public void onError(Throwable e) {
+                fail(e.getMessage());
+            }
+
+            @Override
+            public void onNext(T args) {
+                list.add(args);
+            }
+        });
     }
     @Test
     public void testExactWindowSize() {
@@ -186,31 +171,10 @@ public class NbpOperatorWindowWithTimeTest {
         NbpOperatorWindowWithSizeTest.hotStream()
         .window(300, TimeUnit.MILLISECONDS)
         .take(10)
-        .doOnComplete(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("Main done!");
-            }
-        })
-        .flatMap(new Function<NbpObservable<Integer>, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(NbpObservable<Integer> w) {
-                return w.startWith(indicator)
-                        .doOnComplete(new Runnable() {
-                            @Override
-                            public void run() {
-                                System.out.println("inner done: " + wip.incrementAndGet());
-                            }
-                        })
-                        ;
-            }
-        })
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer pv) {
-                System.out.println(pv);
-            }
-        })
+        .doOnComplete(() -> System.out.println("Main done!"))
+        .flatMap(w -> w.startWith(indicator)
+                .doOnComplete(() -> System.out.println("inner done: " + wip.incrementAndGet())))
+        .doOnNext(System.out::println)
         .subscribe(ts);
         
         ts.awaitTerminalEvent(5, TimeUnit.SECONDS);

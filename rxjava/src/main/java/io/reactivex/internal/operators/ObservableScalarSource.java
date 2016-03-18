@@ -26,12 +26,7 @@ import io.reactivex.internal.subscriptions.*;
 public final class ObservableScalarSource<T> extends Observable<T> {
     private final T value;
     public ObservableScalarSource(final T value) {
-        super(new Publisher<T>() {
-            @Override
-            public void subscribe(Subscriber<? super T> s) {
-                s.onSubscribe(new ScalarSubscription<>(s, value));
-            }
-        });
+        super(s -> s.onSubscribe(new ScalarSubscription<>(s, value)));
         this.value = value;
     }
     
@@ -40,22 +35,19 @@ public final class ObservableScalarSource<T> extends Observable<T> {
     }
     
     public <U> Publisher<U> scalarFlatMap(final Function<? super T, ? extends Publisher<? extends U>> mapper) {
-        return new Publisher<U>() {
-            @Override
-            public void subscribe(Subscriber<? super U> s) {
-                Publisher<? extends U> other;
-                try {
-                    other = mapper.apply(value);
-                } catch (Throwable e) {
-                    EmptySubscription.error(e, s);
-                    return;
-                }
-                if (other == null) {
-                    EmptySubscription.error(new NullPointerException("The publisher returned by the function is null"), s);
-                    return;
-                }
-                other.subscribe(s);
+        return s -> {
+            Publisher<? extends U> other;
+            try {
+                other = mapper.apply(value);
+            } catch (Throwable e) {
+                EmptySubscription.error(e, s);
+                return;
             }
+            if (other == null) {
+                EmptySubscription.error(new NullPointerException("The publisher returned by the function is null"), s);
+                return;
+            }
+            other.subscribe(s);
         };
     }
 }

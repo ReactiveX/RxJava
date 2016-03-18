@@ -34,12 +34,7 @@ public class NbpOnSubscribeDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
         
         NbpObservable.just(1)
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(d -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
         
@@ -67,12 +62,7 @@ public class NbpOnSubscribeDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
         
         NbpObservable.just(1)
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(d -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
         
@@ -101,12 +91,7 @@ public class NbpOnSubscribeDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
         
         NbpObservable.just(1)
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(d -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
         
@@ -134,12 +119,7 @@ public class NbpOnSubscribeDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
         
         NbpObservable.<Integer>error(new TestException())
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(d -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
         
@@ -167,12 +147,7 @@ public class NbpOnSubscribeDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
         
         NbpObservable.<Integer>error(new TestException())
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(d -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
         

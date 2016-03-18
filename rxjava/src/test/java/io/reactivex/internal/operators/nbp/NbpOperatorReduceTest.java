@@ -32,23 +32,13 @@ public class NbpOperatorReduceTest {
         NbpObserver = TestHelper.mockNbpSubscriber();
     }
 
-    BiFunction<Integer, Integer, Integer> sum = new BiFunction<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer t1, Integer t2) {
-            return t1 + t2;
-        }
-    };
+    BiFunction<Integer, Integer, Integer> sum = (t1, t2) -> t1 + t2;
 
     @Test
     public void testAggregateAsIntSum() {
 
         NbpObservable<Integer> result = NbpObservable.just(1, 2, 3, 4, 5).reduce(0, sum)
-                .map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) {
-                        return v;
-                    }
-                });
+                .map(v -> v);
 
         result.subscribe(NbpObserver);
 
@@ -61,12 +51,7 @@ public class NbpOperatorReduceTest {
     public void testAggregateAsIntSumSourceThrows() {
         NbpObservable<Integer> result = NbpObservable.concat(NbpObservable.just(1, 2, 3, 4, 5),
                 NbpObservable.<Integer> error(new TestException()))
-                .reduce(0, sum).map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) {
-                        return v;
-                    }
-                });
+                .reduce(0, sum).map(v -> v);
 
         result.subscribe(NbpObserver);
 
@@ -77,20 +62,12 @@ public class NbpOperatorReduceTest {
 
     @Test
     public void testAggregateAsIntSumAccumulatorThrows() {
-        BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                throw new TestException();
-            }
+        BiFunction<Integer, Integer, Integer> sumErr = (t1, t2) -> {
+            throw new TestException();
         };
 
         NbpObservable<Integer> result = NbpObservable.just(1, 2, 3, 4, 5)
-                .reduce(0, sumErr).map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) {
-                        return v;
-                    }
-                });
+                .reduce(0, sumErr).map(v -> v);
 
         result.subscribe(NbpObserver);
 
@@ -102,12 +79,8 @@ public class NbpOperatorReduceTest {
     @Test
     public void testAggregateAsIntSumResultSelectorThrows() {
 
-        Function<Integer, Integer> error = new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, Integer> error = t1 -> {
+            throw new TestException();
         };
 
         NbpObservable<Integer> result = NbpObservable.just(1, 2, 3, 4, 5)

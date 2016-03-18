@@ -29,10 +29,7 @@ public final class NbpLambdaSubscriber<T> extends AtomicReference<Disposable> im
     final Runnable onComplete;
     final Consumer<? super Disposable> onSubscribe;
     
-    static final Disposable CANCELLED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
+    static final Disposable CANCELLED = () -> { };
     
     public NbpLambdaSubscriber(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
             Runnable onComplete,

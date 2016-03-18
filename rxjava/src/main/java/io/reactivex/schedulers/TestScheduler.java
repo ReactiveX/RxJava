@@ -141,12 +141,7 @@ public final class TestScheduler extends Scheduler {
             final TimedRunnable timedAction = new TimedRunnable(this, time + unit.toNanos(delayTime), run, counter++);
             queue.add(timedAction);
             
-            return new Disposable() {
-                @Override
-                public void dispose() {
-                    queue.remove(timedAction);
-                }
-            };
+            return () -> queue.remove(timedAction);
         }
 
         @Override
@@ -156,12 +151,7 @@ public final class TestScheduler extends Scheduler {
             }
             final TimedRunnable timedAction = new TimedRunnable(this, 0, run, counter++);
             queue.add(timedAction);
-            return new Disposable() {
-                @Override
-                public void dispose() {
-                    queue.remove(timedAction);
-                }
-            };
+            return () -> queue.remove(timedAction);
         }
 
         @Override

@@ -41,12 +41,7 @@ import io.reactivex.plugins.RxJavaPlugins;
      * @param actual the subject wrapped
      */
     public SerializedSubject(final Subject<T, R> actual) {
-        super(new Publisher<R>() {
-            @Override
-            public void subscribe(Subscriber<? super R> s) {
-                actual.subscribe(s);
-            }
-        });
+        super(actual::subscribe);
         this.actual = actual;
     }
     
@@ -171,12 +166,7 @@ import io.reactivex.plugins.RxJavaPlugins;
         }
     }
     
-    final Predicate<Object> consumer = new Predicate<Object>() {
-        @Override
-        public boolean test(Object v) {
-            return SerializedSubject.this.accept(v);
-        }
-    };
+    final Predicate<Object> consumer = this::accept;
     
     /** Delivers the notification to the actual subscriber. */
     boolean accept(Object o) {

@@ -135,12 +135,9 @@ public class OperatorToObservableListTest {
                 final TestSubscriber<List<Integer>> ts = new TestSubscriber<>((Long) null);
                 sorted.subscribe(ts);
                 
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        await(cb);
-                        ts.request(1);
-                    }
+                w.schedule(() -> {
+                    await(cb);
+                    ts.request(1);
                 });
                 source.onNext(1);
                 await(cb);

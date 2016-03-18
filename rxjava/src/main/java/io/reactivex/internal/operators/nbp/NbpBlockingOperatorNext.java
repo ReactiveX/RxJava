@@ -39,12 +39,9 @@ public enum NbpBlockingOperatorNext {
      * @return an {@code Iterable} that behaves like a blocking version of {@code items}
      */
     public static <T> Iterable<T> next(final NbpObservable<? extends T> items) {
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                NbpNextObserver<T> nextObserver = new NbpNextObserver<>();
-                return new NextIterator<>(items, nextObserver);
-            }
+        return () -> {
+            NbpNextObserver<T> nextObserver = new NbpNextObserver<>();
+            return new NextIterator<>(items, nextObserver);
         };
 
     }

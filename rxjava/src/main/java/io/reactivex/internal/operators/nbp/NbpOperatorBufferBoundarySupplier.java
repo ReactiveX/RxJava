@@ -52,10 +52,7 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
         
         final AtomicReference<Disposable> other = new AtomicReference<>();
         
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable DISPOSED = () -> { };
         
         U buffer;
         

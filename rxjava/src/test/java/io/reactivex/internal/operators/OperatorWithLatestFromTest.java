@@ -28,17 +28,9 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorWithLatestFromTest {
-    static final BiFunction<Integer, Integer, Integer> COMBINER = new BiFunction<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer t1, Integer t2) {
-            return (t1 << 8) + t2;
-        }
-    };
-    static final BiFunction<Integer, Integer, Integer> COMBINER_ERROR = new BiFunction<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer t1, Integer t2) {
-            throw new TestException("Forced failure");
-        }
+    static final BiFunction<Integer, Integer, Integer> COMBINER = (t1, t2) -> (t1 << 8) + t2;
+    static final BiFunction<Integer, Integer, Integer> COMBINER_ERROR = (t1, t2) -> {
+        throw new TestException("Forced failure");
     };
     @Test
     public void testSimple() {

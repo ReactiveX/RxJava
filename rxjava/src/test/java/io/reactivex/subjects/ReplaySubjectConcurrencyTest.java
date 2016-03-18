@@ -35,23 +35,19 @@ public class ReplaySubjectConcurrencyTest {
     @Test(timeout = 4000)
     public void testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther() throws InterruptedException {
         final ReplaySubject<Long> replay = ReplaySubject.create();
-        Thread source = new Thread(new Runnable() {
+        Thread source = new Thread(() -> {
+            Observable.create(new Publisher<Long>() {
 
-            @Override
-            public void run() {
-                Observable.create(new Publisher<Long>() {
-
-                    @Override
-                    public void subscribe(Subscriber<? super Long> o) {
-                        System.out.println("********* Start Source Data ***********");
-                        for (long l = 1; l <= 10000; l++) {
-                            o.onNext(l);
-                        }
-                        System.out.println("********* Finished Source Data ***********");
-                        o.onComplete();
+                @Override
+                public void subscribe(Subscriber<? super Long> o) {
+                    System.out.println("********* Start Source Data ***********");
+                    for (long l = 1; l <= 10000; l++) {
+                        o.onNext(l);
                     }
-                }).subscribe(replay);
-            }
+                    System.out.println("********* Finished Source Data ***********");
+                    o.onComplete();
+                }
+            }).subscribe(replay);
         });
         source.start();
 
@@ -60,76 +56,68 @@ public class ReplaySubjectConcurrencyTest {
 
         // it's been played through once so now it will all be replays
         final CountDownLatch slowLatch = new CountDownLatch(1);
-        Thread slowThread = new Thread(new Runnable() {
+        Thread slowThread = new Thread(() -> {
+            Subscriber<Long> slow = new Observer<Long>() {
 
-            @Override
-            public void run() {
-                Subscriber<Long> slow = new Observer<Long>() {
-
-                    @Override
-                    public void onComplete() {
-                        System.out.println("*** Slow Observer completed");
-                        slowLatch.countDown();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                    }
-
-                    @Override
-                    public void onNext(Long args) {
-                        if (args == 1) {
-                            System.out.println("*** Slow Observer STARTED");
-                        }
-                        try {
-                            if (args % 10 == 0) {
-                                Thread.sleep(1);
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                };
-                replay.subscribe(slow);
-                try {
-                    slowLatch.await();
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                @Override
+                public void onComplete() {
+                    System.out.println("*** Slow Observer completed");
+                    slowLatch.countDown();
                 }
+
+                @Override
+                public void onError(Throwable e) {
+                }
+
+                @Override
+                public void onNext(Long args) {
+                    if (args == 1) {
+                        System.out.println("*** Slow Observer STARTED");
+                    }
+                    try {
+                        if (args % 10 == 0) {
+                            Thread.sleep(1);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            replay.subscribe(slow);
+            try {
+                slowLatch.await();
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
             }
         });
         slowThread.start();
 
-        Thread fastThread = new Thread(new Runnable() {
+        Thread fastThread = new Thread(() -> {
+            final CountDownLatch fastLatch = new CountDownLatch(1);
+            Subscriber<Long> fast = new Observer<Long>() {
 
-            @Override
-            public void run() {
-                final CountDownLatch fastLatch = new CountDownLatch(1);
-                Subscriber<Long> fast = new Observer<Long>() {
-
-                    @Override
-                    public void onComplete() {
-                        System.out.println("*** Fast Observer completed");
-                        fastLatch.countDown();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                    }
-
-                    @Override
-                    public void onNext(Long args) {
-                        if (args == 1) {
-                            System.out.println("*** Fast Observer STARTED");
-                        }
-                    }
-                };
-                replay.subscribe(fast);
-                try {
-                    fastLatch.await();
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                @Override
+                public void onComplete() {
+                    System.out.println("*** Fast Observer completed");
+                    fastLatch.countDown();
                 }
+
+                @Override
+                public void onError(Throwable e) {
+                }
+
+                @Override
+                public void onNext(Long args) {
+                    if (args == 1) {
+                        System.out.println("*** Fast Observer STARTED");
+                    }
+                }
+            };
+            replay.subscribe(fast);
+            try {
+                fastLatch.await();
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
             }
         });
         fastThread.start();
@@ -144,23 +132,19 @@ public class ReplaySubjectConcurrencyTest {
     @Test
     public void testReplaySubjectConcurrentSubscriptions() throws InterruptedException {
         final ReplaySubject<Long> replay = ReplaySubject.create();
-        Thread source = new Thread(new Runnable() {
+        Thread source = new Thread(() -> {
+            Observable.create(new Publisher<Long>() {
 
-            @Override
-            public void run() {
-                Observable.create(new Publisher<Long>() {
-
-                    @Override
-                    public void subscribe(Subscriber<? super Long> o) {
-                        System.out.println("********* Start Source Data ***********");
-                        for (long l = 1; l <= 10000; l++) {
-                            o.onNext(l);
-                        }
-                        System.out.println("********* Finished Source Data ***********");
-                        o.onComplete();
+                @Override
+                public void subscribe(Subscriber<? super Long> o) {
+                    System.out.println("********* Start Source Data ***********");
+                    for (long l = 1; l <= 10000; l++) {
+                        o.onNext(l);
                     }
-                }).subscribe(replay);
-            }
+                    System.out.println("********* Finished Source Data ***********");
+                    o.onComplete();
+                }
+            }).subscribe(replay);
         });
 
         // used to collect results of each thread
@@ -178,14 +162,10 @@ public class ReplaySubjectConcurrencyTest {
                 // wait for source to finish then keep adding after it's done
                 source.join();
             }
-            Thread t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    List<Long> values = replay.toList().toBlocking().last();
-                    listOfListsOfValues.add(values);
-                    System.out.println("Finished thread: " + count);
-                }
+            Thread t = new Thread(() -> {
+                List<Long> values = replay.toList().toBlocking().last();
+                listOfListsOfValues.add(values);
+                System.out.println("Finished thread: " + count);
             });
             t.start();
             System.out.println("Started thread: " + i);
@@ -233,28 +213,19 @@ public class ReplaySubjectConcurrencyTest {
             final ReplaySubject<String> subject = ReplaySubject.create();
             final AtomicReference<String> value1 = new AtomicReference<>();
 
-            subject.subscribe(new Consumer<String>() {
-
-                @Override
-                public void accept(String t1) {
-                    try {
-                        // simulate a slow observer
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    value1.set(t1);
+            subject.subscribe(t1 -> {
+                try {
+                    // simulate a slow observer
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-
+                value1.set(t1);
             });
 
-            Thread t1 = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    subject.onNext("value");
-                    subject.onComplete();
-                }
+            Thread t1 = new Thread(() -> {
+                subject.onNext("value");
+                subject.onComplete();
             });
 
             SubjectObserverThread t2 = new SubjectObserverThread(subject);
@@ -335,16 +306,13 @@ public class ReplaySubjectConcurrencyTest {
                 final CountDownLatch finish = new CountDownLatch(1); 
                 final CountDownLatch start = new CountDownLatch(1); 
                 
-                worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            start.await();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                        rs.onNext(1);
+                worker.schedule(() -> {
+                    try {
+                        start.await();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
                     }
+                    rs.onNext(1);
                 });
                 
                 final AtomicReference<Object> o = new AtomicReference<>();
@@ -381,12 +349,7 @@ public class ReplaySubjectConcurrencyTest {
                     break;
                 } else {
                     Assert.assertEquals(1, o.get());
-                    worker.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            rs.onComplete();
-                        }
-                    });
+                    worker.schedule(() -> rs.onComplete());
                     
                 }
             }
@@ -399,22 +362,19 @@ public class ReplaySubjectConcurrencyTest {
         final ReplaySubject<Object> rs = ReplaySubject.create();
         final CyclicBarrier cb = new CyclicBarrier(2);
         
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    cb.await();
-                } catch (InterruptedException e) {
-                    return;
-                } catch (BrokenBarrierException e) {
-                    return;
-                }
-                for (int i = 0; i < 1000000; i++) {
-                    rs.onNext(i);
-                }
-                rs.onComplete();
-                System.out.println("Replay fill Thread finished!");
+        Thread t = new Thread(() -> {
+            try {
+                cb.await();
+            } catch (InterruptedException e) {
+                return;
+            } catch (BrokenBarrierException e) {
+                return;
             }
+            for (int i = 0; i < 1000000; i++) {
+                rs.onNext(i);
+            }
+            rs.onComplete();
+            System.out.println("Replay fill Thread finished!");
         });
         t.start();
         try {

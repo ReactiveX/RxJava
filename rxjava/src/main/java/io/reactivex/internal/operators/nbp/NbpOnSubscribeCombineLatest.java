@@ -320,10 +320,7 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
         
         final AtomicReference<Disposable> s = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         public CombinerSubscriber(LatestCoordinator<T, R> parent, int index) {
             this.parent = parent;

@@ -123,12 +123,7 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
                 return 0;
             }
             final int[] c = new int[1];
-            a.forEach(new Consumer<T>() {
-                @Override
-                public void accept(T v) {
-                    c[0]++;
-                }
-            });
+            a.forEach(v -> c[0]++);
             return c[0];
         }
     }

@@ -69,11 +69,8 @@ public class BlockingOperatorToIteratorTest {
     @Ignore("subscribe() should not throw")
     @Test(expected = TestException.class)
     public void testExceptionThrownFromOnSubscribe() {
-        Iterable<String> strings = Observable.create(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                throw new TestException("intentional");
-            }
+        Iterable<String> strings = Observable.create((Publisher<String>) subscriber -> {
+            throw new TestException("intentional");
         }).toBlocking();
         for (String string : strings) {
             // never reaches here

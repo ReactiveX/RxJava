@@ -62,14 +62,11 @@ public class NbpOperatorDoOnEachTest {
     @Test
     public void testDoOnEachWithError() {
         NbpObservable<String> base = NbpObservable.just("one", "fail", "two", "three", "fail");
-        NbpObservable<String> errs = base.map(new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                return s;
+        NbpObservable<String> errs = base.map(s -> {
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
             }
+            return s;
         });
 
         NbpObservable<String> doOnEach = errs.doOnEach(sideEffectObserver);
@@ -91,12 +88,9 @@ public class NbpOperatorDoOnEachTest {
     @Test
     public void testDoOnEachWithErrorInCallback() {
         NbpObservable<String> base = NbpObservable.just("one", "two", "fail", "three");
-        NbpObservable<String> doOnEach = base.doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
-                }
+        NbpObservable<String> doOnEach = base.doOnNext(s -> {
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
             }
         });
 
@@ -117,19 +111,9 @@ public class NbpOperatorDoOnEachTest {
         for (int i=0; i < expectedCount; i++) {
             NbpObservable
                     .just(Boolean.TRUE, Boolean.FALSE)
-                    .takeWhile(new Predicate<Boolean>() {
-                        @Override
-                        public boolean test(Boolean value) {
-                            return value;
-                        }
-                    })
+                    .takeWhile(value -> value)
                     .toList()
-                    .doOnNext(new Consumer<List<Boolean>>() {
-                        @Override
-                        public void accept(List<Boolean> booleans) {
-                            count.incrementAndGet();
-                        }
-                    })
+                    .doOnNext(booleans -> count.incrementAndGet())
                     .subscribe();
         }
         assertEquals(expectedCount, count.get());
@@ -143,19 +127,9 @@ public class NbpOperatorDoOnEachTest {
         for (int i=0; i < expectedCount; i++) {
             NbpObservable
                     .just(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)
-                    .takeWhile(new Predicate<Boolean>() {
-                        @Override
-                        public boolean test(Boolean value) {
-                            return value;
-                        }
-                    })
+                    .takeWhile(value -> value)
                     .toList()
-                    .doOnNext(new Consumer<List<Boolean>>() {
-                        @Override
-                        public void accept(List<Boolean> booleans) {
-                            count.incrementAndGet();
-                        }
-                    })
+                    .doOnNext(booleans -> count.incrementAndGet())
                     .subscribe();
         }
         assertEquals(expectedCount, count.get());

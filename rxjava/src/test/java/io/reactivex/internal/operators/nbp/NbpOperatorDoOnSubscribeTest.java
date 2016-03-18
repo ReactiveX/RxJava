@@ -30,12 +30,7 @@ public class NbpOperatorDoOnSubscribeTest {
     @Test
     public void testDoOnSubscribe() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        NbpObservable<Integer> o = NbpObservable.just(1).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable s) {
-                    count.incrementAndGet();
-            }
-        });
+        NbpObservable<Integer> o = NbpObservable.just(1).doOnSubscribe(s -> count.incrementAndGet());
 
         o.subscribe();
         o.subscribe();
@@ -46,17 +41,10 @@ public class NbpOperatorDoOnSubscribeTest {
     @Test
     public void testDoOnSubscribe2() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        NbpObservable<Integer> o = NbpObservable.just(1).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable s) {
-                    count.incrementAndGet();
-            }
-        }).take(1).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable s) {
-                    count.incrementAndGet();
-            }
-        });
+        NbpObservable<Integer> o = NbpObservable.just(1)
+                .doOnSubscribe(s -> count.incrementAndGet())
+                .take(1)
+                .doOnSubscribe(s -> count.incrementAndGet());
 
         o.subscribe();
         assertEquals(2, count.get());
@@ -77,18 +65,10 @@ public class NbpOperatorDoOnSubscribeTest {
                 sref.set(s);
             }
 
-        }).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable s) {
-                    countBefore.incrementAndGet();
-            }
-        }).publish().refCount()
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable s) {
-                    countAfter.incrementAndGet();
-            }
-        });
+        }).doOnSubscribe(s -> countBefore.incrementAndGet())
+                .publish()
+                .refCount()
+                .doOnSubscribe(s -> countAfter.incrementAndGet());
 
         o.subscribe();
         o.subscribe();

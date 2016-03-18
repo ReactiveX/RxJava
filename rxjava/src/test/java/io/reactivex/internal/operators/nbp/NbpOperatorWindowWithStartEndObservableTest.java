@@ -57,29 +57,18 @@ public class NbpOperatorWindowWithStartEndObservableTest {
             }
         });
 
-        NbpObservable<Object> openings = NbpObservable.create(new NbpOnSubscribe<Object>() {
-            @Override
-            public void accept(NbpSubscriber<? super Object> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                push(NbpObserver, new Object(), 50);
-                push(NbpObserver, new Object(), 200);
-                complete(NbpObserver, 250);
-            }
+        NbpObservable<Object> openings = NbpObservable.create(NbpObserver -> {
+            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            push(NbpObserver, new Object(), 50);
+            push(NbpObserver, new Object(), 200);
+            complete(NbpObserver, 250);
         });
 
-        Function<Object, NbpObservable<Object>> closer = new Function<Object, NbpObservable<Object>>() {
-            @Override
-            public NbpObservable<Object> apply(Object opening) {
-                return NbpObservable.create(new NbpOnSubscribe<Object>() {
-                    @Override
-                    public void accept(NbpSubscriber<? super Object> NbpObserver) {
-                        NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                        push(NbpObserver, new Object(), 100);
-                        complete(NbpObserver, 101);
-                    }
-                });
-            }
-        };
+        Function<Object, NbpObservable<Object>> closer = opening -> NbpObservable.create(NbpObserver -> {
+            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            push(NbpObserver, new Object(), 100);
+            complete(NbpObserver, 101);
+        });
 
         NbpObservable<NbpObservable<String>> windowed = source.window(openings, closer);
         windowed.subscribe(observeWindow(list, lists));
@@ -112,19 +101,16 @@ public class NbpOperatorWindowWithStartEndObservableTest {
             int calls;
             @Override
             public NbpObservable<Object> get() {
-                return NbpObservable.create(new NbpOnSubscribe<Object>() {
-                    @Override
-                    public void accept(NbpSubscriber<? super Object> NbpObserver) {
-                        NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                        int c = calls++;
-                        if (c == 0) {
-                            push(NbpObserver, new Object(), 100);
-                        } else
-                        if (c == 1) {
-                            push(NbpObserver, new Object(), 100);
-                        } else {
-                            complete(NbpObserver, 101);
-                        }
+                return NbpObservable.create(NbpObserver -> {
+                    NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                    int c = calls++;
+                    if (c == 0) {
+                        push(NbpObserver, new Object(), 100);
+                    } else
+                    if (c == 1) {
+                        push(NbpObserver, new Object(), 100);
+                    } else {
+                        complete(NbpObserver, 101);
                     }
                 });
             }
@@ -149,46 +135,31 @@ public class NbpOperatorWindowWithStartEndObservableTest {
     }
 
     private <T> void push(final NbpSubscriber<T> NbpObserver, final T value, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> NbpObserver.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final NbpSubscriber<?> NbpObserver, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(NbpObserver::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private Consumer<NbpObservable<String>> observeWindow(final List<String> list, final List<List<String>> lists) {
-        return new Consumer<NbpObservable<String>>() {
+        return stringObservable -> stringObservable.subscribe(new NbpObserver<String>() {
             @Override
-            public void accept(NbpObservable<String> stringObservable) {
-                stringObservable.subscribe(new NbpObserver<String>() {
-                    @Override
-                    public void onComplete() {
-                        lists.add(new ArrayList<>(list));
-                        list.clear();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        fail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(String args) {
-                        list.add(args);
-                    }
-                });
+            public void onComplete() {
+                lists.add(new ArrayList<>(list));
+                list.clear();
             }
-        };
+
+            @Override
+            public void onError(Throwable e) {
+                fail(e.getMessage());
+            }
+
+            @Override
+            public void onNext(String args) {
+                list.add(args);
+            }
+        });
     }
     
     @Test
@@ -200,12 +171,7 @@ public class NbpOperatorWindowWithStartEndObservableTest {
         
         NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<>();
         
-        source.window(open, new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t) {
-                return close;
-            }
-        }).unsafeSubscribe(ts);
+        source.window(open, t -> close).unsafeSubscribe(ts);
         
         open.onNext(1);
         source.onNext(1);
@@ -237,12 +203,7 @@ public class NbpOperatorWindowWithStartEndObservableTest {
         
         NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<>();
         
-        source.window(open, new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t) {
-                return close;
-            }
-        }).unsafeSubscribe(ts);
+        source.window(open, t -> close).unsafeSubscribe(ts);
         
         open.onNext(1);
         

@@ -32,18 +32,8 @@ public class NbpOperatorToMultimapTest {
         objectObserver = TestHelper.mockNbpSubscriber();
     }
 
-    Function<String, Integer> lengthFunc = new Function<String, Integer>() {
-        @Override
-        public Integer apply(String t1) {
-            return t1.length();
-        }
-    };
-    Function<String, String> duplicate = new Function<String, String>() {
-        @Override
-        public String apply(String t1) {
-            return t1 + t1;
-        }
-    };
+    Function<String, Integer> lengthFunc = String::length;
+    Function<String, String> duplicate = t1 -> t1 + t1;
 
     @Test
     public void testToMultimap() {
@@ -83,36 +73,21 @@ public class NbpOperatorToMultimapTest {
     public void testToMultimapWithMapFactory() {
         NbpObservable<String> source = NbpObservable.just("a", "b", "cc", "dd", "eee", "fff");
 
-        Supplier<Map<Integer, Collection<String>>> mapFactory = new Supplier<Map<Integer, Collection<String>>>() {
-            @Override
-            public Map<Integer, Collection<String>> get() {
-                return new LinkedHashMap<Integer, Collection<String>>() {
-                    /** */
-                    private static final long serialVersionUID = -2084477070717362859L;
+        Supplier<Map<Integer, Collection<String>>> mapFactory = () -> new LinkedHashMap<Integer, Collection<String>>() {
+            /** */
+            private static final long serialVersionUID = -2084477070717362859L;
 
-                    @Override
-                    protected boolean removeEldestEntry(Map.Entry<Integer, Collection<String>> eldest) {
-                        return size() > 2;
-                    }
-                };
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<Integer, Collection<String>> eldest) {
+                return size() > 2;
             }
         };
 
-        Function<String, String> identity = new Function<String, String>() {
-            @Override
-            public String apply(String v) {
-                return v;
-            }
-        };
+        Function<String, String> identity = v -> v;
         
         NbpObservable<Map<Integer, Collection<String>>> mapped = source.toMultimap(
                 lengthFunc, identity,
-                mapFactory, new Function<Integer, Collection<String>>() {
-                    @Override
-                    public Collection<String> apply(Integer v) {
-                        return new ArrayList<>();
-                    }
-                });
+                mapFactory, v -> new ArrayList<>());
 
         Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
@@ -129,29 +104,16 @@ public class NbpOperatorToMultimapTest {
     public void testToMultimapWithCollectionFactory() {
         NbpObservable<String> source = NbpObservable.just("cc", "dd", "eee", "eee");
 
-        Function<Integer, Collection<String>> collectionFactory = new Function<Integer, Collection<String>>() {
-            @Override
-            public Collection<String> apply(Integer t1) {
-                if (t1 == 2) {
-                    return new ArrayList<>();
-                } else {
-                    return new HashSet<>();
-                }
+        Function<Integer, Collection<String>> collectionFactory = t1 -> {
+            if (t1 == 2) {
+                return new ArrayList<>();
+            } else {
+                return new HashSet<>();
             }
         };
 
-        Function<String, String> identity = new Function<String, String>() {
-            @Override
-            public String apply(String v) {
-                return v;
-            }
-        };
-        Supplier<Map<Integer, Collection<String>>> mapSupplier = new Supplier<Map<Integer, Collection<String>>>() {
-            @Override
-            public Map<Integer, Collection<String>> get() {
-                return new HashMap<>();
-            }
-        };
+        Function<String, String> identity = v -> v;
+        Supplier<Map<Integer, Collection<String>>> mapSupplier = HashMap::new;
         
         NbpObservable<Map<Integer, Collection<String>>> mapped = source
                 .toMultimap(lengthFunc, identity, mapSupplier, collectionFactory);
@@ -171,14 +133,11 @@ public class NbpOperatorToMultimapTest {
     public void testToMultimapWithError() {
         NbpObservable<String> source = NbpObservable.just("a", "b", "cc", "dd");
 
-        Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
-            @Override
-            public Integer apply(String t1) {
-                if ("b".equals(t1)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                return t1.length();
+        Function<String, Integer> lengthFuncErr = t1 -> {
+            if ("b".equals(t1)) {
+                throw new RuntimeException("Forced Failure");
             }
+            return t1.length();
         };
 
         NbpObservable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFuncErr);
@@ -198,14 +157,11 @@ public class NbpOperatorToMultimapTest {
     public void testToMultimapWithErrorInValueSelector() {
         NbpObservable<String> source = NbpObservable.just("a", "b", "cc", "dd");
 
-        Function<String, String> duplicateErr = new Function<String, String>() {
-            @Override
-            public String apply(String t1) {
-                if ("b".equals(t1)) {
-                    throw new RuntimeException("Forced failure");
-                }
-                return t1 + t1;
+        Function<String, String> duplicateErr = t1 -> {
+            if ("b".equals(t1)) {
+                throw new RuntimeException("Forced failure");
             }
+            return t1 + t1;
         };
 
         NbpObservable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicateErr);
@@ -225,20 +181,12 @@ public class NbpOperatorToMultimapTest {
     public void testToMultimapWithMapThrowingFactory() {
         NbpObservable<String> source = NbpObservable.just("a", "b", "cc", "dd", "eee", "fff");
 
-        Supplier<Map<Integer, Collection<String>>> mapFactory = new Supplier<Map<Integer, Collection<String>>>() {
-            @Override
-            public Map<Integer, Collection<String>> get() {
-                throw new RuntimeException("Forced failure");
-            }
+        Supplier<Map<Integer, Collection<String>>> mapFactory = () -> {
+            throw new RuntimeException("Forced failure");
         };
 
         NbpObservable<Map<Integer, Collection<String>>> mapped = source
-                .toMultimap(lengthFunc, new Function<String, String>() {
-                    @Override
-                    public String apply(String v) {
-                        return v;
-                    }
-                }, mapFactory);
+                .toMultimap(lengthFunc, v -> v, mapFactory);
 
         Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
@@ -255,29 +203,16 @@ public class NbpOperatorToMultimapTest {
     public void testToMultimapWithThrowingCollectionFactory() {
         NbpObservable<String> source = NbpObservable.just("cc", "cc", "eee", "eee");
 
-        Function<Integer, Collection<String>> collectionFactory = new Function<Integer, Collection<String>>() {
-            @Override
-            public Collection<String> apply(Integer t1) {
-                if (t1 == 2) {
-                    throw new RuntimeException("Forced failure");
-                } else {
-                    return new HashSet<>();
-                }
+        Function<Integer, Collection<String>> collectionFactory = t1 -> {
+            if (t1 == 2) {
+                throw new RuntimeException("Forced failure");
+            } else {
+                return new HashSet<>();
             }
         };
 
-        Function<String, String> identity = new Function<String, String>() {
-            @Override
-            public String apply(String v) {
-                return v;
-            }
-        };
-        Supplier<Map<Integer, Collection<String>>> mapSupplier = new Supplier<Map<Integer, Collection<String>>>() {
-            @Override
-            public Map<Integer, Collection<String>> get() {
-                return new HashMap<>();
-            }
-        };
+        Function<String, String> identity = v -> v;
+        Supplier<Map<Integer, Collection<String>>> mapSupplier = HashMap::new;
         
         NbpObservable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, 
                 identity, mapSupplier, collectionFactory);

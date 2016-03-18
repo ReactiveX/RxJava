@@ -43,14 +43,7 @@ public class NbpOperatorToObservableSortedListTest {
     @Test
     public void testSortedListWithCustomFunction() {
         NbpObservable<Integer> w = NbpObservable.just(1, 3, 2, 5, 4);
-        NbpObservable<List<Integer>> NbpObservable = w.toSortedList(new Comparator<Integer>() {
-
-            @Override
-            public int compare(Integer t1, Integer t2) {
-                return t2 - t1;
-            }
-
-        });
+        NbpObservable<List<Integer>> NbpObservable = w.toSortedList((t1, t2) -> t2 - t1);
 
         NbpSubscriber<List<Integer>> NbpObserver = TestHelper.mockNbpSubscriber();
         NbpObservable.subscribe(NbpObserver);

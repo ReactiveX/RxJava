@@ -45,35 +45,32 @@ public final class CompletableOnSubscribeTimeout implements CompletableOnSubscri
         
         final AtomicBoolean once = new AtomicBoolean();
         
-        Disposable timer = scheduler.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                if (once.compareAndSet(false, true)) {
-                    set.clear();
-                    if (other == null) {
-                        s.onError(new TimeoutException());
-                    } else {
-                        other.subscribe(new CompletableSubscriber() {
-   
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                set.add(d);
-                            }
-   
-                            @Override
-                            public void onError(Throwable e) {
-                                set.dispose();
-                                s.onError(e);
-                            }
-   
-                            @Override
-                            public void onComplete() {
-                                set.dispose();
-                                s.onComplete();
-                            }
-                            
-                        });
-                    }
+        Disposable timer = scheduler.scheduleDirect(() -> {
+            if (once.compareAndSet(false, true)) {
+                set.clear();
+                if (other == null) {
+                    s.onError(new TimeoutException());
+                } else {
+                    other.subscribe(new CompletableSubscriber() {
+
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            set.add(d);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            set.dispose();
+                            s.onError(e);
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            set.dispose();
+                            s.onComplete();
+                        }
+
+                    });
                 }
             }
         }, timeout, unit);

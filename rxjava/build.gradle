@@ -5,7 +5,12 @@ buildscript {
 
 apply plugin: 'ru.vyarus.animalsniffer'
 
+sourceSets {
+    java8
+}
+
 dependencies {
+    compile sourceSets.java8.output
     signature 'org.codehaus.mojo.signature:java16-sun:1.10@signature'
 }
 

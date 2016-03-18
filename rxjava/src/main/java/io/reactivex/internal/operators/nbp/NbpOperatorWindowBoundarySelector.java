@@ -60,10 +60,7 @@ public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOper
         
         final AtomicReference<Disposable> boundary = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         final List<NbpUnicastSubject<T>> ws;
         

@@ -75,15 +75,10 @@ public class NbpMergeTests {
     @Test
     public void testMergeCovariance4() {
 
-        NbpObservable<Movie> o1 = NbpObservable.defer(new Supplier<NbpObservable<Movie>>() {
-            @Override
-            public NbpObservable<Movie> get() {
-                return NbpObservable.just(
-                        new HorrorMovie(),
-                        new Movie()
-                );
-            }
-        });
+        NbpObservable<Movie> o1 = NbpObservable.defer(() -> NbpObservable.just(
+                new HorrorMovie(),
+                new Movie()
+        ));
         
         NbpObservable<Media> o2 = NbpObservable.just(new Media(), new HorrorMovie());
 

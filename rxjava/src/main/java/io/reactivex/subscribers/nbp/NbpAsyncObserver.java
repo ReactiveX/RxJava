@@ -40,10 +40,7 @@ public abstract class NbpAsyncObserver<T> implements NbpSubscriber<T>, Disposabl
     private final ListCompositeResource<Disposable> resources;
     
     /** The cancelled subscription indicator. */
-    private static final Disposable CANCELLED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
+    private static final Disposable CANCELLED = () -> { };
     
     /**
      * Constructs an AsyncObserver with resource support.

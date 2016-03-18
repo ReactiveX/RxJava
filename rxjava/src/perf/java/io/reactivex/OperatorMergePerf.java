@@ -30,13 +30,7 @@ public class OperatorMergePerf {
     // flatMap
     @Benchmark
     public void oneStreamOfNthatMergesIn1(final InputMillion input) throws InterruptedException {
-        Observable<Observable<Integer>> os = Observable.range(1, input.size)
-                .map(new Function<Integer, Observable<Integer>>() {
-                    @Override
-                    public Observable<Integer> apply(Integer v) {
-                        return Observable.just(v);
-                    }
-                });
+        Observable<Observable<Integer>> os = Observable.range(1, input.size).map(Observable::just);
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.merge(os).subscribe(o);
 
@@ -50,12 +44,7 @@ public class OperatorMergePerf {
     // flatMap
     @Benchmark
     public void merge1SyncStreamOfN(final InputMillion input) throws InterruptedException {
-        Observable<Observable<Integer>> os = Observable.just(1).map(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer i) {
-                    return Observable.range(0, input.size);
-            }
-        });
+        Observable<Observable<Integer>> os = Observable.just(1).map(i -> Observable.range(0, input.size));
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.merge(os).subscribe(o);
         
@@ -68,12 +57,7 @@ public class OperatorMergePerf {
 
     @Benchmark
     public void mergeNSyncStreamsOfN(final InputThousand input) throws InterruptedException {
-        Observable<Observable<Integer>> os = input.observable.map(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer i) {
-                    return Observable.range(0, input.size);
-            }
-        });
+        Observable<Observable<Integer>> os = input.observable.map(i -> Observable.range(0, input.size));
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.merge(os).subscribe(o);
         if (input.size == 1) {
@@ -85,12 +69,8 @@ public class OperatorMergePerf {
 
     @Benchmark
     public void mergeNAsyncStreamsOfN(final InputThousand input) throws InterruptedException {
-        Observable<Observable<Integer>> os = input.observable.map(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer i) {
-                    return Observable.range(0, input.size).subscribeOn(Schedulers.computation());
-            }
-        });
+        Observable<Observable<Integer>> os = input.observable.map(i ->
+            Observable.range(0, input.size).subscribeOn(Schedulers.computation()));
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.merge(os).subscribe(o);
         if (input.size == 1) {

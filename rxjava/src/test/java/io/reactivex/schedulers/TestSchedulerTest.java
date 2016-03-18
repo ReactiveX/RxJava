@@ -42,12 +42,9 @@ public class TestSchedulerTest {
         final Scheduler.Worker inner = scheduler.createWorker();
         
         try {
-            inner.schedulePeriodically(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
-                    calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
-                }
+            inner.schedulePeriodically(() -> {
+                System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
+                calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
             }, 1, 2, TimeUnit.SECONDS);
     
             verify(calledOp, never()).apply(anyLong());
@@ -88,12 +85,9 @@ public class TestSchedulerTest {
         final Scheduler.Worker inner = scheduler.createWorker();
 
         try {
-            final Disposable subscription = inner.schedulePeriodically(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
-                    calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
-                }
+            final Disposable subscription = inner.schedulePeriodically(() -> {
+                System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
+                calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
             }, 1, 2, TimeUnit.SECONDS);
     
             verify(calledOp, never()).apply(anyLong());

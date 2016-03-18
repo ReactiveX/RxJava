@@ -367,13 +367,7 @@ public class ReplaySubjectTest {
             src.onNext(v);
             System.out.printf("Turn: %d%n", i);
             src.first()
-                .flatMap(new Function<String, Observable<String>>() {
-
-                    @Override
-                    public Observable<String> apply(String t1) {
-                        return Observable.just(t1 + ", " + t1);
-                    }
-                })
+                .flatMap(t1 -> Observable.just(t1 + ", " + t1))
                 .subscribe(new Observer<String>() {
                     @Override
                     public void onNext(String t) {

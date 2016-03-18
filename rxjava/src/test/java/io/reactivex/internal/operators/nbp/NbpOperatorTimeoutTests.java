@@ -235,28 +235,24 @@ public class NbpOperatorTimeoutTests {
         final NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
         final NbpTestSubscriber<String> ts = new NbpTestSubscriber<>(NbpObserver);
 
-        new Thread(new Runnable() {
+        new Thread(() -> {
+            NbpObservable.create(new NbpOnSubscribe<String>() {
 
-            @Override
-            public void run() {
-                NbpObservable.create(new NbpOnSubscribe<String>() {
-
-                    @Override
-                    public void accept(NbpSubscriber<? super String> NbpSubscriber) {
-                        NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
-                        try {
-                            timeoutSetuped.countDown();
-                            exit.await();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        NbpSubscriber.onNext("a");
-                        NbpSubscriber.onComplete();
+                @Override
+                public void accept(NbpSubscriber<? super String> NbpSubscriber) {
+                    NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
+                    try {
+                        timeoutSetuped.countDown();
+                        exit.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
+                    NbpSubscriber.onNext("a");
+                    NbpSubscriber.onComplete();
+                }
 
-                }).timeout(1, TimeUnit.SECONDS, testScheduler)
-                        .subscribe(ts);
-            }
+            }).timeout(1, TimeUnit.SECONDS, testScheduler)
+                    .subscribe(ts);
         }).start();
 
         timeoutSetuped.await();

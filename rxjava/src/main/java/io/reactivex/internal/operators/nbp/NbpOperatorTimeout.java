@@ -62,10 +62,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
         
         final AtomicReference<Disposable> timeout = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
 
         public TimeoutSubscriber(NbpSubscriber<? super T> actual, 
                 Supplier<? extends NbpObservable<U>> firstTimeoutSelector,
@@ -243,10 +240,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
         
         final AtomicReference<Disposable> timeout = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
 
         public TimeoutOtherSubscriber(NbpSubscriber<? super T> actual,
                 Supplier<? extends NbpObservable<U>> firstTimeoutSelector,

@@ -28,13 +28,7 @@ public class NbpOperatorFilterTest {
     @Test
     public void testFilter() {
         NbpObservable<String> w = NbpObservable.just("one", "two", "three");
-        NbpObservable<String> NbpObservable = w.filter(new Predicate<String>() {
-
-            @Override
-            public boolean test(String t1) {
-                return t1.equals("two");
-            }
-        });
+        NbpObservable<String> NbpObservable = w.filter(t1 -> t1.equals("two"));
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
 

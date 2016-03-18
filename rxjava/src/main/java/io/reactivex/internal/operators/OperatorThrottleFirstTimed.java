@@ -59,15 +59,9 @@ public final class OperatorThrottleFirstTimed<T> implements Operator<T, T> {
         
         final AtomicReference<Disposable> timer = new AtomicReference<>();
 
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
 
-        static final Disposable NEW_TIMER = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable NEW_TIMER = () -> { };
 
         volatile boolean gate;
         

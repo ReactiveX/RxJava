@@ -38,12 +38,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     final Supplier<? extends ReplayBuffer<T>> bufferFactory;
 
     @SuppressWarnings("rawtypes")
-    static final Supplier DEFAULT_UNBOUNDED_FACTORY = new Supplier() {
-        @Override
-        public Object get() {
-            return new UnboundedReplayBuffer<>(16);
-        }
-    };
+    static final Supplier DEFAULT_UNBOUNDED_FACTORY = () -> new UnboundedReplayBuffer<>(16);
     
     /**
      * Given a connectable observable factory, it multicasts over the generated
@@ -57,9 +52,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     public static <U, R> Observable<R> multicastSelector(
             final Supplier<? extends ConnectableObservable<U>> connectableFactory,
             final Function<? super Observable<U>, ? extends Publisher<R>> selector) {
-        return Observable.create(new Publisher<R>() {
-            @Override
-            public void subscribe(Subscriber<? super R> child) {
+        return Observable.create(child -> {
                 ConnectableObservable<U> co;
                 Publisher<R> observable;
                 try {
@@ -88,14 +81,9 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 
                 observable.subscribe(srw);
                 
-                co.connect(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable r) {
-                        srw.setResource(r);
-                    }
-                });
+                co.connect(srw::setResource);
             }
-        });
+        );
     }
     
     /**
@@ -139,11 +127,8 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         if (bufferSize == Integer.MAX_VALUE) {
             return createFrom(source);
         }
-        return create(source, new Supplier<ReplayBuffer<T>>() {
-            @Override
-            public ReplayBuffer<T> get() {
-                return new SizeBoundReplayBuffer<>(bufferSize);
-            }
+        return create(source, () -> {
+            return new SizeBoundReplayBuffer<>(bufferSize);
         });
     }
 
@@ -173,11 +158,8 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
      */
     public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
             final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize) {
-        return create(source, new Supplier<ReplayBuffer<T>>() {
-            @Override
-            public ReplayBuffer<T> get() {
-                return new SizeAndTimeBoundReplayBuffer<>(bufferSize, maxAge, unit, scheduler);
-            }
+        return create(source, () -> {
+            return new SizeAndTimeBoundReplayBuffer<>(bufferSize, maxAge, unit, scheduler);
         });
     }
 
@@ -191,43 +173,40 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<ReplaySubscriber<T>> curr = new AtomicReference<>();
-        Publisher<T> onSubscribe = new Publisher<T>() {
-            @Override
-            public void subscribe(Subscriber<? super T> child) {
-                // concurrent connection/disconnection may change the state, 
-                // we loop to be atomic while the child subscribes
-                for (;;) {
-                    // get the current subscriber-to-source
-                    ReplaySubscriber<T> r = curr.get();
-                    // if there isn't one
-                    if (r == null) {
-                        // create a new subscriber to source
-                        ReplaySubscriber<T> u = new ReplaySubscriber<>(curr, bufferFactory.get());
-                        // let's try setting it as the current subscriber-to-source
-                        if (!curr.compareAndSet(r, u)) {
-                            // didn't work, maybe someone else did it or the current subscriber 
-                            // to source has just finished
-                            continue;
-                        }
-                        // we won, let's use it going onwards
-                        r = u;
+        Publisher<T> onSubscribe = child -> {
+            // concurrent connection/disconnection may change the state,
+            // we loop to be atomic while the child subscribes
+            for (;;) {
+                // get the current subscriber-to-source
+                ReplaySubscriber<T> r = curr.get();
+                // if there isn't one
+                if (r == null) {
+                    // create a new subscriber to source
+                    ReplaySubscriber<T> u = new ReplaySubscriber<>(curr, bufferFactory.get());
+                    // let's try setting it as the current subscriber-to-source
+                    if (!curr.compareAndSet(r, u)) {
+                        // didn't work, maybe someone else did it or the current subscriber
+                        // to source has just finished
+                        continue;
                     }
-                    
-                    // create the backpressure-managing producer for this child
-                    InnerSubscription<T> inner = new InnerSubscription<>(r, child);
-                    // we try to add it to the array of producers
-                    // if it fails, no worries because we will still have its buffer
-                    // so it is going to replay it for us
-                    r.add(inner);
-                    // trigger the capturing of the current node and total requested
-                    r.buffer.replay(inner);
-                    // the producer has been registered with the current subscriber-to-source so 
-                    // at least it will receive the next terminal event
-                    // setting the producer will trigger the first request to be considered by 
-                    // the subscriber-to-source.
-                    child.onSubscribe(inner);
-                    break;
+                    // we won, let's use it going onwards
+                    r = u;
                 }
+
+                // create the backpressure-managing producer for this child
+                InnerSubscription<T> inner = new InnerSubscription<>(r, child);
+                // we try to add it to the array of producers
+                // if it fails, no worries because we will still have its buffer
+                // so it is going to replay it for us
+                r.add(inner);
+                // trigger the capturing of the current node and total requested
+                r.buffer.replay(inner);
+                // the producer has been registered with the current subscriber-to-source so
+                // at least it will receive the next terminal event
+                // setting the producer will trigger the first request to be considered by
+                // the subscriber-to-source.
+                child.onSubscribe(inner);
+                break;
             }
         };
         return new OperatorReplay<>(onSubscribe, source, curr, bufferFactory);
@@ -787,7 +766,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 int sourceIndex = size;
                 
                 Integer destIndexObject = output.index();
-                int destIndex = destIndexObject != null ? destIndexObject.intValue() : 0;
+                int destIndex = destIndexObject != null ? destIndexObject : 0;
                 
                 long r = output.get();
                 long r0 = r;

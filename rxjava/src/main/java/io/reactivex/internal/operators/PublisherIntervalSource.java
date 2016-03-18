@@ -59,10 +59,7 @@ public final class PublisherIntervalSource implements Publisher<Long> {
         
         volatile boolean cancelled;
         
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable DISPOSED = () -> { };
         
         final AtomicReference<Disposable> resource = new AtomicReference<>();
         

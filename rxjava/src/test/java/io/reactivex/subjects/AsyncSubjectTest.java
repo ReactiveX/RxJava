@@ -197,28 +197,19 @@ public class AsyncSubjectTest {
             final AsyncSubject<String> subject = AsyncSubject.create();
             final AtomicReference<String> value1 = new AtomicReference<>();
 
-            subject.subscribe(new Consumer<String>() {
-
-                @Override
-                public void accept(String t1) {
-                    try {
-                        // simulate a slow observer
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    value1.set(t1);
+            subject.subscribe(t1 -> {
+                try {
+                    // simulate a slow observer
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-
+                value1.set(t1);
             });
 
-            Thread t1 = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    subject.onNext("value");
-                    subject.onComplete();
-                }
+            Thread t1 = new Thread(() -> {
+                subject.onNext("value");
+                subject.onComplete();
             });
 
             SubjectSubscriberThread t2 = new SubjectSubscriberThread(subject);

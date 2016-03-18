@@ -26,12 +26,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class OperatorToList<T, U extends Collection<? super T>> implements Operator<U, T> {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    static final OperatorToList DEFAULT = new OperatorToList(new Supplier() {
-        @Override
-        public Object get() {
-            return new ArrayList<>();
-        }
-    });
+    static final OperatorToList DEFAULT = new OperatorToList(ArrayList::new);
     
     @SuppressWarnings("unchecked")
     public static <T> OperatorToList<T, List<T>> defaultInstance() {

@@ -76,15 +76,10 @@ public class MergeTests {
     @Test
     public void testMergeCovariance4() {
 
-        Observable<Movie> o1 = Observable.defer(new Supplier<Publisher<Movie>>() {
-            @Override
-            public Publisher<Movie> get() {
-                return Observable.just(
-                        new HorrorMovie(),
-                        new Movie()
-                );
-            }
-        });
+        Observable<Movie> o1 = Observable.defer(() -> Observable.just(
+                new HorrorMovie(),
+                new Movie()
+        ));
         
         Observable<Media> o2 = Observable.just(new Media(), new HorrorMovie());
 

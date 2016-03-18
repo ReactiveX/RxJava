@@ -97,16 +97,13 @@ public class BackpressureTests {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         incrementingIntegers(c).observeOn(Schedulers.computation()).map(
-            new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer i) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    return i;
+            i -> {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                return i;
             }
         ).take(NUM).subscribe(ts);
         ts.awaitTerminalEvent();
@@ -220,12 +217,7 @@ public class BackpressureTests {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         
         incrementingIntegers(c)
-        .flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer i) {
-                return incrementingIntegers(new AtomicInteger()).take(10);
-            }
-        })
+        .flatMap(i -> incrementingIntegers(new AtomicInteger()).take(10))
         .take(NUM).subscribe(ts);
         
         ts.awaitTerminalEvent();
@@ -245,14 +237,9 @@ public class BackpressureTests {
         
         incrementingIntegers(c)
         .subscribeOn(Schedulers.computation())
-        .flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer i) {
-                return incrementingIntegers(new AtomicInteger())
-                        .take(10)
-                        .subscribeOn(Schedulers.computation());
-            }
-        }
+        .flatMap(i -> incrementingIntegers(new AtomicInteger())
+                .take(10)
+                .subscribeOn(Schedulers.computation())
         )
         .take(NUM).subscribe(ts);
         
@@ -274,14 +261,9 @@ public class BackpressureTests {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         
         Observable<Integer> zipped = Observable.zip(
-                incrementingIntegers(c1),
-                incrementingIntegers(c2),
-                new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer t1, Integer t2) {
-                        return t1 + t2;
-                    }
-                });
+            incrementingIntegers(c1),
+            incrementingIntegers(c2),
+            (t1, t2) -> t1 + t2);
 
         zipped.take(NUM)
         .subscribe(ts);
@@ -301,14 +283,9 @@ public class BackpressureTests {
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         Observable<Integer> zipped = Observable.zip(
-                incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
-                incrementingIntegers(c2).subscribeOn(Schedulers.computation()),
-                new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer t1, Integer t2) {
-                        return t1 + t2;
-                    }
-                });
+            incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
+            incrementingIntegers(c2).subscribeOn(Schedulers.computation()),
+            (t1, t2) -> t1 + t2);
 
         zipped.take(NUM).subscribe(ts);
         ts.awaitTerminalEvent();
@@ -359,12 +336,7 @@ public class BackpressureTests {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         incrementingIntegers(c).observeOn(Schedulers.computation())
                 .skip(10000)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer i) {
-                        return i > 11000;
-                    }
-                }).take(NUM).subscribe(ts);
+                .filter(i -> i > 11000).take(NUM).subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
@@ -486,16 +458,13 @@ public class BackpressureTests {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         
         firehose(c).observeOn(Schedulers.computation())
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) {
-                try {
-                    Thread.sleep(10);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return v;
+        .map(v -> {
+            try {
+                Thread.sleep(10);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return v;
         })
         .subscribe(ts);
         
@@ -555,18 +524,8 @@ public class BackpressureTests {
             TestSubscriber<Integer> ts = new TestSubscriber<>();
             
             firehose(emitCount)
-            .onBackpressureDrop(new Consumer<Integer>() {
-                @Override
-                public void accept(Integer v) {
-                    dropCount.incrementAndGet();
-                }
-            })
-            .doOnNext(new Consumer<Integer>() {
-                @Override
-                public void accept(Integer v) {
-                    passCount.incrementAndGet();
-                }
-            })
+            .onBackpressureDrop(v -> dropCount.incrementAndGet())
+            .doOnNext(v -> passCount.incrementAndGet())
             .observeOn(Schedulers.computation())
             .map(SLOW_PASS_THRU)
             .take(NUM).subscribe(ts);
@@ -616,12 +575,7 @@ public class BackpressureTests {
             int NUM = (int) (Observable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
             AtomicInteger c = new AtomicInteger();
             TestSubscriber<Integer> ts = new TestSubscriber<>();
-            firehose(c).onBackpressureDrop(new Consumer<Integer>() {
-                @Override
-                public void accept(Integer j) {
-                    dropCount.incrementAndGet();
-                }
-            })
+            firehose(c).onBackpressureDrop(j -> dropCount.incrementAndGet())
             .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
             ts.awaitTerminalEvent();
             ts.assertNoErrors();
@@ -646,12 +600,7 @@ public class BackpressureTests {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         
-        firehose(c).takeWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 100000;
-            }
-        })
+        firehose(c).takeWhile(t1 -> t1 < 100000)
         .onBackpressureBuffer()
         .observeOn(Schedulers.computation())
         .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
@@ -675,45 +624,40 @@ public class BackpressureTests {
     }
 
     private static Observable<Integer> incrementingIntegers(final AtomicInteger counter, final ConcurrentLinkedQueue<Thread> threadsSeen) {
-        return Observable.create(new Publisher<Integer>() {
+        return Observable.create(s -> {
+            s.onSubscribe(new Subscription() {
+                int i = 0;
 
-            @Override
-            public void subscribe(final Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-                    int i = 0;
-                    
-                    volatile boolean cancelled;
+                volatile boolean cancelled;
 
-                    final AtomicLong requested = new AtomicLong();
+                final AtomicLong requested = new AtomicLong();
 
-                    @Override
-                    public void request(long n) {
-                        if (SubscriptionHelper.validateRequest(n)) {
-                            return;
-                        }
-                        if (threadsSeen != null) {
-                            threadsSeen.offer(Thread.currentThread());
-                        }
-                        long _c = BackpressureHelper.add(requested, n);
-                        if (_c == 0) {
-                            while (!cancelled) {
-                                counter.incrementAndGet();
-                                s.onNext(i++);
-                                if (requested.decrementAndGet() == 0) {
-                                    // we're done emitting the number requested so return
-                                    return;
-                                }
+                @Override
+                public void request(long n) {
+                    if (SubscriptionHelper.validateRequest(n)) {
+                        return;
+                    }
+                    if (threadsSeen != null) {
+                        threadsSeen.offer(Thread.currentThread());
+                    }
+                    long _c = BackpressureHelper.add(requested, n);
+                    if (_c == 0) {
+                        while (!cancelled) {
+                            counter.incrementAndGet();
+                            s.onNext(i++);
+                            if (requested.decrementAndGet() == 0) {
+                                // we're done emitting the number requested so return
+                                return;
                             }
                         }
                     }
+                }
 
-                    @Override
-                    public void cancel() {
-                        cancelled = true;
-                    }
-                });
-            }
-
+                @Override
+                public void cancel() {
+                    cancelled = true;
+                }
+            });
         });
     }
 
@@ -724,12 +668,9 @@ public class BackpressureTests {
      * @return
      */
     private static Observable<Integer> firehose(final AtomicInteger counter) {
-        return Observable.create(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                Subscription s2 = new FirehoseNoBackpressure(counter, s);
-                s.onSubscribe(s2);
-            }
+        return Observable.create(s -> {
+            Subscription s2 = new FirehoseNoBackpressure(counter, s);
+            s.onSubscribe(s2);
         });
     }
 

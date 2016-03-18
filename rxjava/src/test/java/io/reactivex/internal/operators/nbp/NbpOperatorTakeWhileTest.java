@@ -33,12 +33,7 @@ public class NbpOperatorTakeWhileTest {
     @Test
     public void testTakeWhile1() {
         NbpObservable<Integer> w = NbpObservable.just(1, 2, 3);
-        NbpObservable<Integer> take = w.takeWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer input) {
-                return input < 3;
-            }
-        });
+        NbpObservable<Integer> take = w.takeWhile(input -> input < 3);
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
         take.subscribe(NbpObserver);
@@ -52,12 +47,7 @@ public class NbpOperatorTakeWhileTest {
     @Test
     public void testTakeWhileOnSubject1() {
         NbpSubject<Integer, Integer> s = NbpPublishSubject.create();
-        NbpObservable<Integer> take = s.takeWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer input) {
-                return input < 3;
-            }
-        });
+        NbpObservable<Integer> take = s.takeWhile(input -> input < 3);
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
         take.subscribe(NbpObserver);
@@ -110,12 +100,7 @@ public class NbpOperatorTakeWhileTest {
             }
         });
 
-        source.takeWhile(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return false;
-            }
-        }).toBlocking().last("");
+        source.takeWhile(s -> false).toBlocking().last("");
     }
 
     @Test
@@ -125,12 +110,9 @@ public class NbpOperatorTakeWhileTest {
 
         NbpSubscriber<String> NbpObserver = TestHelper.mockNbpSubscriber();
         NbpObservable<String> take = NbpObservable.create(source)
-                .takeWhile(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                throw testException;
-            }
-        });
+                .takeWhile(s -> {
+                    throw testException;
+                });
         take.subscribe(NbpObserver);
 
         // wait for the NbpObservable to complete
@@ -192,22 +174,17 @@ public class NbpOperatorTakeWhileTest {
         public void accept(final NbpSubscriber<? super String> NbpObserver) {
             System.out.println("TestObservable subscribed to ...");
             NbpObserver.onSubscribe(s);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestObservable thread");
-                        for (String s : values) {
-                            System.out.println("TestObservable onNext: " + s);
-                            NbpObserver.onNext(s);
-                        }
-                        NbpObserver.onComplete();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestObservable thread");
+                    for (String s1 : values) {
+                        System.out.println("TestObservable onNext: " + s1);
+                        NbpObserver.onNext(s1);
                     }
+                    NbpObserver.onComplete();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
                 }
-
             });
             System.out.println("starting TestObservable thread");
             t.start();
@@ -217,12 +194,7 @@ public class NbpOperatorTakeWhileTest {
     
     @Test
     public void testNoUnsubscribeDownstream() {
-        NbpObservable<Integer> source = NbpObservable.range(1, 1000).takeWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 2;
-            }
-        });
+        NbpObservable<Integer> source = NbpObservable.range(1, 1000).takeWhile(t1 -> t1 < 2);
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         
         source.unsafeSubscribe(ts);
@@ -236,11 +208,8 @@ public class NbpOperatorTakeWhileTest {
     @Test
     public void testErrorCauseIncludesLastValue() {
         NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
-        NbpObservable.just("abc").takeWhile(new Predicate<String>() {
-            @Override
-            public boolean test(String t1) {
-                throw new TestException();
-            }
+        NbpObservable.just("abc").takeWhile(t1 -> {
+            throw new TestException();
         }).subscribe(ts);
         
         ts.assertTerminated();

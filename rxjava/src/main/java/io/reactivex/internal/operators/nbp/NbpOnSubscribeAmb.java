@@ -132,10 +132,7 @@ public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
         
         boolean won;
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         public AmbInnerSubscriber(AmbCoordinator<T> parent, int index, NbpSubscriber<? super T> actual) {
             this.parent = parent;

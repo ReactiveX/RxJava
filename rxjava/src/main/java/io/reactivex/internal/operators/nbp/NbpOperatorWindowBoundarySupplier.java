@@ -53,10 +53,7 @@ public final class NbpOperatorWindowBoundarySupplier<T, B> implements NbpOperato
         
         final AtomicReference<Disposable> boundary = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         NbpUnicastSubject<T> window;
         

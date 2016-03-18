@@ -64,24 +64,16 @@ public class OnSubscribeAmbTest {
                 
                 long delay = interval;
                 for (final String value : values) {
-                    parentSubscription.add(innerScheduler.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            subscriber.onNext(value);
-                        }
-                    }
-                    , delay, TimeUnit.MILLISECONDS));
+                    parentSubscription.add(innerScheduler.schedule(() -> subscriber.onNext(value)
+                            , delay, TimeUnit.MILLISECONDS));
                     delay += interval;
                 }
-                parentSubscription.add(innerScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                            if (e == null) {
-                                subscriber.onComplete();
-                            } else {
-                                subscriber.onError(e);
-                            }
-                    }
+                parentSubscription.add(innerScheduler.schedule(() -> {
+                        if (e == null) {
+                            subscriber.onComplete();
+                        } else {
+                            subscriber.onError(e);
+                        }
                 }, delay, TimeUnit.MILLISECONDS));
             }
         });
@@ -239,12 +231,7 @@ public class OnSubscribeAmbTest {
     @Test
     public void testSubscriptionOnlyHappensOnce() throws InterruptedException {
         final AtomicLong count = new AtomicLong();
-        Consumer<Subscription> incrementer = new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                count.incrementAndGet();
-            }
-        };
+        Consumer<Subscription> incrementer = s -> count.incrementAndGet();
         
         //this aync stream should emit first
         Observable<Integer> o1 = Observable.just(1).doOnSubscribe(incrementer)
@@ -287,15 +274,12 @@ public class OnSubscribeAmbTest {
         // then second observable does not get subscribed to before first
         // subscription completes hence first observable emits result through
         // amb
-        int result = Observable.just(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        //
-                    }
-            }
+        int result = Observable.just(1).doOnNext(t -> {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    //
+                }
         }).ambWith(Observable.just(2)).toBlocking().single();
         assertEquals(1, result);
     }

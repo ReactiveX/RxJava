@@ -33,12 +33,7 @@ public class PublisherDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
         
         Observable.just(1)
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(s -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
         
@@ -66,12 +61,7 @@ public class PublisherDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
         
         Observable.just(1)
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(s -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
         
@@ -100,12 +90,7 @@ public class PublisherDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
         
         Observable.just(1)
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(s -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
         
@@ -133,12 +118,7 @@ public class PublisherDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
         
         Observable.<Integer>error(new TestException())
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(s -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
         
@@ -166,12 +146,7 @@ public class PublisherDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
         
         Observable.<Integer>error(new TestException())
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(s -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
         
@@ -200,12 +175,7 @@ public class PublisherDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
         
         Observable.just(1, 2, 3, 4, 5)
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(s -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
         

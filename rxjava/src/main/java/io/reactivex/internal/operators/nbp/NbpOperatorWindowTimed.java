@@ -84,10 +84,7 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<NbpObservabl
 
         final AtomicReference<Disposable> timer = new AtomicReference<>();
 
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         static final Object NEXT = new Object();
         
@@ -290,10 +287,7 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<NbpObservabl
         
         final AtomicReference<Disposable> timer = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         public WindowExactBoundedSubscriber(
                 NbpSubscriber<? super NbpObservable<T>> actual, 
@@ -597,12 +591,7 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<NbpObservabl
             windows.add(w);
             
             actual.onNext(w);
-            worker.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    complete(w);
-                }
-            }, timespan, unit);
+            worker.schedule(() -> complete(w), timespan, unit);
             
             worker.schedulePeriodically(this, timeskip, timeskip, unit);
         }
@@ -730,12 +719,7 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<NbpObservabl
                             ws.add(w);
                             a.onNext(w);
                                 
-                            worker.schedule(new Runnable() {
-                                @Override
-                                public void run() {
-                                    complete(w);
-                                }
-                            }, timespan, unit);
+                            worker.schedule(() -> complete(w), timespan, unit);
                         } else {
                             ws.remove(work.w);
                             work.w.onComplete();

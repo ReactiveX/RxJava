@@ -29,17 +29,14 @@ public final class NbpEventStream {
     }
     public static NbpObservable<Event> getEventStream(final String type, final int numInstances) {
         
-        return NbpObservable.<Event>generate(new Consumer<NbpSubscriber<Event>>() {
-            @Override
-            public void accept(NbpSubscriber<Event> s) {
-                s.onNext(randomEvent(type, numInstances));
-                try {
-                    // slow it down somewhat
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    s.onError(e);
-                }
+        return NbpObservable.<Event>generate(s -> {
+            s.onNext(randomEvent(type, numInstances));
+            try {
+                // slow it down somewhat
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                s.onError(e);
             }
         }).subscribeOn(Schedulers.newThread());
     }

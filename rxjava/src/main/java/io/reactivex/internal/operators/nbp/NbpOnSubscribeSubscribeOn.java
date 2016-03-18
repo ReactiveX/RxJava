@@ -36,12 +36,7 @@ public final class NbpOnSubscribeSubscribeOn<T> implements NbpOnSubscribe<T> {
          * one must set a Subscription on s on the current thread, but
          * it is expected that onSubscribe is run on the target scheduler.
          */
-        scheduler.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                source.subscribe(s);
-            }
-        });
+        scheduler.scheduleDirect(() -> source.subscribe(s));
     }
     
     static final class SubscribeOnSubscriber<T> extends AtomicReference<Thread> implements NbpSubscriber<T>, Disposable {

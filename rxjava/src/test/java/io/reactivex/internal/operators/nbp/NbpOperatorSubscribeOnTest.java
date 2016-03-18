@@ -76,13 +76,8 @@ public class NbpOperatorSubscribeOnTest {
     @Ignore("NbpOnSubscribe.subscribe can't throw")
     public void testThrownErrorHandling() {
         NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
-        NbpObservable.create(new NbpOnSubscribe<String>() {
-
-            @Override
-            public void accept(NbpSubscriber<? super String> s) {
-                throw new RuntimeException("fail");
-            }
-
+        NbpObservable.<String>create(s -> {
+            throw new RuntimeException("fail");
         }).subscribeOn(Schedulers.computation()).subscribe(ts);
         ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
         ts.assertTerminated();

@@ -72,14 +72,11 @@ public abstract class Scheduler {
         
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         
-        w.schedule(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    decoratedRun.run();
-                } finally {
-                    w.dispose();
-                }
+        w.schedule(() -> {
+            try {
+                decoratedRun.run();
+            } finally {
+                w.dispose();
             }
         }, delay, unit);
         
@@ -93,16 +90,13 @@ public abstract class Scheduler {
         
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         
-        acr.setResource(1, w.schedulePeriodically(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    decoratedRun.run();
-                } catch (Throwable e) {
-                    // make sure the worker is released if the run crashes
-                    acr.dispose();
-                    throw Exceptions.propagate(e);
-                }
+        acr.setResource(1, w.schedulePeriodically(() -> {
+            try {
+                decoratedRun.run();
+            } catch (Throwable e) {
+                // make sure the worker is released if the run crashes
+                acr.dispose();
+                throw Exceptions.propagate(e);
             }
         }, initialDelay, period, unit));
         

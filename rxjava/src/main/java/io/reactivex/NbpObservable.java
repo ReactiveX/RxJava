@@ -435,59 +435,47 @@ public class NbpObservable<T> {
 
     public static <T> NbpObservable<T> fromPublisher(final Publisher<? extends T> publisher) {
         Objects.requireNonNull(publisher, "publisher is null");
-        return create(new NbpOnSubscribe<T>() {
-            @Override
-            public void accept(final NbpSubscriber<? super T> s) {
-                publisher.subscribe(new Subscriber<T>() {
+        return create(s ->
+            publisher.subscribe(new Subscriber<T>() {
+                @Override
+                public void onComplete() {
+                    s.onComplete();
+                }
 
-                    @Override
-                    public void onComplete() {
-                        s.onComplete();
-                    }
+                @Override
+                public void onError(Throwable t) {
+                    s.onError(t);
+                }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        s.onError(t);
-                    }
+                @Override
+                public void onNext(T t) {
+                    s.onNext(t);
+                }
 
-                    @Override
-                    public void onNext(T t) {
-                        s.onNext(t);
-                    }
-
-                    @Override
-                    public void onSubscribe(Subscription inner) {
-                        s.onSubscribe(Disposables.from(inner));
-                        inner.request(Long.MAX_VALUE);
-                    }
-                    
-                });
-            }
-        });
+                @Override
+                public void onSubscribe(Subscription inner) {
+                    s.onSubscribe(Disposables.from(inner));
+                    inner.request(Long.MAX_VALUE);
+                }
+            })
+        );
     }
 
     @SchedulerSupport(SchedulerKind.NONE)
     public static <T> NbpObservable<T> generate(final Consumer<NbpSubscriber<T>> generator) {
         Objects.requireNonNull(generator, "generator  is null");
-        return generate(Functions.nullSupplier(),
-        new BiFunction<Object, NbpSubscriber<T>, Object>() {
-            @Override
-            public Object apply(Object s, NbpSubscriber<T> o) {
-                generator.accept(o);
-                return s;
-            }
+        return generate(Functions.nullSupplier(), (s, o) -> {
+            generator.accept(o);
+            return s;
         }, Functions.emptyConsumer());
     }
 
     @SchedulerSupport(SchedulerKind.NONE)
     public static <T, S> NbpObservable<T> generate(Supplier<S> initialState, final BiConsumer<S, NbpSubscriber<T>> generator) {
         Objects.requireNonNull(generator, "generator  is null");
-        return generate(initialState, new BiFunction<S, NbpSubscriber<T>, S>() {
-            @Override
-            public S apply(S s, NbpSubscriber<T> o) {
-                generator.accept(s, o);
-                return s;
-            }
+        return generate(initialState, (s, o) -> {
+            generator.accept(s, o);
+            return s;
         }, Functions.emptyConsumer());
     }
 
@@ -497,12 +485,9 @@ public class NbpObservable<T> {
             final BiConsumer<S, NbpSubscriber<T>> generator, 
             Consumer<? super S> disposeState) {
         Objects.requireNonNull(generator, "generator  is null");
-        return generate(initialState, new BiFunction<S, NbpSubscriber<T>, S>() {
-            @Override
-            public S apply(S s, NbpSubscriber<T> o) {
-                generator.accept(s, o);
-                return s;
-            }
+        return generate(initialState, (s, o) -> {
+            generator.accept(s, o);
+            return s;
         }, disposeState);
     }
 
@@ -835,9 +820,7 @@ public class NbpObservable<T> {
         if ((long)start + (count - 1) > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Integer overflow");
         }
-        return create(new NbpOnSubscribe<Integer>() {
-            @Override
-            public void accept(NbpSubscriber<? super Integer> s) {
+        return create(s -> {
                 BooleanDisposable d = new BooleanDisposable();
                 s.onSubscribe(d);
                 
@@ -849,7 +832,7 @@ public class NbpObservable<T> {
                     s.onComplete();
                 }
             }
-        });
+        );
     }
 
     @SchedulerSupport(SchedulerKind.NONE)
@@ -1068,12 +1051,7 @@ public class NbpObservable<T> {
 
     @SchedulerSupport(SchedulerKind.NONE)
     public final NbpObservable<T> asObservable() {
-        return create(new NbpOnSubscribe<T>() {
-            @Override
-            public void accept(NbpSubscriber<? super T> s) {
-                NbpObservable.this.subscribe(s);
-            }
-        });
+        return create(this::subscribe);
     }
 
     @SchedulerSupport(SchedulerKind.NONE)
@@ -2685,9 +2663,7 @@ public class NbpObservable<T> {
     }
     
     public final Observable<T> toObservable(BackpressureStrategy strategy) {
-        Observable<T> o = Observable.create(new Publisher<T>() {
-            @Override
-            public void subscribe(final Subscriber<? super T> s) {
+        Observable<T> o = Observable.create(s ->
                 NbpObservable.this.subscribe(new NbpSubscriber<T>() {
 
                     @Override
@@ -2721,10 +2697,8 @@ public class NbpObservable<T> {
                             
                         });
                     }
-                    
-                });
-            }
-        });
+                })
+        );
         
         switch (strategy) {
         case BUFFER:
@@ -2740,37 +2714,32 @@ public class NbpObservable<T> {
     
     @SchedulerSupport(SchedulerKind.NONE)
     public final Single<T> toSingle() {
-        return Single.create(new SingleOnSubscribe<T>() {
-            @Override
-            public void accept(final SingleSubscriber<? super T> s) {
-                NbpObservable.this.subscribe(new NbpSubscriber<T>() {
-                    T last;
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        s.onSubscribe(d);
+        return Single.create(s -> {
+            subscribe(new NbpSubscriber<T>() {
+                T last;
+                @Override
+                public void onSubscribe(Disposable d) {
+                    s.onSubscribe(d);
+                }
+                @Override
+                public void onNext(T value) {
+                    last = value;
+                }
+                @Override
+                public void onError(Throwable e) {
+                    s.onError(e);
+                }
+                @Override
+                public void onComplete() {
+                    T v = last;
+                    last = null;
+                    if (v != null) {
+                        s.onSuccess(v);
+                    } else {
+                        s.onError(new NoSuchElementException());
                     }
-                    @Override
-                    public void onNext(T value) {
-                        last = value;
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-                    @Override
-                    public void onComplete() {
-                        T v = last;
-                        last = null;
-                        if (v != null) {
-                            s.onSuccess(v);
-                        } else {
-                            s.onError(new NoSuchElementException());
-                        }
-                    }
-                    
-                    
-                });
-            }
+                }
+            });
         });
     }
     

@@ -348,30 +348,15 @@ public class NbpOperatorSwitchTest {
     }
 
     private <T> void publishCompleted(final NbpSubscriber<T> NbpObserver, long delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(NbpObserver::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final NbpSubscriber<T> NbpObserver, long delay, final Throwable error) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onError(error);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> NbpObserver.onError(error), delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishNext(final NbpSubscriber<T> NbpObserver, long delay, final T value) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> NbpObserver.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
@@ -442,19 +427,9 @@ public class NbpOperatorSwitchTest {
     public void testIssue2654() {
         NbpObservable<String> oneItem = NbpObservable.just("Hello").mergeWith(NbpObservable.<String>never());
         
-        NbpObservable<String> src = oneItem.switchMap(new Function<String, NbpObservable<String>>() {
-            @Override
-            public NbpObservable<String> apply(final String s) {
-                return NbpObservable.just(s)
-                        .mergeWith(NbpObservable.interval(10, TimeUnit.MILLISECONDS)
-                        .map(new Function<Long, String>() {
-                            @Override
-                            public String apply(Long i) {
-                                return s + " " + i;
-                            }
-                        })).take(250);
-            }
-        })
+        NbpObservable<String> src = oneItem.switchMap(s -> NbpObservable.just(s)
+                .mergeWith(NbpObservable.interval(10, TimeUnit.MILLISECONDS)
+                .map(i -> s + " " + i)).take(250))
         .share()
         ;
         

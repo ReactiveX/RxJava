@@ -110,12 +110,9 @@ public final class TrampolineScheduler extends Scheduler {
                 return EmptyDisposable.INSTANCE;
             } else {
                 // queue wasn't empty, a parent is already processing so we just add to the end of the queue
-                return new Disposable() {
-                    @Override
-                    public void dispose() {
-                        timedRunnable.disposed = true;
-                        queue.remove(timedRunnable);
-                    }
+                return () -> {
+                    timedRunnable.disposed = true;
+                    queue.remove(timedRunnable);
                 };
             }
         }

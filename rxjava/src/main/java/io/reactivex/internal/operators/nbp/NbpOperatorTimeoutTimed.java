@@ -64,15 +64,9 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
 
         final AtomicReference<Disposable> timer = new AtomicReference<>();
 
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
 
-        static final Disposable NEW_TIMER = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable NEW_TIMER = () -> { };
 
         volatile long index;
         
@@ -122,20 +116,17 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
             }
             
             if (timer.compareAndSet(d, NEW_TIMER)) {
-                d = worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (idx == index) {
-                            done = true;
-                            s.dispose();
-                            disposeTimer();
-                            worker.dispose();
-                            
-                            if (other == null) {
-                                actual.onError(new TimeoutException());
-                            } else {
-                                subscribeNext();
-                            }
+                d = worker.schedule(() -> {
+                    if (idx == index) {
+                        done = true;
+                        s.dispose();
+                        disposeTimer();
+                        worker.dispose();
+
+                        if (other == null) {
+                            actual.onError(new TimeoutException());
+                        } else {
+                            subscribeNext();
                         }
                     }
                 }, timeout, unit);
@@ -200,15 +191,9 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
         
         final AtomicReference<Disposable> timer = new AtomicReference<>();
 
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
 
-        static final Disposable NEW_TIMER = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable NEW_TIMER = () -> { };
 
         volatile long index;
         
@@ -252,16 +237,13 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
             }
             
             if (timer.compareAndSet(d, NEW_TIMER)) {
-                d = worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (idx == index) {
-                            done = true;
-                            s.dispose();
-                            dispose();
-                            
-                            actual.onError(new TimeoutException());
-                        }
+                d = worker.schedule(() -> {
+                    if (idx == index) {
+                        done = true;
+                        s.dispose();
+                        dispose();
+
+                        actual.onError(new TimeoutException());
                     }
                 }, timeout, unit);
                 

@@ -34,22 +34,16 @@ public final class NbpOperatorDistinct<T, K> implements NbpOperator<T, T> {
     }
     
     public static <T, K> NbpOperatorDistinct<T, K> withCollection(final Function<? super T, K> keySelector, final Supplier<? extends Collection<? super K>> collectionSupplier) {
-        Supplier<? extends Predicate<? super K>> p = new Supplier<Predicate<K>>() {
-            @Override
-            public Predicate<K> get() {
-                final Collection<? super K> coll = collectionSupplier.get();
-                
-                return new Predicate<K>() {
-                    @Override
-                    public boolean test(K t) {
-                        if (t == null) {
-                            coll.clear();
-                            return true;
-                        }
-                        return coll.add(t);
-                    }
-                };
-            }
+        Supplier<? extends Predicate<? super K>> p = () -> {
+            final Collection<? super K> coll = collectionSupplier.get();
+
+            return t -> {
+                if (t == null) {
+                    coll.clear();
+                    return true;
+                }
+                return coll.add(t);
+            };
         };
         
         return new NbpOperatorDistinct<>(keySelector, p);
@@ -57,24 +51,18 @@ public final class NbpOperatorDistinct<T, K> implements NbpOperator<T, T> {
     
     static final NbpOperatorDistinct<Object, Object> UNTIL_CHANGED;
     static {
-        Supplier<? extends Predicate<? super Object>> p = new Supplier<Predicate<Object>>() {
-            @Override
-            public Predicate<? super Object> get() {
-                final Object[] last = { null };
-                
-                return new Predicate<Object>() {
-                    @Override
-                    public boolean test(Object t) {
-                        if (t == null) {
-                            last[0] = null;
-                            return true;
-                        }
-                        Object o = last[0];
-                        last[0] = t;
-                        return !Objects.equals(o, t);
-                    }
-                };
-            }
+        Supplier<? extends Predicate<? super Object>> p = () -> {
+            final Object[] last = { null };
+
+            return t -> {
+                if (t == null) {
+                    last[0] = null;
+                    return true;
+                }
+                Object o = last[0];
+                last[0] = t;
+                return !Objects.equals(o, t);
+            };
         };
         UNTIL_CHANGED = new NbpOperatorDistinct<>(Functions.identity(), p);
     }
@@ -85,24 +73,18 @@ public final class NbpOperatorDistinct<T, K> implements NbpOperator<T, T> {
     }
 
     public static <T, K> NbpOperatorDistinct<T, K> untilChanged(Function<? super T, K> keySelector) {
-        Supplier<? extends Predicate<? super K>> p = new Supplier<Predicate<K>>() {
-            @Override
-            public Predicate<K> get() {
-                final Object[] last = { null };
-                
-                return new Predicate<K>() {
-                    @Override
-                    public boolean test(K t) {
-                        if (t == null) {
-                            last[0] = null;
-                            return true;
-                        }
-                        Object o = last[0];
-                        last[0] = t;
-                        return !Objects.equals(o, t);
-                    }
-                };
-            }
+        Supplier<? extends Predicate<? super K>> p = () -> {
+            final Object[] last = { null };
+
+            return t -> {
+                if (t == null) {
+                    last[0] = null;
+                    return true;
+                }
+                Object o = last[0];
+                last[0] = t;
+                return !Objects.equals(o, t);
+            };
         };
         return new NbpOperatorDistinct<>(keySelector, p);
     }

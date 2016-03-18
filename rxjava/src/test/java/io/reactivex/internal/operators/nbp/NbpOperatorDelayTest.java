@@ -119,14 +119,11 @@ public class NbpOperatorDelayTest {
     @Test
     public void testDelayWithError() {
         NbpObservable<Long> source = NbpObservable.interval(1L, TimeUnit.SECONDS, scheduler)
-        .map(new Function<Long, Long>() {
-            @Override
-            public Long apply(Long value) {
-                if (value == 1L) {
-                    throw new RuntimeException("error!");
-                }
-                return value;
+        .map(value -> {
+            if (value == 1L) {
+                throw new RuntimeException("error!");
             }
+            return value;
         });
         NbpObservable<Long> delayed = source.delay(1L, TimeUnit.SECONDS, scheduler);
         delayed.subscribe(NbpObserver);
@@ -238,12 +235,7 @@ public class NbpOperatorDelayTest {
             delays.add(delay);
         }
 
-        Function<Integer, NbpObservable<Integer>> delayFunc = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return delays.get(t1);
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> delayFunc = delays::get;
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
@@ -268,13 +260,7 @@ public class NbpOperatorDelayTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> delay = NbpPublishSubject.create();
 
-        Function<Integer, NbpObservable<Integer>> delayFunc = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> delayFunc = t1 -> delay;
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
 
@@ -294,13 +280,7 @@ public class NbpOperatorDelayTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> delay = NbpPublishSubject.create();
 
-        Function<Integer, NbpObservable<Integer>> delayFunc = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> delayFunc = t1 -> delay;
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
 
@@ -319,12 +299,8 @@ public class NbpOperatorDelayTest {
     public void testDelayWithObservableDelayFunctionThrows() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
 
-        Function<Integer, NbpObservable<Integer>> delayFunc = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, NbpObservable<Integer>> delayFunc = t1 -> {
+            throw new TestException();
         };
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
@@ -343,13 +319,7 @@ public class NbpOperatorDelayTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> delay = NbpPublishSubject.create();
 
-        Function<Integer, NbpObservable<Integer>> delayFunc = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> delayFunc = t1 -> delay;
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
 
@@ -367,19 +337,8 @@ public class NbpOperatorDelayTest {
     public void testDelayWithObservableSubscriptionNormal() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> delay = NbpPublishSubject.create();
-        Supplier<NbpObservable<Integer>> subFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return delay;
-            }
-        };
-        Function<Integer, NbpObservable<Integer>> delayFunc = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Supplier<NbpObservable<Integer>> subFunc = () -> delay;
+        Function<Integer, NbpObservable<Integer>> delayFunc = t1 -> delay;
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
@@ -402,19 +361,10 @@ public class NbpOperatorDelayTest {
     public void testDelayWithObservableSubscriptionFunctionThrows() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> delay = NbpPublishSubject.create();
-        Supplier<NbpObservable<Integer>> subFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                throw new TestException();
-            }
+        Supplier<NbpObservable<Integer>> subFunc = () -> {
+            throw new TestException();
         };
-        Function<Integer, NbpObservable<Integer>> delayFunc = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> delayFunc = t1 -> delay;
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
@@ -436,19 +386,8 @@ public class NbpOperatorDelayTest {
     public void testDelayWithObservableSubscriptionThrows() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> delay = NbpPublishSubject.create();
-        Supplier<NbpObservable<Integer>> subFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return delay;
-            }
-        };
-        Function<Integer, NbpObservable<Integer>> delayFunc = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Supplier<NbpObservable<Integer>> subFunc = () -> delay;
+        Function<Integer, NbpObservable<Integer>> delayFunc = t1 -> delay;
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
@@ -470,13 +409,7 @@ public class NbpOperatorDelayTest {
     public void testDelayWithObservableEmptyDelayer() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
 
-        Function<Integer, NbpObservable<Integer>> delayFunc = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return NbpObservable.empty();
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> delayFunc = t1 -> NbpObservable.empty();
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
 
@@ -496,19 +429,8 @@ public class NbpOperatorDelayTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> sdelay = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> delay = NbpPublishSubject.create();
-        Supplier<NbpObservable<Integer>> subFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return sdelay;
-            }
-        };
-        Function<Integer, NbpObservable<Integer>> delayFunc = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Supplier<NbpObservable<Integer>> subFunc = () -> sdelay;
+        Function<Integer, NbpObservable<Integer>> delayFunc = t1 -> delay;
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
@@ -533,12 +455,7 @@ public class NbpOperatorDelayTest {
 
         final NbpObservable<Long> delayer = NbpObservable.timer(500L, TimeUnit.MILLISECONDS, scheduler);
 
-        Function<Long, NbpObservable<Long>> delayFunc = new Function<Long, NbpObservable<Long>>() {
-            @Override
-            public NbpObservable<Long> apply(Long t1) {
-                return delayer;
-            }
-        };
+        Function<Long, NbpObservable<Long>> delayFunc = t1 -> delayer;
 
         NbpObservable<Long> delayed = source.delay(delayFunc);
         delayed.subscribe(NbpObserver);
@@ -587,13 +504,7 @@ public class NbpOperatorDelayTest {
             subjects.add(NbpPublishSubject.<Integer> create());
         }
 
-        NbpObservable<Integer> result = source.delay(new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return subjects.get(t1);
-            }
-        });
+        NbpObservable<Integer> result = source.delay(t1 -> subjects.get(t1));
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
@@ -622,14 +533,7 @@ public class NbpOperatorDelayTest {
     public void testDelayEmitsEverything() {
         NbpObservable<Integer> source = NbpObservable.range(1, 5);
         NbpObservable<Integer> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
-        delayed = delayed.doOnEach(new Consumer<Try<Optional<Integer>>>() {
-
-            @Override
-            public void accept(Try<Optional<Integer>> t1) {
-                System.out.println(t1);
-            }
-
-        });
+        delayed = delayed.doOnEach(System.out::println);
         NbpTestSubscriber<Integer> NbpObserver = new NbpTestSubscriber<>();
         delayed.subscribe(NbpObserver);
         // all will be delivered after 500ms since range does not delay between them
@@ -698,14 +602,7 @@ public class NbpOperatorDelayTest {
     public void testBackpressureWithSelectorDelay() {
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         NbpObservable.range(1, Observable.bufferSize() * 2)
-                .delay(new Function<Integer, NbpObservable<Long>>() {
-
-                    @Override
-                    public NbpObservable<Long> apply(Integer i) {
-                        return NbpObservable.timer(100, TimeUnit.MILLISECONDS);
-                    }
-
-                })
+                .delay(i -> NbpObservable.timer(100, TimeUnit.MILLISECONDS))
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
 
@@ -733,20 +630,7 @@ public class NbpOperatorDelayTest {
     public void testBackpressureWithSelectorDelayAndSubscriptionDelay() {
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         NbpObservable.range(1, Observable.bufferSize() * 2)
-                .delay(new Supplier<NbpObservable<Long>>() {
-
-                    @Override
-                    public NbpObservable<Long> get() {
-                        return NbpObservable.timer(500, TimeUnit.MILLISECONDS);
-                    }
-                }, new Function<Integer, NbpObservable<Long>>() {
-
-                    @Override
-                    public NbpObservable<Long> apply(Integer i) {
-                        return NbpObservable.timer(100, TimeUnit.MILLISECONDS);
-                    }
-
-                })
+                .delay(() -> NbpObservable.timer(500, TimeUnit.MILLISECONDS), i -> NbpObservable.timer(100, TimeUnit.MILLISECONDS))
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
 
@@ -800,12 +684,7 @@ public class NbpOperatorDelayTest {
         
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         
-        source.delaySubscription(new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return ps;
-            }
-        }).subscribe(ts);
+        source.delaySubscription(() -> ps).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -826,12 +705,7 @@ public class NbpOperatorDelayTest {
         
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         
-        source.delaySubscription(new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return ps;
-            }
-        }).subscribe(ts);
+        source.delaySubscription(() -> ps).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -853,12 +727,7 @@ public class NbpOperatorDelayTest {
         
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         
-        source.delaySubscription(new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return ps;
-            }
-        }).subscribe(ts);
+        source.delaySubscription(() -> ps).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNoErrors();

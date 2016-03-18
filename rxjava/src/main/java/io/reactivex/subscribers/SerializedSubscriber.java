@@ -175,12 +175,7 @@ public final class SerializedSubscriber<T> implements Subscriber<T> {
         }
     }
     
-    final Predicate<Object> consumer = new Predicate<Object>() {
-        @Override
-        public boolean test(Object v) {
-            return accept(v);
-        }
-    };
+    final Predicate<Object> consumer = this::accept;
     
     boolean accept(Object value) {
         return NotificationLite.accept(value, actual);

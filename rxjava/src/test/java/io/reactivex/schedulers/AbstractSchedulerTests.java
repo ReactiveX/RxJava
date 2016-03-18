@@ -58,30 +58,21 @@ public abstract class AbstractSchedulerTests {
             final Runnable thirdStepStart = mock(Runnable.class);
             final Runnable thirdStepEnd = mock(Runnable.class);
     
-            final Runnable firstAction = new Runnable() {
-                @Override
-                public void run() {
-                    firstStepStart.run();
-                    firstStepEnd.run();
-                    latch.countDown();
-                }
+            final Runnable firstAction = () -> {
+                firstStepStart.run();
+                firstStepEnd.run();
+                latch.countDown();
             };
-            final Runnable secondAction = new Runnable() {
-                @Override
-                public void run() {
-                    secondStepStart.run();
-                    inner.schedule(firstAction);
-                    secondStepEnd.run();
-    
-                }
+            final Runnable secondAction = () -> {
+                secondStepStart.run();
+                inner.schedule(firstAction);
+                secondStepEnd.run();
+
             };
-            final Runnable thirdAction = new Runnable() {
-                @Override
-                public void run() {
-                    thirdStepStart.run();
-                    inner.schedule(secondAction);
-                    thirdStepEnd.run();
-                }
+            final Runnable thirdAction = () -> {
+                thirdStepStart.run();
+                inner.schedule(secondAction);
+                thirdStepEnd.run();
             };
     
             InOrder inOrder = inOrder(firstStepStart, firstStepEnd, secondStepStart, secondStepEnd, thirdStepStart, thirdStepEnd);
@@ -106,21 +97,10 @@ public abstract class AbstractSchedulerTests {
 
         Observable<Integer> ids = Observable.fromIterable(Arrays.asList(1, 2)).subscribeOn(getScheduler());
 
-        Observable<String> m = ids.flatMap(new Function<Integer, Observable<String>>() {
-
-            @Override
-            public Observable<String> apply(Integer id) {
-                return Observable.fromIterable(Arrays.asList("a-" + id, "b-" + id)).subscribeOn(getScheduler())
-                        .map(new Function<String, String>() {
-
-                            @Override
-                            public String apply(String s) {
-                                return "names=>" + s;
-                            }
-                        });
-            }
-
-        });
+        Observable<String> m = ids.flatMap(id ->
+            Observable.fromIterable(Arrays.asList("a-" + id, "b-" + id))
+                .subscribeOn(getScheduler())
+                .map(s -> "names=>" + s));
 
         List<String> strings = m.toList().toBlocking().last();
 
@@ -148,26 +128,18 @@ public abstract class AbstractSchedulerTests {
             final Runnable second = mock(Runnable.class);
     
             // make it wait until both the first and second are called
-            doAnswer(new Answer() {
-    
-                @Override
-                public Object answer(InvocationOnMock invocation) throws Throwable {
-                    try {
-                        return invocation.getMock();
-                    } finally {
-                        latch.countDown();
-                    }
+            doAnswer(invocation -> {
+                try {
+                    return invocation.getMock();
+                } finally {
+                    latch.countDown();
                 }
             }).when(first).run();
-            doAnswer(new Answer() {
-    
-                @Override
-                public Object answer(InvocationOnMock invocation) throws Throwable {
-                    try {
-                        return invocation.getMock();
-                    } finally {
-                        latch.countDown();
-                    }
+            doAnswer(invocation -> {
+                try {
+                    return invocation.getMock();
+                } finally {
+                    latch.countDown();
                 }
             }).when(second).run();
     
@@ -193,19 +165,10 @@ public abstract class AbstractSchedulerTests {
             final Runnable first = mock(Runnable.class);
             final Runnable second = mock(Runnable.class);
     
-            inner.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    inner.schedule(first, 30, TimeUnit.MILLISECONDS);
-                    inner.schedule(second, 10, TimeUnit.MILLISECONDS);
-                    inner.schedule(new Runnable() {
-    
-                        @Override
-                        public void run() {
-                            latch.countDown();
-                        }
-                    }, 40, TimeUnit.MILLISECONDS);
-                }
+            inner.schedule(() -> {
+                inner.schedule(first, 30, TimeUnit.MILLISECONDS);
+                inner.schedule(second, 10, TimeUnit.MILLISECONDS);
+                inner.schedule(latch::countDown, 40, TimeUnit.MILLISECONDS);
             });
     
             latch.await();
@@ -230,21 +193,12 @@ public abstract class AbstractSchedulerTests {
             final Runnable third = mock(Runnable.class);
             final Runnable fourth = mock(Runnable.class);
     
-            inner.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    inner.schedule(first);
-                    inner.schedule(second, 300, TimeUnit.MILLISECONDS);
-                    inner.schedule(third, 100, TimeUnit.MILLISECONDS);
-                    inner.schedule(fourth);
-                    inner.schedule(new Runnable() {
-    
-                        @Override
-                        public void run() {
-                            latch.countDown();
-                        }
-                    }, 400, TimeUnit.MILLISECONDS);
-                }
+            inner.schedule(() -> {
+                inner.schedule(first);
+                inner.schedule(second, 300, TimeUnit.MILLISECONDS);
+                inner.schedule(third, 100, TimeUnit.MILLISECONDS);
+                inner.schedule(fourth);
+                inner.schedule(latch::countDown, 400, TimeUnit.MILLISECONDS);
             });
     
             latch.await();
@@ -349,13 +303,9 @@ public abstract class AbstractSchedulerTests {
         });
 
         final AtomicInteger lastValue = new AtomicInteger();
-        obs.toBlocking().forEach(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer v) {
-                System.out.println("Value: " + v);
-                lastValue.set(v);
-            }
+        obs.toBlocking().forEach(v -> {
+            System.out.println("Value: " + v);
+            lastValue.set(v);
         });
 
         assertEquals(42, lastValue.get());
@@ -372,14 +322,10 @@ public abstract class AbstractSchedulerTests {
                 observer.onSubscribe(EmptySubscription.INSTANCE);
                 for (int i = 0; i < count; i++) {
                     final int v = i;
-                    new Thread(new Runnable() {
+                    new Thread(() -> {
+                        observer.onNext("v: " + v);
 
-                        @Override
-                        public void run() {
-                            observer.onNext("v: " + v);
-
-                            latch.countDown();
-                        }
+                        latch.countDown();
                     }).start();
                 }
             }
@@ -423,21 +369,12 @@ public abstract class AbstractSchedulerTests {
         final Scheduler scheduler = getScheduler();
 
         Observable<String> o = Observable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
-                .flatMap(new Function<String, Observable<String>>() {
-
-                    @Override
-                    public Observable<String> apply(final String v) {
-                        return Observable.create(new Publisher<String>() {
-
-                            @Override
-                            public void subscribe(Subscriber<? super String> observer) {
-                                observer.onSubscribe(EmptySubscription.INSTANCE);
-                                observer.onNext("value_after_map-" + v);
-                                observer.onComplete();
-                            }
-                        }).subscribeOn(scheduler);
+                .flatMap(v -> Observable.<String>create(observer -> {
+                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onNext("value_after_map-" + v);
+                        observer.onComplete();
                     }
-                });
+                ).subscribeOn(scheduler));
 
         ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<>();
 

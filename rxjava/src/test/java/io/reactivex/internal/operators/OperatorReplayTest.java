@@ -532,8 +532,8 @@ public class OperatorReplayTest {
         replay.subscribe(spiedSubscriberAfterConnect);
         replay.subscribe(spiedSubscriberAfterConnect);
 
-        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe((Subscription)any());
-        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe((Subscription)any());
+        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe(any());
+        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe(any());
 
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
@@ -585,8 +585,8 @@ public class OperatorReplayTest {
         replay.subscribe(mockObserverAfterConnect);
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect, times(2)).onSubscribe((Subscription)any());
-        verify(mockObserverAfterConnect, times(2)).onSubscribe((Subscription)any());
+        verify(mockObserverBeforeConnect, times(2)).onSubscribe(any());
+        verify(mockObserverAfterConnect, times(2)).onSubscribe(any());
 
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
@@ -653,8 +653,8 @@ public class OperatorReplayTest {
         replay.subscribe(mockObserverAfterConnect);
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect, times(2)).onSubscribe((Subscription)any());
-        verify(mockObserverAfterConnect, times(2)).onSubscribe((Subscription)any());
+        verify(mockObserverBeforeConnect, times(2)).onSubscribe(any());
+        verify(mockObserverAfterConnect, times(2)).onSubscribe(any());
         
         // verify interactions
         verify(mockScheduler, times(1)).createWorker();

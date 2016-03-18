@@ -94,30 +94,15 @@ public class NbpOperatorThrottleFirstTest {
     }
 
     private <T> void publishCompleted(final NbpSubscriber<T> NbpObserver, long delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(NbpObserver::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final NbpSubscriber<T> NbpObserver, long delay, final Exception error) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onError(error);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> NbpObserver.onError(error), delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishNext(final NbpSubscriber<T> NbpObserver, long delay, final T value) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> NbpObserver.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     @Test

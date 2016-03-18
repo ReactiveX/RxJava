@@ -75,12 +75,7 @@ public enum Objects {
         return v1 < v2 ? -1 : (v1 > v2 ? 1 : 0);
     }
     
-    static final BiPredicate<Object, Object> EQUALS = new BiPredicate<Object, Object>() {
-        @Override
-        public boolean test(Object o1, Object o2) {
-            return Objects.equals(o1, o2);
-        }
-    };
+    static final BiPredicate<Object, Object> EQUALS = Objects::equals;
     
     /**
      * Returns a BiPredicate that compares its parameters via Objects.equals().

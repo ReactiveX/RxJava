@@ -40,17 +40,14 @@ public enum NbpBlockingOperatorLatest {
      *         been returned by the {@code Iterable}, then returns that item
      */
     public static <T> Iterable<T> latest(final NbpObservable<? extends T> source) {
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                NbpLatestObserverIterator<T> lio = new NbpLatestObserverIterator<>();
-                
-                @SuppressWarnings("unchecked")
-                NbpObservable<Try<Optional<T>>> materialized = ((NbpObservable<T>)source).materialize();
-                
-                materialized.subscribe(lio);
-                return lio;
-            }
+        return () -> {
+            NbpLatestObserverIterator<T> lio = new NbpLatestObserverIterator<>();
+
+            @SuppressWarnings("unchecked")
+            NbpObservable<Try<Optional<T>>> materialized = ((NbpObservable<T>)source).materialize();
+
+            materialized.subscribe(lio);
+            return lio;
         };
     }
 

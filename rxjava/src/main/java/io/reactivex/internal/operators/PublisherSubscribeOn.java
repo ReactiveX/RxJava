@@ -41,19 +41,9 @@ public final class PublisherSubscribeOn<T> implements Publisher<T> {
         if (requestOn) {
             Scheduler.Worker w = scheduler.createWorker();
             final SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<>(s, w);
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    source.subscribe(sos);
-                }
-            });
+            w.schedule(() -> source.subscribe(sos));
         } else {
-            scheduler.scheduleDirect(new Runnable() {
-                @Override
-                public void run() {
-                    source.subscribe(s);
-                }
-            });
+            scheduler.scheduleDirect(() -> source.subscribe(s));
         }
     }
     
@@ -111,12 +101,7 @@ public final class PublisherSubscribeOn<T> implements Publisher<T> {
             if (Thread.currentThread() == get()) {
                 s.request(n);
             } else {
-                worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        s.request(n);
-                    }
-                });
+                worker.schedule(() -> s.request(n));
             }
         }
         

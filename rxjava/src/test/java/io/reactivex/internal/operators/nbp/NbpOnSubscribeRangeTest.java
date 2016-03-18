@@ -48,12 +48,7 @@ public class NbpOnSubscribeRangeTest {
         
         final AtomicInteger count = new AtomicInteger();
         
-        NbpObservable.range(1, 1000).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t1) {
-                count.incrementAndGet();
-            }
-        })
+        NbpObservable.range(1, 1000).doOnNext(t1 -> count.incrementAndGet())
         .take(3).subscribe(NbpObserver);
 
         verify(NbpObserver, times(1)).onNext(1);

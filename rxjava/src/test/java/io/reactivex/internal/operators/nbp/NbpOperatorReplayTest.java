@@ -181,23 +181,9 @@ public class NbpOperatorReplayTest {
 
     @Test
     public void testReplaySelector() {
-        final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+        final Function<Integer, Integer> dbl = t1 -> t1 * 2;
 
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * 2;
-            }
-
-        };
-
-        Function<NbpObservable<Integer>, NbpObservable<Integer>> selector = new Function<NbpObservable<Integer>, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(NbpObservable<Integer> t1) {
-                return t1.map(dbl);
-            }
-
-        };
+        Function<NbpObservable<Integer>, NbpObservable<Integer>> selector = t1 -> t1.map(dbl);
 
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
 
@@ -243,23 +229,9 @@ public class NbpOperatorReplayTest {
     @Test
     public void testBufferedReplaySelector() {
 
-        final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+        final Function<Integer, Integer> dbl = t1 -> t1 * 2;
 
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * 2;
-            }
-
-        };
-
-        Function<NbpObservable<Integer>, NbpObservable<Integer>> selector = new Function<NbpObservable<Integer>, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(NbpObservable<Integer> t1) {
-                return t1.map(dbl);
-            }
-
-        };
+        Function<NbpObservable<Integer>, NbpObservable<Integer>> selector = t1 -> t1.map(dbl);
 
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
 
@@ -303,23 +275,9 @@ public class NbpOperatorReplayTest {
     @Test
     public void testWindowedReplaySelector() {
 
-        final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+        final Function<Integer, Integer> dbl = t1 -> t1 * 2;
 
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * 2;
-            }
-
-        };
-
-        Function<NbpObservable<Integer>, NbpObservable<Integer>> selector = new Function<NbpObservable<Integer>, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(NbpObservable<Integer> t1) {
-                return t1.map(dbl);
-            }
-
-        };
+        Function<NbpObservable<Integer>, NbpObservable<Integer>> selector = t1 -> t1.map(dbl);
 
         TestScheduler scheduler = new TestScheduler();
 
@@ -459,45 +417,17 @@ public class NbpOperatorReplayTest {
     public void testSynchronousDisconnect() {
         final AtomicInteger effectCounter = new AtomicInteger();
         NbpObservable<Integer> source = NbpObservable.just(1, 2, 3, 4)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) {
-                effectCounter.incrementAndGet();
-                System.out.println("Sideeffect #" + v);
-            }
+        .doOnNext(v -> {
+            effectCounter.incrementAndGet();
+            System.out.println("Sideeffect #" + v);
         });
         
-        NbpObservable<Integer> result = source.replay(
-        new Function<NbpObservable<Integer>, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(NbpObservable<Integer> o) {
-                return o.take(2);
-            }
-        });
+        NbpObservable<Integer> result = source.replay(o -> o.take(2));
         
         for (int i = 1; i < 3; i++) {
             effectCounter.set(0);
             System.out.printf("- %d -%n", i);
-            result.subscribe(new Consumer<Integer>() {
-
-                @Override
-                public void accept(Integer t1) {
-                    System.out.println(t1);
-                }
-                
-            }, new Consumer<Throwable>() {
-
-                @Override
-                public void accept(Throwable t1) {
-                    t1.printStackTrace();
-                }
-            }, 
-            new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("Done");
-                }
-            });
+            result.subscribe(System.out::println, Throwable::printStackTrace, () -> System.out.println("Done"));
             assertEquals(2, effectCounter.get());
         }
     }
@@ -531,8 +461,8 @@ public class NbpOperatorReplayTest {
         replay.subscribe(spiedSubscriberAfterConnect);
         replay.subscribe(spiedSubscriberAfterConnect);
 
-        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe((Disposable)any());
-        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe((Disposable)any());
+        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe(any());
+        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe(any());
 
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
@@ -579,8 +509,8 @@ public class NbpOperatorReplayTest {
         replay.connect();
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect).onSubscribe((Disposable)any());
-        verify(mockObserverAfterConnect).onSubscribe((Disposable)any());
+        verify(mockObserverBeforeConnect).onSubscribe(any());
+        verify(mockObserverAfterConnect).onSubscribe(any());
 
         mockScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
         
@@ -637,8 +567,8 @@ public class NbpOperatorReplayTest {
         replay.connect();
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect).onSubscribe((Disposable)any());
-        verify(mockObserverAfterConnect).onSubscribe((Disposable)any());
+        verify(mockObserverBeforeConnect).onSubscribe(any());
+        verify(mockObserverAfterConnect).onSubscribe(any());
         
         
         mockScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
@@ -803,15 +733,11 @@ public class NbpOperatorReplayTest {
             @Override
             public void accept(final NbpSubscriber<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        System.out.println("published NbpObservable being executed");
-                        NbpObserver.onNext("one");
-                        NbpObserver.onComplete();
-                    }
+                new Thread(() -> {
+                    counter.incrementAndGet();
+                    System.out.println("published NbpObservable being executed");
+                    NbpObserver.onNext("one");
+                    NbpObserver.onComplete();
                 }).start();
             }
         }).replay().autoConnect();
@@ -820,25 +746,17 @@ public class NbpOperatorReplayTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                System.out.println("v: " + v);
-                latch.countDown();
-            }
+        o.subscribe(v -> {
+            assertEquals("one", v);
+            System.out.println("v: " + v);
+            latch.countDown();
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                System.out.println("v: " + v);
-                latch.countDown();
-            }
+        o.subscribe(v -> {
+            assertEquals("one", v);
+            System.out.println("v: " + v);
+            latch.countDown();
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -982,12 +900,7 @@ public class NbpOperatorReplayTest {
         final AtomicInteger count = new AtomicInteger();
         
         NbpObservable<Integer> source = NbpObservable.range(1, 100)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        })
+        .doOnNext(t -> count.getAndIncrement())
         .replay().autoConnect();
         
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>() {

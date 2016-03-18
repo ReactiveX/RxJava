@@ -161,40 +161,36 @@ public class NbpOperatorConcatTest {
             public void accept(final NbpSubscriber<? super NbpObservable<String>> NbpObserver) {
                 final BooleanDisposable s = new BooleanDisposable();
                 NbpObserver.onSubscribe(s);
-                parent.set(new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            // emit first
-                            if (!s.isDisposed()) {
-                                System.out.println("Emit o1");
-                                NbpObserver.onNext(NbpObservable.create(o1));
-                            }
-                            // emit second
-                            if (!s.isDisposed()) {
-                                System.out.println("Emit o2");
-                                NbpObserver.onNext(NbpObservable.create(o2));
-                            }
-
-                            // wait until sometime later and emit third
-                            try {
-                                allowThird.await();
-                            } catch (InterruptedException e) {
-                                NbpObserver.onError(e);
-                            }
-                            if (!s.isDisposed()) {
-                                System.out.println("Emit o3");
-                                NbpObserver.onNext(NbpObservable.create(o3));
-                            }
-
-                        } catch (Throwable e) {
-                            NbpObserver.onError(e);
-                        } finally {
-                            System.out.println("Done parent NbpObservable");
-                            NbpObserver.onComplete();
-                            parentHasFinished.countDown();
+                parent.set(new Thread(() -> {
+                    try {
+                        // emit first
+                        if (!s.isDisposed()) {
+                            System.out.println("Emit o1");
+                            NbpObserver.onNext(NbpObservable.create(o1));
                         }
+                        // emit second
+                        if (!s.isDisposed()) {
+                            System.out.println("Emit o2");
+                            NbpObserver.onNext(NbpObservable.create(o2));
+                        }
+
+                        // wait until sometime later and emit third
+                        try {
+                            allowThird.await();
+                        } catch (InterruptedException e) {
+                            NbpObserver.onError(e);
+                        }
+                        if (!s.isDisposed()) {
+                            System.out.println("Emit o3");
+                            NbpObserver.onNext(NbpObservable.create(o3));
+                        }
+
+                    } catch (Throwable e) {
+                        NbpObserver.onError(e);
+                    } finally {
+                        System.out.println("Done parent NbpObservable");
+                        NbpObserver.onComplete();
+                        parentHasFinished.countDown();
                     }
                 }));
                 parent.get().start();
@@ -509,32 +505,27 @@ public class NbpOperatorConcatTest {
         @Override
         public void accept(final NbpSubscriber<? super T> NbpObserver) {
             NbpObserver.onSubscribe(s);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        while (count < size && subscribed) {
-                            if (null != values)
-                                NbpObserver.onNext(values.get(count));
-                            else
-                                NbpObserver.onNext(seed);
-                            count++;
-                            //Unblock the main thread to call unsubscribe.
-                            if (null != once)
-                                once.countDown();
-                            //Block until the main thread has called unsubscribe.
-                            if (null != okToContinue)
-                                okToContinue.await(5, TimeUnit.SECONDS);
-                        }
-                        if (subscribed)
-                            NbpObserver.onComplete();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        fail(e.getMessage());
+            t = new Thread(() -> {
+                try {
+                    while (count < size && subscribed) {
+                        if (null != values)
+                            NbpObserver.onNext(values.get(count));
+                        else
+                            NbpObserver.onNext(seed);
+                        count++;
+                        //Unblock the main thread to call unsubscribe.
+                        if (null != once)
+                            once.countDown();
+                        //Block until the main thread has called unsubscribe.
+                        if (null != okToContinue)
+                            okToContinue.await(5, TimeUnit.SECONDS);
                     }
+                    if (subscribed)
+                        NbpObserver.onComplete();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    fail(e.getMessage());
                 }
-
             });
             t.start();
             threadHasStarted.countDown();
@@ -592,12 +583,7 @@ public class NbpOperatorConcatTest {
     @Test
     public void concatVeryLongObservableOfObservables() {
         final int n = 10000;
-        NbpObservable<NbpObservable<Integer>> source = NbpObservable.range(0, n).map(new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer v) {
-                return NbpObservable.just(v);
-            }
-        });
+        NbpObservable<NbpObservable<Integer>> source = NbpObservable.range(0, n).map(NbpObservable::just);
         
         NbpObservable<List<Integer>> result = NbpObservable.concat(source).toList();
         
@@ -617,12 +603,7 @@ public class NbpOperatorConcatTest {
     @Test
     public void concatVeryLongObservableOfObservablesTakeHalf() {
         final int n = 10000;
-        NbpObservable<NbpObservable<Integer>> source = NbpObservable.range(0, n).map(new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer v) {
-                return NbpObservable.just(v);
-            }
-        });
+        NbpObservable<NbpObservable<Integer>> source = NbpObservable.range(0, n).map(NbpObservable::just);
         
         NbpObservable<List<Integer>> result = NbpObservable.concat(source).take(n / 2).toList();
         
@@ -677,16 +658,13 @@ public class NbpOperatorConcatTest {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
 
-        Function<Integer, NbpObservable<Integer>> func = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t) {
-                NbpObservable<Integer> o = NbpObservable.just(t)
-                        .subscribeOn(sch)
-                ;
-                NbpSubject<Integer, Integer> subject = NbpUnicastSubject.create();
-                o.subscribe(subject);
-                return subject;
-            }
+        Function<Integer, NbpObservable<Integer>> func = t -> {
+            NbpObservable<Integer> o = NbpObservable.just(t)
+                    .subscribeOn(sch)
+            ;
+            NbpSubject<Integer, Integer> subject = NbpUnicastSubject.create();
+            o.subscribe(subject);
+            return subject;
         };
 
         int n = 5000;
@@ -736,12 +714,7 @@ public class NbpOperatorConcatTest {
             }
             NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
             NbpObservable.range(0, 1000)
-            .concatMap(new Function<Integer, NbpObservable<Integer>>() {
-                @Override
-                public NbpObservable<Integer> apply(Integer t) {
-                    return NbpObservable.fromIterable(Arrays.asList(t));
-                }
-            })
+            .concatMap(t -> NbpObservable.fromIterable(Arrays.asList(t)))
             .observeOn(Schedulers.computation()).subscribe(ts);
 
             ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);

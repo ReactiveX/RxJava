@@ -32,10 +32,7 @@ public final class NbpFullArbiter<T> extends FullArbiterPad1 implements Disposab
     final SpscLinkedArrayQueue<Object> queue;
 
     volatile Disposable s;
-    static final Disposable INITIAL = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
+    static final Disposable INITIAL = () -> { };
     
     
     Disposable resource;

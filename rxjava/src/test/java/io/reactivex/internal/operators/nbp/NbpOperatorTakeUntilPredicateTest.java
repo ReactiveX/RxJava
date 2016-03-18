@@ -30,12 +30,7 @@ public class NbpOperatorTakeUntilPredicateTest {
     public void takeEmpty() {
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         
-        NbpObservable.empty().takeUntil(new Predicate<Object>() {
-            @Override
-            public boolean test(Object v) {
-                return true;
-            }
-        }).subscribe(o);
+        NbpObservable.empty().takeUntil(v -> true).subscribe(o);
         
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
@@ -45,12 +40,7 @@ public class NbpOperatorTakeUntilPredicateTest {
     public void takeAll() {
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         
-        NbpObservable.just(1, 2).takeUntil(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return false;
-            }
-        }).subscribe(o);
+        NbpObservable.just(1, 2).takeUntil(v -> false).subscribe(o);
         
         verify(o).onNext(1);
         verify(o).onNext(2);
@@ -61,12 +51,7 @@ public class NbpOperatorTakeUntilPredicateTest {
     public void takeFirst() {
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         
-        NbpObservable.just(1, 2).takeUntil(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        }).subscribe(o);
+        NbpObservable.just(1, 2).takeUntil(v -> true).subscribe(o);
         
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
@@ -77,12 +62,7 @@ public class NbpOperatorTakeUntilPredicateTest {
     public void takeSome() {
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         
-        NbpObservable.just(1, 2, 3).takeUntil(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 == 2;
-            }
-        })
+        NbpObservable.just(1, 2, 3).takeUntil(t1 -> t1 == 2)
         .subscribe(o);
         
         verify(o).onNext(1);
@@ -95,11 +75,8 @@ public class NbpOperatorTakeUntilPredicateTest {
     public void functionThrows() {
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         
-        Predicate<Integer> predicate = (new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                    throw new TestException("Forced failure");
-            }
+        Predicate<Integer> predicate = (t1 -> {
+                throw new TestException("Forced failure");
         });
         NbpObservable.just(1, 2, 3).takeUntil(predicate).subscribe(o);
         
@@ -116,12 +93,7 @@ public class NbpOperatorTakeUntilPredicateTest {
         NbpObservable.just(1)
         .concatWith(NbpObservable.<Integer>error(new TestException()))
         .concatWith(NbpObservable.just(2))
-        .takeUntil(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return false;
-            }
-        }).subscribe(o);
+        .takeUntil(v -> false).subscribe(o);
         
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
@@ -133,11 +105,8 @@ public class NbpOperatorTakeUntilPredicateTest {
     public void testErrorIncludesLastValueAsCause() {
         NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
         final TestException e = new TestException("Forced failure");
-        Predicate<String> predicate = (new Predicate<String>() {
-            @Override
-            public boolean test(String t) {
-                    throw e;
-            }
+        Predicate<String> predicate = (t -> {
+                throw e;
         });
         NbpObservable.just("abc").takeUntil(predicate).subscribe(ts);
         

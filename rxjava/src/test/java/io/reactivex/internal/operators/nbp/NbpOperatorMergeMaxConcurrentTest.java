@@ -98,24 +98,19 @@ public class NbpOperatorMergeMaxConcurrentTest {
         @Override
         public void accept(final NbpSubscriber<? super String> t1) {
             t1.onSubscribe(EmptyDisposable.INSTANCE);
-            new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (subscriptionCount.incrementAndGet() > maxConcurrent) {
-                        failed = true;
-                    }
-                    t1.onNext("one");
-                    t1.onNext("two");
-                    t1.onNext("three");
-                    t1.onNext("four");
-                    t1.onNext("five");
-                    // We could not decrement subscriptionCount in the unsubscribe method
-                    // as "unsubscribe" is not guaranteed to be called before the next "subscribe".
-                    subscriptionCount.decrementAndGet();
-                    t1.onComplete();
+            new Thread(() -> {
+                if (subscriptionCount.incrementAndGet() > maxConcurrent) {
+                    failed = true;
                 }
-
+                t1.onNext("one");
+                t1.onNext("two");
+                t1.onNext("three");
+                t1.onNext("four");
+                t1.onNext("five");
+                // We could not decrement subscriptionCount in the unsubscribe method
+                // as "unsubscribe" is not guaranteed to be called before the next "subscribe".
+                subscriptionCount.decrementAndGet();
+                t1.onComplete();
             }).start();
         }
 

@@ -624,22 +624,17 @@ public class SerializedObserverTest {
         public void subscribe(final Subscriber<? super String> observer) {
             observer.onSubscribe(EmptySubscription.INSTANCE);
             System.out.println("TestSingleThreadedObservable subscribed to ...");
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestSingleThreadedObservable thread");
-                        for (String s : values) {
-                            System.out.println("TestSingleThreadedObservable onNext: " + s);
-                            observer.onNext(s);
-                        }
-                        observer.onComplete();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestSingleThreadedObservable thread");
+                    for (String s : values) {
+                        System.out.println("TestSingleThreadedObservable onNext: " + s);
+                        observer.onNext(s);
                     }
+                    observer.onComplete();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
                 }
-
             });
             System.out.println("starting TestSingleThreadedObservable thread");
             t.start();
@@ -677,65 +672,57 @@ public class SerializedObserverTest {
             observer.onSubscribe(EmptySubscription.INSTANCE);
             final NullPointerException npe = new NullPointerException();
             System.out.println("TestMultiThreadedObservable subscribed to ...");
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestMultiThreadedObservable thread");
-                        int j = 0;
-                        for (final String s : values) {
-                            final int fj = ++j;
-                            threadPool.execute(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    threadsRunning.incrementAndGet();
-                                    try {
-                                        // perform onNext call
-                                        System.out.println("TestMultiThreadedObservable onNext: " + s + " on thread " + Thread.currentThread().getName());
-                                        if (s == null) {
-                                            // force an error
-                                            throw npe;
-                                        } else {
-                                             // allow the exception to queue up
-                                            int sleep = (fj % 3) * 10;
-                                            if (sleep != 0) {
-                                                Thread.sleep(sleep);
-                                            }
-                                        }
-                                        observer.onNext(s);
-                                        // capture 'maxThreads'
-                                        int concurrentThreads = threadsRunning.get();
-                                        int maxThreads = maxConcurrentThreads.get();
-                                        if (concurrentThreads > maxThreads) {
-                                            maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
-                                        }
-                                    } catch (Throwable e) {
-                                        observer.onError(e);
-                                    } finally {
-                                        threadsRunning.decrementAndGet();
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestMultiThreadedObservable thread");
+                    int j = 0;
+                    for (final String s : values) {
+                        final int fj = ++j;
+                        threadPool.execute(() -> {
+                            threadsRunning.incrementAndGet();
+                            try {
+                                // perform onNext call
+                                System.out.println("TestMultiThreadedObservable onNext: " + s + " on thread " + Thread.currentThread().getName());
+                                if (s == null) {
+                                    // force an error
+                                    throw npe;
+                                } else {
+                                     // allow the exception to queue up
+                                    int sleep = (fj % 3) * 10;
+                                    if (sleep != 0) {
+                                        Thread.sleep(sleep);
                                     }
                                 }
-                            });
-                        }
-                        // we are done spawning threads
-                        threadPool.shutdown();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+                                observer.onNext(s);
+                                // capture 'maxThreads'
+                                int concurrentThreads = threadsRunning.get();
+                                int maxThreads = maxConcurrentThreads.get();
+                                if (concurrentThreads > maxThreads) {
+                                    maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
+                                }
+                            } catch (Throwable e) {
+                                observer.onError(e);
+                            } finally {
+                                threadsRunning.decrementAndGet();
+                            }
+                        });
                     }
-
-                    // wait until all threads are done, then mark it as COMPLETED
-                    try {
-                        // wait for all the threads to finish
-                        if (!threadPool.awaitTermination(5, TimeUnit.SECONDS)) {
-                            System.out.println("Threadpool did not terminate in time.");
-                        }
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    observer.onComplete();
+                    // we are done spawning threads
+                    threadPool.shutdown();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
                 }
+
+                // wait until all threads are done, then mark it as COMPLETED
+                try {
+                    // wait for all the threads to finish
+                    if (!threadPool.awaitTermination(5, TimeUnit.SECONDS)) {
+                        System.out.println("Threadpool did not terminate in time.");
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                observer.onComplete();
             });
             System.out.println("starting TestMultiThreadedObservable thread");
             t.start();

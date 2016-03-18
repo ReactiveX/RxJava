@@ -121,11 +121,8 @@ public class NbpOperatorSequenceEqualTest {
     public void testWithEqualityError() {
         NbpObservable<Boolean> o = NbpObservable.sequenceEqual(
                 NbpObservable.just("one"), NbpObservable.just("one"),
-                new BiPredicate<String, String>() {
-                    @Override
-                    public boolean test(String t1, String t2) {
-                        throw new TestException();
-                    }
+                (t1, t2) -> {
+                    throw new TestException();
                 });
         verifyError(o);
     }

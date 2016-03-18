@@ -36,12 +36,7 @@ public class OperatorSwitchIfEmptyTest {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final Observable<Integer> observable = Observable.just(4)
                 .switchIfEmpty(Observable.just(2)
-                .doOnSubscribe(new Consumer<Subscription>() {
-                    @Override
-                    public void accept(Subscription s) {
-                        subscribed.set(true);
-                    }
-                }));
+                .doOnSubscribe(s -> subscribed.set(true)));
 
         assertEquals(4, observable.toBlocking().single().intValue());
         assertFalse(subscribed.get());
@@ -98,10 +93,7 @@ public class OperatorSwitchIfEmptyTest {
 
         Observable.<Long>empty()
                 .switchIfEmpty(withProducer)
-                .lift(new Observable.Operator<Long, Long>() {
-            @Override
-            public Subscriber<? super Long> apply(final Subscriber<? super Long> child) {
-                return new Observer<Long>() {
+                .lift(child -> new Observer<Long>() {
                     @Override
                     public void onComplete() {
 
@@ -116,10 +108,8 @@ public class OperatorSwitchIfEmptyTest {
                     public void onNext(Long aLong) {
                         cancel();
                     }
-                    
-                };
-            }
-        }).subscribe();
+
+                }).subscribe();
 
 
         assertTrue(bs.isCancelled());
@@ -184,11 +174,7 @@ public class OperatorSwitchIfEmptyTest {
                     @Override
                     public void request(long n) {
                         if (n > 0 && completed.compareAndSet(false, true)) {
-                            Schedulers.io().createWorker().schedule(new Runnable() {
-                                @Override
-                                public void run() {
-                                    subscriber.onComplete();
-                                }}, 100, TimeUnit.MILLISECONDS);
+                            Schedulers.io().createWorker().schedule(subscriber::onComplete, 100, TimeUnit.MILLISECONDS);
                         }
                     }
                     

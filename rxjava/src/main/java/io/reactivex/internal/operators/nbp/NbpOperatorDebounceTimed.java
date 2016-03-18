@@ -53,15 +53,9 @@ public final class NbpOperatorDebounceTimed<T> implements NbpOperator<T, T> {
         
         final AtomicReference<Disposable> timer = new AtomicReference<>();
 
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
 
-        static final Disposable NEW_TIMER = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable NEW_TIMER = () -> { };
         
         volatile long index;
         
@@ -165,10 +159,7 @@ public final class NbpOperatorDebounceTimed<T> implements NbpOperator<T, T> {
         /** */
         private static final long serialVersionUID = 6812032969491025141L;
 
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable DISPOSED = () -> { };
         
         final T value;
         final long idx;

@@ -62,14 +62,7 @@ public final class IOScheduler extends Scheduler implements SchedulerLifecycle {
             if (unit != null) {
                 evictor = Executors.newScheduledThreadPool(1, EVICTOR_THREAD_FACTORY);
                 try {
-                    task = evictor.scheduleWithFixedDelay(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    evictExpiredWorkers();
-                                }
-                            }, this.keepAliveTime, this.keepAliveTime, TimeUnit.NANOSECONDS
-                    );
+                    task = evictor.scheduleWithFixedDelay(this::evictExpiredWorkers, this.keepAliveTime, this.keepAliveTime, TimeUnit.NANOSECONDS);
                 } catch (RejectedExecutionException ex) {
                     RxJavaPlugins.onError(ex);
                 }

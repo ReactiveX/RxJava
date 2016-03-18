@@ -58,31 +58,22 @@ public class OnSubscribeFromIterableTest {
      */
     @Test
     public void testRawIterable() {
-        Iterable<String> it = new Iterable<String>() {
+        Iterable<String> it = () -> new Iterator<String>() {
+            int i = 0;
 
             @Override
-            public Iterator<String> iterator() {
-                return new Iterator<String>() {
-
-                    int i = 0;
-
-                    @Override
-                    public boolean hasNext() {
-                        return i < 3;
-                    }
-
-                    @Override
-                    public String next() {
-                        return String.valueOf(++i);
-                    }
-
-                    @Override
-                    public void remove() {
-                    }
-
-                };
+            public boolean hasNext() {
+                return i < 3;
             }
 
+            @Override
+            public String next() {
+                return String.valueOf(++i);
+            }
+
+            @Override
+            public void remove() {
+            }
         };
         Observable<String> observable = Observable.fromIterable(it);
 
@@ -231,34 +222,26 @@ public class OnSubscribeFromIterableTest {
     @Test
     public void testDoesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = new Iterable<Integer>() {
+        Iterable<Integer> iterable = () -> new Iterator<Integer>() {
+            int count = 1;
 
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
+            public void remove() {
+                // ignore
+            }
 
-                    int count = 1;
-                    
-                    @Override
-                    public void remove() {
-                        // ignore
-                    }
+            @Override
+            public boolean hasNext() {
+                if (count > 1) {
+                    called.set(true);
+                    return false;
+                } else
+                    return true;
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        if (count > 1) {
-                            called.set(true);
-                            return false;
-                        } else
-                            return true;
-                    }
-
-                    @Override
-                    public Integer next() {
-                        return count++;
-                    }
-
-                };
+            @Override
+            public Integer next() {
+                return count++;
             }
         };
         Observable.fromIterable(iterable).take(1).subscribe();
@@ -268,34 +251,26 @@ public class OnSubscribeFromIterableTest {
     @Test
     public void testDoesNotCallIteratorHasNextMoreThanRequiredFastPath() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = new Iterable<Integer>() {
+        Iterable<Integer> iterable = () -> new Iterator<Integer>() {
+            int count = 1;
 
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
+            public void remove() {
+                // ignore
+            }
 
-                    @Override
-                    public void remove() {
-                        // ignore
-                    }
+            @Override
+            public boolean hasNext() {
+                if (count > 1) {
+                    called.set(true);
+                    return false;
+                } else
+                    return true;
+            }
 
-                    int count = 1;
-
-                    @Override
-                    public boolean hasNext() {
-                        if (count > 1) {
-                            called.set(true);
-                            return false;
-                        } else
-                            return true;
-                    }
-
-                    @Override
-                    public Integer next() {
-                        return count++;
-                    }
-
-                };
+            @Override
+            public Integer next() {
+                return count++;
             }
         };
         Observable.fromIterable(iterable).subscribe(new Observer<Integer>() {

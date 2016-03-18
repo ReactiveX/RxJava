@@ -48,68 +48,65 @@ public final class NbpOperatorPublish<T> extends NbpConnectableObservable<T> {
     public static <T> NbpConnectableObservable<T> create(NbpObservable<? extends T> source, final int bufferSize) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<PublishSubscriber<T>> curr = new AtomicReference<>();
-        NbpOnSubscribe<T> onSubscribe = new NbpOnSubscribe<T>() {
-            @Override
-            public void accept(NbpSubscriber<? super T> child) {
-                // concurrent connection/disconnection may change the state, 
-                // we loop to be atomic while the child subscribes
-                for (;;) {
-                    // get the current subscriber-to-source
-                    PublishSubscriber<T> r = curr.get();
-                    // if there isn't one or it is unsubscribed
-                    if (r == null || r.isDisposed()) {
-                        // create a new subscriber to source
-                        PublishSubscriber<T> u = new PublishSubscriber<>(curr, bufferSize);
-                        // let's try setting it as the current subscriber-to-source
-                        if (!curr.compareAndSet(r, u)) {
-                            // didn't work, maybe someone else did it or the current subscriber 
-                            // to source has just finished
-                            continue;
-                        }
-                        // we won, let's use it going onwards
-                        r = u;
-                    }
-                    
-                    // create the backpressure-managing producer for this child
-                    InnerProducer<T> inner = new InnerProducer<>(r, child);
-                    /*
-                     * Try adding it to the current subscriber-to-source, add is atomic in respect 
-                     * to other adds and the termination of the subscriber-to-source.
-                     */
-                    if (!r.add(inner)) {
-                        /*
-                         * The current PublishSubscriber has been terminated, try with a newer one.
-                         */
+        NbpOnSubscribe<T> onSubscribe = child -> {
+            // concurrent connection/disconnection may change the state,
+            // we loop to be atomic while the child subscribes
+            for (;;) {
+                // get the current subscriber-to-source
+                PublishSubscriber<T> r = curr.get();
+                // if there isn't one or it is unsubscribed
+                if (r == null || r.isDisposed()) {
+                    // create a new subscriber to source
+                    PublishSubscriber<T> u = new PublishSubscriber<>(curr, bufferSize);
+                    // let's try setting it as the current subscriber-to-source
+                    if (!curr.compareAndSet(r, u)) {
+                        // didn't work, maybe someone else did it or the current subscriber
+                        // to source has just finished
                         continue;
-                        /*
-                         * Note: although technically corrent, concurrent disconnects can cause 
-                         * unexpected behavior such as child subscribers never receiving anything 
-                         * (unless connected again). An alternative approach, similar to 
-                         * PublishSubject would be to immediately terminate such child 
-                         * subscribers as well:
-                         * 
-                         * Object term = r.terminalEvent;
-                         * if (r.nl.isCompleted(term)) {
-                         *     child.onCompleted();
-                         * } else {
-                         *     child.onError(r.nl.getError(term));
-                         * }
-                         * return;
-                         * 
-                         * The original concurrent behavior was non-deterministic in this regard as well.
-                         * Allowing this behavior, however, may introduce another unexpected behavior:
-                         * after disconnecting a previous connection, one might not be able to prepare
-                         * a new connection right after a previous termination by subscribing new child 
-                         * subscribers asynchronously before a connect call.
-                         */
                     }
-                    // the producer has been registered with the current subscriber-to-source so 
-                    // at least it will receive the next terminal event
-                    // setting the producer will trigger the first request to be considered by 
-                    // the subscriber-to-source.
-                    child.onSubscribe(inner);
-                    break;
+                    // we won, let's use it going onwards
+                    r = u;
                 }
+
+                // create the backpressure-managing producer for this child
+                InnerProducer<T> inner = new InnerProducer<>(r, child);
+                /*
+                 * Try adding it to the current subscriber-to-source, add is atomic in respect
+                 * to other adds and the termination of the subscriber-to-source.
+                 */
+                if (!r.add(inner)) {
+                    /*
+                     * The current PublishSubscriber has been terminated, try with a newer one.
+                     */
+                    continue;
+                    /*
+                     * Note: although technically corrent, concurrent disconnects can cause
+                     * unexpected behavior such as child subscribers never receiving anything
+                     * (unless connected again). An alternative approach, similar to
+                     * PublishSubject would be to immediately terminate such child
+                     * subscribers as well:
+                     *
+                     * Object term = r.terminalEvent;
+                     * if (r.nl.isCompleted(term)) {
+                     *     child.onCompleted();
+                     * } else {
+                     *     child.onError(r.nl.getError(term));
+                     * }
+                     * return;
+                     *
+                     * The original concurrent behavior was non-deterministic in this regard as well.
+                     * Allowing this behavior, however, may introduce another unexpected behavior:
+                     * after disconnecting a previous connection, one might not be able to prepare
+                     * a new connection right after a previous termination by subscribing new child
+                     * subscribers asynchronously before a connect call.
+                     */
+                }
+                // the producer has been registered with the current subscriber-to-source so
+                // at least it will receive the next terminal event
+                // setting the producer will trigger the first request to be considered by
+                // the subscriber-to-source.
+                child.onSubscribe(inner);
+                break;
             }
         };
         return new NbpOperatorPublish<>(onSubscribe, source, curr, bufferSize);
@@ -117,22 +114,14 @@ public final class NbpOperatorPublish<T> extends NbpConnectableObservable<T> {
 
     public static <T, R> NbpObservable<R> create(final NbpObservable<? extends T> source, 
             final Function<? super NbpObservable<T>, ? extends NbpObservable<R>> selector, final int bufferSize) {
-        return create(new NbpOnSubscribe<R>() {
-            @Override
-            public void accept(NbpSubscriber<? super R> sr) {
-                NbpConnectableObservable<T> op = create(source, bufferSize);
-                
-                final NbpSubscriberResourceWrapper<R, Disposable> srw = new NbpSubscriberResourceWrapper<>(sr, Disposables.consumeAndDispose());
-                
-                selector.apply(op).subscribe(srw);
-                
-                op.connect(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable r) {
-                        srw.setResource(r);
-                    }
-                });
-            }
+        return create(sr -> {
+            NbpConnectableObservable<T> op = create(source, bufferSize);
+
+            final NbpSubscriberResourceWrapper<R, Disposable> srw = new NbpSubscriberResourceWrapper<>(sr, Disposables.consumeAndDispose());
+
+            selector.apply(op).subscribe(srw);
+
+            op.connect(srw::setResource);
         });
     }
 
@@ -219,10 +208,7 @@ public final class NbpOperatorPublish<T> extends NbpConnectableObservable<T> {
         
         final AtomicReference<Disposable> s = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         public PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
             this.queue = new SpscArrayQueue<>(bufferSize);

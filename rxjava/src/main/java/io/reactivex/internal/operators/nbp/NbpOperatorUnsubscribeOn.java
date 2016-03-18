@@ -72,12 +72,7 @@ public final class NbpOperatorUnsubscribeOn<T> implements NbpOperator<T, T> {
         @Override
         public void dispose() {
             if (compareAndSet(false, true)) {
-                scheduler.scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        s.dispose();
-                    }
-                });
+                scheduler.scheduleDirect(s::dispose);
             }
         }
     }

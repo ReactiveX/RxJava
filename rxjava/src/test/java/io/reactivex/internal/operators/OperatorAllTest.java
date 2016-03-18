@@ -42,7 +42,7 @@ public class OperatorAllTest {
         })
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Subscription)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onNext(true);
         verify(observer).onComplete();
         verifyNoMoreInteractions(observer);
@@ -62,7 +62,7 @@ public class OperatorAllTest {
         })
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Subscription)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onNext(false);
         verify(observer).onComplete();
         verifyNoMoreInteractions(observer);
@@ -82,7 +82,7 @@ public class OperatorAllTest {
         })
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Subscription)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onNext(true);
         verify(observer).onComplete();
         verifyNoMoreInteractions(observer);
@@ -103,7 +103,7 @@ public class OperatorAllTest {
         })
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Subscription)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onError(error);
         verifyNoMoreInteractions(observer);
     }

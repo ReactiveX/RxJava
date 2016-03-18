@@ -82,25 +82,17 @@ public final class OperatorDelay<T> implements Operator<T, T> {
         
         @Override
         public void onNext(final T t) {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    actual.onNext(t);
-                }
-            }, delay, unit);
+            w.schedule(() -> actual.onNext(t), delay, unit);
         }
         
         @Override
         public void onError(final Throwable t) {
             if (delayError) {
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            actual.onError(t);
-                        } finally {
-                            w.dispose();
-                        }
+                w.schedule(() -> {
+                    try {
+                        actual.onError(t);
+                    } finally {
+                        w.dispose();
                     }
                 }, delay, unit);
             } else {
@@ -110,14 +102,11 @@ public final class OperatorDelay<T> implements Operator<T, T> {
         
         @Override
         public void onComplete() {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        actual.onComplete();
-                    } finally {
-                        w.dispose();
-                    }
+            w.schedule(() -> {
+                try {
+                    actual.onComplete();
+                } finally {
+                    w.dispose();
                 }
             }, delay, unit);
         }

@@ -70,14 +70,7 @@ public class NbpOperatorSingleTest {
     @Test
     public void testSingleWithPredicate() {
         NbpObservable<Integer> o = NbpObservable.just(1, 2)
-                .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .single();
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -92,14 +85,7 @@ public class NbpOperatorSingleTest {
     @Test
     public void testSingleWithPredicateAndTooManyElements() {
         NbpObservable<Integer> o = NbpObservable.just(1, 2, 3, 4)
-                .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .single();
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -114,14 +100,7 @@ public class NbpOperatorSingleTest {
     @Test
     public void testSingleWithPredicateAndEmpty() {
         NbpObservable<Integer> o = NbpObservable.just(1)
-                .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .single();
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
         o.subscribe(NbpObserver);
@@ -175,12 +154,7 @@ public class NbpOperatorSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicate() {
         NbpObservable<Integer> o = NbpObservable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .single(4);
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -195,12 +169,7 @@ public class NbpOperatorSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateAndTooManyElements() {
         NbpObservable<Integer> o = NbpObservable.just(1, 2, 3, 4)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .single(6);
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -215,12 +184,7 @@ public class NbpOperatorSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateAndEmpty() {
         NbpObservable<Integer> o = NbpObservable.just(1)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .single(2);
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -236,12 +200,7 @@ public class NbpOperatorSingleTest {
     public void testIssue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         NbpObservable<Integer> source = NbpObservable.just(1, 2, 3, 4, 5, 6);
-        NbpObservable<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer i1, Integer i2) {
-                return i1 + i2;
-            }
-        });
+        NbpObservable<Integer> reduced = source.reduce((i1, i2) -> i1 + i2);
 
         Integer r = reduced.toBlocking().first();
         assertEquals(21, r.intValue());

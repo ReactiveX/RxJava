@@ -37,21 +37,13 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
 
         Observable<Integer> o1 = Observable.just(1, 2, 3, 4, 5);
         Observable<Integer> o2 = Observable.just(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.merge(o1, o2).map(new Function<Integer, String>() {
-
-            @Override
-            public String apply(Integer t) {
-                assertTrue(Thread.currentThread().getName().startsWith("RxCachedThreadScheduler"));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
+        Observable<String> o = Observable.merge(o1, o2).map(t -> {
+            assertTrue(Thread.currentThread().getName().startsWith("RxCachedThreadScheduler"));
+            return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
         });
 
-        o.subscribeOn(Schedulers.io()).toBlocking().forEach(new Consumer<String>() {
-
-            @Override
-            public void accept(String t) {
-                System.out.println("t: " + t);
-            }
+        o.subscribeOn(Schedulers.io()).toBlocking().forEach((Consumer<String>) t -> {
+            System.out.println("t: " + t);
         });
     }
 

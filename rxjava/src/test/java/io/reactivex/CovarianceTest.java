@@ -48,12 +48,7 @@ public class CovarianceTest {
 
     @Test
     public void testSortedList() {
-        Comparator<Media> SORT_FUNCTION = new Comparator<Media>() {
-            @Override
-            public int compare(Media t1, Media t2) {
-                return 1;
-            }
-        };
+        Comparator<Media> SORT_FUNCTION = (t1, t2) -> 1;
 
         // this one would work without the covariance generics
         Observable<Media> o = Observable.just(new Movie(), new TVSeason(), new Album());
@@ -70,47 +65,16 @@ public class CovarianceTest {
         TestSubscriber<String> ts = new TestSubscriber<>();
         
         movies
-        .groupBy(new Function<Movie, Object>() {
-            @Override
-            public Object apply(Movie v) {
-                return v.getClass();
-            }
-        })
-        .doOnNext(new Consumer<GroupedObservable<Object, Movie>>() {
-            @Override
-            public void accept(GroupedObservable<Object, Movie> g) {
-                System.out.println(g.key());
-            }
-        })
-        .flatMap(new Function<GroupedObservable<Object, Movie>, Publisher<String>>() {
-            @Override
-            public Publisher<String> apply(GroupedObservable<Object, Movie> g) {
-                return g
-                        .doOnNext(new Consumer<Movie>() {
-                            @Override
-                            public void accept(Movie v) {
-                                System.out.println(v);
-                            }
-                        })
-                        .compose(new Transformer<Movie, Object>() {
-                            @Override
-                            public Publisher<? extends Object> apply(Observable<Movie> m) {
-                                return m.concatWith(Observable.just(new ActionMovie()));
-                            }
-                        }
-                                )
-                        .map(new Function<Object, String>() {
-                            @Override
-                            public String apply(Object v) {
-                                return v.toString();
-                            }
-                        });
-            }
-        })
-        .subscribe(ts);
+            .groupBy(Object::getClass)
+            .doOnNext(g -> System.out.println(g.key()))
+            .flatMap(g ->
+                g.doOnNext(System.out::println)
+                    .compose(m -> m.concatWith(Observable.just(new ActionMovie())))
+                    .map(Object::toString))
+            .subscribe(ts);
         ts.assertTerminated();
         ts.assertNoErrors();
-        //        System.out.println(ts.getOnNextEvents());
+        //System.out.println(ts.getOnNextEvents());
         assertEquals(6, ts.valueCount());
     }
 
@@ -118,41 +82,21 @@ public class CovarianceTest {
     @Test
     public void testCovarianceOfCompose() {
         Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
-        Observable<Movie> movie2 = movie.compose(new Transformer<HorrorMovie, Movie>() {
-            @Override
-            public Publisher<? extends Movie> apply(Observable<HorrorMovie> t) {
-                return Observable.just(new Movie());
-            }
-        });
+        Observable<Movie> movie2 = movie.compose(t -> Observable.just(new Movie()));
     }
     
     @SuppressWarnings("unused")
     @Test
     public void testCovarianceOfCompose2() {
-        Observable<Movie> movie = Observable.<Movie> just(new HorrorMovie());
-        Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
-            @Override
-            public Publisher<? extends HorrorMovie> apply(Observable<Movie> t) {
-                return Observable.just(new HorrorMovie());
-            }
-        });
+        Observable<Movie> movie = Observable.just(new HorrorMovie());
+        Observable<HorrorMovie> movie2 = movie.compose(t -> Observable.just(new HorrorMovie()));
     }
     
     @SuppressWarnings("unused")
     @Test
     public void testCovarianceOfCompose3() {
-        Observable<Movie> movie = Observable.<Movie>just(new HorrorMovie());
-        Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
-            @Override
-            public Publisher<? extends HorrorMovie> apply(Observable<Movie> t) {
-                return Observable.just(new HorrorMovie()).map(new Function<HorrorMovie, HorrorMovie>() {
-                    @Override
-                    public HorrorMovie apply(HorrorMovie v) {
-                        return v;
-                    }
-                });
-            }
-        }
+        Observable<Movie> movie = Observable.just(new HorrorMovie());
+        Observable<HorrorMovie> movie2 = movie.compose(t -> Observable.just(new HorrorMovie()).map(v -> v)
         );
     }
 
@@ -160,17 +104,7 @@ public class CovarianceTest {
     @Test
     public void testCovarianceOfCompose4() {
         Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
-        Observable<HorrorMovie> movie2 = movie.compose(new Transformer<HorrorMovie, HorrorMovie>() {
-            @Override
-            public Publisher<? extends HorrorMovie> apply(Observable<HorrorMovie> t1) {
-                return t1.map(new Function<HorrorMovie, HorrorMovie>() {
-                    @Override
-                    public HorrorMovie apply(HorrorMovie v) {
-                        return v;
-                    }
-                });
-            }
-        });
+        Observable<HorrorMovie> movie2 = movie.compose(t1 -> t1.map(v -> v));
     }
     
     @Test
@@ -181,44 +115,36 @@ public class CovarianceTest {
         movies.compose(deltaTransformer);
     }
 
-    static Function<List<List<Movie>>, Observable<Movie>> calculateDelta = new Function<List<List<Movie>>, Observable<Movie>>() {
-        @Override
-        public Observable<Movie> apply(List<List<Movie>> listOfLists) {
-            if (listOfLists.size() == 1) {
-                return Observable.fromIterable(listOfLists.get(0));
-            } else {
-                // diff the two
-                List<Movie> newList = listOfLists.get(1);
-                List<Movie> oldList = new ArrayList<>(listOfLists.get(0));
+    static Function<List<List<Movie>>, Observable<Movie>> calculateDelta = listOfLists -> {
+        if (listOfLists.size() == 1) {
+            return Observable.fromIterable(listOfLists.get(0));
+        } else {
+            // diff the two
+            List<Movie> newList = listOfLists.get(1);
+            List<Movie> oldList = new ArrayList<>(listOfLists.get(0));
 
-                Set<Movie> delta = new LinkedHashSet<>();
-                delta.addAll(newList);
-                // remove all that match in old
-                delta.removeAll(oldList);
+            Set<Movie> delta = new LinkedHashSet<>();
+            delta.addAll(newList);
+            // remove all that match in old
+            delta.removeAll(oldList);
 
-                // filter oldList to those that aren't in the newList
-                oldList.removeAll(newList);
+            // filter oldList to those that aren't in the newList
+            oldList.removeAll(newList);
 
-                // for all left in the oldList we'll create DROP events
-                for (@SuppressWarnings("unused") Movie old : oldList) {
-                    delta.add(new Movie());
-                }
-
-                return Observable.fromIterable(delta);
+            // for all left in the oldList we'll create DROP events
+            for (@SuppressWarnings("unused") Movie old : oldList) {
+                delta.add(new Movie());
             }
+
+            return Observable.fromIterable(delta);
         }
     };
     
-    static Transformer<List<Movie>, Movie> deltaTransformer = new Transformer<List<Movie>, Movie>() {
-        @Override
-        public Publisher<? extends Movie> apply(Observable<List<Movie>> movieList) {
-            return movieList
-                .startWith(new ArrayList<Movie>())
-                .buffer(2, 1)
-                .skip(1)
-                .flatMap(calculateDelta);
-        }
-    };
+    static Transformer<List<Movie>, Movie> deltaTransformer = movieList -> movieList
+        .startWith(new ArrayList<Movie>())
+        .buffer(2, 1)
+        .skip(1)
+        .flatMap(calculateDelta);
 
     /*
      * Most tests are moved into their applicable classes such as [Operator]Tests.java

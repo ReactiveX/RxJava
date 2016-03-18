@@ -51,10 +51,7 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
         
         final AtomicReference<Disposable> debouncer = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
 
         volatile long index;
         

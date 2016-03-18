@@ -23,12 +23,7 @@ import io.reactivex.functions.Function;
 public class NbpObservableTest {
     @Test
     public void testFlatMap() {
-        List<Integer> list = NbpObservable.range(1, 5).flatMap(new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer v) {
-                return NbpObservable.range(v, 2);
-            }
-        }).getList();
+        List<Integer> list = NbpObservable.range(1, 5).flatMap(v -> NbpObservable.range(v, 2)).getList();
         
         Assert.assertEquals(Arrays.asList(1, 2, 2, 3, 3, 4, 4, 5, 5, 6), list);
     }

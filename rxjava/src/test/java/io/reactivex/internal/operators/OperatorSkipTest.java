@@ -145,12 +145,7 @@ public class OperatorSkipTest {
         final AtomicLong requests = new AtomicLong(0);
         TestSubscriber<Long> ts = new TestSubscriber<>((Long) null);
         Observable.interval(100, TimeUnit.MILLISECONDS)
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long n) {
-                        requests.addAndGet(n);
-                    }
-                }).skip(4).subscribe(ts);
+                .doOnRequest(requests::addAndGet).skip(4).subscribe(ts);
         Thread.sleep(100);
         ts.request(1);
         ts.request(1);

@@ -47,12 +47,7 @@ public class OperatorZipTest {
 
     @Before
     public void setUp() {
-        concat2Strings = new BiFunction<String, String, String>() {
-            @Override
-            public String apply(String t1, String t2) {
-                return t1 + "-" + t2;
-            }
-        };
+        concat2Strings = (t1, t2) -> t1 + "-" + t2;
 
         s1 = PublishSubject.create();
         s2 = PublishSubject.create();
@@ -152,22 +147,8 @@ public class OperatorZipTest {
 
     }
 
-    BiFunction<Object, Object, String> zipr2 = new BiFunction<Object, Object, String>() {
-
-        @Override
-        public String apply(Object t1, Object t2) {
-            return "" + t1 + t2;
-        }
-
-    };
-    Function3<Object, Object, Object, String> zipr3 = new Function3<Object, Object, Object, String>() {
-
-        @Override
-        public String apply(Object t1, Object t2, Object t3) {
-            return "" + t1 + t2 + t3;
-        }
-
-    };
+    BiFunction<Object, Object, String> zipr2 = (t1, t2) -> "" + t1 + t2;
+    Function3<Object, Object, Object, String> zipr3 = (t1, t2, t3) -> "" + t1 + t2 + t3;
 
     /**
      * Testing internal private logic due to the complexity so I want to use TDD to test as a I build it rather than relying purely on the overall functionality expected by the public methods.
@@ -538,70 +519,34 @@ public class OperatorZipTest {
     }
 
     private BiFunction<String, String, String> getConcat2Strings() {
-        return new BiFunction<String, String, String>() {
-
-            @Override
-            public String apply(String t1, String t2) {
-                return t1 + "-" + t2;
-            }
-        };
+        return (t1, t2) -> t1 + "-" + t2;
     }
 
     private BiFunction<Integer, Integer, Integer> getDivideZipr() {
-        BiFunction<Integer, Integer, Integer> zipr = new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer i1, Integer i2) {
-                return i1 / i2;
-            }
-
-        };
-        return zipr;
+        return (i1, i2) -> i1 / i2;
     }
 
     private Function3<String, String, String, String> getConcat3StringsZipr() {
-        Function3<String, String, String, String> zipr = new Function3<String, String, String, String>() {
-
-            @Override
-            public String apply(String a1, String a2, String a3) {
-                if (a1 == null) {
-                    a1 = "";
-                }
-                if (a2 == null) {
-                    a2 = "";
-                }
-                if (a3 == null) {
-                    a3 = "";
-                }
-                return a1 + a2 + a3;
+        return (a1, a2, a3) -> {
+            if (a1 == null) {
+                a1 = "";
             }
-
+            if (a2 == null) {
+                a2 = "";
+            }
+            if (a3 == null) {
+                a3 = "";
+            }
+            return a1 + a2 + a3;
         };
-        return zipr;
     }
 
     private BiFunction<String, Integer, String> getConcatStringIntegerZipr() {
-        BiFunction<String, Integer, String> zipr = new BiFunction<String, Integer, String>() {
-
-            @Override
-            public String apply(String s, Integer i) {
-                return getStringValue(s) + getStringValue(i);
-            }
-
-        };
-        return zipr;
+        return (s, i) -> getStringValue(s) + getStringValue(i);
     }
 
     private Function3<String, Integer, int[], String> getConcatStringIntegerIntArrayZipr() {
-        Function3<String, Integer, int[], String> zipr = new Function3<String, Integer, int[], String>() {
-
-            @Override
-            public String apply(String s, Integer i, int[] iArray) {
-                return getStringValue(s) + getStringValue(i) + getStringValue(iArray);
-            }
-
-        };
-        return zipr;
+        return (s, i, iArray) -> getStringValue(s) + getStringValue(i) + getStringValue(iArray);
     }
 
     private static String getStringValue(Object o) {
@@ -727,12 +672,7 @@ public class OperatorZipTest {
         final Subscriber<Integer> observer = TestHelper.mockSubscriber();
 
         Observable.zip(Observable.just(1),
-                Observable.just(1), new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) {
-                        return a + b;
-                    }
-                }).subscribe(new Observer<Integer>() {
+                Observable.just(1), (a, b) -> a + b).subscribe(new Observer<Integer>() {
 
             @Override
             public void onComplete() {
@@ -760,22 +700,12 @@ public class OperatorZipTest {
     @Test
     public void testStart() {
         Observable<String> os = OBSERVABLE_OF_5_INTEGERS
-                .zipWith(OBSERVABLE_OF_5_INTEGERS, new BiFunction<Integer, Integer, String>() {
-
-                    @Override
-                    public String apply(Integer a, Integer b) {
-                        return a + "-" + b;
-                    }
-                });
+                .zipWith(OBSERVABLE_OF_5_INTEGERS, (a, b) -> a + "-" + b);
 
         final ArrayList<String> list = new ArrayList<>();
-        os.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
+        os.subscribe(s -> {
+            System.out.println(s);
+            list.add(s);
         });
 
         assertEquals(5, list.size());
@@ -787,13 +717,7 @@ public class OperatorZipTest {
     @Test
     public void testStartAsync() throws InterruptedException {
         Observable<String> os = ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer()
-                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer(), new BiFunction<Integer, Integer, String>() {
-
-                    @Override
-                    public String apply(Integer a, Integer b) {
-                        return a + "-" + b;
-                    }
-                }).take(5);
+                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer(), (a, b) -> a + "-" + b).take(5);
 
         TestSubscriber<String> ts = new TestSubscriber<>();
         os.subscribe(ts);
@@ -812,13 +736,7 @@ public class OperatorZipTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch infiniteObservable = new CountDownLatch(1);
         Observable<String> os = OBSERVABLE_OF_5_INTEGERS
-                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteObservable), new BiFunction<Integer, Integer, String>() {
-
-                    @Override
-                    public String apply(Integer a, Integer b) {
-                        return a + "-" + b;
-                    }
-                });
+                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteObservable), (a, b) -> a + "-" + b);
 
         final ArrayList<String> list = new ArrayList<>();
         os.subscribe(new Observer<String>() {
@@ -857,23 +775,12 @@ public class OperatorZipTest {
     public void testEmitNull() {
         Observable<Integer> oi = Observable.just(1, null, 3);
         Observable<String> os = Observable.just("a", "b", null);
-        Observable<String> o = Observable.zip(oi, os, new BiFunction<Integer, String, String>() {
-
-            @Override
-            public String apply(Integer t1, String t2) {
-                return t1 + "-" + t2;
-            }
-
-        });
+        Observable<String> o = Observable.zip(oi, os, (t1, t2) -> t1 + "-" + t2);
 
         final ArrayList<String> list = new ArrayList<>();
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
+        o.subscribe(s -> {
+            System.out.println(s);
+            list.add(s);
         });
 
         assertEquals(3, list.size());
@@ -906,23 +813,12 @@ public class OperatorZipTest {
     public void testEmitMaterializedNotifications() {
         Observable<Try<Optional<Integer>>> oi = Observable.just(1, 2, 3).materialize();
         Observable<Try<Optional<String>>> os = Observable.just("a", "b", "c").materialize();
-        Observable<String> o = Observable.zip(oi, os, new BiFunction<Try<Optional<Integer>>, Try<Optional<String>>, String>() {
-
-            @Override
-            public String apply(Try<Optional<Integer>> t1, Try<Optional<String>> t2) {
-                return kind(t1) + "_" + value(t1) + "-" + kind(t2) + "_" + value(t2);
-            }
-
-        });
+        Observable<String> o = Observable.zip(oi, os, (t1, t2) -> kind(t1) + "_" + value(t1) + "-" + kind(t2) + "_" + value(t2));
 
         final ArrayList<String> list = new ArrayList<>();
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
+        o.subscribe(s -> {
+            System.out.println(s);
+            list.add(s);
         });
 
         assertEquals(4, list.size());
@@ -935,23 +831,12 @@ public class OperatorZipTest {
     @Test
     public void testStartEmptyObservables() {
 
-        Observable<String> o = Observable.zip(Observable.<Integer> empty(), Observable.<String> empty(), new BiFunction<Integer, String, String>() {
-
-            @Override
-            public String apply(Integer t1, String t2) {
-                return t1 + "-" + t2;
-            }
-
-        });
+        Observable<String> o = Observable.zip(Observable.<Integer> empty(), Observable.<String> empty(), (t1, t2) -> t1 + "-" + t2);
 
         final ArrayList<String> list = new ArrayList<>();
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
+        o.subscribe(s -> {
+            System.out.println(s);
+            list.add(s);
         });
 
         assertEquals(0, list.size());
@@ -963,12 +848,9 @@ public class OperatorZipTest {
         final Object invoked = new Object();
         Collection<Observable<Object>> observables = Collections.emptyList();
 
-        Observable<Object> o = Observable.zip(observables, new Function<Object[], Object>() {
-            @Override
-            public Object apply(final Object[] args) {
-                assertEquals("No argument should have been passed", 0, args.length);
-                return invoked;
-            }
+        Observable<Object> o = Observable.zip(observables, args -> {
+            assertEquals("No argument should have been passed", 0, args.length);
+            return invoked;
         });
 
         TestSubscriber<Object> ts = new TestSubscriber<>();
@@ -987,12 +869,9 @@ public class OperatorZipTest {
         final Object invoked = new Object();
         Collection<Observable<Object>> observables = Collections.emptyList();
 
-        Observable<Object> o = Observable.zip(observables, new Function<Object[], Object>() {
-            @Override
-            public Object apply(final Object[] args) {
-                assertEquals("No argument should have been passed", 0, args.length);
-                return invoked;
-            }
+        Observable<Object> o = Observable.zip(observables, args -> {
+            assertEquals("No argument should have been passed", 0, args.length);
+            return invoked;
         });
 
         o.toBlocking().last();
@@ -1006,14 +885,7 @@ public class OperatorZipTest {
         Observable<Integer> o2 = createInfiniteObservable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
-
-            @Override
-            public String apply(Integer t1, Integer t2) {
-                return t1 + "-" + t2;
-            }
-
-        }).take(Observable.bufferSize() * 2).subscribe(ts);
+        Observable.zip(o1, o2, (t1, t2) -> t1 + "-" + t2).take(Observable.bufferSize() * 2).subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
@@ -1030,14 +902,7 @@ public class OperatorZipTest {
         Observable<Integer> o2 = createInfiniteObservable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
-
-            @Override
-            public String apply(Integer t1, Integer t2) {
-                return t1 + "-" + t2;
-            }
-
-        }).take(Observable.bufferSize() * 2).subscribe(ts);
+        Observable.zip(o1, o2, (t1, t2) -> t1 + "-" + t2).take(Observable.bufferSize() * 2).subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
@@ -1054,14 +919,7 @@ public class OperatorZipTest {
         Observable<Integer> o2 = createInfiniteObservable(generatedB).take(Observable.bufferSize() * 2);
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
-
-            @Override
-            public String apply(Integer t1, Integer t2) {
-                return t1 + "-" + t2;
-            }
-
-        }).observeOn(Schedulers.computation()).take(Observable.bufferSize() * 2).subscribe(ts);
+        Observable.zip(o1, o2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Observable.bufferSize() * 2).subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
@@ -1079,14 +937,7 @@ public class OperatorZipTest {
         Observable<Integer> o2 = createInfiniteObservable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
-
-            @Override
-            public String apply(Integer t1, Integer t2) {
-                return t1 + "-" + t2;
-            }
-
-        }).observeOn(Schedulers.computation()).take(Observable.bufferSize() * 2).subscribe(ts);
+        Observable.zip(o1, o2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Observable.bufferSize() * 2).subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
@@ -1104,14 +955,7 @@ public class OperatorZipTest {
         Observable<Integer> o2 = createInfiniteObservable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
-
-            @Override
-            public String apply(Integer t1, Integer t2) {
-                return t1 + "-" + t2;
-            }
-
-        }).observeOn(Schedulers.computation()).take(Observable.bufferSize() * 2).subscribe(ts);
+        Observable.zip(o1, o2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Observable.bufferSize() * 2).subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
@@ -1122,28 +966,22 @@ public class OperatorZipTest {
     }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
-        Observable<Integer> observable = Observable.fromIterable(new Iterable<Integer>() {
+        return Observable.fromIterable(() -> new Iterator<Integer>() {
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
+            public void remove() {
+            }
 
-                    @Override
-                    public void remove() {
-                    }
+            @Override
+            public Integer next() {
+                return generated.getAndIncrement();
+            }
 
-                    @Override
-                    public Integer next() {
-                        return generated.getAndIncrement();
-                    }
-
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean hasNext() {
+                return true;
             }
         });
-        return observable;
     }
 
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
@@ -1176,21 +1014,17 @@ public class OperatorZipTest {
             public void subscribe(final Subscriber<? super Integer> o) {
                 final BooleanSubscription bs = new BooleanSubscription();
                 o.onSubscribe(bs);
-                Thread t = new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        System.out.println("-------> subscribe to infinite sequence");
-                        System.out.println("Starting thread: " + Thread.currentThread());
-                        int i = 1;
-                        while (!bs.isCancelled()) {
-                            o.onNext(i++);
-                            Thread.yield();
-                        }
-                        o.onComplete();
-                        latch.countDown();
-                        System.out.println("Ending thread: " + Thread.currentThread());
+                Thread t = new Thread(() -> {
+                    System.out.println("-------> subscribe to infinite sequence");
+                    System.out.println("Starting thread: " + Thread.currentThread());
+                    int i = 1;
+                    while (!bs.isCancelled()) {
+                        o.onNext(i++);
+                        Thread.yield();
                     }
+                    o.onComplete();
+                    latch.countDown();
+                    System.out.println("Ending thread: " + Thread.currentThread());
                 });
                 t.start();
 
@@ -1202,22 +1036,8 @@ public class OperatorZipTest {
     @Test(timeout = 30000)
     public void testIssue1812() {
         // https://github.com/ReactiveX/RxJava/issues/1812
-        Observable<Integer> zip1 = Observable.zip(Observable.range(0, 1026), Observable.range(0, 1026),
-                new BiFunction<Integer, Integer, Integer>() {
-
-                    @Override
-                    public Integer apply(Integer i1, Integer i2) {
-                        return i1 + i2;
-                    }
-                });
-        Observable<Integer> zip2 = Observable.zip(zip1, Observable.range(0, 1026),
-                new BiFunction<Integer, Integer, Integer>() {
-
-                    @Override
-                    public Integer apply(Integer i1, Integer i2) {
-                        return i1 + i2;
-                    }
-                });
+        Observable<Integer> zip1 = Observable.zip(Observable.range(0, 1026), Observable.range(0, 1026), (i1, i2) -> i1 + i2);
+        Observable<Integer> zip2 = Observable.zip(zip1, Observable.range(0, 1026), (i1, i2) -> i1 + i2);
         List<Integer> expected = new ArrayList<>();
         for (int i = 0; i < 1026; i++) {
             expected.add(i * 3);
@@ -1226,12 +1046,7 @@ public class OperatorZipTest {
     }
     @Test
     public void testUnboundedDownstreamOverrequesting() {
-        Observable<Integer> source = Observable.range(1, 2).zipWith(Observable.range(1, 2), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + 10 * t2;
-            }
-        });
+        Observable<Integer> source = Observable.range(1, 2).zipWith(Observable.range(1, 2), (t1, t2) -> t1 + 10 * t2);
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
@@ -1257,12 +1072,7 @@ public class OperatorZipTest {
         // used so that this test will not timeout on slow machines.
         int i = 0;
         while (System.currentTimeMillis()-startTime < 9000 && i++ < 100000) {
-            int value = Observable.zip(src, src, new BiFunction<Integer, Integer, Integer>() {
-                @Override
-                public Integer apply(Integer t1, Integer t2) {
-                    return t1 + t2 * 10;
-                }
-            }).toBlocking().single(0);
+            int value = Observable.zip(src, src, (t1, t2) -> t1 + t2 * 10).toBlocking().single(0);
             
             Assert.assertEquals(11, value);
         }
@@ -1276,12 +1086,7 @@ public class OperatorZipTest {
         Observable<Integer> src = Observable.just(1).subscribeOn(Schedulers.computation());
         TestSubscriber<Integer> ts = new TestSubscriber<>(1L);
         
-        Observable.zip(src, src, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2 * 10;
-            }
-        }).subscribe(ts);
+        Observable.zip(src, src, (t1, t2) -> t1 + t2 * 10).subscribe(ts);
         
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
         ts.assertNoErrors();

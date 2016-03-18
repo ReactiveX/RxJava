@@ -48,24 +48,9 @@ public class OperatorSampleTest {
             @Override
             public void subscribe(final Subscriber<? super Long> observer1) {
                 observer1.onSubscribe(EmptySubscription.INSTANCE);
-                innerScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        observer1.onNext(1L);
-                    }
-                }, 1, TimeUnit.SECONDS);
-                innerScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        observer1.onNext(2L);
-                    }
-                }, 2, TimeUnit.SECONDS);
-                innerScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        observer1.onComplete();
-                    }
-                }, 3, TimeUnit.SECONDS);
+                innerScheduler.schedule(() -> observer1.onNext(1L), 1, TimeUnit.SECONDS);
+                innerScheduler.schedule(() -> observer1.onNext(2L), 2, TimeUnit.SECONDS);
+                innerScheduler.schedule(() -> observer1.onComplete(), 3, TimeUnit.SECONDS);
             }
         });
 

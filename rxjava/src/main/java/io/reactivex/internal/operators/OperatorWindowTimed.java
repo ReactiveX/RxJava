@@ -87,10 +87,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
 
         final AtomicReference<Disposable> timer = new AtomicReference<>();
 
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         static final Object NEXT = new Object();
         
@@ -325,10 +322,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
         
         final AtomicReference<Disposable> timer = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         public WindowExactBoundedSubscriber(
                 Subscriber<? super Observable<T>> actual, 
@@ -696,12 +690,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
                 if (r != Long.MAX_VALUE) {
                     produced(1);
                 }
-                worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        complete(w);
-                    }
-                }, timespan, unit);
+                worker.schedule(() -> complete(w), timespan, unit);
                 
                 worker.schedulePeriodically(this, timeskip, timeskip, unit);
                 
@@ -849,12 +838,7 @@ public final class OperatorWindowTimed<T> implements Operator<Observable<T>, T> 
                                     produced(1);
                                 }
                                 
-                                worker.schedule(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        complete(w);
-                                    }
-                                }, timespan, unit);
+                                worker.schedule(() -> complete(w), timespan, unit);
                             } else {
                                 a.onError(new IllegalStateException("Can't emit window due to lack of requests"));
                                 continue;

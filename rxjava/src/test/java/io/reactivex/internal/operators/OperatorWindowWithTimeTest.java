@@ -115,46 +115,31 @@ public class OperatorWindowWithTimeTest {
     }
 
     private <T> void push(final Subscriber<T> observer, final T value, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> observer.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final Subscriber<?> observer, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(observer::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> Consumer<Observable<T>> observeWindow(final List<T> list, final List<List<T>> lists) {
-        return new Consumer<Observable<T>>() {
+        return stringObservable -> stringObservable.subscribe(new Observer<T>() {
             @Override
-            public void accept(Observable<T> stringObservable) {
-                stringObservable.subscribe(new Observer<T>() {
-                    @Override
-                    public void onComplete() {
-                        lists.add(new ArrayList<>(list));
-                        list.clear();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Assert.fail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(T args) {
-                        list.add(args);
-                    }
-                });
+            public void onComplete() {
+                lists.add(new ArrayList<>(list));
+                list.clear();
             }
-        };
+
+            @Override
+            public void onError(Throwable e) {
+                Assert.fail(e.getMessage());
+            }
+
+            @Override
+            public void onNext(T args) {
+                list.add(args);
+            }
+        });
     }
     @Test
     public void testExactWindowSize() {
@@ -188,31 +173,10 @@ public class OperatorWindowWithTimeTest {
         OperatorWindowWithSizeTest.hotStream()
         .window(300, TimeUnit.MILLISECONDS)
         .take(10)
-        .doOnComplete(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("Main done!");
-            }
-        })
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> w) {
-                return w.startWith(indicator)
-                        .doOnComplete(new Runnable() {
-                            @Override
-                            public void run() {
-                                System.out.println("inner done: " + wip.incrementAndGet());
-                            }
-                        })
-                        ;
-            }
-        })
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer pv) {
-                System.out.println(pv);
-            }
-        })
+        .doOnComplete(() -> System.out.println("Main done!"))
+        .flatMap(w -> w.startWith(indicator).doOnComplete(() ->
+                System.out.println("inner done: " + wip.incrementAndGet()))
+        ).doOnNext(System.out::println)
         .subscribe(ts);
         
         ts.awaitTerminalEvent(5, TimeUnit.SECONDS);

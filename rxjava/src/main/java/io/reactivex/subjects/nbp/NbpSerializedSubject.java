@@ -40,12 +40,7 @@ import io.reactivex.plugins.RxJavaPlugins;
      * @param actual the subject wrapped
      */
     public NbpSerializedSubject(final NbpSubject<T, R> actual) {
-        super(new io.reactivex.NbpObservable.NbpOnSubscribe<R>() {
-            @Override
-            public void accept(io.reactivex.NbpObservable.NbpSubscriber<? super R> s) {
-                actual.subscribe(s);
-            }
-        });
+        super(actual::subscribe);
         this.actual = actual;
     }
     
@@ -151,12 +146,7 @@ import io.reactivex.plugins.RxJavaPlugins;
         }
     }
 
-    final Predicate<Object> consumer = new Predicate<Object>() {
-        @Override
-        public boolean test(Object v) {
-            return accept(v);
-        }
-    };
+    final Predicate<Object> consumer = this::accept;
     
     /** Delivers the notification to the actual subscriber. */
     boolean accept(Object o) {

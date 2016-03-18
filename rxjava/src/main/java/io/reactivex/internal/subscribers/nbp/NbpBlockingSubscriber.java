@@ -25,10 +25,7 @@ public final class NbpBlockingSubscriber<T> extends AtomicReference<Disposable> 
     /** */
     private static final long serialVersionUID = -4875965440900746268L;
 
-    static final Disposable CANCELLED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
+    static final Disposable CANCELLED = () -> { };
     
     public static final Object TERMINATED = new Object();
 

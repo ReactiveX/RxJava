@@ -30,12 +30,7 @@ public class NbpOperatorMapTest {
     NbpSubscriber<String> stringObserver;
     NbpSubscriber<String> stringObserver2;
 
-    final static BiFunction<String, Integer, String> APPEND_INDEX = new BiFunction<String, Integer, String>() {
-        @Override
-        public String apply(String value, Integer index) {
-            return value + index;
-        }
-    };
+    final static BiFunction<String, Integer, String> APPEND_INDEX = (value, index) -> value + index;
 
     @Before
     public void before() {
@@ -49,12 +44,7 @@ public class NbpOperatorMapTest {
         Map<String, String> m2 = getMap("Two");
         NbpObservable<Map<String, String>> o = NbpObservable.just(m1, m2);
 
-        NbpObservable<String> m = o.map(new Function<Map<String, String>, String>() {
-            @Override
-            public String apply(Map<String, String> map) {
-                return map.get("firstName");
-            }
-        });
+        NbpObservable<String> m = o.map(map -> map.get("firstName"));
         
         m.subscribe(stringObserver);
 
@@ -70,31 +60,21 @@ public class NbpOperatorMapTest {
         NbpObservable<Integer> ids = NbpObservable.just(1, 2);
 
         /* now simulate the behavior to take those IDs and perform nested async calls based on them */
-        NbpObservable<String> m = ids.flatMap(new Function<Integer, NbpObservable<String>>() {
-
-            @Override
-            public NbpObservable<String> apply(Integer id) {
-                /* simulate making a nested async call which creates another NbpObservable */
-                NbpObservable<Map<String, String>> subObservable = null;
-                if (id == 1) {
-                    Map<String, String> m1 = getMap("One");
-                    Map<String, String> m2 = getMap("Two");
-                    subObservable = NbpObservable.just(m1, m2);
-                } else {
-                    Map<String, String> m3 = getMap("Three");
-                    Map<String, String> m4 = getMap("Four");
-                    subObservable = NbpObservable.just(m3, m4);
-                }
-
-                /* simulate kicking off the async call and performing a select on it to transform the data */
-                return subObservable.map(new Function<Map<String, String>, String>() {
-                    @Override
-                    public String apply(Map<String, String> map) {
-                        return map.get("firstName");
-                    }
-                });
+        NbpObservable<String> m = ids.flatMap(id -> {
+            /* simulate making a nested async call which creates another NbpObservable */
+            NbpObservable<Map<String, String>> subObservable = null;
+            if (id == 1) {
+                Map<String, String> m1 = getMap("One");
+                Map<String, String> m2 = getMap("Two");
+                subObservable = NbpObservable.just(m1, m2);
+            } else {
+                Map<String, String> m3 = getMap("Three");
+                Map<String, String> m4 = getMap("Four");
+                subObservable = NbpObservable.just(m3, m4);
             }
 
+            /* simulate kicking off the async call and performing a select on it to transform the data */
+            return subObservable.map(map -> map.get("firstName"));
         });
         m.subscribe(stringObserver);
 
@@ -118,20 +98,7 @@ public class NbpOperatorMapTest {
 
         NbpObservable<NbpObservable<Map<String, String>>> o = NbpObservable.just(observable1, observable2);
 
-        NbpObservable<String> m = o.flatMap(new Function<NbpObservable<Map<String, String>>, NbpObservable<String>>() {
-
-            @Override
-            public NbpObservable<String> apply(NbpObservable<Map<String, String>> o) {
-                return o.map(new Function<Map<String, String>, String>() {
-
-                    @Override
-                    public String apply(Map<String, String> map) {
-                        return map.get("firstName");
-                    }
-                });
-            }
-
-        });
+        NbpObservable<String> m = o.flatMap(o1 -> o1.map(map -> map.get("firstName")));
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -146,22 +113,12 @@ public class NbpOperatorMapTest {
     @Test
     public void testMapWithError() {
         NbpObservable<String> w = NbpObservable.just("one", "fail", "two", "three", "fail");
-        NbpObservable<String> m = w.map(new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                return s;
+        NbpObservable<String> m = w.map(s -> {
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
             }
-        }).doOnError(new Consumer<Throwable>() {
-
-            @Override
-            public void accept(Throwable t1) {
-                t1.printStackTrace();
-            }
-
-        });
+            return s;
+        }).doOnError(Throwable::printStackTrace);
 
         m.subscribe(stringObserver);
         verify(stringObserver, times(1)).onNext("one");
@@ -174,11 +131,8 @@ public class NbpOperatorMapTest {
     @Test(expected = IllegalArgumentException.class)
     public void testMapWithIssue417() {
         NbpObservable.just(1).observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer arg0) {
-                        throw new IllegalArgumentException("any error");
-                    }
+                .map(arg0 -> {
+                    throw new IllegalArgumentException("any error");
                 }).toBlocking().single();
     }
 
@@ -189,11 +143,8 @@ public class NbpOperatorMapTest {
         // so map needs to handle the error by itself.
         NbpObservable<String> m = NbpObservable.just("one")
                 .observeOn(Schedulers.computation())
-                .map(new Function<String, String>() {
-                    @Override
-                    public String apply(String arg0) {
-                        throw new IllegalArgumentException("any error");
-                    }
+                .map(arg0 -> {
+                    throw new IllegalArgumentException("any error");
                 });
 
         // block for response, expecting exception thrown
@@ -205,14 +156,7 @@ public class NbpOperatorMapTest {
      */
     @Test(expected = NoSuchElementException.class)
     public void testErrorPassesThruMap() {
-        NbpObservable.range(1, 0).last().map(new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer i) {
-                return i;
-            }
-
-        }).toBlocking().single();
+        NbpObservable.range(1, 0).last().map(i -> i).toBlocking().single();
     }
 
     /**
@@ -220,14 +164,7 @@ public class NbpOperatorMapTest {
      */
     @Test(expected = IllegalStateException.class)
     public void testErrorPassesThruMap2() {
-        NbpObservable.error(new IllegalStateException()).map(new Function<Object, Object>() {
-
-            @Override
-            public Object apply(Object i) {
-                return i;
-            }
-
-        }).toBlocking().single();
+        NbpObservable.error(new IllegalStateException()).map(i -> i).toBlocking().single();
     }
 
     /**
@@ -236,14 +173,7 @@ public class NbpOperatorMapTest {
      */
     @Test(expected = ArithmeticException.class)
     public void testMapWithErrorInFunc() {
-        NbpObservable.range(1, 1).last().map(new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer i) {
-                return i / 0;
-            }
-
-        }).toBlocking().single();
+        NbpObservable.range(1, 1).last().map(i -> i / 0).toBlocking().single();
     }
 
     // FIXME RS subscribers can't throw

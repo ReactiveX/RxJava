@@ -75,9 +75,9 @@ public class NbpOperatorBufferTest {
         buffered.subscribe(NbpObserver);
 
         InOrder inOrder = Mockito.inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("one", "two", "three"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("two", "three", "four"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("three", "four", "five"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("one", "two", "three"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("two", "three", "four"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("three", "four", "five"));
         inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
         inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(NbpObserver, Mockito.never()).onComplete();
@@ -91,8 +91,8 @@ public class NbpOperatorBufferTest {
         buffered.subscribe(NbpObserver);
 
         InOrder inOrder = Mockito.inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("one", "two", "three"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("four", "five"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("one", "two", "three"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("four", "five"));
         inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
         inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(NbpObserver, Mockito.times(1)).onComplete();
@@ -106,8 +106,8 @@ public class NbpOperatorBufferTest {
         buffered.subscribe(NbpObserver);
 
         InOrder inOrder = Mockito.inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("one", "two"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("four", "five"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("one", "two"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("four", "five"));
         inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
         inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(NbpObserver, Mockito.times(1)).onComplete();
@@ -133,13 +133,13 @@ public class NbpOperatorBufferTest {
 
         InOrder inOrder = Mockito.inOrder(NbpObserver);
         scheduler.advanceTimeTo(100, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("one", "two"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("one", "two"));
 
         scheduler.advanceTimeTo(200, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("three", "four"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("three", "four"));
 
         scheduler.advanceTimeTo(300, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("five"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("five"));
         inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
         inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(NbpObserver, Mockito.times(1)).onComplete();
@@ -170,10 +170,10 @@ public class NbpOperatorBufferTest {
 
         InOrder inOrder = Mockito.inOrder(NbpObserver);
         scheduler.advanceTimeTo(101, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("one", "two", "three"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("one", "two", "three"));
 
         scheduler.advanceTimeTo(201, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("four", "five"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("four", "five"));
         inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
         inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(NbpObserver, Mockito.times(1)).onComplete();
@@ -194,37 +194,26 @@ public class NbpOperatorBufferTest {
             }
         });
 
-        NbpObservable<Object> openings = NbpObservable.create(new NbpOnSubscribe<Object>() {
-            @Override
-            public void accept(NbpSubscriber<Object> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                push(NbpObserver, new Object(), 50);
-                push(NbpObserver, new Object(), 200);
-                complete(NbpObserver, 250);
-            }
+        NbpObservable<Object> openings = NbpObservable.create(s -> {
+            s.onSubscribe(EmptyDisposable.INSTANCE);
+            push(s, new Object(), 50);
+            push(s, new Object(), 200);
+            complete(s, 250);
         });
 
-        Function<Object, NbpObservable<Object>> closer = new Function<Object, NbpObservable<Object>>() {
-            @Override
-            public NbpObservable<Object> apply(Object opening) {
-                return NbpObservable.create(new NbpOnSubscribe<Object>() {
-                    @Override
-                    public void accept(NbpSubscriber<? super Object> NbpObserver) {
-                        NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                        push(NbpObserver, new Object(), 100);
-                        complete(NbpObserver, 101);
-                    }
-                });
-            }
-        };
+        Function<Object, NbpObservable<Object>> closer = opening -> NbpObservable.create(s -> {
+            s.onSubscribe(EmptyDisposable.INSTANCE);
+            push(s, new Object(), 100);
+            complete(s, 101);
+        });
 
         NbpObservable<List<String>> buffered = source.buffer(openings, closer);
         buffered.subscribe(NbpObserver);
 
         InOrder inOrder = Mockito.inOrder(NbpObserver);
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("two", "three"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("five"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("two", "three"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("five"));
         inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
         inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(NbpObserver, Mockito.times(1)).onComplete();
@@ -232,43 +221,32 @@ public class NbpOperatorBufferTest {
 
     @Test
     public void testObservableBasedCloser() {
-        NbpObservable<String> source = NbpObservable.create(new NbpOnSubscribe<String>() {
-            @Override
-            public void accept(NbpSubscriber<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                push(NbpObserver, "one", 10);
-                push(NbpObserver, "two", 60);
-                push(NbpObserver, "three", 110);
-                push(NbpObserver, "four", 160);
-                push(NbpObserver, "five", 210);
-                complete(NbpObserver, 250);
-            }
+        NbpObservable<String> source = NbpObservable.create(s -> {
+            s.onSubscribe(EmptyDisposable.INSTANCE);
+            push(s, "one", 10);
+            push(s, "two", 60);
+            push(s, "three", 110);
+            push(s, "four", 160);
+            push(s, "five", 210);
+            complete(s, 250);
         });
 
-        Supplier<NbpObservable<Object>> closer = new Supplier<NbpObservable<Object>>() {
-            @Override
-            public NbpObservable<Object> get() {
-                return NbpObservable.create(new NbpOnSubscribe<Object>() {
-                    @Override
-                    public void accept(NbpSubscriber<? super Object> NbpObserver) {
-                        NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                        push(NbpObserver, new Object(), 100);
-                        push(NbpObserver, new Object(), 200);
-                        push(NbpObserver, new Object(), 300);
-                        complete(NbpObserver, 301);
-                    }
-                });
-            }
-        };
+        Supplier<NbpObservable<Object>> closer = () -> NbpObservable.create(s -> {
+            s.onSubscribe(EmptyDisposable.INSTANCE);
+            push(s, new Object(), 100);
+            push(s, new Object(), 200);
+            push(s, new Object(), 300);
+            complete(s, 301);
+        });
 
         NbpObservable<List<String>> buffered = source.buffer(closer);
         buffered.subscribe(NbpObserver);
 
         InOrder inOrder = Mockito.inOrder(NbpObserver);
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("one", "two"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("three", "four"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("five"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("one", "two"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("three", "four"));
+        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(Arrays.asList("five"));
         inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
         inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(NbpObserver, Mockito.times(1)).onComplete();
@@ -308,30 +286,12 @@ public class NbpOperatorBufferTest {
         }
     }
 
-    private List<String> list(String... args) {
-        List<String> list = new ArrayList<>();
-        for (String arg : args) {
-            list.add(arg);
-        }
-        return list;
-    }
-
     private <T> void push(final NbpSubscriber<T> NbpObserver, final T value, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> NbpObserver.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final NbpSubscriber<?> NbpObserver, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(NbpObserver::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
@@ -342,12 +302,7 @@ public class NbpOperatorBufferTest {
         NbpTestSubscriber<List<Integer>> ts = new NbpTestSubscriber<>(o);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
-        .doOnNext(new Consumer<List<Integer>>() {
-            @Override
-            public void accept(List<Integer> pv) {
-                System.out.println(pv);
-            }
-        })
+        .doOnNext(System.out::println)
         .subscribe(ts);
 
         InOrder inOrder = Mockito.inOrder(o);
@@ -575,12 +530,7 @@ public class NbpOperatorBufferTest {
     @Test(timeout = 2000)
     public void bufferWithStartEndBoundaryTake2() {
         NbpObservable<Long> start = NbpObservable.interval(61, 61, TimeUnit.MILLISECONDS, scheduler);
-        Function<Long, NbpObservable<Long>> end = new Function<Long, NbpObservable<Long>>() {
-            @Override
-            public NbpObservable<Long> apply(Long t1) {
-                return NbpObservable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
-            }
-        };
+        Function<Long, NbpObservable<Long>> end = t1 -> NbpObservable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
         
         NbpObservable<Long> source = NbpObservable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
         
@@ -590,12 +540,7 @@ public class NbpOperatorBufferTest {
         InOrder inOrder = inOrder(o);
         
         result
-        .doOnNext(new Consumer<List<Long>>() {
-            @Override
-            public void accept(List<Long> pv) {
-                System.out.println(pv);
-            }
-        })
+        .doOnNext(System.out::println)
         .subscribe(o);
         
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
@@ -678,12 +623,7 @@ public class NbpOperatorBufferTest {
     public void bufferWithStartEndStartThrows() {
         NbpPublishSubject<Integer> start = NbpPublishSubject.create();
         
-        Function<Integer, NbpObservable<Integer>> end = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return NbpObservable.never();
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> end = t1 -> NbpObservable.never();
 
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
 
@@ -706,11 +646,8 @@ public class NbpOperatorBufferTest {
     public void bufferWithStartEndEndFunctionThrows() {
         NbpPublishSubject<Integer> start = NbpPublishSubject.create();
         
-        Function<Integer, NbpObservable<Integer>> end = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, NbpObservable<Integer>> end = t1 -> {
+            throw new TestException();
         };
 
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
@@ -733,12 +670,7 @@ public class NbpOperatorBufferTest {
     public void bufferWithStartEndEndThrows() {
         NbpPublishSubject<Integer> start = NbpPublishSubject.create();
         
-        Function<Integer, NbpObservable<Integer>> end = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return NbpObservable.error(new TestException());
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> end = t1 -> NbpObservable.error(new TestException());
 
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
 

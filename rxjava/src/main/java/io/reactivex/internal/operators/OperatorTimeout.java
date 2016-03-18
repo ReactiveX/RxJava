@@ -61,10 +61,7 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
         
         final AtomicReference<Disposable> timeout = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
 
         public TimeoutSubscriber(Subscriber<? super T> actual, 
                 Supplier<? extends Publisher<U>> firstTimeoutSelector,
@@ -249,10 +246,7 @@ public final class OperatorTimeout<T, U, V> implements Operator<T, T> {
         
         final AtomicReference<Disposable> timeout = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
 
         public TimeoutOtherSubscriber(Subscriber<? super T> actual,
                 Supplier<? extends Publisher<U>> firstTimeoutSelector,

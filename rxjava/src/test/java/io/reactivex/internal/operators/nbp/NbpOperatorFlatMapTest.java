@@ -38,19 +38,8 @@ public class NbpOperatorFlatMapTest {
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
 
-        Function<Integer, List<Integer>> func = new Function<Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(Integer t1) {
-                return list;
-            }
-        };
-        BiFunction<Integer, Integer, Integer> resFunc = new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 | t2;
-            }
-        };
+        final Function<Integer, List<Integer>> func = t1 -> list;
+        final BiFunction<Integer, Integer, Integer> resFunc = (t1, t2) -> t1 | t2;
 
         List<Integer> source = Arrays.asList(16, 32, 64);
 
@@ -69,19 +58,10 @@ public class NbpOperatorFlatMapTest {
     public void testCollectionFunctionThrows() {
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
 
-        Function<Integer, List<Integer>> func = new Function<Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, List<Integer>> func = t1 -> {
+            throw new TestException();
         };
-        BiFunction<Integer, Integer, Integer> resFunc = new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 | t2;
-            }
-        };
+        BiFunction<Integer, Integer, Integer> resFunc = (t1, t2) -> t1 | t2;
 
         List<Integer> source = Arrays.asList(16, 32, 64);
 
@@ -98,18 +78,9 @@ public class NbpOperatorFlatMapTest {
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
 
-        Function<Integer, List<Integer>> func = new Function<Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(Integer t1) {
-                return list;
-            }
-        };
-        BiFunction<Integer, Integer, Integer> resFunc = new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                throw new TestException();
-            }
+        Function<Integer, List<Integer>> func = t1 -> list;
+        BiFunction<Integer, Integer, Integer> resFunc = (t1, t2) -> {
+            throw new TestException();
         };
 
         List<Integer> source = Arrays.asList(16, 32, 64);
@@ -125,19 +96,8 @@ public class NbpOperatorFlatMapTest {
     public void testMergeError() {
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
 
-        Function<Integer, NbpObservable<Integer>> func = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return NbpObservable.error(new TestException());
-            }
-        };
-        BiFunction<Integer, Integer, Integer> resFunc = new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 | t2;
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> func = t1 -> NbpObservable.error(new TestException());
+        BiFunction<Integer, Integer, Integer> resFunc = (t1, t2) -> t1 | t2;
 
         List<Integer> source = Arrays.asList(16, 32, 64);
 
@@ -149,23 +109,11 @@ public class NbpOperatorFlatMapTest {
     }
 
     <T, R> Function<T, R> just(final R value) {
-        return new Function<T, R>() {
-
-            @Override
-            public R apply(T t1) {
-                return value;
-            }
-        };
+        return t1 -> value;
     }
 
     <R> Supplier<R> just0(final R value) {
-        return new Supplier<R>() {
-
-            @Override
-            public R get() {
-                return value;
-            }
-        };
+        return () -> value;
     }
 
     @Test
@@ -197,9 +145,9 @@ public class NbpOperatorFlatMapTest {
         NbpObservable<Integer> onError = NbpObservable.fromIterable(Arrays.asList(5));
 
         NbpObservable<Integer> source = NbpObservable.concat(
-                NbpObservable.fromIterable(Arrays.asList(10, 20, 30)),
-                NbpObservable.<Integer> error(new RuntimeException("Forced failure!"))
-                );
+            NbpObservable.fromIterable(Arrays.asList(10, 20, 30)),
+            NbpObservable.error(new RuntimeException("Forced failure!"))
+        );
         
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
@@ -217,20 +165,14 @@ public class NbpOperatorFlatMapTest {
     }
 
     <R> Supplier<R> funcThrow0(R r) {
-        return new Supplier<R>() {
-            @Override
-            public R get() {
-                throw new TestException();
-            }
+        return () -> {
+            throw new TestException();
         };
     }
 
     <T, R> Function<T, R> funcThrow(T t, R r) {
-        return new Function<T, R>() {
-            @Override
-            public R apply(T t) {
-                throw new TestException();
-            }
+        return t1 -> {
+            throw new TestException();
         };
     }
 
@@ -273,7 +215,7 @@ public class NbpOperatorFlatMapTest {
         NbpObservable<Integer> onCompleted = NbpObservable.fromIterable(Arrays.asList(4));
         NbpObservable<Integer> onError = NbpObservable.fromIterable(Arrays.asList(5));
 
-        NbpObservable<Integer> source = NbpObservable.fromIterable(Arrays.<Integer> asList());
+        NbpObservable<Integer> source = NbpObservable.fromIterable(Arrays.asList());
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
 
@@ -302,22 +244,16 @@ public class NbpOperatorFlatMapTest {
     }
 
     private static <T> NbpObservable<T> composer(NbpObservable<T> source, final AtomicInteger subscriptionCount, final int m) {
-        return source.doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable s) {
-                    int n = subscriptionCount.getAndIncrement();
-                    if (n >= m) {
-                        Assert.fail("Too many subscriptions! " + (n + 1));
-                    }
-            }
-        }).doOnComplete(new Runnable() {
-            @Override
-            public void run() {
-                    int n = subscriptionCount.decrementAndGet();
-                    if (n < 0) {
-                        Assert.fail("Too many unsubscriptions! " + (n - 1));
-                    }
-            }
+        return source.doOnSubscribe(s -> {
+                int n = subscriptionCount.getAndIncrement();
+                if (n >= m) {
+                    Assert.fail("Too many subscriptions! " + (n + 1));
+                }
+        }).doOnComplete(() -> {
+                int n = subscriptionCount.decrementAndGet();
+                if (n < 0) {
+                    Assert.fail("Too many unsubscriptions! " + (n - 1));
+                }
         });
     }
 
@@ -326,12 +262,9 @@ public class NbpOperatorFlatMapTest {
         final int m = 4;
         final AtomicInteger subscriptionCount = new AtomicInteger();
         NbpObservable<Integer> source = NbpObservable.range(1, 10)
-        .flatMap(new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return composer(NbpObservable.range(t1 * 10, 2), subscriptionCount, m)
-                        .subscribeOn(Schedulers.computation());
-            }
+        .flatMap(t1 -> {
+            return composer(NbpObservable.range(t1 * 10, 2), subscriptionCount, m)
+                    .subscribeOn(Schedulers.computation());
         }, m);
         
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
@@ -351,18 +284,10 @@ public class NbpOperatorFlatMapTest {
         final int m = 4;
         final AtomicInteger subscriptionCount = new AtomicInteger();
         NbpObservable<Integer> source = NbpObservable.range(1, 10)
-            .flatMap(new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
+            .flatMap(t1 -> {
                 return composer(NbpObservable.range(t1 * 10, 2), subscriptionCount, m)
                         .subscribeOn(Schedulers.computation());
-            }
-        }, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 * 1000 + t2;
-            }
-        }, m);
+            }, (t1, t2) -> t1 * 1000 + t2, m);
         
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         
@@ -438,12 +363,7 @@ public class NbpOperatorFlatMapTest {
             }
             NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
             NbpObservable.range(0, 1000)
-            .flatMap(new Function<Integer, NbpObservable<Integer>>() {
-                @Override
-                public NbpObservable<Integer> apply(Integer t) {
-                    return NbpObservable.just(t);
-                }
-            })
+            .flatMap(NbpObservable::just)
             .observeOn(Schedulers.computation())
             .subscribe(ts);
 
@@ -513,12 +433,7 @@ public class NbpOperatorFlatMapTest {
         for (int i = 0;i < 1000; i++) {
             NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
             
-            NbpObservable.range(1, 1000).flatMap(new Function<Integer, NbpObservable<Integer>>() {
-                @Override
-                public NbpObservable<Integer> apply(Integer t) {
-                    return NbpObservable.just(1).subscribeOn(Schedulers.computation());
-                }
-            }).subscribe(ts);
+            NbpObservable.range(1, 1000).flatMap(t -> NbpObservable.just(1).subscribeOn(Schedulers.computation())).subscribe(ts);
             
             ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
             ts.assertNoErrors();
@@ -531,12 +446,7 @@ public class NbpOperatorFlatMapTest {
         for (final int n : new int[] { 1, 1000, 1000000 }) {
             NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
     
-            NbpObservable.just(1, 2).flatMap(new Function<Integer, NbpObservable<Integer>>() {
-                @Override
-                public NbpObservable<Integer> apply(Integer t) {
-                    return NbpObservable.range(1, n);
-                }
-            }).subscribe(ts);
+            NbpObservable.just(1, 2).flatMap(t -> NbpObservable.range(1, n)).subscribe(ts);
             
             System.out.println("flatMapTwoNestedSync >> @ " + n);
             ts.assertNoErrors();

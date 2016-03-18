@@ -44,12 +44,7 @@ public final class NbpOnSubscribeRedo<T> implements NbpOnSubscribe<T> {
 
         NbpObservable<?> action = manager.apply(subject);
         
-        action.subscribe(new NbpToNotificationSubscriber<>(new Consumer<Try<Optional<Object>>>() {
-            @Override
-            public void accept(Try<Optional<Object>> o) {
-                parent.handle(o);
-            }
-        }));
+        action.subscribe(new NbpToNotificationSubscriber<>(parent::handle));
         
         // trigger first subscription
         parent.handle(Notification.<Object>next(0));

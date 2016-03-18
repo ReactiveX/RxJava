@@ -342,7 +342,7 @@ public class OperatorBufferTest {
         Observable<Integer> source = Observable.never();
 
         Subscriber<List<Integer>> o = TestHelper.mockSubscriber();
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<>(o, (Long) null);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>(o, null);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
         .doOnNext(new Consumer<List<Integer>>() {

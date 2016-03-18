@@ -63,12 +63,7 @@ public class OperatorTakeLastOneTest {
     @Test
     public void testUnsubscribesFromUpstream() {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Runnable unsubscribeAction = new Runnable() {
-            @Override
-            public void run() {
-                unsubscribed.set(true);
-            }
-        };
+        Runnable unsubscribeAction = () -> unsubscribed.set(true);
         Observable.just(1).doOnCancel(unsubscribeAction)
                 .takeLast(1).subscribe();
         assertTrue(unsubscribed.get());
@@ -87,12 +82,7 @@ public class OperatorTakeLastOneTest {
     public void testTakeLastZeroProcessesAllItemsButIgnoresThem() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final int num = 10;
-        long count = Observable.range(1,num).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t) {
-                upstreamCount.incrementAndGet();
-            }})
+        long count = Observable.range(1,num).doOnNext(t -> upstreamCount.incrementAndGet())
             .takeLast(0).count().toBlocking().single();
         assertEquals(num, upstreamCount.get());
         assertEquals(0L, count);

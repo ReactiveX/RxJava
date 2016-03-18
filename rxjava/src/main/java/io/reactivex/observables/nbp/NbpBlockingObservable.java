@@ -61,27 +61,12 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
 
         NbpLambdaSubscriber<T> ls = new NbpLambdaSubscriber<>(
-            new Consumer<T>() {
-                @Override
-                public void accept(T v) {
-                    queue.offer(NotificationLite.next(v));
-                }
-            },
-            new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) {
-                    queue.offer(NotificationLite.error(e));
-                }
-            },
-            new Runnable() {
-                @Override
-                public void run() {
-                    queue.offer(NotificationLite.complete());
-                }
-            },
+            v -> queue.offer(NotificationLite.next(v)),
+            e -> queue.offer(NotificationLite.error(e)),
+            () -> queue.offer(NotificationLite.complete()),
             Functions.emptyConsumer()
         );
-        
+
         p.subscribe(ls);
         
         return new BlockingIterator<>(queue, ls);
@@ -426,18 +411,10 @@ public final class NbpBlockingObservable<T> implements Iterable<T> {
         final Throwable[] error = { null };
         NbpLambdaSubscriber<T> ls = new NbpLambdaSubscriber<>(
             Functions.emptyConsumer(),
-            new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) {
-                    error[0] = e;
-                    cdl.countDown();
-                }
-            }, new Runnable() {
-            @Override
-            public void run() {
+            e -> {
+                error[0] = e;
                 cdl.countDown();
-            }
-        }, Functions.emptyConsumer());
+            }, cdl::countDown, Functions.emptyConsumer());
         
         o.subscribe(ls);
         

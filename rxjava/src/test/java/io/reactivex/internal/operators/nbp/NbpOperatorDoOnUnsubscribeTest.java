@@ -41,29 +41,20 @@ public class NbpOperatorDoOnUnsubscribeTest {
                 // The stream needs to be infinite to ensure the stream does not terminate
                 // before it is unsubscribed
                 .interval(50, TimeUnit.MILLISECONDS)
-                .doOnCancel(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Test that upper stream will be notified for un-subscription
-                        // from a child NbpSubscriber
-                            upperLatch.countDown();
-                            upperCount.incrementAndGet();
-                    }
+                .doOnCancel(() -> {
+                    // Test that upper stream will be notified for un-subscription
+                    // from a child NbpSubscriber
+                        upperLatch.countDown();
+                        upperCount.incrementAndGet();
                 })
-                .doOnNext(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) {
-                            // Ensure there is at least some onNext events before un-subscription happens
-                            onNextLatch.countDown();
-                    }
+                .doOnNext(aLong -> {
+                        // Ensure there is at least some onNext events before un-subscription happens
+                        onNextLatch.countDown();
                 })
-                .doOnCancel(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Test that lower stream will be notified for a direct un-subscription
-                            lowerLatch.countDown();
-                            lowerCount.incrementAndGet();
-                    }
+                .doOnCancel(() -> {
+                    // Test that lower stream will be notified for a direct un-subscription
+                        lowerLatch.countDown();
+                        lowerCount.incrementAndGet();
                 });
 
         List<Disposable> subscriptions = new ArrayList<>();
@@ -103,28 +94,19 @@ public class NbpOperatorDoOnUnsubscribeTest {
                 // The stream needs to be infinite to ensure the stream does not terminate
                 // before it is unsubscribed
                 .interval(50, TimeUnit.MILLISECONDS)
-                .doOnCancel(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Test that upper stream will be notified for un-subscription
-                            upperLatch.countDown();
-                            upperCount.incrementAndGet();
-                    }
+                .doOnCancel(() -> {
+                    // Test that upper stream will be notified for un-subscription
+                        upperLatch.countDown();
+                        upperCount.incrementAndGet();
                 })
-                .doOnNext(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) {
-                            // Ensure there is at least some onNext events before un-subscription happens
-                            onNextLatch.countDown();
-                    }
+                .doOnNext(aLong -> {
+                        // Ensure there is at least some onNext events before un-subscription happens
+                        onNextLatch.countDown();
                 })
-                .doOnCancel(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Test that lower stream will be notified for un-subscription
-                            lowerLatch.countDown();
-                            lowerCount.incrementAndGet();
-                    }
+                .doOnCancel(() -> {
+                    // Test that lower stream will be notified for un-subscription
+                        lowerLatch.countDown();
+                        lowerCount.incrementAndGet();
                 })
                 .publish()
                 .refCount();

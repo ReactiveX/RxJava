@@ -126,43 +126,22 @@ public class NbpOperatorDebounceTest {
     }
 
     private <T> void publishCompleted(final NbpSubscriber<T> NbpObserver, long delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(NbpObserver::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final NbpSubscriber<T> NbpObserver, long delay, final Exception error) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onError(error);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> NbpObserver.onError(error), delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishNext(final NbpSubscriber<T> NbpObserver, final long delay, final T value) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NbpObserver.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> NbpObserver.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
     public void debounceSelectorNormal1() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> debouncer = NbpPublishSubject.create();
-        Function<Integer, NbpObservable<Integer>> debounceSel = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return debouncer;
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> debounceSel = t1 -> debouncer;
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
@@ -192,12 +171,8 @@ public class NbpOperatorDebounceTest {
     @Test
     public void debounceSelectorFuncThrows() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
-        Function<Integer, NbpObservable<Integer>> debounceSel = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, NbpObservable<Integer>> debounceSel = t1 -> {
+            throw new TestException();
         };
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
@@ -214,13 +189,7 @@ public class NbpOperatorDebounceTest {
     @Test
     public void debounceSelectorObservableThrows() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
-        Function<Integer, NbpObservable<Integer>> debounceSel = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return NbpObservable.error(new TestException());
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> debounceSel = t1 -> NbpObservable.error(new TestException());
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         
@@ -254,13 +223,7 @@ public class NbpOperatorDebounceTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> debouncer = NbpPublishSubject.create();
 
-        Function<Integer, NbpObservable<Integer>> debounceSel = new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return debouncer;
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> debounceSel = t1 -> debouncer;
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         

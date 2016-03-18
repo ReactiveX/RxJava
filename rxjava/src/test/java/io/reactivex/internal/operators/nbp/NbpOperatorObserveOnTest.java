@@ -92,36 +92,19 @@ public class NbpOperatorObserveOnTest {
         final CountDownLatch completedLatch = new CountDownLatch(1);
 
         // assert subscribe is on main thread
-        obs = obs.doOnNext(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                String threadName = Thread.currentThread().getName();
-                System.out.println("Source ThreadName: " + threadName + "  Expected => " + parentThreadName);
-                assertEquals(parentThreadName, threadName);
-            }
-
+        obs = obs.doOnNext(s -> {
+            String threadName = Thread.currentThread().getName();
+            System.out.println("Source ThreadName: " + threadName + "  Expected => " + parentThreadName);
+            assertEquals(parentThreadName, threadName);
         });
 
         // assert observe is on new thread
-        obs.observeOn(Schedulers.newThread()).doOnNext(new Consumer<String>() {
-
-            @Override
-            public void accept(String t1) {
-                String threadName = Thread.currentThread().getName();
-                boolean correctThreadName = threadName.startsWith("RxNewThreadScheduler");
-                System.out.println("ObserveOn ThreadName: " + threadName + "  Correct => " + correctThreadName);
-                assertTrue(correctThreadName);
-            }
-
-        }).finallyDo(new Runnable() {
-
-            @Override
-            public void run() {
-                completedLatch.countDown();
-
-            }
-        }).subscribe(NbpObserver);
+        obs.observeOn(Schedulers.newThread()).doOnNext(t1 -> {
+            String threadName = Thread.currentThread().getName();
+            boolean correctThreadName = threadName.startsWith("RxNewThreadScheduler");
+            System.out.println("ObserveOn ThreadName: " + threadName + "  Correct => " + correctThreadName);
+            assertTrue(correctThreadName);
+        }).finallyDo(() -> completedLatch.countDown()).subscribe(NbpObserver);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
@@ -211,24 +194,12 @@ public class NbpOperatorObserveOnTest {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        NbpObservable.range(1, 100000).map(new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * _multiple;
-            }
-
-        }).observeOn(Schedulers.newThread())
-        .toBlocking().forEach(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
-                // FIXME toBlocking methods run on the current thread
-                String name = Thread.currentThread().getName();
-                assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
-            }
-
+        NbpObservable.range(1, 100000).map(t1 -> t1 * _multiple).observeOn(Schedulers.newThread())
+        .toBlocking().forEach(t1 -> {
+            Assert.assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+            // FIXME toBlocking methods run on the current thread
+            String name = Thread.currentThread().getName();
+            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
         });
 
     }
@@ -241,24 +212,12 @@ public class NbpOperatorObserveOnTest {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        NbpObservable.range(1, 100000).map(new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * _multiple;
-            }
-
-        }).observeOn(Schedulers.computation())
-        .toBlocking().forEach(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
-                // FIXME toBlocking methods run on the caller's thread
-                String name = Thread.currentThread().getName();
-                assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
-            }
-
+        NbpObservable.range(1, 100000).map(t1 -> t1 * _multiple).observeOn(Schedulers.computation())
+        .toBlocking().forEach(t1 -> {
+            Assert.assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+            // FIXME toBlocking methods run on the caller's thread
+            String name = Thread.currentThread().getName();
+            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
         });
     }
 
@@ -276,32 +235,22 @@ public class NbpOperatorObserveOnTest {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        NbpObservable.range(1, 10000).map(new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1) {
-                if (randomIntFrom0to100() > 98) {
-                    try {
-                        Thread.sleep(2);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        NbpObservable.range(1, 10000).map(t1 -> {
+            if (randomIntFrom0to100() > 98) {
+                try {
+                    Thread.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                return t1 * _multiple;
             }
-
+            return t1 * _multiple;
         }).observeOn(Schedulers.computation())
-        .toBlocking().forEach(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+        .toBlocking().forEach(t1 -> {
+            Assert.assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
 //                assertTrue(name.startsWith("RxComputationThreadPool"));
-                // FIXME toBlocking now runs its methods on the caller thread
-                String name = Thread.currentThread().getName();
-                assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
-            }
-
+            // FIXME toBlocking now runs its methods on the caller thread
+            String name = Thread.currentThread().getName();
+            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
         });
     }
 
@@ -403,25 +352,20 @@ public class NbpOperatorObserveOnTest {
     @Test
     public void testBackpressureWithTakeBefore() {
         final AtomicInteger generated = new AtomicInteger();
-        NbpObservable<Integer> o = NbpObservable.fromIterable(new Iterable<Integer>() {
+        NbpObservable<Integer> o = NbpObservable.fromIterable(() -> new Iterator<Integer>() {
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
+            public void remove() {
+            }
 
-                    @Override
-                    public void remove() {
-                    }
+            @Override
+            public Integer next() {
+                return generated.getAndIncrement();
+            }
 
-                    @Override
-                    public Integer next() {
-                        return generated.getAndIncrement();
-                    }
-
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean hasNext() {
+                return true;
             }
         });
 

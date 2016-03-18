@@ -146,12 +146,7 @@ public class NbpOperatorTakeLastTest {
         assertEquals(0, NbpObservable
                 .empty()
                 .count()
-                .filter(new Predicate<Long>() {
-                    @Override
-                    public boolean test(Long v) {
-                        return false;
-                    }
-                })
+                .filter(v -> false)
                 .toList()
                 .toBlocking().single().size());
     }

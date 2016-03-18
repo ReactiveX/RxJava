@@ -173,11 +173,8 @@ public class OperatorMaterializeTest {
     public void testWithCompletionCausingError() {
         TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<>();
         final RuntimeException ex = new RuntimeException("boo");
-        Observable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
-            @Override
-            public void accept(Object t) {
-                throw ex;
-            }
+        Observable.<Integer>empty().materialize().doOnNext(t -> {
+            throw ex;
         }).subscribe(ts);
         ts.assertError(ex);
         ts.assertNoValues();
@@ -234,28 +231,23 @@ public class OperatorMaterializeTest {
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
             observer.onSubscribe(EmptySubscription.INSTANCE);
-            t = new Thread(new Runnable() {
+            t = new Thread(() -> {
+                for (String s : valuesToReturn) {
+                    if (s == null) {
+                        System.out.println("throwing exception");
+                        try {
+                            Thread.sleep(100);
+                        } catch (Throwable e) {
 
-                @Override
-                public void run() {
-                    for (String s : valuesToReturn) {
-                        if (s == null) {
-                            System.out.println("throwing exception");
-                            try {
-                                Thread.sleep(100);
-                            } catch (Throwable e) {
-
-                            }
-                            observer.onError(new NullPointerException());
-                            return;
-                        } else {
-                            observer.onNext(s);
                         }
+                        observer.onError(new NullPointerException());
+                        return;
+                    } else {
+                        observer.onNext(s);
                     }
-                    System.out.println("subscription complete");
-                    observer.onComplete();
                 }
-
+                System.out.println("subscription complete");
+                observer.onComplete();
             });
             t.start();
         }

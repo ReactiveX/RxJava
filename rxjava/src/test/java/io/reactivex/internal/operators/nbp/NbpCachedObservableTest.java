@@ -63,15 +63,11 @@ public class NbpCachedObservableTest {
             @Override
             public void accept(final NbpSubscriber<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        System.out.println("published NbpObservable being executed");
-                        NbpObserver.onNext("one");
-                        NbpObserver.onComplete();
-                    }
+                new Thread(() -> {
+                    counter.incrementAndGet();
+                    System.out.println("published NbpObservable being executed");
+                    NbpObserver.onNext("one");
+                    NbpObserver.onComplete();
                 }).start();
             }
         }).cache();
@@ -80,23 +76,17 @@ public class NbpCachedObservableTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                    assertEquals("one", v);
-                    System.out.println("v: " + v);
-                    latch.countDown();
-            }
+        o.subscribe(v -> {
+                assertEquals("one", v);
+                System.out.println("v: " + v);
+                latch.countDown();
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                    assertEquals("one", v);
-                    System.out.println("v: " + v);
-                    latch.countDown();
-            }
+        o.subscribe(v -> {
+                assertEquals("one", v);
+                System.out.println("v: " + v);
+                latch.countDown();
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -240,12 +230,7 @@ public class NbpCachedObservableTest {
         final AtomicInteger count = new AtomicInteger();
         
         NbpObservable<Integer> source = NbpObservable.range(1, 100)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        })
+        .doOnNext(t -> count.getAndIncrement())
         .cache();
         
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<Integer>() {

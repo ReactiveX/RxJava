@@ -74,12 +74,7 @@ public final class ExecutorScheduler extends Scheduler {
 
         final MultipleAssignmentResource<Disposable> mar = new MultipleAssignmentResource<>(Disposables.consumeAndDispose(), first);
 
-        Disposable delayed = HELPER.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                mar.setResource(scheduleDirect(decoratedRun));
-            }
-        }, delay, unit);
+        Disposable delayed = HELPER.scheduleDirect(() -> mar.setResource(scheduleDirect(decoratedRun)), delay, unit);
         
         first.setResource(delayed);
         
@@ -158,12 +153,7 @@ public final class ExecutorScheduler extends Scheduler {
             
             final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             
-            ScheduledRunnable sr = new ScheduledRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    mar.setResource(schedule(decoratedRun));
-                }
-            }, tasks);
+            ScheduledRunnable sr = new ScheduledRunnable(() -> mar.setResource(schedule(decoratedRun)), tasks);
             tasks.add(sr);
             
             if (executor instanceof ScheduledExecutorService) {

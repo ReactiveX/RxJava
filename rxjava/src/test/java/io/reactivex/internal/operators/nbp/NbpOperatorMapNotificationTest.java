@@ -24,26 +24,8 @@ public class NbpOperatorMapNotificationTest {
     public void testJust() {
         NbpTestSubscriber<Object> ts = new NbpTestSubscriber<>();
         NbpObservable.just(1)
-        .flatMap(
-                new Function<Integer, NbpObservable<Object>>() {
-                    @Override
-                    public NbpObservable<Object> apply(Integer item) {
-                        return NbpObservable.just((Object)(item + 1));
-                    }
-                },
-                new Function<Throwable, NbpObservable<Object>>() {
-                    @Override
-                    public NbpObservable<Object> apply(Throwable e) {
-                        return NbpObservable.error(e);
-                    }
-                },
-                new Supplier<NbpObservable<Object>>() {
-                    @Override
-                    public NbpObservable<Object> get() {
-                        return NbpObservable.never();
-                    }
-                }
-        ).subscribe(ts);
+                .flatMap(item -> NbpObservable.just(item + 1), NbpObservable::error, NbpObservable::never)
+                .subscribe(ts);
         
         ts.assertNoErrors();
         ts.assertNotComplete();

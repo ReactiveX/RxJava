@@ -44,10 +44,7 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
         
         final AtomicReference<Disposable> other = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         Disposable s;
         

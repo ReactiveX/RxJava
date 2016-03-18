@@ -47,15 +47,12 @@ public class NbpBlockingOperatorToIteratorTest {
 
     @Test(expected = TestException.class)
     public void testToIteratorWithException() {
-        NbpObservable<String> obs = NbpObservable.create(new NbpOnSubscribe<String>() {
-
-            @Override
-            public void accept(NbpSubscriber<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                NbpObserver.onNext("one");
-                NbpObserver.onError(new TestException());
+        NbpObservable<String> obs = NbpObservable.create(subscriber -> {
+                subscriber.onSubscribe(EmptyDisposable.INSTANCE);
+                subscriber.onNext("one");
+                subscriber.onError(new TestException());
             }
-        });
+        );
 
         Iterator<String> it = obs.toBlocking().iterator();
 
@@ -69,12 +66,10 @@ public class NbpBlockingOperatorToIteratorTest {
     @Ignore("subscribe() should not throw")
     @Test(expected = TestException.class)
     public void testExceptionThrownFromOnSubscribe() {
-        Iterable<String> strings = NbpObservable.create(new NbpOnSubscribe<String>() {
-            @Override
-            public void accept(NbpSubscriber<? super String> NbpSubscriber) {
+        Iterable<String> strings = NbpObservable.<String>create(subscriber -> {
                 throw new TestException("intentional");
             }
-        }).toBlocking();
+        ).toBlocking();
         for (String string : strings) {
             // never reaches here
             System.out.println(string);

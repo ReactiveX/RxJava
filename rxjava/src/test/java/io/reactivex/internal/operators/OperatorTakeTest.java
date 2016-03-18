@@ -66,23 +66,17 @@ public class OperatorTakeTest {
     @Test(expected = IllegalArgumentException.class)
     public void testTakeWithError() {
         Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                throw new IllegalArgumentException("some error");
-            }
+        .map(t1 -> {
+            throw new IllegalArgumentException("some error");
         }).toBlocking().single();
     }
 
     @Test
     public void testTakeWithErrorHappeningInOnNext() {
         Observable<Integer> w = Observable.fromIterable(Arrays.asList(1, 2, 3))
-                .take(2).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                throw new IllegalArgumentException("some error");
-            }
-        });
+                .take(2).map(t1 -> {
+                    throw new IllegalArgumentException("some error");
+                });
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
         w.subscribe(observer);
@@ -93,11 +87,8 @@ public class OperatorTakeTest {
 
     @Test
     public void testTakeWithErrorHappeningInTheLastOnNext() {
-        Observable<Integer> w = Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                throw new IllegalArgumentException("some error");
-            }
+        Observable<Integer> w = Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(t1 -> {
+            throw new IllegalArgumentException("some error");
         });
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -189,14 +180,7 @@ public class OperatorTakeTest {
     @Test(timeout = 2000)
     public void testUnsubscribeFromSynchronousInfiniteObservable() {
         final AtomicLong count = new AtomicLong();
-        INFINITE_OBSERVABLE.take(10).subscribe(new Consumer<Long>() {
-
-            @Override
-            public void accept(Long l) {
-                count.set(l);
-            }
-
-        });
+        INFINITE_OBSERVABLE.take(10).subscribe(count::set);
         assertEquals(10, count.get());
     }
 
@@ -216,13 +200,8 @@ public class OperatorTakeTest {
                 }
             }
 
-        }).take(100).take(1).toBlocking().forEach(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                System.out.println("Receive: " + t1);
-
-            }
+        }).take(100).take(1).toBlocking().forEach(t1 -> {
+            System.out.println("Receive: " + t1);
 
         });
 
@@ -242,22 +221,17 @@ public class OperatorTakeTest {
         public void subscribe(final Subscriber<? super String> observer) {
             observer.onSubscribe(EmptySubscription.INSTANCE);
             System.out.println("TestObservable subscribed to ...");
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestObservable thread");
-                        for (String s : values) {
-                            System.out.println("TestObservable onNext: " + s);
-                            observer.onNext(s);
-                        }
-                        observer.onComplete();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestObservable thread");
+                    for (String s : values) {
+                        System.out.println("TestObservable onNext: " + s);
+                        observer.onNext(s);
                     }
+                    observer.onComplete();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
                 }
-
             });
             System.out.println("starting TestObservable thread");
             t.start();
@@ -357,20 +331,15 @@ public class OperatorTakeTest {
         final AtomicReference<Object> exception = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
         Observable.just(1).subscribeOn(Schedulers.computation()).take(1)
-        .subscribe(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                try {
-                    Thread.sleep(100);
-                } catch (Exception e) {
-                    exception.set(e);
-                    e.printStackTrace();
-                } finally {
-                    latch.countDown();
-                }
+        .subscribe(t1 -> {
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                exception.set(e);
+                e.printStackTrace();
+            } finally {
+                latch.countDown();
             }
-
         });
 
         latch.await();
@@ -383,12 +352,10 @@ public class OperatorTakeTest {
         TestSubscriber<Long> ts = new TestSubscriber<>((Long) null);
         Observable.interval(100, TimeUnit.MILLISECONDS)
             //
-            .doOnRequest(new LongConsumer() {
-                @Override
-                public void accept(long n) {
-                    System.out.println(n);
-                    requests.addAndGet(n);
-            }})
+            .doOnRequest(n -> {
+                System.out.println(n);
+                requests.addAndGet(n);
+        })
             //
             .take(2)
             //
@@ -428,12 +395,7 @@ public class OperatorTakeTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         
-        source.take(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) {
-                source.onNext(2);
-            }
-        }).subscribe(ts);
+        source.take(1).doOnNext(v -> source.onNext(2)).subscribe(ts);
         
         source.onNext(1);
         

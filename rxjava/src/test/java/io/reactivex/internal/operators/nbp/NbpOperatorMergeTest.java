@@ -133,46 +133,35 @@ public class NbpOperatorMergeTest {
             @Override
             public void accept(final NbpSubscriber<? super NbpObservable<Long>> NbpObserver) {
                 // verbose on purpose so I can track the inside of it
-                final Disposable s = new Disposable() {
-                    @Override
-                    public void dispose() {
-                        System.out.println("*** unsubscribed");
-                        unsubscribed.set(true);
-                    }
+                final Disposable s = () -> {
+                    System.out.println("*** unsubscribed");
+                    unsubscribed.set(true);
                 };
                 NbpObserver.onSubscribe(s);
 
-                new Thread(new Runnable() {
+                new Thread(() -> {
 
-                    @Override
-                    public void run() {
-
-                        while (!unsubscribed.get()) {
-                            NbpObserver.onNext(NbpObservable.just(1L, 2L));
-                        }
-                        System.out.println("Done looping after unsubscribe: " + unsubscribed.get());
-                        NbpObserver.onComplete();
-
-                        // mark that the thread is finished
-                        latch.countDown();
+                    while (!unsubscribed.get()) {
+                        NbpObserver.onNext(NbpObservable.just(1L, 2L));
                     }
+                    System.out.println("Done looping after unsubscribe: " + unsubscribed.get());
+                    NbpObserver.onComplete();
+
+                    // mark that the thread is finished
+                    latch.countDown();
                 }).start();
             }
 
         });
 
         final AtomicInteger count = new AtomicInteger();
-        NbpObservable.merge(source).take(6).toBlocking().forEach(new Consumer<Long>() {
-
-            @Override
-            public void accept(Long v) {
-                System.out.println("Value: " + v);
-                int c = count.incrementAndGet();
-                if (c > 6) {
-                    fail("Should be only 6");
-                }
-
+        NbpObservable.merge(source).take(6).toBlocking().forEach(v -> {
+            System.out.println("Value: " + v);
+            int c = count.incrementAndGet();
+            if (c > 6) {
+                fail("Should be only 6");
             }
+
         });
 
         latch.await(1000, TimeUnit.MILLISECONDS);
@@ -336,13 +325,8 @@ public class NbpOperatorMergeTest {
     @Ignore("Subscribe should not throw")
     public void testThrownErrorHandling() {
         NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
-        NbpObservable<String> o1 = NbpObservable.create(new NbpOnSubscribe<String>() {
-
-            @Override
-            public void accept(NbpSubscriber<? super String> s) {
-                throw new RuntimeException("fail");
-            }
-
+        NbpObservable<String> o1 = NbpObservable.create(s -> {
+            throw new RuntimeException("fail");
         });
 
         NbpObservable.merge(o1, o1).subscribe(ts);
@@ -368,21 +352,16 @@ public class NbpOperatorMergeTest {
         @Override
         public void accept(final NbpSubscriber<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    onNextBeingSent.countDown();
-                    try {
-                        NbpObserver.onNext("hello");
-                        // I can't use a countDownLatch to prove we are actually sending 'onNext'
-                        // since it will block if synchronized and I'll deadlock
-                        NbpObserver.onComplete();
-                    } catch (Exception e) {
-                        NbpObserver.onError(e);
-                    }
+            t = new Thread(() -> {
+                onNextBeingSent.countDown();
+                try {
+                    NbpObserver.onNext("hello");
+                    // I can't use a countDownLatch to prove we are actually sending 'onNext'
+                    // since it will block if synchronized and I'll deadlock
+                    NbpObserver.onComplete();
+                } catch (Exception e) {
+                    NbpObserver.onError(e);
                 }
-
             }, "TestASynchronousObservable");
             t.start();
         }
@@ -499,12 +478,9 @@ public class NbpOperatorMergeTest {
                 .subscribe(new NbpSubscriber<Long>() {
                     @Override
                     public void onSubscribe(final Disposable s) {
-                        child.onSubscribe(new Disposable() {
-                            @Override
-                            public void dispose() {
-                                unsubscribed.set(true);
-                                s.dispose();
-                            }
+                        child.onSubscribe(() -> {
+                            unsubscribed.set(true);
+                            s.dispose();
                         });
                     }
                     
@@ -563,26 +539,21 @@ public class NbpOperatorMergeTest {
                 
                 s.onSubscribe(as);
                 
-                inner.schedule(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            for (int i = 0; i < 100; i++) {
-                                s.onNext(1);
-                                try {
-                                    Thread.sleep(1);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+                inner.schedule(() -> {
+                    try {
+                        for (int i = 0; i < 100; i++) {
+                            s.onNext(1);
+                            try {
+                                Thread.sleep(1);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            s.onError(e);
                         }
-                        as.dispose();
-                        s.onComplete();
+                    } catch (Exception e) {
+                        s.onError(e);
                     }
-
+                    as.dispose();
+                    s.onComplete();
                 });
             }
         });
@@ -613,23 +584,18 @@ public class NbpOperatorMergeTest {
                 
                 s.onSubscribe(as);
                 
-                inner.schedule(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            for (int i = 0; i < 10000; i++) {
-                                s.onNext(i);
-                            }
-                        } catch (Exception e) {
-                            s.onError(e);
+                inner.schedule(() -> {
+                    try {
+                        for (int i = 0; i < 10000; i++) {
+                            s.onNext(i);
                         }
-                        as.dispose();
-                        s.onComplete();
-                        s.onComplete();
-                        s.onComplete();
+                    } catch (Exception e) {
+                        s.onError(e);
                     }
-
+                    as.dispose();
+                    s.onComplete();
+                    s.onComplete();
+                    s.onComplete();
                 });
             }
         });
@@ -774,14 +740,7 @@ public class NbpOperatorMergeTest {
     @Test(timeout = 5000)
     public void testBackpressureBothUpstreamAndDownstreamWithRegularObservables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
-        NbpObservable<NbpObservable<Integer>> o1 = createInfiniteObservable(generated1).map(new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return NbpObservable.just(1, 2, 3);
-            }
-
-        });
+        NbpObservable<NbpObservable<Integer>> o1 = createInfiniteObservable(generated1).map(t1 -> NbpObservable.just(1, 2, 3));
 
         NbpTestSubscriber<Integer> NbpTestSubscriber = new NbpTestSubscriber<Integer>() {
             int i = 0;
@@ -912,14 +871,7 @@ public class NbpOperatorMergeTest {
 
     private NbpObservable<Integer> mergeNAsyncStreamsOfN(final int outerSize, final int innerSize) {
         NbpObservable<NbpObservable<Integer>> os = NbpObservable.range(1, outerSize)
-        .map(new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer i) {
-                return NbpObservable.range(1, innerSize).subscribeOn(Schedulers.computation());
-            }
-
-        });
+        .map(i -> NbpObservable.range(1, innerSize).subscribeOn(Schedulers.computation()));
         return NbpObservable.merge(os);
     }
 
@@ -970,37 +922,25 @@ public class NbpOperatorMergeTest {
 
     private NbpObservable<Integer> mergeNSyncStreamsOfN(final int outerSize, final int innerSize) {
         NbpObservable<NbpObservable<Integer>> os = NbpObservable.range(1, outerSize)
-        .map(new Function<Integer, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(Integer i) {
-                return NbpObservable.range(1, innerSize);
-            }
-
-        });
+        .map(i -> NbpObservable.range(1, innerSize));
         return NbpObservable.merge(os);
     }
 
     private NbpObservable<Integer> createInfiniteObservable(final AtomicInteger generated) {
-        NbpObservable<Integer> o = NbpObservable.fromIterable(new Iterable<Integer>() {
+        NbpObservable<Integer> o = NbpObservable.fromIterable(() -> new Iterator<Integer>() {
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
+            public void remove() {
+            }
 
-                    @Override
-                    public void remove() {
-                    }
+            @Override
+            public Integer next() {
+                return generated.getAndIncrement();
+            }
 
-                    @Override
-                    public Integer next() {
-                        return generated.getAndIncrement();
-                    }
-
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean hasNext() {
+                return true;
             }
         });
         return o;
@@ -1010,49 +950,32 @@ public class NbpOperatorMergeTest {
     public void mergeManyAsyncSingle() {
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         NbpObservable<NbpObservable<Integer>> os = NbpObservable.range(1, 10000)
-        .map(new Function<Integer, NbpObservable<Integer>>() {
+        .map(i -> NbpObservable.create(new NbpOnSubscribe<Integer>() {
 
             @Override
-            public NbpObservable<Integer> apply(final Integer i) {
-                return NbpObservable.create(new NbpOnSubscribe<Integer>() {
-
-                    @Override
-                    public void accept(NbpSubscriber<? super Integer> s) {
-                        s.onSubscribe(EmptyDisposable.INSTANCE);
-                        if (i < 500) {
-                            try {
-                                Thread.sleep(1);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        s.onNext(i);
-                        s.onComplete();
+            public void accept(NbpSubscriber<? super Integer> s) {
+                s.onSubscribe(EmptyDisposable.INSTANCE);
+                if (i < 500) {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-
-                }).subscribeOn(Schedulers.computation()).cache();
+                }
+                s.onNext(i);
+                s.onComplete();
             }
 
-        });
+        }).subscribeOn(Schedulers.computation()).cache());
         NbpObservable.merge(os).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(10000, ts.values().size());
     }
 
-    Function<Integer, NbpObservable<Integer>> toScalar = new Function<Integer, NbpObservable<Integer>>() {
-        @Override
-        public NbpObservable<Integer> apply(Integer v) {
-            return NbpObservable.just(v);
-        }
-    };
+    Function<Integer, NbpObservable<Integer>> toScalar = NbpObservable::just;
     
-    Function<Integer, NbpObservable<Integer>> toHiddenScalar = new Function<Integer, NbpObservable<Integer>>() {
-        @Override
-        public NbpObservable<Integer> apply(Integer t) {
-            return NbpObservable.just(t).asObservable();
-        }
-    };
+    Function<Integer, NbpObservable<Integer>> toHiddenScalar = t -> NbpObservable.just(t).asObservable();
     ;
     
     void runMerge(Function<Integer, NbpObservable<Integer>> func, NbpTestSubscriber<Integer> ts) {

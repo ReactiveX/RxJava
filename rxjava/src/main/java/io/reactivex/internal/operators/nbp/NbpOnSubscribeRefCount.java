@@ -151,18 +151,15 @@ public final class NbpOnSubscribeRefCount<T> implements NbpOnSubscribe<T> {
 
     private Consumer<Disposable> onSubscribe(final NbpSubscriber<? super T> subscriber,
             final AtomicBoolean writeLocked) {
-        return  new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable subscription) {
-                try {
-                    baseSubscription.add(subscription);
-                    // ready to subscribe to source so do it
-                    doSubscribe(subscriber, baseSubscription);
-                } finally {
-                    // release the write lock
-                    lock.unlock();
-                    writeLocked.set(false);
-                }
+        return subscription -> {
+            try {
+                baseSubscription.add(subscription);
+                // ready to subscribe to source so do it
+                doSubscribe(subscriber, baseSubscription);
+            } finally {
+                // release the write lock
+                lock.unlock();
+                writeLocked.set(false);
             }
         };
     }
@@ -177,22 +174,19 @@ public final class NbpOnSubscribeRefCount<T> implements NbpOnSubscribe<T> {
     }
 
     private Disposable disconnect(final SetCompositeResource<Disposable> current) {
-        return new Disposable() {
-            @Override
-            public void dispose() {
-                lock.lock();
-                try {
-                    if (baseSubscription == current) {
-                        if (subscriptionCount.decrementAndGet() == 0) {
-                            baseSubscription.dispose();
-                            // need a new baseSubscription because once
-                            // unsubscribed stays that way
-                            baseSubscription = new SetCompositeResource<>(Disposables.consumeAndDispose());
-                        }
+        return () -> {
+            lock.lock();
+            try {
+                if (baseSubscription == current) {
+                    if (subscriptionCount.decrementAndGet() == 0) {
+                        baseSubscription.dispose();
+                        // need a new baseSubscription because once
+                        // unsubscribed stays that way
+                        baseSubscription = new SetCompositeResource<>(Disposables.consumeAndDispose());
                     }
-                } finally {
-                    lock.unlock();
                 }
+            } finally {
+                lock.unlock();
             }
         };
     }

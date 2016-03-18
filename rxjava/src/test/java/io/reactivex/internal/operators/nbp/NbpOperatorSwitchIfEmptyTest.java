@@ -33,12 +33,7 @@ public class NbpOperatorSwitchIfEmptyTest {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final NbpObservable<Integer> o = NbpObservable.just(4)
                 .switchIfEmpty(NbpObservable.just(2)
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable s) {
-                        subscribed.set(true);
-                    }
-                }));
+                .doOnSubscribe(s -> subscribed.set(true)));
 
         assertEquals(4, o.toBlocking().single().intValue());
         assertFalse(subscribed.get());
@@ -67,10 +62,7 @@ public class NbpOperatorSwitchIfEmptyTest {
 
         NbpObservable.<Long>empty()
                 .switchIfEmpty(withProducer)
-                .lift(new NbpObservable.NbpOperator<Long, Long>() {
-            @Override
-            public NbpSubscriber<? super Long> apply(final NbpSubscriber<? super Long> child) {
-                return new NbpObserver<Long>() {
+                .lift(child -> new NbpObserver<Long>() {
                     @Override
                     public void onComplete() {
 
@@ -85,10 +77,8 @@ public class NbpOperatorSwitchIfEmptyTest {
                     public void onNext(Long aLong) {
                         cancel();
                     }
-                    
-                };
-            }
-        }).subscribe();
+
+                }).subscribe();
 
 
         assertTrue(bs.isDisposed());

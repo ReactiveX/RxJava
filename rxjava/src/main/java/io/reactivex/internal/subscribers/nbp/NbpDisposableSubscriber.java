@@ -27,10 +27,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 public abstract class NbpDisposableSubscriber<T> implements NbpSubscriber<T>, Disposable {
     final AtomicReference<Disposable> s = new AtomicReference<>();
     
-    static final Disposable CANCELLED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
+    static final Disposable CANCELLED = () -> { };
     
     @Override
     public final void onSubscribe(Disposable s) {

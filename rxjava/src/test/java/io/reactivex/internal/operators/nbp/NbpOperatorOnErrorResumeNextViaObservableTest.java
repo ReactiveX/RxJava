@@ -67,14 +67,11 @@ public class NbpOperatorOnErrorResumeNextViaObservableTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the NbpObserver is a
         //  rx.operator incl onErrorResumeNextViaObservable)
-        w = w.map(new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                if ("fail".equals(s))
-                    throw new RuntimeException("Forced Failure");
-                System.out.println("BadMapper:" + s);
-                return s;
-            }
+        w = w.map(s -> {
+            if ("fail".equals(s))
+                throw new RuntimeException("Forced Failure");
+            System.out.println("BadMapper:" + s);
+            return s;
         });
 
         NbpObservable<String> NbpObservable = w.onErrorResumeNext(resume);
@@ -101,13 +98,8 @@ public class NbpOperatorOnErrorResumeNextViaObservableTest {
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribe() {
-        NbpObservable<String> testObservable = NbpObservable.create(new NbpOnSubscribe<String>() {
-
-            @Override
-            public void accept(NbpSubscriber<? super String> t1) {
-                throw new RuntimeException("force failure");
-            }
-            
+        NbpObservable<String> testObservable = NbpObservable.create(t1 -> {
+            throw new RuntimeException("force failure");
         });
         NbpObservable<String> resume = NbpObservable.just("resume");
         NbpObservable<String> NbpObservable = testObservable.onErrorResumeNext(resume);
@@ -123,13 +115,8 @@ public class NbpOperatorOnErrorResumeNextViaObservableTest {
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribeAsync() {
-        NbpObservable<String> testObservable = NbpObservable.create(new NbpOnSubscribe<String>() {
-
-            @Override
-            public void accept(NbpSubscriber<? super String> t1) {
-                throw new RuntimeException("force failure");
-            }
-            
+        NbpObservable<String> testObservable = NbpObservable.create(t1 -> {
+            throw new RuntimeException("force failure");
         });
         NbpObservable<String> resume = NbpObservable.just("resume");
         NbpObservable<String> NbpObservable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeNext(resume);
@@ -161,26 +148,21 @@ public class NbpOperatorOnErrorResumeNextViaObservableTest {
         public void accept(final NbpSubscriber<? super String> NbpObserver) {
             System.out.println("TestObservable subscribed to ...");
             NbpObserver.onSubscribe(s);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestObservable thread");
-                        for (String s : values) {
-                            if ("fail".equals(s))
-                                throw new RuntimeException("Forced Failure");
-                            System.out.println("TestObservable onNext: " + s);
-                            NbpObserver.onNext(s);
-                        }
-                        System.out.println("TestObservable onCompleted");
-                        NbpObserver.onComplete();
-                    } catch (Throwable e) {
-                        System.out.println("TestObservable onError: " + e);
-                        NbpObserver.onError(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestObservable thread");
+                    for (String s1 : values) {
+                        if ("fail".equals(s1))
+                            throw new RuntimeException("Forced Failure");
+                        System.out.println("TestObservable onNext: " + s1);
+                        NbpObserver.onNext(s1);
                     }
+                    System.out.println("TestObservable onCompleted");
+                    NbpObserver.onComplete();
+                } catch (Throwable e) {
+                    System.out.println("TestObservable onError: " + e);
+                    NbpObserver.onError(e);
                 }
-
             });
             System.out.println("starting TestObservable thread");
             t.start();

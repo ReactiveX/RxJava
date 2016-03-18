@@ -47,14 +47,7 @@ public class OperatorToObservableSortedListTest {
     @Test
     public void testSortedListWithCustomFunction() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
-        Observable<List<Integer>> observable = w.toSortedList(new Comparator<Integer>() {
-
-            @Override
-            public int compare(Integer t1, Integer t2) {
-                return t2 - t1;
-            }
-
-        });
+        Observable<List<Integer>> observable = w.toSortedList((t1, t2) -> t2 - t1);
 
         Subscriber<List<Integer>> observer = TestHelper.mockSubscriber();
         observable.subscribe(observer);
@@ -106,12 +99,9 @@ public class OperatorToObservableSortedListTest {
                 final CyclicBarrier cb = new CyclicBarrier(2);
                 final TestSubscriber<List<Integer>> ts = new TestSubscriber<>((Long) null);
                 sorted.subscribe(ts);
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        await(cb);
-                        ts.request(1);
-                    }
+                w.schedule(() -> {
+                    await(cb);
+                    ts.request(1);
                 });
                 source.onNext(1);
                 await(cb);

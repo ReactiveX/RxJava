@@ -89,15 +89,11 @@ public class CachedObservableTest {
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
                 observer.onSubscribe(EmptySubscription.INSTANCE);
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        System.out.println("published observable being executed");
-                        observer.onNext("one");
-                        observer.onComplete();
-                    }
+                new Thread(() -> {
+                    counter.incrementAndGet();
+                    System.out.println("published observable being executed");
+                    observer.onNext("one");
+                    observer.onComplete();
                 }).start();
             }
         }).cache();
@@ -106,23 +102,17 @@ public class CachedObservableTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                    assertEquals("one", v);
-                    System.out.println("v: " + v);
-                    latch.countDown();
-            }
+        o.subscribe(v -> {
+                assertEquals("one", v);
+                System.out.println("v: " + v);
+                latch.countDown();
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                    assertEquals("one", v);
-                    System.out.println("v: " + v);
-                    latch.countDown();
-            }
+        o.subscribe(v -> {
+                assertEquals("one", v);
+                System.out.println("v: " + v);
+                latch.countDown();
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -242,7 +232,7 @@ public class CachedObservableTest {
     @Test
     public void testValuesAndThenError() {
         Observable<Integer> source = Observable.range(1, 10)
-                .concatWith(Observable.<Integer>error(new TestException()))
+                .concatWith(Observable.error(new TestException()))
                 .cache();
         
         
@@ -266,12 +256,7 @@ public class CachedObservableTest {
         final AtomicInteger count = new AtomicInteger();
         
         Observable<Integer> source = Observable.range(1, 100)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        })
+        .doOnNext(t -> count.getAndIncrement())
         .cache();
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {

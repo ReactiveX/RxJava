@@ -28,14 +28,11 @@ public class OperatorDistinctTest {
     Subscriber<String> w;
 
     // nulls lead to exceptions
-    final Function<String, String> TO_UPPER_WITH_EXCEPTION = new Function<String, String>() {
-        @Override
-        public String apply(String s) {
-            if (s.equals("x")) {
-                return "XX";
-            }
-            return s.toUpperCase();
+    final Function<String, String> TO_UPPER_WITH_EXCEPTION = s -> {
+        if (s.equals("x")) {
+            return "XX";
         }
+        return s.toUpperCase();
     };
 
     @Before

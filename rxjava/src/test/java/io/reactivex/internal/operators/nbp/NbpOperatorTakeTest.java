@@ -67,23 +67,17 @@ public class NbpOperatorTakeTest {
     @Test(expected = IllegalArgumentException.class)
     public void testTakeWithError() {
         NbpObservable.fromIterable(Arrays.asList(1, 2, 3)).take(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                throw new IllegalArgumentException("some error");
-            }
+        .map(t1 -> {
+            throw new IllegalArgumentException("some error");
         }).toBlocking().single();
     }
 
     @Test
     public void testTakeWithErrorHappeningInOnNext() {
         NbpObservable<Integer> w = NbpObservable.fromIterable(Arrays.asList(1, 2, 3))
-                .take(2).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                throw new IllegalArgumentException("some error");
-            }
-        });
+                .take(2).map(t1 -> {
+                    throw new IllegalArgumentException("some error");
+                });
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
         w.subscribe(NbpObserver);
@@ -94,11 +88,8 @@ public class NbpOperatorTakeTest {
 
     @Test
     public void testTakeWithErrorHappeningInTheLastOnNext() {
-        NbpObservable<Integer> w = NbpObservable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                throw new IllegalArgumentException("some error");
-            }
+        NbpObservable<Integer> w = NbpObservable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(t1 -> {
+            throw new IllegalArgumentException("some error");
         });
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -190,14 +181,7 @@ public class NbpOperatorTakeTest {
     @Test(timeout = 2000)
     public void testUnsubscribeFromSynchronousInfiniteObservable() {
         final AtomicLong count = new AtomicLong();
-        INFINITE_OBSERVABLE.take(10).subscribe(new Consumer<Long>() {
-
-            @Override
-            public void accept(Long l) {
-                count.set(l);
-            }
-
-        });
+        INFINITE_OBSERVABLE.take(10).subscribe(count::set);
         assertEquals(10, count.get());
     }
 
@@ -217,15 +201,7 @@ public class NbpOperatorTakeTest {
                 }
             }
 
-        }).take(100).take(1).toBlocking().forEach(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                System.out.println("Receive: " + t1);
-
-            }
-
-        });
+        }).take(100).take(1).toBlocking().forEach(t1 -> System.out.println("Receive: " + t1));
 
         assertEquals(1, count.get());
     }
@@ -243,22 +219,17 @@ public class NbpOperatorTakeTest {
         public void accept(final NbpSubscriber<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             System.out.println("TestObservable subscribed to ...");
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestObservable thread");
-                        for (String s : values) {
-                            System.out.println("TestObservable onNext: " + s);
-                            NbpObserver.onNext(s);
-                        }
-                        NbpObserver.onComplete();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestObservable thread");
+                    for (String s : values) {
+                        System.out.println("TestObservable onNext: " + s);
+                        NbpObserver.onNext(s);
                     }
+                    NbpObserver.onComplete();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
                 }
-
             });
             System.out.println("starting TestObservable thread");
             t.start();
@@ -302,20 +273,15 @@ public class NbpOperatorTakeTest {
         final AtomicReference<Object> exception = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
         NbpObservable.just(1).subscribeOn(Schedulers.computation()).take(1)
-        .subscribe(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                try {
-                    Thread.sleep(100);
-                } catch (Exception e) {
-                    exception.set(e);
-                    e.printStackTrace();
-                } finally {
-                    latch.countDown();
-                }
+        .subscribe(t1 -> {
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                exception.set(e);
+                e.printStackTrace();
+            } finally {
+                latch.countDown();
             }
-
         });
 
         latch.await();
@@ -346,12 +312,7 @@ public class NbpOperatorTakeTest {
         
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         
-        source.take(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) {
-                source.onNext(2);
-            }
-        }).subscribe(ts);
+        source.take(1).doOnNext(v -> source.onNext(2)).subscribe(ts);
         
         source.onNext(1);
         

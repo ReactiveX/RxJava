@@ -59,29 +59,18 @@ public class OperatorWindowWithStartEndObservableTest {
             }
         });
 
-        Observable<Object> openings = Observable.create(new Publisher<Object>() {
-            @Override
-            public void subscribe(Subscriber<? super Object> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
-                push(observer, new Object(), 50);
-                push(observer, new Object(), 200);
-                complete(observer, 250);
-            }
+        Observable<Object> openings = Observable.create(observer -> {
+            observer.onSubscribe(EmptySubscription.INSTANCE);
+            push(observer, new Object(), 50);
+            push(observer, new Object(), 200);
+            complete(observer, 250);
         });
 
-        Function<Object, Observable<Object>> closer = new Function<Object, Observable<Object>>() {
-            @Override
-            public Observable<Object> apply(Object opening) {
-                return Observable.create(new Publisher<Object>() {
-                    @Override
-                    public void subscribe(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
-                        push(observer, new Object(), 100);
-                        complete(observer, 101);
-                    }
-                });
-            }
-        };
+        Function<Object, Observable<Object>> closer = opening -> Observable.create(observer -> {
+            observer.onSubscribe(EmptySubscription.INSTANCE);
+            push(observer, new Object(), 100);
+            complete(observer, 101);
+        });
 
         Observable<Observable<String>> windowed = source.window(openings, closer);
         windowed.subscribe(observeWindow(list, lists));
@@ -114,19 +103,16 @@ public class OperatorWindowWithStartEndObservableTest {
             int calls;
             @Override
             public Observable<Object> get() {
-                return Observable.create(new Publisher<Object>() {
-                    @Override
-                    public void subscribe(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
-                        int c = calls++;
-                        if (c == 0) {
-                            push(observer, new Object(), 100);
-                        } else
-                        if (c == 1) {
-                            push(observer, new Object(), 100);
-                        } else {
-                            complete(observer, 101);
-                        }
+                return Observable.create(observer -> {
+                    observer.onSubscribe(EmptySubscription.INSTANCE);
+                    int c = calls++;
+                    if (c == 0) {
+                        push(observer, new Object(), 100);
+                    } else
+                    if (c == 1) {
+                        push(observer, new Object(), 100);
+                    } else {
+                        complete(observer, 101);
                     }
                 });
             }
@@ -151,46 +137,31 @@ public class OperatorWindowWithStartEndObservableTest {
     }
 
     private <T> void push(final Subscriber<T> observer, final T value, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> observer.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final Subscriber<?> observer, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(observer::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private Consumer<Observable<String>> observeWindow(final List<String> list, final List<List<String>> lists) {
-        return new Consumer<Observable<String>>() {
+        return stringObservable -> stringObservable.subscribe(new Observer<String>() {
             @Override
-            public void accept(Observable<String> stringObservable) {
-                stringObservable.subscribe(new Observer<String>() {
-                    @Override
-                    public void onComplete() {
-                        lists.add(new ArrayList<>(list));
-                        list.clear();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        fail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(String args) {
-                        list.add(args);
-                    }
-                });
+            public void onComplete() {
+                lists.add(new ArrayList<>(list));
+                list.clear();
             }
-        };
+
+            @Override
+            public void onError(Throwable e) {
+                fail(e.getMessage());
+            }
+
+            @Override
+            public void onNext(String args) {
+                list.add(args);
+            }
+        });
     }
     
     @Test
@@ -202,12 +173,7 @@ public class OperatorWindowWithStartEndObservableTest {
         
         TestSubscriber<Observable<Integer>> ts = new TestSubscriber<>();
         
-        source.window(open, new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t) {
-                return close;
-            }
-        }).unsafeSubscribe(ts);
+        source.window(open, t -> close).unsafeSubscribe(ts);
         
         open.onNext(1);
         source.onNext(1);
@@ -239,12 +205,7 @@ public class OperatorWindowWithStartEndObservableTest {
         
         TestSubscriber<Observable<Integer>> ts = new TestSubscriber<>();
         
-        source.window(open, new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t) {
-                return close;
-            }
-        }).unsafeSubscribe(ts);
+        source.window(open, t -> close).unsafeSubscribe(ts);
         
         open.onNext(1);
         

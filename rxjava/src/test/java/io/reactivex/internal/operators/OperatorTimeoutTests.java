@@ -234,28 +234,24 @@ public class OperatorTimeoutTests {
         final Subscriber<String> observer = TestHelper.mockSubscriber();
         final TestSubscriber<String> ts = new TestSubscriber<>(observer);
 
-        new Thread(new Runnable() {
+        new Thread(() -> {
+            Observable.create(new Publisher<String>() {
 
-            @Override
-            public void run() {
-                Observable.create(new Publisher<String>() {
-
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(EmptySubscription.INSTANCE);
-                        try {
-                            timeoutSetuped.countDown();
-                            exit.await();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        subscriber.onNext("a");
-                        subscriber.onComplete();
+                @Override
+                public void subscribe(Subscriber<? super String> subscriber) {
+                    subscriber.onSubscribe(EmptySubscription.INSTANCE);
+                    try {
+                        timeoutSetuped.countDown();
+                        exit.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
+                    subscriber.onNext("a");
+                    subscriber.onComplete();
+                }
 
-                }).timeout(1, TimeUnit.SECONDS, testScheduler)
-                        .subscribe(ts);
-            }
+            }).timeout(1, TimeUnit.SECONDS, testScheduler)
+                    .subscribe(ts);
         }).start();
 
         timeoutSetuped.await();

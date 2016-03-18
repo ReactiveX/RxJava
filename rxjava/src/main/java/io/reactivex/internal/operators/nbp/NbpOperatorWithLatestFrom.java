@@ -73,10 +73,7 @@ public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, 
         
         final AtomicReference<Disposable> other = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         public WithLatestFromSubscriber(NbpSubscriber<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
             this.actual = actual;

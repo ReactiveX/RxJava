@@ -46,12 +46,9 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(1);
 
         Observable.interval(50, TimeUnit.MILLISECONDS)
-                .map(new Function<Long, Long>() {
-                    @Override
-                    public Long apply(Long aLong) {
-                        countGenerated.incrementAndGet();
-                        return aLong;
-                    }
+                .map(aLong -> {
+                    countGenerated.incrementAndGet();
+                    return aLong;
                 })
                 .subscribeOn(getScheduler())
                 .observeOn(getScheduler())
@@ -363,16 +360,12 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
 
         final AtomicInteger count = new AtomicInteger();
 
-        Observable<Integer> o1 = Observable.<Integer> just(1, 2, 3, 4, 5);
+        Observable<Integer> o1 = Observable.just(1, 2, 3, 4, 5);
 
-        o1.subscribe(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t) {
-                System.out.println("Thread: " + Thread.currentThread().getName());
-                System.out.println("t: " + t);
-                count.incrementAndGet();
-            }
+        o1.subscribe(t -> {
+            System.out.println("Thread: " + Thread.currentThread().getName());
+            System.out.println("t: " + t);
+            count.incrementAndGet();
         });
 
         // the above should be blocking so we should see a count of 5
@@ -388,23 +381,19 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(5);
         final CountDownLatch first = new CountDownLatch(1);
 
-        o1.subscribeOn(scheduler).subscribe(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t) {
-                try {
-                    // we block the first one so we can assert this executes asynchronously with a count
-                    first.await(1000, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException("The latch should have released if we are async.", e);
-                }
-
-                assertFalse(Thread.currentThread().getName().equals(currentThreadName));
-                System.out.println("Thread: " + Thread.currentThread().getName());
-                System.out.println("t: " + t);
-                count.incrementAndGet();
-                latch.countDown();
+        o1.subscribeOn(scheduler).subscribe(t -> {
+            try {
+                // we block the first one so we can assert this executes asynchronously with a count
+                first.await(1000, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                throw new RuntimeException("The latch should have released if we are async.", e);
             }
+
+            assertFalse(Thread.currentThread().getName().equals(currentThreadName));
+            System.out.println("Thread: " + Thread.currentThread().getName());
+            System.out.println("t: " + t);
+            count.incrementAndGet();
+            latch.countDown();
         });
 
         // assert we are async

@@ -66,30 +66,10 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
 
         LambdaSubscriber<T> ls = new LambdaSubscriber<>(
-            new Consumer<T>() {
-                @Override
-                public void accept(T v) {
-                    queue.offer(NotificationLite.<T>next(v));
-                }
-            },
-            new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) {
-                    queue.offer(NotificationLite.error(e));
-                }
-            },
-            new Runnable() {
-                @Override
-                public void run() {
-                    queue.offer(NotificationLite.complete());
-                }
-            },
-            new Consumer<Subscription>() {
-                @Override
-                public void accept(Subscription s) {
-                    s.request(Long.MAX_VALUE);
-                }
-            }
+            v -> queue.offer(NotificationLite.next(v)),
+            e -> queue.offer(NotificationLite.error(e)),
+            () -> queue.offer(NotificationLite.complete()),
+            s -> s.request(Long.MAX_VALUE)
         );
         
         p.subscribe(ls);
@@ -216,7 +196,7 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
             Exceptions.propagate(e);
         }
         T v = value.get();
-        return v != null ? Optional.of(v) : Optional.<T>empty();
+        return v != null ? Optional.of(v) : Optional.empty();
     }
     
     public T first() {
@@ -281,7 +261,7 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
             Exceptions.propagate(e);
         }
         T v = value.get();
-        return v != null ? Optional.of(v) : Optional.<T>empty();
+        return v != null ? Optional.of(v) : Optional.empty();
     }
     
     public T last() {
@@ -436,24 +416,15 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
     public void run() {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] error = { null };
-        LambdaSubscriber<T> ls = new LambdaSubscriber<>(Functions.emptyConsumer(),
-            new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) {
-                    error[0] = e;
-                    cdl.countDown();
-                }
-            }, new Runnable() {
-            @Override
-            public void run() {
+        LambdaSubscriber<T> ls = new LambdaSubscriber<>(
+            Functions.emptyConsumer(),
+            e -> {
+                error[0] = e;
                 cdl.countDown();
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                s.request(Long.MAX_VALUE);
-            }
-        });
+            },
+            cdl::countDown,
+            s -> s.request(Long.MAX_VALUE)
+        );
         
         o.subscribe(ls);
         

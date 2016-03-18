@@ -37,19 +37,9 @@ public class OperatorWindowWithSizeTest {
     private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {
 
         final List<List<T>> lists = new ArrayList<>();
-        Observable.concat(observables.map(new Function<Observable<T>, Observable<List<T>>>() {
-            @Override
-            public Observable<List<T>> apply(Observable<T> xs) {
-                return xs.toList();
-            }
-        }))
+        Observable.concat(observables.map(Observable::toList))
                 .toBlocking()
-                .forEach(new Consumer<List<T>>() {
-                    @Override
-                    public void accept(List<T> xs) {
-                        lists.add(xs);
-                    }
-                });
+                .forEach(lists::add);
         return lists;
     }
 
@@ -109,14 +99,7 @@ public class OperatorWindowWithSizeTest {
     public void testWindowUnsubscribeNonOverlapping() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         final AtomicInteger count = new AtomicInteger();
-        Observable.merge(Observable.range(1, 10000).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                count.incrementAndGet();
-            }
-
-        }).window(5).take(2)).subscribe(ts);
+        Observable.merge(Observable.range(1, 10000).doOnNext(t1 -> count.incrementAndGet()).window(5).take(2)).subscribe(ts);
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -129,14 +112,7 @@ public class OperatorWindowWithSizeTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 100000)
-                .doOnNext(new Consumer<Integer>() {
-
-                    @Override
-                    public void accept(Integer t1) {
-                        count.incrementAndGet();
-                    }
-
-                })
+                .doOnNext(t1 -> count.incrementAndGet())
                 .observeOn(Schedulers.computation())
                 .window(5)
                 .take(2))
@@ -152,14 +128,7 @@ public class OperatorWindowWithSizeTest {
     public void testWindowUnsubscribeOverlapping() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         final AtomicInteger count = new AtomicInteger();
-        Observable.merge(Observable.range(1, 10000).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                count.incrementAndGet();
-            }
-
-        }).window(5, 4).take(2)).subscribe(ts);
+        Observable.merge(Observable.range(1, 10000).doOnNext(t1 -> count.incrementAndGet()).window(5, 4).take(2)).subscribe(ts);
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
         //        System.out.println(ts.getOnNextEvents());
@@ -172,14 +141,7 @@ public class OperatorWindowWithSizeTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 100000)
-                .doOnNext(new Consumer<Integer>() {
-
-                    @Override
-                    public void accept(Integer t1) {
-                        count.incrementAndGet();
-                    }
-
-                })
+                .doOnNext(t1 -> count.incrementAndGet())
                 .observeOn(Schedulers.computation())
                 .window(5, 4)
                 .take(2), 128)
@@ -278,12 +240,7 @@ public class OperatorWindowWithSizeTest {
         hotStream()
         .window(10)
         .take(2)
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> w) {
-                return w.startWith(indicator);
-            }
-        }).subscribe(ts);
+        .flatMap(w -> w.startWith(indicator)).subscribe(ts);
         
         ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
         ts.assertComplete();
@@ -296,17 +253,7 @@ public class OperatorWindowWithSizeTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>((Long) null);
         
         Observable.range(1, 5).window(2, 1)
-        .map(new Function<Observable<Integer>, Observable<List<Integer>>>() {
-            @Override
-            public Observable<List<Integer>> apply(Observable<Integer> t) {
-                return t.toList();
-            }
-        }).concatMap(new Function<Observable<List<Integer>>, Publisher<List<Integer>>>() {
-            @Override
-            public Publisher<List<Integer>> apply(Observable<List<Integer>> v) {
-                return v;
-            }
-        })
+        .map(Observable::toList).concatMap(v -> v)
         .subscribe(ts);
         
         ts.assertNoErrors();

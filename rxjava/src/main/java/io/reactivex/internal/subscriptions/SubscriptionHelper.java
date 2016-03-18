@@ -93,12 +93,7 @@ public enum SubscriptionHelper {
     }
     
     /** Singleton instance of a function which calls cancel on the supplied Subscription. */
-    static final Consumer<Subscription> CONSUME_AND_CANCEL = new Consumer<Subscription>() {
-        @Override
-        public void accept(Subscription s) {
-            s.cancel();
-        }
-    };
+    static final Consumer<Subscription> CONSUME_AND_CANCEL = Subscription::cancel;
     
     /**
      * Returns a consumer which calls cancel on the supplied Subscription.

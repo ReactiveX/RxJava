@@ -126,43 +126,22 @@ public class OperatorDebounceTest {
     }
 
     private <T> void publishCompleted(final Subscriber<T> observer, long delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(observer::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final Subscriber<T> observer, long delay, final Exception error) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onError(error);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> observer.onError(error), delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishNext(final Subscriber<T> observer, final long delay, final T value) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> observer.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
     public void debounceSelectorNormal1() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> debouncer = PublishSubject.create();
-        Function<Integer, Observable<Integer>> debounceSel = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return debouncer;
-            }
-        };
+        Function<Integer, Observable<Integer>> debounceSel = t1 -> debouncer;
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
@@ -192,12 +171,8 @@ public class OperatorDebounceTest {
     @Test
     public void debounceSelectorFuncThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
-        Function<Integer, Observable<Integer>> debounceSel = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, Observable<Integer>> debounceSel = t1 -> {
+            throw new TestException();
         };
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
@@ -214,13 +189,7 @@ public class OperatorDebounceTest {
     @Test
     public void debounceSelectorObservableThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
-        Function<Integer, Observable<Integer>> debounceSel = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return Observable.error(new TestException());
-            }
-        };
+        Function<Integer, Observable<Integer>> debounceSel = t1 -> Observable.error(new TestException());
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
         
@@ -254,13 +223,7 @@ public class OperatorDebounceTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> debouncer = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> debounceSel = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return debouncer;
-            }
-        };
+        Function<Integer, Observable<Integer>> debounceSel = t1 -> debouncer;
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
         

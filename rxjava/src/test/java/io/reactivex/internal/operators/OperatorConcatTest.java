@@ -172,40 +172,36 @@ public class OperatorConcatTest {
                         s.dispose();
                     }
                 });
-                parent.set(new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            // emit first
-                            if (!s.isDisposed()) {
-                                System.out.println("Emit o1");
-                                observer.onNext(Observable.create(o1));
-                            }
-                            // emit second
-                            if (!s.isDisposed()) {
-                                System.out.println("Emit o2");
-                                observer.onNext(Observable.create(o2));
-                            }
-
-                            // wait until sometime later and emit third
-                            try {
-                                allowThird.await();
-                            } catch (InterruptedException e) {
-                                observer.onError(e);
-                            }
-                            if (!s.isDisposed()) {
-                                System.out.println("Emit o3");
-                                observer.onNext(Observable.create(o3));
-                            }
-
-                        } catch (Throwable e) {
-                            observer.onError(e);
-                        } finally {
-                            System.out.println("Done parent Observable");
-                            observer.onComplete();
-                            parentHasFinished.countDown();
+                parent.set(new Thread(() -> {
+                    try {
+                        // emit first
+                        if (!s.isDisposed()) {
+                            System.out.println("Emit o1");
+                            observer.onNext(Observable.create(o1));
                         }
+                        // emit second
+                        if (!s.isDisposed()) {
+                            System.out.println("Emit o2");
+                            observer.onNext(Observable.create(o2));
+                        }
+
+                        // wait until sometime later and emit third
+                        try {
+                            allowThird.await();
+                        } catch (InterruptedException e) {
+                            observer.onError(e);
+                        }
+                        if (!s.isDisposed()) {
+                            System.out.println("Emit o3");
+                            observer.onNext(Observable.create(o3));
+                        }
+
+                    } catch (Throwable e) {
+                        observer.onError(e);
+                    } finally {
+                        System.out.println("Done parent Observable");
+                        observer.onComplete();
+                        parentHasFinished.countDown();
                     }
                 }));
                 parent.get().start();
@@ -526,32 +522,27 @@ public class OperatorConcatTest {
         @Override
         public void subscribe(final Subscriber<? super T> observer) {
             observer.onSubscribe(s);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        while (count < size && subscribed) {
-                            if (null != values)
-                                observer.onNext(values.get(count));
-                            else
-                                observer.onNext(seed);
-                            count++;
-                            //Unblock the main thread to call unsubscribe.
-                            if (null != once)
-                                once.countDown();
-                            //Block until the main thread has called unsubscribe.
-                            if (null != okToContinue)
-                                okToContinue.await(5, TimeUnit.SECONDS);
-                        }
-                        if (subscribed)
-                            observer.onComplete();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        fail(e.getMessage());
+            t = new Thread(() -> {
+                try {
+                    while (count < size && subscribed) {
+                        if (null != values)
+                            observer.onNext(values.get(count));
+                        else
+                            observer.onNext(seed);
+                        count++;
+                        //Unblock the main thread to call unsubscribe.
+                        if (null != once)
+                            once.countDown();
+                        //Block until the main thread has called unsubscribe.
+                        if (null != okToContinue)
+                            okToContinue.await(5, TimeUnit.SECONDS);
                     }
+                    if (subscribed)
+                        observer.onComplete();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    fail(e.getMessage());
                 }
-
             });
             t.start();
             threadHasStarted.countDown();
@@ -609,12 +600,7 @@ public class OperatorConcatTest {
     @Test
     public void concatVeryLongObservableOfObservables() {
         final int n = 10000;
-        Observable<Observable<Integer>> source = Observable.range(0, n).map(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.just(v);
-            }
-        });
+        Observable<Observable<Integer>> source = Observable.range(0, n).map(Observable::just);
         
         Observable<List<Integer>> result = Observable.concat(source).toList();
         
@@ -634,12 +620,7 @@ public class OperatorConcatTest {
     @Test
     public void concatVeryLongObservableOfObservablesTakeHalf() {
         final int n = 10000;
-        Observable<Observable<Integer>> source = Observable.range(0, n).map(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.just(v);
-            }
-        });
+        Observable<Observable<Integer>> source = Observable.range(0, n).map(Observable::just);
         
         Observable<List<Integer>> result = Observable.concat(source).take(n / 2).toList();
         
@@ -726,16 +707,12 @@ public class OperatorConcatTest {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
 
-        Function<Integer, Observable<Integer>> func = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t) {
-                Observable<Integer> observable = Observable.just(t)
-                        .subscribeOn(sch)
-                ;
-                Subject<Integer, Integer> subject = UnicastSubject.create();
-                observable.subscribe(subject);
-                return subject;
-            }
+        Function<Integer, Observable<Integer>> func = t -> {
+            Observable<Integer> observable = Observable.just(t)
+                    .subscribeOn(sch);
+            Subject<Integer, Integer> subject = UnicastSubject.create();
+            observable.subscribe(subject);
+            return subject;
         };
 
         int n = 5000;
@@ -810,12 +787,7 @@ public class OperatorConcatTest {
             }
             TestSubscriber<Integer> ts = new TestSubscriber<>();
             Observable.range(0, 1000)
-            .concatMap(new Function<Integer, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Integer t) {
-                    return Observable.fromIterable(Arrays.asList(t));
-                }
-            })
+            .concatMap(t -> Observable.fromIterable(Arrays.asList(t)))
             .observeOn(Schedulers.computation()).subscribe(ts);
 
             ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);

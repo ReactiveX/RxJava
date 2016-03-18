@@ -42,19 +42,9 @@ public class NbpOperatorTimeoutWithSelectorTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> timeout = NbpPublishSubject.create();
 
-        Function<Integer, NbpObservable<Integer>> timeoutFunc = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return timeout;
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> timeoutFunc = t1 -> timeout;
 
-        Supplier<NbpObservable<Integer>> firstTimeoutFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return timeout;
-            }
-        };
+        Supplier<NbpObservable<Integer>> firstTimeoutFunc = () -> timeout;
 
         NbpObservable<Integer> other = NbpObservable.fromIterable(Arrays.asList(100));
 
@@ -82,19 +72,9 @@ public class NbpOperatorTimeoutWithSelectorTest {
         NbpObservable<Integer> source = NbpObservable.<Integer>never();
         final NbpPublishSubject<Integer> timeout = NbpPublishSubject.create();
 
-        Function<Integer, NbpObservable<Integer>> timeoutFunc = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return timeout;
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> timeoutFunc = t1 -> timeout;
 
-        Supplier<NbpObservable<Integer>> firstTimeoutFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return timeout;
-            }
-        };
+        Supplier<NbpObservable<Integer>> firstTimeoutFunc = () -> timeout;
 
         NbpObservable<Integer> other = NbpObservable.fromIterable(Arrays.asList(100));
 
@@ -116,18 +96,10 @@ public class NbpOperatorTimeoutWithSelectorTest {
         NbpObservable<Integer> source = NbpObservable.<Integer>never();
         final NbpPublishSubject<Integer> timeout = NbpPublishSubject.create();
 
-        Function<Integer, NbpObservable<Integer>> timeoutFunc = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return timeout;
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> timeoutFunc = t1 -> timeout;
 
-        Supplier<NbpObservable<Integer>> firstTimeoutFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                throw new TestException();
-            }
+        Supplier<NbpObservable<Integer>> firstTimeoutFunc = () -> {
+            throw new TestException();
         };
 
         NbpObservable<Integer> other = NbpObservable.fromIterable(Arrays.asList(100));
@@ -147,19 +119,11 @@ public class NbpOperatorTimeoutWithSelectorTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> timeout = NbpPublishSubject.create();
 
-        Function<Integer, NbpObservable<Integer>> timeoutFunc = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, NbpObservable<Integer>> timeoutFunc = t1 -> {
+            throw new TestException();
         };
 
-        Supplier<NbpObservable<Integer>> firstTimeoutFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return timeout;
-            }
-        };
+        Supplier<NbpObservable<Integer>> firstTimeoutFunc = () -> timeout;
 
         NbpObservable<Integer> other = NbpObservable.fromIterable(Arrays.asList(100));
 
@@ -181,19 +145,9 @@ public class NbpOperatorTimeoutWithSelectorTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> timeout = NbpPublishSubject.create();
 
-        Function<Integer, NbpObservable<Integer>> timeoutFunc = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return timeout;
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> timeoutFunc = t1 -> timeout;
 
-        Supplier<NbpObservable<Integer>> firstTimeoutFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return NbpObservable.<Integer> error(new TestException());
-            }
-        };
+        Supplier<NbpObservable<Integer>> firstTimeoutFunc = () -> NbpObservable.<Integer> error(new TestException());
 
         NbpObservable<Integer> other = NbpObservable.fromIterable(Arrays.asList(100));
 
@@ -212,19 +166,9 @@ public class NbpOperatorTimeoutWithSelectorTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> timeout = NbpPublishSubject.create();
 
-        Function<Integer, NbpObservable<Integer>> timeoutFunc = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return NbpObservable.<Integer> error(new TestException());
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> timeoutFunc = t1 -> NbpObservable.<Integer> error(new TestException());
 
-        Supplier<NbpObservable<Integer>> firstTimeoutFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return timeout;
-            }
-        };
+        Supplier<NbpObservable<Integer>> firstTimeoutFunc = () -> timeout;
 
         NbpObservable<Integer> other = NbpObservable.fromIterable(Arrays.asList(100));
 
@@ -246,19 +190,9 @@ public class NbpOperatorTimeoutWithSelectorTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> timeout = NbpPublishSubject.create();
 
-        Supplier<NbpObservable<Integer>> firstTimeoutFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return timeout;
-            }
-        };
+        Supplier<NbpObservable<Integer>> firstTimeoutFunc = () -> timeout;
 
-        Function<Integer, NbpObservable<Integer>> timeoutFunc = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return NbpPublishSubject.create();
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> timeoutFunc = t1 -> NbpPublishSubject.create();
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         source.timeout(firstTimeoutFunc, timeoutFunc).subscribe(o);
@@ -275,19 +209,9 @@ public class NbpOperatorTimeoutWithSelectorTest {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> timeout = NbpPublishSubject.create();
 
-        Supplier<NbpObservable<Integer>> firstTimeoutFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return NbpPublishSubject.create();
-            }
-        };
+        Supplier<NbpObservable<Integer>> firstTimeoutFunc = NbpPublishSubject::create;
 
-        Function<Integer, NbpObservable<Integer>> timeoutFunc = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                return timeout;
-            }
-        };
+        Function<Integer, NbpObservable<Integer>> timeoutFunc = t1 -> timeout;
 
         NbpSubscriber<Object> o = TestHelper.mockNbpSubscriber();
         source.timeout(firstTimeoutFunc, timeoutFunc).subscribe(o);
@@ -321,87 +245,69 @@ public class NbpOperatorTimeoutWithSelectorTest {
         final CountDownLatch enteredTimeoutOne = new CountDownLatch(1);
         final AtomicBoolean latchTimeout = new AtomicBoolean(false);
 
-        final Function<Integer, NbpObservable<Integer>> timeoutFunc = new Function<Integer, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(Integer t1) {
-                if (t1 == 1) {
-                    // Force "unsubscribe" run on another thread
-                    return NbpObservable.create(new NbpOnSubscribe<Integer>() {
-                        @Override
-                        public void accept(NbpSubscriber<? super Integer> NbpSubscriber) {
-                            NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
-                            enteredTimeoutOne.countDown();
-                            // force the timeout message be sent after NbpObserver.onNext(2)
-                            while (true) {
-                                try {
-                                    if (!observerReceivedTwo.await(30, TimeUnit.SECONDS)) {
-                                        // CountDownLatch timeout
-                                        // There should be something wrong
-                                        latchTimeout.set(true);
-                                    }
-                                    break;
-                                } catch (InterruptedException e) {
-                                    // Since we just want to emulate a busy method,
-                                    // we ignore the interrupt signal from Scheduler.
+        final Function<Integer, NbpObservable<Integer>> timeoutFunc = t1 -> {
+            if (t1 == 1) {
+                // Force "unsubscribe" run on another thread
+                return NbpObservable.create(new NbpOnSubscribe<Integer>() {
+                    @Override
+                    public void accept(NbpSubscriber<? super Integer> NbpSubscriber) {
+                        NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
+                        enteredTimeoutOne.countDown();
+                        // force the timeout message be sent after NbpObserver.onNext(2)
+                        while (true) {
+                            try {
+                                if (!observerReceivedTwo.await(30, TimeUnit.SECONDS)) {
+                                    // CountDownLatch timeout
+                                    // There should be something wrong
+                                    latchTimeout.set(true);
                                 }
+                                break;
+                            } catch (InterruptedException e) {
+                                // Since we just want to emulate a busy method,
+                                // we ignore the interrupt signal from Scheduler.
                             }
-                            NbpSubscriber.onNext(1);
-                            timeoutEmittedOne.countDown();
                         }
-                    }).subscribeOn(Schedulers.newThread());
-                } else {
-                    return NbpPublishSubject.create();
-                }
+                        NbpSubscriber.onNext(1);
+                        timeoutEmittedOne.countDown();
+                    }
+                }).subscribeOn(Schedulers.newThread());
+            } else {
+                return NbpPublishSubject.create();
             }
         };
 
         final NbpSubscriber<Integer> o = TestHelper.mockNbpSubscriber();
-        doAnswer(new Answer<Void>() {
-
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                observerReceivedTwo.countDown();
-                return null;
-            }
-
+        doAnswer(invocation -> {
+            observerReceivedTwo.countDown();
+            return null;
         }).when(o).onNext(2);
-        doAnswer(new Answer<Void>() {
-
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                observerCompleted.countDown();
-                return null;
-            }
-
+        doAnswer(invocation -> {
+            observerCompleted.countDown();
+            return null;
         }).when(o).onComplete();
 
         final NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>(o);
 
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                NbpPublishSubject<Integer> source = NbpPublishSubject.create();
-                source.timeout(timeoutFunc, NbpObservable.just(3)).subscribe(ts);
-                source.onNext(1); // start timeout
-                try {
-                    if(!enteredTimeoutOne.await(30, TimeUnit.SECONDS)) {
-                        latchTimeout.set(true);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        new Thread(() -> {
+            NbpPublishSubject<Integer> source = NbpPublishSubject.create();
+            source.timeout(timeoutFunc, NbpObservable.just(3)).subscribe(ts);
+            source.onNext(1); // start timeout
+            try {
+                if(!enteredTimeoutOne.await(30, TimeUnit.SECONDS)) {
+                    latchTimeout.set(true);
                 }
-                source.onNext(2); // disable timeout
-                try {
-                    if(!timeoutEmittedOne.await(30, TimeUnit.SECONDS)) {
-                        latchTimeout.set(true);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                source.onComplete();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-
+            source.onNext(2); // disable timeout
+            try {
+                if(!timeoutEmittedOne.await(30, TimeUnit.SECONDS)) {
+                    latchTimeout.set(true);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            source.onComplete();
         }).start();
 
         if(!observerCompleted.await(30, TimeUnit.SECONDS)) {

@@ -157,12 +157,7 @@ public final class Subscribers {
         };
     }
 
-    static final Consumer<Subscription> REQUEST_ALL = new Consumer<Subscription>() {
-        @Override
-        public void accept(Subscription t) {
-            t.request(Long.MAX_VALUE);
-        }
-    };
+    static final Consumer<Subscription> REQUEST_ALL = t -> t.request(Long.MAX_VALUE);
     
     public static <T> Subscriber<T> create(
             Consumer<? super T> onNext

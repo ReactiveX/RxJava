@@ -42,14 +42,10 @@ public class NbpOperatorPublishTest {
             @Override
             public void accept(final NbpSubscriber<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        NbpObserver.onNext("one");
-                        NbpObserver.onComplete();
-                    }
+                new Thread(() -> {
+                    counter.incrementAndGet();
+                    NbpObserver.onNext("one");
+                    NbpObserver.onComplete();
                 }).start();
             }
         }).publish();
@@ -57,23 +53,15 @@ public class NbpOperatorPublishTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                latch.countDown();
-            }
+        o.subscribe(v -> {
+            assertEquals("one", v);
+            latch.countDown();
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                latch.countDown();
-            }
+        o.subscribe(v -> {
+            assertEquals("one", v);
+            latch.countDown();
         });
 
         Disposable s = o.connect();
@@ -91,12 +79,7 @@ public class NbpOperatorPublishTest {
     public void testBackpressureFastSlow() {
         NbpConnectableObservable<Integer> is = NbpObservable.range(1, Observable.bufferSize() * 2).publish();
         NbpObservable<Integer> fast = is.observeOn(Schedulers.computation())
-        .doOnComplete(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("^^^^^^^^^^^^^ completed FAST");
-            }
-        });
+        .doOnComplete(() -> System.out.println("^^^^^^^^^^^^^ completed FAST"));
 
         NbpObservable<Integer> slow = is.observeOn(Schedulers.computation()).map(new Function<Integer, Integer>() {
             int c = 0;
@@ -113,14 +96,7 @@ public class NbpOperatorPublishTest {
                 return i;
             }
 
-        }).doOnComplete(new Runnable() {
-
-            @Override
-            public void run() {
-                System.out.println("^^^^^^^^^^^^^ completed SLOW");
-            }
-
-        });
+        }).doOnComplete(() -> System.out.println("^^^^^^^^^^^^^ completed SLOW"));
 
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         NbpObservable.merge(fast, slow).subscribe(ts);
@@ -134,30 +110,9 @@ public class NbpOperatorPublishTest {
     @Test
     public void testTakeUntilWithPublishedStreamUsingSelector() {
         final AtomicInteger emitted = new AtomicInteger();
-        NbpObservable<Integer> xs = NbpObservable.range(0, Observable.bufferSize() * 2).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                emitted.incrementAndGet();
-            }
-
-        });
+        NbpObservable<Integer> xs = NbpObservable.range(0, Observable.bufferSize() * 2).doOnNext(t1 -> emitted.incrementAndGet());
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
-        xs.publish(new Function<NbpObservable<Integer>, NbpObservable<Integer>>() {
-
-            @Override
-            public NbpObservable<Integer> apply(NbpObservable<Integer> xs) {
-                return xs.takeUntil(xs.skipWhile(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer i) {
-                        return i <= 3;
-                    }
-
-                }));
-            }
-
-        }).subscribe(ts);
+        xs.publish(xs1 -> xs1.takeUntil(xs1.skipWhile(i -> i <= 3))).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         ts.assertValues(0, 1, 2, 3);
@@ -171,14 +126,7 @@ public class NbpOperatorPublishTest {
         NbpObservable<Integer> xs = NbpObservable.range(0, Observable.bufferSize() * 2);
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         NbpConnectableObservable<Integer> xsp = xs.publish();
-        xsp.takeUntil(xsp.skipWhile(new Predicate<Integer>() {
-
-            @Override
-            public boolean test(Integer i) {
-                return i <= 3;
-            }
-
-        })).subscribe(ts);
+        xsp.takeUntil(xsp.skipWhile(i -> i <= 3)).subscribe(ts);
         xsp.connect();
         System.out.println(ts.values());
     }
@@ -188,19 +136,8 @@ public class NbpOperatorPublishTest {
         final AtomicInteger sourceEmission = new AtomicInteger();
         final AtomicBoolean sourceUnsubscribed = new AtomicBoolean();
         final NbpObservable<Integer> source = NbpObservable.range(1, 100)
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer t1) {
-                        sourceEmission.incrementAndGet();
-                    }
-                })
-                .doOnCancel(new Runnable() {
-                    @Override
-                    public void run() {
-                        sourceUnsubscribed.set(true);
-                    }
-                }).share();
-        ;
+                .doOnNext(t1 -> sourceEmission.incrementAndGet())
+                .doOnCancel(() -> sourceUnsubscribed.set(true)).share();
         
         final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
         final AtomicBoolean child2Unsubscribed = new AtomicBoolean();
@@ -211,23 +148,13 @@ public class NbpOperatorPublishTest {
             @Override
             public void onNext(Integer t) {
                 if (valueCount() == 2) {
-                    source.doOnCancel(new Runnable() {
-                        @Override
-                        public void run() {
-                            child2Unsubscribed.set(true);
-                        }
-                    }).take(5).subscribe(ts2);
+                    source.doOnCancel(() -> child2Unsubscribed.set(true)).take(5).subscribe(ts2);
                 }
                 super.onNext(t);
             }
         };
         
-        source.doOnCancel(new Runnable() {
-            @Override
-            public void run() {
-                child1Unsubscribed.set(true);
-            }
-        }).take(5)
+        source.doOnCancel(() -> child1Unsubscribed.set(true)).take(5)
         .subscribe(ts1);
         
         ts1.awaitTerminalEvent();

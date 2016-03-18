@@ -43,12 +43,7 @@ public final class Disposables {
     
     public static Disposable from(final Subscription subscription) {
         Objects.requireNonNull(subscription, "subscription is null");
-        return new Disposable() {
-            @Override
-            public void dispose() {
-                subscription.cancel();
-            }
-        };
+        return subscription::cancel;
     }
     
     public static Disposable from(Future<?> future, boolean allowInterrupt) {
@@ -56,20 +51,14 @@ public final class Disposables {
         return new FutureDisposable(future, allowInterrupt);
     }
     
-    static final Disposable EMPTY = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
+    static final Disposable EMPTY = () -> { };
     
     public static Disposable empty() {
         return EMPTY;
     }
 
     // TODO there is no way to distinguish a disposed and non-disposed resource
-    static final Disposable DISPOSED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
+    static final Disposable DISPOSED = () -> { };
     
     public static Disposable disposed() {
         return DISPOSED;
@@ -87,10 +76,7 @@ public final class Disposables {
         /** */
         private static final long serialVersionUID = 4892876354773733738L;
         
-        static final Runnable DISPOSED = new Runnable() {
-            @Override
-            public void run() { }
-        };
+        static final Runnable DISPOSED = () -> { };
         
         public RunnableDisposable(Runnable run) {
             super(run);
@@ -165,12 +151,7 @@ public final class Disposables {
         }
     }
     
-    static final Consumer<Disposable> DISPOSER = new Consumer<Disposable>() {
-        @Override
-        public void accept(Disposable d) {
-            d.dispose();
-        }
-    };
+    static final Consumer<Disposable> DISPOSER = Disposable::dispose;
     
     /**
      * Returns a consumer that calls dispose on the received Disposable.

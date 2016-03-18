@@ -45,12 +45,7 @@ public final class PublisherRedo<T> implements Publisher<T> {
 
         Publisher<?> action = manager.apply(subject);
         
-        action.subscribe(new ToNotificationSubscriber<>(new Consumer<Try<Optional<Object>>>() {
-            @Override
-            public void accept(Try<Optional<Object>> v) {
-                parent.handle(v);
-            }
-        }));
+        action.subscribe(new ToNotificationSubscriber<>(parent::handle));
         
         // trigger first subscription
         parent.handle(Notification.next((Object)0));

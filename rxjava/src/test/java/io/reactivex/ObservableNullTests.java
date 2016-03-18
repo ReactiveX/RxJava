@@ -710,7 +710,7 @@ public class ObservableNullTests {
             public Object apply(Object[] a) {
                 return 1;
             }
-        }, true, 128, (Iterable<Publisher<Object>>)null);
+        }, true, 128, null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -896,7 +896,7 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void collectInitialSupplierNull() {
-        just1.collect((Supplier<Integer>)null, new BiConsumer<Integer, Integer>() {
+        just1.collect(null, new BiConsumer<Integer, Integer>() {
             @Override
             public void accept(Integer a, Integer b) { }
         });
@@ -2365,7 +2365,7 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void timeoutFirstNull() {
-        just1.timeout((Supplier<Publisher<Integer>>)null, new Function<Integer, Publisher<Integer>>() {
+        just1.timeout(null, new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) {
                 return just1;

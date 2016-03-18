@@ -208,32 +208,17 @@ public class PublishSubjectTest {
 
         final ArrayList<String> list = new ArrayList<>();
 
-        s.flatMap(new Function<Integer, Observable<String>>() {
+        s.flatMap(v -> {
+            countParent.incrementAndGet();
 
-            @Override
-            public Observable<String> apply(final Integer v) {
-                countParent.incrementAndGet();
-
-                // then subscribe to subject again (it will not receive the previous value)
-                return s.map(new Function<Integer, String>() {
-
-                    @Override
-                    public String apply(Integer v2) {
-                        countChildren.incrementAndGet();
-                        return "Parent: " + v + " Child: " + v2;
-                    }
-
-                });
-            }
-
-        }).subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                countTotal.incrementAndGet();
-                list.add(v);
-            }
-
+            // then subscribe to subject again (it will not receive the previous value)
+            return s.map(v2 -> {
+                countChildren.incrementAndGet();
+                return "Parent: " + v + " Child: " + v2;
+            });
+        }).subscribe(v -> {
+            countTotal.incrementAndGet();
+            list.add(v);
         });
 
         for (int i = 0; i < 10; i++) {
@@ -301,13 +286,7 @@ public class PublishSubjectTest {
             String v = "" + i;
             System.out.printf("Turn: %d%n", i);
             src.first()
-                .flatMap(new Function<String, Observable<String>>() {
-
-                    @Override
-                    public Observable<String> apply(String t1) {
-                        return Observable.just(t1 + ", " + t1);
-                    }
-                })
+                .flatMap(t1 -> Observable.just(t1 + ", " + t1))
                 .subscribe(new Observer<String>() {
                     @Override
                     public void onNext(String t) {

@@ -335,14 +335,9 @@ public class OperatorMergeDelayErrorTest {
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
             observer.onSubscribe(EmptySubscription.INSTANCE);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    observer.onNext("hello");
-                    observer.onComplete();
-                }
-
+            t = new Thread(() -> {
+                observer.onNext("hello");
+                observer.onComplete();
             });
             t.start();
         }
@@ -390,28 +385,23 @@ public class OperatorMergeDelayErrorTest {
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
             observer.onSubscribe(EmptySubscription.INSTANCE);
-            t = new Thread(new Runnable() {
+            t = new Thread(() -> {
+                for (String s : valuesToReturn) {
+                    if (s == null) {
+                        System.out.println("throwing exception");
+                        try {
+                            Thread.sleep(100);
+                        } catch (Throwable e) {
 
-                @Override
-                public void run() {
-                    for (String s : valuesToReturn) {
-                        if (s == null) {
-                            System.out.println("throwing exception");
-                            try {
-                                Thread.sleep(100);
-                            } catch (Throwable e) {
-
-                            }
-                            observer.onError(new NullPointerException());
-                            return;
-                        } else {
-                            observer.onNext(s);
                         }
+                        observer.onError(new NullPointerException());
+                        return;
+                    } else {
+                        observer.onNext(s);
                     }
-                    System.out.println("subscription complete");
-                    observer.onComplete();
                 }
-
+                System.out.println("subscription complete");
+                observer.onComplete();
             });
             t.start();
         }
@@ -542,19 +532,14 @@ public class OperatorMergeDelayErrorTest {
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
             observer.onSubscribe(EmptySubscription.INSTANCE);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        observer.onError(e);
-                    }
-                    observer.onNext("hello");
-                    observer.onComplete();
+            t = new Thread(() -> {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    observer.onError(e);
                 }
-
+                observer.onNext("hello");
+                observer.onComplete();
             });
             t.start();
         }
@@ -565,12 +550,7 @@ public class OperatorMergeDelayErrorTest {
         Observable<Integer> source = Observable.mergeDelayError(Observable.just(
                 Observable.just(1).asObservable(), 
                 Observable.<Integer>error(new TestException()))
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long t1) {
-                        requests.add(t1);
-                    }
-                }), 1);
+                .doOnRequest(t1 -> requests.add(t1)), 1);
         
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         

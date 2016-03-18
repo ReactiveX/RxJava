@@ -27,12 +27,7 @@ public class ObservableDoOnTest {
     @Test
     public void testDoOnEach() {
         final AtomicReference<String> r = new AtomicReference<>();
-        String output = Observable.just("one").doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                r.set(v);
-            }
-        }).toBlocking().single();
+        String output = Observable.just("one").doOnNext(r::set).toBlocking().single();
 
         assertEquals("one", output);
         assertEquals("one", r.get());
@@ -44,12 +39,7 @@ public class ObservableDoOnTest {
         Throwable t = null;
         try {
             Observable.<String> error(new RuntimeException("an error"))
-            .doOnError(new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable v) {
-                    r.set(v);
-                }
-            }).toBlocking().single();
+            .doOnError(r::set).toBlocking().single();
             fail("expected exception, not a return value");
         } catch (Throwable e) {
             t = e;
@@ -62,12 +52,7 @@ public class ObservableDoOnTest {
     @Test
     public void testDoOnCompleted() {
         final AtomicBoolean r = new AtomicBoolean();
-        String output = Observable.just("one").doOnComplete(new Runnable() {
-            @Override
-            public void run() {
-                r.set(true);
-            }
-        }).toBlocking().single();
+        String output = Observable.just("one").doOnComplete(() -> r.set(true)).toBlocking().single();
 
         assertEquals("one", output);
         assertTrue(r.get());

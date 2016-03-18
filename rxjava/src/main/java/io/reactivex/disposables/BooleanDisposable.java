@@ -18,16 +18,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class BooleanDisposable implements Disposable {
     final AtomicReference<Runnable> run = new AtomicReference<>();
 
-    static final Runnable DISPOSED = new Runnable() {
-        @Override
-        public void run() { }
-    };
+    static final Runnable DISPOSED = () -> { };
 
     public BooleanDisposable() {
-        this(new Runnable() {
-            @Override
-            public void run() { }
-        });
+        this(() -> { });
     }
     
     public BooleanDisposable(Runnable run) {

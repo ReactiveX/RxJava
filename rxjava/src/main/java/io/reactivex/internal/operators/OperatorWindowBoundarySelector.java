@@ -62,10 +62,7 @@ public final class OperatorWindowBoundarySelector<T, B, V> implements Operator<O
         
         final AtomicReference<Disposable> boundary = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         final List<UnicastSubject<T>> ws;
         

@@ -94,13 +94,7 @@ public class OperatorLastTest {
     @Test
     public void testLastWithPredicate() {
         Observable<Integer> observable = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .last();
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -115,14 +109,7 @@ public class OperatorLastTest {
     @Test
     public void testLastWithPredicateAndOneElement() {
         Observable<Integer> observable = Observable.just(1, 2)
-            .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+            .filter(t1 -> t1 % 2 == 0)
             .last();
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -137,14 +124,7 @@ public class OperatorLastTest {
     @Test
     public void testLastWithPredicateAndEmpty() {
         Observable<Integer> observable = Observable.just(1)
-            .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                }).last();
+            .filter(t1 -> t1 % 2 == 0).last();
         
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
         observable.subscribe(observer);
@@ -199,13 +179,7 @@ public class OperatorLastTest {
     @Test
     public void testLastOrDefaultWithPredicate() {
         Observable<Integer> observable = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .last(8);
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -220,13 +194,7 @@ public class OperatorLastTest {
     @Test
     public void testLastOrDefaultWithPredicateAndOneElement() {
         Observable<Integer> observable = Observable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .last(4);
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
@@ -241,14 +209,7 @@ public class OperatorLastTest {
     @Test
     public void testLastOrDefaultWithPredicateAndEmpty() {
         Observable<Integer> observable = Observable.just(1)
-                .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .last(2);
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();

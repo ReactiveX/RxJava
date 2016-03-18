@@ -30,33 +30,14 @@ public class NbpZipTests {
     @Test
     public void testZipNbpObservableOfNbpObservables() {
         NbpEventStream.getEventStream("HTTP-ClusterB", 20)
-                .groupBy(new Function<Event, String>() {
-                    @Override
-                    public String apply(Event e) {
-                        return e.instanceId;
-                    }
-                })
+                .groupBy(e -> e.instanceId)
                 // now we have streams of cluster+instanceId
-                .flatMap(new Function<NbpGroupedObservable<String, Event>, NbpObservable<HashMap<String, String>>>() {
-                    @Override
-                    public NbpObservable<HashMap<String, String>> apply(final NbpGroupedObservable<String, Event> ge) {
-                            return ge.scan(new HashMap<>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
-                                @Override
-                                public HashMap<String, String> apply(HashMap<String, String> accum,
-                                        Event perInstanceEvent) {
-                                            accum.put("instance", ge.key());
-                                            return accum;
-                                        }
-                            });
-                    }
-                })
+                .flatMap(ge -> ge.scan(new HashMap<>(), (accum, perInstanceEvent) -> {
+                    accum.put("instance", ge.key());
+                    return accum;
+                }))
                 .take(10)
-                .toBlocking().forEach(new Consumer<Object>() {
-                    @Override
-                    public void accept(Object pv) {
-                        System.out.println(pv);
-                    }
-                });
+                .toBlocking().forEach(System.out::println);
 
         System.out.println("**** finished");
     }
@@ -91,36 +72,18 @@ public class NbpZipTests {
 
         Collection<NbpObservable<Object>> NbpObservables = Collections.emptyList();
 
-        NbpObservable<Object> result = NbpObservable.zip(NbpObservables, new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] args) {
-                System.out.println("received: " + args);
-                Assert.assertEquals("No argument should have been passed", 0, args.length);
-                return invoked;
-            }
+        NbpObservable<Object> result = NbpObservable.zip(NbpObservables, args -> {
+            System.out.println("received: " + args);
+            Assert.assertEquals("No argument should have been passed", 0, args.length);
+            return invoked;
         });
 
         assertSame(invoked, result.toBlocking().last());
     }
 
-    BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {
-        @Override
-        public ExtendedResult apply(Media m, Rating r) {
-                return new ExtendedResult();
-        }
-    };
+    BiFunction<Media, Rating, ExtendedResult> combine = (m, r) -> new ExtendedResult();
 
-    Consumer<Result> action = new Consumer<Result>() {
-        @Override
-        public void accept(Result t1) {
-            System.out.println("Result: " + t1);
-        }
-    };
+    Consumer<Result> action = t1 -> System.out.println("Result: " + t1);
 
-    Consumer<ExtendedResult> extendedAction = new Consumer<ExtendedResult>() {
-        @Override
-        public void accept(ExtendedResult t1) {
-            System.out.println("Result: " + t1);
-        }
-    };
+    Consumer<ExtendedResult> extendedAction = t1 -> System.out.println("Result: " + t1);
 }

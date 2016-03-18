@@ -89,10 +89,7 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
         
         final AtomicReference<Disposable> timer = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
 
         public BufferExactUnboundedSubscriber(
                 Subscriber<? super U> actual, Supplier<U> bufferSupplier,
@@ -319,15 +316,12 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
 
             w.schedulePeriodically(this, timeskip, timeskip, unit);
             
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (BufferSkipBoundedSubscriber.this) {
-                        buffers.remove(b);
-                    }
-                    
-                    fastpathOrderedEmitMax(b, false, w);
+            w.schedule(() -> {
+                synchronized (BufferSkipBoundedSubscriber.this) {
+                    buffers.remove(b);
                 }
+
+                fastpathOrderedEmitMax(b, false, w);
             }, timespan, unit);
         }
         
@@ -410,15 +404,12 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
                 buffers.add(b);
             }
             
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (BufferSkipBoundedSubscriber.this) {
-                        buffers.remove(b);
-                    }
-                    
-                    fastpathOrderedEmitMax(b, false, w);
+            w.schedule(() -> {
+                synchronized (BufferSkipBoundedSubscriber.this) {
+                    buffers.remove(b);
                 }
+
+                fastpathOrderedEmitMax(b, false, w);
             }, timespan, unit);
         }
         

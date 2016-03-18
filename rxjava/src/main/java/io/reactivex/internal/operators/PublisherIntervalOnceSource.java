@@ -49,16 +49,10 @@ public final class PublisherIntervalOnceSource implements Publisher<Long> {
 
         final Subscriber<? super Long> actual;
         
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable DISPOSED = () -> { };
 
         /** This state tells the setResource not to call dispose since the run is finishing anyway. */
-        static final Disposable DONE = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable DONE = () -> { };
         
         volatile boolean requested;
         

@@ -35,24 +35,9 @@ import io.reactivex.subjects.nbp.NbpPublishSubject;
 import io.reactivex.subscribers.nbp.NbpTestSubscriber;
 
 public class NbpOperatorRetryWithPredicateTest {
-    BiPredicate<Integer, Throwable> retryTwice = new BiPredicate<Integer, Throwable>() {
-        @Override
-        public boolean test(Integer t1, Throwable t2) {
-            return t1 <= 2;
-        }
-    };
-    BiPredicate<Integer, Throwable> retry5 = new BiPredicate<Integer, Throwable>() {
-        @Override
-        public boolean test(Integer t1, Throwable t2) {
-            return t1 <= 5;
-        }
-    };
-    BiPredicate<Integer, Throwable> retryOnTestException = new BiPredicate<Integer, Throwable>() {
-        @Override
-        public boolean test(Integer t1, Throwable t2) {
-            return t2 instanceof IOException;
-        }
-    };
+    BiPredicate<Integer, Throwable> retryTwice = (t1, t2) -> t1 <= 2;
+    BiPredicate<Integer, Throwable> retry5 = (t1, t2) -> t1 <= 5;
+    BiPredicate<Integer, Throwable> retryOnTestException = (t1, t2) -> t2 instanceof IOException;
     @Test
     public void testWithNothingToRetry() {
         NbpObservable<Integer> source = NbpObservable.range(0, 3);
@@ -210,12 +195,7 @@ public class NbpOperatorRetryWithPredicateTest {
     public void testUnsubscribeFromRetry() {
         NbpPublishSubject<Integer> subject = NbpPublishSubject.create();
         final AtomicInteger count = new AtomicInteger(0);
-        Disposable sub = subject.retry(retryTwice).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer n) {
-                count.incrementAndGet();
-            }
-        });
+        Disposable sub = subject.retry(retryTwice).subscribe(n -> count.incrementAndGet());
         subject.onNext(1);
         sub.dispose();
         subject.onNext(2);
@@ -279,12 +259,9 @@ public class NbpOperatorRetryWithPredicateTest {
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         final RuntimeException e = new RuntimeException("You shall not pass");
         final AtomicInteger c = new AtomicInteger();
-        NbpObservable.just(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                c.incrementAndGet();
-                throw e;
-            }
+        NbpObservable.just(1).<Integer>map(t1 -> {
+            c.incrementAndGet();
+            throw e;
         }).retry(retry5).subscribe(ts);
 
         ts.assertTerminated();
@@ -294,14 +271,11 @@ public class NbpOperatorRetryWithPredicateTest {
     @Test
     public void testJustAndRetry() throws Exception {
         final AtomicBoolean throwException = new AtomicBoolean(true);
-        int value = NbpObservable.just(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                if (throwException.compareAndSet(true, false)) {
-                    throw new TestException();
-                }
-                return t1;
+        int value = NbpObservable.just(1).map(t1 -> {
+            if (throwException.compareAndSet(true, false)) {
+                throw new TestException();
             }
+            return t1;
         }).retry(1).toBlocking().single();
 
         assertEquals(1, value);
@@ -311,27 +285,18 @@ public class NbpOperatorRetryWithPredicateTest {
     public void testIssue3008RetryWithPredicate() {
         final List<Long> list = new CopyOnWriteArrayList<>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
-        NbpObservable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>(){
-            @Override
-            public Long apply(Long x) {
-                System.out.println("map " + x);
-                if (x == 2 && isFirst.getAndSet(false)) {
-                    throw new RuntimeException("retryable error");
-                }
-                return x;
-            }})
-        .retry(new BiPredicate<Integer, Throwable>() {
-            @Override
-            public boolean test(Integer t1, Throwable t2) {
-                return true;
-            }})
-        .forEach(new Consumer<Long>() {
-
-            @Override
-            public void accept(Long t) {
-                System.out.println(t);
-                list.add(t);
-            }});
+        NbpObservable.just(1L, 2L, 3L).<Long>map(x -> {
+            System.out.println("map " + x);
+            if (x == 2 && isFirst.getAndSet(false)) {
+                throw new RuntimeException("retryable error");
+            }
+            return x;
+        })
+        .retry((t1, t2) -> true)
+        .forEach(t -> {
+            System.out.println(t);
+            list.add(t);
+        });
         assertEquals(Arrays.asList(1L,1L,2L,3L), list);
     }
     
@@ -339,23 +304,18 @@ public class NbpOperatorRetryWithPredicateTest {
     public void testIssue3008RetryInfinite() {
         final List<Long> list = new CopyOnWriteArrayList<>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
-        NbpObservable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>(){
-            @Override
-            public Long apply(Long x) {
-                System.out.println("map " + x);
-                if (x == 2 && isFirst.getAndSet(false)) {
-                    throw new RuntimeException("retryable error");
-                }
-                return x;
-            }})
+        NbpObservable.just(1L, 2L, 3L).map(x -> {
+            System.out.println("map " + x);
+            if (x == 2 && isFirst.getAndSet(false)) {
+                throw new RuntimeException("retryable error");
+            }
+            return x;
+        })
         .retry()
-        .forEach(new Consumer<Long>() {
-
-            @Override
-            public void accept(Long t) {
-                System.out.println(t);
-                list.add(t);
-            }});
+        .forEach(t -> {
+            System.out.println(t);
+            list.add(t);
+        });
         assertEquals(Arrays.asList(1L,1L,2L,3L), list);
     }
 }

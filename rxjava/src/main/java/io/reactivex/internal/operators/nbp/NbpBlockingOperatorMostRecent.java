@@ -39,19 +39,16 @@ public enum NbpBlockingOperatorMostRecent {
      *         {@code initialValue} if {@code source} has not yet emitted any items
      */
     public static <T> Iterable<T> mostRecent(final NbpObservable<? extends T> source, final T initialValue) {
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                NbpMostRecentObserver<T> mostRecentObserver = new NbpMostRecentObserver<>(initialValue);
+        return () -> {
+            NbpMostRecentObserver<T> mostRecentObserver = new NbpMostRecentObserver<>(initialValue);
 
-                /**
-                 * Subscribe instead of unsafeSubscribe since this is the final subscribe in the chain
-                 * since it is for BlockingObservable.
-                 */
-                source.subscribe(mostRecentObserver);
+            /**
+             * Subscribe instead of unsafeSubscribe since this is the final subscribe in the chain
+             * since it is for BlockingObservable.
+             */
+            source.subscribe(mostRecentObserver);
 
-                return mostRecentObserver.getIterable();
-            }
+            return mostRecentObserver.getIterable();
         };
     }
 

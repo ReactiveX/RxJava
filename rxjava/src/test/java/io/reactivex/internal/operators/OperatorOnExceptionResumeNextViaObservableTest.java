@@ -46,7 +46,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(observer).onSubscribe((Subscription)any());
+        verify(observer).onSubscribe(any());
         verify(observer, times(1)).onNext("one");
         verify(observer, Mockito.never()).onNext("two");
         verify(observer, Mockito.never()).onNext("three");
@@ -74,7 +74,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(observer).onSubscribe((Subscription)any());
+        verify(observer).onSubscribe(any());
         verify(observer, times(1)).onNext("one");
         verify(observer, Mockito.never()).onNext("two");
         verify(observer, Mockito.never()).onNext("three");
@@ -102,7 +102,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(observer).onSubscribe((Subscription)any());
+        verify(observer).onSubscribe(any());
         verify(observer, times(1)).onNext("one");
         verify(observer, never()).onNext("two");
         verify(observer, never()).onNext("three");
@@ -130,7 +130,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(observer).onSubscribe((Subscription)any());
+        verify(observer).onSubscribe(any());
         verify(observer, times(1)).onNext("one");
         verify(observer, never()).onNext("two");
         verify(observer, never()).onNext("three");
@@ -151,14 +151,11 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
-        w = w.map(new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                if ("fail".equals(s))
-                    throw new RuntimeException("Forced Failure");
-                System.out.println("BadMapper:" + s);
-                return s;
-            }
+        w = w.map(s -> {
+            if ("fail".equals(s))
+                throw new RuntimeException("Forced Failure");
+            System.out.println("BadMapper:" + s);
+            return s;
         });
 
         Observable<String> observable = w.onExceptionResumeNext(resume);
@@ -227,32 +224,27 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
         public void subscribe(final Subscriber<? super String> observer) {
             observer.onSubscribe(EmptySubscription.INSTANCE);
             System.out.println("TestObservable subscribed to ...");
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestObservable thread");
-                        for (String s : values) {
-                            if ("EXCEPTION".equals(s))
-                                throw new Exception("Forced Exception");
-                            else if ("RUNTIMEEXCEPTION".equals(s))
-                                throw new RuntimeException("Forced RuntimeException");
-                            else if ("ERROR".equals(s))
-                                throw new Error("Forced Error");
-                            else if ("THROWABLE".equals(s))
-                                throw new Throwable("Forced Throwable");
-                            System.out.println("TestObservable onNext: " + s);
-                            observer.onNext(s);
-                        }
-                        System.out.println("TestObservable onCompleted");
-                        observer.onComplete();
-                    } catch (Throwable e) {
-                        System.out.println("TestObservable onError: " + e);
-                        observer.onError(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestObservable thread");
+                    for (String s : values) {
+                        if ("EXCEPTION".equals(s))
+                            throw new Exception("Forced Exception");
+                        else if ("RUNTIMEEXCEPTION".equals(s))
+                            throw new RuntimeException("Forced RuntimeException");
+                        else if ("ERROR".equals(s))
+                            throw new Error("Forced Error");
+                        else if ("THROWABLE".equals(s))
+                            throw new Throwable("Forced Throwable");
+                        System.out.println("TestObservable onNext: " + s);
+                        observer.onNext(s);
                     }
+                    System.out.println("TestObservable onCompleted");
+                    observer.onComplete();
+                } catch (Throwable e) {
+                    System.out.println("TestObservable onError: " + e);
+                    observer.onError(e);
                 }
-
             });
             System.out.println("starting TestObservable thread");
             t.start();

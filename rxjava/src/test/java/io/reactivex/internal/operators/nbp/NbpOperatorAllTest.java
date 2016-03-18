@@ -35,15 +35,10 @@ public class NbpOperatorAllTest {
 
         NbpSubscriber <Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
         
-        obs.all(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return s.length() == 3;
-            }
-        })
+        obs.all(s -> s.length() == 3)
         .subscribe(NbpObserver);
 
-        verify(NbpObserver).onSubscribe((Disposable)any());
+        verify(NbpObserver).onSubscribe(any());
         verify(NbpObserver).onNext(true);
         verify(NbpObserver).onComplete();
         verifyNoMoreInteractions(NbpObserver);
@@ -55,15 +50,10 @@ public class NbpOperatorAllTest {
 
         NbpSubscriber <Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
 
-        obs.all(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return s.length() == 3;
-            }
-        })
+        obs.all(s -> s.length() == 3)
         .subscribe(NbpObserver);
 
-        verify(NbpObserver).onSubscribe((Disposable)any());
+        verify(NbpObserver).onSubscribe(any());
         verify(NbpObserver).onNext(false);
         verify(NbpObserver).onComplete();
         verifyNoMoreInteractions(NbpObserver);
@@ -75,15 +65,10 @@ public class NbpOperatorAllTest {
 
         NbpSubscriber <Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
 
-        obs.all(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return s.length() == 3;
-            }
-        })
+        obs.all(s -> s.length() == 3)
         .subscribe(NbpObserver);
 
-        verify(NbpObserver).onSubscribe((Disposable)any());
+        verify(NbpObserver).onSubscribe(any());
         verify(NbpObserver).onNext(true);
         verify(NbpObserver).onComplete();
         verifyNoMoreInteractions(NbpObserver);
@@ -96,15 +81,10 @@ public class NbpOperatorAllTest {
 
         NbpSubscriber <Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
 
-        obs.all(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return s.length() == 3;
-            }
-        })
+        obs.all(s -> s.length() == 3)
         .subscribe(NbpObserver);
 
-        verify(NbpObserver).onSubscribe((Disposable)any());
+        verify(NbpObserver).onSubscribe(any());
         verify(NbpObserver).onError(error);
         verifyNoMoreInteractions(NbpObserver);
     }
@@ -112,30 +92,15 @@ public class NbpOperatorAllTest {
     @Test
     public void testFollowingFirst() {
         NbpObservable<Integer> o = NbpObservable.fromArray(1, 3, 5, 6);
-        NbpObservable<Boolean> allOdd = o.all(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer i) {
-                return i % 2 == 1;
-            }
-        });
+        NbpObservable<Boolean> allOdd = o.all(i -> i % 2 == 1);
         
         assertFalse(allOdd.toBlocking().first());
     }
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         NbpObservable<Integer> source = NbpObservable.just(1)
-            .all(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer t1) {
-                    return false;
-                }
-            })
-            .flatMap(new Function<Boolean, NbpObservable<Integer>>() {
-                @Override
-                public NbpObservable<Integer> apply(Boolean t1) {
-                    return NbpObservable.just(2).delay(500, TimeUnit.MILLISECONDS);
-                }
-            });
+            .all(t1 -> false)
+            .flatMap(t1 -> NbpObservable.just(2).delay(500, TimeUnit.MILLISECONDS));
         
         assertEquals((Object)2, source.toBlocking().first());
     }
@@ -147,11 +112,8 @@ public class NbpOperatorAllTest {
         
         final IllegalArgumentException ex = new IllegalArgumentException();
         
-        NbpObservable.just("Boo!").all(new Predicate<String>() {
-            @Override
-            public boolean test(String v) {
-                throw ex;
-            }
+        NbpObservable.just("Boo!").all(v -> {
+            throw ex;
         })
         .subscribe(ts);
         

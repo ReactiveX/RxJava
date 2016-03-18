@@ -31,13 +31,7 @@ public class OperatorFilterTest {
     @Test
     public void testFilter() {
         Observable<String> w = Observable.just("one", "two", "three");
-        Observable<String> observable = w.filter(new Predicate<String>() {
-
-            @Override
-            public boolean test(String t1) {
-                return t1.equals("two");
-            }
-        });
+        Observable<String> observable = w.filter(t1 -> t1.equals("two"));
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
 
@@ -58,13 +52,7 @@ public class OperatorFilterTest {
     @Test(timeout = 500)
     public void testWithBackpressure() throws InterruptedException {
         Observable<String> w = Observable.just("one", "two", "three");
-        Observable<String> o = w.filter(new Predicate<String>() {
-
-            @Override
-            public boolean test(String t1) {
-                return t1.equals("three");
-            }
-        });
+        Observable<String> o = w.filter(t1 -> t1.equals("three"));
 
         final CountDownLatch latch = new CountDownLatch(1);
         TestSubscriber<String> ts = new TestSubscriber<String>() {
@@ -105,13 +93,7 @@ public class OperatorFilterTest {
     @Test(timeout = 500000)
     public void testWithBackpressure2() throws InterruptedException {
         Observable<Integer> w = Observable.range(1, Observable.bufferSize() * 2);
-        Observable<Integer> o = w.filter(new Predicate<Integer>() {
-
-            @Override
-            public boolean test(Integer t1) {
-                return t1 > 100;
-            }
-        });
+        Observable<Integer> o = w.filter(t1 -> t1 > 100);
 
         final CountDownLatch latch = new CountDownLatch(1);
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {

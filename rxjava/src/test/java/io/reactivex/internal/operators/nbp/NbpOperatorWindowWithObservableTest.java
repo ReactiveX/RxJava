@@ -266,12 +266,7 @@ public class NbpOperatorWindowWithObservableTest {
                 super.onNext(t);
             }
         };
-        source.window(new Supplier<NbpObservable<Object>>() {
-            @Override
-            public NbpObservable<Object> get() {
-                return NbpObservable.never();
-            }
-        }).subscribe(ts);
+        source.window(NbpObservable::never).subscribe(ts);
 
         source.onNext(1);
         source.onComplete();
@@ -283,12 +278,7 @@ public class NbpOperatorWindowWithObservableTest {
     @Test
     public void testWindowViaObservableNoUnsubscribe() {
         NbpObservable<Integer> source = NbpObservable.range(1, 10);
-        Supplier<NbpObservable<String>> boundary = new Supplier<NbpObservable<String>>() {
-            @Override
-            public NbpObservable<String> get() {
-                return NbpObservable.empty();
-            }
-        };
+        Supplier<NbpObservable<String>> boundary = NbpObservable::empty;
         
         NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<>();
         source.window(boundary).unsafeSubscribe(ts);
@@ -300,12 +290,7 @@ public class NbpOperatorWindowWithObservableTest {
     public void testBoundaryUnsubscribedOnMainCompletion() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> boundary = NbpPublishSubject.create();
-        Supplier<NbpObservable<Integer>> boundaryFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return boundary;
-            }
-        };
+        Supplier<NbpObservable<Integer>> boundaryFunc = () -> boundary;
         
         NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<>();
         source.window(boundaryFunc).subscribe(ts);
@@ -326,12 +311,7 @@ public class NbpOperatorWindowWithObservableTest {
     public void testMainUnsubscribedOnBoundaryCompletion() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> boundary = NbpPublishSubject.create();
-        Supplier<NbpObservable<Integer>> boundaryFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return boundary;
-            }
-        };
+        Supplier<NbpObservable<Integer>> boundaryFunc = () -> boundary;
         
         NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<>();
         source.window(boundaryFunc).subscribe(ts);
@@ -354,12 +334,7 @@ public class NbpOperatorWindowWithObservableTest {
     public void testChildUnsubscribed() {
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> boundary = NbpPublishSubject.create();
-        Supplier<NbpObservable<Integer>> boundaryFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                return boundary;
-            }
-        };
+        Supplier<NbpObservable<Integer>> boundaryFunc = () -> boundary;
         
         NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<>();
         source.window(boundaryFunc).subscribe(ts);
@@ -384,12 +359,9 @@ public class NbpOperatorWindowWithObservableTest {
         final AtomicInteger calls = new AtomicInteger();
         NbpPublishSubject<Integer> source = NbpPublishSubject.create();
         final NbpPublishSubject<Integer> boundary = NbpPublishSubject.create();
-        Supplier<NbpObservable<Integer>> boundaryFunc = new Supplier<NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> get() {
-                calls.getAndIncrement();
-                return boundary;
-            }
+        Supplier<NbpObservable<Integer>> boundaryFunc = () -> {
+            calls.getAndIncrement();
+            return boundary;
         };
         
         NbpTestSubscriber<NbpObservable<Integer>> ts = new NbpTestSubscriber<>();

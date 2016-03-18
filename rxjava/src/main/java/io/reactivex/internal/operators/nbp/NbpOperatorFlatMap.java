@@ -511,10 +511,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         volatile boolean done;
         volatile Queue<U> queue;
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         public InnerSubscriber(MergeSubscriber<T, U> parent, long id) {
             this.id = id;

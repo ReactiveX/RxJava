@@ -290,10 +290,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
         volatile boolean done;
         Throwable error;
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         public SwitchMapInnerSubscriber(SwitchMapSubscriber<T, R> parent, long index, int bufferSize) {
             this.parent = parent;

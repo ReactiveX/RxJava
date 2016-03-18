@@ -78,12 +78,7 @@ public final class OperatorUnsubscribeOn<T> implements Operator<T, T> {
         @Override
         public void cancel() {
             if (compareAndSet(false, true)) {
-                scheduler.scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        s.cancel();
-                    }
-                });
+                scheduler.scheduleDirect(s::cancel);
             }
         }
     }

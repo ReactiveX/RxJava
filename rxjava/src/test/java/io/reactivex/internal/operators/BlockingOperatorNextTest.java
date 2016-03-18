@@ -239,21 +239,17 @@ public class BlockingOperatorNextTest {
             @Override
             public void subscribe(final Subscriber<? super Integer> o) {
                 o.onSubscribe(EmptySubscription.INSTANCE);
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            while (running.get()) {
-                                o.onNext(count.incrementAndGet());
-                                timeHasPassed.countDown();
-                            }
-                            o.onComplete();
-                        } catch (Throwable e) {
-                            o.onError(e);
-                        } finally {
-                            finished.countDown();
+                new Thread(() -> {
+                    try {
+                        while (running.get()) {
+                            o.onNext(count.incrementAndGet());
+                            timeHasPassed.countDown();
                         }
+                        o.onComplete();
+                    } catch (Throwable e) {
+                        o.onError(e);
+                    } finally {
+                        finished.countDown();
                     }
                 }).start();
             }

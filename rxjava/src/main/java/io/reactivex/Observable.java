@@ -477,13 +477,9 @@ public class Observable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerKind.NONE)
     public static <T> Observable<T> generate(final Consumer<Subscriber<T>> generator) {
         Objects.requireNonNull(generator, "generator is null");
-        return generate(Functions.nullSupplier(), 
-        new BiFunction<Object, Subscriber<T>, Object>() {
-            @Override
-            public Object apply(Object s, Subscriber<T> o) {
-                generator.accept(o);
-                return s;
-            }
+        return generate(Functions.nullSupplier(), (s, o) -> {
+            generator.accept(o);
+            return s;
         }, Functions.emptyConsumer());
     }
 
@@ -491,12 +487,9 @@ public class Observable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerKind.NONE)
     public static <T, S> Observable<T> generate(Supplier<S> initialState, final BiConsumer<S, Subscriber<T>> generator) {
         Objects.requireNonNull(generator, "generator is null");
-        return generate(initialState, new BiFunction<S, Subscriber<T>, S>() {
-            @Override
-            public S apply(S s, Subscriber<T> o) {
-                generator.accept(s, o);
-                return s;
-            }
+        return generate(initialState, (s, o) -> {
+            generator.accept(s, o);
+            return s;
         }, Functions.emptyConsumer());
     }
 
@@ -504,12 +497,9 @@ public class Observable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerKind.NONE)
     public static <T, S> Observable<T> generate(Supplier<S> initialState, final BiConsumer<S, Subscriber<T>> generator, Consumer<? super S> disposeState) {
         Objects.requireNonNull(generator, "generator is null");
-        return generate(initialState, new BiFunction<S, Subscriber<T>, S>() {
-            @Override
-            public S apply(S s, Subscriber<T> o) {
-                generator.accept(s, o);
-                return s;
-            }
+        return generate(initialState, (s, o) -> {
+            generator.accept(s, o);
+            return s;
         }, disposeState);
     }
 
@@ -1121,12 +1111,7 @@ public class Observable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerKind.NONE)
     public final Observable<T> asObservable() {
-        return create(new Publisher<T>() {
-            @Override
-            public void subscribe(Subscriber<? super T> s) {
-                Observable.this.subscribe(s);
-            }
-        });
+        return create(Observable.this::subscribe);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1584,12 +1569,7 @@ public class Observable<T> implements Publisher<T> {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         Objects.requireNonNull(onRequest, "onRequest is null");
         Objects.requireNonNull(onCancel, "onCancel is null");
-        return lift(new Operator<T, T>() {
-            @Override
-            public Subscriber<? super T> apply(Subscriber<? super T> s) {
-                return new SubscriptionLambdaSubscriber<>(s, onSubscribe, onRequest, onCancel);
-            }
-        });
+        return lift(s -> new SubscriptionLambdaSubscriber<>(s, onSubscribe, onRequest, onCancel));
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -1810,9 +1790,7 @@ public class Observable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerKind.NONE)
     public final <U> Observable<U> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int bufferSize) {
-        return flatMap(v -> {
-            return new PublisherIterableSource<>(mapper.apply(v));
-        }, false, bufferSize);
+        return flatMap(v -> new PublisherIterableSource<>(mapper.apply(v)), false, bufferSize);
     }
 
     @BackpressureSupport(BackpressureKind.NONE)
@@ -2383,12 +2361,7 @@ public class Observable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerKind.NONE)
     public final Observable<T> serialize() {
-        return lift(new Operator<T, T>() {
-            @Override
-            public Subscriber<? super T> apply(Subscriber<? super T> s) {
-                return new SerializedSubscriber<>(s);
-            }
-        });
+        return lift(SerializedSubscriber::new);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2525,29 +2498,31 @@ public class Observable<T> implements Publisher<T> {
         return concatArray(fromArray, this);
     }
 
+    static final Consumer<Subscription> REQUEST_ALL = t -> t.request(Long.MAX_VALUE);
+
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerKind.NONE)
     public final Disposable subscribe() {
-        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), s -> s.request(Long.MAX_VALUE));
+        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), REQUEST_ALL);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerKind.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
-        return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), s -> s.request(Long.MAX_VALUE));
+        return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), REQUEST_ALL);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerKind.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
-        return subscribe(onNext, onError, Functions.emptyRunnable(), s -> s.request(Long.MAX_VALUE));
+        return subscribe(onNext, onError, Functions.emptyRunnable(), REQUEST_ALL);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerKind.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
             Runnable onComplete) {
-        return subscribe(onNext, onError, onComplete, s -> s.request(Long.MAX_VALUE));
+        return subscribe(onNext, onError, onComplete, REQUEST_ALL);
     }
     
     @BackpressureSupport(BackpressureKind.SPECIAL)
@@ -3014,7 +2989,6 @@ public class Observable<T> implements Publisher<T> {
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerKind.NONE)
-    @SuppressWarnings("unchecked")
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(
             final Function<? super T, ? extends K> keySelector, 
             final Function<? super T, ? extends V> valueSelector, 

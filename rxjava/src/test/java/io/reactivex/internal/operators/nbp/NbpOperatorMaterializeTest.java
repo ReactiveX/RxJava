@@ -97,11 +97,8 @@ public class NbpOperatorMaterializeTest {
     public void testWithCompletionCausingError() {
         NbpTestSubscriber<Try<Optional<Integer>>> ts = new NbpTestSubscriber<>();
         final RuntimeException ex = new RuntimeException("boo");
-        NbpObservable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
-            @Override
-            public void accept(Object t) {
-                throw ex;
-            }
+        NbpObservable.<Integer>empty().materialize().doOnNext(t -> {
+            throw ex;
         }).subscribe(ts);
         ts.assertError(ex);
         ts.assertNoValues();
@@ -144,28 +141,23 @@ public class NbpOperatorMaterializeTest {
         @Override
         public void accept(final NbpSubscriber<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-            t = new Thread(new Runnable() {
+            t = new Thread(() -> {
+                for (String s : valuesToReturn) {
+                    if (s == null) {
+                        System.out.println("throwing exception");
+                        try {
+                            Thread.sleep(100);
+                        } catch (Throwable e) {
 
-                @Override
-                public void run() {
-                    for (String s : valuesToReturn) {
-                        if (s == null) {
-                            System.out.println("throwing exception");
-                            try {
-                                Thread.sleep(100);
-                            } catch (Throwable e) {
-
-                            }
-                            NbpObserver.onError(new NullPointerException());
-                            return;
-                        } else {
-                            NbpObserver.onNext(s);
                         }
+                        NbpObserver.onError(new NullPointerException());
+                        return;
+                    } else {
+                        NbpObserver.onNext(s);
                     }
-                    System.out.println("subscription complete");
-                    NbpObserver.onComplete();
                 }
-
+                System.out.println("subscription complete");
+                NbpObserver.onComplete();
             });
             t.start();
         }

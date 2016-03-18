@@ -124,12 +124,7 @@ public class OperatorOnBackpressureBufferTest {
 
         ts.request(100);
         infinite.subscribeOn(Schedulers.computation())
-             .onBackpressureBuffer(500, new Runnable() {
-                 @Override
-                 public void run() {
-                     backpressureCallback.countDown();
-                 }
-             })
+             .onBackpressureBuffer(500, backpressureCallback::countDown)
              /*.take(1000)*/
              .subscribe(ts);
         l1.await();

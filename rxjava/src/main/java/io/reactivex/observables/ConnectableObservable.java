@@ -62,12 +62,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      */
     public final Disposable connect() {
         final Disposable[] connection = new Disposable[1];
-        connect(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                connection[0] = d;
-            }
-        });
+        connect(d -> connection[0] = d);
         return connection[0];
     }
 

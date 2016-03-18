@@ -40,12 +40,7 @@ public class NbpOperatorZipIterableTest {
 
     @Before
     public void setUp() {
-        concat2Strings = new BiFunction<String, String, String>() {
-            @Override
-            public String apply(String t1, String t2) {
-                return t1 + "-" + t2;
-            }
-        };
+        concat2Strings = (t1, t2) -> t1 + "-" + t2;
 
         s1 = NbpPublishSubject.create();
         s2 = NbpPublishSubject.create();
@@ -57,22 +52,8 @@ public class NbpOperatorZipIterableTest {
         zipped.subscribe(NbpObserver);
     }
 
-    BiFunction<Object, Object, String> zipr2 = new BiFunction<Object, Object, String>() {
-
-        @Override
-        public String apply(Object t1, Object t2) {
-            return "" + t1 + t2;
-        }
-
-    };
-    Function3<Object, Object, Object, String> zipr3 = new Function3<Object, Object, Object, String>() {
-
-        @Override
-        public String apply(Object t1, Object t2, Object t3) {
-            return "" + t1 + t2 + t3;
-        }
-
-    };
+    BiFunction<Object, Object, String> zipr2 = (t1, t2) -> "" + t1 + t2;
+    Function3<Object, Object, Object, String> zipr3 = (t1, t2, t3) -> "" + t1 + t2 + t3;
 
     @Test
     public void testZipIterableSameSize() {
@@ -218,11 +199,8 @@ public class NbpOperatorZipIterableTest {
         NbpSubscriber<String> o = TestHelper.mockNbpSubscriber();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = new Iterable<String>() {
-            @Override
-            public Iterator<String> iterator() {
-                throw new TestException();
-            }
+        Iterable<String> r2 = () -> {
+            throw new TestException();
         };
 
         r1.zipWith(r2, zipr2).subscribe(o);
@@ -245,33 +223,26 @@ public class NbpOperatorZipIterableTest {
         NbpSubscriber<String> o = TestHelper.mockNbpSubscriber();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = new Iterable<String>() {
+        Iterable<String> r2 = () -> new Iterator<String>() {
+            int count;
 
             @Override
-            public Iterator<String> iterator() {
-                return new Iterator<String>() {
-                    int count;
+            public boolean hasNext() {
+                if (count == 0) {
+                    return true;
+                }
+                throw new TestException();
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        if (count == 0) {
-                            return true;
-                        }
-                        throw new TestException();
-                    }
+            @Override
+            public String next() {
+                count++;
+                return "1";
+            }
 
-                    @Override
-                    public String next() {
-                        count++;
-                        return "1";
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                    }
-
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
         };
@@ -295,27 +266,20 @@ public class NbpOperatorZipIterableTest {
         NbpSubscriber<String> o = TestHelper.mockNbpSubscriber();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = new Iterable<String>() {
+        Iterable<String> r2 = () -> new Iterator<String>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
 
             @Override
-            public Iterator<String> iterator() {
-                return new Iterator<String>() {
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
+            public String next() {
+                throw new TestException();
+            }
 
-                    @Override
-                    public String next() {
-                        throw new TestException();
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                    }
-
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
         };
@@ -331,12 +295,7 @@ public class NbpOperatorZipIterableTest {
 
     }
     
-    Consumer<String> printer = new Consumer<String>() {
-        @Override
-        public void accept(String pv) {
-            System.out.println(pv);
-        }
-    };
+    Consumer<String> printer = pv -> System.out.println(pv);
 
     static final class SquareStr implements Function<Integer, String> {
         final AtomicInteger counter = new AtomicInteger();

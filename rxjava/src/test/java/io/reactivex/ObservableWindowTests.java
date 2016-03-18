@@ -31,19 +31,9 @@ public class ObservableWindowTests {
         Observable.concat(
             Observable.just(1, 2, 3, 4, 5, 6)
             .window(3)
-            .map(new Function<Observable<Integer>, Observable<List<Integer>>>() {
-                @Override
-                public Observable<List<Integer>> apply(Observable<Integer> xs) {
-                    return xs.toList();
-                }
-            })
+            .map(Observable::toList)
         )
-        .toBlocking().forEach(new Consumer<List<Integer>>() {
-            @Override
-            public void accept(List<Integer> xs) {
-                lists.add(xs);
-            }
-        });
+        .toBlocking().forEach(lists::add);
 
         assertArrayEquals(lists.get(0).toArray(new Integer[3]), new Integer[] { 1, 2, 3 });
         assertArrayEquals(lists.get(1).toArray(new Integer[3]), new Integer[] { 4, 5, 6 });

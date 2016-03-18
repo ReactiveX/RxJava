@@ -328,14 +328,9 @@ public class NbpOperatorMergeDelayErrorTest {
         @Override
         public void accept(final NbpSubscriber<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    NbpObserver.onNext("hello");
-                    NbpObserver.onComplete();
-                }
-
+            t = new Thread(() -> {
+                NbpObserver.onNext("hello");
+                NbpObserver.onComplete();
             });
             t.start();
         }
@@ -383,28 +378,23 @@ public class NbpOperatorMergeDelayErrorTest {
         @Override
         public void accept(final NbpSubscriber<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-            t = new Thread(new Runnable() {
+            t = new Thread(() -> {
+                for (String s : valuesToReturn) {
+                    if (s == null) {
+                        System.out.println("throwing exception");
+                        try {
+                            Thread.sleep(100);
+                        } catch (Throwable e) {
 
-                @Override
-                public void run() {
-                    for (String s : valuesToReturn) {
-                        if (s == null) {
-                            System.out.println("throwing exception");
-                            try {
-                                Thread.sleep(100);
-                            } catch (Throwable e) {
-
-                            }
-                            NbpObserver.onError(new NullPointerException());
-                            return;
-                        } else {
-                            NbpObserver.onNext(s);
                         }
+                        NbpObserver.onError(new NullPointerException());
+                        return;
+                    } else {
+                        NbpObserver.onNext(s);
                     }
-                    System.out.println("subscription complete");
-                    NbpObserver.onComplete();
                 }
-
+                System.out.println("subscription complete");
+                NbpObserver.onComplete();
             });
             t.start();
         }
@@ -535,19 +525,14 @@ public class NbpOperatorMergeDelayErrorTest {
         @Override
         public void accept(final NbpSubscriber<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        NbpObserver.onError(e);
-                    }
-                    NbpObserver.onNext("hello");
-                    NbpObserver.onComplete();
+            t = new Thread(() -> {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    NbpObserver.onError(e);
                 }
-
+                NbpObserver.onNext("hello");
+                NbpObserver.onComplete();
             });
             t.start();
         }

@@ -367,13 +367,7 @@ public class NbpReplaySubjectTest {
             src.onNext(v);
             System.out.printf("Turn: %d%n", i);
             src.first()
-                .flatMap(new Function<String, NbpObservable<String>>() {
-
-                    @Override
-                    public NbpObservable<String> apply(String t1) {
-                        return NbpObservable.just(t1 + ", " + t1);
-                    }
-                })
+                .flatMap(t1 -> NbpObservable.just(t1 + ", " + t1))
                 .subscribe(new NbpObserver<String>() {
                     @Override
                     public void onNext(String t) {

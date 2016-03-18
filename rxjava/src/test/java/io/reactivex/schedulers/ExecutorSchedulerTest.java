@@ -67,17 +67,11 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         int n = 100 * 1000;
         if (periodic) {
             final CountDownLatch cdl = new CountDownLatch(n);
-            final Runnable action = new Runnable() {
-                @Override
-                public void run() {
-                    cdl.countDown();
-                }
-            };
             for (int i = 0; i < n; i++) {
                 if (i % 50000 == 0) {
                     System.out.println("  -> still scheduling: " + i);
                 }
-                w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
+                w.schedulePeriodically(cdl::countDown, 0, 1, TimeUnit.DAYS);
             }
             
             System.out.println("Waiting for the first round to finish...");
@@ -167,12 +161,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     @Test
     public void testCancelledTasksDontRun() {
         final AtomicInteger calls = new AtomicInteger();
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        };
+        Runnable task = calls::getAndIncrement;
         TestExecutor exec = new TestExecutor();
         Scheduler custom = Schedulers.from(exec);
         Worker w = custom.createWorker();
@@ -195,12 +184,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     @Test
     public void testCancelledWorkerDoesntRunTasks() {
         final AtomicInteger calls = new AtomicInteger();
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        };
+        Runnable task = calls::getAndIncrement;
         TestExecutor exec = new TestExecutor();
         Scheduler custom = Schedulers.from(exec);
         Worker w = custom.createWorker();

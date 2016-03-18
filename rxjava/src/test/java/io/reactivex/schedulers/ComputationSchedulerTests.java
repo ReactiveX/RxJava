@@ -90,23 +90,15 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
     @Test
     public final void testComputationThreadPool1() {
-        Observable<Integer> o1 = Observable.<Integer> just(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> just(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Function<Integer, String>() {
-
-            @Override
-            public String apply(Integer t) {
-                assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
+        Observable<Integer> o1 = Observable.just(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.just(6, 7, 8, 9, 10);
+        Observable<String> o = Observable.merge(o1, o2).map(t -> {
+            assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+            return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
         });
 
-        o.subscribeOn(Schedulers.computation()).toBlocking().forEach(new Consumer<String>() {
-
-            @Override
-            public void accept(String t) {
-                System.out.println("t: " + t);
-            }
+        o.subscribeOn(Schedulers.computation()).toBlocking().forEach(t -> {
+            System.out.println("t: " + t);
         });
     }
 
@@ -116,25 +108,15 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
         final String currentThreadName = Thread.currentThread().getName();
 
-        Observable<Integer> o1 = Observable.<Integer> just(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> just(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.computation()).map(new Function<Integer, String>() {
-
-            @Override
-            public String apply(Integer t) {
-                assertFalse(Thread.currentThread().getName().equals(currentThreadName));
-                assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
+        Observable<Integer> o1 = Observable.just(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.just(6, 7, 8, 9, 10);
+        Observable<String> o = Observable.merge(o1, o2).subscribeOn(Schedulers.computation()).map(t -> {
+            assertFalse(Thread.currentThread().getName().equals(currentThreadName));
+            assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+            return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
         });
 
-        o.toBlocking().forEach(new Consumer<String>() {
-
-            @Override
-            public void accept(String t) {
-                System.out.println("t: " + t);
-            }
-        });
+        o.toBlocking().forEach(t -> System.out.println("t: " + t));
     }
 
     @Test

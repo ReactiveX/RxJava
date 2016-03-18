@@ -54,29 +54,21 @@ public class NbpOnSubscribeFromIterableTest {
      */
     @Test
     public void testRawIterable() {
-        Iterable<String> it = new Iterable<String>() {
+        Iterable<String> it = () -> new Iterator<String>() {
+            int i = 0;
 
             @Override
-            public Iterator<String> iterator() {
-                return new Iterator<String>() {
+            public boolean hasNext() {
+                return i < 3;
+            }
 
-                    int i = 0;
+            @Override
+            public String next() {
+                return String.valueOf(++i);
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        return i < 3;
-                    }
-
-                    @Override
-                    public String next() {
-                        return String.valueOf(++i);
-                    }
-
-                    @Override
-                    public void remove() {
-                    }
-
-                };
+            @Override
+            public void remove() {
             }
 
         };
@@ -138,35 +130,28 @@ public class NbpOnSubscribeFromIterableTest {
     @Test
     public void testDoesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = new Iterable<Integer>() {
+        Iterable<Integer> iterable = () -> new Iterator<Integer>() {
+            int count = 1;
 
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-
-                    int count = 1;
-                    
-                    @Override
-                    public void remove() {
-                        // ignore
-                    }
-
-                    @Override
-                    public boolean hasNext() {
-                        if (count > 1) {
-                            called.set(true);
-                            return false;
-                        } else
-                            return true;
-                    }
-
-                    @Override
-                    public Integer next() {
-                        return count++;
-                    }
-
-                };
+            public void remove() {
+                // ignore
             }
+
+            @Override
+            public boolean hasNext() {
+                if (count > 1) {
+                    called.set(true);
+                    return false;
+                } else
+                    return true;
+            }
+
+            @Override
+            public Integer next() {
+                return count++;
+            }
+
         };
         NbpObservable.fromIterable(iterable).take(1).subscribe();
         assertFalse(called.get());
@@ -175,35 +160,28 @@ public class NbpOnSubscribeFromIterableTest {
     @Test
     public void testDoesNotCallIteratorHasNextMoreThanRequiredFastPath() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = new Iterable<Integer>() {
+        Iterable<Integer> iterable = () -> new Iterator<Integer>() {
+            @Override
+            public void remove() {
+                // ignore
+            }
+
+            int count = 1;
 
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-
-                    @Override
-                    public void remove() {
-                        // ignore
-                    }
-
-                    int count = 1;
-
-                    @Override
-                    public boolean hasNext() {
-                        if (count > 1) {
-                            called.set(true);
-                            return false;
-                        } else
-                            return true;
-                    }
-
-                    @Override
-                    public Integer next() {
-                        return count++;
-                    }
-
-                };
+            public boolean hasNext() {
+                if (count > 1) {
+                    called.set(true);
+                    return false;
+                } else
+                    return true;
             }
+
+            @Override
+            public Integer next() {
+                return count++;
+            }
+
         };
         NbpObservable.fromIterable(iterable).subscribe(new NbpObserver<Integer>() {
 

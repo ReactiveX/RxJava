@@ -29,10 +29,7 @@ public final class NbpSubscriberResourceWrapper<T, R> extends AtomicReference<Ob
     
     final AtomicReference<Disposable> subscription = new AtomicReference<>();
     
-    static final Disposable TERMINATED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
+    static final Disposable TERMINATED = () -> { };
     
     public NbpSubscriberResourceWrapper(NbpSubscriber<? super T> actual, Consumer<? super R> disposer) {
         this.actual = actual;

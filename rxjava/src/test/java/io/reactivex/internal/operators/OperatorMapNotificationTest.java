@@ -24,26 +24,8 @@ public class OperatorMapNotificationTest {
     public void testJust() {
         TestSubscriber<Object> ts = new TestSubscriber<>();
         Observable.just(1)
-        .flatMap(
-                new Function<Integer, Observable<Object>>() {
-                    @Override
-                    public Observable<Object> apply(Integer item) {
-                        return Observable.just((Object)(item + 1));
-                    }
-                },
-                new Function<Throwable, Observable<Object>>() {
-                    @Override
-                    public Observable<Object> apply(Throwable e) {
-                        return Observable.error(e);
-                    }
-                },
-                new Supplier<Observable<Object>>() {
-                    @Override
-                    public Observable<Object> get() {
-                        return Observable.never();
-                    }
-                }
-        ).subscribe(ts);
+                .flatMap(item -> Observable.just(item + 1), Observable::error, Observable::never)
+                .subscribe(ts);
         
         ts.assertNoErrors();
         ts.assertNotComplete();

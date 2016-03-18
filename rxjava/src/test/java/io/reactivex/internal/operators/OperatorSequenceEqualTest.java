@@ -121,11 +121,8 @@ public class OperatorSequenceEqualTest {
     public void testWithEqualityError() {
         Observable<Boolean> observable = Observable.sequenceEqual(
                 Observable.just("one"), Observable.just("one"),
-                new BiPredicate<String, String>() {
-                    @Override
-                    public boolean test(String t1, String t2) {
-                        throw new TestException();
-                    }
+                (t1, t2) -> {
+                    throw new TestException();
                 });
         verifyError(observable);
     }

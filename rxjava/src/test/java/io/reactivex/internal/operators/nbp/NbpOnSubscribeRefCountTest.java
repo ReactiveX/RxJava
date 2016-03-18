@@ -40,26 +40,13 @@ public class NbpOnSubscribeRefCountTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         NbpObservable<Long> r = NbpObservable.interval(0, 5, TimeUnit.MILLISECONDS)
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable s) {
-                        subscribeCount.incrementAndGet();
-                    }
-                })
-                .doOnNext(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long l) {
-                        nextCount.incrementAndGet();
-                    }
-                })
+                .doOnSubscribe(s -> subscribeCount.incrementAndGet())
+                .doOnNext(l -> nextCount.incrementAndGet())
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable s1 = r.subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long l) {
-                receivedCount.incrementAndGet();
-            }
+        Disposable s1 = r.subscribe(l -> {
+            receivedCount.incrementAndGet();
         });
         
         Disposable s2 = r.subscribe();
@@ -87,26 +74,13 @@ public class NbpOnSubscribeRefCountTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         NbpObservable<Integer> r = NbpObservable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable s) {
-                        subscribeCount.incrementAndGet();
-                    }
-                })
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer l) {
-                        nextCount.incrementAndGet();
-                    }
-                })
+                .doOnSubscribe(s -> subscribeCount.incrementAndGet())
+                .doOnNext(l -> nextCount.incrementAndGet())
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable s1 = r.subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer l) {
-                receivedCount.incrementAndGet();
-            }
+        Disposable s1 = r.subscribe(l -> {
+            receivedCount.incrementAndGet();
         });
 
         Disposable s2 = r.subscribe();
@@ -133,22 +107,16 @@ public class NbpOnSubscribeRefCountTest {
     public void testRefCountSynchronousTake() {
         final AtomicInteger nextCount = new AtomicInteger();
         NbpObservable<Integer> r = NbpObservable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer l) {
-                            System.out.println("onNext --------> " + l);
-                            nextCount.incrementAndGet();
-                    }
+                .doOnNext(l -> {
+                        System.out.println("onNext --------> " + l);
+                        nextCount.incrementAndGet();
                 })
                 .take(4)
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        r.subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer l) {
-                receivedCount.incrementAndGet();
-            }
+        r.subscribe(l -> {
+            receivedCount.incrementAndGet();
         });
 
         System.out.println("onNext: " + nextCount.get());
@@ -162,21 +130,15 @@ public class NbpOnSubscribeRefCountTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger unsubscribeCount = new AtomicInteger();
         NbpObservable<Long> r = NbpObservable.interval(0, 1, TimeUnit.MILLISECONDS)
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable s) {
-                            System.out.println("******************************* Subscribe received");
-                            // when we are subscribed
-                            subscribeCount.incrementAndGet();
-                    }
+                .doOnSubscribe(s -> {
+                        System.out.println("******************************* Subscribe received");
+                        // when we are subscribed
+                        subscribeCount.incrementAndGet();
                 })
-                .doOnCancel(new Runnable() {
-                    @Override
-                    public void run() {
-                            System.out.println("******************************* Unsubscribe received");
-                            // when we are unsubscribed
-                            unsubscribeCount.incrementAndGet();
-                    }
+                .doOnCancel(() -> {
+                        System.out.println("******************************* Unsubscribe received");
+                        // when we are unsubscribed
+                        unsubscribeCount.incrementAndGet();
                 })
                 .publish().refCount();
 
@@ -207,21 +169,15 @@ public class NbpOnSubscribeRefCountTest {
         final CountDownLatch subscribeLatch = new CountDownLatch(1);
         
         NbpObservable<Long> o = synchronousInterval()
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable s) {
-                            System.out.println("******************************* Subscribe received");
-                            // when we are subscribed
-                            subscribeLatch.countDown();
-                    }
+                .doOnSubscribe(s -> {
+                        System.out.println("******************************* Subscribe received");
+                        // when we are subscribed
+                        subscribeLatch.countDown();
                 })
-                .doOnCancel(new Runnable() {
-                    @Override
-                    public void run() {
-                            System.out.println("******************************* Unsubscribe received");
-                            // when we are unsubscribed
-                            unsubscribeLatch.countDown();
-                    }
+                .doOnCancel(() -> {
+                        System.out.println("******************************* Unsubscribe received");
+                        // when we are unsubscribed
+                        unsubscribeLatch.countDown();
                 });
         
         NbpTestSubscriber<Long> s = new NbpTestSubscriber<>();
@@ -253,20 +209,14 @@ public class NbpOnSubscribeRefCountTest {
     public void testConnectUnsubscribeRaceCondition() throws InterruptedException {
         final AtomicInteger subUnsubCount = new AtomicInteger();
         NbpObservable<Long> o = synchronousInterval()
-                .doOnCancel(new Runnable() {
-                    @Override
-                    public void run() {
-                            System.out.println("******************************* Unsubscribe received");
-                            // when we are unsubscribed
-                            subUnsubCount.decrementAndGet();
-                    }
+                .doOnCancel(() -> {
+                        System.out.println("******************************* Unsubscribe received");
+                        // when we are unsubscribed
+                        subUnsubCount.decrementAndGet();
                 })
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable s) {
-                            System.out.println("******************************* SUBSCRIBE received");
-                            subUnsubCount.incrementAndGet();
-                    }
+                .doOnSubscribe(s -> {
+                        System.out.println("******************************* SUBSCRIBE received");
+                        subUnsubCount.incrementAndGet();
                 });
 
         NbpTestSubscriber<Long> s = new NbpTestSubscriber<>();
@@ -294,12 +244,7 @@ public class NbpOnSubscribeRefCountTest {
             @Override
             public void accept(NbpSubscriber<? super Long> NbpSubscriber) {
                 final AtomicBoolean cancel = new AtomicBoolean();
-                NbpSubscriber.onSubscribe(new Disposable() {
-                    @Override
-                    public void dispose() {
-                        cancel.set(true);
-                    }
-                });
+                NbpSubscriber.onSubscribe(() -> cancel.set(true));
                 for (;;) {
                     if (cancel.get()) {
                         break;
@@ -322,12 +267,7 @@ public class NbpOnSubscribeRefCountTest {
             @Override
             public void accept(NbpSubscriber<? super Integer> NbpObserver) {
                 subscriptionCount.incrementAndGet();
-                NbpObserver.onSubscribe(new Disposable() {
-                    @Override
-                    public void dispose() {
-                            unsubscriptionCount.incrementAndGet();
-                    }
-                });
+                NbpObserver.onSubscribe(unsubscriptionCount::incrementAndGet);
             }
         });
         NbpObservable<Integer> refCounted = o.publish().refCount();
@@ -352,11 +292,8 @@ public class NbpOnSubscribeRefCountTest {
 
         // subscribe list1
         final List<Long> list1 = new ArrayList<>();
-        Disposable s1 = interval.subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                list1.add(t1);
-            }
+        Disposable s1 = interval.subscribe(t1 -> {
+            list1.add(t1);
         });
 
         s.advanceTimeBy(200, TimeUnit.MILLISECONDS);
@@ -367,11 +304,8 @@ public class NbpOnSubscribeRefCountTest {
 
         // subscribe list2
         final List<Long> list2 = new ArrayList<>();
-        Disposable s2 = interval.subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                list2.add(t1);
-            }
+        Disposable s2 = interval.subscribe(t1 -> {
+            list2.add(t1);
         });
 
         s.advanceTimeBy(300, TimeUnit.MILLISECONDS);
@@ -412,11 +346,8 @@ public class NbpOnSubscribeRefCountTest {
         // subscribing a new one should start over because the source should have been unsubscribed
         // subscribe list3
         final List<Long> list3 = new ArrayList<>();
-        interval.subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                list3.add(t1);
-            }
+        interval.subscribe(t1 -> {
+            list3.add(t1);
         });
 
         s.advanceTimeBy(200, TimeUnit.MILLISECONDS);
@@ -474,13 +405,7 @@ public class NbpOnSubscribeRefCountTest {
     public void testConnectDisconnectConnectAndSubjectState() {
         NbpObservable<Integer> o1 = NbpObservable.just(10);
         NbpObservable<Integer> o2 = NbpObservable.just(20);
-        NbpObservable<Integer> combined = NbpObservable.combineLatest(o1, o2, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        })
-        .publish().refCount();
+        NbpObservable<Integer> combined = NbpObservable.combineLatest(o1, o2, (t1, t2) -> t1 + t2).publish().refCount();
 
         NbpTestSubscriber<Integer> ts1 = new NbpTestSubscriber<>();
         NbpTestSubscriber<Integer> ts2 = new NbpTestSubscriber<>();
@@ -502,61 +427,25 @@ public class NbpOnSubscribeRefCountTest {
         final AtomicInteger intervalSubscribed = new AtomicInteger();
         NbpObservable<String> interval =
                 NbpObservable.interval(200,TimeUnit.MILLISECONDS)
-                        .doOnSubscribe(new Consumer<Disposable>() {
-                            @Override
-                            public void accept(Disposable s) {
-                                            System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
-                                    }
-                        }
-                         )
-                        .flatMap(new Function<Long, NbpObservable<String>>() {
-                            @Override
-                            public NbpObservable<String> apply(Long t1) {
-                                    return NbpObservable.defer(new Supplier<NbpObservable<String>>() {
-                                        @Override
-                                        public NbpObservable<String> get() {
-                                                return NbpObservable.<String>error(new Exception("Some exception"));
-                                        }
-                                    });
-                            }
-                        })
-                        .onErrorResumeNext(new Function<Throwable, NbpObservable<String>>() {
-                            @Override
-                            public NbpObservable<String> apply(Throwable t1) {
-                                    return NbpObservable.<String>error(t1);
-                            }
-                        })
+                        .doOnSubscribe(s -> System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet())
+                        )
+                        .flatMap(t1 -> NbpObservable.defer(() -> NbpObservable.<String>error(new Exception("Some exception"))))
+                        .onErrorResumeNext(NbpObservable::<String>error)
                         .publish()
                         .refCount();
 
         interval
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable t1) {
-                            System.out.println("NbpSubscriber 1 onError: " + t1);
-                    }
-                })
+                .doOnError(t1 -> System.out.println("NbpSubscriber 1 onError: " + t1))
                 .retry(5)
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String t1) {
-                            System.out.println("NbpSubscriber 1: " + t1);
-                    }
+                .subscribe(t1 -> {
+                        System.out.println("NbpSubscriber 1: " + t1);
                 });
         Thread.sleep(100);
         interval
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t1) {
-                    System.out.println("NbpSubscriber 2 onError: " + t1);
-            }
-        })
+        .doOnError(t1 -> System.out.println("NbpSubscriber 2 onError: " + t1))
         .retry(5)
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String t1) {
-                            System.out.println("NbpSubscriber 2: " + t1);
-                    }
+                .subscribe(t1 -> {
+                        System.out.println("NbpSubscriber 2: " + t1);
                 });
         
         Thread.sleep(1300);

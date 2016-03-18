@@ -79,18 +79,13 @@ public class OperatorRepeatTest {
             }
         }).subscribeOn(Schedulers.newThread());
 
-        Object[] ys = oi.repeat().subscribeOn(Schedulers.newThread()).map(new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return t1;
+        Object[] ys = oi.repeat().subscribeOn(Schedulers.newThread()).map(t1 -> {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-
+            return t1;
         }).take(4).toList().toBlocking().last().toArray();
 
         assertEquals(2, counter.get());
@@ -177,14 +172,11 @@ public class OperatorRepeatTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         Observable.just(1, 2)
         .repeat(5)
-        .concatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer x) {
-                System.out.println("testRepeatRetarget -> " + x);
-                concatBase.add(x);
-                return Observable.<Integer>empty()
-                        .delay(200, TimeUnit.MILLISECONDS);
-            }
+        .concatMap(x -> {
+            System.out.println("testRepeatRetarget -> " + x);
+            concatBase.add(x);
+            return Observable.<Integer>empty()
+                    .delay(200, TimeUnit.MILLISECONDS);
         })
         .subscribe(ts);
 

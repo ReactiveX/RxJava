@@ -77,13 +77,8 @@ public class OperatorSubscribeOnTest {
     @Ignore("Publisher.subscribe can't throw")
     public void testThrownErrorHandling() {
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Observable.create(new Publisher<String>() {
-
-            @Override
-            public void subscribe(Subscriber<? super String> s) {
-                throw new RuntimeException("fail");
-            }
-
+        Observable.<String>create(s -> {
+            throw new RuntimeException("fail");
         }).subscribeOn(Schedulers.computation()).subscribe(ts);
         ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
         ts.assertTerminated();

@@ -246,13 +246,7 @@ public class NbpBehaviorSubjectTest {
             src.onNext(v);
             System.out.printf("Turn: %d%n", i);
             src.first()
-                .flatMap(new Function<String, NbpObservable<String>>() {
-
-                    @Override
-                    public NbpObservable<String> apply(String t1) {
-                        return NbpObservable.just(t1 + ", " + t1);
-                    }
-                })
+                .flatMap(t1 -> NbpObservable.just(t1 + ", " + t1))
                 .subscribe(new NbpObserver<String>() {
                     @Override
                     public void onNext(String t) {
@@ -412,16 +406,13 @@ public class NbpBehaviorSubjectTest {
                 final CountDownLatch finish = new CountDownLatch(1); 
                 final CountDownLatch start = new CountDownLatch(1); 
                 
-                worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            start.await();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                        rs.onNext(1);
+                worker.schedule(() -> {
+                    try {
+                        start.await();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
                     }
+                    rs.onNext(1);
                 });
                 
                 final AtomicReference<Object> o = new AtomicReference<>();
@@ -458,12 +449,7 @@ public class NbpBehaviorSubjectTest {
                     break;
                 } else {
                     Assert.assertEquals(1, o.get());
-                    worker.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            rs.onComplete();
-                        }
-                    });
+                    worker.schedule(rs::onComplete);
                 }
             }
         } finally {
@@ -500,7 +486,7 @@ public class NbpBehaviorSubjectTest {
     
     @Test
     public void testCurrentStateMethodsNormalSomeStart() {
-        NbpBehaviorSubject<Object> as = NbpBehaviorSubject.createDefault((Object)1);
+        NbpBehaviorSubject<Object> as = NbpBehaviorSubject.createDefault(1);
         
         assertTrue(as.hasValue());
         assertFalse(as.hasThrowable());

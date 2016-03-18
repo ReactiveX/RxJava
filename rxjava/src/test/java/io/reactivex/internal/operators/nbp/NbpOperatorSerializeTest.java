@@ -221,22 +221,17 @@ public class NbpOperatorSerializeTest {
         public void accept(final NbpSubscriber<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             System.out.println("TestSingleThreadedObservable subscribed to ...");
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestSingleThreadedObservable thread");
-                        for (String s : values) {
-                            System.out.println("TestSingleThreadedObservable onNext: " + s);
-                            NbpObserver.onNext(s);
-                        }
-                        NbpObserver.onComplete();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestSingleThreadedObservable thread");
+                    for (String s : values) {
+                        System.out.println("TestSingleThreadedObservable onNext: " + s);
+                        NbpObserver.onNext(s);
                     }
+                    NbpObserver.onComplete();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
                 }
-
             });
             System.out.println("starting TestSingleThreadedObservable thread");
             t.start();
@@ -273,56 +268,48 @@ public class NbpOperatorSerializeTest {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             System.out.println("TestMultiThreadedObservable subscribed to ...");
             final NullPointerException npe = new NullPointerException();
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestMultiThreadedObservable thread");
-                        for (final String s : values) {
-                            threadPool.execute(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    threadsRunning.incrementAndGet();
-                                    try {
-                                        // perform onNext call
-                                        if (s == null) {
-                                            System.out.println("TestMultiThreadedObservable onNext: null");
-                                            // force an error
-                                            throw npe;
-                                        } else 
-                                            System.out.println("TestMultiThreadedObservable onNext: " + s);
-                                        NbpObserver.onNext(s);
-                                        // capture 'maxThreads'
-                                        int concurrentThreads = threadsRunning.get();
-                                        int maxThreads = maxConcurrentThreads.get();
-                                        if (concurrentThreads > maxThreads) {
-                                            maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
-                                        }
-                                    } catch (Throwable e) {
-                                        NbpObserver.onError(e);
-                                    } finally {
-                                        threadsRunning.decrementAndGet();
-                                    }
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestMultiThreadedObservable thread");
+                    for (final String s : values) {
+                        threadPool.execute(() -> {
+                            threadsRunning.incrementAndGet();
+                            try {
+                                // perform onNext call
+                                if (s == null) {
+                                    System.out.println("TestMultiThreadedObservable onNext: null");
+                                    // force an error
+                                    throw npe;
+                                } else
+                                    System.out.println("TestMultiThreadedObservable onNext: " + s);
+                                NbpObserver.onNext(s);
+                                // capture 'maxThreads'
+                                int concurrentThreads = threadsRunning.get();
+                                int maxThreads = maxConcurrentThreads.get();
+                                if (concurrentThreads > maxThreads) {
+                                    maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
                                 }
-                            });
-                        }
-                        // we are done spawning threads
-                        threadPool.shutdown();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+                            } catch (Throwable e) {
+                                NbpObserver.onError(e);
+                            } finally {
+                                threadsRunning.decrementAndGet();
+                            }
+                        });
                     }
-
-                    // wait until all threads are done, then mark it as COMPLETED
-                    try {
-                        // wait for all the threads to finish
-                        threadPool.awaitTermination(2, TimeUnit.SECONDS);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    NbpObserver.onComplete();
+                    // we are done spawning threads
+                    threadPool.shutdown();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
                 }
+
+                // wait until all threads are done, then mark it as COMPLETED
+                try {
+                    // wait for all the threads to finish
+                    threadPool.awaitTermination(2, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                NbpObserver.onComplete();
             });
             System.out.println("starting TestMultiThreadedObservable thread");
             t.start();

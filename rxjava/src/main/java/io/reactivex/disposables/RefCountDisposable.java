@@ -21,10 +21,7 @@ public final class RefCountDisposable implements Disposable {
 
     final AtomicReference<Disposable> resource = new AtomicReference<>();
 
-    static final Disposable DISPOSED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
+    static final Disposable DISPOSED = () -> { };
     
     final AtomicInteger count = new AtomicInteger();
 

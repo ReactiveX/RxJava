@@ -406,12 +406,7 @@ public final class RxJavaPlugins {
     }
 
     /** Singleton consumer that calls RxJavaPlugins.onError. */
-    static final Consumer<Throwable> CONSUME_BY_RXJAVA_PLUGIN = new Consumer<Throwable>() {
-        @Override
-        public void accept(Throwable e) {
-            RxJavaPlugins.onError(e);
-        }
-    };
+    static final Consumer<Throwable> CONSUME_BY_RXJAVA_PLUGIN = RxJavaPlugins::onError;
     
     /**
      * Returns a consumer which relays the received Throwable to RxJavaPlugins.onError().

@@ -232,12 +232,7 @@ public final class NbpAsyncSubject<T> extends NbpSubject<T, T> {
         
         @Override
         public void accept(final NbpSubscriber<? super T> t) {
-            BooleanDisposable bd = new BooleanDisposable(new Runnable() {
-                @Override
-                public void run() {
-                    remove(t);
-                }
-            });
+            BooleanDisposable bd = new BooleanDisposable(() -> remove(t));
             t.onSubscribe(bd);
             if (add(t)) {
                 if (bd.isDisposed()) {

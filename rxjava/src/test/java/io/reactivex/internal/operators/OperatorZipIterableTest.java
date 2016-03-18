@@ -41,12 +41,7 @@ public class OperatorZipIterableTest {
 
     @Before
     public void setUp() {
-        concat2Strings = new BiFunction<String, String, String>() {
-            @Override
-            public String apply(String t1, String t2) {
-                return t1 + "-" + t2;
-            }
-        };
+        concat2Strings = (t1, t2) -> t1 + "-" + t2;
 
         s1 = PublishSubject.create();
         s2 = PublishSubject.create();
@@ -58,22 +53,8 @@ public class OperatorZipIterableTest {
         zipped.subscribe(observer);
     }
 
-    BiFunction<Object, Object, String> zipr2 = new BiFunction<Object, Object, String>() {
-
-        @Override
-        public String apply(Object t1, Object t2) {
-            return "" + t1 + t2;
-        }
-
-    };
-    Function3<Object, Object, Object, String> zipr3 = new Function3<Object, Object, Object, String>() {
-
-        @Override
-        public String apply(Object t1, Object t2, Object t3) {
-            return "" + t1 + t2 + t3;
-        }
-
-    };
+    BiFunction<Object, Object, String> zipr2 = (t1, t2) -> "" + t1 + t2;
+    Function3<Object, Object, Object, String> zipr3 = (t1, t2, t3) -> "" + t1 + t2 + t3;
 
     @Test
     public void testZipIterableSameSize() {
@@ -219,11 +200,8 @@ public class OperatorZipIterableTest {
         Subscriber<String> o = TestHelper.mockSubscriber();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = new Iterable<String>() {
-            @Override
-            public Iterator<String> iterator() {
-                throw new TestException();
-            }
+        Iterable<String> r2 = () -> {
+            throw new TestException();
         };
 
         r1.zipWith(r2, zipr2).subscribe(o);
@@ -246,33 +224,26 @@ public class OperatorZipIterableTest {
         Subscriber<String> o = TestHelper.mockSubscriber();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = new Iterable<String>() {
+        Iterable<String> r2 = () -> new Iterator<String>() {
+            int count;
 
             @Override
-            public Iterator<String> iterator() {
-                return new Iterator<String>() {
-                    int count;
+            public boolean hasNext() {
+                if (count == 0) {
+                    return true;
+                }
+                throw new TestException();
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        if (count == 0) {
-                            return true;
-                        }
-                        throw new TestException();
-                    }
+            @Override
+            public String next() {
+                count++;
+                return "1";
+            }
 
-                    @Override
-                    public String next() {
-                        count++;
-                        return "1";
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                    }
-
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
         };
@@ -296,27 +267,20 @@ public class OperatorZipIterableTest {
         Subscriber<String> o = TestHelper.mockSubscriber();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = new Iterable<String>() {
+        Iterable<String> r2 = () -> new Iterator<String>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
 
             @Override
-            public Iterator<String> iterator() {
-                return new Iterator<String>() {
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
+            public String next() {
+                throw new TestException();
+            }
 
-                    @Override
-                    public String next() {
-                        throw new TestException();
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                    }
-
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
         };
@@ -331,33 +295,19 @@ public class OperatorZipIterableTest {
         verify(o, never()).onComplete();
 
     }
-    
-    Consumer<String> printer = new Consumer<String>() {
-        @Override
-        public void accept(String pv) {
-            System.out.println(pv);
-        }
-    };
-
-    static final class SquareStr implements Function<Integer, String> {
-        final AtomicInteger counter = new AtomicInteger();
-        @Override
-        public String apply(Integer t1) {
-            counter.incrementAndGet();
-            System.out.println("Omg I'm calculating so hard: " + t1 + "*" + t1 + "=" + (t1*t1));
-            return " " + (t1*t1);
-        }
-    }
 
     @Test 
     public void testTake2() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4, 5);
         Iterable<String> it = Arrays.asList("a", "b", "c", "d", "e");
+
+        final AtomicInteger counter = new AtomicInteger();
+        o.map(t1 -> {
+            counter.incrementAndGet();
+            System.out.println("Omg I'm calculating so hard: " + t1 + "*" + t1 + "=" + (t1*t1));
+            return " " + (t1*t1);
+        }).zipWith(it, concat2Strings).take(2).subscribe(System.out::println);
         
-        SquareStr squareStr = new SquareStr();
-        
-        o.map(squareStr).zipWith(it, concat2Strings).take(2).subscribe(printer);
-        
-        assertEquals(2, squareStr.counter.get());
+        assertEquals(2, counter.get());
     }
 }

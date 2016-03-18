@@ -243,10 +243,7 @@ public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
         
         final AtomicReference<Disposable> s = new AtomicReference<>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
+        static final Disposable CANCELLED = () -> { };
         
         public ZipSubscriber(ZipCoordinator<T, R> parent, int bufferSize) {
             this.parent = parent;

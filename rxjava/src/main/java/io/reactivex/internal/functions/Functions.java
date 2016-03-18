@@ -25,126 +25,97 @@ public enum Functions {
     @SuppressWarnings("unchecked")
     public static <T1, T2, R> Function<Object[], R> toFunction(final BiFunction<? super T1, ? super T2, ? extends R> biFunction) {
         Objects.requireNonNull(biFunction, "biFunction is null");
-        return new Function<Object[], R>() {
-            @Override
-            public R apply(Object[] a) {
-                if (a.length != 2) {
-                    throw new IllegalArgumentException("Array of size 2 expected but got " + a.length);
-                }
-                return ((BiFunction<Object, Object, R>)biFunction).apply(a[0], a[1]);
+        return a -> {
+            if (a.length != 2) {
+                throw new IllegalArgumentException("Array of size 2 expected but got " + a.length);
             }
+            return biFunction.apply((T1)a[0], (T2)a[1]);
         };
     }
-    
+
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, R> Function<Object[], R> toFunction(final Function3<T1, T2, T3, R> f) {
         Objects.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) {
-                if (a.length != 3) {
-                    throw new IllegalArgumentException("Array of size 3 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2]);
+        return a -> {
+            if (a.length != 3) {
+                throw new IllegalArgumentException("Array of size 3 expected but got " + a.length);
             }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2]);
         };
     }
-    
+
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, R> Function<Object[], R> toFunction(final Function4<T1, T2, T3, T4, R> f) {
         Objects.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) {
-                if (a.length != 4) {
-                    throw new IllegalArgumentException("Array of size 4 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3]);
+        return a -> {
+            if (a.length != 4) {
+                throw new IllegalArgumentException("Array of size 4 expected but got " + a.length);
             }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3]);
         };
     }
-    
+
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, R> Function<Object[], R> toFunction(final Function5<T1, T2, T3, T4, T5, R> f) {
         Objects.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) {
-                if (a.length != 5) {
-                    throw new IllegalArgumentException("Array of size 5 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4]);
+        return a -> {
+            if (a.length != 5) {
+                throw new IllegalArgumentException("Array of size 5 expected but got " + a.length);
             }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4]);
         };
     }
-    
+
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, R> Function<Object[], R> toFunction(
             final Function6<T1, T2, T3, T4, T5, T6, R> f) {
         Objects.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) {
-                if (a.length != 6) {
-                    throw new IllegalArgumentException("Array of size 6 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5]);
+        return a -> {
+            if (a.length != 6) {
+                throw new IllegalArgumentException("Array of size 6 expected but got " + a.length);
             }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5]);
         };
     }
-    
+
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, R> Function<Object[], R> toFunction(
             final Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
         Objects.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) {
-                if (a.length != 7) {
-                    throw new IllegalArgumentException("Array of size 7 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6]);
+        return a -> {
+            if (a.length != 7) {
+                throw new IllegalArgumentException("Array of size 7 expected but got " + a.length);
             }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6]);
         };
     }
-    
+
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function<Object[], R> toFunction(
             final Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
         Objects.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) {
-                if (a.length != 8) {
-                    throw new IllegalArgumentException("Array of size 8 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7]);
+        return a -> {
+            if (a.length != 8) {
+                throw new IllegalArgumentException("Array of size 8 expected but got " + a.length);
             }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7]);
         };
     }
-    
+
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Function<Object[], R> toFunction(
             final Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f) {
         Objects.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) {
-                if (a.length != 9) {
-                    throw new IllegalArgumentException("Array of size 9 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8]);
+        return a -> {
+            if (a.length != 9) {
+                throw new IllegalArgumentException("Array of size 9 expected but got " + a.length);
             }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8]);
         };
     }
     
     /** A singleton identity function. */
-    static final Function<Object, Object> IDENTITY = new Function<Object, Object>() {
-        @Override
-        public Object apply(Object v) {
-            return v;
-        }
-    };
+    static final Function<Object, Object> IDENTITY = v -> v;
     
     /**
      * Returns an identity function that simply returns its argument.
@@ -156,10 +127,7 @@ public enum Functions {
         return (Function<T, T>)IDENTITY;
     }
     
-    static final Runnable EMPTY = new Runnable() {
-        @Override
-        public void run() { }
-    };
+    static final Runnable EMPTY = () -> { };
     
     /**
      * Returns an empty runnable that does nothing.
@@ -169,10 +137,7 @@ public enum Functions {
         return EMPTY;
     }
     
-    static final Consumer<Object> EMPTY_CONSUMER = new Consumer<Object>() {
-        @Override
-        public void accept(Object v) { }
-    };
+    static final Consumer<Object> EMPTY_CONSUMER = v -> { };
     
     /**
      * Returns an empty consumer that does nothing.
@@ -184,10 +149,7 @@ public enum Functions {
         return (Consumer<T>)EMPTY_CONSUMER;
     }
     
-    static final LongConsumer EMPTY_LONGCONSUMER = new LongConsumer() {
-        @Override
-        public void accept(long v) { }
-    };
+    static final LongConsumer EMPTY_LONGCONSUMER = v -> { };
     
     /**
      * Returns an empty long consumer that does nothing.
@@ -197,34 +159,14 @@ public enum Functions {
         return EMPTY_LONGCONSUMER;
     }
     
-    static final Predicate<Object> ALWAYS_TRUE = new Predicate<Object>() {
-        @Override
-        public boolean test(Object o) {
-            return true;
-        }
-    };
+    static final Predicate<Object> ALWAYS_TRUE = o -> true;
 
-    static final Predicate<Object> ALWAYS_FALSE = new Predicate<Object>() {
-        @Override
-        public boolean test(Object o) {
-            return true;
-        }
-    };
+    static final Predicate<Object> ALWAYS_FALSE = o -> true;
     
-    static final Supplier<Object> NULL_SUPPLIER = new Supplier<Object>() {
-        @Override
-        public Object get() {
-            return null;
-        }
-    };
-    
-    static final Comparator<Object> NATURAL_COMPARATOR = new Comparator<Object>() {
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        public int compare(Object a, Object b) {
-            return ((Comparable)a).compareTo(b);
-        }
-    };
+    static final Supplier<Object> NULL_SUPPLIER = () -> null;
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    static final Comparator<Object> NATURAL_COMPARATOR = (a, b) -> ((Comparable)a).compareTo(b);
     
     @SuppressWarnings("unchecked")
     public static <T> Predicate<T> alwaysTrue() {

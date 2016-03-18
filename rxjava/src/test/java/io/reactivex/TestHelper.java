@@ -37,14 +37,11 @@ public enum TestHelper {
     public static <T> Subscriber<T> mockSubscriber() {
         Subscriber<T> w = mock(Subscriber.class);
         
-        Mockito.doAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock a) throws Throwable {
-                Subscription s = a.getArgumentAt(0, Subscription.class);
-                s.request(Long.MAX_VALUE);
-                return null;
-            }
-        }).when(w).onSubscribe((Subscription)any());
+        Mockito.doAnswer(a -> {
+            Subscription s = a.getArgumentAt(0, Subscription.class);
+            s.request(Long.MAX_VALUE);
+            return null;
+        }).when(w).onSubscribe(any());
         
         return w;
     }

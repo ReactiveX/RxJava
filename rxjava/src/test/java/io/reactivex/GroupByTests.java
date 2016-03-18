@@ -30,20 +30,12 @@ public class GroupByTests {
             EventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(new Function<Event, Object>() {
-            @Override
-            public Object apply(Event event) {
-                return event.type;
-            }
-        })
+        .groupBy(event -> event.type)
         .take(1)
         .toBlocking()
-        .forEach(new Consumer<GroupedObservable<Object, Event>>() {
-            @Override
-            public void accept(GroupedObservable<Object, Event> v) {
-                System.out.println(v);
-                v.take(1).subscribe();  // FIXME groups need consumption to a certain degree to cancel upstream
-            }
+        .forEach((Consumer<GroupedObservable<String, Event>>) v -> {
+            System.out.println(v);
+            v.take(1).subscribe();  // FIXME groups need consumption to a certain degree to cancel upstream
         });
 
         System.out.println("**** finished");
@@ -56,31 +48,11 @@ public class GroupByTests {
             EventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(new Function<Event, Object>() {
-            @Override
-            public Object apply(Event event) {
-                return event.type;
-            }
-        })
-        .flatMap(new Function<GroupedObservable<Object, Event>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(GroupedObservable<Object, Event> g) {
-                return g.map(new Function<Event, Object>() {
-                    @Override
-                    public Object apply(Event event) {
-                        return event.instanceId + " - " + event.values.get("count200");
-                    }
-                });
-            }
-        })
+        .groupBy(event -> event.type)
+        .flatMap(g -> g.map(event -> event.instanceId + " - " + event.values.get("count200")))
         .take(20)
         .toBlocking()
-        .forEach(new Consumer<Object>() {
-            @Override
-            public void accept(Object v) {
-                System.out.println(v);
-            }
-        });
+        .forEach((Consumer<String>) System.out::println);
 
         System.out.println("**** finished");
     }

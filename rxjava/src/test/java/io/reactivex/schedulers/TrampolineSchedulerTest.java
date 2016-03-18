@@ -44,22 +44,12 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
         Observable<Integer> o1 = Observable.<Integer> just(1, 2, 3, 4, 5);
         Observable<Integer> o2 = Observable.<Integer> just(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.trampoline()).map(new Function<Integer, String>() {
-
-            @Override
-            public String apply(Integer t) {
-                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
+        Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.trampoline()).map(t -> {
+            assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+            return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
         });
 
-        o.toBlocking().forEach(new Consumer<String>() {
-
-            @Override
-            public void accept(String t) {
-                System.out.println("t: " + t);
-            }
-        });
+        o.toBlocking().forEach(t -> System.out.println("t: " + t));
     }
 
     @Test
@@ -69,26 +59,14 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
         Worker worker = Schedulers.trampoline().createWorker();
         try {
             workers.add(worker);
-            worker.schedule(new Runnable() {
-    
-                @Override
-                public void run() {
-                    workers.add(doWorkOnNewTrampoline("A", workDone));
-                }
-    
-            });
+            worker.schedule(() -> workers.add(doWorkOnNewTrampoline("A", workDone)));
     
             final Worker worker2 = Schedulers.trampoline().createWorker();
             workers.add(worker2);
-            worker2.schedule(new Runnable() {
-    
-                @Override
-                public void run() {
-                    workers.add(doWorkOnNewTrampoline("B", workDone));
-                    // we unsubscribe worker2 ... it should not affect work scheduled on a separate Trampline.Worker
-                    worker2.dispose();
-                }
-    
+            worker2.schedule(() -> {
+                workers.add(doWorkOnNewTrampoline("B", workDone));
+                // we unsubscribe worker2 ... it should not affect work scheduled on a separate Trampline.Worker
+                worker2.dispose();
             });
         
             assertEquals(6, workDone.size());
@@ -112,19 +90,9 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
         // Spam the trampoline with actions.
         Observable.range(0, 50)
-                .flatMap(new Function<Integer, Publisher<Disposable>>() {
-                    @Override
-                    public Publisher<Disposable> apply(Integer count) {
-                        return Observable
-                                .interval(1, TimeUnit.MICROSECONDS)
-                                .map(new Function<Long, Disposable>() {
-                                    @Override
-                                    public Disposable apply(Long ount1) {
-                                        return trampolineWorker.schedule(Functions.emptyRunnable());
-                                    }
-                                }).take(100);
-                    }
-                })
+                .flatMap(count -> Observable
+                    .interval(1, TimeUnit.MICROSECONDS)
+                    .map(ount1 -> trampolineWorker.schedule(Functions.emptyRunnable())).take(100))
                 .subscribeOn(Schedulers.computation())
                 .subscribe(ts);
         ts.awaitTerminalEvent();
@@ -133,31 +101,21 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
     private static Worker doWorkOnNewTrampoline(final String key, final ArrayList<String> workDone) {
         Worker worker = Schedulers.trampoline().createWorker();
-        worker.schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                String msg = key + ".1";
-                workDone.add(msg);
-                System.out.println(msg);
-                Worker worker3 = Schedulers.trampoline().createWorker();
-                worker3.schedule(createPrintAction(key + ".B.1", workDone));
-                worker3.schedule(createPrintAction(key + ".B.2", workDone));
-            }
-
+        worker.schedule(() -> {
+            String msg = key + ".1";
+            workDone.add(msg);
+            System.out.println(msg);
+            Worker worker3 = Schedulers.trampoline().createWorker();
+            worker3.schedule(createPrintAction(key + ".B.1", workDone));
+            worker3.schedule(createPrintAction(key + ".B.2", workDone));
         });
         return worker;
     }
 
     private static Runnable createPrintAction(final String message, final ArrayList<String> workDone) {
-        return new Runnable() {
-
-            @Override
-            public void run() {
-                System.out.println(message);
-                workDone.add(message);
-            }
-
+        return () -> {
+            System.out.println(message);
+            workDone.add(message);
         };
     }
 }

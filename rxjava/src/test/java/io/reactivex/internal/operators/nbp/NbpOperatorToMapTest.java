@@ -32,18 +32,8 @@ public class NbpOperatorToMapTest {
         objectObserver = TestHelper.mockNbpSubscriber();
     }
 
-    Function<String, Integer> lengthFunc = new Function<String, Integer>() {
-        @Override
-        public Integer apply(String t1) {
-            return t1.length();
-        }
-    };
-    Function<String, String> duplicate = new Function<String, String>() {
-        @Override
-        public String apply(String t1) {
-            return t1 + t1;
-        }
-    };
+    Function<String, Integer> lengthFunc = String::length;
+    Function<String, String> duplicate = t1 -> t1 + t1;
 
     @Test
     public void testToMap() {
@@ -87,14 +77,11 @@ public class NbpOperatorToMapTest {
     public void testToMapWithError() {
         NbpObservable<String> source = NbpObservable.just("a", "bb", "ccc", "dddd");
 
-        Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
-            @Override
-            public Integer apply(String t1) {
-                if ("bb".equals(t1)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                return t1.length();
+        Function<String, Integer> lengthFuncErr = t1 -> {
+            if ("bb".equals(t1)) {
+                throw new RuntimeException("Forced Failure");
             }
+            return t1.length();
         };
         NbpObservable<Map<Integer, String>> mapped = source.toMap(lengthFuncErr);
 
@@ -116,14 +103,11 @@ public class NbpOperatorToMapTest {
     public void testToMapWithErrorInValueSelector() {
         NbpObservable<String> source = NbpObservable.just("a", "bb", "ccc", "dddd");
 
-        Function<String, String> duplicateErr = new Function<String, String>() {
-            @Override
-            public String apply(String t1) {
-                if ("bb".equals(t1)) {
-                    throw new RuntimeException("Forced failure");
-                }
-                return t1 + t1;
+        Function<String, String> duplicateErr = t1 -> {
+            if ("bb".equals(t1)) {
+                throw new RuntimeException("Forced failure");
             }
+            return t1 + t1;
         };
 
         NbpObservable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr);
@@ -146,33 +130,18 @@ public class NbpOperatorToMapTest {
     public void testToMapWithFactory() {
         NbpObservable<String> source = NbpObservable.just("a", "bb", "ccc", "dddd");
 
-        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
-            @Override
-            public Map<Integer, String> get() {
-                return new LinkedHashMap<Integer, String>() {
-                    /** */
-                    private static final long serialVersionUID = -3296811238780863394L;
+        Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() {
+            /** */
+            private static final long serialVersionUID = -3296811238780863394L;
 
-                    @Override
-                    protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
-                        return size() > 3;
-                    }
-                };
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
+                return size() > 3;
             }
         };
 
-        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
-            @Override
-            public Integer apply(String t1) {
-                return t1.length();
-            }
-        };
-        NbpObservable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
-            @Override
-            public String apply(String v) {
-                return v;
-            }
-        }, mapFactory);
+        Function<String, Integer> lengthFunc = String::length;
+        NbpObservable<Map<Integer, String>> mapped = source.toMap(lengthFunc, v -> v, mapFactory);
 
         Map<Integer, String> expected = new LinkedHashMap<>();
         expected.put(2, "bb");
@@ -190,25 +159,12 @@ public class NbpOperatorToMapTest {
     public void testToMapWithErrorThrowingFactory() {
         NbpObservable<String> source = NbpObservable.just("a", "bb", "ccc", "dddd");
 
-        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
-            @Override
-            public Map<Integer, String> get() {
-                throw new RuntimeException("Forced failure");
-            }
+        Supplier<Map<Integer, String>> mapFactory = () -> {
+            throw new RuntimeException("Forced failure");
         };
 
-        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
-            @Override
-            public Integer apply(String t1) {
-                return t1.length();
-            }
-        };
-        NbpObservable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
-            @Override
-            public String apply(String v) {
-                return v;
-            }
-        }, mapFactory);
+        Function<String, Integer> lengthFunc = String::length;
+        NbpObservable<Map<Integer, String>> mapped = source.toMap(lengthFunc, v -> v, mapFactory);
 
         Map<Integer, String> expected = new LinkedHashMap<>();
         expected.put(2, "bb");

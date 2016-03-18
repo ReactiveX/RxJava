@@ -148,14 +148,9 @@ public class NbpOperatorUnsubscribeOnTest {
              * DON'T DO THIS IN PRODUCTION CODE
              */
             final CountDownLatch latch = new CountDownLatch(1);
-            eventLoop.scheduleDirect(new Runnable() {
-
-                @Override
-                public void run() {
-                    t = Thread.currentThread();
-                    latch.countDown();
-                }
-
+            eventLoop.scheduleDirect(() -> {
+                t = Thread.currentThread();
+                latch.countDown();
             });
             try {
                 latch.await();

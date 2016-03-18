@@ -43,13 +43,10 @@ public enum BlockingOperatorLatest {
      *         been returned by the {@code Iterable}, then returns that item
      */
     public static <T> Iterable<T> latest(final Publisher<? extends T> source) {
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                LatestObserverIterator<T> lio = new LatestObserverIterator<>();
-                Observable.<T>fromPublisher(source).materialize().subscribe(lio);
-                return lio;
-            }
+        return () -> {
+            LatestObserverIterator<T> lio = new LatestObserverIterator<>();
+            Observable.<T>fromPublisher(source).materialize().subscribe(lio);
+            return lio;
         };
     }
 

@@ -85,11 +85,8 @@ public class SafeSubscriberWithPluginTest {
     @Test(expected = OnCompleteFailedException.class)
     @Ignore("Subscribers can't throw")
     public void testPluginException() {
-        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                throw new RuntimeException();
-            }
+        RxJavaPlugins.setErrorHandler(e -> {
+            throw new RuntimeException();
         });
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
@@ -224,12 +221,7 @@ public class SafeSubscriberWithPluginTest {
     @Ignore("Subscribers can't throw")
     public void testPluginErrorHandlerReceivesExceptionWhenUnsubscribeAfterCompletionThrows() {
         final AtomicInteger calls = new AtomicInteger();
-        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                calls.incrementAndGet();
-            }
-        });
+        RxJavaPlugins.setErrorHandler(e -> calls.incrementAndGet());
         
         final AtomicInteger errors = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
@@ -265,12 +257,7 @@ public class SafeSubscriberWithPluginTest {
     @Ignore("Subscribers can't throw")
     public void testPluginErrorHandlerReceivesExceptionFromFailingUnsubscribeAfterCompletionThrows() {
         final AtomicInteger calls = new AtomicInteger();
-        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                    calls.incrementAndGet();
-            }
-        });
+        RxJavaPlugins.setErrorHandler(e -> calls.incrementAndGet());
         
         final AtomicInteger errors = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {

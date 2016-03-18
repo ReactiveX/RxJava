@@ -38,40 +38,31 @@ public abstract class InputWithIncrementingInteger {
         final int size = getSize();
         observable = Observable.range(0, size);
 
-        firehose = Observable.create(new Publisher<Integer>() {
-
-            @Override
-            public void subscribe(Subscriber<? super Integer> s) {
+        firehose = Observable.create(s -> {
                 s.onSubscribe(EmptySubscription.INSTANCE);
                 for (int i = 0; i < size; i++) {
                     s.onNext(i);
                 }
                 s.onComplete();
             }
+        );
+        iterable = () -> new Iterator<Integer>() {
+            int i = 0;
 
-        });
-        iterable = new Iterable<Integer>() {
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    int i = 0;
-                    
-                    @Override
-                    public boolean hasNext() {
-                        return i < size;
-                    }
-                    
-                    @Override
-                    public Integer next() {
-                        Blackhole.consumeCPU(10);
-                        return i++;
-                    }
-                    
-                    @Override
-                    public void remove() {
-                        
-                    }
-                };
+            public boolean hasNext() {
+                return i < size;
+            }
+
+            @Override
+            public Integer next() {
+                Blackhole.consumeCPU(10);
+                return i++;
+            }
+
+            @Override
+            public void remove() {
+
             }
         };
 

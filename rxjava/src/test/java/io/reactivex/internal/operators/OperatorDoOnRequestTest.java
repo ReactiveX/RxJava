@@ -31,18 +31,10 @@ public class OperatorDoOnRequestTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Observable.just(1)
         //
-                .doOnCancel(new Runnable() {
-                    @Override
-                    public void run() {
-                        unsubscribed.set(true);
-                    }
-                })
+                .doOnCancel(() -> unsubscribed.set(true))
                 //
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long n) {
-                        // do nothing
-                    }
+                .doOnRequest(n -> {
+                    // do nothing
                 })
                 //
                 .subscribe();
@@ -54,12 +46,7 @@ public class OperatorDoOnRequestTest {
         final List<Long> requests = new ArrayList<>();
         Observable.range(1, 5)
         //
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long n) {
-                        requests.add(n);
-                    }
-                })
+                .doOnRequest(requests::add)
                 //
                 .subscribe(new Observer<Integer>() {
 

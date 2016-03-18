@@ -147,12 +147,7 @@ public class TestSubscriberTest {
         final AtomicBoolean unsub = new AtomicBoolean(false);
         Observable.just(1)
         //
-                .doOnCancel(new Runnable() {
-                    @Override
-                    public void run() {
-                        unsub.set(true);
-                    }
-                })
+                .doOnCancel(() -> unsub.set(true))
                 //
                 .delay(1000, TimeUnit.MILLISECONDS).subscribe(ts);
         ts.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
@@ -174,7 +169,7 @@ public class TestSubscriberTest {
     
     @Test(expected = NullPointerException.class)
     public void testNullDelegate3() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>((Subscriber<Integer>) null, null);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(null, null);
         ts.onComplete();
     }
     
@@ -414,12 +409,7 @@ public class TestSubscriberTest {
         final Thread t0 = Thread.currentThread();
         Worker w = Schedulers.computation().createWorker();
         try {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    t0.interrupt();
-                }
-            }, 200, TimeUnit.MILLISECONDS);
+            w.schedule(t0::interrupt, 200, TimeUnit.MILLISECONDS);
             
             try {
                 if (ts.awaitTerminalEvent()) {
@@ -442,12 +432,7 @@ public class TestSubscriberTest {
         final Thread t0 = Thread.currentThread();
         Worker w = Schedulers.computation().createWorker();
         try {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    t0.interrupt();
-                }
-            }, 200, TimeUnit.MILLISECONDS);
+            w.schedule(t0::interrupt, 200, TimeUnit.MILLISECONDS);
             
             try {
                 if (ts.awaitTerminalEvent(5, TimeUnit.SECONDS)) {
@@ -471,12 +456,7 @@ public class TestSubscriberTest {
         final Thread t0 = Thread.currentThread();
         Worker w = Schedulers.computation().createWorker();
         try {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    t0.interrupt();
-                }
-            }, 200, TimeUnit.MILLISECONDS);
+            w.schedule(t0::interrupt, 200, TimeUnit.MILLISECONDS);
             
             ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
             ts.dispose();

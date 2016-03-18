@@ -35,11 +35,6 @@ public class ScanTests {
         })
         .take(10)
         .toBlocking()
-        .forEach(new Consumer<HashMap<String, String>>() {
-            @Override
-            public void accept(HashMap<String, String> v) {
-                System.out.println(v);
-            }
-        });
+        .forEach(v -> System.out.println(v));
     }
 }

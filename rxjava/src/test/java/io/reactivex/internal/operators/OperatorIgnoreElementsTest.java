@@ -41,12 +41,7 @@ public class OperatorIgnoreElementsTest {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
         long count = Observable.range(1, num)
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer t) {
-                        upstreamCount.incrementAndGet();
-                    }
-                })
+                .doOnNext(t -> upstreamCount.incrementAndGet())
                 .ignoreElements()
                 .count().toBlocking().single();
         assertEquals(num, upstreamCount.get());
@@ -80,11 +75,7 @@ public class OperatorIgnoreElementsTest {
     @Test
     public void testUnsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
-        Observable.range(1, 10).doOnCancel(new Runnable() {
-            @Override
-            public void run() {
-                unsub.set(true);
-            }})
+        Observable.range(1, 10).doOnCancel(() -> unsub.set(true))
             .subscribe();
         assertTrue(unsub.get());
     }
@@ -96,22 +87,11 @@ public class OperatorIgnoreElementsTest {
         int num = 10;
         Observable.range(1, num)
         //
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer t) {
-                        upstreamCount.incrementAndGet();
-                    }
-                })
+                .doOnNext(t -> upstreamCount.incrementAndGet())
                 //
                 .ignoreElements()
                 //
-                .doOnNext(new Consumer<Integer>() {
-
-                    @Override
-                    public void accept(Integer t) {
-                        upstreamCount.incrementAndGet();
-                    }
-                })
+                .doOnNext(t -> upstreamCount.incrementAndGet())
                 //
                 .subscribe(new Observer<Integer>() {
 

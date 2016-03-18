@@ -33,19 +33,9 @@ public class NbpOperatorWindowWithSizeTest {
     private static <T> List<List<T>> toLists(NbpObservable<NbpObservable<T>> observables) {
 
         final List<List<T>> lists = new ArrayList<>();
-        NbpObservable.concat(observables.map(new Function<NbpObservable<T>, NbpObservable<List<T>>>() {
-            @Override
-            public NbpObservable<List<T>> apply(NbpObservable<T> xs) {
-                return xs.toList();
-            }
-        }))
+        NbpObservable.concat(observables.map(NbpObservable::toList))
                 .toBlocking()
-                .forEach(new Consumer<List<T>>() {
-                    @Override
-                    public void accept(List<T> xs) {
-                        lists.add(xs);
-                    }
-                });
+                .forEach(lists::add);
         return lists;
     }
 
@@ -105,14 +95,7 @@ public class NbpOperatorWindowWithSizeTest {
     public void testWindowUnsubscribeNonOverlapping() {
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         final AtomicInteger count = new AtomicInteger();
-        NbpObservable.merge(NbpObservable.range(1, 10000).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                count.incrementAndGet();
-            }
-
-        }).window(5).take(2)).subscribe(ts);
+        NbpObservable.merge(NbpObservable.range(1, 10000).doOnNext(t1 -> count.incrementAndGet()).window(5).take(2)).subscribe(ts);
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -125,14 +108,7 @@ public class NbpOperatorWindowWithSizeTest {
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         final AtomicInteger count = new AtomicInteger();
         NbpObservable.merge(NbpObservable.range(1, 100000)
-                .doOnNext(new Consumer<Integer>() {
-
-                    @Override
-                    public void accept(Integer t1) {
-                        count.incrementAndGet();
-                    }
-
-                })
+                .doOnNext(t1 -> count.incrementAndGet())
                 .observeOn(Schedulers.computation())
                 .window(5)
                 .take(2))
@@ -148,14 +124,7 @@ public class NbpOperatorWindowWithSizeTest {
     public void testWindowUnsubscribeOverlapping() {
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         final AtomicInteger count = new AtomicInteger();
-        NbpObservable.merge(NbpObservable.range(1, 10000).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                count.incrementAndGet();
-            }
-
-        }).window(5, 4).take(2)).subscribe(ts);
+        NbpObservable.merge(NbpObservable.range(1, 10000).doOnNext(t1 -> count.incrementAndGet()).window(5, 4).take(2)).subscribe(ts);
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
         //        System.out.println(ts.getOnNextEvents());
@@ -168,14 +137,7 @@ public class NbpOperatorWindowWithSizeTest {
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         final AtomicInteger count = new AtomicInteger();
         NbpObservable.merge(NbpObservable.range(1, 100000)
-                .doOnNext(new Consumer<Integer>() {
-
-                    @Override
-                    public void accept(Integer t1) {
-                        count.incrementAndGet();
-                    }
-
-                })
+                .doOnNext(t1 -> count.incrementAndGet())
                 .observeOn(Schedulers.computation())
                 .window(5, 4)
                 .take(2), 128)
@@ -229,12 +191,7 @@ public class NbpOperatorWindowWithSizeTest {
         hotStream()
         .window(10)
         .take(2)
-        .flatMap(new Function<NbpObservable<Integer>, NbpObservable<Integer>>() {
-            @Override
-            public NbpObservable<Integer> apply(NbpObservable<Integer> w) {
-                return w.startWith(indicator);
-            }
-        }).subscribe(ts);
+        .flatMap(w -> w.startWith(indicator)).subscribe(ts);
         
         ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
         ts.assertComplete();

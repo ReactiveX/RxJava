@@ -39,36 +39,25 @@ public class NbpBufferUntilSubscriberTest {
             final NbpPublishSubject<Void> s = NbpPublishSubject.create();
             final AtomicBoolean completed = new AtomicBoolean();
             NbpObservable.fromArray(numbers)
-                    .takeUntil(s)
-                    .window(50)
-                    .flatMap(new Function<NbpObservable<Integer>, NbpObservable<Object>>() {
-                        @Override
-                        public NbpObservable<Object> apply(NbpObservable<Integer> integerObservable) {
-                                return integerObservable
-                                        .subscribeOn(Schedulers.computation())
-                                        .map(new Function<Integer, Object>() {
-                                            @Override
-                                            public Object apply(Integer integer) {
-                                                    if (integer >= 5 && completed.compareAndSet(false, true)) {
-                                                        s.onComplete();
-                                                    }
-                                                    // do some work
-                                                    Math.pow(Math.random(), Math.random());
-                                                    return integer * 2;
-                                            }
-                                        });
-                        }
-                    })
-                    .toList()
-                    .doOnNext(new Consumer<List<Object>>() {
-                        @Override
-                        public void accept(List<Object> integers) {
-                                counter.incrementAndGet();
-                                latch.countDown();
-                                innerLatch.countDown();
-                        }
-                    })
-                    .subscribe();
+                .takeUntil(s)
+                .window(50)
+                .flatMap(integerObservable -> integerObservable
+                    .subscribeOn(Schedulers.computation())
+                    .map(integer -> {
+                            if (integer >= 5 && completed.compareAndSet(false, true)) {
+                                s.onComplete();
+                            }
+                            // do some work
+                            Math.pow(Math.random(), Math.random());
+                            return integer * 2;
+                    }))
+                .toList()
+                .doOnNext(integers -> {
+                    counter.incrementAndGet();
+                    latch.countDown();
+                    innerLatch.countDown();
+                })
+                .subscribe();
             if (!innerLatch.await(30, TimeUnit.SECONDS))
                 Assert.fail("Failed inner latch wait, iteration " + iters);
         }

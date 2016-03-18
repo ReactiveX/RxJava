@@ -42,45 +42,20 @@ public class NbpCombineLatestTests {
         NbpObservable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine);
     }
 
-    BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {
-        @Override
-        public ExtendedResult apply(Media m, Rating r) {
-            return new ExtendedResult();
-        }
-    };
+    BiFunction<Media, Rating, ExtendedResult> combine = (m, r) -> new ExtendedResult();
 
-    Consumer<Result> action = new Consumer<Result>() {
-        @Override
-        public void accept(Result t1) {
-            System.out.println("Result: " + t1);
-        }
-    };
+    Consumer<Result> action = t1 -> System.out.println("Result: " + t1);
 
-    Consumer<ExtendedResult> extendedAction = new Consumer<ExtendedResult>() {
-        @Override
-        public void accept(ExtendedResult t1) {
-            System.out.println("Result: " + t1);
-        }
-    };
+    Consumer<ExtendedResult> extendedAction = t1 -> System.out.println("Result: " + t1);
 
     @Ignore
     @Test
     public void testNullEmitting() throws Exception {
         // FIXME this is no longer allowed
-        NbpObservable<Boolean> nullNbpObservable = NbpBehaviorSubject.createDefault((Boolean) null);
+        NbpObservable<Boolean> nullNbpObservable = NbpBehaviorSubject.createDefault(null);
         NbpObservable<Boolean> nonNullNbpObservable = NbpBehaviorSubject.createDefault(true);
         NbpObservable<Boolean> combined =
-                combineLatest(nullNbpObservable, nonNullNbpObservable, new BiFunction<Boolean, Boolean, Boolean>() {
-                    @Override
-                    public Boolean apply(Boolean bool1, Boolean bool2) {
-                        return bool1 == null ? null : bool2;
-                    }
-                });
-        combined.subscribe(new Consumer<Boolean>() {
-            @Override
-            public void accept(Boolean aBoolean) {
-                Assert.assertNull(aBoolean);
-            }
-        });
+                combineLatest(nullNbpObservable, nonNullNbpObservable, (bool1, bool2) -> bool1 == null ? null : bool2);
+        combined.subscribe(Assert::assertNull);
     }
 }

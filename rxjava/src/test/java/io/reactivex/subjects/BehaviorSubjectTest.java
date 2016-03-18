@@ -246,13 +246,7 @@ public class BehaviorSubjectTest {
             src.onNext(v);
             System.out.printf("Turn: %d%n", i);
             src.first()
-                .flatMap(new Function<String, Observable<String>>() {
-
-                    @Override
-                    public Observable<String> apply(String t1) {
-                        return Observable.just(t1 + ", " + t1);
-                    }
-                })
+                .flatMap(t1 -> Observable.just(t1 + ", " + t1))
                 .subscribe(new Observer<String>() {
                     @Override
                     public void onNext(String t) {
@@ -412,16 +406,13 @@ public class BehaviorSubjectTest {
                 final CountDownLatch finish = new CountDownLatch(1); 
                 final CountDownLatch start = new CountDownLatch(1); 
                 
-                worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            start.await();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                        rs.onNext(1);
+                worker.schedule(() -> {
+                    try {
+                        start.await();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
                     }
+                    rs.onNext(1);
                 });
                 
                 final AtomicReference<Object> o = new AtomicReference<>();
@@ -458,12 +449,7 @@ public class BehaviorSubjectTest {
                     break;
                 } else {
                     Assert.assertEquals(1, o.get());
-                    worker.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            rs.onComplete();
-                        }
-                    });
+                    worker.schedule(rs::onComplete);
                 }
             }
         } finally {
@@ -500,7 +486,7 @@ public class BehaviorSubjectTest {
     
     @Test
     public void testCurrentStateMethodsNormalSomeStart() {
-        BehaviorSubject<Object> as = BehaviorSubject.createDefault((Object)1);
+        BehaviorSubject<Object> as = BehaviorSubject.createDefault(1);
         
         assertTrue(as.hasValue());
         assertFalse(as.hasThrowable());

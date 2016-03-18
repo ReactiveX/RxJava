@@ -94,13 +94,7 @@ public class NbpOperatorLastTest {
     @Test
     public void testLastWithPredicate() {
         NbpObservable<Integer> o = NbpObservable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .last();
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -115,14 +109,7 @@ public class NbpOperatorLastTest {
     @Test
     public void testLastWithPredicateAndOneElement() {
         NbpObservable<Integer> o = NbpObservable.just(1, 2)
-            .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+            .filter(t1 -> t1 % 2 == 0)
             .last();
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -137,14 +124,7 @@ public class NbpOperatorLastTest {
     @Test
     public void testLastWithPredicateAndEmpty() {
         NbpObservable<Integer> o = NbpObservable.just(1)
-            .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                }).last();
+            .filter(t1 -> t1 % 2 == 0).last();
         
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
         o.subscribe(NbpObserver);
@@ -199,13 +179,7 @@ public class NbpOperatorLastTest {
     @Test
     public void testLastOrDefaultWithPredicate() {
         NbpObservable<Integer> o = NbpObservable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .last(8);
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -220,13 +194,7 @@ public class NbpOperatorLastTest {
     @Test
     public void testLastOrDefaultWithPredicateAndOneElement() {
         NbpObservable<Integer> o = NbpObservable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .last(4);
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
@@ -241,14 +209,7 @@ public class NbpOperatorLastTest {
     @Test
     public void testLastOrDefaultWithPredicateAndEmpty() {
         NbpObservable<Integer> o = NbpObservable.just(1)
-                .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .last(2);
 
         NbpSubscriber<Integer> NbpObserver = TestHelper.mockNbpSubscriber();

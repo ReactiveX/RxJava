@@ -194,12 +194,7 @@ public final class NbpPublishSubject<T> extends NbpSubject<T, T> {
                 emit(t, v);
                 return;
             }
-            BooleanDisposable bd = new BooleanDisposable(new Runnable() {
-                @Override
-                public void run() {
-                    remove(t);
-                }
-            });
+            BooleanDisposable bd = new BooleanDisposable(() -> remove(t));
             t.onSubscribe(bd);
             if (add(t)) {
                 if (bd.isDisposed()) {

@@ -48,14 +48,9 @@ public class NbpOperatorOnErrorResumeNextViaFunctionTest {
             }
         });
 
-        Function<Throwable, NbpObservable<String>> resume = new Function<Throwable, NbpObservable<String>>() {
-
-            @Override
-            public NbpObservable<String> apply(Throwable t1) {
-                receivedException.set(t1);
-                return NbpObservable.just("twoResume", "threeResume");
-            }
-
+        Function<Throwable, NbpObservable<String>> resume = t1 -> {
+            receivedException.set(t1);
+            return NbpObservable.just("twoResume", "threeResume");
         };
         NbpObservable<String> NbpObservable = w.onErrorResumeNext(resume);
 
@@ -78,14 +73,9 @@ public class NbpOperatorOnErrorResumeNextViaFunctionTest {
         final AtomicReference<Throwable> receivedException = new AtomicReference<>();
         Subscription s = mock(Subscription.class);
         TestObservable w = new TestObservable(s, "one");
-        Function<Throwable, NbpObservable<String>> resume = new Function<Throwable, NbpObservable<String>>() {
-
-            @Override
-            public NbpObservable<String> apply(Throwable t1) {
-                receivedException.set(t1);
-                return NbpObservable.just("twoResume", "threeResume");
-            }
-
+        Function<Throwable, NbpObservable<String>> resume = t1 -> {
+            receivedException.set(t1);
+            return NbpObservable.just("twoResume", "threeResume");
         };
         NbpObservable<String> o = NbpObservable.create(w).onErrorResumeNext(resume);
 
@@ -116,13 +106,8 @@ public class NbpOperatorOnErrorResumeNextViaFunctionTest {
     public void testFunctionThrowsError() {
         Subscription s = mock(Subscription.class);
         TestObservable w = new TestObservable(s, "one");
-        Function<Throwable, NbpObservable<String>> resume = new Function<Throwable, NbpObservable<String>>() {
-
-            @Override
-            public NbpObservable<String> apply(Throwable t1) {
-                throw new RuntimeException("exception from function");
-            }
-
+        Function<Throwable, NbpObservable<String>> resume = t1 -> {
+            throw new RuntimeException("exception from function");
         };
         NbpObservable<String> o = NbpObservable.create(w).onErrorResumeNext(resume);
 
@@ -152,24 +137,14 @@ public class NbpOperatorOnErrorResumeNextViaFunctionTest {
     @Ignore("Failed operator may leave the child NbpSubscriber in an inconsistent state which prevents further error delivery.")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
         NbpTestSubscriber<String> ts = new NbpTestSubscriber<>();
-        NbpObservable.just(1).lift(new NbpOperator<String, Integer>() {
-
-            @Override
-            public NbpSubscriber<? super Integer> apply(NbpSubscriber<? super String> t1) {
-                throw new RuntimeException("failed");
+        NbpObservable.just(1).<String>lift(t1 -> {
+            throw new RuntimeException("failed");
+        }).onErrorResumeNext(t1 -> {
+            if (t1.getMessage().equals("failed")) {
+                return NbpObservable.just("success");
+            } else {
+                return NbpObservable.error(t1);
             }
-
-        }).onErrorResumeNext(new Function<Throwable, NbpObservable<String>>() {
-
-            @Override
-            public NbpObservable<String> apply(Throwable t1) {
-                if (t1.getMessage().equals("failed")) {
-                    return NbpObservable.just("success");
-                } else {
-                    return NbpObservable.error(t1);
-                }
-            }
-
         }).subscribe(ts);
 
         ts.assertTerminated();
@@ -214,17 +189,12 @@ public class NbpOperatorOnErrorResumeNextViaFunctionTest {
                 };
             }
 
-        }).onErrorResumeNext(new Function<Throwable, NbpObservable<String>>() {
-
-            @Override
-            public NbpObservable<String> apply(Throwable t1) {
-                if (t1.getMessage().equals("failed")) {
-                    return NbpObservable.just("success");
-                } else {
-                    return NbpObservable.error(t1);
-                }
+        }).onErrorResumeNext(t1 -> {
+            if (t1.getMessage().equals("failed")) {
+                return NbpObservable.just("success");
+            } else {
+                return NbpObservable.error(t1);
             }
-
         }).subscribe(ts);
 
         ts.assertTerminated();
@@ -239,23 +209,15 @@ public class NbpOperatorOnErrorResumeNextViaFunctionTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the NbpObserver is a
         //  rx.operator incl onErrorResumeNextViaObservable)
-        w = w.map(new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                if ("fail".equals(s))
-                    throw new RuntimeException("Forced Failure");
-                System.out.println("BadMapper:" + s);
-                return s;
-            }
+        w = w.map(s -> {
+            if ("fail".equals(s))
+                throw new RuntimeException("Forced Failure");
+            System.out.println("BadMapper:" + s);
+            return s;
         });
 
-        NbpObservable<String> o = w.onErrorResumeNext(new Function<Throwable, NbpObservable<String>>() {
-
-            @Override
-            public NbpObservable<String> apply(Throwable t1) {
-                return NbpObservable.just("twoResume", "threeResume").subscribeOn(Schedulers.computation());
-            }
-            
+        NbpObservable<String> o = w.onErrorResumeNext(t1 -> {
+            return NbpObservable.just("twoResume", "threeResume").subscribeOn(Schedulers.computation());
         });
 
         @SuppressWarnings("unchecked")
@@ -287,22 +249,17 @@ public class NbpOperatorOnErrorResumeNextViaFunctionTest {
         public void accept(final NbpSubscriber<? super String> NbpObserver) {
             System.out.println("TestObservable subscribed to ...");
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestObservable thread");
-                        for (String s : values) {
-                            System.out.println("TestObservable onNext: " + s);
-                            NbpObserver.onNext(s);
-                        }
-                        throw new RuntimeException("Forced Failure");
-                    } catch (Throwable e) {
-                        NbpObserver.onError(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestObservable thread");
+                    for (String s : values) {
+                        System.out.println("TestObservable onNext: " + s);
+                        NbpObserver.onNext(s);
                     }
+                    throw new RuntimeException("Forced Failure");
+                } catch (Throwable e) {
+                    NbpObserver.onError(e);
                 }
-
             });
             System.out.println("starting TestObservable thread");
             t.start();
@@ -315,13 +272,8 @@ public class NbpOperatorOnErrorResumeNextViaFunctionTest {
     public void testBackpressure() {
         NbpTestSubscriber<Integer> ts = new NbpTestSubscriber<>();
         NbpObservable.range(0, 100000)
-                .onErrorResumeNext(new Function<Throwable, NbpObservable<Integer>>() {
-
-                    @Override
-                    public NbpObservable<Integer> apply(Throwable t1) {
-                        return NbpObservable.just(1);
-                    }
-
+                .onErrorResumeNext(t1 -> {
+                    return NbpObservable.just(1);
                 })
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {

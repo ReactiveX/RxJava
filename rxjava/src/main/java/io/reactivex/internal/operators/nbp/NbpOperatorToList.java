@@ -26,12 +26,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class NbpOperatorToList<T, U extends Collection<? super T>> implements NbpOperator<U, T> {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    static final NbpOperatorToList DEFAULT = new NbpOperatorToList(new Supplier() {
-        @Override
-        public Object get() {
-            return new ArrayList();
-        }
-    });
+    static final NbpOperatorToList DEFAULT = new NbpOperatorToList(ArrayList::new);
     
     @SuppressWarnings("unchecked")
     public static <T> NbpOperatorToList<T, List<T>> defaultInstance() {
