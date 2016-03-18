@@ -1,5 +1,43 @@
 # RxJava Releases #
 
+### Version 1.1.2 - March 18, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.2%7C))
+
+#### API Enhancements
+
+  - [Pull 3766](https://github.com/ReactiveX/RxJava/pull/3766): Add `Single.onErrorResumeNext(Func1)` operator
+  - [Pull 3765](https://github.com/ReactiveX/RxJava/pull/3765): Add `Observable.switchOnNextDelayError` and `Observable.switchMapDelayError` operators
+  - [Pull 3759](https://github.com/ReactiveX/RxJava/pull/3759): Add `Observable.concatDelayError` and `Observable.concatMapDelayError` operators
+  - [Pull 3763](https://github.com/ReactiveX/RxJava/pull/3763): Add `Observable.combineLatestDelayError` operator
+  - [Pull 3752](https://github.com/ReactiveX/RxJava/pull/3752): Add `Single.using` operator
+  - [Pull 3722](https://github.com/ReactiveX/RxJava/pull/3722): Add `Observable.flatMapIterable` overload with `maxConcurrent` parameter
+  - [Pull 3741](https://github.com/ReactiveX/RxJava/pull/3741): Add `Single.doOnSubscribe` operator
+  - [Pull 3738](https://github.com/ReactiveX/RxJava/pull/3738): Add `Observable.create(SyncOnSubscribe)` and `Observable.create(AsyncOnSubscribe)` factory methods
+  - [Pull 3718](https://github.com/ReactiveX/RxJava/pull/3718): Add `Observable.concatMapIterable` operator
+  - [Pull 3712](https://github.com/ReactiveX/RxJava/pull/3712): Add `Single.takeUntil(Completable)` operator
+  - [Pull 3696](https://github.com/ReactiveX/RxJava/pull/3696): Added Single execution hooks via `RxJavaSingleExecutionHook` class. **Warning**! This PR introduced a binary incompatible change of `Single.unsafeSubscribe(Subscriber)` by changing its return type from `void` to `Subscription`.
+  - [Pull 3487](https://github.com/ReactiveX/RxJava/pull/3487): Add `onBackpressureBuffer` overflow strategies (oldest, newest, error)
+
+#### API deprecations
+
+  - [Pull 3701](https://github.com/ReactiveX/RxJava/pull/3701): deprecate `Completable.doOnComplete` in favor of `Completable.doOnCompleted` (note the last d in the method name)
+
+#### Performance enhancements
+
+  - [Pull 3759](https://github.com/ReactiveX/RxJava/pull/3759): Add `Observable.concatDelayError` and `Observable.concatMapDelayError` operators
+  - [Pull 3476](https://github.com/ReactiveX/RxJava/pull/3476): reduced `range` and `flatMap/merge` overhead
+
+#### Bugfixes
+
+  - [Pull 3768](https://github.com/ReactiveX/RxJava/pull/3768): Fix `observeOn` in-sequence termination/unsubscription checking
+  - [Pull 3733](https://github.com/ReactiveX/RxJava/pull/3733): Avoid swallowing errors in `Completable`
+  - [Pull 3727](https://github.com/ReactiveX/RxJava/pull/3727): Fix `scan` not requesting `Long.MAX_VALUE` from upstream if downstream has requested `Long.MAX_VALUE`
+  - [Pull 3707](https://github.com/ReactiveX/RxJava/pull/3707): Lambda-based `Completable.subscribe()` methods should report `isUnsubscribed` properly
+  - [Pull 3702](https://github.com/ReactiveX/RxJava/pull/3702): Fix `mapNotification` backpressure handling
+  - [Pull 3697](https://github.com/ReactiveX/RxJava/pull/3697): Fix `ScalarSynchronousObservable` expecting the `Scheduler.computation()` to be `EventLoopsScheduler` all the time
+  - [Pull 3760](https://github.com/ReactiveX/RxJava/pull/3760): Fix ExecutorScheduler and GenericScheduledExecutorService reorder bug
+  - [Pull 3678](https://github.com/ReactiveX/RxJava/pull/3678): Fix counted buffer and window backpressure
+
+
 ### Version 1.1.1 - February 11, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.1%7C))
 
 #### The new `Completable` class
