@@ -7665,6 +7665,26 @@ public class Observable<T> {
     }
 
     /**
+     * Allow the an external signal control the amount of data being set through this Observable chain.
+     * When the control Observable emits false (closes the valve) requests upstream are stopped and any
+     * requests from downstream for more data are buffered until the control Observable emits a true
+     * (opens the valve). Should the control Observable error or complete while closed (last control
+     * emition was a false) an error is sent down the data stream. The granularity breaks up large requests
+     * from downstream to limit the number of onNexts that are possible after the control valve has closed.
+     * The smaller the number the tighter the control on the flow but the more overhead there will be in
+     * managing the requests.
+     * 
+     * @param control
+     *             an Observable that dictates if request signals propagate upstream
+     * @param granularity
+     *             the maximum number of outstanding requests.
+     * @returns an Observable that mostly stops emiting after the control Observable emits a false.
+     */
+    public final Observable<T> pressureValve(Observable<Boolean> control, long granularity) {
+        return lift(new OperatorValve<T>(control, granularity));
+    }
+
+    /**
      * Returns an Observable that applies a specified accumulator function to the first item emitted by a source
      * Observable, then feeds the result of that function along with the second item emitted by the source
      * Observable into the same function, and so on until all items have been emitted by the source Observable,
