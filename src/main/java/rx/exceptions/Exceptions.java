@@ -171,8 +171,7 @@ public final class Exceptions {
                     throw new RuntimeException(t);
                 }
             }
-            throw new CompositeException(
-                    "Multiple exceptions", exceptions);
+            throw new CompositeException(exceptions);
         }
     }
     
