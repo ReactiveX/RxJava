@@ -15,7 +15,7 @@ package io.reactivex.internal.disposables;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.NotificationLite;
@@ -28,7 +28,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the value type
  */
 public final class NbpFullArbiter<T> extends FullArbiterPad1 implements Disposable {
-    final NbpSubscriber<? super T> actual;
+    final Observer<? super T> actual;
     final SpscLinkedArrayQueue<Object> queue;
 
     volatile Disposable s;
@@ -42,7 +42,7 @@ public final class NbpFullArbiter<T> extends FullArbiterPad1 implements Disposab
 
     volatile boolean cancelled;
 
-    public NbpFullArbiter(NbpSubscriber<? super T> actual, Disposable resource, int capacity) {
+    public NbpFullArbiter(Observer<? super T> actual, Disposable resource, int capacity) {
         this.actual = actual;
         this.resource = resource;
         this.queue = new SpscLinkedArrayQueue<Object>(capacity);
@@ -107,7 +107,7 @@ public final class NbpFullArbiter<T> extends FullArbiterPad1 implements Disposab
         int missed = 1;
         
         final SpscLinkedArrayQueue<Object> q = queue;
-        final NbpSubscriber<? super T> a = actual;
+        final Observer<? super T> a = actual;
         
         for (;;) {
             

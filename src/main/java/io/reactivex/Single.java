@@ -23,7 +23,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.subscriptions.*;
@@ -224,11 +224,11 @@ public class Single<T> {
         });
     }
 
-    public static <T> Observable<T> concat(Iterable<? extends Single<? extends T>> sources) {
-        return concat(Observable.fromIterable(sources));
+    public static <T> Flowable<T> concat(Iterable<? extends Single<? extends T>> sources) {
+        return concat(Flowable.fromIterable(sources));
     }
     
-    public static <T> Observable<T> concat(Observable<? extends Single<? extends T>> sources) {
+    public static <T> Flowable<T> concat(Flowable<? extends Single<? extends T>> sources) {
         return sources.concatMap(new Function<Single<? extends T>, Publisher<? extends T>>() {
             @Override 
             public Publisher<? extends T> apply(Single<? extends T> v){
@@ -238,27 +238,27 @@ public class Single<T> {
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> concat(
+    public static <T> Flowable<T> concat(
             Single<? extends T> s1, Single<? extends T> s2
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
-        return concat(Observable.fromArray(s1, s2));
+        return concat(Flowable.fromArray(s1, s2));
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> concat(
+    public static <T> Flowable<T> concat(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
         Objects.requireNonNull(s3, "s3 is null");
-        return concat(Observable.fromArray(s1, s2, s3));
+        return concat(Flowable.fromArray(s1, s2, s3));
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> concat(
+    public static <T> Flowable<T> concat(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3, Single<? extends T> s4
      ) {
@@ -266,11 +266,11 @@ public class Single<T> {
         Objects.requireNonNull(s2, "s2 is null");
         Objects.requireNonNull(s3, "s3 is null");
         Objects.requireNonNull(s4, "s4 is null");
-        return concat(Observable.fromArray(s1, s2, s3, s4));
+        return concat(Flowable.fromArray(s1, s2, s3, s4));
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> concat(
+    public static <T> Flowable<T> concat(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3, Single<? extends T> s4,
             Single<? extends T> s5
@@ -280,11 +280,11 @@ public class Single<T> {
         Objects.requireNonNull(s3, "s3 is null");
         Objects.requireNonNull(s4, "s4 is null");
         Objects.requireNonNull(s5, "s5 is null");
-        return concat(Observable.fromArray(s1, s2, s3, s4, s5));
+        return concat(Flowable.fromArray(s1, s2, s3, s4, s5));
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> concat(
+    public static <T> Flowable<T> concat(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3, Single<? extends T> s4,
             Single<? extends T> s5, Single<? extends T> s6
@@ -295,11 +295,11 @@ public class Single<T> {
         Objects.requireNonNull(s4, "s4 is null");
         Objects.requireNonNull(s5, "s5 is null");
         Objects.requireNonNull(s6, "s6 is null");
-        return concat(Observable.fromArray(s1, s2, s3, s4, s5, s6));
+        return concat(Flowable.fromArray(s1, s2, s3, s4, s5, s6));
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> concat(
+    public static <T> Flowable<T> concat(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3, Single<? extends T> s4,
             Single<? extends T> s5, Single<? extends T> s6,
@@ -312,11 +312,11 @@ public class Single<T> {
         Objects.requireNonNull(s5, "s5 is null");
         Objects.requireNonNull(s6, "s6 is null");
         Objects.requireNonNull(s7, "s7 is null");
-        return concat(Observable.fromArray(s1, s2, s3, s4, s5, s6, s7));
+        return concat(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7));
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> concat(
+    public static <T> Flowable<T> concat(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3, Single<? extends T> s4,
             Single<? extends T> s5, Single<? extends T> s6,
@@ -330,11 +330,11 @@ public class Single<T> {
         Objects.requireNonNull(s6, "s6 is null");
         Objects.requireNonNull(s7, "s7 is null");
         Objects.requireNonNull(s8, "s8 is null");
-        return concat(Observable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8));
+        return concat(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8));
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> concat(
+    public static <T> Flowable<T> concat(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3, Single<? extends T> s4,
             Single<? extends T> s5, Single<? extends T> s6,
@@ -350,7 +350,7 @@ public class Single<T> {
         Objects.requireNonNull(s7, "s7 is null");
         Objects.requireNonNull(s8, "s8 is null");
         Objects.requireNonNull(s9, "s9 is null");
-        return concat(Observable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
+        return concat(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
     }
     
     public static <T> Single<T> create(SingleOnSubscribe<T> onSubscribe) {
@@ -439,19 +439,19 @@ public class Single<T> {
     }
     
     public static <T> Single<T> fromFuture(Future<? extends T> future) {
-        return Observable.<T>fromFuture(future).toSingle();
+        return Flowable.<T>fromFuture(future).toSingle();
     }
 
     public static <T> Single<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
-        return Observable.<T>fromFuture(future, timeout, unit).toSingle();
+        return Flowable.<T>fromFuture(future, timeout, unit).toSingle();
     }
 
     public static <T> Single<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
-        return Observable.<T>fromFuture(future, timeout, unit, scheduler).toSingle();
+        return Flowable.<T>fromFuture(future, timeout, unit, scheduler).toSingle();
     }
 
     public static <T> Single<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
-        return Observable.<T>fromFuture(future, scheduler).toSingle();
+        return Flowable.<T>fromFuture(future, scheduler).toSingle();
     }
 
     public static <T> Single<T> fromPublisher(final Publisher<? extends T> publisher) {
@@ -505,11 +505,11 @@ public class Single<T> {
         });
     }
 
-    public static <T> Observable<T> merge(Iterable<? extends Single<? extends T>> sources) {
-        return merge(Observable.fromIterable(sources));
+    public static <T> Flowable<T> merge(Iterable<? extends Single<? extends T>> sources) {
+        return merge(Flowable.fromIterable(sources));
     }
 
-    public static <T> Observable<T> merge(Observable<? extends Single<? extends T>> sources) {
+    public static <T> Flowable<T> merge(Flowable<? extends Single<? extends T>> sources) {
         return sources.flatMap(new Function<Single<? extends T>, Publisher<? extends T>>() {
             @Override 
             public Publisher<? extends T> apply(Single<? extends T> v){
@@ -524,27 +524,27 @@ public class Single<T> {
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> merge(
+    public static <T> Flowable<T> merge(
             Single<? extends T> s1, Single<? extends T> s2
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
-        return merge(Observable.fromArray(s1, s2));
+        return merge(Flowable.fromArray(s1, s2));
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> merge(
+    public static <T> Flowable<T> merge(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
         Objects.requireNonNull(s3, "s3 is null");
-        return merge(Observable.fromArray(s1, s2, s3));
+        return merge(Flowable.fromArray(s1, s2, s3));
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> merge(
+    public static <T> Flowable<T> merge(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3, Single<? extends T> s4
      ) {
@@ -552,11 +552,11 @@ public class Single<T> {
         Objects.requireNonNull(s2, "s2 is null");
         Objects.requireNonNull(s3, "s3 is null");
         Objects.requireNonNull(s4, "s4 is null");
-        return merge(Observable.fromArray(s1, s2, s3, s4));
+        return merge(Flowable.fromArray(s1, s2, s3, s4));
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> merge(
+    public static <T> Flowable<T> merge(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3, Single<? extends T> s4,
             Single<? extends T> s5
@@ -566,11 +566,11 @@ public class Single<T> {
         Objects.requireNonNull(s3, "s3 is null");
         Objects.requireNonNull(s4, "s4 is null");
         Objects.requireNonNull(s5, "s5 is null");
-        return merge(Observable.fromArray(s1, s2, s3, s4, s5));
+        return merge(Flowable.fromArray(s1, s2, s3, s4, s5));
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> merge(
+    public static <T> Flowable<T> merge(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3, Single<? extends T> s4,
             Single<? extends T> s5, Single<? extends T> s6
@@ -581,11 +581,11 @@ public class Single<T> {
         Objects.requireNonNull(s4, "s4 is null");
         Objects.requireNonNull(s5, "s5 is null");
         Objects.requireNonNull(s6, "s6 is null");
-        return merge(Observable.fromArray(s1, s2, s3, s4, s5, s6));
+        return merge(Flowable.fromArray(s1, s2, s3, s4, s5, s6));
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> merge(
+    public static <T> Flowable<T> merge(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3, Single<? extends T> s4,
             Single<? extends T> s5, Single<? extends T> s6,
@@ -598,11 +598,11 @@ public class Single<T> {
         Objects.requireNonNull(s5, "s5 is null");
         Objects.requireNonNull(s6, "s6 is null");
         Objects.requireNonNull(s7, "s7 is null");
-        return merge(Observable.fromArray(s1, s2, s3, s4, s5, s6, s7));
+        return merge(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7));
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> merge(
+    public static <T> Flowable<T> merge(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3, Single<? extends T> s4,
             Single<? extends T> s5, Single<? extends T> s6,
@@ -616,11 +616,11 @@ public class Single<T> {
         Objects.requireNonNull(s6, "s6 is null");
         Objects.requireNonNull(s7, "s7 is null");
         Objects.requireNonNull(s8, "s8 is null");
-        return merge(Observable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8));
+        return merge(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8));
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Observable<T> merge(
+    public static <T> Flowable<T> merge(
             Single<? extends T> s1, Single<? extends T> s2,
             Single<? extends T> s3, Single<? extends T> s4,
             Single<? extends T> s5, Single<? extends T> s6,
@@ -636,7 +636,7 @@ public class Single<T> {
         Objects.requireNonNull(s7, "s7 is null");
         Objects.requireNonNull(s8, "s8 is null");
         Objects.requireNonNull(s9, "s9 is null");
-        return merge(Observable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
+        return merge(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
     }
     
     static final Single<Object> NEVER = create(new SingleOnSubscribe<Object>() {
@@ -842,11 +842,11 @@ public class Single<T> {
     public static <T, R> Single<R> zip(final Iterable<? extends Single<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(sources, "sources is null");
         
-        Iterable<? extends Observable<T>> it = new Iterable<Observable<T>>() {
+        Iterable<? extends Flowable<T>> it = new Iterable<Flowable<T>>() {
             @Override
-            public Iterator<Observable<T>> iterator() {
+            public Iterator<Flowable<T>> iterator() {
                 final Iterator<? extends Single<? extends T>> sit = sources.iterator();
-                return new Iterator<Observable<T>>() {
+                return new Iterator<Flowable<T>>() {
 
                     @Override
                     public boolean hasNext() {
@@ -854,8 +854,8 @@ public class Single<T> {
                     }
 
                     @Override
-                    public Observable<T> next() {
-                        return ((Observable<T>)sit.next().toFlowable());
+                    public Flowable<T> next() {
+                        return ((Flowable<T>)sit.next().toFlowable());
                     }
                     
                     @Override
@@ -865,7 +865,7 @@ public class Single<T> {
                 };
             }
         };
-        return Observable.zipIterable(zipper, false, 1, it).toSingle();
+        return Flowable.zipIterable(zipper, false, 1, it).toSingle();
     }
 
     @SuppressWarnings("unchecked")
@@ -1000,7 +1000,7 @@ public class Single<T> {
             sourcePublishers[i] = s.toFlowable();
             i++;
         }
-        return Observable.zipArray(zipper, false, 1, sourcePublishers).toSingle();
+        return Flowable.zipArray(zipper, false, 1, sourcePublishers).toSingle();
     }
 
     protected final SingleOnSubscribe<T> onSubscribe;
@@ -1139,7 +1139,7 @@ public class Single<T> {
         });
     }
     
-    public final Observable<T> concatWith(Single<? extends T> other) {
+    public final Flowable<T> concatWith(Single<? extends T> other) {
         return concat(this, other);
     }
     
@@ -1322,7 +1322,7 @@ public class Single<T> {
         return lift(new SingleOperatorFlatMap<T, R>(mapper));   
     }
 
-    public final <R> Observable<R> flatMapPublisher(Function<? super T, ? extends Publisher<? extends R>> mapper) {
+    public final <R> Flowable<R> flatMapPublisher(Function<? super T, ? extends Publisher<? extends R>> mapper) {
         return toFlowable().flatMap(mapper);
     }
     
@@ -1423,7 +1423,7 @@ public class Single<T> {
         });
     }
     
-    public final Observable<T> mergeWith(Single<? extends T> other) {
+    public final Flowable<T> mergeWith(Single<? extends T> other) {
         return merge(this, other);
     }
     
@@ -1588,19 +1588,19 @@ public class Single<T> {
         });
     }
     
-    public final Observable<T> repeat() {
+    public final Flowable<T> repeat() {
         return toFlowable().repeat();
     }
     
-    public final Observable<T> repeat(long times) {
+    public final Flowable<T> repeat(long times) {
         return toFlowable().repeat(times);
     }
     
-    public final Observable<T> repeatWhen(Function<? super Observable<Object>, ? extends Publisher<Object>> handler) {
+    public final Flowable<T> repeatWhen(Function<? super Flowable<Object>, ? extends Publisher<Object>> handler) {
         return toFlowable().repeatWhen(handler);
     }
     
-    public final Observable<T> repeatUntil(BooleanSupplier stop) {
+    public final Flowable<T> repeatUntil(BooleanSupplier stop) {
         return toFlowable().repeatUntil(stop);
     }
     
@@ -1620,7 +1620,7 @@ public class Single<T> {
         return toFlowable().retry(predicate).toSingle();
     }
     
-    public final Single<T> retryWhen(Function<? super Observable<? extends Throwable>, ? extends Publisher<Object>> handler) {
+    public final Single<T> retryWhen(Function<? super Flowable<? extends Throwable>, ? extends Publisher<Object>> handler) {
         return toFlowable().retryWhen(handler).toSingle();
     }
     
@@ -1809,8 +1809,8 @@ public class Single<T> {
         return convert.apply(this);
     }
     
-    public final Observable<T> toFlowable() {
-        return Observable.create(new Publisher<T>() {
+    public final Flowable<T> toFlowable() {
+        return Flowable.create(new Publisher<T>() {
             @Override
             public void subscribe(final Subscriber<? super T> s) {
                 final ScalarAsyncSubscription<T> sas = new ScalarAsyncSubscription<T>(s);

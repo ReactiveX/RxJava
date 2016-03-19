@@ -21,10 +21,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Observer;
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
-import io.reactivex.subscribers.SafeSubscriber;
 
 public class SafeObserverTest {
 
@@ -323,7 +321,7 @@ public class SafeObserverTest {
     }
 
     private static Subscriber<String> OBSERVER_SUCCESS() {
-        return new Observer<String>() {
+        return new DefaultObserver<String>() {
 
             @Override
             public void onComplete() {
@@ -344,7 +342,7 @@ public class SafeObserverTest {
     }
 
     private static Subscriber<String> OBSERVER_SUCCESS(final AtomicReference<Throwable> onError) {
-        return new Observer<String>() {
+        return new DefaultObserver<String>() {
 
             @Override
             public void onComplete() {
@@ -365,7 +363,7 @@ public class SafeObserverTest {
     }
 
     private static Subscriber<String> OBSERVER_ONNEXT_FAIL(final AtomicReference<Throwable> onError) {
-        return new Observer<String>() {
+        return new DefaultObserver<String>() {
 
             @Override
             public void onComplete() {
@@ -386,7 +384,7 @@ public class SafeObserverTest {
     }
 
     private static Subscriber<String> OBSERVER_ONNEXT_ONERROR_FAIL() {
-        return new Observer<String>() {
+        return new DefaultObserver<String>() {
 
             @Override
             public void onComplete() {
@@ -407,7 +405,7 @@ public class SafeObserverTest {
     }
 
     private static Subscriber<String> OBSERVER_ONERROR_FAIL() {
-        return new Observer<String>() {
+        return new DefaultObserver<String>() {
 
             @Override
             public void onComplete() {
@@ -428,7 +426,7 @@ public class SafeObserverTest {
     }
 
     private static Subscriber<String> OBSERVER_ONERROR_NOTIMPLEMENTED() {
-        return new Observer<String>() {
+        return new DefaultObserver<String>() {
 
             @Override
             public void onComplete() {
@@ -449,7 +447,7 @@ public class SafeObserverTest {
     }
 
     private static Subscriber<String> OBSERVER_ONCOMPLETED_FAIL(final AtomicReference<Throwable> onError) {
-        return new Observer<String>() {
+        return new DefaultObserver<String>() {
 
             @Override
             public void onComplete() {
@@ -480,7 +478,7 @@ public class SafeObserverTest {
     @Ignore("Subscribers can't throw")
     public void testOnCompletedThrows() {
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        SafeSubscriber<Integer> s = new SafeSubscriber<Integer>(new Observer<Integer>() {
+        SafeSubscriber<Integer> s = new SafeSubscriber<Integer>(new DefaultObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 
@@ -505,7 +503,7 @@ public class SafeObserverTest {
     
     @Test
     public void testActual() {
-        Subscriber<Integer> actual = new Observer<Integer>() {
+        Subscriber<Integer> actual = new DefaultObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
             }

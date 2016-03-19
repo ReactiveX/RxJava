@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.subscriptions;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;

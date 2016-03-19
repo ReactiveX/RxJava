@@ -24,7 +24,7 @@ import org.junit.Test;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.subscribers.Observers;
+import io.reactivex.observers.Observers;
 
 public class ObserversTest {
     @Test

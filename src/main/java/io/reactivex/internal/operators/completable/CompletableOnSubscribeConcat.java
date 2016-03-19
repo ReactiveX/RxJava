@@ -27,10 +27,10 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableOnSubscribeConcat implements CompletableOnSubscribe {
-    final Observable<? extends Completable> sources;
+    final Flowable<? extends Completable> sources;
     final int prefetch;
     
-    public CompletableOnSubscribeConcat(Observable<? extends Completable> sources, int prefetch) {
+    public CompletableOnSubscribeConcat(Flowable<? extends Completable> sources, int prefetch) {
         this.sources = sources;
         this.prefetch = prefetch;
     }

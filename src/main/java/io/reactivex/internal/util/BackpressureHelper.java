@@ -12,7 +12,7 @@
  */
 package io.reactivex.internal.util;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Utility class to help with backpressure-related operations such as request aggregation.

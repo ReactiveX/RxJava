@@ -17,7 +17,7 @@
 package io.reactivex.internal.schedulers;
 
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;

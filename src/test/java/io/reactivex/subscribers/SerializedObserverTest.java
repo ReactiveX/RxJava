@@ -23,8 +23,9 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.Schedulers;
@@ -45,7 +46,7 @@ public class SerializedObserverTest {
     @Test
     public void testSingleThreadedBasic() {
         TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable("one", "two", "three");
-        Observable<String> w = Observable.create(onSubscribe);
+        Flowable<String> w = Flowable.create(onSubscribe);
 
         Subscriber<String> aw = serializedSubscriber(observer);
 
@@ -65,7 +66,7 @@ public class SerializedObserverTest {
     @Test
     public void testMultiThreadedBasic() {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three");
-        Observable<String> w = Observable.create(onSubscribe);
+        Flowable<String> w = Flowable.create(onSubscribe);
 
         BusySubscriber busySubscriber = new BusySubscriber();
         Subscriber<String> aw = serializedSubscriber(busySubscriber);
@@ -89,7 +90,7 @@ public class SerializedObserverTest {
     @Test(timeout = 1000)
     public void testMultiThreadedWithNPE() throws InterruptedException {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null);
-        Observable<String> w = Observable.create(onSubscribe);
+        Flowable<String> w = Flowable.create(onSubscribe);
 
         BusySubscriber busySubscriber = new BusySubscriber();
         Subscriber<String> aw = serializedSubscriber(busySubscriber);
@@ -123,7 +124,7 @@ public class SerializedObserverTest {
         for (int i = 0; i < n; i++) {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null, 
                     "four", "five", "six", "seven", "eight", "nine");
-            Observable<String> w = Observable.create(onSubscribe);
+            Flowable<String> w = Flowable.create(onSubscribe);
 
             BusySubscriber busySubscriber = new BusySubscriber();
             Subscriber<String> aw = serializedSubscriber(busySubscriber);
@@ -267,7 +268,7 @@ public class SerializedObserverTest {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final CountDownLatch running = new CountDownLatch(2);
 
-                TestSubscriber<String> to = new TestSubscriber<String>(new Observer<String>() {
+                TestSubscriber<String> to = new TestSubscriber<String>(new DefaultObserver<String>() {
 
                     @Override
                     public void onComplete() {
@@ -348,7 +349,7 @@ public class SerializedObserverTest {
     @Test
     public void testThreadStarvation() throws InterruptedException {
 
-        TestSubscriber<String> to = new TestSubscriber<String>(new Observer<String>() {
+        TestSubscriber<String> to = new TestSubscriber<String>(new DefaultObserver<String>() {
 
             @Override
             public void onComplete() {
@@ -376,13 +377,13 @@ public class SerializedObserverTest {
         AtomicInteger p2 = new AtomicInteger();
 
         o.onSubscribe(EmptySubscription.INSTANCE);
-        AsyncObserver<String> as1 = Observers.createAsync(new Consumer<String>() {
+        AsyncSubscriber<String> as1 = Subscribers.createAsync(new Consumer<String>() {
             @Override
             public void accept(String v) {
                 o.onNext(v);
             }
         });
-        AsyncObserver<String> as2 = Observers.createAsync(new Consumer<String>() {
+        AsyncSubscriber<String> as2 = Subscribers.createAsync(new Consumer<String>() {
             @Override
             public void accept(String v) {
                 o.onNext(v);
@@ -412,8 +413,8 @@ public class SerializedObserverTest {
         }
     }
 
-    private static Observable<String> infinite(final AtomicInteger produced) {
-        return Observable.create(new Publisher<String>() {
+    private static Flowable<String> infinite(final AtomicInteger produced) {
+        return Flowable.create(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> s) {
@@ -518,7 +519,7 @@ public class SerializedObserverTest {
         onCompleted, onError, onNext
     }
 
-    private static class TestConcurrencySubscriber extends Observer<String> {
+    private static class TestConcurrencySubscriber extends DefaultObserver<String> {
 
         /**
          * used to store the order and number of events received
@@ -751,7 +752,7 @@ public class SerializedObserverTest {
         }
     }
 
-    private static class BusySubscriber extends Observer<String> {
+    private static class BusySubscriber extends DefaultObserver<String> {
         volatile boolean onCompleted = false;
         volatile boolean onError = false;
         AtomicInteger onNextCount = new AtomicInteger();

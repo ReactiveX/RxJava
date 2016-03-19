@@ -16,7 +16,6 @@ package io.reactivex.schedulers;
 import org.junit.*;
 
 import io.reactivex.Scheduler;
-import io.reactivex.schedulers.Schedulers;
 
 public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 

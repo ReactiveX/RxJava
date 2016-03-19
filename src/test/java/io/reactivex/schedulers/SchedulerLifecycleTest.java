@@ -13,7 +13,7 @@
 
 package io.reactivex.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -22,7 +22,6 @@ import org.junit.*;
 
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class SchedulerLifecycleTest {
     @Test

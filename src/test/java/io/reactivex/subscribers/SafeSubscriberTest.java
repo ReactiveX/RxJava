@@ -20,7 +20,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
+import io.reactivex.flowable.TestHelper;
 
 public class SafeSubscriberTest {
 
@@ -30,7 +31,7 @@ public class SafeSubscriberTest {
     @Test
     public void testOnNextAfterOnError() {
         TestObservable t = new TestObservable();
-        Observable<String> st = Observable.create(t);
+        Flowable<String> st = Flowable.create(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
         st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
@@ -50,7 +51,7 @@ public class SafeSubscriberTest {
     @Test
     public void testOnCompletedAfterOnError() {
         TestObservable t = new TestObservable();
-        Observable<String> st = Observable.create(t);
+        Flowable<String> st = Flowable.create(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
         
@@ -71,7 +72,7 @@ public class SafeSubscriberTest {
     @Test
     public void testOnNextAfterOnCompleted() {
         TestObservable t = new TestObservable();
-        Observable<String> st = Observable.create(t);
+        Flowable<String> st = Flowable.create(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
         st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
@@ -92,7 +93,7 @@ public class SafeSubscriberTest {
     @Test
     public void testOnErrorAfterOnCompleted() {
         TestObservable t = new TestObservable();
-        Observable<String> st = Observable.create(t);
+        Flowable<String> st = Flowable.create(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
         st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));

@@ -24,7 +24,6 @@ import org.junit.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.subscribers.Subscribers;
 
 public class SubscribersTest {
     @Test

@@ -14,14 +14,13 @@
 package io.reactivex.subjects;
 
 import java.lang.reflect.Array;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.*;
 
-import org.reactivestreams.*;
-
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -32,7 +31,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         return new BehaviorSubject<T>(state);
     }
     
-    // TODO a plain create() would create a method ambiguity with Observable.create with javac
+    // A plain create(T) would create a method ambiguity with Observable.create with javac
     public static <T> BehaviorSubject<T> createDefault(T defaultValue) {
         Objects.requireNonNull(defaultValue, "defaultValue is null");
         State<T> state = new State<T>();
@@ -47,7 +46,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     }
     
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(Disposable s) {
         state.onSubscribe(s);
     }
 
@@ -142,19 +141,19 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
     }
     
-    static final class State<T> extends AtomicReference<Object> implements Publisher<T>, Subscriber<T> {
+    static final class State<T> extends AtomicReference<Object> implements NbpOnSubscribe<T>, Observer<T> {
         /** */
         private static final long serialVersionUID = -4311717003288339429L;
 
         boolean done;
         
-        final AtomicReference<BehaviorSubscription<T>[]> subscribers;
+        final AtomicReference<BehaviorDisposable<T>[]> subscribers;
         
         @SuppressWarnings("rawtypes")
-        static final BehaviorSubscription[] EMPTY = new BehaviorSubscription[0];
+        static final BehaviorDisposable[] EMPTY = new BehaviorDisposable[0];
 
         @SuppressWarnings("rawtypes")
-        static final BehaviorSubscription[] TERMINATED = new BehaviorSubscription[0];
+        static final BehaviorDisposable[] TERMINATED = new BehaviorDisposable[0];
 
         long index;
         
@@ -167,18 +166,18 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             this.lock = new ReentrantReadWriteLock();
             this.readLock = lock.readLock();
             this.writeLock = lock.writeLock();
-            this.subscribers = new AtomicReference<BehaviorSubscription<T>[]>(EMPTY);
+            this.subscribers = new AtomicReference<BehaviorDisposable<T>[]>(EMPTY);
         }
         
-        public boolean add(BehaviorSubscription<T> rs) {
+        public boolean add(BehaviorDisposable<T> rs) {
             for (;;) {
-                BehaviorSubscription<T>[] a = subscribers.get();
+                BehaviorDisposable<T>[] a = subscribers.get();
                 if (a == TERMINATED) {
                     return false;
                 }
                 int len = a.length;
                 @SuppressWarnings("unchecked")
-                BehaviorSubscription<T>[] b = new BehaviorSubscription[len + 1];
+                BehaviorDisposable<T>[] b = new BehaviorDisposable[len + 1];
                 System.arraycopy(a, 0, b, 0, len);
                 b[len] = rs;
                 if (subscribers.compareAndSet(a, b)) {
@@ -188,9 +187,9 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         }
         
         @SuppressWarnings("unchecked")
-        public void remove(BehaviorSubscription<T> rs) {
+        public void remove(BehaviorDisposable<T> rs) {
             for (;;) {
-                BehaviorSubscription<T>[] a = subscribers.get();
+                BehaviorDisposable<T>[] a = subscribers.get();
                 if (a == TERMINATED || a == EMPTY) {
                     return;
                 }
@@ -206,11 +205,11 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                 if (j < 0) {
                     return;
                 }
-                BehaviorSubscription<T>[] b;
+                BehaviorDisposable<T>[] b;
                 if (len == 1) {
                     b = EMPTY;
                 } else {
-                    b = new BehaviorSubscription[len - 1];
+                    b = new BehaviorDisposable[len - 1];
                     System.arraycopy(a, 0, b, 0, j);
                     System.arraycopy(a, j + 1, b, j, len - j - 1);
                 }
@@ -221,9 +220,9 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         }
         
         @SuppressWarnings("unchecked")
-        public BehaviorSubscription<T>[] terminate(Object terminalValue) {
+        public BehaviorDisposable<T>[] terminate(Object terminalValue) {
             
-            BehaviorSubscription<T>[] a = subscribers.get();
+            BehaviorDisposable<T>[] a = subscribers.get();
             if (a != TERMINATED) {
                 a = subscribers.getAndSet(TERMINATED);
                 if (a != TERMINATED) {
@@ -236,8 +235,8 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void subscribe(Subscriber<? super T> s) {
-            BehaviorSubscription<T> bs = new BehaviorSubscription<T>(s, this);
+        public void accept(Observer<? super T> s) {
+            BehaviorDisposable<T> bs = new BehaviorDisposable<T>(s, this);
             s.onSubscribe(bs);
             if (!bs.cancelled) {
                 if (add(bs)) {
@@ -258,12 +257,11 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(Disposable s) {
             if (done) {
-                s.cancel();
+                s.dispose();
                 return;
             }
-            s.request(Long.MAX_VALUE);
         }
         
         void setCurrent(Object o) {
@@ -283,7 +281,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             }
             Object o = NotificationLite.next(t);
             setCurrent(o);
-            for (BehaviorSubscription<T> bs : subscribers.get()) {
+            for (BehaviorDisposable<T> bs : subscribers.get()) {
                 bs.emitNext(o, index);
             }
         }
@@ -296,7 +294,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             }
             done = true;
             Object o = NotificationLite.error(t);
-            for (BehaviorSubscription<T> bs : terminate(o)) {
+            for (BehaviorDisposable<T> bs : terminate(o)) {
                 bs.emitNext(o, index);
             }
         }
@@ -308,17 +306,15 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             }
             done = true;
             Object o = NotificationLite.complete();
-            for (BehaviorSubscription<T> bs : terminate(o)) {
+            for (BehaviorDisposable<T> bs : terminate(o)) {
                 bs.emitNext(o, index);  // relaxed read okay since this is the only mutator thread
             }
         }
     }
     
-    static final class BehaviorSubscription<T> extends AtomicLong implements Subscription, Predicate<Object> {
-        /** */
-        private static final long serialVersionUID = 3293175281126227086L;
+    static final class BehaviorDisposable<T> implements Disposable, Predicate<Object> {
         
-        final Subscriber<? super T> actual;
+        final Observer<? super T> actual;
         final State<T> state;
         
         boolean next;
@@ -331,22 +327,13 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         
         long index;
 
-        public BehaviorSubscription(Subscriber<? super T> actual, State<T> state) {
+        public BehaviorDisposable(Observer<? super T> actual, State<T> state) {
             this.actual = actual;
             this.state = state;
         }
         
         @Override
-        public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
-                return;
-            }
-            
-            BackpressureHelper.add(this, n);
-        }
-        
-        @Override
-        public void cancel() {
+        public void dispose() {
             if (!cancelled) {
                 cancelled = true;
                 
@@ -368,14 +355,14 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                 }
                 
                 State<T> s = state;
+                Lock lock = s.readLock;
                 
-                Lock readLock = s.readLock;
-                readLock.lock();
+                lock.lock();
                 try {
                     index = s.index;
                     o = s.get();
                 } finally {
-                    readLock.unlock();
+                    lock.unlock();
                 }
                 
                 emitting = o != null;
@@ -425,29 +412,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             if (cancelled) {
                 return true;
             }
-            
-            if (NotificationLite.isComplete(o)) {
-                cancel();
-                actual.onComplete();
-                return true;
-            } else
-            if (NotificationLite.isError(o)) {
-                cancel();
-                actual.onError(NotificationLite.getError(o));
-                return true;
-            }
-            
-            long r = get();
-            if (r != 0L) {
-                actual.onNext(NotificationLite.<T>getValue(o));
-                if (r != Long.MAX_VALUE) {
-                    decrementAndGet();
-                }
-                return false;
-            }
-            cancel();
-            actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
-            return true;
+            return NotificationLite.accept(o, actual);
         }
         
         void emitLoop() {

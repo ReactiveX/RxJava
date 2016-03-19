@@ -16,7 +16,7 @@ import java.io.Serializable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
 /**
@@ -230,7 +230,7 @@ public enum NotificationLite {
      * @return true if the notification was a terminal event (i.e., complete or error)
      */
     @SuppressWarnings("unchecked")
-    public static <T> boolean accept(Object o, NbpSubscriber<? super T> s) {
+    public static <T> boolean accept(Object o, Observer<? super T> s) {
         if (o == Complete.INSTANCE) {
             s.onComplete();
             return true;
@@ -275,10 +275,10 @@ public enum NotificationLite {
      * @param o the notification object
      * @param s the subscriber to call methods on
      * @return true if the notification was a terminal event (i.e., complete or error)
-     * @see #accept(Object, NbpSubscriber)
+     * @see #accept(Object, Observer)
      */
     @SuppressWarnings("unchecked")
-    public static <T> boolean acceptFull(Object o, NbpSubscriber<? super T> s) {
+    public static <T> boolean acceptFull(Object o, Observer<? super T> s) {
         if (o == Complete.INSTANCE) {
             s.onComplete();
             return true;

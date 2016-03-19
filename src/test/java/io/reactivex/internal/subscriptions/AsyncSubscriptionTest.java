@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.AsyncSubscription;
 
 public class AsyncSubscriptionTest {
     @Test

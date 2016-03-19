@@ -24,7 +24,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.functions.*;
-import io.reactivex.subscribers.AsyncObserver;
+import io.reactivex.subscribers.*;
 
 /**
  * Base tests for schedulers that involve threads (concurrency).
@@ -45,7 +45,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final AtomicInteger countGenerated = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Observable.interval(50, TimeUnit.MILLISECONDS)
+        Flowable.interval(50, TimeUnit.MILLISECONDS)
                 .map(new Function<Long, Long>() {
                     @Override
                     public Long apply(Long aLong) {
@@ -55,7 +55,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                 })
                 .subscribeOn(getScheduler())
                 .observeOn(getScheduler())
-                .subscribe(new Observer<Long>() {
+                .subscribe(new DefaultObserver<Long>() {
                     @Override
                     public void onComplete() {
                         System.out.println("--- completed");
@@ -283,7 +283,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch completionLatch = new CountDownLatch(1);
         final Worker inner = getScheduler().createWorker();
         try {
-            Observable<Integer> obs = Observable.create(new Publisher<Integer>() {
+            Flowable<Integer> obs = Flowable.create(new Publisher<Integer>() {
                 @Override
                 public void subscribe(final Subscriber<? super Integer> observer) {
                     inner.schedule(new Runnable() {
@@ -317,7 +317,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     
             final AtomicInteger count = new AtomicInteger();
             final AtomicBoolean completed = new AtomicBoolean(false);
-            AsyncObserver<Integer> s = new AsyncObserver<Integer>() {
+            AsyncSubscriber<Integer> s = new AsyncSubscriber<Integer>() {
                 @Override
                 public void onComplete() {
                     System.out.println("Completed");
@@ -363,7 +363,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
 
         final AtomicInteger count = new AtomicInteger();
 
-        Observable<Integer> o1 = Observable.<Integer> just(1, 2, 3, 4, 5);
+        Flowable<Integer> o1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
 
         o1.subscribe(new Consumer<Integer>() {
 

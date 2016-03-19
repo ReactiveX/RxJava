@@ -18,12 +18,11 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import org.reactivestreams.*;
-
+import io.reactivex.Observer;
 import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
@@ -93,7 +92,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     }
     
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(Disposable s) {
         state.onSubscribe(s);
     }
 
@@ -168,7 +167,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         return state.buffer.size();
     }
     
-    static final class State<T> extends AtomicReference<Object> implements Publisher<T>, Subscriber<T> {
+    static final class State<T> extends AtomicReference<Object> implements NbpOnSubscribe<T>, Observer<T> {
         /** */
         private static final long serialVersionUID = -4673197222000219014L;
 
@@ -176,23 +175,23 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         boolean done;
         
-        final AtomicReference<ReplaySubscription<T>[]> subscribers;
+        final AtomicReference<ReplayDisposable<T>[]> subscribers = new AtomicReference<ReplayDisposable<T>[]>();
         
         @SuppressWarnings("rawtypes")
-        static final ReplaySubscription[] EMPTY = new ReplaySubscription[0];
+        static final ReplayDisposable[] EMPTY = new ReplayDisposable[0];
 
         @SuppressWarnings("rawtypes")
-        static final ReplaySubscription[] TERMINATED = new ReplaySubscription[0];
+        static final ReplayDisposable[] TERMINATED = new ReplayDisposable[0];
         
         @SuppressWarnings("unchecked")
         public State(ReplayBuffer<T> buffer) {
             this.buffer = buffer;
-            this.subscribers = new AtomicReference<ReplaySubscription<T>[]>(EMPTY);
+            subscribers.lazySet(EMPTY);
         }
         
         @Override
-        public void subscribe(Subscriber<? super T> s) {
-            ReplaySubscription<T> rs = new ReplaySubscription<T>(s, this);
+        public void accept(Observer<? super T> s) {
+            ReplayDisposable<T> rs = new ReplayDisposable<T>(s, this);
             s.onSubscribe(rs);
             
             if (!rs.cancelled) {
@@ -206,15 +205,15 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             }
         }
         
-        public boolean add(ReplaySubscription<T> rs) {
+        public boolean add(ReplayDisposable<T> rs) {
             for (;;) {
-                ReplaySubscription<T>[] a = subscribers.get();
+                ReplayDisposable<T>[] a = subscribers.get();
                 if (a == TERMINATED) {
                     return false;
                 }
                 int len = a.length;
                 @SuppressWarnings("unchecked")
-                ReplaySubscription<T>[] b = new ReplaySubscription[len + 1];
+                ReplayDisposable<T>[] b = new ReplayDisposable[len + 1];
                 System.arraycopy(a, 0, b, 0, len);
                 b[len] = rs;
                 if (subscribers.compareAndSet(a, b)) {
@@ -224,9 +223,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
         
         @SuppressWarnings("unchecked")
-        public void remove(ReplaySubscription<T> rs) {
+        public void remove(ReplayDisposable<T> rs) {
             for (;;) {
-                ReplaySubscription<T>[] a = subscribers.get();
+                ReplayDisposable<T>[] a = subscribers.get();
                 if (a == TERMINATED || a == EMPTY) {
                     return;
                 }
@@ -242,11 +241,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 if (j < 0) {
                     return;
                 }
-                ReplaySubscription<T>[] b;
+                ReplayDisposable<T>[] b;
                 if (len == 1) {
                     b = EMPTY;
                 } else {
-                    b = new ReplaySubscription[len - 1];
+                    b = new ReplayDisposable[len - 1];
                     System.arraycopy(a, 0, b, 0, j);
                     System.arraycopy(a, j + 1, b, j, len - j - 1);
                 }
@@ -257,7 +256,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
         
         @SuppressWarnings("unchecked")
-        public ReplaySubscription<T>[] terminate(Object terminalValue) {
+        public ReplayDisposable<T>[] terminate(Object terminalValue) {
             if (compareAndSet(null, terminalValue)) {
                 return subscribers.getAndSet(TERMINATED);
             }
@@ -265,12 +264,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(Disposable s) {
             if (done) {
-                s.cancel();
-                return;
+                s.dispose();
             }
-            s.request(Long.MAX_VALUE);
         }
         
         @Override
@@ -282,7 +279,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             ReplayBuffer<T> b = buffer;
             b.add(t);
             
-            for (ReplaySubscription<T> rs : subscribers.get()) {
+            for (ReplayDisposable<T> rs : subscribers.get()) {
+                // FIXME there is a caught-up optimization possible here as is with 1.x
                 b.replay(rs);
             }
         }
@@ -301,7 +299,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             
             b.addFinal(o);
             
-            for (ReplaySubscription<T> rs : terminate(o)) {
+            for (ReplayDisposable<T> rs : terminate(o)) {
                 b.replay(rs);
             }
         }
@@ -319,7 +317,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             
             b.addFinal(o);
             
-            for (ReplaySubscription<T> rs : terminate(o)) {
+            for (ReplayDisposable<T> rs : terminate(o)) {
                 b.replay(rs);
             }
         }
@@ -331,7 +329,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         void addFinal(Object notificationLite);
         
-        void replay(ReplaySubscription<T> rs);
+        void replay(ReplayDisposable<T> rs);
         
         int size();
         
@@ -340,34 +338,23 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         T[] getValues(T[] array);
     }
     
-    static final class ReplaySubscription<T> extends AtomicInteger implements Subscription {
+    static final class ReplayDisposable<T> extends AtomicInteger implements Disposable {
         /** */
         private static final long serialVersionUID = 466549804534799122L;
-        final Subscriber<? super T> actual;
+        final Observer<? super T> actual;
         final State<T> state;
         
         Object index;
         
-        final AtomicLong requested;
-        
         volatile boolean cancelled;
         
-        public ReplaySubscription(Subscriber<? super T> actual, State<T> state) {
+        public ReplayDisposable(Observer<? super T> actual, State<T> state) {
             this.actual = actual;
             this.state = state;
-            this.requested = new AtomicLong();
-        }
-        @Override
-        public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
-                return;
-            }
-            BackpressureHelper.add(requested, n);
-            state.buffer.replay(this);
         }
         
         @Override
-        public void cancel() {
+        public void dispose() {
             if (!cancelled) {
                 cancelled = true;
                 state.remove(this);
@@ -456,14 +443,14 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         @Override
         @SuppressWarnings("unchecked")
-        public void replay(ReplaySubscription<T> rs) {
+        public void replay(ReplayDisposable<T> rs) {
             if (rs.getAndIncrement() != 0) {
                 return;
             }
             
             int missed = 1;
             final List<Object> b = buffer;
-            final Subscriber<? super T> a = rs.actual;
+            final Observer<? super T> a = rs.actual;
 
             Integer indexObject = (Integer)rs.index;
             int index = 0;
@@ -482,9 +469,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 }
 
                 int s = size;
-                long r = rs.requested.get();
-                boolean unbounded = r == Long.MAX_VALUE;
-                long e = 0L;
                 
                 while (s != index) {
                     
@@ -511,25 +495,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                         }
                     }
                     
-                    if (r == 0) {
-                        r = rs.requested.get() + e;
-                        if (r == 0) {
-                            break;
-                        }
-                    }
-
                     a.onNext((T)o);
-                    r--;
-                    e--;
                     index++;
                 }
                 
-                if (e != 0L) {
-                    if (!unbounded) {
-                        r = rs.requested.addAndGet(e);
-                    }
-                }
-                if (index != size && r != 0L) {
+                if (index != size) {
                     continue;
                 }
                 
@@ -694,13 +664,13 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         @Override
         @SuppressWarnings("unchecked")
-        public void replay(ReplaySubscription<T> rs) {
+        public void replay(ReplayDisposable<T> rs) {
             if (rs.getAndIncrement() != 0) {
                 return;
             }
             
             int missed = 1;
-            final Subscriber<? super T> a = rs.actual;
+            final Observer<? super T> a = rs.actual;
 
             Node<Object> index = (Node<Object>)rs.index;
             if (index == null) {
@@ -714,10 +684,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     return;
                 }
 
-                long r = rs.requested.get();
-                boolean unbounded = r == Long.MAX_VALUE;
-                long e = 0;
-                
                 for (;;) {
                     if (rs.cancelled) {
                         rs.index = null;
@@ -746,27 +712,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                         }
                     }
                     
-                    if (r == 0) {
-                        r = rs.requested.get() + e;
-                        if (r == 0) {
-                            break;
-                        }
-                    }
-
                     a.onNext((T)o);
-                    r--;
-                    e--;
                     
                     index = n;
                 }
                 
-                if (e != 0L) {
-                    if (!unbounded) {
-                        r = rs.requested.addAndGet(e);
-                    }
-                }
-                
-                if (index.get() != null && r != 0L) {
+                if (index.get() != null) {
                     continue;
                 }
                 
@@ -962,13 +913,13 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         @Override
         @SuppressWarnings("unchecked")
-        public void replay(ReplaySubscription<T> rs) {
+        public void replay(ReplayDisposable<T> rs) {
             if (rs.getAndIncrement() != 0) {
                 return;
             }
             
             int missed = 1;
-            final Subscriber<? super T> a = rs.actual;
+            final Observer<? super T> a = rs.actual;
 
             TimedNode<Object> index = (TimedNode<Object>)rs.index;
             if (index == null) {
@@ -995,10 +946,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                     return;
                 }
 
-                long r = rs.requested.get();
-                boolean unbounded = r == Long.MAX_VALUE;
-                long e = 0;
-                
                 for (;;) {
                     if (rs.cancelled) {
                         rs.index = null;
@@ -1027,27 +974,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                         }
                     }
                     
-                    if (r == 0) {
-                        r = rs.requested.get() + e;
-                        if (r == 0) {
-                            break;
-                        }
-                    }
-
                     a.onNext((T)o);
-                    r--;
-                    e--;
                     
                     index = n;
                 }
                 
-                if (e != 0L) {
-                    if (!unbounded) {
-                        r = rs.requested.addAndGet(e);
-                    }
-                }
-                
-                if (index.get() != null && r != 0L) {
+                if (index.get() != null) {
                     continue;
                 }
                 

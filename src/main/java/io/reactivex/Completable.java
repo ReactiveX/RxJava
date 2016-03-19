@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
 
-import io.reactivex.NbpObservable.*;
+import io.reactivex.Observable.*;
 import io.reactivex.Single.*;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.*;
@@ -353,7 +353,7 @@ public class Completable {
      * @throws NullPointerException if sources is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static Completable concat(Observable<? extends Completable> sources) {
+    public static Completable concat(Flowable<? extends Completable> sources) {
         return concat(sources, 2);
     }
     
@@ -365,7 +365,7 @@ public class Completable {
      * @throws NullPointerException if sources is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static Completable concat(Observable<? extends Completable> sources, int prefetch) {
+    public static Completable concat(Flowable<? extends Completable> sources, int prefetch) {
         Objects.requireNonNull(sources, "sources is null");
         if (prefetch < 1) {
             throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
@@ -517,7 +517,7 @@ public class Completable {
      * @throws NullPointerException if flowable is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static <T> Completable fromFlowable(final Observable<T> flowable) {
+    public static <T> Completable fromFlowable(final Flowable<T> flowable) {
         Objects.requireNonNull(flowable, "flowable is null");
         return create(new CompletableOnSubscribe() {
             @Override
@@ -559,12 +559,12 @@ public class Completable {
      * @throws NullPointerException if flowable is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static <T> Completable fromNbpObservable(final NbpObservable<T> observable) {
+    public static <T> Completable fromNbpObservable(final Observable<T> observable) {
         Objects.requireNonNull(observable, "observable is null");
         return create(new CompletableOnSubscribe() {
             @Override
             public void accept(final CompletableSubscriber s) {
-                observable.subscribe(new NbpSubscriber<T>() {
+                observable.subscribe(new Observer<T>() {
 
                     @Override
                     public void onComplete() {
@@ -695,7 +695,7 @@ public class Completable {
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
-    public static Completable merge(Observable<? extends Completable> sources) {
+    public static Completable merge(Flowable<? extends Completable> sources) {
         return merge0(sources, Integer.MAX_VALUE, false);
     }
     
@@ -708,7 +708,7 @@ public class Completable {
      * @throws NullPointerException if sources is null
      * @throws IllegalArgumentException if maxConcurrency is less than 1
      */
-    public static Completable merge(Observable<? extends Completable> sources, int maxConcurrency) {
+    public static Completable merge(Flowable<? extends Completable> sources, int maxConcurrency) {
         return merge0(sources, maxConcurrency, false);
         
     }
@@ -724,7 +724,7 @@ public class Completable {
      * @throws NullPointerException if sources is null
      * @throws IllegalArgumentException if maxConcurrency is less than 1
      */
-    protected static Completable merge0(Observable<? extends Completable> sources, int maxConcurrency, boolean delayErrors) {
+    protected static Completable merge0(Flowable<? extends Completable> sources, int maxConcurrency, boolean delayErrors) {
         Objects.requireNonNull(sources, "sources is null");
         if (maxConcurrency < 1) {
             throw new IllegalArgumentException("maxConcurrency > 0 required but it was " + maxConcurrency);
@@ -767,7 +767,7 @@ public class Completable {
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
-    public static Completable mergeDelayError(Observable<? extends Completable> sources) {
+    public static Completable mergeDelayError(Flowable<? extends Completable> sources) {
         return merge0(sources, Integer.MAX_VALUE, true);
     }
     
@@ -781,7 +781,7 @@ public class Completable {
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
-    public static Completable mergeDelayError(Observable<? extends Completable> sources, int maxConcurrency) {
+    public static Completable mergeDelayError(Flowable<? extends Completable> sources, int maxConcurrency) {
         return merge0(sources, maxConcurrency, true);
     }
     
@@ -1390,7 +1390,7 @@ public class Completable {
      * @throws NullPointerException if next is null
      */
     @SchedulerSupport(SchedulerKind.CUSTOM)
-    public final <T> NbpObservable<T> endWith(NbpObservable<T> next) {
+    public final <T> Observable<T> endWith(Observable<T> next) {
         return next.startWith(this.<T>toNbpObservable());
     }
     
@@ -1403,7 +1403,7 @@ public class Completable {
      * @throws NullPointerException if next is null
      */
     @SchedulerSupport(SchedulerKind.CUSTOM)
-    public final <T> Observable<T> endWith(Observable<T> next) {
+    public final <T> Flowable<T> endWith(Flowable<T> next) {
         return next.startWith(this.<T>toFlowable());
     }
 
@@ -1787,7 +1787,7 @@ public class Completable {
      * FIXME the Observable<Void> type doesn't make sense here because nulls are not allowed
      * FIXME add unit test once the type has been fixed
      */ 
-    public final Completable repeatWhen(Function<? super Observable<Object>, ? extends Publisher<Object>> handler) {
+    public final Completable repeatWhen(Function<? super Flowable<Object>, ? extends Publisher<Object>> handler) {
         return fromFlowable(toFlowable().repeatWhen(handler));
     }
     
@@ -1847,7 +1847,7 @@ public class Completable {
      * @throws NullPointerException if handler is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final Completable retryWhen(Function<? super Observable<? extends Throwable>, ? extends Publisher<Object>> handler) {
+    public final Completable retryWhen(Function<? super Flowable<? extends Throwable>, ? extends Publisher<Object>> handler) {
         return fromFlowable(toFlowable().retryWhen(handler));
     }
 
@@ -1873,7 +1873,7 @@ public class Completable {
      * @throws NullPointerException if other is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final <T> NbpObservable<T> startWith(NbpObservable<T> other) {
+    public final <T> Observable<T> startWith(Observable<T> other) {
         Objects.requireNonNull(other, "other is null");
         return other.endWith(this.<T>toNbpObservable());
     }
@@ -1886,7 +1886,7 @@ public class Completable {
      * @throws NullPointerException if other is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final <T> Observable<T> startWith(Observable<T> other) {
+    public final <T> Flowable<T> startWith(Flowable<T> other) {
         Objects.requireNonNull(other, "other is null");
         return other.endWith(this.<T>toFlowable());
     }
@@ -1988,7 +1988,7 @@ public class Completable {
      * @throws NullPointerException if s is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final void subscribe(final NbpSubscriber<?> s) {
+    public final void subscribe(final Observer<?> s) {
         Objects.requireNonNull(s, "s is null");
         try {
             // TODO plugin wrapping the subscriber
@@ -2221,8 +2221,8 @@ public class Completable {
      * @return the new Observable created
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final <T> Observable<T> toFlowable() {
-        return Observable.create(new Publisher<T>() {
+    public final <T> Flowable<T> toFlowable() {
+        return Flowable.create(new Publisher<T>() {
             @Override
             public void subscribe(Subscriber<? super T> s) {
                 Completable.this.subscribe(s);
@@ -2237,10 +2237,10 @@ public class Completable {
      * @return the new NbpObservable created
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final <T> NbpObservable<T> toNbpObservable() {
-        return NbpObservable.create(new NbpOnSubscribe<T>() {
+    public final <T> Observable<T> toNbpObservable() {
+        return Observable.create(new NbpOnSubscribe<T>() {
             @Override
-            public void accept(NbpSubscriber<? super T> s) {
+            public void accept(Observer<? super T> s) {
                 subscribe(s);
             }
         });

@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.util;
 
-import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.Observer;
 
 public interface NbpQueueDrain<T, U> {
     
@@ -37,5 +37,5 @@ public interface NbpQueueDrain<T, U> {
      * @param a the subscriber to deliver values to
      * @param v the value to deliver
      */
-    void accept(NbpSubscriber<? super U> a, T v);
+    void accept(Observer<? super U> a, T v);
 }

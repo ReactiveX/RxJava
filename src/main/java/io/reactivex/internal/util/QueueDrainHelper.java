@@ -13,11 +13,11 @@
 package io.reactivex.internal.util;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.NbpObservable.NbpSubscriber;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BooleanSupplier;
 
@@ -289,7 +289,7 @@ public enum QueueDrainHelper {
         return false;
     }
     
-    public static <T, U> void drainLoop(Queue<T> q, NbpSubscriber<? super U> a, boolean delayError, Disposable dispose, NbpQueueDrain<T, U> qd) {
+    public static <T, U> void drainLoop(Queue<T> q, Observer<? super U> a, boolean delayError, Disposable dispose, NbpQueueDrain<T, U> qd) {
         
         int missed = 1;
         
@@ -323,7 +323,7 @@ public enum QueueDrainHelper {
     }
 
     public static <T, U> boolean checkTerminated(boolean d, boolean empty, 
-            NbpSubscriber<?> s, boolean delayError, Queue<?> q, Disposable disposable, NbpQueueDrain<T, U> qd) {
+            Observer<?> s, boolean delayError, Queue<?> q, Disposable disposable, NbpQueueDrain<T, U> qd) {
         if (qd.cancelled()) {
             q.clear();
             disposable.dispose();

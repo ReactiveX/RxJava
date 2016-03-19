@@ -28,7 +28,6 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.schedulers.TestScheduler;
 
 public class TestSchedulerTest {
 
@@ -180,8 +179,8 @@ public class TestSchedulerTest {
         try {
             final Runnable calledOp = mock(Runnable.class);
     
-            Observable<Object> poller;
-            poller = Observable.create(new Publisher<Object>() {
+            Flowable<Object> poller;
+            poller = Flowable.create(new Publisher<Object>() {
                 @Override
                 public void subscribe(final Subscriber<? super Object> aSubscriber) {
                     final BooleanSubscription bs = new BooleanSubscription();

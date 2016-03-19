@@ -23,7 +23,6 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.functions.*;
-import io.reactivex.schedulers.Schedulers;
 
 public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests {
 
@@ -90,9 +89,9 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
     @Test
     public final void testComputationThreadPool1() {
-        Observable<Integer> o1 = Observable.<Integer> just(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> just(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Function<Integer, String>() {
+        Flowable<Integer> o1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
+        Flowable<Integer> o2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
+        Flowable<String> o = Flowable.<Integer> merge(o1, o2).map(new Function<Integer, String>() {
 
             @Override
             public String apply(Integer t) {
@@ -116,9 +115,9 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
         final String currentThreadName = Thread.currentThread().getName();
 
-        Observable<Integer> o1 = Observable.<Integer> just(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> just(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.computation()).map(new Function<Integer, String>() {
+        Flowable<Integer> o1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
+        Flowable<Integer> o2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
+        Flowable<String> o = Flowable.<Integer> merge(o1, o2).subscribeOn(Schedulers.computation()).map(new Function<Integer, String>() {
 
             @Override
             public String apply(Integer t) {

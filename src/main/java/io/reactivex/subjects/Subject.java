@@ -13,12 +13,10 @@
 
 package io.reactivex.subjects;
 
-import org.reactivestreams.*;
-
-import io.reactivex.Observable;
+import io.reactivex.*;
 
 /**
- * Represents a Subscriber and an Observable (Publisher) at the same time, allowing
+ * Represents a NbpSubscriber and a NbpObservable at the same time, allowing
  * multicasting events from a single source to multiple child Subscribers.
  * <p>All methods except the onSubscribe, onNext, onError and onComplete are thread-safe.
  * Use {@link #toSerialized()} to make these methods thread-safe as well.
@@ -26,9 +24,9 @@ import io.reactivex.Observable;
  * @param <T> the source value type
  * @param <R> the emission value type
  */
-public abstract class Subject<T, R> extends Observable<R> implements Processor<T, R> {
+public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
     
-    protected Subject(Publisher<R> onSubscribe) {
+    protected Subject(NbpOnSubscribe<R> onSubscribe) {
         super(onSubscribe);
     }
     
@@ -44,7 +42,7 @@ public abstract class Subject<T, R> extends Observable<R> implements Processor<T
      * <p>The method is thread-safe.
      * @return true if the subject has reached a terminal state through an error event
      * @see #getThrowable()
-     * @see #hasComplete()
+     * &see {@link #hasComplete()}
      */
     public boolean hasThrowable() {
         throw new UnsupportedOperationException();

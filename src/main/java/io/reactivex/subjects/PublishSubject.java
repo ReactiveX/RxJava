@@ -10,118 +10,63 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+
 package io.reactivex.subjects;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
-
-import io.reactivex.exceptions.MissingBackpressureException;
-import io.reactivex.functions.IntFunction;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.Observer;
+import io.reactivex.disposables.*;
+import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 
-/**
- * A Subject that multicasts events to Subscribers that are currently subscribed to it.
- * 
- * <p>The subject does not coordinate backpressure for its subscribers and implements a weaker onSubscribe which
- * calls requests Long.MAX_VALUE from the incoming Subscriptions. This makes it possible to subscribe the PublishSubject
- * to multiple sources (note on serialization though) unlike the standard contract on Subscriber. Child subscribers, however, are not overflown but receive an
- * IllegalStateException in case their requested amount is zero.
- * 
- * <p>The implementation of onXXX methods are technically thread-safe but non-serialized calls
- * to them may lead to undefined state in the currently subscribed Subscribers.
- * 
- * <p>Due to the nature Observables are constructed, the PublishSubject can't be instantiated through
- * {@code new} but must be created via the {@link #create()} method.
- *
- * @param <T> the value type multicast to Subscribers.
- */
 public final class PublishSubject<T> extends Subject<T, T> {
-    
-    /**
-     * Constructs a PublishSubject.
-     * @param <T> the value type
-     * @return the new PublishSubject
-     */
     public static <T> PublishSubject<T> create() {
         State<T> state = new State<T>();
         return new PublishSubject<T>(state);
     }
     
-    /** Holds the terminal event and manages the array of subscribers. */
     final State<T> state;
-    /** 
-     * Indicates the subject has been terminated. It is checked in the onXXX methods in
-     * a relaxed matter: concurrent calls may not properly see it (which shouldn't happen if
-     * the reactive-streams contract is held).
-     */
-    boolean done;
-    
     protected PublishSubject(State<T> state) {
         super(state);
         this.state = state;
     }
     
     @Override
-    public void onSubscribe(Subscription s) {
-        if (done) {
-            s.cancel();
-            return;
-        }
-        // PublishSubject doesn't bother with request coordination.
-        s.request(Long.MAX_VALUE);
-    }
-    
-    @Override
-    public void onNext(T t) {
-        if (done) {
-            return;
-        }
-        if (t == null) {
-            onError(new NullPointerException());
-            return;
-        }
-        for (PublishSubscriber<T> s : state.subscribers()) {
-            s.onNext(t);
+    public void onSubscribe(Disposable d) {
+        if (state.done) {
+            d.dispose();
         }
     }
     
     @Override
-    public void onError(Throwable t) {
-        if (done) {
-            RxJavaPlugins.onError(t);
-            return;
-        }
-        done = true;
-        if (t == null) {
-            t = new NullPointerException();
-        }
-        for (PublishSubscriber<T> s : state.terminate(t)) {
-            s.onError(t);
-        }
+    public void onNext(T value) {
+        state.onNext(value);
+    }
+    
+    @Override
+    public void onError(Throwable e) {
+        state.onError(e);
     }
     
     @Override
     public void onComplete() {
-        if (done) {
-            return;
-        }
-        done = true;
-        for (PublishSubscriber<T> s : state.terminate()) {
-            s.onComplete();
-        }
+        state.onComplete();
     }
     
     @Override
     public boolean hasSubscribers() {
-        return state.subscribers().length != 0;
+        return state.subscribers.get().length != 0;
     }
     
     @Override
-    public boolean hasValue() {
-        return false;
+    public Throwable getThrowable() {
+        Object o = state.get();
+        if (NotificationLite.isError(o)) {
+            return NotificationLite.getError(o);
+        }
+        return null;
     }
     
     @Override
@@ -138,194 +83,180 @@ public final class PublishSubject<T> extends Subject<T, T> {
     }
     
     @Override
-    public Throwable getThrowable() {
+    public boolean hasComplete() {
         Object o = state.get();
-        if (o == State.COMPLETE) {
-            return null;
-        }
-        return (Throwable)o;
+        return o != null && !NotificationLite.isError(o);
     }
     
     @Override
     public boolean hasThrowable() {
-        Object o = state.get();
-        return o != null && o != State.COMPLETE;
+        return NotificationLite.isError(state.get());
     }
     
     @Override
-    public boolean hasComplete() {
-        return state.get() == State.COMPLETE;
+    public boolean hasValue() {
+        return false;
     }
     
-    /**
-     * Contains the state of the Subject, including the currently subscribed clients and the 
-     * terminal value.
-     *
-     * @param <T> the value type of the events
-     */
-    @SuppressWarnings("rawtypes")
-    static final class State<T> extends AtomicReference<Object> 
-    implements Publisher<T>, IntFunction<PublishSubscriber<T>[]> {
+    static final class State<T> extends AtomicReference<Object> implements NbpOnSubscribe<T>, Observer<T> {
         /** */
-        private static final long serialVersionUID = -2699311989055418316L;
-        /** The completion token. */
-        static final Object COMPLETE = new Object();
-        
-        /** The terminated indicator for the subscribers array. */
-        static final PublishSubscriber[] TERMINATED = new PublishSubscriber[0];
-        /** An empty subscribers array to avoid allocating it all the time. */
-        static final PublishSubscriber[] EMPTY = new PublishSubscriber[0];
+        private static final long serialVersionUID = 4876574210612691772L;
 
-        /** The array of currently subscribed subscribers. */
-        @SuppressWarnings("unchecked")
-        final AtomicReference<PublishSubscriber<T>[]> subscribers = new AtomicReference<PublishSubscriber<T>[]>(EMPTY);
+        final AtomicReference<Observer<? super T>[]> subscribers = new AtomicReference<Observer<? super T>[]>();
         
-        @Override
-        public void subscribe(Subscriber<? super T> t) {
-            PublishSubscriber<T> ps = new PublishSubscriber<T>(t, this);
-            t.onSubscribe(ps);
-            if (!ps.cancelled.get()) {
-                if (add(ps)) {
-                    // if cancellation happened while a successful add, the remove() didn't work
-                    // so we need to do it again
-                    if (ps.cancelled.get()) {
-                        remove(ps);
-                    }
-                } else {
-                    Object o = get();
-                    if (o == COMPLETE) {
-                        ps.onComplete();
-                    } else {
-                        ps.onError((Throwable)o);
-                    }
+        @SuppressWarnings("rawtypes")
+        static final Observer[] EMPTY = new Observer[0];
+        @SuppressWarnings("rawtypes")
+        static final Observer[] TERMINATED = new Observer[0];
+
+        volatile boolean done;
+        
+        @SuppressWarnings("unchecked")
+        public State() {
+            subscribers.lazySet(EMPTY);
+        }
+        
+        boolean add(Observer<? super T> s) {
+            for (;;) {
+                Observer<? super T>[] a = subscribers.get();
+                if (a == TERMINATED) {
+                    return false;
+                }
+                int n = a.length;
+                
+                @SuppressWarnings("unchecked")
+                Observer<? super T>[] b = new Observer[n + 1];
+                System.arraycopy(a, 0, b, 0, n);
+                b[n] = s;
+                
+                if (subscribers.compareAndSet(a, b)) {
+                    return true;
                 }
             }
         }
         
-        /**
-         * @return the array of currently subscribed subscribers
-         */
-        PublishSubscriber<T>[] subscribers() {
-            return subscribers.get();
-        }
-        
-        /**
-         * Atomically swaps in the terminal state with a completion indicator and returns
-         * the last array of subscribers.
-         * @return the last array of subscribers
-         */
-        PublishSubscriber<T>[] terminate() {
-            return terminate(COMPLETE);
-        }
-        
-        /**
-         * Atomically swaps in the terminal state with a completion indicator and returns
-         * the last array of subscribers.
-         * @param event the terminal state value to set
-         * @return the last array of subscribers
-         */
         @SuppressWarnings("unchecked")
-        PublishSubscriber<T>[] terminate(Object event) {
-            if (compareAndSet(null, event)) {
-                return TerminalAtomicsHelper.terminate(subscribers, TERMINATED);
+        void remove(Observer<? super T> s) {
+            for (;;) {
+                Observer<? super T>[] a = subscribers.get();
+                if (a == TERMINATED || a == EMPTY) {
+                    return;
+                }
+                int n = a.length;
+                int j = -1;
+                for (int i = 0; i < n; i++) {
+                    Observer<? super T> e = a[i];
+                    if (e.equals(s)) {
+                        j = i;
+                        break;
+                    }
+                }
+                if (j < 0) {
+                    return;
+                }
+                Observer<? super T>[] b;
+                if (n == 1) {
+                    b = EMPTY;
+                } else {
+                    b = new Observer[n - 1];
+                    System.arraycopy(a, 0, b, 0, j);
+                    System.arraycopy(a, j + 1, b, j, n - j - 1);
+                }
+                if (subscribers.compareAndSet(a, b)) {
+                    return;
+                }
+            }
+        }
+        
+        @SuppressWarnings("unchecked")
+        Observer<? super T>[] terminate(Object notification) {
+            if (compareAndSet(null, notification)) {
+                Observer<? super T>[] a = subscribers.get();
+                if (a != TERMINATED) {
+                    return subscribers.getAndSet(TERMINATED);
+                }
             }
             return TERMINATED;
         }
         
-        /**
-         * Tries to add the given subscriber to the subscribers array atomically
-         * or returns false if the subject has terminated.
-         * @param ps the subscriber to add
-         * @return true if successful, false if the subject has terminated
-         */
-        @SuppressWarnings("unchecked")
-        boolean add(PublishSubscriber<T> ps) {
-            return TerminalAtomicsHelper.add(subscribers, ps, TERMINATED, this);
-        }
-        
-        /**
-         * Atomically removes the given subscriber if it is subscribed to the subject.
-         * @param ps the subject to remove
-         */
-        @SuppressWarnings("unchecked")
-        void remove(PublishSubscriber<T> ps) {
-            TerminalAtomicsHelper.remove(subscribers, ps, TERMINATED, EMPTY, this);
-        }
-        
-        @SuppressWarnings("unchecked")
-        @Override
-        public PublishSubscriber<T>[] apply(int value) {
-            return new PublishSubscriber[value];
-        }
-    }
-    
-    /**
-     * Wraps the actual subscriber, tracks its requests and makes cancellation
-     * to remove itself from the current subscribers array.
-     *
-     * @param <T> the value type
-     */
-    static final class PublishSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
-        /** */
-        private static final long serialVersionUID = 3562861878281475070L;
-        /** The actual subscriber. */
-        final Subscriber<? super T> actual;
-        /** The subject state. */
-        final State<T> state;
-
-        final AtomicBoolean cancelled = new AtomicBoolean();
-        
-        /**
-         * Constructs a PublishSubscriber, wraps the actual subscriber and the state.
-         * @param actual the actual subscriber
-         * @param state the state
-         */
-        public PublishSubscriber(Subscriber<? super T> actual, State<T> state) {
-            this.actual = actual;
-            this.state = state;
-        }
-        
-        @Override
-        public void onSubscribe(Subscription s) {
-            // not called because requests are handled locally and cancel is forwared to state
-        }
-        
-        @Override
-        public void onNext(T t) {
-            long r = get();
-            if (r != 0L) {
-                actual.onNext(t);
-                if (r != Long.MAX_VALUE) {
-                    decrementAndGet();
-                }
+        void emit(Observer<? super T> t, Object v) {
+            if (NotificationLite.isComplete(v)) {
+                t.onComplete();
             } else {
-                cancel();
-                actual.onError(new MissingBackpressureException("Could not emit value due to lack of requests"));
+                t.onError(NotificationLite.getError(v));
             }
         }
         
         @Override
-        public void onError(Throwable t) {
-            actual.onError(t);
+        public void accept(final Observer<? super T> t) {
+            Object v = get();
+            if (v != null) {
+                t.onSubscribe(EmptyDisposable.INSTANCE);
+                emit(t, v);
+                return;
+            }
+            BooleanDisposable bd = new BooleanDisposable(new Runnable() {
+                @Override
+                public void run() {
+                    remove(t);
+                }
+            });
+            t.onSubscribe(bd);
+            if (add(t)) {
+                if (bd.isDisposed()) {
+                    remove(t);
+                }
+                return;
+            }
+            v = get();
+            emit(t, v);
+        }
+        
+        @Override
+        public void onSubscribe(Disposable d) {
+            if (done) {
+                d.dispose();
+            }
+        }
+        
+        @Override
+        public void onNext(T value) {
+            if (done) {
+                return;
+            }
+            if (value == null) {
+                onError(new NullPointerException("The value is null"));
+                return;
+            }
+            for (Observer<? super T> v : subscribers.get()) {
+                v.onNext(value);
+            }
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            if (done) {
+                RxJavaPlugins.onError(e);
+                return;
+            }
+            done = true;
+            if (e == null) {
+                e = new NullPointerException();
+            }
+
+            for (Observer<? super T> v : terminate(NotificationLite.error(e))) {
+                v.onError(e);
+            }
         }
         
         @Override
         public void onComplete() {
-            actual.onComplete();
-        }
-        
-        @Override
-        public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (done) {
                 return;
             }
-            BackpressureHelper.add(this, n);
-        }
-        
-        @Override
-        public void cancel() {
-            if (!cancelled.get() && cancelled.compareAndSet(false, true)) {
-                state.remove(this);
+            done = true;
+            for (Observer<? super T> v : terminate(NotificationLite.complete())) {
+                v.onComplete();
             }
         }
     }
