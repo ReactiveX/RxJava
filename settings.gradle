@@ -1,1 +1,3 @@
-rootProject.name='rxjava'
+rootProject.name='RxJava'
+include 'rxjava'
+include 'rxjava-java6'
