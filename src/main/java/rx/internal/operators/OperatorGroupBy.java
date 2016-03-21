@@ -219,6 +219,12 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             if (done) {
                 return;
             }
+
+            for (GroupedUnicast<K, V> e : groups.values()) {
+                e.onComplete();
+            }
+            groups.clear();
+
             done = true;
             GROUP_COUNT.decrementAndGet(this);
             drain();
@@ -328,13 +334,6 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                     return true;
                 } else
                 if (empty) {
-                    List<GroupedUnicast<K, V>> list = new ArrayList<GroupedUnicast<K, V>>(groups.values());
-                    groups.clear();
-                    
-                    for (GroupedUnicast<K, V> e : list) {
-                        e.onComplete();
-                    }
-                    
                     actual.onCompleted();
                     return true;
                 }
