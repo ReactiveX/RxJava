@@ -40,14 +40,25 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
     private final Scheduler scheduler;
     private final boolean delayError;
+    private final int bufferSize;
 
     /**
      * @param scheduler the scheduler to use
      * @param delayError delay errors until all normal events are emitted in the other thread?
      */
     public OperatorObserveOn(Scheduler scheduler, boolean delayError) {
+        this(scheduler, delayError, RxRingBuffer.SIZE);
+    }
+
+    /**
+     * @param scheduler the scheduler to use
+     * @param delayError delay errors until all normal events are emitted in the other thread?
+     * @param bufferSize for the buffer feeding the Scheduler workers, defaults to {@code RxRingBuffer.MAX} if <= 0
+     */
+    public OperatorObserveOn(Scheduler scheduler, boolean delayError, int bufferSize) {
         this.scheduler = scheduler;
         this.delayError = delayError;
+        this.bufferSize = (bufferSize > 0) ? bufferSize : RxRingBuffer.SIZE;
     }
 
     @Override
@@ -59,7 +70,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             // avoid overhead, execute directly
             return child;
         } else {
-            ObserveOnSubscriber<T> parent = new ObserveOnSubscriber<T>(scheduler, child, delayError);
+            ObserveOnSubscriber<T> parent = new ObserveOnSubscriber<T>(scheduler, child, delayError, bufferSize);
             parent.init();
             return parent;
         }
@@ -72,6 +83,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         final NotificationLite<T> on;
         final boolean delayError;
         final Queue<Object> queue;
+        final int bufferSize;
         
         // the status of the current stream
         volatile boolean finished;
@@ -88,15 +100,16 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
         // do NOT pass the Subscriber through to couple the subscription chain ... unsubscribing on the parent should
         // not prevent anything downstream from consuming, which will happen if the Subscription is chained
-        public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> child, boolean delayError) {
+        public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> child, boolean delayError, int bufferSize) {
             this.child = child;
             this.recursiveScheduler = scheduler.createWorker();
             this.delayError = delayError;
             this.on = NotificationLite.instance();
+            this.bufferSize = (bufferSize > 0) ? bufferSize : RxRingBuffer.SIZE;
             if (UnsafeAccess.isUnsafeAvailable()) {
-                queue = new SpscArrayQueue<Object>(RxRingBuffer.SIZE);
+                queue = new SpscArrayQueue<Object>(this.bufferSize);
             } else {
-                queue = new SpscAtomicArrayQueue<Object>(RxRingBuffer.SIZE);
+                queue = new SpscAtomicArrayQueue<Object>(this.bufferSize);
             }
         }
         
@@ -123,7 +136,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         @Override
         public void onStart() {
             // signal that this is an async operator capable of receiving this many
-            request(RxRingBuffer.SIZE);
+            request(this.bufferSize);
         }
 
         @Override
@@ -180,7 +193,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             
             // requested and counter are not included to avoid JIT issues with register spilling
             // and their access is is amortized because they are part of the outer loop which runs
-            // less frequently (usually after each RxRingBuffer.SIZE elements)
+            // less frequently (usually after each bufferSize elements)
             
             for (;;) {
                 long requestAmount = requested.get();
