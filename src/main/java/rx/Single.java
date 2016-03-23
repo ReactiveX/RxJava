@@ -163,9 +163,8 @@ public class Single<T> {
      * @return a Single that is the result of applying the lifted Operator to the source Single
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
-    private <R> Single<R> lift(final Operator<? extends R, ? super T> lift) {
-        // This method is private because not sure if we want to expose the Observable.Operator in this public API rather than a Single.Operator 
-
+    @Experimental
+    public final <R> Single<R> lift(final Operator<? extends R, ? super T> lift) {
         return new Single<R>(new Observable.OnSubscribe<R>() {
             @Override
             public void call(Subscriber<? super R> o) {
