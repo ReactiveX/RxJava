@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -50,7 +51,7 @@ public class CompositeExceptionTest {
         Throwable e1 = new Throwable("1", rootCause);
         Throwable e2 = new Throwable("2", rootCause);
         Throwable e3 = new Throwable("3", rootCause);
-        CompositeException ce = new CompositeException("3 failures with same root cause", Arrays.asList(e1, e2, e3));
+        CompositeException ce = new CompositeException(Arrays.asList(e1, e2, e3));
 
         System.err.println("----------------------------- print composite stacktrace");
         ce.printStackTrace();
@@ -174,7 +175,7 @@ public class CompositeExceptionTest {
     }
     @Test
     public void testNullElement() {
-        CompositeException composite = new CompositeException(Arrays.asList((Throwable)null));
+        CompositeException composite = new CompositeException(Collections.singletonList((Throwable) null));
         composite.getCause();
         composite.printStackTrace();
     }
@@ -219,5 +220,17 @@ public class CompositeExceptionTest {
 
         System.err.println("----------------------------- print cause stacktrace");
         cex.getCause().printStackTrace();
+    }
+
+    @Test
+    public void messageCollection() {
+        CompositeException compositeException = new CompositeException(Arrays.asList(ex1, ex3));
+        assertEquals("2 exceptions occurred. ", compositeException.getMessage());
+    }
+
+    @Test
+    public void messageVarargs() {
+        CompositeException compositeException = new CompositeException(ex1, ex2, ex3);
+        assertEquals("3 exceptions occurred. ", compositeException.getMessage());
     }
 }
