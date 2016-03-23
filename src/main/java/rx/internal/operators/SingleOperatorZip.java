@@ -7,6 +7,7 @@ import rx.functions.FuncN;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.CompositeSubscription;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,6 +17,11 @@ public class SingleOperatorZip {
         return Single.create(new Single.OnSubscribe<R>() {
             @Override
             public void call(final SingleSubscriber<? super R> subscriber) {
+                if (singles.length == 0) {
+                    subscriber.onError(new NoSuchElementException("Can't zip 0 Singles."));
+                    return;
+                }
+
                 final AtomicInteger wip = new AtomicInteger(singles.length);
                 final AtomicBoolean once = new AtomicBoolean();
                 final Object[] values = new Object[singles.length];

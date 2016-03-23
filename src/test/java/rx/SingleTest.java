@@ -341,6 +341,26 @@ public class SingleTest {
     }
 
     @Test
+    public void zipEmptyIterableShouldThrow() {
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+        Iterable<Single<Object>> singles = Collections.emptyList();
+
+        Single
+                .zip(singles, new FuncN<Object>() {
+                    @Override
+                    public Object call(Object... args) {
+                        throw new IllegalStateException("Should not be called");
+                    }
+                })
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertNotCompleted();
+        testSubscriber.assertError(NoSuchElementException.class);
+        assertEquals("Can't zip 0 Singles.", testSubscriber.getOnErrorEvents().get(0).getMessage());
+    }
+
+    @Test
     public void testZipWith() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 

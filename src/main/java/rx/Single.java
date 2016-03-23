@@ -1234,7 +1234,8 @@ public class Single<T> {
      * </dl>
      *
      * @param singles
-     *            an Iterable of source Singles
+     *            an Iterable of source Singles. Should not be empty because {@link Single} either emits result or error.
+     *            {@link java.util.NoSuchElementException} will be emit as error if Iterable will be empty.
      * @param zipFunction
      *            a function that, when applied to an item emitted by each of the source Singles, results in
      *            an item that will be emitted by the resulting Single
