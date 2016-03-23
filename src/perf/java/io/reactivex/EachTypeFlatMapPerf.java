@@ -31,45 +31,45 @@ public class EachTypeFlatMapPerf {
     @Param({ "1", "1000", "1000000" })
     public int times;
     
-    Observable<Integer> bpRange;
-    NbpObservable<Integer> nbpRange;
+    Flowable<Integer> bpRange;
+    Observable<Integer> nbpRange;
     Single<Integer> singleJust;
 
-    Observable<Integer> bpRangeMapJust;
-    NbpObservable<Integer> nbpRangeMapJust;
+    Flowable<Integer> bpRangeMapJust;
+    Observable<Integer> nbpRangeMapJust;
     Single<Integer> singleJustMapJust;
 
-    Observable<Integer> bpRangeMapRange;
-    NbpObservable<Integer> nbpRangeMapRange;
+    Flowable<Integer> bpRangeMapRange;
+    Observable<Integer> nbpRangeMapRange;
 
     @Setup
     public void setup() {
-        bpRange = Observable.range(1, times);
-        nbpRange = NbpObservable.range(1, times);
+        bpRange = Flowable.range(1, times);
+        nbpRange = Observable.range(1, times);
 
         bpRangeMapJust = bpRange.flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) {
-                return Observable.just(v);
+                return Flowable.just(v);
             }
         });
-        nbpRangeMapJust = nbpRange.flatMap(new Function<Integer, NbpObservable<Integer>>() {
+        nbpRangeMapJust = nbpRange.flatMap(new Function<Integer, Observable<Integer>>() {
             @Override
-            public NbpObservable<Integer> apply(Integer v) {
-                return NbpObservable.just(v);
+            public Observable<Integer> apply(Integer v) {
+                return Observable.just(v);
             }
         });
         
         bpRangeMapRange = bpRange.flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) {
-                return Observable.range(v, 2);
+                return Flowable.range(v, 2);
             }
         });
-        nbpRangeMapRange = nbpRange.flatMap(new Function<Integer, NbpObservable<Integer>>() {
+        nbpRangeMapRange = nbpRange.flatMap(new Function<Integer, Observable<Integer>>() {
             @Override
-            public NbpObservable<Integer> apply(Integer v) {
-                return NbpObservable.range(v, 2);
+            public Observable<Integer> apply(Integer v) {
+                return Observable.range(v, 2);
             }
         });
 

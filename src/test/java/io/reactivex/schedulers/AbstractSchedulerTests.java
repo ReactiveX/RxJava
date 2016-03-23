@@ -29,8 +29,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
+import io.reactivex.subscribers.DefaultObserver;
 
 /**
  * Base tests for all schedulers including Immediate/Current.
@@ -104,13 +103,13 @@ public abstract class AbstractSchedulerTests {
     @Test
     public final void testNestedScheduling() {
 
-        Observable<Integer> ids = Observable.fromIterable(Arrays.asList(1, 2)).subscribeOn(getScheduler());
+        Flowable<Integer> ids = Flowable.fromIterable(Arrays.asList(1, 2)).subscribeOn(getScheduler());
 
-        Observable<String> m = ids.flatMap(new Function<Integer, Observable<String>>() {
+        Flowable<String> m = ids.flatMap(new Function<Integer, Flowable<String>>() {
 
             @Override
-            public Observable<String> apply(Integer id) {
-                return Observable.fromIterable(Arrays.asList("a-" + id, "b-" + id)).subscribeOn(getScheduler())
+            public Flowable<String> apply(Integer id) {
+                return Flowable.fromIterable(Arrays.asList("a-" + id, "b-" + id)).subscribeOn(getScheduler())
                         .map(new Function<String, String>() {
 
                             @Override
@@ -321,7 +320,7 @@ public abstract class AbstractSchedulerTests {
 
     @Test
     public final void testRecursiveSchedulerInObservable() {
-        Observable<Integer> obs = Observable.create(new Publisher<Integer>() {
+        Flowable<Integer> obs = Flowable.create(new Publisher<Integer>() {
             @Override
             public void subscribe(final Subscriber<? super Integer> observer) {
                 final Scheduler.Worker inner = getScheduler().createWorker();
@@ -365,7 +364,7 @@ public abstract class AbstractSchedulerTests {
     public final void testConcurrentOnNextFailsValidation() throws InterruptedException {
         final int count = 10;
         final CountDownLatch latch = new CountDownLatch(count);
-        Observable<String> o = Observable.create(new Publisher<String>() {
+        Flowable<String> o = Flowable.create(new Publisher<String>() {
 
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
@@ -402,7 +401,7 @@ public abstract class AbstractSchedulerTests {
     public final void testObserveOn() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
 
-        Observable<String> o = Observable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
+        Flowable<String> o = Flowable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
 
         ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
 
@@ -422,12 +421,12 @@ public abstract class AbstractSchedulerTests {
     public final void testSubscribeOnNestedConcurrency() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
 
-        Observable<String> o = Observable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
-                .flatMap(new Function<String, Observable<String>>() {
+        Flowable<String> o = Flowable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
+                .flatMap(new Function<String, Flowable<String>>() {
 
                     @Override
-                    public Observable<String> apply(final String v) {
-                        return Observable.create(new Publisher<String>() {
+                    public Flowable<String> apply(final String v) {
+                        return Flowable.create(new Publisher<String>() {
 
                             @Override
                             public void subscribe(Subscriber<? super String> observer) {
@@ -458,7 +457,7 @@ public abstract class AbstractSchedulerTests {
      * 
      * @param <T>
      */
-    private static class ConcurrentObserverValidator<T> extends Observer<T> {
+    private static class ConcurrentObserverValidator<T> extends DefaultObserver<T> {
 
         final AtomicInteger concurrentCounter = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();

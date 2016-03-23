@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
 import io.reactivex.internal.schedulers.SingleScheduler;
 import io.reactivex.schedulers.Schedulers;
 
@@ -32,15 +32,15 @@ public class RangePerf {
     @Param({ "1", "1000", "1000000" })
     public int times;
     
-    Observable<Integer> range;
+    Flowable<Integer> range;
     
-    Observable<Integer> rangeAsync;
+    Flowable<Integer> rangeAsync;
 
-    Observable<Integer> rangeAsyncPipeline;
+    Flowable<Integer> rangeAsyncPipeline;
 
     @Setup
     public void setup() {
-        range = Observable.range(1, times);
+        range = Flowable.range(1, times);
         
         rangeAsync = range.observeOn(Schedulers.single());
         

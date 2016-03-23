@@ -13,8 +13,7 @@
 
 package io.reactivex.subjects;
 
-import org.reactivestreams.*;
-
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -41,9 +40,9 @@ import io.reactivex.plugins.RxJavaPlugins;
      * @param actual the subject wrapped
      */
     public SerializedSubject(final Subject<T, R> actual) {
-        super(new Publisher<R>() {
+        super(new io.reactivex.Observable.NbpOnSubscribe<R>() {
             @Override
-            public void subscribe(Subscriber<? super R> s) {
+            public void accept(io.reactivex.Observer<? super R> s) {
                 actual.subscribe(s);
             }
         });
@@ -51,27 +50,8 @@ import io.reactivex.plugins.RxJavaPlugins;
     }
     
     @Override
-    public void onSubscribe(Subscription s) {
-        if (done) {
-            return;
-        }
-        synchronized (this) {
-            if (done) {
-                return;
-            }
-            if (emitting) {
-                AppendOnlyLinkedArrayList<Object> q = queue;
-                if (q == null) {
-                    q = new AppendOnlyLinkedArrayList<Object>(4);
-                    queue = q;
-                }
-                q.add(NotificationLite.subscription(s));
-                return;
-            }
-            emitting = true;
-        }
-        actual.onSubscribe(s);
-        emitLoop();
+    public void onSubscribe(Disposable s) {
+        // NO-OP
     }
     
     @Override
@@ -170,17 +150,17 @@ import io.reactivex.plugins.RxJavaPlugins;
             q.forEachWhile(consumer);
         }
     }
-    
+
     final Predicate<Object> consumer = new Predicate<Object>() {
         @Override
         public boolean test(Object v) {
-            return SerializedSubject.this.accept(v);
+            return accept(v);
         }
     };
     
     /** Delivers the notification to the actual subscriber. */
     boolean accept(Object o) {
-        return NotificationLite.acceptFull(o, actual);
+        return NotificationLite.accept(o, actual);
     }
     
     @Override

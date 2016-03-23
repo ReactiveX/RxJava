@@ -13,40 +13,16 @@
 
 package io.reactivex;
 
-import org.reactivestreams.*;
+import io.reactivex.disposables.Disposable;
 
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+public interface Observer<T> {
+    
+    void onSubscribe(Disposable d);
 
-public abstract class Observer<T> implements Subscriber<T> {
-    private Subscription s;
-    @Override
-    public final void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validateSubscription(this.s, s)) {
-            return;
-        }
-        this.s = s;
-        onStart();
-    }
+    void onNext(T value);
     
-    protected final Subscription subscription() {
-        return s;
-    }
+    void onError(Throwable e);
     
-    protected final void request(long n) {
-        subscription().request(n);
-    }
-    
-    protected final void cancel() {
-        subscription().cancel();
-    }
-    /**
-     * Called once the subscription has been set on this observer; override this
-     * to perform initialization or issue an initial request.
-     * <p>
-     * The default implementation requests {@link Long#MAX_VALUE}.
-     */
-    protected void onStart() {
-        request(Long.MAX_VALUE);
-    }
+    void onComplete();
     
 }

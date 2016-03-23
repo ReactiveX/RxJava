@@ -14,7 +14,7 @@
 package io.reactivex.disposables;
 
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.Subscription;
 

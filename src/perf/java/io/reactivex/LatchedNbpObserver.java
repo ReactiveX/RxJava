@@ -17,10 +17,9 @@ import java.util.concurrent.CountDownLatch;
 
 import org.openjdk.jmh.infra.Blackhole;
 
-import io.reactivex.NbpObservable.NbpSubscriber;
 import io.reactivex.disposables.Disposable;
 
-public final class LatchedNbpObserver<T> implements NbpSubscriber<T> {
+public final class LatchedNbpObserver<T> implements Observer<T> {
     final CountDownLatch cdl;
     final Blackhole bh;
     public LatchedNbpObserver(Blackhole bh) {

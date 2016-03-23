@@ -17,7 +17,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.*;
-import io.reactivex.internal.subscribers.*;
+import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -228,6 +228,190 @@ public final class Subscribers {
                 } catch (Throwable e) {
                     done = true;
                     s.cancel();
+                    try {
+                        onError.accept(e);
+                    } catch (Throwable ex) {
+                        RxJavaPlugins.onError(ex);
+                        RxJavaPlugins.onError(e);
+                    }
+                }
+            }
+            
+            @Override
+            public void onError(Throwable t) {
+                if (done) {
+                    RxJavaPlugins.onError(t);
+                    return;
+                }
+                done = true;
+                try {
+                    onError.accept(t);
+                } catch (Throwable ex) {
+                    RxJavaPlugins.onError(ex);
+                    RxJavaPlugins.onError(t);
+                }
+            }
+            
+            @Override
+            public void onComplete() {
+                if (done) {
+                    return;
+                }
+                done = true;
+                try {
+                    onComplete.run();
+                } catch (Throwable e) {
+                    RxJavaPlugins.onError(e);
+                }
+            }
+        };
+    }
+    public static <T> AsyncSubscriber<T> emptyAsync() {
+        return new AsyncSubscriber<T>() {
+            @Override
+            public void onNext(T t) {
+                
+            }
+            
+            @Override
+            public void onError(Throwable t) {
+                RxJavaPlugins.onError(t);
+            }
+            
+            @Override
+            public void onComplete() {
+                
+            }
+        };
+    }
+    
+    public static <T> DefaultObserver<T> create(
+            final Consumer<? super T> onNext, 
+            final Consumer<? super Throwable> onError, 
+            final Runnable onComplete, 
+            final Runnable onStart) {
+        Objects.requireNonNull(onNext, "onNext is null");
+        Objects.requireNonNull(onError, "onError is null");
+        Objects.requireNonNull(onComplete, "onComplete is null");
+        Objects.requireNonNull(onStart, "onStart is null");
+        return new DefaultObserver<T>() {
+            boolean done;
+            @Override
+            protected void onStart() {
+                super.onStart();
+                try {
+                    onStart.run();
+                } catch (Throwable e) {
+                    done = true;
+                    cancel();
+                    try {
+                        onError.accept(e);
+                    } catch (Throwable ex) {
+                        RxJavaPlugins.onError(e);
+                        RxJavaPlugins.onError(ex);
+                    }
+                }
+            }
+            @Override
+            public void onNext(T t) {
+                if (done) {
+                    return;
+                }
+                try {
+                    onNext.accept(t);
+                } catch (Throwable e) {
+                    done = true;
+                    cancel();
+                    try {
+                        onError.accept(e);
+                    } catch (Throwable ex) {
+                        RxJavaPlugins.onError(e);
+                        RxJavaPlugins.onError(ex);
+                    }
+                }
+            }
+            
+            @Override
+            public void onError(Throwable t) {
+                if (done) {
+                    RxJavaPlugins.onError(t);
+                    return;
+                }
+                done = true;
+                try {
+                    onError.accept(t);
+                } catch (Throwable ex) {
+                    RxJavaPlugins.onError(ex);
+                    RxJavaPlugins.onError(t);
+                }
+            }
+            
+            @Override
+            public void onComplete() {
+                if (done) {
+                    return;
+                }
+                done = true;
+                try {
+                    onComplete.run();
+                } catch (Throwable e) {
+                    RxJavaPlugins.onError(e);
+                }
+            }
+        };
+    }
+    
+    public static <T> AsyncSubscriber<T> createAsync(Consumer<? super T> onNext) {
+        return createAsync(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
+    }
+
+    public static <T> AsyncSubscriber<T> createAsync(Consumer<? super T> onNext, 
+            Consumer<? super Throwable> onError) {
+        return createAsync(onNext, onError, Functions.emptyRunnable(), Functions.emptyRunnable());
+    }
+
+    public static <T> AsyncSubscriber<T> createAsync(Consumer<? super T> onNext, 
+            Consumer<? super Throwable> onError, Runnable onComplete) {
+        return createAsync(onNext, onError, onComplete, Functions.emptyRunnable());
+    }
+    
+    public static <T> AsyncSubscriber<T> createAsync(
+            final Consumer<? super T> onNext, 
+            final Consumer<? super Throwable> onError, 
+            final Runnable onComplete, 
+            final Runnable onStart) {
+        Objects.requireNonNull(onNext, "onNext is null");
+        Objects.requireNonNull(onError, "onError is null");
+        Objects.requireNonNull(onComplete, "onComplete is null");
+        Objects.requireNonNull(onStart, "onStart is null");
+        return new AsyncSubscriber<T>() {
+            boolean done;
+            @Override
+            protected void onStart() {
+                super.onStart();
+                try {
+                    onStart.run();
+                } catch (Throwable e) {
+                    done = true;
+                    cancel();
+                    try {
+                        onError.accept(e);
+                    } catch (Throwable ex) {
+                        RxJavaPlugins.onError(ex);
+                        RxJavaPlugins.onError(e);
+                    }
+                }
+            }
+            @Override
+            public void onNext(T t) {
+                if (done) {
+                    return;
+                }
+                try {
+                    onNext.accept(t);
+                } catch (Throwable e) {
+                    done = true;
+                    cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {

@@ -12,7 +12,7 @@
  */
 package io.reactivex.internal.util;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.functions.*;
 

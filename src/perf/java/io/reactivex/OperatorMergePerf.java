@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -30,15 +30,15 @@ public class OperatorMergePerf {
     // flatMap
     @Benchmark
     public void oneStreamOfNthatMergesIn1(final InputMillion input) throws InterruptedException {
-        Observable<Observable<Integer>> os = Observable.range(1, input.size)
-                .map(new Function<Integer, Observable<Integer>>() {
+        Flowable<Flowable<Integer>> os = Flowable.range(1, input.size)
+                .map(new Function<Integer, Flowable<Integer>>() {
                     @Override
-                    public Observable<Integer> apply(Integer v) {
-                        return Observable.just(v);
+                    public Flowable<Integer> apply(Integer v) {
+                        return Flowable.just(v);
                     }
                 });
         LatchedObserver<Integer> o = input.newLatchedObserver();
-        Observable.merge(os).subscribe(o);
+        Flowable.merge(os).subscribe(o);
 
         if (input.size == 1) {
             while (o.latch.getCount() != 0);
@@ -50,14 +50,14 @@ public class OperatorMergePerf {
     // flatMap
     @Benchmark
     public void merge1SyncStreamOfN(final InputMillion input) throws InterruptedException {
-        Observable<Observable<Integer>> os = Observable.just(1).map(new Function<Integer, Observable<Integer>>() {
+        Flowable<Flowable<Integer>> os = Flowable.just(1).map(new Function<Integer, Flowable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer i) {
-                    return Observable.range(0, input.size);
+            public Flowable<Integer> apply(Integer i) {
+                    return Flowable.range(0, input.size);
             }
         });
         LatchedObserver<Integer> o = input.newLatchedObserver();
-        Observable.merge(os).subscribe(o);
+        Flowable.merge(os).subscribe(o);
         
         if (input.size == 1) {
             while (o.latch.getCount() != 0);
@@ -68,14 +68,14 @@ public class OperatorMergePerf {
 
     @Benchmark
     public void mergeNSyncStreamsOfN(final InputThousand input) throws InterruptedException {
-        Observable<Observable<Integer>> os = input.observable.map(new Function<Integer, Observable<Integer>>() {
+        Flowable<Flowable<Integer>> os = input.observable.map(new Function<Integer, Flowable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer i) {
-                    return Observable.range(0, input.size);
+            public Flowable<Integer> apply(Integer i) {
+                    return Flowable.range(0, input.size);
             }
         });
         LatchedObserver<Integer> o = input.newLatchedObserver();
-        Observable.merge(os).subscribe(o);
+        Flowable.merge(os).subscribe(o);
         if (input.size == 1) {
             while (o.latch.getCount() != 0);
         } else {
@@ -85,14 +85,14 @@ public class OperatorMergePerf {
 
     @Benchmark
     public void mergeNAsyncStreamsOfN(final InputThousand input) throws InterruptedException {
-        Observable<Observable<Integer>> os = input.observable.map(new Function<Integer, Observable<Integer>>() {
+        Flowable<Flowable<Integer>> os = input.observable.map(new Function<Integer, Flowable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer i) {
-                    return Observable.range(0, input.size).subscribeOn(Schedulers.computation());
+            public Flowable<Integer> apply(Integer i) {
+                    return Flowable.range(0, input.size).subscribeOn(Schedulers.computation());
             }
         });
         LatchedObserver<Integer> o = input.newLatchedObserver();
-        Observable.merge(os).subscribe(o);
+        Flowable.merge(os).subscribe(o);
         if (input.size == 1) {
             while (o.latch.getCount() != 0);
         } else {
@@ -103,8 +103,8 @@ public class OperatorMergePerf {
     @Benchmark
     public void mergeTwoAsyncStreamsOfN(final InputThousand input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
-        Observable<Integer> ob = Observable.range(0, input.size).subscribeOn(Schedulers.computation());
-        Observable.merge(ob, ob).subscribe(o);
+        Flowable<Integer> ob = Flowable.range(0, input.size).subscribeOn(Schedulers.computation());
+        Flowable.merge(ob, ob).subscribe(o);
         if (input.size == 1) {
             while (o.latch.getCount() != 0);
         } else {
@@ -115,7 +115,7 @@ public class OperatorMergePerf {
     @Benchmark
     public void mergeNSyncStreamsOf1(final InputForMergeN input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
-        Observable.merge(input.observables).subscribe(o);
+        Flowable.merge(input.observables).subscribe(o);
         if (input.size == 1) {
             while (o.latch.getCount() != 0);
         } else {
@@ -130,14 +130,14 @@ public class OperatorMergePerf {
         public int size;
 
         private Blackhole bh;
-        List<Observable<Integer>> observables;
+        List<Flowable<Integer>> observables;
 
         @Setup
         public void setup(final Blackhole bh) {
             this.bh = bh;
-            observables = new ArrayList<Observable<Integer>>();
+            observables = new ArrayList<Flowable<Integer>>();
             for (int i = 0; i < size; i++) {
-                observables.add(Observable.just(i));
+                observables.add(Flowable.just(i));
             }
         }
 

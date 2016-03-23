@@ -13,18 +13,18 @@
 
 package io.reactivex.observables;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
 
-import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.operators.*;
+import io.reactivex.internal.operators.observable.*;
 
 /**
- * A {@code ConnectableObservable} resembles an ordinary {@link Observable}, except that it does not begin
+ * A {@code ConnectableObservable} resembles an ordinary {@link Flowable}, except that it does not begin
  * emitting items when it is subscribed to, but only when its {@link #connect} method is called. In this way you
- * can wait for all intended {@link Subscriber}s to {@link Observable#subscribe} to the {@code Observable}
+ * can wait for all intended {@link Subscriber}s to {@link Flowable#subscribe} to the {@code Observable}
  * before the {@code Observable} begins emitting items.
  * <p>
  * <img width="640" height="510" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/publishConnect.png" alt="">
@@ -36,13 +36,13 @@ import io.reactivex.internal.operators.*;
  */
 public abstract class ConnectableObservable<T> extends Observable<T> {
     
-    protected ConnectableObservable(Publisher<T> onSubscribe) {
+    protected ConnectableObservable(NbpOnSubscribe<T> onSubscribe) {
         super(onSubscribe);
     }
     
     /**
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
-     * {@link Observable} to its {@link Subscriber}s.
+     * {@link Flowable} to its {@link Subscriber}s.
      *
      * @param connection
      *          the action that receives the connection subscription before the subscription to source happens
@@ -53,9 +53,9 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     
     /**
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
-     * {@link Observable} to its {@link Subscriber}s.
+     * {@link Flowable} to its {@link Subscriber}s.
      * <p>
-     * To disconnect from a synchronous source, use the {@link #connect(io.reactivex.functions.Consumer)} method.
+     * To disconnect from a synchronous source, use the {@link #connect(Consumer)} method.
      *
      * @return the subscription representing the connection
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
@@ -75,11 +75,11 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * Returns an {@code Observable} that stays connected to this {@code ConnectableObservable} as long as there
      * is at least one subscription to this {@code ConnectableObservable}.
      * 
-     * @return a {@link Observable}
+     * @return a {@link Flowable}
      * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>
      */
     public Observable<T> refCount() {
-        return create(new PublisherRefCount<T>(this));
+        return create(new NbpOnSubscribeRefCount<T>(this));
     }
 
     /**
@@ -125,6 +125,6 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
             this.connect(connection);
             return this;
         }
-        return create(new PublisherAutoConnect<T>(this, numberOfSubscribers, connection));
+        return create(new NbpOnSubscribeAutoConnect<T>(this, numberOfSubscribers, connection));
     }
 }

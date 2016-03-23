@@ -25,13 +25,13 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.exceptions.*;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class TestSubscriberTest {
 
@@ -40,7 +40,7 @@ public class TestSubscriberTest {
 
     @Test
     public void testAssert() {
-        Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
+        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
@@ -51,7 +51,7 @@ public class TestSubscriberTest {
 
     @Test
     public void testAssertNotMatchCount() {
-        Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
+        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
@@ -66,7 +66,7 @@ public class TestSubscriberTest {
 
     @Test
     public void testAssertNotMatchValue() {
-        Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
+        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
@@ -82,7 +82,7 @@ public class TestSubscriberTest {
 
     @Test
     public void testAssertTerminalEventNotReceived() {
-        PublishSubject<Integer> p = PublishSubject.create();
+        PublishProcessor<Integer> p = PublishProcessor.create();
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         p.subscribe(o);
 
@@ -100,7 +100,7 @@ public class TestSubscriberTest {
 
     @Test
     public void testWrappingMock() {
-        Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
+        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         Subscriber<Integer> mockObserver = TestHelper.mockSubscriber();
 
         oi.subscribe(new TestSubscriber<Integer>(mockObserver));
@@ -114,7 +114,7 @@ public class TestSubscriberTest {
 
     @Test
     public void testWrappingMockWhenUnsubscribeInvolved() {
-        Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(2);
+        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(2);
         Subscriber<Integer> mockObserver = TestHelper.mockSubscriber();
         oi.subscribe(new TestSubscriber<Integer>(mockObserver));
 
@@ -129,14 +129,14 @@ public class TestSubscriberTest {
     public void testAssertError() {
         RuntimeException e = new RuntimeException("Oops");
         TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
-        Observable.error(e).subscribe(subscriber);
+        Flowable.error(e).subscribe(subscriber);
         subscriber.assertError(e);
     }
     
     @Test
     public void testAwaitTerminalEventWithDuration() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
-        Observable.just(1).subscribe(ts);
+        Flowable.just(1).subscribe(ts);
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
         ts.assertTerminated();
     }
@@ -145,7 +145,7 @@ public class TestSubscriberTest {
     public void testAwaitTerminalEventWithDurationAndUnsubscribeOnTimeout() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         final AtomicBoolean unsub = new AtomicBoolean(false);
-        Observable.just(1)
+        Flowable.just(1)
         //
                 .doOnCancel(new Runnable() {
                     @Override
@@ -162,7 +162,7 @@ public class TestSubscriberTest {
 
     @Test(expected = NullPointerException.class)
     public void testNullDelegate1() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Observer<Integer>)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((DefaultObserver<Integer>)null);
         ts.onComplete();
     }
     

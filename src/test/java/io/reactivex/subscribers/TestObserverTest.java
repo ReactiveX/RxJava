@@ -25,10 +25,9 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.subscriptions.EmptySubscription;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subscribers.TestSubscriber;
-import io.reactivex.Observable;
+import io.reactivex.processors.PublishProcessor;
 
 public class TestObserverTest {
 
@@ -37,7 +36,7 @@ public class TestObserverTest {
 
     @Test
     public void testAssert() {
-        Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
+        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
@@ -48,7 +47,7 @@ public class TestObserverTest {
 
     @Test
     public void testAssertNotMatchCount() {
-        Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
+        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
@@ -63,7 +62,7 @@ public class TestObserverTest {
 
     @Test
     public void testAssertNotMatchValue() {
-        Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
+        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
@@ -78,7 +77,7 @@ public class TestObserverTest {
 
     @Test
     public void testAssertTerminalEventNotReceived() {
-        PublishSubject<Integer> p = PublishSubject.create();
+        PublishProcessor<Integer> p = PublishProcessor.create();
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         p.subscribe(o);
 
@@ -96,7 +95,7 @@ public class TestObserverTest {
 
     @Test
     public void testWrappingMock() {
-        Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
+        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
 
         Subscriber<Integer> mockObserver = TestHelper.mockSubscriber();
         
@@ -111,7 +110,7 @@ public class TestObserverTest {
 
     @Test
     public void testWrappingMockWhenUnsubscribeInvolved() {
-        Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(2);
+        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(2);
         Subscriber<Integer> mockObserver = TestHelper.mockSubscriber();
         oi.subscribe(new TestSubscriber<Integer>(mockObserver));
 
@@ -124,7 +123,7 @@ public class TestObserverTest {
     
     @Test
     public void testErrorSwallowed() {
-        Observable.error(new RuntimeException()).subscribe(new TestSubscriber<Object>());
+        Flowable.error(new RuntimeException()).subscribe(new TestSubscriber<Object>());
     }
     
     @Test

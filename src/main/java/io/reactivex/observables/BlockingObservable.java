@@ -18,30 +18,26 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
-
-import io.reactivex.Optional;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.Optional;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.operators.*;
-import io.reactivex.internal.subscribers.*;
+import io.reactivex.internal.operators.observable.*;
+import io.reactivex.internal.subscribers.flowable.BlockingSubscriber;
+import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.*;
+import io.reactivex.observers.DefaultObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
-    final Publisher<? extends T> o;
-    protected BlockingObservable(Publisher<? extends T> source) {
+public final class BlockingObservable<T> implements Iterable<T> {
+    final Observable<? extends T> o;
+    protected BlockingObservable(Observable<? extends T> source) {
         this.o = source;
     }
     
-    @SuppressWarnings("unchecked")
-    public static <T> BlockingObservable<T> from(Publisher<? extends T> source) {
-        if (source instanceof BlockingObservable) {
-            return (BlockingObservable<T>)source;
-        }
+    public static <T> BlockingObservable<T> from(Observable<? extends T> source) {
         return new BlockingObservable<T>(source);
     }
     
@@ -57,19 +53,19 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
                 action.accept(it.next());
             } catch (Throwable e) {
                 it.dispose();
-                throw Exceptions.propagate(e);
+                Exceptions.propagate(e);
             }
         }
     }
     
-    static final <T> BlockingIterator<T> iterate(Publisher<? extends T> p) {
+    static final <T> BlockingIterator<T> iterate(Observable<? extends T> p) {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
 
-        LambdaSubscriber<T> ls = new LambdaSubscriber<T>(
+        NbpLambdaSubscriber<T> ls = new NbpLambdaSubscriber<T>(
             new Consumer<T>() {
                 @Override
                 public void accept(T v) {
-                    queue.offer(NotificationLite.<T>next(v));
+                    queue.offer(NotificationLite.next(v));
                 }
             },
             new Consumer<Throwable>() {
@@ -84,12 +80,7 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
                     queue.offer(NotificationLite.complete());
                 }
             },
-            new Consumer<Subscription>() {
-                @Override
-                public void accept(Subscription s) {
-                    s.request(Long.MAX_VALUE);
-                }
-            }
+            Functions.emptyConsumer()
         );
         
         p.subscribe(ls);
@@ -170,24 +161,23 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
         return firstOption(o);
     }
     
-    static <T> Optional<T> firstOption(Publisher<? extends T> o) {
+    static <T> Optional<T> firstOption(Observable<? extends T> o) {
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         final CountDownLatch cdl = new CountDownLatch(1);
         final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
         
-        o.subscribe(new Subscriber<T>() {
-            Subscription s;
+        o.subscribe(new Observer<T>() {
+            Disposable s;
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(Disposable s) {
                 this.s = s;
-                mad.set(Disposables.from(s));
-                s.request(Long.MAX_VALUE);
+                mad.set(s);
             }
             
             @Override
             public void onNext(T t) {
-                s.cancel();
+                s.dispose();
                 value.lazySet(t);
                 cdl.countDown();
             }
@@ -239,17 +229,16 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
         return lastOption(o);
     }
     
-    static <T> Optional<T> lastOption(Publisher<? extends T> o) {
+    static <T> Optional<T> lastOption(Observable<? extends T> o) {
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         final CountDownLatch cdl = new CountDownLatch(1);
         final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
         
-        o.subscribe(new Subscriber<T>() {
+        o.subscribe(new Observer<T>() {
             @Override
-            public void onSubscribe(Subscription s) {
-                mad.set(Disposables.from(s));
-                s.request(Long.MAX_VALUE);
+            public void onSubscribe(Disposable s) {
+                mad.set(s);
             }
             
             @Override
@@ -301,7 +290,7 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
     }
     
     public T single() {
-        Optional<T> o = firstOption(Observable.fromPublisher(this.o).single());
+        Optional<T> o = firstOption(this.o.single());
         if (o.isPresent()) {
             return o.get();
         }
@@ -309,7 +298,8 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
     }
     
     public T single(T defaultValue) {
-        Optional<T> o = firstOption(Observable.<T>fromPublisher(this.o).single(defaultValue));
+        @SuppressWarnings("unchecked")
+        Optional<T> o = firstOption(((Observable<T>)this.o).single(defaultValue));
         if (o.isPresent()) {
             return o.get();
         }
@@ -317,15 +307,15 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
     }
     
     public Iterable<T> mostRecent(T initialValue) {
-        return BlockingOperatorMostRecent.mostRecent(o, initialValue);
+        return NbpBlockingOperatorMostRecent.mostRecent(o, initialValue);
     }
     
     public Iterable<T> next() {
-        return BlockingOperatorNext.next(o);
+        return NbpBlockingOperatorNext.next(o);
     }
     
     public Iterable<T> latest() {
-        return BlockingOperatorLatest.latest(o);
+        return NbpBlockingOperatorLatest.latest(o);
     }
     
     public Future<T> toFuture() {
@@ -334,12 +324,11 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
         
-        o.subscribe(new Subscriber<T>() {
+        o.subscribe(new Observer<T>() {
 
             @Override
-            public void onSubscribe(Subscription d) {
-                mad.set(Disposables.from(d));
-                d.request(Long.MAX_VALUE);
+            public void onSubscribe(Disposable d) {
+                mad.set(d);
             }
 
             @Override
@@ -436,24 +425,20 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
     public void run() {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] error = { null };
-        LambdaSubscriber<T> ls = new LambdaSubscriber<T>(Functions.emptyConsumer(), 
-        new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                error[0] = e;
-                cdl.countDown();
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                s.request(Long.MAX_VALUE);
-            }
-        });
+        NbpLambdaSubscriber<T> ls = new NbpLambdaSubscriber<T>(
+            Functions.emptyConsumer(), 
+            new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable e) {
+                    error[0] = e;
+                    cdl.countDown();
+                }
+            }, new Runnable() {
+                @Override
+                public void run() {
+                    cdl.countDown();
+                }
+            }, Functions.emptyConsumer());
         
         o.subscribe(ls);
         
@@ -474,11 +459,10 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
      * The unsubscription and backpressure is composed through.
      * @param subscriber the subscriber to forward events and calls to in the current thread
      */
-    @Override
-    public void subscribe(Subscriber<? super T> subscriber) {
+    public void subscribe(Observer<? super T> subscriber) {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
         
-        BlockingSubscriber<T> bs = new BlockingSubscriber<T>(queue);
+        NbpBlockingSubscriber<T> bs = new NbpBlockingSubscriber<T>(queue);
         
         o.subscribe(bs);
         
@@ -500,7 +484,7 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
                 if (o == BlockingSubscriber.TERMINATED) {
                     break;
                 }
-                if (NotificationLite.acceptFull(o, subscriber)) {
+                if (NotificationLite.accept(o, subscriber)) {
                     break;
                 }
             }
@@ -508,7 +492,7 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
             Thread.currentThread().interrupt();
             subscriber.onError(e);
         } finally {
-            bs.cancel();
+            bs.dispose();
         }
     }
     
@@ -544,7 +528,7 @@ public final class BlockingObservable<T> implements Publisher<T>, Iterable<T> {
      * @param onComplete the callback action for the completion event.
      */
     public void subscribe(final Consumer<? super T> onNext, final Consumer<? super Throwable> onError, final Runnable onComplete) {
-        subscribe(new Observer<T>() {
+        subscribe(new DefaultObserver<T>() {
             @Override
             public void onNext(T t) {
                 onNext.accept(t);

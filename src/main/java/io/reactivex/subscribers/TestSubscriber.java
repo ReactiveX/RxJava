@@ -22,7 +22,7 @@ import io.reactivex.Notification;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.subscribers.EmptySubscriber;
+import io.reactivex.internal.subscribers.flowable.EmptySubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 

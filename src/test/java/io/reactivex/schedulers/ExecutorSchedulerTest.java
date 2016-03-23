@@ -26,7 +26,6 @@ import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.schedulers.*;
-import io.reactivex.schedulers.Schedulers;
 
 public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 

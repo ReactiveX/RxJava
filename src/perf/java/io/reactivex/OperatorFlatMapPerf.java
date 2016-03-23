@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -45,7 +45,7 @@ public class OperatorFlatMapPerf {
         input.observable.flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) {
-                return Observable.just(v);
+                return Flowable.just(v);
             }
         }).subscribe(input.newSubscriber());
     }
@@ -56,7 +56,7 @@ public class OperatorFlatMapPerf {
         input.observable.flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer i) {
-                    return Observable.just(i).subscribeOn(Schedulers.computation());
+                    return Flowable.just(i).subscribeOn(Schedulers.computation());
             }
         }).subscribe(latchedObserver);
         if (input.size == 1) {
@@ -68,7 +68,7 @@ public class OperatorFlatMapPerf {
 
     @Benchmark
     public void flatMapTwoNestedSync(final Input input) throws InterruptedException {
-        Observable.range(1, 2).flatMap(new Function<Integer, Publisher<Integer>>() {
+        Flowable.range(1, 2).flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer i) {
                     return input.observable;

@@ -12,13 +12,11 @@
  */
 package io.reactivex.observables;
 
-import org.reactivestreams.Publisher;
-
 import io.reactivex.Observable;
 
 public class GroupedObservable<K, T> extends Observable<T> {
     final K key;
-    protected GroupedObservable(Publisher<T> onSubscribe, K key) {
+    protected GroupedObservable(NbpOnSubscribe<T> onSubscribe, K key) {
         super(onSubscribe);
         this.key = key;
     }

@@ -15,15 +15,8 @@
  */
 package io.reactivex.exceptions;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 /**
  * Represents an exception that is a composite of one or more other exceptions. A {@code CompositeException}

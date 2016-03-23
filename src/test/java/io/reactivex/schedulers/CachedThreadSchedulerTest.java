@@ -20,7 +20,6 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.functions.*;
-import io.reactivex.schedulers.Schedulers;
 
 public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -35,9 +34,9 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     @Test
     public final void testIOScheduler() {
 
-        Observable<Integer> o1 = Observable.just(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.just(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.merge(o1, o2).map(new Function<Integer, String>() {
+        Flowable<Integer> o1 = Flowable.just(1, 2, 3, 4, 5);
+        Flowable<Integer> o2 = Flowable.just(6, 7, 8, 9, 10);
+        Flowable<String> o = Flowable.merge(o1, o2).map(new Function<Integer, String>() {
 
             @Override
             public String apply(Integer t) {

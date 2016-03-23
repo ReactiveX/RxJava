@@ -32,51 +32,51 @@ public class RxVsStreamPerf {
     @Param({ "1", "1000", "1000000" })
     public int times;
     
-    Observable<Integer> range;
+    Flowable<Integer> range;
     
-    NbpObservable<Integer> rangeNbp;
+    Observable<Integer> rangeNbp;
 
-    Observable<Integer> rangeFlatMap;
+    Flowable<Integer> rangeFlatMap;
 
-    NbpObservable<Integer> rangeNbpFlatMap;
+    Observable<Integer> rangeNbpFlatMap;
 
-    Observable<Integer> rangeFlatMapJust;
+    Flowable<Integer> rangeFlatMapJust;
 
-    NbpObservable<Integer> rangeNbpFlatMapJust;
+    Observable<Integer> rangeNbpFlatMapJust;
 
     List<Integer> values;
 
     @Setup
     public void setup() {
-        range = Observable.range(1, times);
+        range = Flowable.range(1, times);
 
         rangeFlatMapJust = range.flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) {
-                return Observable.just(v);
+                return Flowable.just(v);
             }
         });
 
         rangeFlatMap = range.flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) {
-                return Observable.range(v, 2);
+                return Flowable.range(v, 2);
             }
         });
         
-        rangeNbp = NbpObservable.range(1, times);
+        rangeNbp = Observable.range(1, times);
 
-        rangeNbpFlatMapJust = rangeNbp.flatMap(new Function<Integer, NbpObservable<Integer>>() {
+        rangeNbpFlatMapJust = rangeNbp.flatMap(new Function<Integer, Observable<Integer>>() {
             @Override
-            public NbpObservable<Integer> apply(Integer v) {
-                return NbpObservable.just(v);
+            public Observable<Integer> apply(Integer v) {
+                return Observable.just(v);
             }
         });
         
-        rangeNbpFlatMap = rangeNbp.flatMap(new Function<Integer, NbpObservable<Integer>>() {
+        rangeNbpFlatMap = rangeNbp.flatMap(new Function<Integer, Observable<Integer>>() {
             @Override
-            public NbpObservable<Integer> apply(Integer v) {
-                return NbpObservable.range(v, 2);
+            public Observable<Integer> apply(Integer v) {
+                return Observable.range(v, 2);
             }
         });
         

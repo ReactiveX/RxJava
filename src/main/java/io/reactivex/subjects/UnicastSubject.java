@@ -16,11 +16,10 @@ package io.reactivex.subjects;
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
-import org.reactivestreams.*;
-
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.BackpressureHelper;
 
 /**
  * Subject that allows only a single Subscriber to subscribe to it during its lifetime.
@@ -96,26 +95,8 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         volatile long p8a, p9a, p10a, p11a, p12a, p13a, p14a, p15a;
     }
     
-    /** Contains the requested counter. */
-    static abstract class StateRequested extends StatePad0 {
-        /** */
-        private static final long serialVersionUID = -2744070795149472578L;
-        /** Holds the current requested amount. */
-        final AtomicLong requested = new AtomicLong();
-    }
-    
-    /** Pads away the requested counter. */
-    static abstract class StatePad1 extends StateRequested {
-        /** */
-        private static final long serialVersionUID = -446575186947206398L;
-        /** Cache line padding 3. */
-        volatile long p1b, p2b, p3b, p4b, p5b, p6b, p7b;
-        /** Cache line padding 4. */
-        volatile long p8b, p9b, p10b, p11b, p12b, p13b, p14b, p15b;
-    }
-    
     /** The state of the UnicastSubject. */
-    static final class State<T> extends StatePad1 implements Publisher<T>, Subscription, Subscriber<T> {
+    static final class State<T> extends StatePad0 implements NbpOnSubscribe<T>, Disposable, Observer<T> {
         /** */
         private static final long serialVersionUID = 5058617037583835632L;
 
@@ -123,7 +104,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         final Queue<T> queue;
         
         /** The single subscriber. */
-        final AtomicReference<Subscriber<? super T>> subscriber = new AtomicReference<Subscriber<? super T>>();
+        final AtomicReference<Observer<? super T>> subscriber = new AtomicReference<Observer<? super T>>();
         
         /** Indicates the single subscriber has cancelled. */
         volatile boolean cancelled;
@@ -157,40 +138,19 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void subscribe(Subscriber<? super T> s) {
+        public void accept(Observer<? super T> s) {
             if (!once.get() && once.compareAndSet(false, true)) {
                 s.onSubscribe(this);
                 subscriber.lazySet(s); // full barrier in drain
-                if (cancelled) {
-                    subscriber.lazySet(null);
-                    return;
-                }
                 drain();
             } else {
-                if (done) {
-                    Throwable e = error;
-                    if (e != null) {
-                        EmptySubscription.error(e, s);
-                    } else {
-                        EmptySubscription.complete(s);
-                    }
-                } else {
-                    EmptySubscription.error(new IllegalStateException("Only a single subscriber allowed."), s);
-                }
+                s.onSubscribe(EmptyDisposable.INSTANCE);
+                s.onError(new IllegalStateException("Only a single subscriber allowed."));
             }
         }
         
         @Override
-        public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
-                return;
-            }
-            BackpressureHelper.add(requested, n);
-            drain();
-        }
-        
-        @Override
-        public void cancel() {
+        public void dispose() {
             if (!cancelled) {
                 cancelled = true;
                 
@@ -219,12 +179,10 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(Disposable s) {
             if (done || cancelled) {
-                s.cancel();
-                return;
+                s.dispose();
             }
-            s.request(Long.MAX_VALUE);
         }
         
         @Override
@@ -268,7 +226,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
             }
             
             final Queue<T> q = queue;
-            Subscriber<? super T> a = subscriber.get();
+            Observer<? super T> a = subscriber.get();
             int missed = 1;
             
             for (;;) {
@@ -294,11 +252,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                         return;
                     }
                     
-                    long r = requested.get();
-                    boolean unbounded = r == Long.MAX_VALUE;
-                    long e = 0L;
-                    
-                    while (r != 0L) {
+                    for (;;) {
                         
                         if (cancelled) {
                             clear(q);
@@ -326,15 +280,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                         }
                         
                         a.onNext(v);
-                        
-                        r--;
-                        e--;
                     }
-                    
-                    if (e != 0 && !unbounded) {
-                        requested.getAndAdd(e);
-                    }
-                    
                 }
                 
                 missed = addAndGet(-missed);
@@ -350,7 +296,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
     }
     
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(Disposable s) {
         state.onSubscribe(s);
     }
     

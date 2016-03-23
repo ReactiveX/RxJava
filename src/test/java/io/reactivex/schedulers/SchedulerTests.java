@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.concurrent.*;
 
 import io.reactivex.*;
+import io.reactivex.subscribers.DefaultObserver;
 
 final class SchedulerTests {
     private SchedulerTests() {
@@ -37,7 +38,7 @@ final class SchedulerTests {
             CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
             Thread.setDefaultUncaughtExceptionHandler(handler);
             IllegalStateException error = new IllegalStateException("Should be delivered to handler");
-            Observable.error(error)
+            Flowable.error(error)
                     .subscribeOn(scheduler)
                     .subscribe();
 
@@ -72,7 +73,7 @@ final class SchedulerTests {
             CapturingObserver<Object> observer = new CapturingObserver<Object>();
             Thread.setDefaultUncaughtExceptionHandler(handler);
             IllegalStateException error = new IllegalStateException("Should be delivered to handler");
-            Observable.error(error)
+            Flowable.error(error)
                     .subscribeOn(scheduler)
                     .subscribe(observer);
 
@@ -109,7 +110,7 @@ final class SchedulerTests {
         }
     }
 
-    private static final class CapturingObserver<T> extends Observer<T> {
+    private static final class CapturingObserver<T> extends DefaultObserver<T> {
         CountDownLatch completed = new CountDownLatch(1);
         int errorCount = 0;
         int nextCount = 0;
