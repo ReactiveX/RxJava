@@ -21,6 +21,7 @@ import rx.EventStream.Event;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observables.GroupedObservable;
+import rx.observers.TestSubscriber;
 
 public class GroupByTests {
 
@@ -89,5 +90,28 @@ public class GroupByTests {
                 });
 
         System.out.println("**** finished");
+    }
+    
+    @Test
+    public void groupsCompleteAsSoonAsMainCompletes() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(0, 20)
+        .groupBy(new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer i) {
+                return i % 5;
+            }
+        })
+        .concatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(GroupedObservable<Integer, Integer> v) {
+                return v;
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(0, 5, 10, 15, 1, 6, 11, 16, 2, 7, 12, 17, 3, 8, 13, 18, 4, 9, 14, 19);
+        ts.assertCompleted();
+        ts.assertNoErrors();
     }
 }
