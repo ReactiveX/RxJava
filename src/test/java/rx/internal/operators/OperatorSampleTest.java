@@ -110,6 +110,39 @@ public class OperatorSampleTest {
     }
 
     @Test
+    public void sampleWithTimeEmitAndTerminate() {
+        Observable<Long> source = Observable.create(new OnSubscribe<Long>() {
+            @Override
+            public void call(final Subscriber<? super Long> observer1) {
+                innerScheduler.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        observer1.onNext(1L);
+                    }
+                }, 1, TimeUnit.SECONDS);
+                innerScheduler.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        observer1.onNext(2L);
+                        observer1.onCompleted();
+                    }
+                }, 2, TimeUnit.SECONDS);
+            }
+        });
+
+        Observable<Long> sampled = source.sample(400L, TimeUnit.MILLISECONDS, scheduler);
+        sampled.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+
+        scheduler.advanceTimeTo(2000L, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext(1L);
+        inOrder.verify(observer, times(1)).onNext(2L);
+        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+
+    @Test
     public void sampleWithSamplerNormal() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> sampler = PublishSubject.create();
@@ -208,7 +241,7 @@ public class OperatorSampleTest {
         InOrder inOrder = inOrder(observer2);
         inOrder.verify(observer2, never()).onNext(1);
         inOrder.verify(observer2, times(1)).onNext(2);
-        inOrder.verify(observer2, never()).onNext(3);
+        inOrder.verify(observer2, times(1)).onNext(3);
         inOrder.verify(observer2, times(1)).onCompleted();
         inOrder.verify(observer2, never()).onNext(any());
         verify(observer, never()).onError(any(Throwable.class));

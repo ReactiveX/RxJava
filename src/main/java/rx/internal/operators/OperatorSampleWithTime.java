@@ -89,12 +89,17 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
 
         @Override
         public void onCompleted() {
+            emitIfNonEmpty();
             subscriber.onCompleted();
             unsubscribe();
         }
 
         @Override
         public void call() {
+            emitIfNonEmpty();
+        }
+
+        private void emitIfNonEmpty() {
             Object localValue = value.getAndSet(EMPTY_TOKEN);
             if (localValue != EMPTY_TOKEN) {
                 try {
