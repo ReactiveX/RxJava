@@ -29,7 +29,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 /**
  * Base tests for all schedulers including Immediate/Current.
@@ -457,7 +457,7 @@ public abstract class AbstractSchedulerTests {
      * 
      * @param <T>
      */
-    private static class ConcurrentObserverValidator<T> extends DefaultObserver<T> {
+    private static class ConcurrentObserverValidator<T> extends DefaultSubscriber<T> {
 
         final AtomicInteger concurrentCounter = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();

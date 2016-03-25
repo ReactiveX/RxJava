@@ -16,17 +16,17 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
+import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
-    final Observable<? extends T>[] sources;
-    final Iterable<? extends Observable<? extends T>> sourcesIterable;
+    final ConsumableObservable<? extends T>[] sources;
+    final Iterable<? extends ConsumableObservable<? extends T>> sourcesIterable;
     
-    public NbpOnSubscribeAmb(Observable<? extends T>[] sources, Iterable<? extends Observable<? extends T>> sourcesIterable) {
+    public NbpOnSubscribeAmb(ConsumableObservable<? extends T>[] sources, Iterable<? extends ConsumableObservable<? extends T>> sourcesIterable) {
         this.sources = sources;
         this.sourcesIterable = sourcesIterable;
     }
@@ -34,13 +34,13 @@ public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
     @Override
     @SuppressWarnings("unchecked")
     public void accept(Observer<? super T> s) {
-        Observable<? extends T>[] sources = this.sources;
+        ConsumableObservable<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
-            sources = new Observable[8];
-            for (Observable<? extends T> p : sourcesIterable) {
+            sources = new ConsumableObservable[8];
+            for (ConsumableObservable<? extends T> p : sourcesIterable) {
                 if (count == sources.length) {
-                    Observable<? extends T>[] b = new Observable[count + (count >> 2)];
+                    ConsumableObservable<? extends T>[] b = new ConsumableObservable[count + (count >> 2)];
                     System.arraycopy(sources, 0, b, 0, count);
                     sources = b;
                 }
@@ -55,7 +55,7 @@ public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
             return;
         } else
         if (count == 1) {
-            sources[0].subscribe(s);
+            Observable.wrap(sources[0]).subscribe(s);
             return;
         }
 
@@ -75,7 +75,7 @@ public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
             this.subscribers = new AmbInnerSubscriber[count];
         }
         
-        public void subscribe(Observable<? extends T>[] sources) {
+        public void subscribe(ConsumableObservable<? extends T>[] sources) {
             AmbInnerSubscriber<T>[] as = subscribers;
             int len = as.length;
             for (int i = 0; i < len; i++) {

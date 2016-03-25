@@ -16,9 +16,9 @@ package io.reactivex.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.ConsumableObservable;
+import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.Observer;
-import io.reactivex.Observable;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Function;
@@ -28,14 +28,14 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R> {
-    final Observable<? extends T>[] sources;
-    final Iterable<? extends Observable<? extends T>> sourcesIterable;
+    final ConsumableObservable<? extends T>[] sources;
+    final Iterable<? extends ConsumableObservable<? extends T>> sourcesIterable;
     final Function<? super Object[], ? extends R> combiner;
     final int bufferSize;
     final boolean delayError;
     
-    public NbpOnSubscribeCombineLatest(Observable<? extends T>[] sources,
-            Iterable<? extends Observable<? extends T>> sourcesIterable,
+    public NbpOnSubscribeCombineLatest(ConsumableObservable<? extends T>[] sources,
+            Iterable<? extends ConsumableObservable<? extends T>> sourcesIterable,
             Function<? super Object[], ? extends R> combiner, int bufferSize,
             boolean delayError) {
         this.sources = sources;
@@ -49,13 +49,13 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
     @Override
     @SuppressWarnings("unchecked")
     public void accept(Observer<? super R> s) {
-        Observable<? extends T>[] sources = this.sources;
+        ConsumableObservable<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
-            sources = new Observable[8];
-            for (Observable<? extends T> p : sourcesIterable) {
+            sources = new ConsumableObservable[8];
+            for (ConsumableObservable<? extends T> p : sourcesIterable) {
                 if (count == sources.length) {
-                    Observable<? extends T>[] b = new Observable[count + (count >> 2)];
+                    ConsumableObservable<? extends T>[] b = new ConsumableObservable[count + (count >> 2)];
                     System.arraycopy(sources, 0, b, 0, count);
                     sources = b;
                 }
@@ -109,7 +109,7 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
             this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
         }
         
-        public void subscribe(Observable<? extends T>[] sources) {
+        public void subscribe(ConsumableObservable<? extends T>[] sources) {
             Observer<T>[] as = subscribers;
             int len = as.length;
             for (int i = 0; i < len; i++) {

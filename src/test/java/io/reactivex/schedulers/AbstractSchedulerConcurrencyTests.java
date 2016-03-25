@@ -55,7 +55,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                 })
                 .subscribeOn(getScheduler())
                 .observeOn(getScheduler())
-                .subscribe(new DefaultObserver<Long>() {
+                .subscribe(new DefaultSubscriber<Long>() {
                     @Override
                     public void onComplete() {
                         System.out.println("--- completed");

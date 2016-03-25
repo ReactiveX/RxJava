@@ -25,7 +25,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Consumer;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OnSubscribeRangeTest {
@@ -198,7 +198,7 @@ public class OnSubscribeRangeTest {
     public void testRequestOverflow() {
         final AtomicInteger count = new AtomicInteger();
         int n = 10;
-        Flowable.range(1, n).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(1, n).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -226,7 +226,7 @@ public class OnSubscribeRangeTest {
     @Test
     public void testEmptyRangeSendsOnCompleteEagerlyWithRequestZero() {
         final AtomicBoolean completed = new AtomicBoolean(false);
-        Flowable.range(1, 0).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(1, 0).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {

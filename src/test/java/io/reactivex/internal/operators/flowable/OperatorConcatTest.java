@@ -32,7 +32,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorConcatTest {
@@ -741,7 +741,7 @@ public class OperatorConcatTest {
         int n = 5000;
         final AtomicInteger counter = new AtomicInteger();
 
-        Flowable.range(1, n).concatMap(func).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(1, n).concatMap(func).subscribe(new DefaultSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 // Consume after sleep for 1 ms
@@ -777,7 +777,7 @@ public class OperatorConcatTest {
         Flowable<Integer> o1 = Flowable.just(1,2,3);
         Flowable<Integer> o2 = Flowable.just(4,5,6);
         final AtomicBoolean completed = new AtomicBoolean(false);
-        o1.concatWith(o2).subscribe(new DefaultObserver<Integer>() {
+        o1.concatWith(o2).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {

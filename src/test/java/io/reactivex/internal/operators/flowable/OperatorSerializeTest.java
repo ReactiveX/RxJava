@@ -26,7 +26,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.subscriptions.EmptySubscription;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 public class OperatorSerializeTest {
 
@@ -146,10 +146,10 @@ public class OperatorSerializeTest {
      */
     public static class OnNextThread implements Runnable {
 
-        private final DefaultObserver<String> observer;
+        private final DefaultSubscriber<String> observer;
         private final int numStringsToSend;
 
-        OnNextThread(DefaultObserver<String> observer, int numStringsToSend) {
+        OnNextThread(DefaultSubscriber<String> observer, int numStringsToSend) {
             this.observer = observer;
             this.numStringsToSend = numStringsToSend;
         }
@@ -167,11 +167,11 @@ public class OperatorSerializeTest {
      */
     public static class CompletionThread implements Runnable {
 
-        private final DefaultObserver<String> observer;
+        private final DefaultSubscriber<String> observer;
         private final TestConcurrencyobserverEvent event;
         private final Future<?>[] waitOnThese;
 
-        CompletionThread(DefaultObserver<String> observer, TestConcurrencyobserverEvent event, Future<?>... waitOnThese) {
+        CompletionThread(DefaultSubscriber<String> observer, TestConcurrencyobserverEvent event, Future<?>... waitOnThese) {
             this.observer = observer;
             this.event = event;
             this.waitOnThese = waitOnThese;
@@ -340,7 +340,7 @@ public class OperatorSerializeTest {
         }
     }
 
-    private static class BusyObserver extends DefaultObserver<String> {
+    private static class BusyObserver extends DefaultSubscriber<String> {
         volatile boolean onCompleted = false;
         volatile boolean onError = false;
         AtomicInteger onNextCount = new AtomicInteger();

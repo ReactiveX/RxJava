@@ -33,7 +33,7 @@ import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.*;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 public class OperatorBufferTest {
 
@@ -961,7 +961,7 @@ public class OperatorBufferTest {
                 });
             }
 
-        }).buffer(3, 2).subscribe(new DefaultObserver<List<Integer>>() {
+        }).buffer(3, 2).subscribe(new DefaultSubscriber<List<Integer>>() {
 
             @Override
             public void onStart() {

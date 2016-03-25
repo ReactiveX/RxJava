@@ -23,11 +23,11 @@ import io.reactivex.internal.subscribers.observable.NbpToNotificationSubscriber;
 import io.reactivex.subjects.BehaviorSubject;
 
 public final class NbpOnSubscribeRedo<T> implements NbpOnSubscribe<T> {
-    final Observable<? extends T> source;
-    final Function<? super Observable<Try<Optional<Object>>>, ? extends Observable<?>> manager;
+    final ConsumableObservable<? extends T> source;
+    final Function<? super Observable<Try<Optional<Object>>>, ? extends ConsumableObservable<?>> manager;
 
     public NbpOnSubscribeRedo(Observable<? extends T> source,
-            Function<? super Observable<Try<Optional<Object>>>, ? extends Observable<?>> manager) {
+            Function<? super Observable<Try<Optional<Object>>>, ? extends ConsumableObservable<?>> manager) {
         this.source = source;
         this.manager = manager;
     }
@@ -42,7 +42,7 @@ public final class NbpOnSubscribeRedo<T> implements NbpOnSubscribe<T> {
 
         s.onSubscribe(parent.arbiter);
 
-        Observable<?> action = manager.apply(subject);
+        ConsumableObservable<?> action = manager.apply(subject);
         
         action.subscribe(new NbpToNotificationSubscriber<Object>(new Consumer<Try<Optional<Object>>>() {
             @Override
@@ -60,12 +60,12 @@ public final class NbpOnSubscribeRedo<T> implements NbpOnSubscribe<T> {
         private static final long serialVersionUID = -1151903143112844287L;
         final Observer<? super T> actual;
         final BehaviorSubject<Try<Optional<Object>>> subject;
-        final Observable<? extends T> source;
+        final ConsumableObservable<? extends T> source;
         final MultipleAssignmentDisposable arbiter;
         
         final AtomicInteger wip = new AtomicInteger();
         
-        public RedoSubscriber(Observer<? super T> actual, BehaviorSubject<Try<Optional<Object>>> subject, Observable<? extends T> source) {
+        public RedoSubscriber(Observer<? super T> actual, BehaviorSubject<Try<Optional<Object>>> subject, ConsumableObservable<? extends T> source) {
             this.actual = actual;
             this.subject = subject;
             this.source = source;

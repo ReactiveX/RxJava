@@ -16,15 +16,15 @@ package io.reactivex.internal.operators.completable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Completable;
+import io.reactivex.*;
 import io.reactivex.Completable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 
 public final class CompletableOnSubscribeMergeDelayErrorIterable implements CompletableOnSubscribe {
-    final Iterable<? extends Completable> sources;
+    final Iterable<? extends ConsumableCompletable> sources;
     
-    public CompletableOnSubscribeMergeDelayErrorIterable(Iterable<? extends Completable> sources) {
+    public CompletableOnSubscribeMergeDelayErrorIterable(Iterable<? extends ConsumableCompletable> sources) {
         this.sources = sources;
     }
     
@@ -37,7 +37,7 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements Comp
         
         s.onSubscribe(set);
         
-        Iterator<? extends Completable> iterator;
+        Iterator<? extends ConsumableCompletable> iterator;
         
         try {
             iterator = sources.iterator();
@@ -79,7 +79,7 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements Comp
                 return;
             }
             
-            Completable c;
+            ConsumableCompletable c;
             
             try {
                 c = iterator.next();

@@ -28,7 +28,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Supplier;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorWindowWithObservableTest {
@@ -42,7 +42,7 @@ public class OperatorWindowWithObservableTest {
 
         final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
 
-        Subscriber<Flowable<Integer>> wo = new DefaultObserver<Flowable<Integer>>() {
+        Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() {
             @Override
             public void onNext(Flowable<Integer> args) {
                 final Subscriber<Object> mo = TestHelper.mockSubscriber();
@@ -100,7 +100,7 @@ public class OperatorWindowWithObservableTest {
 
         final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
 
-        Subscriber<Flowable<Integer>> wo = new DefaultObserver<Flowable<Integer>>() {
+        Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() {
             @Override
             public void onNext(Flowable<Integer> args) {
                 final Subscriber<Object> mo = TestHelper.mockSubscriber();
@@ -156,7 +156,7 @@ public class OperatorWindowWithObservableTest {
 
         final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
 
-        Subscriber<Flowable<Integer>> wo = new DefaultObserver<Flowable<Integer>>() {
+        Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() {
             @Override
             public void onNext(Flowable<Integer> args) {
                 final Subscriber<Object> mo = TestHelper.mockSubscriber();
@@ -206,7 +206,7 @@ public class OperatorWindowWithObservableTest {
 
         final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
 
-        Subscriber<Flowable<Integer>> wo = new DefaultObserver<Flowable<Integer>>() {
+        Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() {
             @Override
             public void onNext(Flowable<Integer> args) {
                 final Subscriber<Object> mo = TestHelper.mockSubscriber();

@@ -33,7 +33,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorZipTest {
@@ -732,7 +732,7 @@ public class OperatorZipTest {
                     public Integer apply(Integer a, Integer b) {
                         return a + b;
                     }
-                }).subscribe(new DefaultObserver<Integer>() {
+                }).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {
@@ -821,7 +821,7 @@ public class OperatorZipTest {
                 });
 
         final ArrayList<String> list = new ArrayList<String>();
-        os.subscribe(new DefaultObserver<String>() {
+        os.subscribe(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {

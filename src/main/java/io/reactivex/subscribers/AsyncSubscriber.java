@@ -27,7 +27,7 @@ import io.reactivex.internal.util.BackpressureHelper;
  * An abstract Subscriber implementation that allows asynchronous cancellation of its
  * subscription.
  * 
- * <p>This implementation let's you chose if the AsyncObserver manages resources or not,
+ * <p>This implementation let's you chose if the AsyncSubscriber manages resources or not,
  * thus saving memory on cases where there is no need for that.
  * 
  * <p>All pre-implemented final methods are thread-safe.
@@ -58,14 +58,14 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
     };
     
     /**
-     * Constructs an AsyncObserver with resource support.
+     * Constructs an AsyncSubscriber with resource support.
      */
     public AsyncSubscriber() {
         this(true);
     }
 
     /**
-     * Constructs an AsyncObserver and allows specifying if it should support resources or not.
+     * Constructs an AsyncSubscriber and allows specifying if it should support resources or not.
      * @param withResources true if resource support should be on.
      */
     public AsyncSubscriber(boolean withResources) {
@@ -75,16 +75,16 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
     }
 
     /**
-     * Adds a resource to this AsyncObserver.
+     * Adds a resource to this AsyncSubscriber.
      * 
-     * <p>Note that if the AsyncObserver doesn't manage resources, this method will
+     * <p>Note that if the AsyncSubscriber doesn't manage resources, this method will
      * throw an IllegalStateException. Use {@link #supportsResources()} to determine if
-     * this AsyncObserver manages resources or not.
+     * this AsyncSubscriber manages resources or not.
      * 
      * @param resource the resource to add
      * 
      * @throws NullPointerException if resource is null
-     * @throws IllegalStateException if this AsyncObserver doesn't manage resources
+     * @throws IllegalStateException if this AsyncSubscriber doesn't manage resources
      * @see #supportsResources()
      */
     public final void add(Disposable resource) {
@@ -93,13 +93,13 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
             add(resource);
         } else {
             resource.dispose();
-            throw new IllegalStateException("This AsyncObserver doesn't manage additional resources");
+            throw new IllegalStateException("This AsyncSubscriber doesn't manage additional resources");
         }
     }
     
     /**
-     * Returns true if this AsyncObserver supports resources added via the add() method. 
-     * @return true if this AsyncObserver supports resources added via the add() method
+     * Returns true if this AsyncSubscriber supports resources added via the add() method. 
+     * @return true if this AsyncSubscriber supports resources added via the add() method
      * @see #add(Disposable)
      */
     public final boolean supportsResources() {
@@ -124,7 +124,7 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
     }
     
     /**
-     * Called once the upstream sets a Subscription on this AsyncObserver.
+     * Called once the upstream sets a Subscription on this AsyncSubscriber.
      * 
      * <p>You can perform initialization at this moment. The default
      * implementation requests Long.MAX_VALUE from upstream.
@@ -162,7 +162,7 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
     
     /**
      * Cancels the subscription (if any) and disposes the resources associated with
-     * this AsyncObserver (if any).
+     * this AsyncSubscriber (if any).
      * 
      * <p>This method can be called before the upstream calls onSubscribe at which
      * case the Subscription will be immediately cancelled.
@@ -186,8 +186,8 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
     }
     
     /**
-     * Returns true if this AsyncObserver has been disposed/cancelled.
-     * @return true if this AsyncObserver has been disposed/cancelled
+     * Returns true if this AsyncSubscriber has been disposed/cancelled.
+     * @return true if this AsyncSubscriber has been disposed/cancelled
      */
     public final boolean isDisposed() {
         return s == CANCELLED;

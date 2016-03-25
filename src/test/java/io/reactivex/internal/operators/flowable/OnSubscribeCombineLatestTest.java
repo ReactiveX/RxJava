@@ -31,7 +31,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OnSubscribeCombineLatestTest {
@@ -481,7 +481,7 @@ public class OnSubscribeCombineLatestTest {
 
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Subscriber<List<Object>> s = new DefaultObserver<List<Object>>() {
+            Subscriber<List<Object>> s = new DefaultSubscriber<List<Object>>() {
 
                 @Override
                 public void onNext(List<Object> t) {
@@ -812,7 +812,7 @@ public class OnSubscribeCombineLatestTest {
             }});
         //should get at least 4
         final CountDownLatch latch = new CountDownLatch(4);
-        o.subscribeOn(Schedulers.computation()).subscribe(new DefaultObserver<Integer>() {
+        o.subscribeOn(Schedulers.computation()).subscribe(new DefaultSubscriber<Integer>() {
             
             @Override
             public void onStart() {

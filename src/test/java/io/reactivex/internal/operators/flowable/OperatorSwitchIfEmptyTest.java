@@ -101,7 +101,7 @@ public class OperatorSwitchIfEmptyTest {
                 .lift(new Flowable.Operator<Long, Long>() {
             @Override
             public Subscriber<? super Long> apply(final Subscriber<? super Long> child) {
-                return new DefaultObserver<Long>() {
+                return new DefaultSubscriber<Long>() {
                     @Override
                     public void onComplete() {
 

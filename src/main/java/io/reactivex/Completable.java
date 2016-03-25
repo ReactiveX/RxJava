@@ -37,10 +37,11 @@ import io.reactivex.schedulers.Schedulers;
  * 
  * The class follows a similar event pattern as Reactive-Streams: onSubscribe (onError|onComplete)?
  */
-public class Completable {
+public class Completable implements ConsumableCompletable {
     /**
      * Callback used for building deferred computations that takes a CompletableSubscriber.
      */
+    // TODO use ConsumableCompletable directly?
     public interface CompletableOnSubscribe extends Consumer<CompletableSubscriber> {
         
     }
@@ -51,29 +52,6 @@ public class Completable {
      */
     public interface CompletableOperator extends Function<CompletableSubscriber, CompletableSubscriber> {
         
-    }
-    
-    /**
-     * Represents the subscription API callbacks when subscribing to a Completable instance.
-     */
-    public interface CompletableSubscriber {
-        /**
-         * Called once the deferred computation completes normally.
-         */
-        void onComplete();
-        
-        /**
-         * Called once if the deferred computation 'throws' an exception.
-         * @param e the exception, not null.
-         */
-        void onError(Throwable e);
-        
-        /**
-         * Called once by the Completable to set a Disposable on this instance which
-         * then can be used to cancel the subscription at any time.
-         * @param d the Disposable instance to call dispose on for cancellation, not null
-         */
-        void onSubscribe(Disposable d);
     }
     
     /**
@@ -102,6 +80,27 @@ public class Completable {
     });
     
     /**
+     * Wraps a general ConsumableCompletable, if not already a Completable, into 
+     * a Completable instance.
+     * 
+     * @param consumable the consumable to wrap or cast to Completable
+     * 
+     * @return the Completable instance wrapped or cast
+     */
+    public static Completable wrap(final ConsumableCompletable consumable) {
+        if (consumable instanceof Completable) {
+            return (Completable)consumable;
+        }
+        Objects.requireNonNull(consumable, "consumable is null");
+        return create(new CompletableOnSubscribe() {
+            @Override
+            public void accept(CompletableSubscriber cs) {
+                consumable.subscribe(cs);
+            }
+        });
+    }
+    
+    /**
      * Returns a Completable which terminates as soon as one of the source Completables
      * terminates (normally or with an error) and cancels all other Completables.
      * @param sources the array of source Completables
@@ -109,13 +108,13 @@ public class Completable {
      * @throws NullPointerException if sources is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static Completable amb(final Completable... sources) {
+    public static Completable amb(final ConsumableCompletable... sources) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return complete();
         }
         if (sources.length == 1) {
-            return sources[0];
+            return wrap(sources[0]);
         }
         
         return create(new CompletableOnSubscribe() {
@@ -152,7 +151,7 @@ public class Completable {
                     
                 };
                 
-                for (Completable c : sources) {
+                for (ConsumableCompletable c : sources) {
                     if (set.isDisposed()) {
                         return;
                     }
@@ -185,7 +184,7 @@ public class Completable {
      * @throws NullPointerException if sources is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static Completable amb(final Iterable<? extends Completable> sources) {
+    public static Completable amb(final Iterable<? extends ConsumableCompletable> sources) {
         Objects.requireNonNull(sources, "sources is null");
         
         return create(new CompletableOnSubscribe() {
@@ -222,7 +221,7 @@ public class Completable {
                     
                 };
                 
-                Iterator<? extends Completable> it;
+                Iterator<? extends ConsumableCompletable> it;
                 
                 try {
                     it = sources.iterator();
@@ -270,7 +269,7 @@ public class Completable {
                         return;
                     }
 
-                    Completable c;
+                    ConsumableCompletable c;
                     
                     try {
                         c = it.next();
@@ -322,13 +321,13 @@ public class Completable {
      * @throws NullPointerException if sources is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static Completable concat(Completable... sources) {
+    public static Completable concat(ConsumableCompletable... sources) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return complete();
         } else
         if (sources.length == 1) {
-            return sources[0];
+            return wrap(sources[0]);
         }
         return create(new CompletableOnSubscribeConcatArray(sources));
     }
@@ -340,7 +339,7 @@ public class Completable {
      * @throws NullPointerException if sources is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static Completable concat(Iterable<? extends Completable> sources) {
+    public static Completable concat(Iterable<? extends ConsumableCompletable> sources) {
         Objects.requireNonNull(sources, "sources is null");
         
         return create(new CompletableOnSubscribeConcatIterable(sources));
@@ -353,7 +352,7 @@ public class Completable {
      * @throws NullPointerException if sources is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static Completable concat(Flowable<? extends Completable> sources) {
+    public static Completable concat(Flowable<? extends ConsumableCompletable> sources) {
         return concat(sources, 2);
     }
     
@@ -365,7 +364,7 @@ public class Completable {
      * @throws NullPointerException if sources is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static Completable concat(Flowable<? extends Completable> sources, int prefetch) {
+    public static Completable concat(Flowable<? extends ConsumableCompletable> sources, int prefetch) {
         Objects.requireNonNull(sources, "sources is null");
         if (prefetch < 1) {
             throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
@@ -401,12 +400,12 @@ public class Completable {
      * @return the Completable instance
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static Completable defer(final Supplier<? extends Completable> completableSupplier) {
+    public static Completable defer(final Supplier<? extends ConsumableCompletable> completableSupplier) {
         Objects.requireNonNull(completableSupplier, "completableSupplier");
         return create(new CompletableOnSubscribe() {
             @Override
             public void accept(CompletableSubscriber s) {
-                Completable c;
+                ConsumableCompletable c;
                 
                 try {
                     c = completableSupplier.get();
@@ -508,7 +507,7 @@ public class Completable {
     }
     
     /**
-     * Returns a Completable instance that subscribes to the given flowable, ignores all values and
+     * Returns a Completable instance that subscribes to the given a Flowable, ignores all values and
      * emits only the terminal event.
      * 
      * @param <T> the type of the flowable
@@ -551,7 +550,7 @@ public class Completable {
     }
     
     /**
-     * Returns a Completable instance that subscribes to the given NbpObservable, ignores all values and
+     * Returns a Completable instance that subscribes to the given ConsumableObservable, ignores all values and
      * emits only the terminal event.
      * @param <T> the type of the NbpObservable
      * @param observable the Observable instance to subscribe to, not null
@@ -559,7 +558,7 @@ public class Completable {
      * @throws NullPointerException if flowable is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static <T> Completable fromNbpObservable(final Observable<T> observable) {
+    public static <T> Completable fromObservable(final ConsumableObservable<T> observable) {
         Objects.requireNonNull(observable, "observable is null");
         return create(new CompletableOnSubscribe() {
             @Override
@@ -664,13 +663,13 @@ public class Completable {
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
-    public static Completable merge(Completable... sources) {
+    public static Completable merge(ConsumableCompletable... sources) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return complete();
         } else
         if (sources.length == 1) {
-            return sources[0];
+            return wrap(sources[0]);
         }
         return create(new CompletableOnSubscribeMergeArray(sources));
     }
@@ -683,7 +682,7 @@ public class Completable {
      * @throws NullPointerException if sources is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static Completable merge(Iterable<? extends Completable> sources) {
+    public static Completable merge(Iterable<? extends ConsumableCompletable> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return create(new CompletableOnSubscribeMergeIterable(sources));
     }
@@ -695,7 +694,7 @@ public class Completable {
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
-    public static Completable merge(Flowable<? extends Completable> sources) {
+    public static Completable merge(Flowable<? extends ConsumableCompletable> sources) {
         return merge0(sources, Integer.MAX_VALUE, false);
     }
     
@@ -708,7 +707,7 @@ public class Completable {
      * @throws NullPointerException if sources is null
      * @throws IllegalArgumentException if maxConcurrency is less than 1
      */
-    public static Completable merge(Flowable<? extends Completable> sources, int maxConcurrency) {
+    public static Completable merge(Flowable<? extends ConsumableCompletable> sources, int maxConcurrency) {
         return merge0(sources, maxConcurrency, false);
         
     }
@@ -716,7 +715,7 @@ public class Completable {
     /**
      * Returns a Completable instance that keeps subscriptions to a limited number of sources at once and
      * completes only when all source Completables terminate in one way or another, combining any exceptions
-     * thrown by either the sources Observable or the inner Completable instances.
+     * thrown by either the source Publisher or the inner ConsumableCompletable instances.
      * @param sources the iterable sequence of sources.
      * @param maxConcurrency the maximum number of concurrent subscriptions
      * @param delayErrors delay all errors from the main source and from the inner Completables?
@@ -724,7 +723,7 @@ public class Completable {
      * @throws NullPointerException if sources is null
      * @throws IllegalArgumentException if maxConcurrency is less than 1
      */
-    protected static Completable merge0(Flowable<? extends Completable> sources, int maxConcurrency, boolean delayErrors) {
+    protected static Completable merge0(Publisher<? extends ConsumableCompletable> sources, int maxConcurrency, boolean delayErrors) {
         Objects.requireNonNull(sources, "sources is null");
         if (maxConcurrency < 1) {
             throw new IllegalArgumentException("maxConcurrency > 0 required but it was " + maxConcurrency);
@@ -734,26 +733,26 @@ public class Completable {
 
     /**
      * Returns a Completable that subscribes to all Completables in the source array and delays
-     * any error emitted by either the sources observable or any of the inner Completables until all of
+     * any error emitted by any of the inner Completables until all of
      * them terminate in a way or another.
      * @param sources the array of Completables
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
-    public static Completable mergeDelayError(Completable... sources) {
+    public static Completable mergeDelayError(ConsumableCompletable... sources) {
         Objects.requireNonNull(sources, "sources is null");
         return create(new CompletableOnSubscribeMergeDelayErrorArray(sources));
     }
 
     /**
      * Returns a Completable that subscribes to all Completables in the source sequence and delays
-     * any error emitted by either the sources observable or any of the inner Completables until all of
+     * any error emitted by any of the inner ConsumableCompletables until all of
      * them terminate in a way or another.
      * @param sources the sequence of Completables
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
-    public static Completable mergeDelayError(Iterable<? extends Completable> sources) {
+    public static Completable mergeDelayError(Iterable<? extends ConsumableCompletable> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return create(new CompletableOnSubscribeMergeDelayErrorIterable(sources));
     }
@@ -767,7 +766,7 @@ public class Completable {
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
-    public static Completable mergeDelayError(Flowable<? extends Completable> sources) {
+    public static Completable mergeDelayError(Publisher<? extends ConsumableCompletable> sources) {
         return merge0(sources, Integer.MAX_VALUE, true);
     }
     
@@ -781,7 +780,7 @@ public class Completable {
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
-    public static Completable mergeDelayError(Flowable<? extends Completable> sources, int maxConcurrency) {
+    public static Completable mergeDelayError(Publisher<? extends ConsumableCompletable> sources, int maxConcurrency) {
         return merge0(sources, maxConcurrency, true);
     }
     
@@ -857,7 +856,7 @@ public class Completable {
      * @return the new Completable instance
      */
     public static <R> Completable using(Supplier<R> resourceSupplier, 
-            Function<? super R, ? extends Completable> completableFunction, 
+            Function<? super R, ? extends ConsumableCompletable> completableFunction, 
             Consumer<? super R> disposer) {
         return using(resourceSupplier, completableFunction, disposer, true);
     }
@@ -881,7 +880,7 @@ public class Completable {
      */
     public static <R> Completable using(
             final Supplier<R> resourceSupplier, 
-            final Function<? super R, ? extends Completable> completableFunction, 
+            final Function<? super R, ? extends ConsumableCompletable> completableFunction, 
             final Consumer<? super R> disposer, 
             final boolean eager) {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
@@ -901,7 +900,7 @@ public class Completable {
                     return;
                 }
                 
-                Completable cs;
+                ConsumableCompletable cs;
                 
                 try {
                     cs = completableFunction.apply(resource);
@@ -912,8 +911,14 @@ public class Completable {
                 }
                 
                 if (cs == null) {
+                    Throwable e = new NullPointerException("The completable supplied is null");
+                    try {
+                        disposer.accept(resource);
+                    } catch (Throwable ex) {
+                        e = new CompositeException(ex, e);
+                    }
                     s.onSubscribe(EmptyDisposable.INSTANCE);
-                    s.onError(new NullPointerException("The completable supplied is null"));
+                    s.onError(e);
                     return;
                 }
                 
@@ -1006,7 +1011,7 @@ public class Completable {
      * @throws NullPointerException if other is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final Completable ambWith(Completable other) {
+    public final Completable ambWith(ConsumableCompletable other) {
         Objects.requireNonNull(other, "other is null");
         return amb(this, other);
     }
@@ -1132,7 +1137,7 @@ public class Completable {
      * @throws NullPointerException if other is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final Completable concatWith(Completable other) {
+    public final Completable concatWith(ConsumableCompletable other) {
         Objects.requireNonNull(other, "other is null");
         return concat(this, other);
     }
@@ -1372,17 +1377,17 @@ public class Completable {
      * Returns a completable that first runs this Completable
      * and then the other completable.
      * <p>
-     * This is an alias for {@link #concatWith(Completable)}.
+     * This is an alias for {@link #concatWith(ConsumableCompletable)}.
      * @param other the other Completable, not null
      * @return the new Completable instance
      * @throws NullPointerException if other is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final Completable endWith(Completable other) {
+    public final Completable andThen(ConsumableCompletable other) {
         return concatWith(other);
     }
     /**
-     * Returns an NbpObservable that first runs this Completable instance and
+     * Returns an Observable that first runs this Completable instance and
      * resumes with the given next Observable.
      * @param <T> the type of the NbpObservable
      * @param next the next Observable to continue
@@ -1390,12 +1395,12 @@ public class Completable {
      * @throws NullPointerException if next is null
      */
     @SchedulerSupport(SchedulerKind.CUSTOM)
-    public final <T> Observable<T> endWith(Observable<T> next) {
-        return next.startWith(this.<T>toNbpObservable());
+    public final <T> Observable<T> andThen(ConsumableObservable<T> next) {
+        return Observable.wrap(next).startWith(this.<T>toObservable());
     }
     
     /**
-     * Returns an Observable that first runs this Completable instance and
+     * Returns an Flowable that first runs this Completable instance and
      * resumes with the given next Observable.
      * @param <T> the value type of the observable
      * @param next the next Observable to continue
@@ -1403,8 +1408,8 @@ public class Completable {
      * @throws NullPointerException if next is null
      */
     @SchedulerSupport(SchedulerKind.CUSTOM)
-    public final <T> Flowable<T> endWith(Flowable<T> next) {
-        return next.startWith(this.<T>toFlowable());
+    public final <T> Flowable<T> andThen(Publisher<T> next) {
+        return Flowable.fromPublisher(next).startWith(this.<T>toFlowable());
     }
 
     /**
@@ -1548,7 +1553,7 @@ public class Completable {
      * @throws NullPointerException if other is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final Completable mergeWith(Completable other) {
+    public final Completable mergeWith(ConsumableCompletable other) {
         Objects.requireNonNull(other, "other is null");
         return merge(this, other);
     }
@@ -1680,7 +1685,7 @@ public class Completable {
      * @return the new Completable instance
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final Completable onErrorResumeNext(final Function<? super Throwable, ? extends Completable> errorMapper) {
+    public final Completable onErrorResumeNext(final Function<? super Throwable, ? extends ConsumableCompletable> errorMapper) {
         Objects.requireNonNull(errorMapper, "errorMapper is null");
         return create(new CompletableOnSubscribe() {
             @Override
@@ -1695,7 +1700,7 @@ public class Completable {
 
                     @Override
                     public void onError(Throwable e) {
-                        Completable c;
+                        ConsumableCompletable c;
                         
                         try {
                             c = errorMapper.apply(e);
@@ -1859,7 +1864,7 @@ public class Completable {
      * @throws NullPointerException if other is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final Completable startWith(Completable other) {
+    public final Completable startWith(ConsumableCompletable other) {
         Objects.requireNonNull(other, "other is null");
         return concat(other, this);
     }
@@ -1873,9 +1878,9 @@ public class Completable {
      * @throws NullPointerException if other is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final <T> Observable<T> startWith(Observable<T> other) {
+    public final <T> Observable<T> startWith(ConsumableObservable<T> other) {
         Objects.requireNonNull(other, "other is null");
-        return other.endWith(this.<T>toNbpObservable());
+        return Observable.concat(other, this.<T>toObservable());
     }
     /**
      * Returns an Observable which first delivers the events
@@ -1886,9 +1891,9 @@ public class Completable {
      * @throws NullPointerException if other is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final <T> Flowable<T> startWith(Flowable<T> other) {
+    public final <T> Flowable<T> startWith(Publisher<T> other) {
         Objects.requireNonNull(other, "other is null");
-        return other.endWith(this.<T>toFlowable());
+        return Flowable.concat(other, this.<T>toFlowable());
     }
     
     /**
@@ -1924,6 +1929,7 @@ public class Completable {
      * @throws NullPointerException if s is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
+    @Override
     public final void subscribe(CompletableSubscriber s) {
         Objects.requireNonNull(s, "s is null");
         try {
@@ -2146,7 +2152,7 @@ public class Completable {
      * @throws NullPointerException if unit or other is null
      */
     @SchedulerSupport(SchedulerKind.COMPUTATION)
-    public final Completable timeout(long timeout, TimeUnit unit, Completable other) {
+    public final Completable timeout(long timeout, TimeUnit unit, ConsumableCompletable other) {
         Objects.requireNonNull(other, "other is null");
         return timeout0(timeout, unit, Schedulers.computation(), other);
     }
@@ -2178,7 +2184,7 @@ public class Completable {
      * @throws NullPointerException if unit, scheduler or other is null
      */
     @SchedulerSupport(SchedulerKind.CUSTOM)
-    public final Completable timeout(long timeout, TimeUnit unit, Scheduler scheduler, Completable other) {
+    public final Completable timeout(long timeout, TimeUnit unit, Scheduler scheduler, ConsumableCompletable other) {
         Objects.requireNonNull(other, "other is null");
         return timeout0(timeout, unit, scheduler, other);
     }
@@ -2196,7 +2202,7 @@ public class Completable {
      * @throws NullPointerException if unit or scheduler
      */
     @SchedulerSupport(SchedulerKind.CUSTOM)
-    public final Completable timeout0(long timeout, TimeUnit unit, Scheduler scheduler, Completable other) {
+    public final Completable timeout0(long timeout, TimeUnit unit, Scheduler scheduler, ConsumableCompletable other) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
         return create(new CompletableOnSubscribeTimeout(this, timeout, unit, scheduler, other));
@@ -2215,10 +2221,10 @@ public class Completable {
     }
 
     /**
-     * Returns an Observable which when subscribed to subscribes to this Completable and
+     * Returns an Flowable which when subscribed to subscribes to this Completable and
      * relays the terminal events to the subscriber.
      * @param <T> the value type
-     * @return the new Observable created
+     * @return the new Flowable created
      */
     @SchedulerSupport(SchedulerKind.NONE)
     public final <T> Flowable<T> toFlowable() {
@@ -2237,7 +2243,7 @@ public class Completable {
      * @return the new NbpObservable created
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final <T> Observable<T> toNbpObservable() {
+    public final <T> Observable<T> toObservable() {
         return Observable.create(new NbpOnSubscribe<T>() {
             @Override
             public void accept(Observer<? super T> s) {

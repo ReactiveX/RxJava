@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.single;
 
 import io.reactivex.Single.*;
+import io.reactivex.SingleSubscriber;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 

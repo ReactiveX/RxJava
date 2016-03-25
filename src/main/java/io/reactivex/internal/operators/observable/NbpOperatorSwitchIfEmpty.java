@@ -18,8 +18,8 @@ import io.reactivex.Observable.*;
 import io.reactivex.disposables.*;
 
 public final class NbpOperatorSwitchIfEmpty<T> implements NbpOperator<T, T> {
-    final Observable<? extends T> other;
-    public NbpOperatorSwitchIfEmpty(Observable<? extends T> other) {
+    final ConsumableObservable<? extends T> other;
+    public NbpOperatorSwitchIfEmpty(ConsumableObservable<? extends T> other) {
         this.other = other;
     }
     
@@ -32,12 +32,12 @@ public final class NbpOperatorSwitchIfEmpty<T> implements NbpOperator<T, T> {
     
     static final class SwitchIfEmptySubscriber<T> implements Observer<T> {
         final Observer<? super T> actual;
-        final Observable<? extends T> other;
+        final ConsumableObservable<? extends T> other;
         final SerialDisposable arbiter;
         
         boolean empty;
         
-        public SwitchIfEmptySubscriber(Observer<? super T> actual, Observable<? extends T> other) {
+        public SwitchIfEmptySubscriber(Observer<? super T> actual, ConsumableObservable<? extends T> other) {
             this.actual = actual;
             this.other = other;
             this.empty = true;

@@ -26,7 +26,7 @@ import io.reactivex.Optional;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorMaterializeTest {
@@ -197,7 +197,7 @@ public class OperatorMaterializeTest {
 //        ts.assertUnsubscribed();
     }
 
-    private static class TestObserver extends DefaultObserver<Try<Optional<String>>> {
+    private static class TestObserver extends DefaultSubscriber<Try<Optional<String>>> {
 
         boolean onCompleted = false;
         boolean onError = false;

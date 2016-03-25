@@ -16,22 +16,22 @@ package io.reactivex.internal.operators.completable;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Completable;
+import io.reactivex.*;
 import io.reactivex.Completable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class CompletableOnSubscribeConcatIterable implements CompletableOnSubscribe {
-    final Iterable<? extends Completable> sources;
+    final Iterable<? extends ConsumableCompletable> sources;
     
-    public CompletableOnSubscribeConcatIterable(Iterable<? extends Completable> sources) {
+    public CompletableOnSubscribeConcatIterable(Iterable<? extends ConsumableCompletable> sources) {
         this.sources = sources;
     }
     
     @Override
     public void accept(CompletableSubscriber s) {
         
-        Iterator<? extends Completable> it;
+        Iterator<? extends ConsumableCompletable> it;
         
         try {
             it = sources.iterator();
@@ -57,13 +57,13 @@ public final class CompletableOnSubscribeConcatIterable implements CompletableOn
         private static final long serialVersionUID = -7965400327305809232L;
 
         final CompletableSubscriber actual;
-        final Iterator<? extends Completable> sources;
+        final Iterator<? extends ConsumableCompletable> sources;
         
         int index;
         
         final SerialDisposable sd;
         
-        public ConcatInnerSubscriber(CompletableSubscriber actual, Iterator<? extends Completable> sources) {
+        public ConcatInnerSubscriber(CompletableSubscriber actual, Iterator<? extends ConsumableCompletable> sources) {
             this.actual = actual;
             this.sources = sources;
             this.sd = new SerialDisposable();
@@ -93,7 +93,7 @@ public final class CompletableOnSubscribeConcatIterable implements CompletableOn
                 return;
             }
 
-            Iterator<? extends Completable> a = sources;
+            Iterator<? extends ConsumableCompletable> a = sources;
             do {
                 if (sd.isDisposed()) {
                     return;
@@ -112,7 +112,7 @@ public final class CompletableOnSubscribeConcatIterable implements CompletableOn
                     return;
                 }
                 
-                Completable c;
+                ConsumableCompletable c;
                 
                 try {
                     c = a.next();

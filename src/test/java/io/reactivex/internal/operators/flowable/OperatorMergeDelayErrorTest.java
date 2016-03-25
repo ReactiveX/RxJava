@@ -29,7 +29,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.LongConsumer;
 import io.reactivex.internal.subscriptions.EmptySubscription;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorMergeDelayErrorTest {
@@ -295,7 +295,7 @@ public class OperatorMergeDelayErrorTest {
         final Flowable<Flowable<String>> o1 = Flowable.error(new RuntimeException("unit test"));
 
         final CountDownLatch latch = new CountDownLatch(1);
-        Flowable.mergeDelayError(o1).subscribe(new DefaultObserver<String>() {
+        Flowable.mergeDelayError(o1).subscribe(new DefaultSubscriber<String>() {
             @Override
             public void onComplete() {
                 fail("Expected onError path");
@@ -417,7 +417,7 @@ public class OperatorMergeDelayErrorTest {
         }
     }
 
-    private static class CaptureObserver extends DefaultObserver<String> {
+    private static class CaptureObserver extends DefaultSubscriber<String> {
         volatile Throwable e;
 
         @Override
@@ -458,7 +458,7 @@ public class OperatorMergeDelayErrorTest {
         final Subscriber<Integer> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
         
-        result.unsafeSubscribe(new DefaultObserver<Integer>() {
+        result.unsafeSubscribe(new DefaultSubscriber<Integer>() {
             int calls;
             @Override
             public void onNext(Integer t) {
@@ -563,7 +563,7 @@ public class OperatorMergeDelayErrorTest {
     public void testDelayErrorMaxConcurrent() {
         final List<Long> requests = new ArrayList<Long>();
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(
-                Flowable.just(1).asObservable(), 
+                Flowable.just(1).asFlowable(), 
                 Flowable.<Integer>error(new TestException()))
                 .doOnRequest(new LongConsumer() {
                     @Override

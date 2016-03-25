@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorTakeLastOneTest {
@@ -98,7 +98,7 @@ public class OperatorTakeLastOneTest {
         assertEquals(0L, count);
     }
     
-    private static class MySubscriber<T> extends DefaultObserver<T> {
+    private static class MySubscriber<T> extends DefaultSubscriber<T> {
 
         private long initialRequest;
 

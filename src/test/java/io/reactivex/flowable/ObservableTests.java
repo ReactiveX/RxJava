@@ -33,7 +33,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class ObservableTests {
@@ -318,7 +318,7 @@ public class ObservableTests {
         // FIXME custom built???
         Flowable.just("1", "2", "three", "4")
         .subscribeOn(Schedulers.newThread())
-        .safeSubscribe(new DefaultObserver<String>() {
+        .safeSubscribe(new DefaultSubscriber<String>() {
             @Override
             public void onComplete() {
                 System.out.println("completed");
@@ -365,7 +365,7 @@ public class ObservableTests {
         
         // FIXME custom built???
         Flowable.just("1", "2", "three", "4")
-        .safeSubscribe(new DefaultObserver<String>() {
+        .safeSubscribe(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -412,7 +412,7 @@ public class ObservableTests {
                 return new NumberFormatException();
             }
         }))
-        .subscribe(new DefaultObserver<String>() {
+        .subscribe(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -687,7 +687,7 @@ public class ObservableTests {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         Flowable.just("1", "2", "three", "4").take(3)
-        .safeSubscribe(new DefaultObserver<String>() {
+        .safeSubscribe(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {

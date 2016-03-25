@@ -19,31 +19,31 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class NbpOperatorMapNotification<T, R> implements NbpOperator<Observable<? extends R>, T>{
+public final class NbpOperatorMapNotification<T, R> implements NbpOperator<ConsumableObservable<? extends R>, T>{
 
-    final Function<? super T, ? extends Observable<? extends R>> onNextMapper;
-    final Function<? super Throwable, ? extends Observable<? extends R>> onErrorMapper;
-    final Supplier<? extends Observable<? extends R>> onCompleteSupplier;
+    final Function<? super T, ? extends ConsumableObservable<? extends R>> onNextMapper;
+    final Function<? super Throwable, ? extends ConsumableObservable<? extends R>> onErrorMapper;
+    final Supplier<? extends ConsumableObservable<? extends R>> onCompleteSupplier;
 
-    public NbpOperatorMapNotification(Function<? super T, ? extends Observable<? extends R>> onNextMapper, 
-            Function<? super Throwable, ? extends Observable<? extends R>> onErrorMapper, 
-            Supplier<? extends Observable<? extends R>> onCompleteSupplier) {
+    public NbpOperatorMapNotification(Function<? super T, ? extends ConsumableObservable<? extends R>> onNextMapper, 
+            Function<? super Throwable, ? extends ConsumableObservable<? extends R>> onErrorMapper, 
+            Supplier<? extends ConsumableObservable<? extends R>> onCompleteSupplier) {
         this.onNextMapper = onNextMapper;
         this.onErrorMapper = onErrorMapper;
         this.onCompleteSupplier = onCompleteSupplier;
     }
     
     @Override
-    public Observer<? super T> apply(Observer<? super Observable<? extends R>> t) {
+    public Observer<? super T> apply(Observer<? super ConsumableObservable<? extends R>> t) {
         return new MapNotificationSubscriber<T, R>(t, onNextMapper, onErrorMapper, onCompleteSupplier);
     }
     
     static final class MapNotificationSubscriber<T, R>
     implements Observer<T> {
-        final Observer<? super Observable<? extends R>> actual;
-        final Function<? super T, ? extends Observable<? extends R>> onNextMapper;
-        final Function<? super Throwable, ? extends Observable<? extends R>> onErrorMapper;
-        final Supplier<? extends Observable<? extends R>> onCompleteSupplier;
+        final Observer<? super ConsumableObservable<? extends R>> actual;
+        final Function<? super T, ? extends ConsumableObservable<? extends R>> onNextMapper;
+        final Function<? super Throwable, ? extends ConsumableObservable<? extends R>> onErrorMapper;
+        final Supplier<? extends ConsumableObservable<? extends R>> onCompleteSupplier;
         
         Disposable s;
         
@@ -51,10 +51,10 @@ public final class NbpOperatorMapNotification<T, R> implements NbpOperator<Obser
         
         volatile boolean done;
 
-        public MapNotificationSubscriber(Observer<? super Observable<? extends R>> actual,
-                Function<? super T, ? extends Observable<? extends R>> onNextMapper,
-                Function<? super Throwable, ? extends Observable<? extends R>> onErrorMapper,
-                Supplier<? extends Observable<? extends R>> onCompleteSupplier) {
+        public MapNotificationSubscriber(Observer<? super ConsumableObservable<? extends R>> actual,
+                Function<? super T, ? extends ConsumableObservable<? extends R>> onNextMapper,
+                Function<? super Throwable, ? extends ConsumableObservable<? extends R>> onErrorMapper,
+                Supplier<? extends ConsumableObservable<? extends R>> onCompleteSupplier) {
             this.actual = actual;
             this.onNextMapper = onNextMapper;
             this.onErrorMapper = onErrorMapper;
@@ -72,7 +72,7 @@ public final class NbpOperatorMapNotification<T, R> implements NbpOperator<Obser
         
         @Override
         public void onNext(T t) {
-            Observable<? extends R> p;
+            ConsumableObservable<? extends R> p;
             
             try {
                 p = onNextMapper.apply(t);
@@ -91,7 +91,7 @@ public final class NbpOperatorMapNotification<T, R> implements NbpOperator<Obser
         
         @Override
         public void onError(Throwable t) {
-            Observable<? extends R> p;
+            ConsumableObservable<? extends R> p;
             
             try {
                 p = onErrorMapper.apply(t);
@@ -111,7 +111,7 @@ public final class NbpOperatorMapNotification<T, R> implements NbpOperator<Obser
         
         @Override
         public void onComplete() {
-            Observable<? extends R> p;
+            ConsumableObservable<? extends R> p;
             
             try {
                 p = onCompleteSupplier.get();

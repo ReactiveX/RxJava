@@ -51,7 +51,7 @@ public class OperatorOnBackpressureDropTest {
     public void testFixBackpressureWithBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch l2 = new CountDownLatch(150);
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultObserver<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultSubscriber<Long>() {
 
             @Override
             protected void onStart() {
@@ -93,7 +93,7 @@ public class OperatorOnBackpressureDropTest {
     public void testRequestOverflow() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
         int n = 10;
-        range(n).onBackpressureDrop().subscribe(new DefaultObserver<Long>() {
+        range(n).onBackpressureDrop().subscribe(new DefaultSubscriber<Long>() {
 
             @Override
             public void onStart() {

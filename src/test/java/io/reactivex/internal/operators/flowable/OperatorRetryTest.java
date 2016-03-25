@@ -33,7 +33,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorRetryTest {
@@ -615,7 +615,7 @@ public class OperatorRetryTest {
     }
 
     /** Observer for listener on seperate thread */
-    static final class AsyncObserver<T> extends DefaultObserver<T> {
+    static final class AsyncObserver<T> extends DefaultSubscriber<T> {
 
         protected CountDownLatch latch = new CountDownLatch(1);
 
@@ -662,7 +662,7 @@ public class OperatorRetryTest {
     public void testUnsubscribeAfterError() {
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<Long> observer = mock(DefaultObserver.class);
+        DefaultSubscriber<Long> observer = mock(DefaultSubscriber.class);
 
         // Observable that always fails after 100ms
         SlowObservable so = new SlowObservable(100, 0);
@@ -687,7 +687,7 @@ public class OperatorRetryTest {
     public void testTimeoutWithRetry() {
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<Long> observer = mock(DefaultObserver.class);
+        DefaultSubscriber<Long> observer = mock(DefaultSubscriber.class);
 
         // Observable that sends every 100ms (timeout fails instead)
         SlowObservable so = new SlowObservable(100, 10);

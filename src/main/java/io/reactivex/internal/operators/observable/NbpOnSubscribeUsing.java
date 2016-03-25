@@ -26,12 +26,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOnSubscribeUsing<T, D> implements NbpOnSubscribe<T> {
     final Supplier<? extends D> resourceSupplier;
-    final Function<? super D, ? extends Observable<? extends T>> sourceSupplier;
+    final Function<? super D, ? extends ConsumableObservable<? extends T>> sourceSupplier;
     final Consumer<? super D> disposer;
     final boolean eager;
     
     public NbpOnSubscribeUsing(Supplier<? extends D> resourceSupplier,
-            Function<? super D, ? extends Observable<? extends T>> sourceSupplier, 
+            Function<? super D, ? extends ConsumableObservable<? extends T>> sourceSupplier, 
             Consumer<? super D> disposer,
             boolean eager) {
         this.resourceSupplier = resourceSupplier;
@@ -51,7 +51,7 @@ public final class NbpOnSubscribeUsing<T, D> implements NbpOnSubscribe<T> {
             return;
         }
         
-        Observable<? extends T> source;
+        ConsumableObservable<? extends T> source;
         try {
             source = sourceSupplier.apply(resource);
         } catch (Throwable e) {

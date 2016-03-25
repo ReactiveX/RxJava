@@ -26,14 +26,14 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
     
-    final Observable<? extends T>[] sources;
-    final Iterable<? extends Observable<? extends T>> sourcesIterable;
+    final ConsumableObservable<? extends T>[] sources;
+    final Iterable<? extends ConsumableObservable<? extends T>> sourcesIterable;
     final Function<? super Object[], ? extends R> zipper;
     final int bufferSize;
     final boolean delayError;
     
-    public NbpOnSubscribeZip(Observable<? extends T>[] sources,
-            Iterable<? extends Observable<? extends T>> sourcesIterable,
+    public NbpOnSubscribeZip(ConsumableObservable<? extends T>[] sources,
+            Iterable<? extends ConsumableObservable<? extends T>> sourcesIterable,
             Function<? super Object[], ? extends R> zipper,
             int bufferSize,
             boolean delayError) {
@@ -47,13 +47,13 @@ public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
     @Override
     @SuppressWarnings("unchecked")
     public void accept(Observer<? super R> s) {
-        Observable<? extends T>[] sources = this.sources;
+        ConsumableObservable<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
-            sources = new Observable[8];
-            for (Observable<? extends T> p : sourcesIterable) {
+            sources = new ConsumableObservable[8];
+            for (ConsumableObservable<? extends T> p : sourcesIterable) {
                 if (count == sources.length) {
-                    Observable<? extends T>[] b = new Observable[count + (count >> 2)];
+                    ConsumableObservable<? extends T>[] b = new ConsumableObservable[count + (count >> 2)];
                     System.arraycopy(sources, 0, b, 0, count);
                     sources = b;
                 }
@@ -94,7 +94,7 @@ public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
             this.delayError = delayError;
         }
         
-        public void subscribe(Observable<? extends T>[] sources, int bufferSize) {
+        public void subscribe(ConsumableObservable<? extends T>[] sources, int bufferSize) {
             ZipSubscriber<T, R>[] s = subscribers;
             int len = s.length;
             for (int i = 0; i < len; i++) {

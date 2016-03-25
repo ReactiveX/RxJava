@@ -28,7 +28,7 @@ import io.reactivex.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorTakeLastTest {
@@ -162,7 +162,7 @@ public class OperatorTakeLastTest {
     @Test
     public void testIgnoreRequest1() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -188,7 +188,7 @@ public class OperatorTakeLastTest {
     @Test
     public void testIgnoreRequest2() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -213,7 +213,7 @@ public class OperatorTakeLastTest {
     @Test(timeout = 30000)
     public void testIgnoreRequest3() {
         // If `takeLast` does not ignore `request` properly, it will enter an infinite loop.
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -240,7 +240,7 @@ public class OperatorTakeLastTest {
     @Test
     public void testIgnoreRequest4() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -266,7 +266,7 @@ public class OperatorTakeLastTest {
     @Test
     public void testUnsubscribeTakesEffectEarlyOnFastPath() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -294,7 +294,7 @@ public class OperatorTakeLastTest {
     @Test(timeout=10000)
     public void testRequestOverflow() {
         final List<Integer> list = new ArrayList<Integer>();
-        Flowable.range(1, 100).takeLast(50).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(1, 100).takeLast(50).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {

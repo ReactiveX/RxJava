@@ -15,14 +15,14 @@ package io.reactivex.internal.operators.completable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Completable;
+import io.reactivex.*;
 import io.reactivex.Completable.*;
 import io.reactivex.disposables.*;
 
 public final class CompletableOnSubscribeConcatArray implements CompletableOnSubscribe {
-    final Completable[] sources;
+    final ConsumableCompletable[] sources;
     
-    public CompletableOnSubscribeConcatArray(Completable[] sources) {
+    public CompletableOnSubscribeConcatArray(ConsumableCompletable[] sources) {
         this.sources = sources;
     }
     
@@ -38,13 +38,13 @@ public final class CompletableOnSubscribeConcatArray implements CompletableOnSub
         private static final long serialVersionUID = -7965400327305809232L;
 
         final CompletableSubscriber actual;
-        final Completable[] sources;
+        final ConsumableCompletable[] sources;
         
         int index;
         
         final SerialDisposable sd;
         
-        public ConcatInnerSubscriber(CompletableSubscriber actual, Completable[] sources) {
+        public ConcatInnerSubscriber(CompletableSubscriber actual, ConsumableCompletable[] sources) {
             this.actual = actual;
             this.sources = sources;
             this.sd = new SerialDisposable();
@@ -74,7 +74,7 @@ public final class CompletableOnSubscribeConcatArray implements CompletableOnSub
                 return;
             }
 
-            Completable[] a = sources;
+            ConsumableCompletable[] a = sources;
             do {
                 if (sd.isDisposed()) {
                     return;

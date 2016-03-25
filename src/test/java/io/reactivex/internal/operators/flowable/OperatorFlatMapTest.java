@@ -483,7 +483,7 @@ public class OperatorFlatMapTest {
                 public Flowable<Integer> apply(Integer t) {
                     Flowable<Integer> r = Flowable.just(t);
                     if (rnd.nextBoolean()) {
-                        r = r.asObservable();
+                        r = r.asFlowable();
                     }
                     return r;
                 }
