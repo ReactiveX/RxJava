@@ -1558,7 +1558,7 @@ public class SingleTest {
                         return observable.flatMap(new Func1<Throwable, Observable<?>>() {
                             @Override
                             public Observable<?> call(Throwable throwable) {
-                                return throwable instanceof IOException ? Observable.just(null) : Observable.error(throwable);
+                                return throwable instanceof IOException ? Observable.just(null,true) : Observable.error(throwable);
                             }
                         });
                     }
