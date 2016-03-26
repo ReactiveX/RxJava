@@ -1921,7 +1921,6 @@ public class Observable<T> {
      */
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
-    @Deprecated
     public static <T> Observable<T> just(T... t) {
         return from(t);
     }
