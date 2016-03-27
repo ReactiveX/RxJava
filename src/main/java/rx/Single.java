@@ -27,7 +27,6 @@ import rx.internal.util.ScalarSynchronousSingle;
 import rx.internal.util.UtilityFunctions;
 import rx.observers.SafeSubscriber;
 import rx.observers.SerializedSubscriber;
-import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.plugins.RxJavaSingleExecutionHook;
 import rx.schedulers.Schedulers;
@@ -2671,4 +2670,28 @@ public class Single<T> {
         return create(new SingleOnSubscribeUsing<T, Resource>(resourceFactory, singleFactory, disposeAction, disposeEagerly));
     }
 
+    /**
+     * Returns a Single that delays the subscription to this Single
+     * until the Observable completes. In case the {@code onError} of the supplied observer throws,
+     * the exception will be propagated to the downstream subscriber
+     * and will result in skipping the subscription of this Single.
+     *
+     * <p>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other the Observable that should trigger the subscription
+     *        to this Single.
+     * @return a Single that delays the subscription to this Single
+     *         until the Observable emits an element or completes normally.
+     */
+    @Experimental
+    public final Single<T> delaySubscription(Observable<?> other) {
+        if (other == null) {
+            throw new NullPointerException();
+        }
+        return create(new SingleOnSubscribeDelaySubscriptionOther<T>(this, other));
+    }
 }
