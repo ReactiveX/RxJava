@@ -598,7 +598,7 @@ public class OperatorRetryTest {
         }
     }
 
-    /** Observer for listener on seperate thread */
+    /** Observer for listener on separate thread */
     static final class AsyncObserver<T> implements Observer<T> {
 
         protected CountDownLatch latch = new CountDownLatch(1);

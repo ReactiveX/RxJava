@@ -94,7 +94,7 @@ public class SingleOnSubscribeUsingTest {
         inOrder.verify(observer).onCompleted();
         inOrder.verifyNoMoreInteractions();
 
-        // The resouce should be closed
+        // The resource should be closed
         verify(resource).dispose();
     }
 

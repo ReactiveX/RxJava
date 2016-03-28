@@ -96,7 +96,7 @@ public class BackpressureTests {
         assertEquals(NUM, ts.getOnNextEvents().size());
         // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
         // TODO is it possible to make this deterministic rather than one possibly starving the other?
-        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algoritms generally take a performance hit
+        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algorithms generally take a performance hit
         assertTrue(c1.get() < RxRingBuffer.SIZE * 5);
         assertTrue(c2.get() < RxRingBuffer.SIZE * 5);
     }
@@ -118,7 +118,7 @@ public class BackpressureTests {
         assertEquals(NUM, ts.getOnNextEvents().size());
         // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
         // TODO is it possible to make this deterministic rather than one possibly starving the other?
-        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algoritms generally take a performance hit
+        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algorithms generally take a performance hit
         assertTrue(c1.get() < RxRingBuffer.SIZE * 5);
         assertTrue(c2.get() < RxRingBuffer.SIZE * 5);
     }
@@ -164,7 +164,7 @@ public class BackpressureTests {
         assertEquals(NUM, ts.getOnNextEvents().size());
         // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
         // TODO is it possible to make this deterministic rather than one possibly starving the other?
-        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algoritms generally take a performance hit
+        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algorithms generally take a performance hit
         // akarnokd => run this in a loop over 10k times and never saw values get as high as 7*SIZE, but since observeOn delays the unsubscription non-deterministically, the test will remain unreliable
         assertTrue(c1.get() < RxRingBuffer.SIZE * 7);
         assertTrue(c2.get() < RxRingBuffer.SIZE * 7);

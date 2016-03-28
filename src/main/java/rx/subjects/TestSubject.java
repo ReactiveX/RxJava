@@ -121,10 +121,10 @@ public final class TestSubject<T> extends Subject<T, T> {
      *
      * @param e
      *         the {@code Throwable} to pass to the {@code onError} method
-     * @param dalayTime
+     * @param delayTime
      *         the number of milliseconds in the future relative to "now()" at which to call {@code onError}
      */
-    public void onError(final Throwable e, long dalayTime) {
+    public void onError(final Throwable e, long delayTime) {
         innerScheduler.schedule(new Action0() {
 
             @Override
@@ -132,7 +132,7 @@ public final class TestSubject<T> extends Subject<T, T> {
                 _onError(e);
             }
 
-        }, dalayTime, TimeUnit.MILLISECONDS);
+        }, delayTime, TimeUnit.MILLISECONDS);
     }
 
     /**

@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * 
  * Where the {@code .class} property contains the simple classname from above and the {@code .impl}
  * contains the fully qualified name of the implementation class. The {@code [index]} can be
- * any short string or number of your chosing. For example, you can now define a custom 
+ * any short string or number of your choosing. For example, you can now define a custom
  * {@code RxJavaErrorHandler} via two system property:
  * <pre><code>
  * rxjava.plugin.1.class=RxJavaErrorHandler

@@ -614,7 +614,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     }
 
                     /*
-                     * We need to read done before innerSubscribers because innerSubcribers are added
+                     * We need to read done before innerSubscribers because innerSubscribers are added
                      * before done is set to true. If it were the other way around, we could read an empty
                      * innerSubscribers, get paused and then read a done flag but an async producer
                      * might have added more subscribers between the two.

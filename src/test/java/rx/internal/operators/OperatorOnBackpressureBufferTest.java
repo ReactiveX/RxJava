@@ -154,7 +154,7 @@ public class OperatorOnBackpressureBufferTest {
     }
 
     @Test
-    public void testFixBackpressueBoundedBufferDroppingLatest()
+    public void testFixBackpressureBoundedBufferDroppingLatest()
         throws InterruptedException {
 
         List<Long> events = overflowBufferWithBehaviour(100, 10, ON_OVERFLOW_DROP_LATEST);

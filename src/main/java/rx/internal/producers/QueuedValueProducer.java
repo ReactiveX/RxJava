@@ -73,7 +73,7 @@ public final class QueuedValueProducer<T> extends AtomicLong implements Producer
     }
     
     /**
-     * Offers a value to this producer and tries to emit any queud values
+     * Offers a value to this producer and tries to emit any queued values
      * if the child requests allow it.
      * @param value the value to enqueue and attempt to drain
      * @return true if the queue accepted the offer, false otherwise

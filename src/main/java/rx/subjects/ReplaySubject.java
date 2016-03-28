@@ -78,7 +78,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     /**
      * Creates an unbounded replay subject with the specified initial buffer capacity.
      * <p>
-     * Use this method to avoid excessive array reallocation while the internal buffer grows to accomodate new
+     * Use this method to avoid excessive array reallocation while the internal buffer grows to accommodate new
      * items. For example, if you know that the buffer will hold 32k items, you can ask the
      * {@code ReplaySubject} to preallocate its internal array with a capacity to hold that many items. Once
      * the items start to arrive, the internal array won't need to grow, creating less garbage and no overhead
@@ -525,7 +525,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         @Override
         public int size() {
-            int idx = get(); // aquire
+            int idx = get(); // acquire
             if (idx > 0) {
                 Object o = list.get(idx - 1);
                 if (nl.isCompleted(o) || nl.isError(o)) {

@@ -90,7 +90,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
         bsub.scheduleChunk();
         return bsub;
     }
-    /** Subscriber when the buffer chunking time and lenght differ. */
+    /** Subscriber when the buffer chunking time and length differ. */
     final class InexactSubscriber extends Subscriber<T> {
         final Subscriber<? super List<T>> child;
         final Worker inner;

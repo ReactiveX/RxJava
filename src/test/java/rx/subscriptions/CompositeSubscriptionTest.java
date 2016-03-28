@@ -335,7 +335,7 @@ public class CompositeSubscriptionTest {
         csub.remove(csub1);
         csub.add(csub2);
         
-        csub.remove(csub1); // try removing agian
+        csub.remove(csub1); // try removing again
     }
 
     @Test(expected = NullPointerException.class)

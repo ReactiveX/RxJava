@@ -21,7 +21,7 @@ package rx;
  * backpressure).
  * 
  * <p>The request amount only affects calls to {@link Subscriber#onNext(Object)}; onError and onCompleted may appear without
- * requrests.
+ * requests.
  * 
  * <p>However, backpressure is somewhat optional in RxJava 1.x and Subscribers may not
  * receive a Producer via their {@link Subscriber#setProducer(Producer)} method and will run

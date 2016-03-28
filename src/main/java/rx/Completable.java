@@ -752,7 +752,7 @@ public class Completable {
     }
     
     /**
-     * Returns a Completable instance that fires its onComplete event after the given delay ellapsed.
+     * Returns a Completable instance that fires its onComplete event after the given delay elapsed.
      * @param delay the delay time
      * @param unit the delay unit
      * @return the new Completable instance
@@ -762,7 +762,7 @@ public class Completable {
     }
     
     /**
-     * Returns a Completable instance that fires its onComplete event after the given delay ellapsed
+     * Returns a Completable instance that fires its onComplete event after the given delay elapsed
      * by using the supplied scheduler.
      * @param delay the delay time
      * @param unit the delay unit
@@ -1040,7 +1040,7 @@ public class Completable {
      * @param timeout the timeout value
      * @param unit the timeout unit
      * @return true if the this Completable instance completed normally within the time limit,
-     * false if the timeout ellapsed before this Completable terminated.
+     * false if the timeout elapsed before this Completable terminated.
      * @throws RuntimeException wrapping an InterruptedException if the current thread is interrupted
      */
     public final boolean await(long timeout, TimeUnit unit) {
@@ -1239,7 +1239,7 @@ public class Completable {
     }
     
     /**
-     * Returns a Completable which calls the giveon onUnsubscribe callback if the child subscriber cancels
+     * Returns a Completable which calls the given onUnsubscribe callback if the child subscriber cancels
      * the subscription.
      * @param onUnsubscribe the callback to call when the child subscriber cancels the subscription
      * @return the new Completable instance
@@ -1395,7 +1395,7 @@ public class Completable {
     }
 
     /**
-     * Returns a Completable instace that calls the given onAfterComplete callback after this
+     * Returns a Completable instance that calls the given onAfterComplete callback after this
      * Completable completes normally.
      * @param onAfterComplete the callback to call after this Completable emits an onComplete event.
      * @return the new Completable instance
@@ -1448,10 +1448,10 @@ public class Completable {
     
     /**
      * Subscribes to this Completable instance and blocks until it terminates or the specified timeout 
-     * ellapses, then returns null for normal termination or the emitted exception if any.
+     * elapses, then returns null for normal termination or the emitted exception if any.
      * @return the throwable if this terminated with an error, null otherwise
      * @throws RuntimeException that wraps an InterruptedException if the wait is interrupted or
-     * TimeoutException if the specified timeout ellapsed before it
+     * TimeoutException if the specified timeout elapsed before it
      */
     public final Throwable get(long timeout, TimeUnit unit) {
         requireNonNull(unit);
@@ -2128,7 +2128,7 @@ public class Completable {
     }
     
     /**
-     * Convers this Completable into a Single which when this Completable completes normally,
+     * Converts this Completable into a Single which when this Completable completes normally,
      * calls the given supplier and emits its returned value through onSuccess.
      * @param completionValueFunc0 the value supplier called when this Completable completes normally
      * @return the new Single instance
@@ -2175,7 +2175,7 @@ public class Completable {
     }
     
     /**
-     * Convers this Completable into a Single which when this Completable completes normally,
+     * Converts this Completable into a Single which when this Completable completes normally,
      * emits the given value through onSuccess.
      * @param completionValue the value to emit when this Completable completes normally
      * @return the new Single instance

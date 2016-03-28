@@ -24,7 +24,7 @@ import rx.functions.Action0;
 import rx.observers.SerializedSubscriber;
 
 /**
- * Takes values from the source until the specific time ellapses.
+ * Takes values from the source until the specific time elapses.
  * 
  * @param <T>
  *            the result value type

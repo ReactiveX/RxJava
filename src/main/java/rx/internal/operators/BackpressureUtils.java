@@ -246,10 +246,10 @@ public final class BackpressureUtils {
              * in which we know the queue won't change anymore (i.e., done is always true
              * when looking at the classical algorithm and there is no error).
              * 
-             * Note that we don't check for cancellation or emptyness upfront for two reasons:
+             * Note that we don't check for cancellation or emptiness upfront for two reasons:
              * 1) if e != r, the loop will do this and we quit appropriately
              * 2) if e == r, then either there was no outstanding requests or we emitted the requested amount
-             *    and the execution simply falls to the e == r check below which checks for emptyness anyway.
+             *    and the execution simply falls to the e == r check below which checks for emptiness anyway.
              */
             
             while (e != r) {

@@ -202,7 +202,7 @@ public class OperatorPublishFunctionTest {
     }
     
     @Test
-    public void oveflowMissingBackpressureException() {
+    public void overflowMissingBackpressureException() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
         PublishSubject<Integer> ps = PublishSubject.create();
@@ -227,7 +227,7 @@ public class OperatorPublishFunctionTest {
     }
     
     @Test
-    public void oveflowMissingBackpressureExceptionDelayed() {
+    public void overflowMissingBackpressureExceptionDelayed() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
         PublishSubject<Integer> ps = PublishSubject.create();
