@@ -370,12 +370,14 @@ Options are:
 The intent is to let Android users consume the new version of RxJava.
 (Not sure if JDK6 is the appropriate requirement, JDK7+ is maybe sufficient).
 
-##### Custom Observable, Single, Completable, or Flowable (To be confirmed)
+### Future work 
 
-An implementation of an Observable which can be subscribed to with an `Observer`. Custom (`Observable`|`Single`|`Completable`|`Flowable`) classes would implement the interface `Consumable<S>` where the generic type `S` is a `Flowable.Subscriber<T>`, `Observable.Observer<T>`, `Completable.Subscriber<T>`, or a `Single.Subscriber<T>` depending on which semantics the custom class will follow. This choice would also affect the kinds of observables the custom class could interop with. For instance, `Flowable#merge` could operate over the standard `Flowable` or any custom class which implements `Consumable<Flowable.Subscriber<T>>`. 
+This section contains current design work which needs more discussion and elaboration before it is merged into this document as a stated goal for 2.x. Our goal is 
 
-For more information see the proof of concept project [Consumable](https://github.com/stealthcode/Consumable). 
+#### Custom Observable, Single, Completable, or Flowable
 
-### Fusion (To be confirmed)
+We are investigate a base interface (similar to `Publisher`) for the `Observable`, `Single`, and `Completable` (currently referred to as `Consumable` or `ConsumableObservable`). This would empower library owners and api developers to implement their own type of `Observable`, `Single`, or `Completable` without extending the class. This would result in a change the type signatures of `subscribe` as well as any operator that operates over an `Observable`, `Single`, or `Completable` to accept a more generic type (i.e. `ConsumableObservable`). For more information see the proof of concept project [Consumable](https://github.com/stealthcode/Consumable). 
+
+#### Fusion (To be confirmed)
 
 We intend to enable operator fusion, but we don't have any specification yet. Nothing we do here should prevent the implementation of fusion.
