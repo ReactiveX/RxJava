@@ -109,7 +109,7 @@ public class OperatorTimeoutTests {
     }
 
     @Test
-    public void shouldCompleteIfUnderlyingComletes() {
+    public void shouldCompleteIfUnderlyingCompletes() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Subscription subscription = withTimeout.subscribe(observer);

@@ -28,7 +28,7 @@ import rx.subjects.*;
 import rx.subscriptions.*;
 
 /**
- * Corrrelates two sequences when they overlap and groups the results.
+ * Correlates two sequences when they overlap and groups the results.
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/hh244235.aspx">MSDN: Observable.GroupJoin</a>
  * @param <T1> the left value type

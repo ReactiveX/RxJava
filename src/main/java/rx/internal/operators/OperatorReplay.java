@@ -377,7 +377,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 if (producers.compareAndSet(c, u)) {
                     return true;
                 }
-                // if failed, some other operation succeded (another add, remove or termination)
+                // if failed, some other operation succeeded (another add, remove or termination)
                 // so retry
             }
         }
@@ -633,7 +633,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 if (compareAndSet(r, u)) {
                     // increment the total request counter
                     addTotalRequested(n);
-                    // if successful, notify the parent dispacher this child can receive more
+                    // if successful, notify the parent dispatcher this child can receive more
                     // elements
                     parent.manageRequests();
                     
@@ -687,7 +687,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 }
                 // try updating the request value
                 if (compareAndSet(r, u)) {
-                    // and return the udpated value
+                    // and return the updated value
                     return u;
                 }
                 // otherwise, some concurrent activity happened and we need to retry

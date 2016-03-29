@@ -28,7 +28,7 @@ public final class TestException extends RuntimeException {
     }
     /**
      * Create the test exception with the provided message.
-     * @param message the mesage to use
+     * @param message the message to use
      */
     public TestException(String message) {
         super(message);

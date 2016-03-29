@@ -1241,7 +1241,7 @@ public class OperatorZipTest {
         assertEquals(expected, zip2.toList().toBlocking().single());
     }
     @Test
-    public void testUnboundedDownstreamOverrequesting() {
+    public void testUnboundedDownstreamOverRequesting() {
         Observable<Integer> source = Observable.range(1, 2).zipWith(Observable.range(1, 2), new Func2<Integer, Integer, Integer>() {
             @Override
             public Integer call(Integer t1, Integer t2) {

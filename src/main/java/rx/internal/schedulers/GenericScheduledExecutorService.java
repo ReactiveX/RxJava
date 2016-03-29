@@ -44,7 +44,7 @@ public final class GenericScheduledExecutorService implements SchedulerLifecycle
         SHUTDOWN.shutdown();
     }
 
-    /* Schedulers needs acces to this in order to work with the lifecycle. */
+    /* Schedulers needs access to this in order to work with the lifecycle. */
     public final static GenericScheduledExecutorService INSTANCE = new GenericScheduledExecutorService();
     
     private final AtomicReference<ScheduledExecutorService[]> executor;

@@ -1340,7 +1340,7 @@ public class SingleTest {
     }
 
     @Test
-    public void onErrorResumeNextViaFunctionShouldNotInterruptSuccesfulSingle() {
+    public void onErrorResumeNextViaFunctionShouldNotInterruptSuccessfulSingle() {
         TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
 
         Single

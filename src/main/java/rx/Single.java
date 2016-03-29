@@ -1719,7 +1719,7 @@ public class Single<T> {
             subscriber = new SafeSubscriber<T>(subscriber);
         }
 
-        // The code below is exactly the same an unsafeSubscribe but not used because it would add a sigificent depth to alreay huge call stacks.
+        // The code below is exactly the same an unsafeSubscribe but not used because it would add a significant depth to already huge call stacks.
         try {
             // allow the hook to intercept and/or decorate
             hook.onSubscribeStart(this, onSubscribe).call(subscriber);
@@ -2186,7 +2186,7 @@ public class Single<T> {
      *            the Single to use as the fallback in case of a timeout
      * @param scheduler
      *            the {@link Scheduler} to run the timeout timers on
-     * @return the source Single modified so that it will switch to the fallback Singlein case of a timeout
+     * @return the source Single modified so that it will switch to the fallback Single in case of a timeout
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     public final Single<T> timeout(long timeout, TimeUnit timeUnit, Single<? extends T> other, Scheduler scheduler) {
@@ -2630,7 +2630,7 @@ public class Single<T> {
      * Constructs an Single that creates a dependent resource object which is disposed of just before 
      * termination if you have set {@code disposeEagerly} to {@code true} and unsubscription does not occur
      * before termination. Otherwise resource disposal will occur on unsubscription.  Eager disposal is
-     * particularly appropriate for a synchronous Single that resuses resources. {@code disposeAction} will
+     * particularly appropriate for a synchronous Single that reuses resources. {@code disposeAction} will
      * only be called once per subscription.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">

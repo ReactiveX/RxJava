@@ -421,7 +421,7 @@ public class OperatorConcatTest {
             Subscription s1 = concat.subscribe(observer);
             //Block main thread to allow observable "w1" to complete and observable "w2" to call onNext once.
             callOnce.await();
-            // Unsubcribe
+            // Unsubscribe
             s1.unsubscribe();
             //Unblock the observable to continue.
             okToContinue.countDown();

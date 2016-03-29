@@ -102,7 +102,7 @@ public class Observable<T> {
      * 
      * <p><b>Note:</b> the {@code SyncOnSubscribe} provides a generic way to fulfill data by iterating 
      * over a (potentially stateful) function (e.g. reading data off of a channel, a parser, ). If your 
-     * data comes directly from an asyrchronous/potentially concurrent source then consider using the 
+     * data comes directly from an asynchronous/potentially concurrent source then consider using the
      * {@link Observable#create(AsyncOnSubscribe) asynchronous overload}.
      * 
      * <p>
@@ -3052,7 +3052,7 @@ public class Observable<T> {
      * Constructs an Observable that creates a dependent resource object which is disposed of just before 
      * termination if you have set {@code disposeEagerly} to {@code true} and unsubscription does not occur
      * before termination. Otherwise resource disposal will occur on unsubscription.  Eager disposal is
-     * particularly appropriate for a synchronous Observable that resuses resources. {@code disposeAction} will
+     * particularly appropriate for a synchronous Observable that reuses resources. {@code disposeAction} will
      * only be called once per subscription.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
@@ -3094,7 +3094,7 @@ public class Observable<T> {
      * item emitted by each of those Observables; and so forth.
      * <p>
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@code onNext} as many times as
-     * the number of {@code onNext} invokations of the source Observable that emits the fewest items.
+     * the number of {@code onNext} invocations of the source Observable that emits the fewest items.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
@@ -3128,7 +3128,7 @@ public class Observable<T> {
      * function applied to the second item emitted by each of those Observables; and so forth.
      * <p>
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@code onNext} as many times as
-     * the number of {@code onNext} invokations of the source Observable that emits the fewest items.
+     * the number of {@code onNext} invocations of the source Observable that emits the fewest items.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.o.png" alt="">
      * <dl>
@@ -3900,7 +3900,7 @@ public class Observable<T> {
      * subscribe/unsubscribe behavior of all the {@link Subscriber}s.
      * <p>
      * When you call {@code cache}, it does not yet subscribe to the source Observable and so does not yet
-     * begin cacheing items. This only happens when the first Subscriber calls the resulting Observable's
+     * begin caching items. This only happens when the first Subscriber calls the resulting Observable's
      * {@code subscribe} method.
      * <p>
      * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
@@ -3943,7 +3943,7 @@ public class Observable<T> {
      * subscribe/unsubscribe behavior of all the {@link Subscriber}s.
      * <p>
      * When you call {@code cache}, it does not yet subscribe to the source Observable and so does not yet
-     * begin cacheing items. This only happens when the first Subscriber calls the resulting Observable's
+     * begin caching items. This only happens when the first Subscriber calls the resulting Observable's
      * {@code subscribe} method.
      * <p>
      * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
@@ -4367,7 +4367,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that delays the subscription to and emissions from the souce Observable via another
+     * Returns an Observable that delays the subscription to and emissions from the source Observable via another
      * Observable on a per-item basis.
      * <p>
      * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.oo.png" alt="">
@@ -5357,7 +5357,7 @@ public class Observable<T> {
     
     /**
      * Returns an Observable that emits the single item at a specified index in a sequence of emissions from a
-     * source Observbable.
+     * source Observable.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.png" alt="">
      * <dl>
@@ -5821,7 +5821,7 @@ public class Observable<T> {
      * @param <U>
      *            the collection element type
      * @param <R>
-     *            the type of item emited by the resulting Observable
+     *            the type of item emitted by the resulting Observable
      * @param collectionSelector
      *            a function that returns an Iterable sequence of values for each item emitted by the source
      *            Observable
@@ -5851,7 +5851,7 @@ public class Observable<T> {
      * @param <U>
      *            the collection element type
      * @param <R>
-     *            the type of item emited by the resulting Observable
+     *            the type of item emitted by the resulting Observable
      * @param collectionSelector
      *            a function that returns an Iterable sequence of values for each item emitted by the source
      *            Observable
@@ -6813,7 +6813,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceSeed.png" alt="">
      * <p>
-     * This technique, which is called "reduce" here, is sometimec called "aggregate," "fold," "accumulate,"
+     * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
      * <dl>
@@ -10355,7 +10355,7 @@ public class Observable<T> {
      *            new window
      * @param unit
      *            the unit of time that applies to the {@code timespan} argument
-     * @return an Observable that emits connected, non-overlapping windows represending items emitted by the
+     * @return an Observable that emits connected, non-overlapping windows representing items emitted by the
      *         source Observable during fixed, consecutive durations
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
@@ -10581,9 +10581,9 @@ public class Observable<T> {
         }
         
         /**
-         * Returns a singleton instance of NeverObservble (cast to the generic type).
+         * Returns a singleton instance of NeverObservable (cast to the generic type).
          * 
-         * @return
+         * @return singleton instance of NeverObservable (cast to the generic type)
          */
         @SuppressWarnings("unchecked")
         static <T> NeverObservable<T> instance() {

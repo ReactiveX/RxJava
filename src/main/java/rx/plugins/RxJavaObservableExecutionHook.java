@@ -44,12 +44,12 @@ public abstract class RxJavaObservableExecutionHook {
      * Invoked during the construction by {@link Observable#create(OnSubscribe)}
      * <p>
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
-     * logging, metrics and other such things and pass-thru the function.
+     * logging, metrics and other such things and pass through the function.
      * 
      * @param f
      *            original {@link OnSubscribe}<{@code T}> to be executed
      * @return {@link OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
-     *         returned as a pass-thru
+     *         returned as a pass through
      */
     public <T> OnSubscribe<T> onCreate(OnSubscribe<T> f) {
         return f;
@@ -59,15 +59,15 @@ public abstract class RxJavaObservableExecutionHook {
      * Invoked before {@link Observable#subscribe(rx.Subscriber)} is about to be executed.
      * <p>
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
-     * logging, metrics and other such things and pass-thru the function.
+     * logging, metrics and other such things and pass through the function.
      * 
      * @param onSubscribe
      *            original {@link OnSubscribe}<{@code T}> to be executed
      * @return {@link OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
-     *         returned as a pass-thru
+     *         returned as a pass through
      */
     public <T> OnSubscribe<T> onSubscribeStart(Observable<? extends T> observableInstance, final OnSubscribe<T> onSubscribe) {
-        // pass-thru by default
+        // pass through by default
         return onSubscribe;
     }
 
@@ -76,15 +76,15 @@ public abstract class RxJavaObservableExecutionHook {
      * {@link Subscription}.
      * <p>
      * This can be used to decorate or replace the {@link Subscription} instance or just perform extra logging,
-     * metrics and other such things and pass-thru the subscription.
+     * metrics and other such things and pass through the subscription.
      * 
      * @param subscription
      *            original {@link Subscription}
      * @return {@link Subscription} subscription that can be modified, decorated, replaced or just returned as a
-     *         pass-thru
+     *         pass through
      */
     public <T> Subscription onSubscribeReturn(Subscription subscription) {
-        // pass-thru by default
+        // pass through by default
         return subscription;
     }
 
@@ -96,10 +96,10 @@ public abstract class RxJavaObservableExecutionHook {
      * 
      * @param e
      *            Throwable thrown by {@link Observable#subscribe(Subscriber)}
-     * @return Throwable that can be decorated, replaced or just returned as a pass-thru
+     * @return Throwable that can be decorated, replaced or just returned as a pass through
      */
     public <T> Throwable onSubscribeError(Throwable e) {
-        // pass-thru by default
+        // pass through by default
         return e;
     }
 
@@ -108,12 +108,12 @@ public abstract class RxJavaObservableExecutionHook {
      * {@link Observable} and the return value is used as the lifted function
      * <p>
      * This can be used to decorate or replace the {@link Operator} instance or just perform extra
-     * logging, metrics and other such things and pass-thru the onSubscribe.
+     * logging, metrics and other such things and pass through the onSubscribe.
      * 
      * @param lift
      *            original {@link Operator}{@code <R, T>}
      * @return {@link Operator}{@code <R, T>} function that can be modified, decorated, replaced or just
-     *         returned as a pass-thru
+     *         returned as a pass through
      */
     public <T, R> Operator<? extends R, ? super T> onLift(final Operator<? extends R, ? super T> lift) {
         return lift;

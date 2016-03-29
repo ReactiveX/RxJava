@@ -29,7 +29,7 @@ abstract class ConcurrentCircularArrayQueueL0Pad<E> extends AbstractQueue<E> imp
 /**
  * A concurrent access enabling class used by circular array based queues this class exposes an offset computation
  * method along with differently memory fenced load/store methods into the underlying array. The class is pre-padded and
- * the array is padded on either side to help with False sharing prvention. It is expected theat subclasses handle post
+ * the array is padded on either side to help with False sharing prevention. It is expected that subclasses handle post
  * padding.
  * <p>
  * Offset calculation is separate from access to enable the reuse of a give compute offset.

@@ -486,7 +486,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
             try {
                 for (;;) {
                     /*
-                     * We need to read terminalEvent before checking the queue for emptyness because
+                     * We need to read terminalEvent before checking the queue for emptiness because
                      * all enqueue happens before setting the terminal event.
                      * If it were the other way around, when the emission is paused between
                      * checking isEmpty and checking terminalEvent, some other thread might

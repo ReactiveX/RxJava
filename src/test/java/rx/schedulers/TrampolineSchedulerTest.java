@@ -86,7 +86,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
                 @Override
                 public void call() {
                     workers.add(doWorkOnNewTrampoline("B", workDone));
-                    // we unsubscribe worker2 ... it should not affect work scheduled on a separate Trampline.Worker
+                    // we unsubscribe worker2 ... it should not affect work scheduled on a separate Trampoline.Worker
                     worker2.unsubscribe();
                 }
     

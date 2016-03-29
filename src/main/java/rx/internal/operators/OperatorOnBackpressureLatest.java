@@ -50,7 +50,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
         return parent;
     }
     /**
-     * A terminatable producer which emits the latest items on request.
+     * A terminable producer which emits the latest items on request.
      * @param <T>
      */
     static final class LatestEmitter<T> extends AtomicLong implements Producer, Subscription, Observer<T> {

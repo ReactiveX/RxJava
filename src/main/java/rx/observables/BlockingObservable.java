@@ -543,7 +543,7 @@ public final class BlockingObservable<T> {
     /** Constant indicating the setProducer method should be called. */
     static final Object SET_PRODUCER = new Object();
 
-    /** Indicates an unsubscripton happened */
+    /** Indicates an unsubscription happened */
     static final Object UNSUBSCRIBE = new Object();
 
     /**

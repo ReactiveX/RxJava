@@ -324,7 +324,7 @@ public class OperatorFlatMapTest {
             @Override
             public void call() {
                 if (subscriptionCount.decrementAndGet() < 0) {
-                    Assert.fail("Too many unsubscriptionss! " + subscriptionCount.get());
+                    Assert.fail("Too many unsubscriptions! " + subscriptionCount.get());
                 }
             }
         });

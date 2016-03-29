@@ -48,7 +48,7 @@ public class SerialSubscriptionTests {
     }
 
     @Test
-    public void getSubscriptionShouldReturnset() {
+    public void getSubscriptionShouldReturnSet() {
         final Subscription underlying = mock(Subscription.class);
         serialSubscription.set(underlying);
         assertSame(underlying, serialSubscription.get());

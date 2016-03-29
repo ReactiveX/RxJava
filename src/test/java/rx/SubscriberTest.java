@@ -160,7 +160,7 @@ public class SubscriberTest {
             }
 
         });
-        // this will be Long.MAX_VALUE because it is decoupled and nothing requsted on the Operator subscriber
+        // this will be Long.MAX_VALUE because it is decoupled and nothing requested on the Operator subscriber
         assertEquals(Long.MAX_VALUE, r.get());
     }
 

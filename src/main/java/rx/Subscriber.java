@@ -193,9 +193,9 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
             toRequest = requested;
             producer = p;
             if (subscriber != null) {
-                // middle operator ... we pass thru unless a request has been made
+                // middle operator ... we pass through unless a request has been made
                 if (toRequest == NOT_SET) {
-                    // we pass-thru to the next producer as nothing has been requested
+                    // we pass through to the next producer as nothing has been requested
                     passToSubscriber = true;
                 }
             }

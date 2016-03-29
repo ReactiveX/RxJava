@@ -43,12 +43,12 @@ public abstract class RxJavaSingleExecutionHook {
      * Invoked during the construction by {@link Single#create(Single.OnSubscribe)}
      * <p>
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
-     * logging, metrics and other such things and pass-thru the function.
+     * logging, metrics and other such things and pass through the function.
      *
      * @param f
      *            original {@link Single.OnSubscribe}<{@code T}> to be executed
      * @return {@link Single.OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
-     *         returned as a pass-thru
+     *         returned as a pass through
      */
     public <T> Single.OnSubscribe<T> onCreate(Single.OnSubscribe<T> f) {
         return f;
@@ -58,15 +58,15 @@ public abstract class RxJavaSingleExecutionHook {
      * Invoked before {@link Single#subscribe(Subscriber)} is about to be executed.
      * <p>
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
-     * logging, metrics and other such things and pass-thru the function.
+     * logging, metrics and other such things and pass through the function.
      *
      * @param onSubscribe
      *            original {@link Observable.OnSubscribe}<{@code T}> to be executed
      * @return {@link Observable.OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
-     *         returned as a pass-thru
+     *         returned as a pass through
      */
     public <T> Observable.OnSubscribe<T> onSubscribeStart(Single<? extends T> singleInstance, final Observable.OnSubscribe<T> onSubscribe) {
-        // pass-thru by default
+        // pass through by default
         return onSubscribe;
     }
 
@@ -75,15 +75,15 @@ public abstract class RxJavaSingleExecutionHook {
      * {@link Subscription}.
      * <p>
      * This can be used to decorate or replace the {@link Subscription} instance or just perform extra logging,
-     * metrics and other such things and pass-thru the subscription.
+     * metrics and other such things and pass through the subscription.
      *
      * @param subscription
      *            original {@link Subscription}
      * @return {@link Subscription} subscription that can be modified, decorated, replaced or just returned as a
-     *         pass-thru
+     *         pass through
      */
     public <T> Subscription onSubscribeReturn(Subscription subscription) {
-        // pass-thru by default
+        // pass through by default
         return subscription;
     }
 
@@ -95,10 +95,10 @@ public abstract class RxJavaSingleExecutionHook {
      *
      * @param e
      *            Throwable thrown by {@link Single#subscribe(Subscriber)}
-     * @return Throwable that can be decorated, replaced or just returned as a pass-thru
+     * @return Throwable that can be decorated, replaced or just returned as a pass through
      */
     public <T> Throwable onSubscribeError(Throwable e) {
-        // pass-thru by default
+        // pass through by default
         return e;
     }
 
@@ -107,12 +107,12 @@ public abstract class RxJavaSingleExecutionHook {
      * {@link Single} and the return value is used as the lifted function
      * <p>
      * This can be used to decorate or replace the {@link Observable.Operator} instance or just perform extra
-     * logging, metrics and other such things and pass-thru the onSubscribe.
+     * logging, metrics and other such things and pass through the onSubscribe.
      *
      * @param lift
      *            original {@link Observable.Operator}{@code <R, T>}
      * @return {@link Observable.Operator}{@code <R, T>} function that can be modified, decorated, replaced or just
-     *         returned as a pass-thru
+     *         returned as a pass through
      */
     public <T, R> Observable.Operator<? extends R, ? super T> onLift(final Observable.Operator<? extends R, ? super T> lift) {
         return lift;

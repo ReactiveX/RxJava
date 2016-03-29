@@ -95,7 +95,7 @@ public class GroupedObservable<K, T> extends Observable<T> {
     }
 
     /**
-     * Returns the key that identifies the group of items emited by this {@code GroupedObservable}
+     * Returns the key that identifies the group of items emitted by this {@code GroupedObservable}
      * 
      * @return the key that the items emitted by this {@code GroupedObservable} were grouped by
      */

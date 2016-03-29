@@ -449,7 +449,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
                 Assert.fail("Size decreased! " + lastSize + " -> " + size);
             }
             if ((size > 0) && !hasAny) {
-                Assert.fail("hasAnyValue reports emptyness but size doesn't");
+                Assert.fail("hasAnyValue reports emptiness but size doesn't");
             }
             if (size > values.length) {
                 Assert.fail("Got fewer values than size! " + size + " -> " + values.length);

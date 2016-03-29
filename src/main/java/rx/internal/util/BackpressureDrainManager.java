@@ -72,7 +72,7 @@ public final class BackpressureDrainManager extends AtomicLong implements Produc
     /** The callbacks to manage the drain. */
     protected final BackpressureQueueCallback actual;
     /**
-     * Constructs a backpressure drain manager with 0 requesedCount,
+     * Constructs a backpressure drain manager with 0 requestedCount,
      * no terminal event and not emitting.
      * @param actual he queue callback to check for new element availability
      */
