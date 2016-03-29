@@ -28,10 +28,10 @@ import org.junit.*;
 import org.mockito.*;
 
 import rx.*;
-import rx.Observable.OnSubscribe;
-import rx.Scheduler.Worker;
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Scheduler.Worker;
 import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
@@ -1352,5 +1352,22 @@ public class OperatorMergeTest {
         } catch (IllegalArgumentException e) {
             assertEquals("maxConcurrent > 0 required but it was 0", e.getMessage());
         }
+    }
+    
+    @Test
+    public void mergeJustNull() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+        
+        Observable.range(1, 2).flatMap(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t) {
+                return Observable.just(null);
+            }
+        }).subscribe(ts);
+        
+        ts.requestMore(2);
+        ts.assertValues(null, null);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 }

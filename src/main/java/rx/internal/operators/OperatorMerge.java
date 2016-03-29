@@ -475,7 +475,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 }
                 this.queue = q;
             }
-            if (!q.offer(value)) {
+            if (!q.offer(nl.next(value))) {
                 unsubscribe();
                 onError(OnErrorThrowable.addValueAsLastCause(new MissingBackpressureException(), value));
                 return;
