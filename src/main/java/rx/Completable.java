@@ -1114,6 +1114,24 @@ public class Completable {
         requireNonNull(next);
         return next.delaySubscription(toObservable());
     }
+
+    /**
+     * Returns a Single which will subscribe to this Completable and once that is completed then
+     * will subscribe to the {@code next} Single. An error event from this Completable will be
+     * propagated to the downstream subscriber and will result in skipping the subscription of the
+     * Single.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param next the Single to subscribe after this Completable is completed, not null
+     * @return Single that composes this Completable and next
+     */
+    public final <T> Single<T> andThen(Single<T> next) {
+        requireNonNull(next);
+        return next.delaySubscription(toObservable());
+    }
     
     /**
      * Concatenates this Completable with another Completable.

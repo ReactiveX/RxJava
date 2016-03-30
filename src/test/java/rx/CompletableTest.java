@@ -418,6 +418,61 @@ public class CompletableTest {
         ts.assertCompleted();
         ts.assertNoErrors();
     }
+
+    @Test
+    public void andThenSingle() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        Completable.complete().andThen(Single.just("foo")).subscribe(ts);
+        ts.requestMore(1);
+        ts.assertValue("foo");
+        ts.assertCompleted();
+        ts.assertNoErrors();
+        ts.assertUnsubscribed();
+    }
+
+    @Test
+    public void andThenSingleNever() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        Completable.never().andThen(Single.just("foo")).subscribe(ts);
+        ts.requestMore(1);
+        ts.assertNoValues();
+        ts.assertNoTerminalEvent();
+    }
+
+    @Test
+    public void andThenSingleError() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        final AtomicBoolean hasRun = new AtomicBoolean(false);
+        final Exception e = new Exception();
+        Completable.error(e)
+            .andThen(Single.<String>create(new Single.OnSubscribe<String>() {
+                @Override
+                public void call(SingleSubscriber<? super String> s) {
+                    hasRun.set(true);
+                    s.onSuccess("foo");
+                }
+            }))
+            .subscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(e);
+        ts.assertUnsubscribed();
+        Assert.assertFalse("Should not have subscribed to single when completable errors", hasRun.get());
+    }
+
+    @Test
+    public void andThenSingleSubscribeOn() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestScheduler scheduler = new TestScheduler();
+        Completable.complete().andThen(Single.just("foo").delay(1, TimeUnit.SECONDS, scheduler)).subscribe(ts);
+        ts.requestMore(1);
+        ts.assertNoValues();
+        ts.assertNoTerminalEvent();
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        ts.assertValue("foo");
+        ts.assertCompleted();
+        ts.assertNoErrors();
+        ts.assertUnsubscribed();
+    }
     
     @Test(expected = NullPointerException.class)
     public void createNull() {
