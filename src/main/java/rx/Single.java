@@ -603,7 +603,7 @@ public class Single<T> {
      *         the type of the item emitted by the {@link Single}.
      * @return a {@link Single} whose {@link Observer}s' subscriptions trigger an invocation of the given function.
      */
-    @Experimental
+    @Beta
     public static <T> Single<T> fromCallable(final Callable<? extends T> func) {
         return create(new OnSubscribe<T>() {
             @Override
