@@ -23,6 +23,7 @@ import rx.Observer;
 import rx.Producer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.annotations.Beta;
 import rx.annotations.Experimental;
 import rx.exceptions.Exceptions;
 import rx.functions.Action0;
@@ -46,7 +47,7 @@ import rx.plugins.RxJavaPlugins;
  * @param <T>
  *            the type of {@code Subscribers} that will be compatible with {@code this}.
  */
-@Experimental
+@Beta
 public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
     
     /* (non-Javadoc)
@@ -126,7 +127,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      *            next(S, Subscriber)})
      * @return a SyncOnSubscribe that emits data in a protocol compatible with back-pressure.
      */
-    @Experimental
+    @Beta
     public static <S, T> SyncOnSubscribe<S, T> createSingleState(Func0<? extends S> generator, 
             final Action2<? super S, ? super Observer<? super T>> next) {
         Func2<S, ? super Observer<? super T>, S> nextFunc = new Func2<S, Observer<? super T>, S>() {
@@ -155,7 +156,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @return a SyncOnSubscribe that emits data downstream in a protocol compatible with
      *         back-pressure.
      */
-    @Experimental
+    @Beta
     public static <S, T> SyncOnSubscribe<S, T> createSingleState(Func0<? extends S> generator, 
             final Action2<? super S, ? super Observer<? super T>> next, 
             final Action1<? super S> onUnsubscribe) {
@@ -183,7 +184,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @return a SyncOnSubscribe that emits data downstream in a protocol compatible with
      *         back-pressure.
      */
-    @Experimental
+    @Beta
     public static <S, T> SyncOnSubscribe<S, T> createStateful(Func0<? extends S> generator, 
             Func2<? super S, ? super Observer<? super T>, ? extends S> next, 
             Action1<? super S> onUnsubscribe) {
@@ -202,7 +203,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @return a SyncOnSubscribe that emits data downstream in a protocol compatible with
      *         back-pressure.
      */
-    @Experimental
+    @Beta
     public static <S, T> SyncOnSubscribe<S, T> createStateful(Func0<? extends S> generator, 
             Func2<? super S, ? super Observer<? super T>, ? extends S> next) {
         return new SyncOnSubscribeImpl<S, T>(generator, next);
@@ -221,7 +222,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @return a SyncOnSubscribe that emits data downstream in a protocol compatible with
      *         back-pressure.
      */
-    @Experimental
+    @Beta
     public static <T> SyncOnSubscribe<Void, T> createStateless(final Action1<? super Observer<? super T>> next) {
         Func2<Void, Observer<? super T>, Void> nextFunc = new Func2<Void, Observer<? super T>, Void>() {
             @Override
@@ -248,7 +249,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @return a SyncOnSubscribe that emits data downstream in a protocol compatible with
      *         back-pressure.
      */
-    @Experimental
+    @Beta
     public static <T> SyncOnSubscribe<Void, T> createStateless(final Action1<? super Observer<? super T>> next, 
             final Action0 onUnsubscribe) {
         Func2<Void, Observer<? super T>, Void> nextFunc = new Func2<Void, Observer<? super T>, Void>() {
