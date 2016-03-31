@@ -126,7 +126,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <S, T> Observable<T> create(SyncOnSubscribe<S, T> syncOnSubscribe) {
         return new Observable<T>(hook.onCreate(syncOnSubscribe));
     }
