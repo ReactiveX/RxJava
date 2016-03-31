@@ -186,7 +186,7 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
             this.child = child;
             Queue<Object> q;
             // TODO switch to the linked-array based queue once available
-            if (UnsafeAccess.isUnsafeAvailable()) {
+            if (UnsafeAccess.IS_UNSAFE_AVAILABLE) {
                 q = new SpscLinkedQueue<Object>(); // new SpscUnboundedArrayQueue<R>(8);
             } else {
                 q = new SpscLinkedAtomicQueue<Object>();  // new SpscUnboundedAtomicArrayQueue<R>(8);

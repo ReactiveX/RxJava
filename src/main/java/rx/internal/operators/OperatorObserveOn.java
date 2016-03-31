@@ -106,7 +106,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             this.delayError = delayError;
             this.on = NotificationLite.instance();
             this.bufferSize = (bufferSize > 0) ? bufferSize : RxRingBuffer.SIZE;
-            if (UnsafeAccess.isUnsafeAvailable()) {
+            if (UnsafeAccess.IS_UNSAFE_AVAILABLE) {
                 queue = new SpscArrayQueue<Object>(this.bufferSize);
             } else {
                 queue = new SpscAtomicArrayQueue<Object>(this.bufferSize);

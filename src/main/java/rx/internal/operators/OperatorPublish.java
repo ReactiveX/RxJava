@@ -244,7 +244,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         boolean missed;
         
         public PublishSubscriber(AtomicReference<PublishSubscriber<T>> current) {
-            this.queue = UnsafeAccess.isUnsafeAvailable() 
+            this.queue = UnsafeAccess.IS_UNSAFE_AVAILABLE
                     ? new SpscArrayQueue<Object>(RxRingBuffer.SIZE) 
                     : new SynchronizedQueue<Object>(RxRingBuffer.SIZE);
             

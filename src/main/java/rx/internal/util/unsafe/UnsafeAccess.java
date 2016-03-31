@@ -20,7 +20,7 @@ import java.lang.reflect.Field;
 import sun.misc.Unsafe;
 
 /**
- * All use of this class MUST first check that UnsafeAccess.isUnsafeAvailable() == true
+ * All use of this class MUST first check that {@code UnsafeAccess.IS_UNSAFE_AVAILABLE == true}
  * otherwise NPEs will happen in environments without "suc.misc.Unsafe" such as Android.
  */
 public final class UnsafeAccess {
@@ -28,7 +28,9 @@ public final class UnsafeAccess {
         throw new IllegalStateException("No instances!");
     }
 
-    public static final Unsafe UNSAFE;
+    static final Unsafe UNSAFE;
+    public static final boolean IS_UNSAFE_AVAILABLE;
+
     static {
         Unsafe u = null;
         try {
@@ -45,10 +47,7 @@ public final class UnsafeAccess {
             // do nothing, hasUnsafe() will return false
         }
         UNSAFE = u;
-    }
-
-    public static boolean isUnsafeAvailable() {
-        return UNSAFE != null;
+        IS_UNSAFE_AVAILABLE = UNSAFE != null;
     }
 
     /*

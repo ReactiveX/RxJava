@@ -464,7 +464,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     q = new SpscUnboundedAtomicArrayQueue<Object>(RxRingBuffer.SIZE);
                 } else {
                     if (Pow2.isPowerOfTwo(mc)) {
-                        if (UnsafeAccess.isUnsafeAvailable()) {
+                        if (UnsafeAccess.IS_UNSAFE_AVAILABLE) {
                             q = new SpscArrayQueue<Object>(mc);
                         } else {
                             q = new SpscAtomicArrayQueue<Object>(mc);

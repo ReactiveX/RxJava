@@ -282,7 +282,7 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
             super();
             this.parent = parent;
             Queue<Object> q;
-            if (UnsafeAccess.isUnsafeAvailable()) {
+            if (UnsafeAccess.IS_UNSAFE_AVAILABLE) {
                 q = new SpscArrayQueue<Object>(bufferSize);
             } else {
                 q = new SpscAtomicArrayQueue<Object>(bufferSize);

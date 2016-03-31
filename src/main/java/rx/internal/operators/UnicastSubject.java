@@ -146,11 +146,11 @@ public final class UnicastSubject<T> extends Subject<T, T> {
             
             Queue<Object> q;
             if (capacityHint > 1) {
-                q = UnsafeAccess.isUnsafeAvailable()
+                q = UnsafeAccess.IS_UNSAFE_AVAILABLE
                         ? new SpscUnboundedArrayQueue<Object>(capacityHint)
                         : new SpscUnboundedAtomicArrayQueue<Object>(capacityHint);
             } else {
-                q = UnsafeAccess.isUnsafeAvailable()
+                q = UnsafeAccess.IS_UNSAFE_AVAILABLE
                         ? new SpscLinkedQueue<Object>()
                         : new SpscLinkedAtomicQueue<Object>();
             }

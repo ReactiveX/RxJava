@@ -125,7 +125,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
             this.wip = new AtomicInteger();
             this.error = new AtomicReference<Throwable>();
             Queue<Object> q;
-            if (UnsafeAccess.isUnsafeAvailable()) {
+            if (UnsafeAccess.IS_UNSAFE_AVAILABLE) {
                 q = new SpscArrayQueue<Object>(prefetch);
             } else {
                 q = new SpscAtomicArrayQueue<Object>(prefetch);

@@ -50,7 +50,7 @@ public final class QueuedProducer<T> extends AtomicLong implements Producer, Obs
      * @param child the target child subscriber
      */
     public QueuedProducer(Subscriber<? super T> child) {
-        this(child, UnsafeAccess.isUnsafeAvailable() 
+        this(child, UnsafeAccess.IS_UNSAFE_AVAILABLE
                 ? new SpscLinkedQueue<Object>() : new SpscLinkedAtomicQueue<Object>());
     }
     /**
