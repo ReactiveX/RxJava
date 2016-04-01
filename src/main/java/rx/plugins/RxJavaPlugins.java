@@ -17,6 +17,7 @@ package rx.plugins;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import rx.annotations.Experimental;
 
 /**
  * Registry for plugin implementations that allows global override and handles the retrieval of correct
@@ -65,8 +66,18 @@ public class RxJavaPlugins {
     /* package accessible for unit tests */RxJavaPlugins() {
 
     }
-
-    /* package accessible for unit tests */void reset() {
+    
+    /**
+     * Reset {@code RxJavaPlugins} instance
+     * <p>
+     * This API is experimental. Resetting the plugins is dangerous 
+     * during application runtime and also bad code could invoke it in 
+     * the middle of an application life-cycle and really break applications
+     * if not used cautiously. For more detailed discussions:
+     * * @see <a href="https://github.com/ReactiveX/RxJava/issues/2297">Make RxJavaPlugins.reset() public</a>
+     */
+    @Experimental
+    public void reset() {
         INSTANCE.errorHandler.set(null);
         INSTANCE.observableExecutionHook.set(null);
         INSTANCE.singleExecutionHook.set(null);
