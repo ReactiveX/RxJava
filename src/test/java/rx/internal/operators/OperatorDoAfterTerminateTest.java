@@ -15,18 +15,14 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.functions.Action0;
+import rx.observers.TestSubscriber;
 
 public class OperatorDoAfterTerminateTest {
 
@@ -64,5 +60,38 @@ public class OperatorDoAfterTerminateTest {
         } catch (NullPointerException expected) {
             assertEquals("Action can not be null", expected.getMessage());
         }
+    }
+    
+    @Test
+    public void nullFinallyActionShouldBeCheckedASAP() {
+        try {
+            Observable
+                    .just("value")
+                    .doAfterTerminate(null);
+
+            fail();
+        } catch (NullPointerException expected) {
+
+        }
+    }
+
+    @Test
+    public void ifFinallyActionThrowsExceptionShouldNotBeSwallowedAndActionShouldBeCalledOnce() {
+        Action0 finallyAction = mock(Action0.class);
+        doThrow(new IllegalStateException()).when(finallyAction).call();
+
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Observable
+                .just("value")
+                .doAfterTerminate(finallyAction)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValue("value");
+
+        verify(finallyAction).call();
+        // Actual result:
+        // Not only IllegalStateException was swallowed
+        // But finallyAction was called twice!
     }
 }
