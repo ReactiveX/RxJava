@@ -200,7 +200,11 @@ public class RxJavaPlugins {
         }
     }
 
-    /* test */ static Object getPluginImplementationViaProperty(Class<?> pluginClass, Properties props) {
+    /* test */ static Object getPluginImplementationViaProperty(Class<?> pluginClass, Properties propsIn) {
+        // Make a defensive clone because traversal may fail with ConcurrentModificationException
+        // if the properties get changed by something outside RxJava.
+        Properties props = (Properties)propsIn.clone();
+        
         final String classSimpleName = pluginClass.getSimpleName();
         /*
          * Check system properties for plugin class.
