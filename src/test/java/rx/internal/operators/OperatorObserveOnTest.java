@@ -582,64 +582,28 @@ public class OperatorObserveOnTest {
 
     @Test
     public void testQueueFullEmitsErrorWithVaryingBufferSize() {
-        final CountDownLatch latch = new CountDownLatch(1);
-        // randomize buffer size, note that underlying implementations may be tuning the real size to a power of 2
-        // which can lead to unexpected results when adding excess capacity (e.g.: see ConcurrentCircularArrayQueue)
         for (int i = 1; i <= 1024; i = i * 2) {
             final int capacity = i;
-            Observable<Integer> observable = Observable.create(new OnSubscribe<Integer>() {
-
-                @Override
-                public void call(Subscriber<? super Integer> o) {
-                    for (int i = 0; i < capacity + 10; i++) {
-                        o.onNext(i);
-                    }
-                    latch.countDown();
-                    o.onCompleted();
-                }
-
-            });
-
-            TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>(new Observer<Integer>() {
-
-                @Override
-                public void onCompleted() {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-
-                }
-
-                @Override
-                public void onNext(Integer t) {
-                    try {
-                        // force it to be slow wait until we have queued everything
-                        latch.await(500, TimeUnit.MILLISECONDS);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            });
-            System.out.println("Using capacity " + capacity); // for post-failure debugging
-            observable.observeOn(Schedulers.newThread(), capacity).subscribe(testSubscriber);
-
-            testSubscriber.awaitTerminalEvent();
-            List<Throwable> errors = testSubscriber.getOnErrorEvents();
-            assertEquals(1, errors.size());
-            System.out.println("Errors: " + errors);
-            Throwable t = errors.get(0);
-            if (t instanceof MissingBackpressureException) {
-                // success, we expect this
-            } else {
-                if (t.getCause() instanceof MissingBackpressureException) {
-                    // this is also okay
-                } else {
-                    fail("Expecting MissingBackpressureException");
-                }
+            System.out.println(">> testQueueFullEmitsErrorWithVaryingBufferSize @ " + i);
+            
+            PublishSubject<Integer> ps = PublishSubject.create();
+            
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+            
+            TestScheduler test = Schedulers.test();
+            
+            ps.observeOn(test, capacity).subscribe(ts);
+            
+            for (int j = 0; j < capacity + 10; j++) {
+                ps.onNext(j);
             }
+            ps.onCompleted();
+            
+            test.advanceTimeBy(1, TimeUnit.SECONDS);
+            
+            ts.assertNoValues();
+            ts.assertError(MissingBackpressureException.class);
+            ts.assertNotCompleted();
         }
     }
 
