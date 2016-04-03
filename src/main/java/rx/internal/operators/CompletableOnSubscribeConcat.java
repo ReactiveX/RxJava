@@ -26,11 +26,11 @@ import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.SerialSubscription;
 
 public final class CompletableOnSubscribeConcat implements CompletableOnSubscribe {
-    final Observable<? extends Completable> sources;
+    final Observable<Completable> sources;
     final int prefetch;
     
     public CompletableOnSubscribeConcat(Observable<? extends Completable> sources, int prefetch) {
-        this.sources = sources;
+        this.sources = (Observable<Completable>)sources;
         this.prefetch = prefetch;
     }
     

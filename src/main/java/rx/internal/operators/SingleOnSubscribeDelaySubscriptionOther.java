@@ -86,6 +86,6 @@ public final class SingleOnSubscribeDelaySubscriptionOther<T> implements Single.
 
         serial.set(otherSubscriber);
 
-        other.subscribe(otherSubscriber);
+        ((Observable<Object>)other).subscribe(otherSubscriber);
     }
 }

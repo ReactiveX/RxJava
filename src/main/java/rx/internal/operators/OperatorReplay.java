@@ -135,7 +135,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
             final int bufferSize) {
         if (bufferSize == Integer.MAX_VALUE) {
-            return create(source);
+            return (ConnectableObservable<T>)create(source);
         }
         return create(source, new Func0<ReplayBuffer<T>>() {
             @Override
@@ -155,7 +155,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
      */
     public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
             long maxAge, TimeUnit unit, Scheduler scheduler) {
-        return create(source, maxAge, unit, scheduler, Integer.MAX_VALUE);
+        return (ConnectableObservable<T>)create(source, maxAge, unit, scheduler, Integer.MAX_VALUE);
     }
 
     /**

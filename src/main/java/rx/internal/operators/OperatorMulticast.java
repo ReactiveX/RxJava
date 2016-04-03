@@ -149,6 +149,6 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
             sub = subscription;
         }
         if (sub != null)
-            source.subscribe(sub);
+            ((Observable<T>)source).subscribe(sub);
     }
 }

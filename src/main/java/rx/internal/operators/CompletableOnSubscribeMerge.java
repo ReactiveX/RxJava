@@ -28,12 +28,12 @@ import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.CompositeSubscription;
 
 public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe {
-    final Observable<? extends Completable> source;
+    final Observable<Completable> source;
     final int maxConcurrency;
     final boolean delayErrors;
     
     public CompletableOnSubscribeMerge(Observable<? extends Completable> source, int maxConcurrency, boolean delayErrors) {
-        this.source = source;
+        this.source = (Observable<Completable>)source;
         this.maxConcurrency = maxConcurrency;
         this.delayErrors = delayErrors;
     }

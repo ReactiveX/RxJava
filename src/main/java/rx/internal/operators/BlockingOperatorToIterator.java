@@ -50,7 +50,7 @@ public final class BlockingOperatorToIterator {
         SubscriberIterator<T> subscriber = new SubscriberIterator<T>();
 
         // using subscribe instead of unsafeSubscribe since this is a BlockingObservable "final subscribe"
-        source.materialize().subscribe(subscriber);
+        ((Observable<T>)source).materialize().subscribe(subscriber);
         return subscriber;
     }
 

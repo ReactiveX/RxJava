@@ -39,7 +39,7 @@ public final class CachedObservable<T> extends Observable<T> {
      * @return the CachedObservable instance
      */
     public static <T> CachedObservable<T> from(Observable<? extends T> source) {
-        return from(source, 16);
+        return (CachedObservable<T>)from(source, 16);
     }
     
     /**

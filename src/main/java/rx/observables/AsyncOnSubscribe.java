@@ -608,12 +608,13 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
             };
             subscriptions.add(s);
 
-            t.doOnTerminate(new Action0() {
+            Observable<? extends T> doOnTerminate = t.doOnTerminate(new Action0() {
                     @Override
                     public void call() {
                         subscriptions.remove(s);
-                    }})
-                .subscribe(s);
+                    }});
+            
+            ((Observable<T>)doOnTerminate).subscribe(s);
 
             merger.onNext(buffer);
         }

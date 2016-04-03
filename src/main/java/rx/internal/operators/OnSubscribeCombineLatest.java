@@ -140,7 +140,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                 if (cancelled) {
                     return;
                 }
-                sources[i].subscribe(as[i]);
+                ((Observable<T>)sources[i]).subscribe(as[i]);
             }
         }
         

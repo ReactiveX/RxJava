@@ -47,7 +47,7 @@ public final class OperatorMapPair<T, U, R> implements Operator<Observable<? ext
         return new Func1<T, Observable<U>>() {
             @Override
             public Observable<U> call(T t1) {
-                return Observable.from(selector.call(t1));
+                return (Observable<U>)Observable.from(selector.call(t1));
             }
         };
     }

@@ -54,7 +54,7 @@ public final class BlockingOperatorToFuture {
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
-        final Subscription s = that.single().subscribe(new Subscriber<T>() {
+        final Subscription s = ((Observable<T>)that).single().subscribe(new Subscriber<T>() {
 
             @Override
             public void onCompleted() {
