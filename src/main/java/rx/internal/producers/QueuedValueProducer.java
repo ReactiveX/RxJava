@@ -47,7 +47,7 @@ public final class QueuedValueProducer<T> extends AtomicLong implements Producer
      * @param child the target child subscriber
      */
     public QueuedValueProducer(Subscriber<? super T> child) {
-        this(child, UnsafeAccess.isUnsafeAvailable() 
+        this(child, UnsafeAccess.IS_UNSAFE_AVAILABLE
                 ? new SpscLinkedQueue<Object>() : new SpscLinkedAtomicQueue<Object>());
     }
     /**

@@ -139,7 +139,7 @@ public abstract class ObjectPool<T> implements SchedulerLifecycle {
     protected abstract T createObject();
 
     private void initialize(final int min) {
-        if (UnsafeAccess.isUnsafeAvailable()) {
+        if (UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             pool = new MpmcArrayQueue<T>(Math.max(maxSize, 1024));
         } else {
             pool = new ConcurrentLinkedQueue<T>();

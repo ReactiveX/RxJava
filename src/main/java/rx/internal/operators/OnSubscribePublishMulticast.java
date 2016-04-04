@@ -104,7 +104,7 @@ implements Observable.OnSubscribe<T>, Observer<T>, Subscription {
         }
         this.prefetch = prefetch;
         this.delayError = delayError;
-        if (UnsafeAccess.isUnsafeAvailable()) {
+        if (UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             this.queue = new SpscArrayQueue<T>(prefetch);
         } else {
             this.queue = new SpscAtomicArrayQueue<T>(prefetch);

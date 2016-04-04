@@ -41,7 +41,7 @@ public class JCToolsQueueTests {
     }
     @Test
     public void casBasedUnsafe() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         long offset = UnsafeAccess.addressOf(IntField.class, "value");
@@ -74,7 +74,7 @@ public class JCToolsQueueTests {
     
     @Test(expected = NullPointerException.class)
     public void testMpmcArrayQueueNull() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         MpmcArrayQueue<Integer> q = new MpmcArrayQueue<Integer>(16);
@@ -83,7 +83,7 @@ public class JCToolsQueueTests {
     
     @Test(expected = UnsupportedOperationException.class)
     public void testMpmcArrayQueueIterator() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         MpmcArrayQueue<Integer> q = new MpmcArrayQueue<Integer>(16);
@@ -92,7 +92,7 @@ public class JCToolsQueueTests {
     
     @Test
     public void testMpmcArrayQueueOfferPoll() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         Queue<Integer> q = new MpmcArrayQueue<Integer>(128);
@@ -102,7 +102,7 @@ public class JCToolsQueueTests {
     
     @Test
     public void testMpmcOfferUpToCapacity() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         int n = 128;
@@ -176,7 +176,7 @@ public class JCToolsQueueTests {
     
     @Test(expected = UnsupportedOperationException.class)
     public void testMpscLinkedQueueIterator() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         MpscLinkedQueue<Integer> q = new MpscLinkedQueue<Integer>();
@@ -185,7 +185,7 @@ public class JCToolsQueueTests {
     
     @Test(expected = NullPointerException.class)
     public void testMpscLinkedQueueNull() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         MpscLinkedQueue<Integer> q = new MpscLinkedQueue<Integer>();
@@ -194,7 +194,7 @@ public class JCToolsQueueTests {
     
     @Test
     public void testMpscLinkedQueueOfferPoll() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         MpscLinkedQueue<Integer> q = new MpscLinkedQueue<Integer>();
@@ -203,7 +203,7 @@ public class JCToolsQueueTests {
     }
     @Test(timeout = 2000)
     public void testMpscLinkedQueuePipelined() throws InterruptedException {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         final MpscLinkedQueue<Integer> q = new MpscLinkedQueue<Integer>();
@@ -273,7 +273,7 @@ public class JCToolsQueueTests {
     
     @Test(expected = NullPointerException.class)
     public void testSpmcArrayQueueNull() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         SpmcArrayQueue<Integer> q = new SpmcArrayQueue<Integer>(16);
@@ -282,7 +282,7 @@ public class JCToolsQueueTests {
     
     @Test
     public void testSpmcArrayQueueOfferPoll() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         Queue<Integer> q = new SpmcArrayQueue<Integer>(128);
@@ -291,7 +291,7 @@ public class JCToolsQueueTests {
     }
     @Test(expected = UnsupportedOperationException.class)
     public void testSpmcArrayQueueIterator() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         SpmcArrayQueue<Integer> q = new SpmcArrayQueue<Integer>(16);
@@ -300,7 +300,7 @@ public class JCToolsQueueTests {
     
     @Test
     public void testSpmcOfferUpToCapacity() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         int n = 128;
@@ -313,7 +313,7 @@ public class JCToolsQueueTests {
     
     @Test(expected = NullPointerException.class)
     public void testSpscArrayQueueNull() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(16);
@@ -322,7 +322,7 @@ public class JCToolsQueueTests {
     
     @Test
     public void testSpscArrayQueueOfferPoll() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         Queue<Integer> q = new SpscArrayQueue<Integer>(128);
@@ -331,7 +331,7 @@ public class JCToolsQueueTests {
     }
     @Test(expected = UnsupportedOperationException.class)
     public void testSpscArrayQueueIterator() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(16);
@@ -384,7 +384,7 @@ public class JCToolsQueueTests {
     
     @Test(expected = UnsupportedOperationException.class)
     public void testSpscLinkedQueueIterator() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         SpscLinkedQueue<Integer> q = new SpscLinkedQueue<Integer>();
@@ -393,7 +393,7 @@ public class JCToolsQueueTests {
     
     @Test(expected = NullPointerException.class)
     public void testSpscLinkedQueueNull() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         SpscLinkedQueue<Integer> q = new SpscLinkedQueue<Integer>();
@@ -402,7 +402,7 @@ public class JCToolsQueueTests {
     
     @Test
     public void testSpscLinkedQueueOfferPoll() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         SpscLinkedQueue<Integer> q = new SpscLinkedQueue<Integer>();
@@ -412,7 +412,7 @@ public class JCToolsQueueTests {
     
     @Test(timeout = 2000)
     public void testSpscLinkedQueuePipelined() throws InterruptedException {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         final SpscLinkedQueue<Integer> q = new SpscLinkedQueue<Integer>();
@@ -442,7 +442,7 @@ public class JCToolsQueueTests {
 
     @Test
     public void testSpscOfferUpToCapacity() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         int n = 128;
@@ -455,7 +455,7 @@ public class JCToolsQueueTests {
 
     @Test(expected = InternalError.class)
     public void testUnsafeAccessAddressOf() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return;
         }
         UnsafeAccess.addressOf(Object.class, "field");

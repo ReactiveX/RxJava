@@ -33,7 +33,7 @@ import rx.internal.util.unsafe.UnsafeAccess;
 public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpscInstance() {
-        if (UnsafeAccess.isUnsafeAvailable()) {
+        if (UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return new RxRingBuffer(SPSC_POOL, SIZE);
         } else {
             return new RxRingBuffer();
@@ -41,7 +41,7 @@ public class RxRingBuffer implements Subscription {
     }
 
     public static RxRingBuffer getSpmcInstance() {
-        if (UnsafeAccess.isUnsafeAvailable()) {
+        if (UnsafeAccess.IS_UNSAFE_AVAILABLE) {
             return new RxRingBuffer(SPMC_POOL, SIZE);
         } else {
             return new RxRingBuffer();
