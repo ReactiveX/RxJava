@@ -22,6 +22,7 @@ import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.internal.operators.NotificationLite;
+import rx.internal.producers.SingleProducer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**
@@ -68,9 +69,13 @@ public final class AsyncSubject<T> extends Subject<T, T> {
             public void call(SubjectObserver<T> o) {
                 Object v = state.getLatest();
                 NotificationLite<T> nl = state.nl;
-                o.accept(v, nl);
-                if (v == null || (!nl.isCompleted(v) && !nl.isError(v))) {
+                if (v == null || nl.isCompleted(v)) {
                     o.onCompleted();
+                } else
+                if (nl.isError(v)) {
+                    o.onError(nl.getError(v));
+                } else {
+                    o.actual.setProducer(new SingleProducer<T>(o.actual, nl.getValue(v)));
                 }
             }
         };
@@ -97,8 +102,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
                 if (last == nl.completed()) {
                     bo.onCompleted();
                 } else {
-                    bo.onNext(nl.getValue(last));
-                    bo.onCompleted();
+                    bo.actual.setProducer(new SingleProducer<T>(bo.actual, nl.getValue(last)));
                 }
             }
         }
