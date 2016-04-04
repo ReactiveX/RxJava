@@ -17,7 +17,9 @@ package rx.internal.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Action0;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Registers an action to be called after an Observable invokes {@code onComplete} or {@code onError}.
@@ -53,7 +55,7 @@ public final class OperatorDoAfterTerminate<T> implements Operator<T, T> {
                 try {
                     child.onError(e);
                 } finally {
-                    action.call();
+                    callAction();
                 }
             }
 
@@ -62,7 +64,16 @@ public final class OperatorDoAfterTerminate<T> implements Operator<T, T> {
                 try {
                     child.onCompleted();
                 } finally {
+                    callAction();
+                }
+            }
+            
+            void callAction() {
+                try {
                     action.call();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(ex);
                 }
             }
         };
