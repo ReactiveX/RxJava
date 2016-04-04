@@ -430,4 +430,47 @@ public class AsyncSubjectTest {
         assertNull(async.getValue());
         assertFalse(async.hasValue());
     }
+    
+    @Test
+    public void backpressureOnline() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        AsyncSubject<Integer> subject = AsyncSubject.create();
+        
+        subject.subscribe(ts);
+        
+        subject.onNext(1);
+        subject.onCompleted();
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(1);
+        
+        ts.assertValue(1);
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void backpressureOffline() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        AsyncSubject<Integer> subject = AsyncSubject.create();
+        subject.onNext(1);
+        subject.onCompleted();
+        
+        subject.subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(1);
+        
+        ts.assertValue(1);
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
 }

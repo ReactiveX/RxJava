@@ -203,7 +203,7 @@ import rx.subscriptions.Subscriptions;
      */
     protected static final class SubjectObserver<T> implements Observer<T> {
         /** The actual Observer. */
-        final Observer<? super T> actual;
+        final Subscriber<? super T> actual;
         /** Was the emitFirst run? Guarded by this. */
         boolean first = true;
         /** Guarded by this. */
@@ -215,7 +215,7 @@ import rx.subscriptions.Subscriptions;
         protected volatile boolean caughtUp;
         /** Indicate where the observer is at replaying. */
         private volatile Object index;
-        public SubjectObserver(Observer<? super T> actual) {
+        public SubjectObserver(Subscriber<? super T> actual) {
             this.actual = actual;
         }
         @Override
