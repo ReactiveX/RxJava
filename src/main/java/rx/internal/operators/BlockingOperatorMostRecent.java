@@ -53,7 +53,7 @@ public final class BlockingOperatorMostRecent {
                  * Subscribe instead of unsafeSubscribe since this is the final subscribe in the chain
                  * since it is for BlockingObservable.
                  */
-                source.subscribe(mostRecentObserver);
+                ((Observable<T>)source).subscribe(mostRecentObserver);
 
                 return mostRecentObserver.getIterable();
             }

@@ -49,7 +49,7 @@ public final class BlockingOperatorLatest {
             @Override
             public Iterator<T> iterator() {
                 LatestObserverIterator<T> lio = new LatestObserverIterator<T>();
-                source.materialize().subscribe(lio);
+                ((Observable<T>)source).materialize().subscribe(lio);
                 return lio;
             }
         };

@@ -99,7 +99,7 @@ public final class BlockingObservable<T> {
          * Use 'subscribe' instead of 'unsafeSubscribe' for Rx contract behavior
          * (see http://reactivex.io/documentation/contract.html) as this is the final subscribe in the chain.
          */
-        Subscription subscription = o.subscribe(new Subscriber<T>() {
+        Subscription subscription = ((Observable<T>)o).subscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
                 latch.countDown();
@@ -144,7 +144,7 @@ public final class BlockingObservable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     public Iterator<T> getIterator() {
-        return BlockingOperatorToIterator.toIterator(o);
+        return BlockingOperatorToIterator.toIterator((Observable<T>)o);
     }
 
     /**
@@ -299,7 +299,7 @@ public final class BlockingObservable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX documentation: TakeLast</a>
      */
     public Iterable<T> next() {
-        return BlockingOperatorNext.next(o);
+        return BlockingOperatorNext.next((Observable<T>)o);
     }
 
     /**
@@ -316,7 +316,7 @@ public final class BlockingObservable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     public Iterable<T> latest() {
-        return BlockingOperatorLatest.latest(o);
+        return BlockingOperatorLatest.latest((Observable<T>)o);
     }
 
     /**
@@ -398,7 +398,7 @@ public final class BlockingObservable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     public Future<T> toFuture() {
-        return BlockingOperatorToFuture.toFuture(o);
+        return BlockingOperatorToFuture.toFuture((Observable<T>)o);
     }
 
     /**
@@ -430,7 +430,7 @@ public final class BlockingObservable<T> {
         final AtomicReference<Throwable> returnException = new AtomicReference<Throwable>();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Subscription subscription = observable.subscribe(new Subscriber<T>() {
+        Subscription subscription = ((Observable<T>)observable).subscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
                 latch.countDown();
@@ -467,7 +467,7 @@ public final class BlockingObservable<T> {
     public void subscribe() {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] error = { null };
-        Subscription s = o.subscribe(new Subscriber<T>() {
+        Subscription s = ((Observable<T>)o).subscribe(new Subscriber<T>() {
             @Override
             public void onNext(T t) {
                 
@@ -504,7 +504,7 @@ public final class BlockingObservable<T> {
         final NotificationLite<T> nl = NotificationLite.instance();
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
         
-        Subscription s = o.subscribe(new Subscriber<T>() {
+        Subscription s = ((Observable<T>)o).subscribe(new Subscriber<T>() {
             @Override
             public void onNext(T t) {
                 queue.offer(nl.next(t));
@@ -592,7 +592,7 @@ public final class BlockingObservable<T> {
             }
         }));
         
-        o.subscribe(s);
+        ((Observable<T>)o).subscribe(s);
         
         try {
             for (;;) {

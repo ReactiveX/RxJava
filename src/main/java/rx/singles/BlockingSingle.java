@@ -100,7 +100,7 @@ public class BlockingSingle<T> {
      */
     @Experimental
     public Future<T> toFuture() {
-        return BlockingOperatorToFuture.toFuture(single.toObservable());
+        return BlockingOperatorToFuture.toFuture(((Single<T>)single).toObservable());
     }
 }
 

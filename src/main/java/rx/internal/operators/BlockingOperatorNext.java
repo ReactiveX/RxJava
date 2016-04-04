@@ -96,7 +96,7 @@ public final class BlockingOperatorNext {
                     started = true;
                     // if not started, start now
                     observer.setWaiting(1);
-                    items.materialize().subscribe(observer);
+                    ((Observable<T>)items).materialize().subscribe(observer);
                 }
                 
                 Notification<? extends T> nextNotification = observer.takeNext();

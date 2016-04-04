@@ -524,7 +524,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     public static <T> Single<T> from(Future<? extends T> future) {
-        return new Single<T>(OnSubscribeToObservableFuture.toObservableFuture(future));
+        return new Single<T>((Observable.OnSubscribe<T>)OnSubscribeToObservableFuture.toObservableFuture(future));
     }
 
     /**
@@ -555,7 +555,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     public static <T> Single<T> from(Future<? extends T> future, long timeout, TimeUnit unit) {
-        return new Single<T>(OnSubscribeToObservableFuture.toObservableFuture(future, timeout, unit));
+        return new Single<T>((Observable.OnSubscribe<T>)OnSubscribeToObservableFuture.toObservableFuture(future, timeout, unit));
     }
 
     /**
@@ -583,7 +583,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     public static <T> Single<T> from(Future<? extends T> future, Scheduler scheduler) {
-        return new Single<T>(OnSubscribeToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
+        return new Single<T>((Observable.OnSubscribe<T>)OnSubscribeToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
     }
 
     /**
@@ -949,7 +949,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public static <T1, T2, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, final Func2<? super T1, ? super T2, ? extends R> zipFunction) {
-        return SingleOperatorZip.zip(new Single<?>[] {s1, s2}, new FuncN<R>() {
+        return SingleOperatorZip.zip(new Single[] {s1, s2}, new FuncN<R>() {
             @Override
             public R call(Object... args) {
                 return zipFunction.call((T1) args[0], (T2) args[1]);
@@ -980,7 +980,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public static <T1, T2, T3, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, final Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
-        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3}, new FuncN<R>() {
+        return SingleOperatorZip.zip(new Single[] {s1, s2, s3}, new FuncN<R>() {
             @Override
             public R call(Object... args) {
                 return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2]);
@@ -1013,7 +1013,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public static <T1, T2, T3, T4, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, final Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
-        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3, s4}, new FuncN<R>() {
+        return SingleOperatorZip.zip(new Single[] {s1, s2, s3, s4}, new FuncN<R>() {
             @Override
             public R call(Object... args) {
                 return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2], (T4) args[3]);
@@ -1048,7 +1048,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public static <T1, T2, T3, T4, T5, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, final Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
-        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3, s4, s5}, new FuncN<R>() {
+        return SingleOperatorZip.zip(new Single[] {s1, s2, s3, s4, s5}, new FuncN<R>() {
             @Override
             public R call(Object... args) {
                 return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2], (T4) args[3], (T5) args[4]);
@@ -1086,7 +1086,7 @@ public class Single<T> {
      */
     public static <T1, T2, T3, T4, T5, T6, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, Single<? extends T6> s6,
                                                             final Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipFunction) {
-        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3, s4, s5, s6}, new FuncN<R>() {
+        return SingleOperatorZip.zip(new Single[] {s1, s2, s3, s4, s5, s6}, new FuncN<R>() {
             @Override
             public R call(Object... args) {
                 return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2], (T4) args[3], (T5) args[4], (T6) args[5]);
@@ -1126,7 +1126,7 @@ public class Single<T> {
      */
     public static <T1, T2, T3, T4, T5, T6, T7, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, Single<? extends T6> s6, Single<? extends T7> s7,
                                                                 final Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipFunction) {
-        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3, s4, s5, s6, s7}, new FuncN<R>() {
+        return SingleOperatorZip.zip(new Single[] {s1, s2, s3, s4, s5, s6, s7}, new FuncN<R>() {
             @Override
             public R call(Object... args) {
                 return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2], (T4) args[3], (T5) args[4], (T6) args[5], (T7) args[6]);
@@ -1168,7 +1168,7 @@ public class Single<T> {
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, Single<? extends T6> s6, Single<? extends T7> s7, Single<? extends T8> s8,
                                                                     final Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipFunction) {
-        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3, s4, s5, s6, s7, s8}, new FuncN<R>() {
+        return SingleOperatorZip.zip(new Single[] {s1, s2, s3, s4, s5, s6, s7, s8}, new FuncN<R>() {
             @Override
             public R call(Object... args) {
                 return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2], (T4) args[3], (T5) args[4], (T6) args[5], (T7) args[6], (T8) args[7]);
@@ -1212,7 +1212,7 @@ public class Single<T> {
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, Single<? extends T6> s6, Single<? extends T7> s7, Single<? extends T8> s8,
                                                                         Single<? extends T9> s9, final Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipFunction) {
-        return SingleOperatorZip.zip(new Single<?>[] {s1, s2, s3, s4, s5, s6, s7, s8, s9}, new FuncN<R>() {
+        return SingleOperatorZip.zip(new Single[] {s1, s2, s3, s4, s5, s6, s7, s8, s9}, new FuncN<R>() {
             @Override
             public R call(Object... args) {
                 return zipFunction.call((T1) args[0], (T2) args[1], (T3) args[2], (T4) args[3], (T5) args[4], (T6) args[5], (T7) args[6], (T8) args[7], (T9) args[8]);
@@ -1242,7 +1242,8 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public static <R> Single<R> zip(Iterable<? extends Single<?>> singles, FuncN<? extends R> zipFunction) {
-        return SingleOperatorZip.zip(iterableToArray(singles), zipFunction);
+        Single[] iterableToArray = iterableToArray(singles);
+        return SingleOperatorZip.zip(iterableToArray, zipFunction);
     }
 
     /**
@@ -1401,7 +1402,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     public final Single<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) {
-        return lift(OperatorOnErrorResumeNextViaFunction.withSingle(resumeFunction));
+        return lift((Operator<T, T>)OperatorOnErrorResumeNextViaFunction.withSingle(resumeFunction));
     }
 
     /**
@@ -2234,7 +2235,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public final <T2, R> Single<R> zipWith(Single<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
-        return zip(this, other, zipFunction);
+        return (Single<R>)zip(this, other, zipFunction);
     }
 
     /**
