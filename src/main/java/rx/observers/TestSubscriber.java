@@ -145,12 +145,12 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public static <T> TestSubscriber<T> create(Observer<T> delegate, long initialRequest) {
         return new TestSubscriber<T>(delegate, initialRequest);
     }
-    
+
     /**
-     * Factory method to construct a TestSubscriber which delegates events to the given Observer and
+     * Factory method to construct a TestSubscriber which delegates events to the given Subscriber and
      * an issues an initial request of Long.MAX_VALUE.
      * @param <T> the value type
-     * @param delegate the observer to delegate events to
+     * @param delegate the subscriber to delegate events to
      * @return the created TestSubscriber instance
      * @throws NullPointerException if delegate is null
      * @since 1.1.0
@@ -160,10 +160,10 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
     
     /**
-     * Factory method to construct a TestSubscriber which delegates events to the given Subscriber and
+     * Factory method to construct a TestSubscriber which delegates events to the given Observer and
      * an issues an initial request of Long.MAX_VALUE.
      * @param <T> the value type
-     * @param delegate the subscriber to delegate events to
+     * @param delegate the observer to delegate events to
      * @return the created TestSubscriber instance
      * @throws NullPointerException if delegate is null
      * @since 1.1.0
