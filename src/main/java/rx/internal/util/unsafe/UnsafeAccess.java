@@ -22,6 +22,9 @@ import sun.misc.Unsafe;
 /**
  * All use of this class MUST first check that UnsafeAccess.isUnsafeAvailable() == true
  * otherwise NPEs will happen in environments without "suc.misc.Unsafe" such as Android.
+ * <p>
+ * Note that you can force RxJava to not use Unsafe API by setting any value to System Property
+ * {@code rx.unsafe-disable}.
  */
 public final class UnsafeAccess {
     private UnsafeAccess() {
@@ -29,6 +32,9 @@ public final class UnsafeAccess {
     }
 
     public static final Unsafe UNSAFE;
+
+    private static final boolean DISABLED_BY_USER = System.getProperty("rx.unsafe-disable") != null;
+
     static {
         Unsafe u = null;
         try {
@@ -48,7 +54,7 @@ public final class UnsafeAccess {
     }
 
     public static boolean isUnsafeAvailable() {
-        return UNSAFE != null;
+        return UNSAFE != null && !DISABLED_BY_USER;
     }
 
     /*
