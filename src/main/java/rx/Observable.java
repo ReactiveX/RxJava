@@ -5164,6 +5164,9 @@ public class Observable<T> {
         if (capacityHint < 1) {
             throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
         }
+        if (maxConcurrent < 1) {
+            throw new IllegalArgumentException("maxConcurrent > 0 required but it was " + capacityHint);
+        }
         return lift(new OperatorEagerConcatMap<T, R>(mapper, capacityHint, maxConcurrent));
     }
     

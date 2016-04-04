@@ -223,10 +223,10 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
                             if (empty) {
                                 synchronized (subscribers) {
                                     subscribers.poll();
-                                    request(1);
                                 }
                                 innerSubscriber.unsubscribe();
                                 innerDone = true;
+                                request(1);
                                 break;
                             }
                         }

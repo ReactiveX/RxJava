@@ -16,6 +16,8 @@
 
 package rx.internal.operators;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
@@ -405,9 +407,34 @@ public class OperatorEagerConcatMapTest {
                 return Observable.just(null);
             }
         }).subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertCompleted();
         ts.assertValue(null);
+    }
+
+
+    @Test
+    public void testMaxConcurrent5() {
+        final List<Long> requests = new ArrayList<Long>();
+        Observable.range(1, 100).doOnRequest(new Action1<Long>() {
+            @Override
+            public void call(Long reqCount) {
+                requests.add(reqCount);
+            }
+        }).concatMapEager(toJust, RxRingBuffer.SIZE, 5).subscribe(ts);
+
+        ts.assertNoErrors();
+        ts.assertValueCount(100);
+        ts.assertCompleted();
+
+        Assert.assertEquals(5, (long) requests.get(0));
+        Assert.assertEquals(1, (long) requests.get(1));
+        Assert.assertEquals(1, (long) requests.get(2));
+        Assert.assertEquals(1, (long) requests.get(3));
+        Assert.assertEquals(1, (long) requests.get(4));
+        Assert.assertEquals(1, (long) requests.get(5));
+
+
     }
 }
