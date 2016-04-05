@@ -5158,7 +5158,6 @@ public class Observable<T> {
      * @warn javadoc fails to describe the return value
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-
     @Experimental
     public final <R> Observable<R> concatMapEager(Func1<? super T, ? extends Observable<? extends R>> mapper, int capacityHint, int maxConcurrent) {
         if (capacityHint < 1) {

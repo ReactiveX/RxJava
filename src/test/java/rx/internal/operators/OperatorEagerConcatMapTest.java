@@ -304,10 +304,15 @@ public class OperatorEagerConcatMapTest {
         ts.assertNotCompleted();
         ts.assertError(TestException.class);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidCapacityHint() {
         Observable.just(1).concatMapEager(toJust, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidMaxConcurrent() {
+        Observable.just(1).concatMapEager(toJust, RxRingBuffer.SIZE, 0);
     }
     
     @Test
@@ -399,8 +404,6 @@ public class OperatorEagerConcatMapTest {
     
     @Test
     public void testInnerNull() {
-        TestSubscriber<Object> ts = TestSubscriber.create();
-        
         Observable.just(1).concatMapEager(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t) {
@@ -434,7 +437,5 @@ public class OperatorEagerConcatMapTest {
         Assert.assertEquals(1, (long) requests.get(3));
         Assert.assertEquals(1, (long) requests.get(4));
         Assert.assertEquals(1, (long) requests.get(5));
-
-
     }
 }
