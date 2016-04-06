@@ -20,7 +20,7 @@ import java.util.*;
 import rx.*;
 import rx.Observable;
 import rx.Observable.Operator;
-import rx.exceptions.CompositeException;
+import rx.exceptions.*;
 import rx.internal.producers.ProducerArbiter;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.SerialSubscription;
@@ -45,6 +45,9 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         static final OperatorSwitch<Object> INSTANCE = new OperatorSwitch<Object>(true);
     }
     /**
+     * Returns a singleton instance of the operator based on the delayError parameter.
+     * @param <T> the value type
+     * @param delayError should the errors of the inner sources delayed until the main sequence completes?
      * @return a singleton instance of this stateless operator.
      */
     @SuppressWarnings({ "unchecked" })
@@ -104,7 +107,9 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                 @Override
                 public void request(long n) {
                     if (n > 0) {
-                        arbiter.request(n);
+                        synchronized (this) {
+                            arbiter.request(n);
+                        }
                     }
                 }
             });
@@ -117,6 +122,8 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                 long id = ++index;
                 inner = new InnerSubscriber<T>(id, this);
                 innerActive = true;
+                
+                arbiter.setProducer(null);
             }
             ssub.set(inner);
             
@@ -135,6 +142,10 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                 }
                 if (delayError && innerActive) {
                     return;
+                }
+                if (!delayError) {
+                    index = Long.MAX_VALUE;
+                    arbiter.setProducer(null);
                 }
                 emitting = true;
             }
@@ -202,7 +213,12 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                 emitting = true;
             }
             
-            child.onNext(value);
+            try {
+                child.onNext(value);
+            } catch (Throwable ex) {
+                Exceptions.throwOrReport(ex, child, value);
+                return;
+            }
             
             arbiter.produced(1);
             
@@ -225,6 +241,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                     localMainDone = mainDone;
                     localQueue = queue;
                     localActive = innerActive;
+                    queue = null;
                 }
                 
                 if (!delayError && localError != null) {
@@ -248,7 +265,12 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                             return;
                         }
 
-                        child.onNext(v);
+                        try {
+                            child.onNext(v);
+                        } catch (Throwable ex) {
+                            Exceptions.throwOrReport(ex, child, v);
+                            return;
+                        }
                         n++;
                     }
                     
@@ -261,6 +283,8 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
             boolean drop;
             synchronized (this) {
                 if (id == index) {
+                    arbiter.setProducer(null);
+
                     innerActive = false;
                     
                     e = updateError(e);
@@ -293,6 +317,9 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                 if (id != index) {
                     return;
                 }
+                
+                arbiter.setProducer(null);
+                
                 innerActive = false;
                 
                 if (emitting) {
@@ -317,6 +344,14 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         void pluginError(Throwable e) {
             RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
         }
+        
+        void innerProducer(Producer p, long id) {
+            synchronized (this) {
+                if (this.index == id) {
+                    arbiter.setProducer(p);
+                }
+            }
+        }
     }
     
     private static final class InnerSubscriber<T> extends Subscriber<T> {
@@ -332,7 +367,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         
         @Override
         public void setProducer(Producer p) {
-            parent.arbiter.setProducer(p);
+            parent.innerProducer(p, id);
         }
 
         @Override
