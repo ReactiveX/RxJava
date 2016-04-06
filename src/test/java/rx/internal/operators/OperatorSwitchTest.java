@@ -831,6 +831,13 @@ public class OperatorSwitchTest {
     }
 
     @Test
+    public void switchAsyncHeavilyLoop() {
+        for (int i = 0; i < 1000; i++) {
+            switchAsyncHeavily();
+        }
+    }
+    
+    @Test
     public void switchAsyncHeavily() {
         for (int i = 1; i < 1024; i *= 2) {
             System.out.println("switchAsyncHeavily >> " + i);

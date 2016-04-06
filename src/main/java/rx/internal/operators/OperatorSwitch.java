@@ -107,7 +107,9 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                 @Override
                 public void request(long n) {
                     if (n > 0) {
-                        arbiter.request(n);
+                        synchronized (this) {
+                            arbiter.request(n);
+                        }
                     }
                 }
             });
