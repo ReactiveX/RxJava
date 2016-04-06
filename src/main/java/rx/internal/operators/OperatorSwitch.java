@@ -20,7 +20,7 @@ import java.util.*;
 import rx.*;
 import rx.Observable;
 import rx.Observable.Operator;
-import rx.exceptions.CompositeException;
+import rx.exceptions.*;
 import rx.internal.producers.ProducerArbiter;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.SerialSubscription;
@@ -211,7 +211,12 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                 emitting = true;
             }
             
-            child.onNext(value);
+            try {
+                child.onNext(value);
+            } catch (Throwable ex) {
+                Exceptions.throwOrReport(ex, child, value);
+                return;
+            }
             
             arbiter.produced(1);
             
@@ -258,7 +263,12 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                             return;
                         }
 
-                        child.onNext(v);
+                        try {
+                            child.onNext(v);
+                        } catch (Throwable ex) {
+                            Exceptions.throwOrReport(ex, child, v);
+                            return;
+                        }
                         n++;
                     }
                     
