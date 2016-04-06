@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,7 +33,7 @@ import rx.Observer;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
-import rx.schedulers.TestScheduler;
+import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 
 public class OperatorSwitchTest {
@@ -654,7 +655,7 @@ public class OperatorSwitchTest {
         ts.requestMore(Long.MAX_VALUE - 1);
         ts.awaitTerminalEvent();
         assertTrue(ts.getOnNextEvents().size() > 0);
-        assertEquals(5, requests.size());
+        assertEquals(4, requests.size()); // depends on the request pattern
         assertEquals(Long.MAX_VALUE, (long) requests.get(requests.size()-1));
     }
 
@@ -790,4 +791,90 @@ public class OperatorSwitchTest {
         ts.assertCompleted();
     }
 
+    Object ref;
+    
+    @Test
+    public void producerIsNotRetained() throws Exception {
+        ref = new Object();
+        
+        WeakReference<Object> wr = new WeakReference<Object>(ref);
+        
+        PublishSubject<Observable<Object>> ps = PublishSubject.create();
+        
+        Subscriber<Object> observer = new Subscriber<Object>() {
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Object t) {
+            }
+        };
+        
+        Observable.switchOnNext(ps).subscribe(observer);
+        
+        ps.onNext(Observable.just(ref));
+        
+        ref = null;
+        
+        System.gc();
+        
+        Thread.sleep(500);
+        
+        Assert.assertNotNull(observer); // retain every other referenec in the pipeline
+        Assert.assertNotNull(ps);
+        Assert.assertNull("Object retained!", wr.get());
+    }
+
+    @Test
+    public void switchAsyncHeavily() {
+        for (int i = 1; i < 1024; i *= 2) {
+            System.out.println("switchAsyncHeavily >> " + i);
+            
+            final Queue<Throwable> q = new ConcurrentLinkedQueue<Throwable>();
+            
+            final int j = i;
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>(i) {
+                int count;
+                @Override
+                public void onNext(Integer t) {
+                    super.onNext(t);
+                    if (++count == j) {
+                        count = 0;
+                        requestMore(j);
+                    }
+                }
+            };
+            
+            Observable.range(1, 25000)
+            .observeOn(Schedulers.computation(), i)
+            .switchMap(new Func1<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> call(Integer v) {
+                    return Observable.range(1, 1000).observeOn(Schedulers.computation(), j)
+                            .doOnError(new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable e) {
+                                    q.add(e);
+                                }
+                            });
+                }
+            })
+            .timeout(10, TimeUnit.SECONDS)
+            .subscribe(ts);
+            
+            ts.awaitTerminalEvent(30, TimeUnit.SECONDS);
+            if (!q.isEmpty()) {
+                throw new AssertionError("Dropped exceptions", new CompositeException(q));
+            }
+            ts.assertNoErrors();
+            if (ts.getOnCompletedEvents().size() == 0) {
+                fail("switchAsyncHeavily timed out @ " + j + " (" + ts.getOnNextEvents().size() + " onNexts received)");
+            }
+        }
+    }
 }
