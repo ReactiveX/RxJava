@@ -16,15 +16,18 @@
 package rx.internal.operators;
 
 import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.concurrent.atomic.AtomicLong;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Subscriber;
+import rx.functions.Func1;
 
 /**
  * Returns an Observable that emits the at most the last <code>count</code> items emitted by the source Observable.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/last.png" alt="">
+ * 
+ * @param <T> the value type
  */
 public final class OperatorTakeLast<T> implements Operator<T, T> {
 
@@ -39,44 +42,62 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
-        final Deque<Object> deque = new ArrayDeque<Object>();
-        final NotificationLite<T> notification = NotificationLite.instance();
-        final TakeLastQueueProducer<T> producer = new TakeLastQueueProducer<T>(notification, deque, subscriber);
-        subscriber.setProducer(producer);
-
-        return new Subscriber<T>(subscriber) {
-
-            // no backpressure up as it wants to receive and discard all but the last
+        final TakeLastSubscriber<T> parent = new TakeLastSubscriber<T>(subscriber, count);
+        
+        subscriber.add(parent);
+        subscriber.setProducer(new Producer() {
             @Override
-            public void onStart() {
-                // we do this to break the chain of the child subscriber being passed through
-                request(Long.MAX_VALUE);
+            public void request(long n) {
+                parent.requestMore(n);
             }
-
-            @Override
-            public void onCompleted() {
-                deque.offer(notification.completed());
-                producer.startEmitting();
+        });
+        
+        return parent;
+    }
+    
+    static final class TakeLastSubscriber<T> extends Subscriber<T> implements Func1<Object, T> {
+        final Subscriber<? super T> actual;
+        final AtomicLong requested;
+        final ArrayDeque<Object> queue;
+        final int count;
+        final NotificationLite<T> nl;
+        
+        public TakeLastSubscriber(Subscriber<? super T> actual, int count) {
+            this.actual = actual;
+            this.count = count;
+            this.requested = new AtomicLong();
+            this.queue = new ArrayDeque<Object>();
+            this.nl = NotificationLite.instance();
+        }
+        
+        @Override
+        public void onNext(T t) {
+            if (queue.size() == count) {
+                queue.poll();
             }
-
-            @Override
-            public void onError(Throwable e) {
-                deque.clear();
-                subscriber.onError(e);
+            queue.offer(nl.next(t));
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            queue.clear();
+            actual.onError(e);
+        }
+        
+        @Override
+        public void onCompleted() {
+            BackpressureUtils.postCompleteDone(requested, queue, actual, this);
+        }
+        
+        @Override
+        public T call(Object t) {
+            return nl.getValue(t);
+        }
+        
+        void requestMore(long n) {
+            if (n > 0L) {
+                BackpressureUtils.postCompleteRequest(requested, n, queue, actual, this);
             }
-
-            @Override
-            public void onNext(T value) {
-                if (count == 0) {
-                    // If count == 0, we do not need to put value into deque and
-                    // remove it at once. We can ignore the value directly.
-                    return;
-                }
-                if (deque.size() == count) {
-                    deque.removeFirst();
-                }
-                deque.offerLast(notification.next(value));
-            }
-        };
+        }
     }
 }

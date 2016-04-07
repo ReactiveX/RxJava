@@ -22,15 +22,20 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler.Worker;
 import rx.exceptions.TestException;
-import rx.schedulers.TestScheduler;
+import rx.functions.Action0;
+import rx.observers.TestSubscriber;
+import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 
 public class OperatorTakeLastTimedTest {
@@ -207,5 +212,76 @@ public class OperatorTakeLastTimedTest {
 
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
+    }
+
+    @Test(timeout = 30000) // original could get into an infinite loop
+    public void completionRequestRace() {
+        Worker w = Schedulers.computation().createWorker();
+        try {
+            final int n = 1000;
+            for (int i = 0; i < 25000; i++) {
+                if (i % 1000 == 0) {
+                    System.out.println("completionRequestRace >> " + i);
+                }
+                PublishSubject<Integer> ps = PublishSubject.create();
+                final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+                
+                ps.takeLast(n, 1, TimeUnit.DAYS).subscribe(ts);
+                
+                for (int j = 0; j < n; j++) {
+                    ps.onNext(j);
+                }
+
+                final AtomicBoolean go = new AtomicBoolean();
+                
+                w.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        while (!go.get());
+                        ts.requestMore(n + 1);
+                    }
+                });
+                
+                go.set(true);
+                ps.onCompleted();
+                
+                ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+                
+                ts.assertValueCount(n);
+                ts.assertNoErrors();
+                ts.assertCompleted();
+                
+                List<Integer> list = ts.getOnNextEvents();
+                for (int j = 0; j < n; j++) {
+                    Assert.assertEquals(j, list.get(j).intValue());
+                }
+            }
+        } finally {
+            w.unsubscribe();
+        }
+    }
+    
+    @Test
+    public void nullElements() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+        
+        Observable.from(new Integer[] { 1, null, 2}).takeLast(4, 1, TimeUnit.DAYS)
+        .subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(1);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(1, null, 2);
+        ts.assertCompleted();
+        ts.assertNoErrors();
     }
 }
