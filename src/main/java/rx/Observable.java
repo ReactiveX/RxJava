@@ -1464,7 +1464,7 @@ public class Observable<T> {
      * @see #defer(Func0)
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T> Observable<T> fromCallable(Callable<? extends T> func) {
         return create(new OnSubscribeFromCallable<T>(func));
     }
