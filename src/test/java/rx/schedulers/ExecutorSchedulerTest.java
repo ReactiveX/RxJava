@@ -18,9 +18,11 @@ package rx.schedulers;
 import static org.junit.Assert.*;
 
 import java.lang.management.*;
+import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import rx.*;
@@ -274,5 +276,33 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         s.unsubscribe();
         
         assertFalse(w.tasks.hasSubscriptions());
+    }
+    
+    @Test
+    public void workerUnderConcurrentUnsubscribeShouldNotAllowLaterTasksToRunDueToUnsubscriptionRace() {
+        Scheduler scheduler = Schedulers.from(Executors.newFixedThreadPool(1));
+        for (int i = 0; i< 1000; i++) {
+            Worker worker = scheduler.createWorker();
+            final Queue<Integer> q = new ConcurrentLinkedQueue<Integer>();
+            Action0 action1 = new Action0() {
+    
+                @Override
+                public void call() {
+                    q.add(1);
+                }};
+            Action0 action2 = new Action0() {
+    
+                @Override
+                public void call() {
+                    q.add(2);
+                }};
+            worker.schedule(action1);
+            worker.schedule(action2);
+            worker.unsubscribe();
+            if (q.size()==1 && q.poll() == 2) {
+                //expect a queue of 1,2 or 1. If queue is just 2 then we have a problem!
+                Assert.fail("wrong order on loop " + i);
+            }
+        }
     }
 }
