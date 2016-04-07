@@ -383,7 +383,8 @@ public class AsyncOnSubscribeTest {
                                     }}));
                         break;
                     case 2:
-                        observer.onNext(Observable.<Integer>never()
+                        observer.onNext(Observable.just(1)
+                                .concatWith(Observable.<Integer>never())
                                 .subscribeOn(scheduler)
                                 .doOnUnsubscribe(new Action0(){
                                     @Override
@@ -397,7 +398,7 @@ public class AsyncOnSubscribeTest {
                     return state + 1;
                 }});
         Subscription subscription = Observable.create(os)
-            .observeOn(scheduler)
+            .observeOn(scheduler, 1)
             .subscribe(subscriber);
         sub.set(subscription);
         subscriber.assertNoValues();
