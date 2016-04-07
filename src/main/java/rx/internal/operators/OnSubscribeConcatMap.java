@@ -220,7 +220,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
 
             final int delayErrorMode = this.delayErrorMode;
             
-            do {
+            for (;;) {
                 if (actual.isUnsubscribed()) {
                     return;
                 }
@@ -288,11 +288,17 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                                     return;
                                 }
                             }
+                            request(1);
+                        } else {
+                            request(1);
+                            continue;
                         }
-                        request(1);
                     }
                 }
-            } while (wip.decrementAndGet() != 0);
+                if (wip.decrementAndGet() == 0) {
+                    break;
+                }
+            }
         }
         
         void drainError(Throwable mapperError) {

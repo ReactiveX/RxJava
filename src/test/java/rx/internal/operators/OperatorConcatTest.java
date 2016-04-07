@@ -864,4 +864,50 @@ public class OperatorConcatTest {
         ts.assertCompleted();
         ts.assertNoErrors();
     }
+    
+    @Test
+    public void scalarAndEmptyBackpressured() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        Observable.just(1).concatWith(Observable.<Integer>empty()).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.requestMore(5);
+        
+        ts.assertValue(1);
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void rangeAndEmptyBackpressured() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        Observable.range(1, 2).concatWith(Observable.<Integer>empty()).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.requestMore(5);
+        
+        ts.assertValues(1, 2);
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void emptyAndScalarBackpressured() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        Observable.<Integer>empty().concatWith(Observable.just(1)).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.requestMore(5);
+        
+        ts.assertValue(1);
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+
 }
