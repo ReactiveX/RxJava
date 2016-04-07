@@ -16,14 +16,17 @@
 package rx.internal.operators;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.*;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.exceptions.CompositeException;
-import rx.internal.producers.ProducerArbiter;
+import rx.functions.Action0;
+import rx.internal.util.RxRingBuffer;
+import rx.internal.util.atomic.SpscLinkedArrayQueue;
 import rx.plugins.RxJavaPlugins;
-import rx.subscriptions.SerialSubscription;
+import rx.subscriptions.*;
 
 /**
  * Transforms an Observable that emits Observables into a single Observable that
@@ -45,6 +48,9 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         static final OperatorSwitch<Object> INSTANCE = new OperatorSwitch<Object>(true);
     }
     /**
+     * Returns a singleton instance of the operator based on the delayError parameter.
+     * @param <T> the value type
+     * @param delayError should the errors of the inner sources delayed until the main sequence completes?
      * @return a singleton instance of this stateless operator.
      */
     @SuppressWarnings({ "unchecked" })
@@ -72,51 +78,80 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
     private static final class SwitchSubscriber<T> extends Subscriber<Observable<? extends T>> {
         final Subscriber<? super T> child;
         final SerialSubscription ssub;
-        final ProducerArbiter arbiter;
-        
         final boolean delayError;
-        
-        long index;
-        
-        Throwable error;
-        
-        boolean mainDone;
-        
-        List<T> queue;
-        
-        boolean innerActive;
-        
+        final AtomicLong index;
+        final SpscLinkedArrayQueue<Object> queue;
+        final NotificationLite<T> nl;
+
         boolean emitting;
         
         boolean missed;
+        
+        long requested;
+        
+        Producer producer;
+        
+        volatile boolean mainDone;
+
+        Throwable error;
+        
+        boolean innerActive;
+        
+        static final Throwable TERMINAL_ERROR = new Throwable("Terminal error");
 
         SwitchSubscriber(Subscriber<? super T> child, boolean delayError) {
             this.child = child;
-            this.arbiter = new ProducerArbiter();
             this.ssub = new SerialSubscription();
             this.delayError = delayError;
+            this.index = new AtomicLong();
+            this.queue = new SpscLinkedArrayQueue<Object>(RxRingBuffer.SIZE);
+            this.nl = NotificationLite.instance();
         }
         
         void init() {
             child.add(ssub);
+            child.add(Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    clearProducer();
+                }
+            }));
             child.setProducer(new Producer(){
 
                 @Override
                 public void request(long n) {
-                    if (n > 0) {
-                        arbiter.request(n);
+                    if (n > 0L) {
+                        childRequested(n);
+                    } else
+                    if (n < 0L) {
+                        throw new IllegalArgumentException("n >= 0 expected but it was " + n);
                     }
                 }
             });
         }
-
+        
+        void clearProducer() {
+            synchronized (this) {
+                producer = null;
+            }
+        }
+        
         @Override
         public void onNext(Observable<? extends T> t) {
+            long id = index.incrementAndGet();
+            
+            Subscription s = ssub.get();
+            if (s != null) {
+                s.unsubscribe();
+            }
+            
             InnerSubscriber<T> inner;
+            
             synchronized (this) {
-                long id = ++index;
                 inner = new InnerSubscriber<T>(id, this);
+
                 innerActive = true;
+                producer = null;
             }
             ssub.set(inner);
             
@@ -125,201 +160,228 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
 
         @Override
         public void onError(Throwable e) {
-            synchronized (this) {
-                e = updateError(e);
-                mainDone = true;
-                
-                if (emitting) {
-                    missed = true;
-                    return;
-                }
-                if (delayError && innerActive) {
-                    return;
-                }
-                emitting = true;
-            }
+            boolean success;
             
-            child.onError(e);
+            synchronized (this) {
+                success = updateError(e);
+            }
+            if (success) {
+                mainDone = true;
+                drain();
+            } else {
+                pluginError(e);
+            }
         }
 
+        boolean updateError(Throwable next) {
+            Throwable e = error;
+            if (e == TERMINAL_ERROR) {
+                return false;
+            } else
+            if (e == null) {
+                error = next;
+            } else
+            if (e instanceof CompositeException) {
+                List<Throwable> list = new ArrayList<Throwable>(((CompositeException)e).getExceptions());
+                list.add(next);
+                error = new CompositeException(list);
+            } else {
+                error = new CompositeException(e, next);
+            }
+            return true;
+        }
+        
         @Override
         public void onCompleted() {
-            Throwable ex;
-            synchronized (this) {
-                mainDone = true;
-                if (emitting) {
-                    missed = true;
-                    return;
-                }
-                if (innerActive) {
-                    return;
-                }
-                emitting = true;
-                ex = error;
-            }
-            if (ex == null) {
-                child.onCompleted();
-            } else {
-                child.onError(ex);
-            }
+            mainDone = true;
+            drain();
         }
         
-        Throwable updateError(Throwable e) {
-            Throwable ex = error;
-            if (ex == null) {
-                error = e;
-            } else
-            if (ex instanceof CompositeException) {
-                CompositeException ce = (CompositeException) ex;
-                List<Throwable> list = new ArrayList<Throwable>(ce.getExceptions());
-                list.add(e);
-                e = new CompositeException(list);
-                error = e;
-            } else {
-                e = new CompositeException(Arrays.asList(ex, e));
-                error = e;
-            }
-            return e;
-        }
-        
-        void emit(T value, long id) {
+        void emit(T value, InnerSubscriber<T> inner) {
             synchronized (this) {
-                if (id != index) {
+                if (index.get() != inner.id) {
                     return;
                 }
                 
-                if (emitting) {
-                    List<T> q = queue;
-                    if (q == null) {
-                        q = new ArrayList<T>(4);
-                        queue = q;
-                    }
-                    q.add(value);
-                    missed = true;
-                    return;
-                }
-                
-                emitting = true;
+                queue.offer(inner, nl.next(value));
             }
-            
-            child.onNext(value);
-            
-            arbiter.produced(1);
-            
-            for (;;) {
-                if (child.isUnsubscribed()) {
-                    return;
-                }
-                
-                Throwable localError;
-                boolean localMainDone;
-                boolean localActive;
-                List<T> localQueue;
-                synchronized (this) {
-                    if (!missed) {
-                        emitting = false;
-                        return;
-                    }
-                    
-                    localError = error;
-                    localMainDone = mainDone;
-                    localQueue = queue;
-                    localActive = innerActive;
-                }
-                
-                if (!delayError && localError != null) {
-                    child.onError(localError);
-                    return;
-                }
-                
-                if (localQueue == null && !localActive && localMainDone) {
-                    if (localError != null) {
-                        child.onError(localError);
-                    } else {
-                        child.onCompleted();
-                    }
-                    return;
-                }
-                
-                if (localQueue != null) {
-                    int n = 0;
-                    for (T v : localQueue) {
-                        if (child.isUnsubscribed()) {
-                            return;
-                        }
-
-                        child.onNext(v);
-                        n++;
-                    }
-                    
-                    arbiter.produced(n);
-                }
-            }
+            drain();
         }
 
         void error(Throwable e, long id) {
-            boolean drop;
+            boolean success;
             synchronized (this) {
-                if (id == index) {
+                if (index.get() == id) {
+                    success = updateError(e);
                     innerActive = false;
-                    
-                    e = updateError(e);
-                    
-                    if (emitting) {
-                        missed = true;
-                        return;
-                    }
-                    if (delayError && !mainDone) {
-                        return;
-                    }
-                    emitting = true;
-                    
-                    drop = false;
+                    producer = null;
                 } else {
-                    drop = true;
+                    success = true;
                 }
             }
-            
-            if (drop) {
-                pluginError(e);
+            if (success) {
+                drain();
             } else {
-                child.onError(e);
+                pluginError(e);
             }
         }
         
         void complete(long id) {
-            Throwable ex;
             synchronized (this) {
-                if (id != index) {
+                if (index.get() != id) {
                     return;
                 }
                 innerActive = false;
-                
-                if (emitting) {
-                    missed = true;
-                    return;
-                }
-                
-                ex = error;
-
-                if (!mainDone) {
-                    return;
-                }
+                producer = null;
             }
-            
-            if (ex != null) {
-                child.onError(ex);
-            } else {
-                child.onCompleted();
-            }
+            drain();
         }
 
         void pluginError(Throwable e) {
             RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
         }
+        
+        void innerProducer(Producer p, long id) {
+            long n;
+            synchronized (this) {
+                if (index.get() != id) {
+                    return;
+                }
+                n = requested;
+                producer = p;
+            }
+            
+            p.request(n);
+        }
+        
+        void childRequested(long n) {
+            Producer p;
+            synchronized (this) {
+                p = producer;
+                requested = BackpressureUtils.addCap(requested, n);
+            }
+            if (p != null) {
+                p.request(n);
+            }
+            drain();
+        }
+        
+        void drain() {
+            boolean localMainDone = mainDone;
+            boolean localInnerActive;
+            long localRequested;
+            Throwable localError;
+            synchronized (this) {
+                if (emitting) {
+                    missed = true;
+                    return;
+                }
+                emitting = true;
+                localInnerActive = innerActive;
+                localRequested = requested;
+                localError = error;
+                if (localError != null && localError != TERMINAL_ERROR && !delayError) {
+                    error = TERMINAL_ERROR;
+                }
+            }
+
+            final SpscLinkedArrayQueue<Object> localQueue = queue;
+            final AtomicLong localIndex = index;
+            final Subscriber<? super T> localChild = child;
+
+            for (;;) {
+
+                long localEmission = 0L;
+
+                while (localEmission != localRequested) {
+                    if (localChild.isUnsubscribed()) {
+                        return;
+                    }
+
+                    boolean empty = localQueue.isEmpty();
+                    
+                    if (checkTerminated(localMainDone, localInnerActive, localError, 
+                            localQueue, localChild, empty)) {
+                        return;
+                    }
+                    
+                    if (empty) {
+                        break;
+                    }
+                    
+                    @SuppressWarnings("unchecked")
+                    InnerSubscriber<T> inner = (InnerSubscriber<T>)localQueue.poll();
+                    T value = nl.getValue(localQueue.poll());
+                    
+                    if (localIndex.get() == inner.id) {
+                        localChild.onNext(value);
+                        localEmission++;
+                    }
+                }
+                
+                if (localEmission == localRequested) {
+                    if (localChild.isUnsubscribed()) {
+                        return;
+                    }
+                    
+                    if (checkTerminated(mainDone, localInnerActive, localError, localQueue, 
+                            localChild, localQueue.isEmpty())) {
+                        return;
+                    }
+                }
+                
+                
+                synchronized (this) {
+                    
+                    localRequested = requested;
+                    if (localRequested != Long.MAX_VALUE) {
+                        localRequested -= localEmission;
+                        requested = localRequested;
+                    }
+                    
+                    if (!missed) {
+                        emitting = false;
+                        return;
+                    }
+                    missed = false;
+                    
+                    localMainDone = mainDone;
+                    localInnerActive = innerActive;
+                    localError = error;
+                    if (localError != null && localError != TERMINAL_ERROR && !delayError) {
+                        error = TERMINAL_ERROR;
+                    }
+                }
+            }
+        }
+
+        protected boolean checkTerminated(boolean localMainDone, boolean localInnerActive, Throwable localError,
+                final SpscLinkedArrayQueue<Object> localQueue, final Subscriber<? super T> localChild, boolean empty) {
+            if (delayError) {
+                if (localMainDone && !localInnerActive && empty) {
+                    if (localError != null) {
+                        localChild.onError(localError);
+                    } else {
+                        localChild.onCompleted();
+                    }
+                    return true;
+                }
+            } else {
+                if (localError != null) {
+                    localQueue.clear();
+                    localChild.onError(localError);
+                    return true;
+                } else
+                if (localMainDone && !localInnerActive && empty) {
+                    localChild.onCompleted();
+                    return true;
+                }
+            }
+            return false;
+        }
     }
     
-    private static final class InnerSubscriber<T> extends Subscriber<T> {
+    static final class InnerSubscriber<T> extends Subscriber<T> {
 
         private final long id;
 
@@ -332,12 +394,12 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         
         @Override
         public void setProducer(Producer p) {
-            parent.arbiter.setProducer(p);
+            parent.innerProducer(p, id);
         }
 
         @Override
         public void onNext(T t) {
-            parent.emit(t, id);
+            parent.emit(t, this);
         }
 
         @Override

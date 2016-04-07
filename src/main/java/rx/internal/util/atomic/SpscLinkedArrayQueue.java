@@ -30,23 +30,19 @@ import rx.internal.util.unsafe.Pow2;
 /**
  * A single-producer single-consumer array-backed queue which can allocate new arrays in case the consumer is slower
  * than the producer.
+ * 
+ * @param <T> the element type, not null
  */
 public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     static final int MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
-    protected volatile long producerIndex;
-    @SuppressWarnings("rawtypes")
-    static final AtomicLongFieldUpdater<SpscLinkedArrayQueue> PRODUCER_INDEX =
-            AtomicLongFieldUpdater.newUpdater(SpscLinkedArrayQueue.class, "producerIndex");
+    protected final AtomicLong producerIndex;
     protected int producerLookAheadStep;
     protected long producerLookAhead;
     protected int producerMask;
     protected AtomicReferenceArray<Object> producerBuffer;
     protected int consumerMask;
     protected AtomicReferenceArray<Object> consumerBuffer;
-    protected volatile long consumerIndex;
-    @SuppressWarnings("rawtypes")
-    static final AtomicLongFieldUpdater<SpscLinkedArrayQueue> CONSUMER_INDEX =
-            AtomicLongFieldUpdater.newUpdater(SpscLinkedArrayQueue.class, "consumerIndex");
+    protected final AtomicLong consumerIndex;
     private static final Object HAS_NEXT = new Object();
 
     public SpscLinkedArrayQueue(final int bufferSize) {
@@ -59,7 +55,8 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
         consumerBuffer = buffer;
         consumerMask = mask;
         producerLookAhead = mask - 1; // we know it's all empty to start with
-        soProducerIndex(0L);
+        producerIndex = new AtomicLong();
+        consumerIndex = new AtomicLong();
     }
 
     /**
@@ -219,27 +216,27 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     }
 
     private long lvProducerIndex() {
-        return producerIndex;
+        return producerIndex.get();
     }
 
     private long lvConsumerIndex() {
-        return consumerIndex;
+        return consumerIndex.get();
     }
 
     private long lpProducerIndex() {
-        return producerIndex;
+        return producerIndex.get();
     }
 
     private long lpConsumerIndex() {
-        return consumerIndex;
+        return consumerIndex.get();
     }
 
     private void soProducerIndex(long v) {
-        PRODUCER_INDEX.lazySet(this, v);
+        producerIndex.lazySet(v);
     }
 
     private void soConsumerIndex(long v) {
-        CONSUMER_INDEX.lazySet(this, v);
+        consumerIndex.lazySet(v);
     }
 
     private static int calcWrappedOffset(long index, int mask) {
@@ -321,11 +318,11 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
      * <p>Don't use the regular offer() with this at all!
      * @param first
      * @param second
-     * @return
+     * @return always true
      */
     public boolean offer(T first, T second) {
         final AtomicReferenceArray<Object> buffer = producerBuffer;
-        final long p = producerIndex;
+        final long p = lvProducerIndex();
         final int m = producerMask;
         
         int pi = calcWrappedOffset(p + 2, m);
