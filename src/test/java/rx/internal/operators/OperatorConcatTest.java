@@ -850,4 +850,18 @@ public class OperatorConcatTest {
         }
     }
     
+    @Test
+    public void scalarAndRangeBackpressured() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        Observable.just(1).concatWith(Observable.range(2, 3)).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.requestMore(5);
+        
+        ts.assertValues(1, 2, 3, 4);
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
 }
