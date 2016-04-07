@@ -31,14 +31,16 @@ import rx.subscriptions.Subscriptions;
 public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
     final Func1<? super T, ? extends Observable<? extends R>> mapper;
     final int bufferSize;
-    public OperatorEagerConcatMap(Func1<? super T, ? extends Observable<? extends R>> mapper, int bufferSize) {
+    private final int maxConcurrent;
+    public OperatorEagerConcatMap(Func1<? super T, ? extends Observable<? extends R>> mapper, int bufferSize, int maxConcurrent) {
         this.mapper = mapper;
         this.bufferSize = bufferSize;
+        this.maxConcurrent = maxConcurrent;
     }
     
     @Override
     public Subscriber<? super T> call(Subscriber<? super R> t) {
-        EagerOuterSubscriber<T, R> outer = new EagerOuterSubscriber<T, R>(mapper, bufferSize, t);
+        EagerOuterSubscriber<T, R> outer = new EagerOuterSubscriber<T, R>(mapper, bufferSize, maxConcurrent, t);
         outer.init();
         return outer;
     }
@@ -82,12 +84,13 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
         private EagerOuterProducer sharedProducer;
         
         public EagerOuterSubscriber(Func1<? super T, ? extends Observable<? extends R>> mapper, int bufferSize,
-                Subscriber<? super R> actual) {
+                int maxConcurrent, Subscriber<? super R> actual) {
             this.mapper = mapper;
             this.bufferSize = bufferSize;
             this.actual = actual;
             this.subscribers = new LinkedList<EagerInnerSubscriber<R>>();
             this.wip = new AtomicInteger();
+            request(maxConcurrent == Integer.MAX_VALUE ? Long.MAX_VALUE : maxConcurrent);
         }
         
         void init() {
@@ -223,6 +226,7 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
                                 }
                                 innerSubscriber.unsubscribe();
                                 innerDone = true;
+                                request(1);
                                 break;
                             }
                         }
