@@ -20,7 +20,7 @@ import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.observers.Subscribers;
 import rx.plugins.*;
-import rx.subscriptions.SerialSubscription;
+import rx.subscriptions.*;
 
 /**
  * Delays the subscription to the main source until the other
@@ -39,9 +39,12 @@ public final class OnSubscribeDelaySubscriptionOther<T, U> implements OnSubscrib
     
     @Override
     public void call(Subscriber<? super T> t) {
+        final SerialSubscription serial = new SerialSubscription();
+        
+        t.add(serial);
+        
         final Subscriber<T> child = Subscribers.wrap(t);
         
-        final SerialSubscription serial = new SerialSubscription();
         
         Subscriber<U> otherSubscriber = new Subscriber<U>() {
             boolean done;
@@ -66,7 +69,7 @@ public final class OnSubscribeDelaySubscriptionOther<T, U> implements OnSubscrib
                     return;
                 }
                 done = true;
-                serial.set(child);
+                serial.set(Subscriptions.unsubscribed());
                 
                 main.unsafeSubscribe(child);
             }
