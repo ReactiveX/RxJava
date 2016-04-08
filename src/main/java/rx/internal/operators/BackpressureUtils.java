@@ -19,6 +19,8 @@ import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import rx.Subscriber;
+import rx.functions.Func1;
+import rx.internal.util.UtilityFunctions;
 
 /**
  * Utility functions for use with backpressure.
@@ -140,27 +142,7 @@ public final class BackpressureUtils {
      * @param actual the subscriber to receive the values
      */
     public static <T> void postCompleteDone(AtomicLong requested, Queue<T> queue, Subscriber<? super T> actual) {
-        for (;;) {
-            long r = requested.get();
-            
-            // switch to completed mode only once
-            if ((r & COMPLETED_MASK) != 0L) {
-                return;
-            }
-            
-            //
-            long u = r | COMPLETED_MASK;
-            
-            if (requested.compareAndSet(r, u)) {
-                // if we successfully switched to post-complete mode and there 
-                // are requests available start draining the queue
-                if (r != 0L) {
-                    // if the switch happened when there was outstanding requests, start draining
-                    postCompleteDrain(requested, queue, actual);
-                }
-                return;
-            }
-        }
+        postCompleteDone(requested, queue, actual, UtilityFunctions.<T>identity());
     }
     
     /**
@@ -183,6 +165,82 @@ public final class BackpressureUtils {
      * in the post-completed mode and the queue is draining.
      */
     public static <T> boolean postCompleteRequest(AtomicLong requested, long n, Queue<T> queue, Subscriber<? super T> actual) {
+        return postCompleteRequest(requested, n, queue, actual, UtilityFunctions.<T>identity());
+    }
+    
+    /**
+     * Signals the completion of the main sequence and switches to post-completion replay mode
+     * and allows exit transformation on the queued values.
+     * 
+     * <p>
+     * Don't modify the queue after calling this method!
+     * 
+     * <p>
+     * Post-completion backpressure handles the case when a source produces values based on
+     * requests when it is active but more values are available even after its completion.
+     * In this case, the onCompleted() can't just emit the contents of the queue but has to
+     * coordinate with the requested amounts. This requires two distinct modes: active and
+     * completed. In active mode, requests flow through and the queue is not accessed but
+     * in completed mode, requests no-longer reach the upstream but help in draining the queue.
+     * <p>
+     * The algorithm utilizes the most significant bit (bit 63) of a long value (AtomicLong) since
+     * request amount only goes up to Long.MAX_VALUE (bits 0-62) and negative values aren't
+     * allowed.
+     * 
+     * @param <T> the value type in the queue
+     * @param <R> the value type to emit
+     * @param requested the holder of current requested amount
+     * @param queue the queue holding values to be emitted after completion
+     * @param actual the subscriber to receive the values
+     * @param exitTransform the transformation to apply on the dequeued value to get the value to be emitted
+     */
+    public static <T, R> void postCompleteDone(AtomicLong requested, Queue<T> queue, Subscriber<? super R> actual, Func1<? super T, ? extends R> exitTransform) {
+        for (;;) {
+            long r = requested.get();
+            
+            // switch to completed mode only once
+            if ((r & COMPLETED_MASK) != 0L) {
+                return;
+            }
+            
+            //
+            long u = r | COMPLETED_MASK;
+            
+            if (requested.compareAndSet(r, u)) {
+                // if we successfully switched to post-complete mode and there 
+                // are requests available start draining the queue
+                if (r != 0L) {
+                    // if the switch happened when there was outstanding requests, start draining
+                    postCompleteDrain(requested, queue, actual, exitTransform);
+                }
+                return;
+            }
+        }
+    }
+    
+    /**
+     * Accumulates requests (validated) and handles the completed mode draining of the queue based on the requests
+     * and allows exit transformation on the queued values.
+     * 
+     * <p>
+     * Post-completion backpressure handles the case when a source produces values based on
+     * requests when it is active but more values are available even after its completion.
+     * In this case, the onCompleted() can't just emit the contents of the queue but has to
+     * coordinate with the requested amounts. This requires two distinct modes: active and
+     * completed. In active mode, requests flow through and the queue is not accessed but
+     * in completed mode, requests no-longer reach the upstream but help in draining the queue.
+     * 
+     * @param <T> the value type in the queue
+     * @param <R> the value type to emit
+     * @param requested the holder of current requested amount
+     * @param n the value requested;
+     * @param queue the queue holding values to be emitted after completion
+     * @param actual the subscriber to receive the values
+     * @param exitTransform the transformation to apply on the dequeued value to get the value to be emitted
+     * @return true if in the active mode and the request amount of n can be relayed to upstream, false if
+     * in the post-completed mode and the queue is draining.
+     */
+    public static <T, R> boolean postCompleteRequest(AtomicLong requested, long n, Queue<T> queue, Subscriber<? super R> actual, Func1<? super T, ? extends R> exitTransform) {
         if (n < 0L) {
             throw new IllegalArgumentException("n >= 0 required but it was " + n);
         }
@@ -209,7 +267,7 @@ public final class BackpressureUtils {
                 // if there was no outstanding request before and in
                 // the post-completed state, start draining
                 if (r == COMPLETED_MASK) {
-                    postCompleteDrain(requested, queue, actual);
+                    postCompleteDrain(requested, queue, actual, exitTransform);
                     return false;
                 }
                 // returns true for active mode and false if the completed flag was set
@@ -219,16 +277,37 @@ public final class BackpressureUtils {
     }
     
     /**
-     * Drains the queue based on the outstanding requests in post-completed mode (only!).
+     * Drains the queue based on the outstanding requests in post-completed mode (only!)
+     * and allows exit transformation on the queued values.
      * 
-     * @param <T> the value type to emit
+     * @param <T> the value type in the queue
+     * @param <R> the value type to emit
      * @param requested the holder of current requested amount
      * @param queue the queue holding values to be emitted after completion
-     * @param actual the subscriber to receive the values
+     * @param subscriber the subscriber to receive the values
+     * @param exitTransform the transformation to apply on the dequeued value to get the value to be emitted
      */
-    static <T> void postCompleteDrain(AtomicLong requested, Queue<T> queue, Subscriber<? super T> subscriber) {
+    static <T, R> void postCompleteDrain(AtomicLong requested, Queue<T> queue, Subscriber<? super R> subscriber, Func1<? super T, ? extends R> exitTransform) {
         
         long r = requested.get();
+        
+        // Run on a fast-path if the downstream is unbounded
+        if (r == Long.MAX_VALUE) {
+            for (;;) {
+                if (subscriber.isUnsubscribed()) {
+                    return;
+                }
+                
+                T v = queue.poll();
+                
+                if (v == null) {
+                    subscriber.onCompleted();
+                    return;
+                }
+                
+                subscriber.onNext(exitTransform.call(v));
+            }
+        }
         /*
          * Since we are supposed to be in the post-complete state, 
          * requested will have its top bit set.
@@ -264,7 +343,7 @@ public final class BackpressureUtils {
                     return;
                 }
                 
-                subscriber.onNext(v);
+                subscriber.onNext(exitTransform.call(v));
                 
                 e++;
             }
