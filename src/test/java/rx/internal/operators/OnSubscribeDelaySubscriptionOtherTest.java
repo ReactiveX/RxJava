@@ -16,7 +16,7 @@
 
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 
@@ -243,4 +243,69 @@ public class OnSubscribeDelaySubscriptionOtherTest {
         ts.assertNoErrors();
         ts.assertCompleted();
     }
+    
+    @Test
+    public void unsubscriptionPropagatesBeforeSubscribe() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> other = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.delaySubscription(other).subscribe(ts);
+        
+        Assert.assertFalse("source subscribed?", source.hasObservers());
+        Assert.assertTrue("other not subscribed?", other.hasObservers());
+        
+        ts.unsubscribe();
+        
+        Assert.assertFalse("source subscribed?", source.hasObservers());
+        Assert.assertFalse("other still subscribed?", other.hasObservers());
+    }
+
+    @Test
+    public void unsubscriptionPropagatesAfterSubscribe() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> other = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.delaySubscription(other).subscribe(ts);
+        
+        Assert.assertFalse("source subscribed?", source.hasObservers());
+        Assert.assertTrue("other not subscribed?", other.hasObservers());
+        
+        other.onCompleted();
+        
+        Assert.assertTrue("source not subscribed?", source.hasObservers());
+        Assert.assertFalse("other still subscribed?", other.hasObservers());
+        
+        ts.unsubscribe();
+        
+        Assert.assertFalse("source subscribed?", source.hasObservers());
+        Assert.assertFalse("other still subscribed?", other.hasObservers());
+    }
+
+    @Test
+    public void delayAndTakeUntilNeverSubscribeToSource() {
+        PublishSubject<Integer> delayUntil = PublishSubject.create();
+        PublishSubject<Integer> interrupt = PublishSubject.create();
+        final AtomicBoolean subscribed = new AtomicBoolean(false);
+
+        Observable.just(1)
+        .doOnSubscribe(new Action0() {
+            @Override
+            public void call() {
+                subscribed.set(true);
+            }
+        })
+        .delaySubscription(delayUntil)
+        .takeUntil(interrupt)
+        .subscribe();
+
+        interrupt.onNext(9000);
+        delayUntil.onNext(1);
+
+        Assert.assertFalse(subscribed.get());
+    }
+
 }

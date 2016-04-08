@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
@@ -41,9 +41,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.exceptions.TestException;
-import rx.functions.Action1;
-import rx.functions.Func0;
-import rx.functions.Func1;
+import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
@@ -821,4 +819,47 @@ public class OperatorDelayTest {
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
     }
+
+    @Test
+    public void delaySubscriptionCancelBeforeTime() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.delaySubscription(100, TimeUnit.MILLISECONDS, scheduler).subscribe(ts);
+        
+        Assert.assertFalse("source subscribed?", source.hasObservers());
+        
+        ts.unsubscribe();
+
+        Assert.assertFalse("source subscribed?", source.hasObservers());
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        Assert.assertFalse("source subscribed?", source.hasObservers());
+    }
+
+    @Test
+    public void delayAndTakeUntilNeverSubscribeToSource() {
+        PublishSubject<Integer> interrupt = PublishSubject.create();
+        final AtomicBoolean subscribed = new AtomicBoolean(false);
+        TestScheduler testScheduler = new TestScheduler();
+
+        Observable.just(1)
+        .doOnSubscribe(new Action0() {
+            @Override
+            public void call() {
+                subscribed.set(true);
+            }
+        })
+        .delaySubscription(1, TimeUnit.SECONDS, testScheduler)
+        .takeUntil(interrupt)
+        .subscribe();
+
+        interrupt.onNext(9000);
+        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        Assert.assertFalse(subscribed.get());
+    }
+
 }
