@@ -1,5 +1,43 @@
 # RxJava Releases #
 
+### Version 1.1.3 - April 8, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.3%7C))
+
+#### API enhancements
+
+  - [Pull 3780](https://github.com/ReactiveX/RxJava/pull/3780): `SyncOnSubscribe` has been promoted to `@Beta` API.
+  - [Pull 3799](https://github.com/ReactiveX/RxJava/pull/3799): Added `Completable.andThen(Single)` operator
+  - [Pull 3777](https://github.com/ReactiveX/RxJava/pull/3777): Added `observeOn` overload to configure the prefetch/buffer size
+  - [Pull 3790](https://github.com/ReactiveX/RxJava/pull/3790): Make `Single.lift` public and `@Experimental`
+  - [Pull 3818](https://github.com/ReactiveX/RxJava/pull/3818): `fromCallable` promotion to `@Beta` 
+  - [Pull 3842](https://github.com/ReactiveX/RxJava/pull/3842): improve `ExecutorScheduler` worker unsubscription
+
+#### API deprecations
+
+  - [Pull 3762](https://github.com/ReactiveX/RxJava/pull/3762): Deprecate `CompositeException` constructor with message prefix
+
+#### General enhancements
+
+  - [Pull 3828](https://github.com/ReactiveX/RxJava/pull/3828): `AsyncSubject` now supports backpressure
+  - [Pull 3829](https://github.com/ReactiveX/RxJava/pull/3829): Added `rx.unsafe-disable` system property to disable use of `sun.misc.Unsafe` even if it is available
+  - [Pull 3757](https://github.com/ReactiveX/RxJava/pull/3757): **Warning: behavior change!** Operator `sample` emits last sampled value before termination
+
+#### Performance enhancements
+
+  - [Pull 3795](https://github.com/ReactiveX/RxJava/pull/3795): `observeOn` now replenishes with constant rate
+
+#### Bugfixes
+
+  - [Pull 3809](https://github.com/ReactiveX/RxJava/pull/3809): fix `merge`/`flatMap` crash when the inner source was `just(null)`
+  - [Pull 3789](https://github.com/ReactiveX/RxJava/pull/3789): Prevent `Single.zip()` of zero `Single`s
+  - [Pull 3787](https://github.com/ReactiveX/RxJava/pull/3787): fix `groupBy` delaying group completion till all groups were emitted
+  - [Pull 3823](https://github.com/ReactiveX/RxJava/pull/3823): fix `DoAfterTerminate` handle if action throws
+  - [Pull 3822](https://github.com/ReactiveX/RxJava/pull/3822): make defensive copy of the properties in `RxJavaPlugins`
+  - [Pull 3836](https://github.com/ReactiveX/RxJava/pull/3836): fix `switchMap`/`switchOnNext` producer retention and backpressure
+  - [Pull 3840](https://github.com/ReactiveX/RxJava/pull/3840): fix `concatMap` scalar/empty source behavior
+  - [Pull 3839](https://github.com/ReactiveX/RxJava/pull/3839): fix `takeLast()` backpressure
+  - [Pull 3845](https://github.com/ReactiveX/RxJava/pull/3845): fix delaySubscription(Observable) unsubscription before triggered
+
+
 ### Version 1.1.2 - March 18, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.2%7C))
 
 #### API Enhancements
