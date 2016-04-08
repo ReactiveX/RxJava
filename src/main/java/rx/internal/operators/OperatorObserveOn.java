@@ -83,7 +83,8 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         final NotificationLite<T> on;
         final boolean delayError;
         final Queue<Object> queue;
-        final int bufferSize;
+        /** The emission threshold that should trigger a replenishing request. */
+        final int limit;
         
         // the status of the current stream
         volatile boolean finished;
@@ -97,6 +98,9 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
          * reading finished (acquire).
          */
         Throwable error;
+        
+        /** Remembers how many elements have been emitted before the requests run out. */
+        long emitted;
 
         // do NOT pass the Subscriber through to couple the subscription chain ... unsubscribing on the parent should
         // not prevent anything downstream from consuming, which will happen if the Subscription is chained
@@ -105,12 +109,16 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             this.recursiveScheduler = scheduler.createWorker();
             this.delayError = delayError;
             this.on = NotificationLite.instance();
-            this.bufferSize = (bufferSize > 0) ? bufferSize : RxRingBuffer.SIZE;
+            int calculatedSize = (bufferSize > 0) ? bufferSize : RxRingBuffer.SIZE;
+            // this formula calculates the 75% of the bufferSize, rounded up to the next integer
+            this.limit = calculatedSize - (calculatedSize >> 2);
             if (UnsafeAccess.isUnsafeAvailable()) {
-                queue = new SpscArrayQueue<Object>(this.bufferSize);
+                queue = new SpscArrayQueue<Object>(calculatedSize);
             } else {
-                queue = new SpscAtomicArrayQueue<Object>(this.bufferSize);
+                queue = new SpscAtomicArrayQueue<Object>(calculatedSize);
             }
+            // signal that this is an async operator capable of receiving this many
+            request(calculatedSize);
         }
         
         void init() {
@@ -131,12 +139,6 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             });
             localChild.add(recursiveScheduler);
             localChild.add(this);
-        }
-
-        @Override
-        public void onStart() {
-            // signal that this is an async operator capable of receiving this many
-            request(this.bufferSize);
         }
 
         @Override
@@ -180,9 +182,8 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         // only execute this from schedule()
         @Override
         public void call() {
-            long emitted = 0L;
-
             long missed = 1L;
+            long currentEmission = emitted;
 
             // these are accessed in a tight loop around atomics so
             // loading them into local variables avoids the mandatory re-reading
@@ -197,7 +198,6 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             
             for (;;) {
                 long requestAmount = requested.get();
-                long currentEmission = 0L;
                 
                 while (requestAmount != currentEmission) {
                     boolean done = finished;
@@ -215,7 +215,11 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                     localChild.onNext(localOn.getValue(v));
 
                     currentEmission++;
-                    emitted++;
+                    if (currentEmission == limit) {
+                        requestAmount = BackpressureUtils.produced(requested, currentEmission);
+                        request(currentEmission);
+                        currentEmission = 0L;
+                    }
                 }
                 
                 if (requestAmount == currentEmission) {
@@ -223,19 +227,12 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                         return;
                     }
                 }
-                
-                if (currentEmission != 0L) {
-                    BackpressureUtils.produced(requested, currentEmission);
-                }
-                
+
+                emitted = currentEmission;
                 missed = counter.addAndGet(-missed);
                 if (missed == 0L) {
                     break;
                 }
-            }
-            
-            if (emitted != 0L) {
-                request(emitted);
             }
         }
         

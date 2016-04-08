@@ -864,7 +864,7 @@ public class OperatorObserveOnTest {
     
     @Test
     public void requestExactCompletesImmediately() {
-TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
         
         TestScheduler test = Schedulers.test();
 
@@ -883,5 +883,54 @@ TestSubscriber<Integer> ts = TestSubscriber.create(0);
         ts.assertValueCount(10);
         ts.assertNoErrors();
         ts.assertCompleted();
+    }
+    
+    @Test
+    public void fixedReplenishPattern() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+
+        TestScheduler test = Schedulers.test();
+        
+        final List<Long> requests = new ArrayList<Long>();
+        
+        Observable.range(1, 100)
+        .doOnRequest(new Action1<Long>() {
+            @Override
+            public void call(Long v) {
+                requests.add(v);
+            }
+        })
+        .observeOn(test, 16).subscribe(ts);
+        
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        ts.requestMore(20);
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        ts.requestMore(10);
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        ts.requestMore(50);
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        ts.requestMore(35);
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ts.assertValueCount(100);
+        ts.assertCompleted();
+        ts.assertNoErrors();
+        
+        assertEquals(Arrays.asList(16L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L), requests);
+    }
+    
+    @Test
+    public void bufferSizesWork() {
+        for (int i = 1; i <= 1024; i = i * 2) {
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            Observable.range(1, 1000 * 1000).observeOn(Schedulers.computation(), i)
+            .subscribe(ts);
+            
+            ts.awaitTerminalEvent();
+            ts.assertValueCount(1000 * 1000);
+            ts.assertCompleted();
+            ts.assertNoErrors();
+        }
     }
 }
