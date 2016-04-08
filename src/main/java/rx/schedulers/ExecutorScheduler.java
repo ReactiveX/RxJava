@@ -96,11 +96,20 @@ import rx.subscriptions.*;
         @Override
         public void run() {
             do {
+                if (tasks.isUnsubscribed()) {
+                    queue.clear();
+                    return;
+                }
+
                 ScheduledAction sa = queue.poll();
+                if (sa == null) {
+                    return;
+                }
+
                 if (!sa.isUnsubscribed()) {
                     sa.run();
                 }
-            } while (wip.decrementAndGet() > 0);
+            } while (wip.decrementAndGet() != 0);
         }
         
         @Override
@@ -170,6 +179,7 @@ import rx.subscriptions.*;
         @Override
         public void unsubscribe() {
             tasks.unsubscribe();
+            queue.clear();
         }
         
     }
