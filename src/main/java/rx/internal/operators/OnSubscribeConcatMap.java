@@ -220,7 +220,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
 
             final int delayErrorMode = this.delayErrorMode;
             
-            do {
+            for (;;) {
                 if (actual.isUnsubscribed()) {
                     return;
                 }
@@ -273,6 +273,8 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                             if (source instanceof ScalarSynchronousObservable) {
                                 ScalarSynchronousObservable<? extends R> scalarSource = (ScalarSynchronousObservable<? extends R>) source;
                                 
+                                active = true;
+                                
                                 arbiter.setProducer(new ConcatMapInnerScalarProducer<T, R>(scalarSource.get(), this));
                             } else {
                                 ConcatMapInnerSubscriber<T, R> innerSubscriber = new ConcatMapInnerSubscriber<T, R>(this);
@@ -286,11 +288,17 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                                     return;
                                 }
                             }
+                            request(1);
+                        } else {
+                            request(1);
+                            continue;
                         }
-                        request(1);
                     }
                 }
-            } while (wip.decrementAndGet() != 0);
+                if (wip.decrementAndGet() == 0) {
+                    break;
+                }
+            }
         }
         
         void drainError(Throwable mapperError) {
@@ -352,7 +360,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
 
         @Override
         public void request(long n) {
-            if (!once) {
+            if (!once && n > 0L) {
                 once = true;
                 ConcatMapSubscriber<T, R> p = parent;
                 p.innerNext(value);
