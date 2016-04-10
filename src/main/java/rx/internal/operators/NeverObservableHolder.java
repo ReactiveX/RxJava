@@ -23,7 +23,8 @@ import rx.Observable.OnSubscribe;
  * Holds a singleton instance of a never Observable which is stateless doesn't
  * call any of the Subscriber's methods.
  */
-public enum NeverObservableHolder {
+public enum NeverObservableHolder implements OnSubscribe<Object> {
+    INSTANCE
     ;
     
     /**
@@ -36,12 +37,9 @@ public enum NeverObservableHolder {
     }
     
     /** The singleton instance. */
-    static final Observable<Object> NEVER = Observable.create(new OnSubscribeNever());
+    static final Observable<Object> NEVER = Observable.create(INSTANCE);
     
-    /** The OnSubscribe implementing the never behavior. */
-    static final class OnSubscribeNever implements OnSubscribe<Object> {
-        @Override
-        public void call(Subscriber<? super Object> child) {
-        }
+    @Override
+    public void call(Subscriber<? super Object> child) {
     }
 }

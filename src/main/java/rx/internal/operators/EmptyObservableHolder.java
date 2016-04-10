@@ -23,7 +23,8 @@ import rx.Observable.OnSubscribe;
  * Holds a singleton instance of an empty Observable which is stateless and completes
  * the child subscriber immediately.
  */
-public enum EmptyObservableHolder {
+public enum EmptyObservableHolder implements OnSubscribe<Object> {
+    INSTANCE
     ;
     
     /**
@@ -36,13 +37,10 @@ public enum EmptyObservableHolder {
     }
     
     /** The singleton instance. */
-    static final Observable<Object> EMPTY = Observable.create(new OnSubscribeEmpty());
+    static final Observable<Object> EMPTY = Observable.create(INSTANCE);
     
-    /** The OnSubscribe implementing the empty behavior. */
-    static final class OnSubscribeEmpty implements OnSubscribe<Object> {
-        @Override
-        public void call(Subscriber<? super Object> child) {
-            child.onCompleted();
-        }
+    @Override
+    public void call(Subscriber<? super Object> child) {
+        child.onCompleted();
     }
 }

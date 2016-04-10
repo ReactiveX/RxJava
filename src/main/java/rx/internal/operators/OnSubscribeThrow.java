@@ -17,6 +17,7 @@
 package rx.internal.operators;
 
 import rx.*;
+import rx.Observable.OnSubscribe;
 
 /**
  * An Observable that invokes {@link Observer#onError onError} when the {@link Observer} subscribes to it.
@@ -24,29 +25,22 @@ import rx.*;
  * @param <T>
  *            the type of item (ostensibly) emitted by the Observable
  */
-public final class ThrowObservable<T> extends Observable<T> {
+public final class OnSubscribeThrow<T> implements OnSubscribe<T> {
 
-    public ThrowObservable(final Throwable exception) {
-        super(new OnSubscribeThrow<T>(exception));
+    private final Throwable exception;
+
+    public OnSubscribeThrow(Throwable exception) {
+        this.exception = exception;
     }
 
-    static final class OnSubscribeThrow<T> implements OnSubscribe<T> {
-        private final Throwable exception;
-
-        private OnSubscribeThrow(Throwable exception) {
-            this.exception = exception;
-        }
-
-        /**
-         * Accepts an {@link Observer} and calls its {@link Observer#onError onError} method.
-         * 
-         * @param observer
-         *            an {@link Observer} of this Observable
-         */
-        @Override
-        public void call(Subscriber<? super T> observer) {
-            observer.onError(exception);
-        }
+    /**
+     * Accepts an {@link Observer} and calls its {@link Observer#onError onError} method.
+     * 
+     * @param observer
+     *            an {@link Observer} of this Observable
+     */
+    @Override
+    public void call(Subscriber<? super T> observer) {
+        observer.onError(exception);
     }
-
 }

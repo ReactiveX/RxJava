@@ -1280,7 +1280,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     public static <T> Observable<T> error(Throwable exception) {
-        return new ThrowObservable<T>(exception);
+        return create(new OnSubscribeThrow<T>(exception));
     }
 
     /**
