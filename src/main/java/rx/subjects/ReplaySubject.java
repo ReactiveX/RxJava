@@ -717,8 +717,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @SuppressWarnings("unchecked")
         public T[] toArray(T[] a) {
             List<T> list = new ArrayList<T>();
-            NodeList.Node<Object> l = head();
-            NodeList.Node<Object> next = l.next;
+            NodeList.Node<Object> next = head().next;
             while (next != null) {
                 Object o = leaveTransform.call(next.value);
 
@@ -727,7 +726,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 } else {
                     list.add((T)o);
                 }
-                l = next;
                 next = next.next;
             }
             return list.toArray(a);
