@@ -22,30 +22,30 @@ import rx.functions.*;
  * A Subscriber that forwards the onXXX method calls to callbacks.
  * @param <T> the value type
  */
-public final class LambdaSubscriber<T> extends Subscriber<T> {
-    
-        final Action1<? super T> onNext;
-        final Action1<Throwable> onError;
-        final Action0 onCompleted;
-        
-        public LambdaSubscriber(Action1<? super T> onNext, Action1<Throwable> onError, Action0 onCompleted) {
-            this.onNext = onNext;
-            this.onError = onError;
-            this.onCompleted = onCompleted;
-        }
-        
-        @Override
-        public void onNext(T t) {
-            onNext.call(t);
-        }
-        
-        @Override
-        public void onError(Throwable e) {
-            onError.call(e);
-        }
-        
-        @Override
-        public void onCompleted() {
-            onCompleted.call();
-        }
+public final class ActionSubscriber<T> extends Subscriber<T> {
+
+    final Action1<? super T> onNext;
+    final Action1<Throwable> onError;
+    final Action0 onCompleted;
+
+    public ActionSubscriber(Action1<? super T> onNext, Action1<Throwable> onError, Action0 onCompleted) {
+        this.onNext = onNext;
+        this.onError = onError;
+        this.onCompleted = onCompleted;
     }
+
+    @Override
+    public void onNext(T t) {
+        onNext.call(t);
+    }
+
+    @Override
+    public void onError(Throwable e) {
+        onError.call(e);
+    }
+
+    @Override
+    public void onCompleted() {
+        onCompleted.call();
+    }
+}

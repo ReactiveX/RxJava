@@ -23,26 +23,26 @@ import rx.functions.*;
  * by transforming each signal type into Notifications.
  * @param <T> the value type
  */
-public final class LambdaNotificationObserver<T> implements Observer<T> {
+public final class ActionNotificationObserver<T> implements Observer<T> {
     
-        final Action1<Notification<? super T>> onNotification;
-        
-        public LambdaNotificationObserver(Action1<Notification<? super T>> onNotification) {
-            this.onNotification = onNotification;
-        }
-        
-        @Override
-        public void onNext(T t) {
-            onNotification.call(Notification.createOnNext(t));
-        }
-        
-        @Override
-        public void onError(Throwable e) {
-            onNotification.call(Notification.createOnError(e));
-        }
-        
-        @Override
-        public void onCompleted() {
-            onNotification.call(Notification.createOnCompleted());
-        }
+    final Action1<Notification<? super T>> onNotification;
+
+    public ActionNotificationObserver(Action1<Notification<? super T>> onNotification) {
+        this.onNotification = onNotification;
     }
+
+    @Override
+    public void onNext(T t) {
+        onNotification.call(Notification.createOnNext(t));
+    }
+
+    @Override
+    public void onError(Throwable e) {
+        onNotification.call(Notification.createOnError(e));
+    }
+
+    @Override
+    public void onCompleted() {
+        onNotification.call(Notification.createOnCompleted());
+    }
+}
