@@ -17,7 +17,12 @@
 package rx.plugins;
 
 import rx.Scheduler;
+import rx.annotations.Experimental;
 import rx.functions.Action0;
+import rx.internal.schedulers.CachedThreadScheduler;
+import rx.internal.schedulers.EventLoopsScheduler;
+import rx.internal.schedulers.NewThreadScheduler;
+import rx.schedulers.Schedulers;
 
 /**
  * This plugin class provides 2 ways to customize {@link Scheduler} functionality
@@ -34,6 +39,30 @@ import rx.functions.Action0;
  * <a href="https://github.com/ReactiveX/RxJava/wiki/Plugins">https://github.com/ReactiveX/RxJava/wiki/Plugins</a>.
  */
 public class RxJavaSchedulersHook {
+
+    /**
+     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#computation()}.
+     */
+    @Experimental
+    public static Scheduler createComputationScheduler() {
+        return new EventLoopsScheduler();
+    }
+
+    /**
+     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#io()}.
+     */
+    @Experimental
+    public static Scheduler createIoScheduler() {
+        return new CachedThreadScheduler();
+    }
+
+    /**
+     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#newThread()}.
+     */
+    @Experimental
+    public static Scheduler createNewThreadScheduler() {
+        return new NewThreadScheduler();
+    }
 
     protected RxJavaSchedulersHook() {
 

@@ -19,6 +19,7 @@ import rx.Scheduler;
 import rx.internal.schedulers.*;
 import rx.internal.util.RxRingBuffer;
 import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaSchedulersHook;
 
 import java.util.concurrent.Executor;
 
@@ -34,25 +35,27 @@ public final class Schedulers {
     private static final Schedulers INSTANCE = new Schedulers();
 
     private Schedulers() {
-        Scheduler c = RxJavaPlugins.getInstance().getSchedulersHook().getComputationScheduler();
+        RxJavaSchedulersHook hook = RxJavaPlugins.getInstance().getSchedulersHook();
+
+        Scheduler c = hook.getComputationScheduler();
         if (c != null) {
             computationScheduler = c;
         } else {
-            computationScheduler = new EventLoopsScheduler();
+            computationScheduler = RxJavaSchedulersHook.createComputationScheduler();
         }
 
-        Scheduler io = RxJavaPlugins.getInstance().getSchedulersHook().getIOScheduler();
+        Scheduler io = hook.getIOScheduler();
         if (io != null) {
             ioScheduler = io;
         } else {
-            ioScheduler = new CachedThreadScheduler();
+            ioScheduler = RxJavaSchedulersHook.createIoScheduler();
         }
 
-        Scheduler nt = RxJavaPlugins.getInstance().getSchedulersHook().getNewThreadScheduler();
+        Scheduler nt = hook.getNewThreadScheduler();
         if (nt != null) {
             newThreadScheduler = nt;
         } else {
-            newThreadScheduler = NewThreadScheduler.instance();
+            newThreadScheduler = RxJavaSchedulersHook.createNewThreadScheduler();
         }
     }
 
