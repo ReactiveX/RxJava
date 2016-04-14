@@ -432,4 +432,27 @@ public final class Actions {
             }
         };
     }
+    
+    /**
+     * Wraps an Action0 instance into an Action1 instance where the latter calls
+     * the former.
+     * @param action the action to call
+     * @return the new Action1 instance
+     */
+    public static <T> Action1<T> toAction1(Action0 action) {
+        return new Action1CallsAction0<T>(action);
+    }
+    
+    static final class Action1CallsAction0<T> implements Action1<T> {
+        final Action0 action;
+        
+        public Action1CallsAction0(Action0 action) {
+            this.action = action;
+        }
+        
+        @Override
+        public void call(T t) {
+            action.call();
+        }
+    }
 }
