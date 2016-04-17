@@ -55,11 +55,12 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
             return;
         }
             
-            
-        if (!b && !o.isUnsubscribed()) {
-            o.onCompleted();
-        } else { 
-            o.setProducer(new IterableProducer<T>(o, it));
+        if (!o.isUnsubscribed()) {
+            if (!b) {
+                o.onCompleted();
+            } else { 
+                o.setProducer(new IterableProducer<T>(o, it));
+            }
         }
     }
 

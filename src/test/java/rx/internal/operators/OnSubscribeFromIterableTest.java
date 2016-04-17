@@ -498,4 +498,38 @@ public class OnSubscribeFromIterableTest {
         ts.assertNotCompleted();
     }
 
+    @Test
+    public void deadOnArrival() {
+        Iterable<Integer> it = new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    @Override
+                    public boolean hasNext() {
+                        return false;
+                    }
+                    
+                    @Override
+                    public Integer next() {
+                        throw new NoSuchElementException();
+                    }
+                    
+                    @Override
+                    public void remove() {
+                        // ignored
+                    }
+                };
+            }
+        };
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5);
+        ts.unsubscribe();
+        
+        Observable.from(it).unsafeSubscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+    }
 }
