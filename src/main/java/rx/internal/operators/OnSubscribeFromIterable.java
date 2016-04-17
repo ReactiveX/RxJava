@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.exceptions.Exceptions;
 
 /**
  * Converts an {@code Iterable} sequence into an {@code Observable}.
@@ -42,11 +43,24 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
     @Override
     public void call(final Subscriber<? super T> o) {
-        final Iterator<? extends T> it = is.iterator();
-        if (!it.hasNext() && !o.isUnsubscribed())
+        final Iterator<? extends T> it;
+        boolean b;
+        
+        try {
+            it = is.iterator();
+            
+            b = it.hasNext();
+        } catch (Throwable ex) {
+            Exceptions.throwOrReport(ex, o);
+            return;
+        }
+            
+            
+        if (!b && !o.isUnsubscribed()) {
             o.onCompleted();
-        else 
+        } else { 
             o.setProducer(new IterableProducer<T>(o, it));
+        }
     }
 
     private static final class IterableProducer<T> extends AtomicLong implements Producer {
@@ -80,39 +94,59 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
             final Subscriber<? super T> o = this.o;
             final Iterator<? extends T> it = this.it;
 
-            long r = n;
-            while (true) {
-                /*
-                 * This complicated logic is done to avoid touching the
-                 * volatile `requested` value during the loop itself. If
-                 * it is touched during the loop the performance is
-                 * impacted significantly.
-                 */
-                long numToEmit = r;
-                while (true) {
+            long r = get();
+            long e = 0;
+            
+            for (;;) {
+                while (e != r) {
                     if (o.isUnsubscribed()) {
                         return;
-                    } else if (it.hasNext()) {
-                        if (--numToEmit >= 0) {
-                            o.onNext(it.next());
-                        } else
-                            break;
-                    } else if (!o.isUnsubscribed()) {
-                        o.onCompleted();
-                        return;
-                    } else {
-                        // is unsubscribed
+                    }
+                    
+                    T value;
+                    
+                    try {
+                        value = it.next();
+                    } catch (Throwable ex) {
+                        Exceptions.throwOrReport(ex, o);
                         return;
                     }
-                }
-                r = addAndGet(-r);
-                if (r == 0L) {
-                    // we're done emitting the number requested so
-                    // return
-                    return;
-                }
+                    
+                    o.onNext(value);
 
+                    if (o.isUnsubscribed()) {
+                        return;
+                    }
+
+                    boolean b;
+                    
+                    try {
+                        b = it.hasNext();
+                    } catch (Throwable ex) {
+                        Exceptions.throwOrReport(ex, o);
+                        return;
+                    }
+                    
+                    if (!b) {
+                        if (!o.isUnsubscribed()) {
+                            o.onCompleted();
+                        }
+                        return;
+                    }
+                    
+                    e++;
+                }
+                
+                r = get();
+                if (e == r) {
+                    r = BackpressureUtils.produced(this, e);
+                    if (r == 0L) {
+                        break;
+                    }
+                    e = 0L;
+                }
             }
+            
         }
 
         void fastpath() {
@@ -120,16 +154,39 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
             final Subscriber<? super T> o = this.o;
             final Iterator<? extends T> it = this.it;
 
-            while (true) {
+            for (;;) {
                 if (o.isUnsubscribed()) {
                     return;
-                } else if (it.hasNext()) {
-                    o.onNext(it.next());
-                } else if (!o.isUnsubscribed()) {
-                    o.onCompleted();
+                }
+                
+                T value;
+
+                try {
+                    value = it.next();
+                } catch (Throwable ex) {
+                    Exceptions.throwOrReport(ex, o);
                     return;
-                } else {
-                    // is unsubscribed
+                }
+                
+                o.onNext(value);
+
+                if (o.isUnsubscribed()) {
+                    return;
+                }
+
+                boolean b;
+
+                try {
+                    b  = it.hasNext();
+                } catch (Throwable ex) {
+                    Exceptions.throwOrReport(ex, o);
+                    return;
+                }
+
+                if (!b) {
+                    if (!o.isUnsubscribed()) {
+                        o.onCompleted();
+                    }
                     return;
                 }
             }
