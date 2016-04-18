@@ -813,6 +813,29 @@ public class SingleTest {
     }
 
     @Test
+    public void toCompletableSuccess() {
+        Completable completable = Single.just("value").toCompletable();
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+        completable.subscribe(testSubscriber);
+
+        testSubscriber.assertCompleted();
+        testSubscriber.assertNoValues();
+        testSubscriber.assertNoErrors();
+    }
+
+    @Test
+    public void toCompletableError() {
+        TestException exception = new TestException();
+        Completable completable = Single.error(exception).toCompletable();
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+        completable.subscribe(testSubscriber);
+
+        testSubscriber.assertError(exception);
+        testSubscriber.assertNoValues();
+        testSubscriber.assertNotCompleted();
+    }
+
+    @Test
     public void doOnErrorShouldNotCallActionIfNoErrorHasOccurred() {
         Action1<Throwable> action = mock(Action1.class);
 

@@ -2096,6 +2096,31 @@ public class Single<T> {
     }
 
     /**
+     * Returns a {@link Completable} that discards result of the {@link Single} (similar to
+     * {@link Observable#ignoreElements()}) and calls {@code onCompleted} when this source {@link Single} calls
+     * {@code onSuccess}. Error terminal event is propagated.
+     * <p>
+     * <img width="640" height="295" src=
+     * "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toCompletable.png"
+     * alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a {@link Completable} that calls {@code onCompleted} on it's subscriber when the source {@link Single}
+     *         calls {@code onSuccess}.
+     * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation:
+     *      Completable</a>.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
+     *        with the release number).
+     */
+    @Experimental
+    public final Completable toCompletable() {
+        return Completable.fromSingle(this);
+    }
+
+    /**
      * Returns a Single that mirrors the source Single but applies a timeout policy for its emitted item. If it
      * is not emitted within the specified timeout duration, the resulting Single terminates and notifies
      * subscribers of a {@code TimeoutException}.
