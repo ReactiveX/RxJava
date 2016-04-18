@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.schedulers;
+package rx.internal.schedulers;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import rx.*;
 import rx.functions.Action0;
-import rx.internal.schedulers.*;
 import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.*;
 
-/* package */final class CachedThreadScheduler extends Scheduler implements SchedulerLifecycle {
+public final class CachedThreadScheduler extends Scheduler implements SchedulerLifecycle {
     private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler-";
     static final RxThreadFactory WORKER_THREAD_FACTORY =
             new RxThreadFactory(WORKER_THREAD_NAME_PREFIX);
