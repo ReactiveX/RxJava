@@ -4061,7 +4061,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     public final <R> Observable<R> concatMapIterable(Func1<? super T, ? extends Iterable<? extends R>> collectionSelector) {
-        return concat(map(OperatorMapPair.convertSelector(collectionSelector)));
+        return OnSubscribeFlattenIterable.createFrom(this, collectionSelector, RxRingBuffer.SIZE);
     }
     
     /**
@@ -5672,7 +5672,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     public final <R> Observable<R> flatMapIterable(Func1<? super T, ? extends Iterable<? extends R>> collectionSelector) {
-        return merge(map(OperatorMapPair.convertSelector(collectionSelector)));
+        return flatMapIterable(collectionSelector, RxRingBuffer.SIZE);
     }
 
     /**
@@ -5702,7 +5702,7 @@ public class Observable<T> {
      */
     @Beta
     public final <R> Observable<R> flatMapIterable(Func1<? super T, ? extends Iterable<? extends R>> collectionSelector, int maxConcurrent) {
-        return merge(map(OperatorMapPair.convertSelector(collectionSelector)), maxConcurrent);
+        return OnSubscribeFlattenIterable.createFrom(this, collectionSelector, maxConcurrent);
     }
     
     /**
