@@ -100,14 +100,17 @@ import rx.subscriptions.*;
                     queue.clear();
                     return;
                 }
-
                 ScheduledAction sa = queue.poll();
                 if (sa == null) {
                     return;
                 }
-
                 if (!sa.isUnsubscribed()) {
-                    sa.run();
+                    if (!tasks.isUnsubscribed()) {
+                        sa.run();
+                    } else {
+                        queue.clear();
+                        return;
+                    }
                 }
             } while (wip.decrementAndGet() != 0);
         }
