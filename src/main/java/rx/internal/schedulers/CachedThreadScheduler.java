@@ -204,13 +204,21 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         }
 
         @Override
-        public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
+        public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
             if (innerSubscription.isUnsubscribed()) {
                 // don't schedule, we are unsubscribed
                 return Subscriptions.unsubscribed();
             }
 
-            ScheduledAction s = threadWorker.scheduleActual(action, delayTime, unit);
+            ScheduledAction s = threadWorker.scheduleActual(new Action0() {
+                @Override
+                public void call() {
+                    if (isUnsubscribed()) {
+                        return;
+                    }
+                    action.call();
+                }
+            }, delayTime, unit);
             innerSubscription.add(s);
             s.addParent(innerSubscription);
             return s;
