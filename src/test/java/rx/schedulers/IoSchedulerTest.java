@@ -24,7 +24,7 @@ import rx.*;
 import rx.Scheduler.Worker;
 import rx.functions.*;
 
-public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
+public class IoSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Override
     protected Scheduler getScheduler() {
@@ -71,13 +71,13 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     public void testCancelledTaskRetention() throws InterruptedException {
         Worker w = Schedulers.io().createWorker();
         try {
-            ExecutorSchedulerTest.testCancelledRetention(w, false);
+            SchedulerTests.testCancelledRetention(w, false);
         } finally {
             w.unsubscribe();
         }
         w = Schedulers.io().createWorker();
         try {
-            ExecutorSchedulerTest.testCancelledRetention(w, true);
+            SchedulerTests.testCancelledRetention(w, true);
         } finally {
             w.unsubscribe();
         }

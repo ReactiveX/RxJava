@@ -157,13 +157,13 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     public void testCancelledTaskRetention() throws InterruptedException {
         Worker w = Schedulers.computation().createWorker();
         try {
-            ExecutorSchedulerTest.testCancelledRetention(w, false);
+            SchedulerTests.testCancelledRetention(w, false);
         } finally {
             w.unsubscribe();
         }
         w = Schedulers.computation().createWorker();
         try {
-            ExecutorSchedulerTest.testCancelledRetention(w, true);
+            SchedulerTests.testCancelledRetention(w, true);
         } finally {
             w.unsubscribe();
         }

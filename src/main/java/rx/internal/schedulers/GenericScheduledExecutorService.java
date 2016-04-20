@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Scheduler;
 import rx.internal.util.RxThreadFactory;
-import rx.schedulers.*;
 
 /**
  * A default {@link ScheduledExecutorService} that can be used for scheduling actions when a {@link Scheduler} implementation doesn't have that ability.

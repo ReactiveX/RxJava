@@ -4,14 +4,20 @@ import rx.CapturingUncaughtExceptionHandler;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
+import rx.functions.Action0;
+import rx.functions.Actions;
+import rx.internal.schedulers.NewThreadWorker;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-final class SchedulerTests {
+public final class SchedulerTests {
     private SchedulerTests() {
         // No instances.
     }
@@ -23,7 +29,7 @@ final class SchedulerTests {
      * Schedulers which execute on a separate thread from their calling thread should exhibit this behavior. Schedulers
      * which execute on their calling thread may not.
      */
-    static void testUnhandledErrorIsDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
+    public static void testUnhandledErrorIsDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
         Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
         try {
             CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
@@ -57,7 +63,7 @@ final class SchedulerTests {
      * This is a companion test to {@link #testUnhandledErrorIsDeliveredToThreadHandler}, and is needed only for the
      * same Schedulers.
      */
-    static void testHandledErrorIsNotDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
+    public static void testHandledErrorIsNotDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
         Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
         try {
             CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
@@ -85,6 +91,72 @@ final class SchedulerTests {
             assertEquals("Our error should have been delivered to the observer", error, cause);
         } finally {
             Thread.setDefaultUncaughtExceptionHandler(originalHandler);
+        }
+    }
+
+    public static void testCancelledRetention(Scheduler.Worker w, boolean periodic) throws InterruptedException {
+        System.out.println("Wait before GC");
+        Thread.sleep(1000);
+
+        System.out.println("GC");
+        System.gc();
+
+        Thread.sleep(1000);
+
+
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage memHeap = memoryMXBean.getHeapMemoryUsage();
+        long initial = memHeap.getUsed();
+
+        System.out.printf("Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
+
+        int n = 500 * 1000;
+        if (periodic) {
+            final CountDownLatch cdl = new CountDownLatch(n);
+            final Action0 action = new Action0() {
+                @Override
+                public void call() {
+                    cdl.countDown();
+                }
+            };
+            for (int i = 0; i < n; i++) {
+                if (i % 50000 == 0) {
+                    System.out.println("  -> still scheduling: " + i);
+                }
+                w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
+            }
+
+            System.out.println("Waiting for the first round to finish...");
+            cdl.await();
+        } else {
+            for (int i = 0; i < n; i++) {
+                if (i % 50000 == 0) {
+                    System.out.println("  -> still scheduling: " + i);
+                }
+                w.schedule(Actions.empty(), 1, TimeUnit.DAYS);
+            }
+        }
+
+        memHeap = memoryMXBean.getHeapMemoryUsage();
+        long after = memHeap.getUsed();
+        System.out.printf("Peak: %.3f MB%n", after / 1024.0 / 1024.0);
+
+        w.unsubscribe();
+
+        System.out.println("Wait before second GC");
+        Thread.sleep(NewThreadWorker.PURGE_FREQUENCY + 2000);
+
+        System.out.println("Second GC");
+        System.gc();
+
+        Thread.sleep(1000);
+
+        memHeap = memoryMXBean.getHeapMemoryUsage();
+        long finish = memHeap.getUsed();
+        System.out.printf("After: %.3f MB%n", finish / 1024.0 / 1024.0);
+
+        if (finish > initial * 5) {
+            fail(String.format("Tasks retained: %.3f -> %.3f -> %.3f", initial / 1024 / 1024.0, after / 1024 / 1024.0, finish / 1024 / 1024d));
         }
     }
 
