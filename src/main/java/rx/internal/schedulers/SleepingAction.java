@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.schedulers;
+package rx.internal.schedulers;
 
 import rx.Scheduler;
 import rx.functions.Action0;

@@ -61,21 +61,21 @@ public final class Schedulers {
 
     /**
      * Creates and returns a {@link Scheduler} that executes work immediately on the current thread.
-     * 
-     * @return an {@link ImmediateScheduler} instance
+     *
+     * @return a {@link Scheduler} that executes work immediately
      */
     public static Scheduler immediate() {
-        return ImmediateScheduler.instance();
+        return rx.internal.schedulers.ImmediateScheduler.INSTANCE;
     }
 
     /**
      * Creates and returns a {@link Scheduler} that queues work on the current thread to be executed after the
      * current work completes.
-     * 
-     * @return a {@link TrampolineScheduler} instance
+     *
+     * @return a {@link Scheduler} that queues work on the current thread
      */
     public static Scheduler trampoline() {
-        return TrampolineScheduler.instance();
+        return rx.internal.schedulers.TrampolineScheduler.INSTANCE;
     }
 
     /**
@@ -83,7 +83,7 @@ public final class Schedulers {
      * <p>
      * Unhandled errors will be delivered to the scheduler Thread's {@link java.lang.Thread.UncaughtExceptionHandler}.
      *
-     * @return a {@link NewThreadScheduler} instance
+     * @return a {@link Scheduler} that creates new threads
      */
     public static Scheduler newThread() {
         return INSTANCE.newThreadScheduler;

@@ -15,63 +15,20 @@
  */
 package rx.schedulers;
 
-import java.util.concurrent.TimeUnit;
-
 import rx.Scheduler;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.subscriptions.BooleanSubscription;
-import rx.subscriptions.Subscriptions;
 
 /**
- * Executes work immediately on the current thread.
+ * @deprecated This type was never publicly instantiable. Use {@link Schedulers#immediate()}.
  */
+@Deprecated
+@SuppressWarnings("unused") // Class was part of public API.
 public final class ImmediateScheduler extends Scheduler {
-    private static final ImmediateScheduler INSTANCE = new ImmediateScheduler();
-
-    /* package */static ImmediateScheduler instance() {
-        return INSTANCE;
-    }
-
-    /* package accessible for unit tests */ImmediateScheduler() {
+    private ImmediateScheduler() {
+        throw new AssertionError();
     }
 
     @Override
     public Worker createWorker() {
-        return new InnerImmediateScheduler();
+        return null;
     }
-
-    private class InnerImmediateScheduler extends Scheduler.Worker implements Subscription {
-
-        final BooleanSubscription innerSubscription = new BooleanSubscription();
-
-        InnerImmediateScheduler() {
-        }
-
-        @Override
-        public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
-            // since we are executing immediately on this thread we must cause this thread to sleep
-            long execTime = ImmediateScheduler.this.now() + unit.toMillis(delayTime);
-
-            return schedule(new SleepingAction(action, this, execTime));
-        }
-
-        @Override
-        public Subscription schedule(Action0 action) {
-            action.call();
-            return Subscriptions.unsubscribed();
-        }
-
-        @Override
-        public void unsubscribe() {
-            innerSubscription.unsubscribe();
-        }
-
-        @Override
-        public boolean isUnsubscribed() {
-            return innerSubscription.isUnsubscribed();
-        }
-
-    }
-
 }

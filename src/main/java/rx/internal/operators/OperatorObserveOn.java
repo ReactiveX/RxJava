@@ -22,11 +22,11 @@ import rx.*;
 import rx.Observable.Operator;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
+import rx.internal.schedulers.*;
 import rx.internal.util.*;
 import rx.internal.util.atomic.SpscAtomicArrayQueue;
 import rx.internal.util.unsafe.*;
 import rx.plugins.RxJavaPlugins;
-import rx.schedulers.*;
 
 /**
  * Delivers events on the specified {@code Scheduler} asynchronously via an unbounded buffer.

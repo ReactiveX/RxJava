@@ -13,14 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package rx.schedulers;
+package rx.internal.schedulers;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.*;
 import rx.functions.Action0;
-import rx.internal.schedulers.*;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.*;
 
@@ -30,7 +29,7 @@ import rx.subscriptions.*;
  * Note that thread-hopping is unavoidable with this kind of Scheduler as we don't know about the underlying
  * threading behavior of the executor.
  */
-/* public */final class ExecutorScheduler extends Scheduler {
+public final class ExecutorScheduler extends Scheduler {
     final Executor executor;
     public ExecutorScheduler(Executor executor) {
         this.executor = executor;
