@@ -95,7 +95,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
             final Subscriber<? super T> o = this.o;
             final Iterator<? extends T> it = this.it;
 
-            long r = get();
+            long r = n;
             long e = 0;
             
             for (;;) {
