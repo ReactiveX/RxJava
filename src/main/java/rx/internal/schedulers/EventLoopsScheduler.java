@@ -23,10 +23,7 @@ import rx.functions.Action0;
 import rx.internal.util.*;
 import rx.subscriptions.*;
 
-public class EventLoopsScheduler extends Scheduler implements SchedulerLifecycle {
-    /** Manages a fixed number of workers. */
-    private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
-    static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
+public final class EventLoopsScheduler extends Scheduler implements SchedulerLifecycle {
     /**
      * Key to setting the maximum number of computation scheduler threads.
      * Zero or less is interpreted as use available. Capped by available.
@@ -48,7 +45,7 @@ public class EventLoopsScheduler extends Scheduler implements SchedulerLifecycle
     
     static final PoolWorker SHUTDOWN_WORKER;
     static {
-        SHUTDOWN_WORKER = new PoolWorker(new RxThreadFactory("RxComputationShutdown-"));
+        SHUTDOWN_WORKER = new PoolWorker(RxThreadFactory.NONE);
         SHUTDOWN_WORKER.unsubscribe();
     }
     
@@ -58,12 +55,12 @@ public class EventLoopsScheduler extends Scheduler implements SchedulerLifecycle
         final PoolWorker[] eventLoops;
         long n;
 
-        FixedSchedulerPool(int maxThreads) {
+        FixedSchedulerPool(ThreadFactory threadFactory, int maxThreads) {
             // initialize event loops
             this.cores = maxThreads;
             this.eventLoops = new PoolWorker[maxThreads];
             for (int i = 0; i < maxThreads; i++) {
-                this.eventLoops[i] = new PoolWorker(THREAD_FACTORY);
+                this.eventLoops[i] = new PoolWorker(threadFactory);
             }
         }
 
@@ -83,15 +80,17 @@ public class EventLoopsScheduler extends Scheduler implements SchedulerLifecycle
         }
     }
     /** This will indicate no pool is active. */
-    static final FixedSchedulerPool NONE = new FixedSchedulerPool(0);
+    static final FixedSchedulerPool NONE = new FixedSchedulerPool(null, 0);
 
+    final ThreadFactory threadFactory;
     final AtomicReference<FixedSchedulerPool> pool;
     
     /**
      * Create a scheduler with pool size equal to the available processor
      * count and using least-recent worker selection policy.
      */
-    public EventLoopsScheduler() {
+    public EventLoopsScheduler(ThreadFactory threadFactory) {
+        this.threadFactory = threadFactory;
         this.pool = new AtomicReference<FixedSchedulerPool>(NONE);
         start();
     }
@@ -103,7 +102,7 @@ public class EventLoopsScheduler extends Scheduler implements SchedulerLifecycle
     
     @Override
     public void start() {
-        FixedSchedulerPool update = new FixedSchedulerPool(MAX_THREADS);
+        FixedSchedulerPool update = new FixedSchedulerPool(threadFactory, MAX_THREADS);
         if (!pool.compareAndSet(NONE, update)) {
             update.shutdown();
         }

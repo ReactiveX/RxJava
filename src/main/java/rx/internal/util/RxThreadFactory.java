@@ -19,6 +19,12 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
 public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
+    public static final ThreadFactory NONE = new ThreadFactory() {
+        @Override public Thread newThread(Runnable r) {
+            throw new AssertionError("No threads allowed.");
+        }
+    };
+
     final String prefix;
 
     public RxThreadFactory(String prefix) {

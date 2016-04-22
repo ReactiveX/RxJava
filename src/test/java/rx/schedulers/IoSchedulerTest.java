@@ -43,7 +43,7 @@ public class IoSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
             @Override
             public String call(Integer t) {
-                assertTrue(Thread.currentThread().getName().startsWith("RxCachedThreadScheduler"));
+                assertTrue(Thread.currentThread().getName().startsWith("RxIoScheduler"));
                 return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
             }
         });

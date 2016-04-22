@@ -238,7 +238,7 @@ public class OperatorObserveOnTest {
      * Confirm that running on a ThreadPoolScheduler allows multiple threads but is still ordered.
      */
     @Test
-    public void testObserveOnWithThreadPoolScheduler() {
+    public void testObserveOnWithComputationScheduler() {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
@@ -255,7 +255,7 @@ public class OperatorObserveOnTest {
                     @Override
                     public void call(Integer t1) {
                         assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
-                        assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+                        assertTrue(Thread.currentThread().getName().startsWith("RxComputationScheduler"));
                     }
 
                 });
@@ -295,7 +295,7 @@ public class OperatorObserveOnTest {
                     @Override
                     public void call(Integer t1) {
                         assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
-                        assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+                        assertTrue(Thread.currentThread().getName().startsWith("RxComputationScheduler"));
                     }
 
                 });
