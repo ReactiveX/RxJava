@@ -110,7 +110,6 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
     private static final class BufferSubscriber<T> extends Subscriber<T> implements BackpressureDrainManager.BackpressureQueueCallback {
         // TODO get a different queue implementation
         private final ConcurrentLinkedQueue<Object> queue = new ConcurrentLinkedQueue<Object>();
-        private final Long baseCapacity;
         private final AtomicLong capacity;
         private final Subscriber<? super T> child;
         private final AtomicBoolean saturated = new AtomicBoolean(false);
@@ -122,7 +121,6 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         public BufferSubscriber(final Subscriber<? super T> child, Long capacity, Action0 onOverflow,
                                 BackpressureOverflow.Strategy overflowStrategy) {
             this.child = child;
-            this.baseCapacity = capacity;
             this.capacity = capacity != null ? new AtomicLong(capacity) : null;
             this.onOverflow = onOverflow;
             this.manager = new BackpressureDrainManager(this);
