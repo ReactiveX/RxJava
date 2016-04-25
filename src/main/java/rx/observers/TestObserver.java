@@ -113,7 +113,11 @@ public class TestObserver<T> implements Observer<T> {
      */
     public void assertReceivedOnNext(List<T> items) {
         if (onNextEvents.size() != items.size()) {
-            throw new AssertionError("Number of items does not match. Provided: " + items.size() + "  Actual: " + onNextEvents.size());
+            throw new AssertionError("Number of items does not match. Provided: " + items.size() + "  Actual: " + onNextEvents.size()
+            + ".\n"
+            + "Provided values: " + items
+            + "\n"
+            + "Actual values: " + onNextEvents);
         }
 
         for (int i = 0; i < items.size(); i++) {

@@ -595,4 +595,24 @@ public class TestSubscriberTest {
         
         ts.awaitTerminalEvent();
     }
+
+    @Test
+    public void assertValuesShouldThrowIfNumberOfItemsDoesNotMatch() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        ts.onNext("a");
+        ts.onNext("b");
+        ts.onNext("c");
+
+        try {
+            ts.assertValues("1", "2");
+            fail();
+        } catch (AssertionError expected) {
+            assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
+                    "Provided values: [1, 2]\n" +
+                    "Actual values: [a, b, c]",
+                    expected.getMessage()
+            );
+        }
+    }
 }
