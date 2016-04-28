@@ -16,28 +16,21 @@
 package rx.internal.operators;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
-import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.internal.operators.OperatorMap;
+import rx.exceptions.*;
+import rx.functions.*;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class OperatorMapTest {
 
@@ -338,5 +331,28 @@ public class OperatorMapTest {
                 System.out.println(s);
             }
         });
+    }
+    
+    @Test
+    public void functionCrashUnsubscribes() {
+        
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        ps.map(new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer v) { 
+                throw new TestException(); 
+            }
+        }).unsafeSubscribe(ts);
+        
+        Assert.assertTrue("Not subscribed?", ps.hasObservers());
+        
+        ps.onNext(1);
+        
+        Assert.assertFalse("Subscribed?", ps.hasObservers());
+        
+        ts.assertError(TestException.class);
     }
 }

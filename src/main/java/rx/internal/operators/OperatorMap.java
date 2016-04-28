@@ -15,16 +15,20 @@
  */
 package rx.internal.operators;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Subscriber;
-import rx.exceptions.Exceptions;
+import rx.exceptions.*;
 import rx.functions.Func1;
+import rx.internal.util.RxJavaPluginUtils;
 
 /**
  * Applies a function of your choosing to every item emitted by an {@code Observable}, and emits the results of
  * this transformation as a new {@code Observable}.
  * <p>
  * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/map.png" alt="">
+ * 
+ * @param <T> the input value type
+ * @param <R> the return value type
  */
 public final class OperatorMap<T, R> implements Operator<R, T> {
 
@@ -36,28 +40,64 @@ public final class OperatorMap<T, R> implements Operator<R, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super R> o) {
-        return new Subscriber<T>(o) {
+        MapSubscriber<T, R> parent = new MapSubscriber<T, R>(o, transformer);
+        o.add(parent);
+        return parent;
+    }
+    
+    static final class MapSubscriber<T, R> extends Subscriber<T> {
+        
+        final Subscriber<? super R> actual;
+        
+        final Func1<? super T, ? extends R> mapper;
 
-            @Override
-            public void onCompleted() {
-                o.onCompleted();
+        boolean done;
+        
+        public MapSubscriber(Subscriber<? super R> actual, Func1<? super T, ? extends R> mapper) {
+            this.actual = actual;
+            this.mapper = mapper;
+        }
+        
+        @Override
+        public void onNext(T t) {
+            R result;
+            
+            try {
+                result = mapper.call(t);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                unsubscribe();
+                onError(OnErrorThrowable.addValueAsLastCause(ex, t));
+                return;
             }
-
-            @Override
-            public void onError(Throwable e) {
-                o.onError(e);
+            
+            actual.onNext(result);
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            if (done) {
+                RxJavaPluginUtils.handleException(e);
+                return;
             }
-
-            @Override
-            public void onNext(T t) {
-                try {
-                    o.onNext(transformer.call(t));
-                } catch (Throwable e) {
-                    Exceptions.throwOrReport(e, this, t);
-                }
+            done = true;
+            
+            actual.onError(e);
+        }
+        
+        
+        @Override
+        public void onCompleted() {
+            if (done) {
+                return;
             }
-
-        };
+            actual.onCompleted();
+        }
+        
+        @Override
+        public void setProducer(Producer p) {
+            actual.setProducer(p);
+        }
     }
 
 }

@@ -28,6 +28,7 @@ import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
+import rx.subjects.PublishSubject;
 
 public class OperatorFilterTest {
 
@@ -54,6 +55,7 @@ public class OperatorFilterTest {
 
     /**
      * Make sure we are adjusting subscriber.request() for filtered items
+     * @throws InterruptedException on interrupt
      */
     @Test(timeout = 500)
     public void testWithBackpressure() throws InterruptedException {
@@ -100,6 +102,7 @@ public class OperatorFilterTest {
 
     /**
      * Make sure we are adjusting subscriber.request() for filtered items
+     * @throws InterruptedException on interrupt
      */
     @Test(timeout = 500000)
     public void testWithBackpressure2() throws InterruptedException {
@@ -167,4 +170,28 @@ public class OperatorFilterTest {
             }
         }
     }
+
+    @Test
+    public void functionCrashUnsubscribes() {
+        
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        ps.filter(new Func1<Integer, Boolean>() {
+            @Override
+            public Boolean call(Integer v) { 
+                throw new TestException(); 
+            }
+        }).unsafeSubscribe(ts);
+        
+        Assert.assertTrue("Not subscribed?", ps.hasObservers());
+        
+        ps.onNext(1);
+        
+        Assert.assertFalse("Subscribed?", ps.hasObservers());
+        
+        ts.assertError(TestException.class);
+    }
+
 }
