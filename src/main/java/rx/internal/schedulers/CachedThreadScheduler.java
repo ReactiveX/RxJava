@@ -24,31 +24,25 @@ import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.*;
 
 public final class CachedThreadScheduler extends Scheduler implements SchedulerLifecycle {
-    private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler-";
-    static final RxThreadFactory WORKER_THREAD_FACTORY =
-            new RxThreadFactory(WORKER_THREAD_NAME_PREFIX);
-
-    private static final String EVICTOR_THREAD_NAME_PREFIX = "RxCachedWorkerPoolEvictor-";
-    static final RxThreadFactory EVICTOR_THREAD_FACTORY =
-            new RxThreadFactory(EVICTOR_THREAD_NAME_PREFIX);
-
     private static final long KEEP_ALIVE_TIME = 60;
     private static final TimeUnit KEEP_ALIVE_UNIT = TimeUnit.SECONDS;
     
     static final ThreadWorker SHUTDOWN_THREADWORKER;
     static {
-        SHUTDOWN_THREADWORKER = new ThreadWorker(new RxThreadFactory("RxCachedThreadSchedulerShutdown-"));
+        SHUTDOWN_THREADWORKER = new ThreadWorker(RxThreadFactory.NONE);
         SHUTDOWN_THREADWORKER.unsubscribe();
     }
     
     private static final class CachedWorkerPool {
+        private final ThreadFactory threadFactory;
         private final long keepAliveTime;
         private final ConcurrentLinkedQueue<ThreadWorker> expiringWorkerQueue;
         private final CompositeSubscription allWorkers;
         private final ScheduledExecutorService evictorService;
         private final Future<?> evictorTask;
 
-        CachedWorkerPool(long keepAliveTime, TimeUnit unit) {
+        CachedWorkerPool(final ThreadFactory threadFactory, long keepAliveTime, TimeUnit unit) {
+            this.threadFactory = threadFactory;
             this.keepAliveTime = unit != null ? unit.toNanos(keepAliveTime) : 0L;
             this.expiringWorkerQueue = new ConcurrentLinkedQueue<ThreadWorker>();
             this.allWorkers = new CompositeSubscription();
@@ -56,7 +50,13 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
             ScheduledExecutorService evictor = null;
             Future<?> task = null;
             if (unit != null) {
-                evictor = Executors.newScheduledThreadPool(1, EVICTOR_THREAD_FACTORY);
+                evictor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+                    @Override public Thread newThread(Runnable r) {
+                        Thread thread = threadFactory.newThread(r);
+                        thread.setName(thread.getName() + " (Evictor)");
+                        return thread;
+                    }
+                });
                 NewThreadWorker.tryEnableCancelPolicy(evictor);
                 task = evictor.scheduleWithFixedDelay(
                         new Runnable() {
@@ -83,7 +83,7 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
             }
 
             // No cached worker found, so create a new one.
-            ThreadWorker w = new ThreadWorker(WORKER_THREAD_FACTORY);
+            ThreadWorker w = new ThreadWorker(threadFactory);
             allWorkers.add(w);
             return w;
         }
@@ -131,22 +131,25 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         }
     }
 
+    final ThreadFactory threadFactory;
     final AtomicReference<CachedWorkerPool> pool;
     
     static final CachedWorkerPool NONE;
     static {
-        NONE = new CachedWorkerPool(0, null);
+        NONE = new CachedWorkerPool(null, 0, null);
         NONE.shutdown();
     }
     
-    public CachedThreadScheduler() {
+    public CachedThreadScheduler(ThreadFactory threadFactory) {
+        this.threadFactory = threadFactory;
         this.pool = new AtomicReference<CachedWorkerPool>(NONE);
         start();
     }
     
     @Override
     public void start() {
-        CachedWorkerPool update = new CachedWorkerPool(KEEP_ALIVE_TIME, KEEP_ALIVE_UNIT);
+        CachedWorkerPool update =
+            new CachedWorkerPool(threadFactory, KEEP_ALIVE_TIME, KEEP_ALIVE_UNIT);
         if (!pool.compareAndSet(NONE, update)) {
             update.shutdown();
         }

@@ -15,22 +15,21 @@
  */
 package rx.internal.schedulers;
 
+import java.util.concurrent.ThreadFactory;
 import rx.Scheduler;
-import rx.internal.util.RxThreadFactory;
 
 /**
  * Schedules work on a new thread.
  */
 public final class NewThreadScheduler extends Scheduler {
+    private final ThreadFactory threadFactory;
 
-    private static final String THREAD_NAME_PREFIX = "RxNewThreadScheduler-";
-    private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
-
-    public NewThreadScheduler() {
+    public NewThreadScheduler(ThreadFactory threadFactory) {
+        this.threadFactory = threadFactory;
     }
 
     @Override
     public Worker createWorker() {
-        return new NewThreadWorker(THREAD_FACTORY);
+        return new NewThreadWorker(threadFactory);
     }
 }
