@@ -46,6 +46,28 @@ public class ExceptionsTest {
         });
     }
 
+    /**
+     * https://github.com/ReactiveX/RxJava/issues/3885
+     */
+    @Test(expected = OnCompletedFailedException.class)
+    public void testOnCompletedExceptionIsThrown() {
+        Observable.empty()
+            .subscribe(new Subscriber<Object>() {
+                @Override
+                public void onCompleted() {
+                    throw new RuntimeException();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                }
+
+                @Override
+                public void onNext(Object o) {
+                }
+            });
+    }
+
     @Test
     public void testStackOverflowWouldOccur() {
         final PublishSubject<Integer> a = PublishSubject.create();
