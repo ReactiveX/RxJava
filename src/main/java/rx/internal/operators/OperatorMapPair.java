@@ -15,12 +15,11 @@
  */
 package rx.internal.operators;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.Operator;
 import rx.exceptions.*;
-import rx.Subscriber;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
+import rx.internal.util.RxJavaPluginUtils;
 
 /**
  * An {@link Operator} that pairs up items emitted by a source {@link Observable} with the sequence of items
@@ -45,6 +44,7 @@ public final class OperatorMapPair<T, U, R> implements Operator<Observable<? ext
      */
     public static <T, U> Func1<T, Observable<U>> convertSelector(final Func1<? super T, ? extends Iterable<? extends U>> selector) {
         return new Func1<T, Observable<U>>() {
+            @SuppressWarnings("cast")
             @Override
             public Observable<U> call(T t1) {
                 return (Observable<U>)Observable.from(selector.call(t1));
@@ -62,34 +62,84 @@ public final class OperatorMapPair<T, U, R> implements Operator<Observable<? ext
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super Observable<? extends R>> o) {
-        return new Subscriber<T>(o) {
+        MapPairSubscriber<T, U, R> parent = new MapPairSubscriber<T, U, R>(o, collectionSelector, resultSelector);
+        o.add(parent);
+        return parent;
+    }
+    
+    static final class MapPairSubscriber<T, U, R> extends Subscriber<T> {
+        
+        final Subscriber<? super Observable<? extends R>> actual;
+        
+        final Func1<? super T, ? extends Observable<? extends U>> collectionSelector;
+        final Func2<? super T, ? super U, ? extends R> resultSelector;
 
-            @Override
-            public void onCompleted() {
-                o.onCompleted();
+        boolean done;
+        
+        public MapPairSubscriber(Subscriber<? super Observable<? extends R>> actual, 
+                Func1<? super T, ? extends Observable<? extends U>> collectionSelector,
+                        Func2<? super T, ? super U, ? extends R> resultSelector) {
+            this.actual = actual;
+            this.collectionSelector = collectionSelector;
+            this.resultSelector = resultSelector;
+        }
+        
+        @Override
+        public void onNext(T outer) {
+            
+            Observable<? extends U> intermediate;
+            
+            try {
+                intermediate = collectionSelector.call(outer);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                unsubscribe();
+                onError(OnErrorThrowable.addValueAsLastCause(ex, outer));
+                return;
             }
-
-            @Override
-            public void onError(Throwable e) {
-                o.onError(e);
+            
+            actual.onNext(intermediate.map(new OuterInnerMapper<T, U, R>(outer, resultSelector)));
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            if (done) {
+                RxJavaPluginUtils.handleException(e);
+                return;
             }
-
-            @Override
-            public void onNext(final T outer) {
-                try {
-                    o.onNext(collectionSelector.call(outer).map(new Func1<U, R>() {
-
-                        @Override
-                        public R call(U inner) {
-                            return resultSelector.call(outer, inner);
-                        }
-                    }));
-                } catch (Throwable e) {
-                    Exceptions.throwOrReport(e, o, outer);
-                }
+            done = true;
+            
+            actual.onError(e);
+        }
+        
+        
+        @Override
+        public void onCompleted() {
+            if (done) {
+                return;
             }
-
-        };
+            actual.onCompleted();
+        }
+        
+        @Override
+        public void setProducer(Producer p) {
+            actual.setProducer(p);
+        }
     }
 
+    static final class OuterInnerMapper<T, U, R> implements Func1<U, R> {
+        final T outer;
+        final Func2<? super T, ? super U, ? extends R> resultSelector;
+
+        public OuterInnerMapper(T outer, Func2<? super T, ? super U, ? extends R> resultSelector) {
+            this.outer = outer;
+            this.resultSelector = resultSelector;
+        }
+        
+        @Override
+        public R call(U inner) {
+            return resultSelector.call(outer, inner);
+        }
+       
+    }
 }
