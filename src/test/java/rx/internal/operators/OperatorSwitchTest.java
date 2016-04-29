@@ -837,12 +837,15 @@ public class OperatorSwitchTest {
             
             final Queue<Throwable> q = new ConcurrentLinkedQueue<Throwable>();
             
+            final long[] lastSeen = { 0L };
+            
             final int j = i;
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>(i) {
                 int count;
                 @Override
                 public void onNext(Integer t) {
                     super.onNext(t);
+                    lastSeen[0] = System.currentTimeMillis();
                     if (++count == j) {
                         count = 0;
                         requestMore(j);
@@ -867,13 +870,13 @@ public class OperatorSwitchTest {
             .timeout(10, TimeUnit.SECONDS)
             .subscribe(ts);
             
-            ts.awaitTerminalEvent(30, TimeUnit.SECONDS);
+            ts.awaitTerminalEvent(45, TimeUnit.SECONDS);
             if (!q.isEmpty()) {
                 throw new AssertionError("Dropped exceptions", new CompositeException(q));
             }
             ts.assertNoErrors();
             if (ts.getOnCompletedEvents().size() == 0) {
-                fail("switchAsyncHeavily timed out @ " + j + " (" + ts.getOnNextEvents().size() + " onNexts received)");
+                fail("switchAsyncHeavily timed out @ " + j + " (" + ts.getOnNextEvents().size() + " onNexts received, last was " + (System.currentTimeMillis() - lastSeen[0]) + " ms ago");
             }
         }
     }
