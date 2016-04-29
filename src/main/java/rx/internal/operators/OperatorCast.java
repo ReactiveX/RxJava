@@ -15,9 +15,10 @@
  */
 package rx.internal.operators;
 
+import rx.*;
 import rx.Observable.Operator;
 import rx.exceptions.*;
-import rx.Subscriber;
+import rx.internal.util.RxJavaPluginUtils;
 
 /**
  * Converts the elements of an observable sequence to the specified type.
@@ -32,26 +33,63 @@ public class OperatorCast<T, R> implements Operator<R, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super R> o) {
-        return new Subscriber<T>(o) {
+        CastSubscriber<T, R> parent = new CastSubscriber<T, R>(o, castClass);
+        o.add(parent);
+        return parent;
+    }
+    
+    static final class CastSubscriber<T, R> extends Subscriber<T> {
+        
+        final Subscriber<? super R> actual;
+        
+        final Class<R> castClass;
 
-            @Override
-            public void onCompleted() {
-                o.onCompleted();
+        boolean done;
+        
+        public CastSubscriber(Subscriber<? super R> actual, Class<R> castClass) {
+            this.actual = actual;
+            this.castClass = castClass;
+        }
+        
+        @Override
+        public void onNext(T t) {
+            R result;
+            
+            try {
+                result = castClass.cast(t);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                unsubscribe();
+                onError(OnErrorThrowable.addValueAsLastCause(ex, t));
+                return;
             }
-
-            @Override
-            public void onError(Throwable e) {
-                o.onError(e);
+            
+            actual.onNext(result);
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            if (done) {
+                RxJavaPluginUtils.handleException(e);
+                return;
             }
-
-            @Override
-            public void onNext(T t) {
-                try {
-                    o.onNext(castClass.cast(t));
-                } catch (Throwable e) {
-                    Exceptions.throwOrReport(e, this, t);
-                }
+            done = true;
+            
+            actual.onError(e);
+        }
+        
+        
+        @Override
+        public void onCompleted() {
+            if (done) {
+                return;
             }
-        };
+            actual.onCompleted();
+        }
+        
+        @Override
+        public void setProducer(Producer p) {
+            actual.setProducer(p);
+        }
     }
 }
