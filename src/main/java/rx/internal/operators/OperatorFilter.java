@@ -15,15 +15,17 @@
  */
 package rx.internal.operators;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Subscriber;
 import rx.exceptions.*;
 import rx.functions.Func1;
+import rx.internal.util.RxJavaPluginUtils;
 
 /**
  * Filters an Observable by discarding any items it emits that do not meet some test.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/filter.png" alt="">
+ * @param <T> the value type
  */
 public final class OperatorFilter<T> implements Operator<T, T> {
 
@@ -35,33 +37,67 @@ public final class OperatorFilter<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        return new Subscriber<T>(child) {
-
-            @Override
-            public void onCompleted() {
-                child.onCompleted();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                child.onError(e);
-            }
-
-            @Override
-            public void onNext(T t) {
-                try {
-                    if (predicate.call(t)) {
-                        child.onNext(t);
-                    } else {
-                        // TODO consider a more complicated version that batches these
-                        request(1);
-                    }
-                } catch (Throwable e) {
-                    Exceptions.throwOrReport(e, child, t);
-                }
-            }
-
-        };
+        FilterSubscriber<T> parent = new FilterSubscriber<T>(child, predicate);
+        child.add(parent);
+        return parent;
     }
 
+    static final class FilterSubscriber<T> extends Subscriber<T> {
+        
+        final Subscriber<? super T> actual;
+        
+        final Func1<? super T, Boolean> predicate;
+
+        boolean done;
+        
+        public FilterSubscriber(Subscriber<? super T> actual, Func1<? super T, Boolean> predicate) {
+            this.actual = actual;
+            this.predicate = predicate;
+        }
+        
+        @Override
+        public void onNext(T t) {
+            boolean result;
+            
+            try {
+                result = predicate.call(t);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                unsubscribe();
+                onError(OnErrorThrowable.addValueAsLastCause(ex, t));
+                return;
+            }
+            
+            if (result) {
+                actual.onNext(t);
+            } else {
+                request(1);
+            }
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            if (done) {
+                RxJavaPluginUtils.handleException(e);
+                return;
+            }
+            done = true;
+            
+            actual.onError(e);
+        }
+        
+        
+        @Override
+        public void onCompleted() {
+            if (done) {
+                return;
+            }
+            actual.onCompleted();
+        }
+        @Override
+        public void setProducer(Producer p) {
+            super.setProducer(p);
+            actual.setProducer(p);
+        }
+    }
 }
