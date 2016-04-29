@@ -53,7 +53,9 @@ public class TestObserverTest {
         oi.subscribe(o);
 
         thrown.expect(AssertionError.class);
-        thrown.expectMessage("Number of items does not match. Provided: 1  Actual: 2");
+        thrown.expectMessage("Number of items does not match. Provided: 1  Actual: 2.\n" +
+                "Provided values: [1]\n" +
+                "Actual values: [1, 2]");
 
         o.assertReceivedOnNext(Arrays.asList(1));
         assertEquals(2, o.getOnNextEvents().size());
