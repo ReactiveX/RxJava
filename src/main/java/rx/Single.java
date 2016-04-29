@@ -2484,7 +2484,7 @@ public class Single<T> {
      */
     @Experimental
     public final Single<T> doAfterTerminate(Action0 action) {
-        return lift(new OperatorDoAfterTerminate<T>(action));
+        return create(new SingleDoAfterTerminate<T>(this, action));
     }
 
     /**
