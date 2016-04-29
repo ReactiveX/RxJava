@@ -16,27 +16,16 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.observers.TestObserver;
-import rx.observers.TestSubscriber;
+import rx.*;
+import rx.observers.*;
 import rx.schedulers.Schedulers;
 
 public class OnSubscribeToObservableFutureTest {
@@ -138,5 +127,29 @@ public class OnSubscribeToObservableFutureTest {
         assertEquals(0, testSubscriber.getOnErrorEvents().size());
         assertEquals(0, testSubscriber.getOnCompletedEvents().size());
         assertEquals(0, testSubscriber.getOnNextEvents().size());
+    }
+    
+    @Test
+    public void backpressure() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+        
+        FutureTask<Integer> f = new FutureTask<Integer>(new Runnable() {
+            @Override
+            public void run() {
+                
+            }
+        }, 1);
+        
+        f.run();
+        
+        Observable.from(f).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.requestMore(1);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 }

@@ -22,6 +22,7 @@ import rx.Observable.OnSubscribe;
 import rx.exceptions.Exceptions;
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.internal.producers.SingleProducer;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -72,8 +73,7 @@ public final class OnSubscribeToObservableFuture {
                     return;
                 }
                 T value = (unit == null) ? (T) that.get() : (T) that.get(time, unit);
-                subscriber.onNext(value);
-                subscriber.onCompleted();
+                subscriber.setProducer(new SingleProducer<T>(subscriber, value));
             } catch (Throwable e) {
                 // If this Observable is unsubscribed, we will receive an CancellationException.
                 // However, CancellationException will not be passed to the final Subscriber
