@@ -867,7 +867,7 @@ public class OperatorSwitchTest {
             .timeout(10, TimeUnit.SECONDS)
             .subscribe(ts);
             
-            ts.awaitTerminalEvent(30, TimeUnit.SECONDS);
+            ts.awaitTerminalEvent(45, TimeUnit.SECONDS);
             if (!q.isEmpty()) {
                 throw new AssertionError("Dropped exceptions", new CompositeException(q));
             }
