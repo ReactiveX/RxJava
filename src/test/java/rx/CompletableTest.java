@@ -2813,6 +2813,30 @@ public class CompletableTest {
         });
     }
 
+    @Test(expected = OnErrorNotImplementedException.class)
+    public void propagateExceptionSubscribeEmpty() {
+        error.completable.toSingleDefault(0).subscribe();
+    }
+
+    @Test(expected = OnErrorNotImplementedException.class)
+    public void propagateExceptionSubscribeOneAction() {
+        error.completable.toSingleDefault(1).subscribe(new Action1<Integer>() {
+            @Override
+            public void call(Integer integer) {
+            }
+        });
+    }
+
+    @Test(expected = OnErrorNotImplementedException.class)
+    public void propagateExceptionSubscribeOneActionThrowFromOnSuccess() {
+        normal.completable.toSingleDefault(1).subscribe(new Action1<Integer>() {
+            @Override
+            public void call(Integer integer) {
+                throw new TestException();
+            }
+        });
+    }
+
     @Test(timeout = 1000)
     public void timeoutEmitError() {
         Throwable e = Completable.never().timeout(100, TimeUnit.MILLISECONDS).get();
