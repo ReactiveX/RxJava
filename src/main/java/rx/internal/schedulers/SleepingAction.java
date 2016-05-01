@@ -34,15 +34,14 @@ import rx.functions.Action0;
         if (innerScheduler.isUnsubscribed()) {
             return;
         }
-        if (execTime > innerScheduler.now()) {
-            long delay = execTime - innerScheduler.now();
-            if (delay > 0) {
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException(e);
-                }
+
+        long delay = execTime - innerScheduler.now();
+        if (delay > 0) {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
             }
         }
 
