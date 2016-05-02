@@ -37,6 +37,7 @@ import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.observers.TestSubscriber;
 
 public class OperatorSingleTest {
 
@@ -455,5 +456,20 @@ public class OperatorSingleTest {
 
         Integer r = reduced.toBlocking().first();
         assertEquals(21, r.intValue());
+    }
+    
+    @Test
+    public void defaultBackpressure() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        Observable.<Integer>empty().singleOrDefault(1).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.requestMore(1);
+        
+        ts.assertValue(1);
+        ts.assertCompleted();
+        ts.assertNoErrors();
     }
 }
