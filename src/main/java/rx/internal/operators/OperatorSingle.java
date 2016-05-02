@@ -20,6 +20,7 @@ import java.util.NoSuchElementException;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.internal.producers.SingleProducer;
+import rx.internal.util.RxJavaPluginUtils;
 
 /**
  * If the Observable completes after emitting a single item that matches a
@@ -121,6 +122,7 @@ public final class OperatorSingle<T> implements Operator<T, T> {
         @Override
         public void onError(Throwable e) {
             if (hasTooManyElements) {
+                RxJavaPluginUtils.handleException(e);
                 return;
             }
             
