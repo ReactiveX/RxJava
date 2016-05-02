@@ -255,25 +255,26 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
             if (n < 0L) {
                 throw new IllegalStateException("n >= required but it was " + n);
             }
-            if (n != 0L) {
-                once = true;
-                Subscriber<? super T> a = actual;
-                if (a.isUnsubscribed()) {
-                    return;
-                }
-                T v = value;
-                try {
-                    a.onNext(v);
-                } catch (Throwable e) {
-                    Exceptions.throwOrReport(e, a, v);
-                    return;
-                }
-                
-                if (a.isUnsubscribed()) {
-                    return;
-                }
-                a.onCompleted();
+            if (n == 0L) {
+                return;
             }
+            once = true;
+            Subscriber<? super T> a = actual;
+            if (a.isUnsubscribed()) {
+                return;
+            }
+            T v = value;
+            try {
+                a.onNext(v);
+            } catch (Throwable e) {
+                Exceptions.throwOrReport(e, a, v);
+                return;
+            }
+
+            if (a.isUnsubscribed()) {
+                return;
+            }
+            a.onCompleted();
         }
     }
 }
