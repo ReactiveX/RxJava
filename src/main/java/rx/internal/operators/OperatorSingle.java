@@ -16,11 +16,11 @@
 package rx.internal.operators;
 
 import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable.Operator;
-import rx.Producer;
 import rx.Subscriber;
+import rx.internal.producers.SingleProducer;
+import rx.internal.util.RxJavaPluginUtils;
 
 /**
  * If the Observable completes after emitting a single item that matches a
@@ -65,19 +65,6 @@ public final class OperatorSingle<T> implements Operator<T, T> {
 
         final ParentSubscriber<T> parent = new ParentSubscriber<T>(child, hasDefaultValue,
                 defaultValue);
-
-        child.setProducer(new Producer() {
-
-            private final AtomicBoolean requestedTwo = new AtomicBoolean(false);
-
-            @Override
-            public void request(long n) {
-                if (n > 0 && requestedTwo.compareAndSet(false, true)) {
-                    parent.requestMore(2);
-                }
-            }
-
-        });
         child.add(parent);
         return parent;
     }
@@ -88,8 +75,8 @@ public final class OperatorSingle<T> implements Operator<T, T> {
         private final T defaultValue;
         
         private T value;
-        private boolean isNonEmpty = false;
-        private boolean hasTooManyElements = false;
+        private boolean isNonEmpty;
+        private boolean hasTooManyElements;
 
         
         ParentSubscriber(Subscriber<? super T> child, boolean hasDefaultValue,
@@ -97,14 +84,14 @@ public final class OperatorSingle<T> implements Operator<T, T> {
             this.child = child;
             this.hasDefaultValue = hasDefaultValue;
             this.defaultValue = defaultValue;
-        }
-
-        void requestMore(long n) {
-            request(n);
+            request(2); // could go unbounded, but test expect this
         }
 
         @Override
         public void onNext(T value) {
+            if (hasTooManyElements) {
+                return;
+            } else
             if (isNonEmpty) {
                 hasTooManyElements = true;
                 child.onError(new IllegalArgumentException("Sequence contains too many elements"));
@@ -121,12 +108,10 @@ public final class OperatorSingle<T> implements Operator<T, T> {
                 // We have already sent an onError message
             } else {
                 if (isNonEmpty) {
-                    child.onNext(value);
-                    child.onCompleted();
+                    child.setProducer(new SingleProducer<T>(child, value));
                 } else {
                     if (hasDefaultValue) {
-                        child.onNext(defaultValue);
-                        child.onCompleted();
+                        child.setProducer(new SingleProducer<T>(child, defaultValue));
                     } else {
                         child.onError(new NoSuchElementException("Sequence contains no elements"));
                     }
@@ -136,6 +121,11 @@ public final class OperatorSingle<T> implements Operator<T, T> {
 
         @Override
         public void onError(Throwable e) {
+            if (hasTooManyElements) {
+                RxJavaPluginUtils.handleException(e);
+                return;
+            }
+            
             child.onError(e);
         }
 
