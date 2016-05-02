@@ -1972,6 +1972,7 @@ public class Completable {
             throw ex;
         } catch (Throwable ex) {
             ERROR_HANDLER.handleError(ex);
+            Exceptions.throwIfFatal(ex);
             throw toNpe(ex);
         }
     }
