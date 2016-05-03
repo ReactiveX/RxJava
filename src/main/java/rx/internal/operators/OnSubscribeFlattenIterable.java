@@ -150,8 +150,7 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
             if (n > 0) {
                 BackpressureUtils.getAndAddRequest(requested, n);
                 drain();
-            } else
-            if (n < 0) {
+            } else if (n < 0) {
                 throw new IllegalStateException("n >= 0 required but it was " + n);
             }
         }
