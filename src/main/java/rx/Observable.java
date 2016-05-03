@@ -6611,6 +6611,23 @@ public class Observable<T> {
         return lift((Operator<T, T>)OperatorOnErrorResumeNextViaFunction.withException(resumeSequence));
     }
 
+    
+    /**
+     * Nulls out references to the upstream producer and downstream Subscriber if
+     * the sequence is terminated or downstream unsubscribes.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return an Observable which out references to the upstream producer and downstream Subscriber if
+     * the sequence is terminated or downstream unsubscribes
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public final Observable<T> onTerminateDetach() {
+        return create(new OnSubscribeDetach<T>(this));
+    }
+    
     /**
      * Returns a {@link ConnectableObservable}, which is a variety of Observable that waits until its
      * {@link ConnectableObservable#connect connect} method is called before it begins emitting items to those
