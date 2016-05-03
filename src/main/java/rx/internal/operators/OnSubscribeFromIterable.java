@@ -64,7 +64,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
         }
     }
 
-    private static final class IterableProducer<T> extends AtomicLong implements Producer {
+    static final class IterableProducer<T> extends AtomicLong implements Producer {
         /** */
         private static final long serialVersionUID = -8730475647105475802L;
         private final Subscriber<? super T> o;
