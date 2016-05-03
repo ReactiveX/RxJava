@@ -1,5 +1,39 @@
 # RxJava Releases #
 
+### Version 1.1.4 - May 3, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.4%7C))
+
+#### API enhancements
+
+  - [Pull 3856](https://github.com/ReactiveX/RxJava/pull/3856): Provide factories for creating the default scheduler instances.
+  - [Pull 3866](https://github.com/ReactiveX/RxJava/pull/3866): Add `Single.toCompletable()`.
+  - [Pull 3879](https://github.com/ReactiveX/RxJava/pull/3879): Expose scheduler factories which accept thread factories.
+  - [Pull 3820](https://github.com/ReactiveX/RxJava/pull/3820): Making RxPlugins `reset()` public
+  - [Pull 3888](https://github.com/ReactiveX/RxJava/pull/3888): New operator: `onTerminateDetach` - detach upstream/downstream for GC
+
+#### API deprecations
+
+  - [Pull 3871](https://github.com/ReactiveX/RxJava/pull/3871): Deprecate remaining public scheduler types.
+
+#### Performance enhancements
+
+  - [Pull 3761](https://github.com/ReactiveX/RxJava/pull/3761): optimize `merge`/`flatMap` for empty sources.
+  - [Pull 3864](https://github.com/ReactiveX/RxJava/pull/3864): optimize `concatMapIterable`/`flatMapIterable`. 
+
+#### Bugfixes
+
+  - [Pull 3868](https://github.com/ReactiveX/RxJava/pull/3868): Fix an unsubscribe race in `EventLoopWorker`.
+  - [Pull 3867](https://github.com/ReactiveX/RxJava/pull/3867): ensure waiting tasks are cancelled on worker unsubscription.
+  - [Pull 3862](https://github.com/ReactiveX/RxJava/pull/3862): fix `from(Iterable)` error handling of Iterable/Iterator
+  - [Pull 3886](https://github.com/ReactiveX/RxJava/pull/3886): `throwIfFatal()` now throws `OnCompletedFailedException`.
+  - [Pull 3887](https://github.com/ReactiveX/RxJava/pull/3887): Have undeliverable errors on `subscribe()` sent to plugin error handler.
+  - [Pull 3895](https://github.com/ReactiveX/RxJava/pull/3895): `cast()` should unsubscribe on crash eagerly.
+  - [Pull 3896](https://github.com/ReactiveX/RxJava/pull/3896): `OperatorMapPair` should unsubscribe on crash eagerly.
+  - [Pull 3890](https://github.com/ReactiveX/RxJava/pull/3890): `map()` and `filter()` should unsubscribe on crash eagerly.
+  - [Pull 3893](https://github.com/ReactiveX/RxJava/pull/3893): enable backpressure with `from(Future)`
+  - [Pull 3883](https://github.com/ReactiveX/RxJava/pull/3883): fix multiple chained `Single.doAfterTerminate` not calling actions
+  - [Pull 3904](https://github.com/ReactiveX/RxJava/pull/3904): Fix `Completable` swallows `OnErrorNotImplementedException`
+  - [Pull 3905](https://github.com/ReactiveX/RxJava/pull/3905): fix `singleOrDefault()` backpressure if source is empty
+
 ### Version 1.1.3 - April 8, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.3%7C))
 
 #### API enhancements
