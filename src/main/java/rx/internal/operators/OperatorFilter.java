@@ -53,6 +53,7 @@ public final class OperatorFilter<T> implements Operator<T, T> {
         public FilterSubscriber(Subscriber<? super T> actual, Func1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
+            request(0);
         }
         
         @Override
