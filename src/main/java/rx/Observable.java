@@ -4774,13 +4774,21 @@ public class Observable<T> {
     }
     
     /**
-     * Modifies the source {@code Observable} so that it invokes the given action when it is unsubscribed from
-     * its subscribers. Each un-subscription will result in an invocation of the given action except when the
-     * source {@code Observable} is reference counted, in which case the source {@code Observable} will invoke
-     * the given action for the very last un-subscription.
+     * Calls the unsubscribe {@code Action0} if the downstream unsubscribes the sequence.
+     * <p>
+     * The action is shared between subscriptions and thus may be called concurrently from multiple
+     * threads; the action must be thread safe.
+     * <p>
+     * If the action throws a runtime exception, that exception is rethrown by the {@code unsubscribe()} call,
+     * sometimes as a {@code CompositeException} if there were multiple exceptions along the way.
+     * <p>
+     * Note that terminal events trigger the action unless the {@code Observable} is subscribed to via {@code unsafeSubscribe()}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnUnsubscribe.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>{@code doOnUnsubscribe} does not interact with backpressure requests or value delivery; backpressure
+     *  behavior is preserved between its upstream and its downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnUnsubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
