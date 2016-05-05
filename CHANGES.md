@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 1.1.5 - May 5, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.5%7C))
+
+#### Bugfixes
+
+  - [Pull 3912](https://github.com/ReactiveX/RxJava/pull/3912): fix filter() default-requesting and thus going unbounded
+
 ### Version 1.1.4 - May 3, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.4%7C))
 
 #### API enhancements
