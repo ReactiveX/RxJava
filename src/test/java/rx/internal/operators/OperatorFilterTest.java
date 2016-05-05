@@ -26,7 +26,7 @@ import org.mockito.Mockito;
 import rx.*;
 import rx.exceptions.*;
 import rx.functions.*;
-import rx.internal.util.RxRingBuffer;
+import rx.internal.util.*;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
@@ -69,7 +69,7 @@ public class OperatorFilterTest {
         });
 
         final CountDownLatch latch = new CountDownLatch(1);
-        TestSubscriber<String> ts = new TestSubscriber<String>() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0L) {
 
             @Override
             public void onCompleted() {
@@ -116,7 +116,7 @@ public class OperatorFilterTest {
         });
 
         final CountDownLatch latch = new CountDownLatch(1);
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L) {
             
             @Override
             public void onCompleted() {
@@ -194,4 +194,18 @@ public class OperatorFilterTest {
         ts.assertError(TestException.class);
     }
 
+    @Test
+    public void doesntRequestOnItsOwn() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0L);
+        
+        Observable.range(1, 10).filter(UtilityFunctions.alwaysTrue()).unsafeSubscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.requestMore(10);
+        
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
 }
