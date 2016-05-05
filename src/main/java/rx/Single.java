@@ -2603,10 +2603,28 @@ public class Single<T> {
      * Returns a Single that emits the same values as the source Single with the exception of an
      * {@code onError}. An {@code onError} notification from the source will result in the emission of a
      * {@link Throwable} item to the Observable provided as an argument to the {@code notificationHandler}
-     * function. If that Observable calls {@code onComplete} or {@code onError} then {@code retry} will call
-     * {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this Observable will
-     * resubscribe to the source Single.
-     *
+     * function. 
+     * <p>Emissions from the handler {@code Observable} is treated as follows:
+     * <ul>
+     * <li>If the handler {@code Observable} emits an {@code onCompleted} the {@code retryWhen} will call {@code onError}
+     * with {@code NoSuchElementException} on the child subscription.</li> 
+     * <li>If the handler {@code Observable} emits an {@code onError} the {@code retryWhen} will call
+     * {@code onError} with the same Throwable instance on the child subscription. 
+     * <li>Otherwise, the operator will resubscribe to the source Single.</li>
+     * </ul>
+     * <p>The {@code notificationHandler} function is called for each subscriber individually. This allows per-Subscriber
+     * state to be added to the error notification sequence.</p>
+     * <pre><code>
+     * single.retryWhen(error -&gt; {
+     *     AtomicInteger counter = new AtomicInteger();
+     *     return error.takeWhile(e -&gt; counter.incrementAndGet() &lt; 3).map(e -&gt; "retry");
+     * }).subscribe(...);
+     * </code></pre>
+     * <p>
+     * Note that you must compose over the input {@code Observable} provided in the function call because {@retryWhen} expects
+     * an emission of the exception to be matched by an event from the handler Observable.
+     * <p>
+     * 
      * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.png" alt="">
      *
      * <dl>
