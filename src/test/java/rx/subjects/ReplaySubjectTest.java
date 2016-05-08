@@ -443,52 +443,6 @@ public class ReplaySubjectTest {
         verify(o, never()).onError(any(Throwable.class));
     }
     @Test
-    public void testNodeListSimpleAddRemove() {
-        ReplaySubject.NodeList<Integer> list = new ReplaySubject.NodeList<Integer>();
-        
-        assertEquals(0, list.size());
-        
-        // add and remove one
-        
-        list.addLast(1);
-
-        assertEquals(1, list.size());
-        
-        assertEquals((Integer)1, list.removeFirst());
-
-        assertEquals(0, list.size());
-
-        // add and remove one again
-        
-        list.addLast(1);
-
-        assertEquals(1, list.size());
-        
-        assertEquals((Integer)1, list.removeFirst());
-
-        // add and remove two items
-        
-        list.addLast(1);
-        list.addLast(2);
-
-        assertEquals(2, list.size());
-
-        assertEquals((Integer)1, list.removeFirst());
-        assertEquals((Integer)2, list.removeFirst());
-
-        assertEquals(0, list.size());
-        // clear two items
-        
-        list.addLast(1);
-        list.addLast(2);
-
-        assertEquals(2, list.size());
-        
-        list.clear();
-
-        assertEquals(0, list.size());
-    }
-    @Test
     public void testReplay1AfterTermination() {
         ReplaySubject<Integer> source = ReplaySubject.createWithSize(1);
         
@@ -555,7 +509,7 @@ public class ReplaySubjectTest {
         
         verify(o, never()).onNext(1);
         verify(o, never()).onNext(2);
-        verify(o).onNext(3);
+        verify(o, never()).onNext(3); // late subscribers no longer replay stale data
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
@@ -844,9 +798,12 @@ public class ReplaySubjectTest {
         
         for (int i = 0; i < 1000; i++) {
             rs.onNext(i);
-            ts.advanceTimeBy(2, TimeUnit.SECONDS);
+            ts.advanceTimeBy(500, TimeUnit.MILLISECONDS);
             assertEquals(1, rs.size());
             assertTrue(rs.hasAnyValue());
+            ts.advanceTimeBy(1500, TimeUnit.MILLISECONDS);
+            assertEquals(0, rs.size()); // stale data no longer peekable
+            assertFalse(rs.hasAnyValue());
         }
         
         rs.onCompleted();
@@ -1049,4 +1006,139 @@ public class ReplaySubjectTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+    
+    void backpressureLive(ReplaySubject<Integer> rs) {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        rs.subscribe(ts);
+        
+        for (int i = 1; i <= 5; i++) {
+            rs.onNext(i);
+        }
+        
+        ts.assertNoValues();
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(1, 2);
+        
+        ts.requestMore(6);
+
+        ts.assertValues(1, 2, 3, 4, 5);
+        
+        for (int i = 6; i <= 10; i++) {
+            rs.onNext(i);
+        }
+
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8);
+        
+        rs.onCompleted();
+        
+        ts.assertNotCompleted();
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    void backpressureOffline(ReplaySubject<Integer> rs) {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        for (int i = 1; i <= 10; i++) {
+            rs.onNext(i);
+        }
+        rs.onCompleted();
+
+        rs.subscribe(ts);
+
+        ts.assertNoValues();
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(1, 2);
+        
+        ts.requestMore(6);
+        
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8);
+        
+        ts.assertNotCompleted();
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    void backpressureOffline5(ReplaySubject<Integer> rs) {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        for (int i = 1; i <= 10; i++) {
+            rs.onNext(i);
+        }
+        rs.onCompleted();
+
+        rs.subscribe(ts);
+
+        ts.assertNoValues();
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(6, 7);
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(6, 7, 8, 9);
+        
+        ts.assertNotCompleted();
+        
+        ts.requestMore(1);
+        
+        ts.assertValues(6, 7, 8, 9, 10);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void backpressureUnboundedLive() {
+        backpressureLive(ReplaySubject.<Integer>create());
+    }
+
+    @Test
+    public void backpressureSizeBoundLive() {
+        backpressureLive(ReplaySubject.<Integer>createWithSize(1));
+        backpressureLive(ReplaySubject.<Integer>createWithSize(5));
+        backpressureLive(ReplaySubject.<Integer>createWithSize(10));
+        backpressureLive(ReplaySubject.<Integer>createWithSize(100));
+    }
+
+    @Test
+    public void backpressureSizeAndTimeLive() {
+        backpressureLive(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 1, Schedulers.immediate()));
+        backpressureLive(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 5, Schedulers.immediate()));
+        backpressureLive(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 10, Schedulers.immediate()));
+        backpressureLive(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 100, Schedulers.immediate()));
+    }
+
+    @Test
+    public void backpressureUnboundedOffline() {
+        backpressureOffline(ReplaySubject.<Integer>create());
+    }
+
+    @Test
+    public void backpressureSizeBoundOffline() {
+        backpressureOffline5(ReplaySubject.<Integer>createWithSize(5));
+        backpressureOffline(ReplaySubject.<Integer>createWithSize(10));
+        backpressureOffline(ReplaySubject.<Integer>createWithSize(100));
+    }
+
+    @Test
+    public void backpressureSizeAndTimeOffline() {
+        backpressureOffline5(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 5, Schedulers.immediate()));
+        backpressureOffline(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 10, Schedulers.immediate()));
+        backpressureOffline(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 100, Schedulers.immediate()));
+    }
+
 }
