@@ -21,11 +21,8 @@ import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Scheduler.Worker;
-import rx.functions.Action0;
-import rx.internal.schedulers.SchedulerLifecycle;
+import rx.internal.schedulers.*;
 import rx.internal.util.unsafe.*;
-import rx.schedulers.Schedulers;
 
 public abstract class ObjectPool<T> implements SchedulerLifecycle {
     Queue<T> pool;
@@ -33,7 +30,7 @@ public abstract class ObjectPool<T> implements SchedulerLifecycle {
     final int maxSize;
     private final long validationInterval;
 
-    private final AtomicReference<Worker> schedulerWorker;
+    private final AtomicReference<Future<?>> periodicTask;
 
     public ObjectPool() {
         this(0, 0, 67);
@@ -55,7 +52,7 @@ public abstract class ObjectPool<T> implements SchedulerLifecycle {
         this.minSize = min;
         this.maxSize = max;
         this.validationInterval = validationInterval;
-        this.schedulerWorker = new AtomicReference<Worker>();
+        this.periodicTask = new AtomicReference<Future<?>>();
         // initialize pool
         initialize(min);
 
@@ -96,38 +93,51 @@ public abstract class ObjectPool<T> implements SchedulerLifecycle {
      */
     @Override
     public void shutdown() {
-        Worker w = schedulerWorker.getAndSet(null);
-        if (w != null) {
-            w.unsubscribe();
+        Future<?> f = periodicTask.getAndSet(null);
+        if (f != null) {
+            f.cancel(false);
         }
     }
 
     @Override
     public void start() {
-        Worker w = Schedulers.computation().createWorker();
-        if (schedulerWorker.compareAndSet(null, w)) {
-            w.schedulePeriodically(new Action0() {
-    
-                @Override
-                public void call() {
-                    int size = pool.size();
-                    if (size < minSize) {
-                        int sizeToBeAdded = maxSize - size;
-                        for (int i = 0; i < sizeToBeAdded; i++) {
-                            pool.add(createObject());
-                        }
-                    } else if (size > maxSize) {
-                        int sizeToBeRemoved = size - maxSize;
-                        for (int i = 0; i < sizeToBeRemoved; i++) {
-                            //                        pool.pollLast();
-                            pool.poll();
+        for (;;) {
+            if (periodicTask.get() != null) {
+                return;
+            }
+            ScheduledExecutorService w = GenericScheduledExecutorService.getInstance();
+            
+            Future<?> f;
+            try {
+                f = w.scheduleAtFixedRate(new Runnable() {
+        
+                    @Override
+                    public void run() {
+                        int size = pool.size();
+                        if (size < minSize) {
+                            int sizeToBeAdded = maxSize - size;
+                            for (int i = 0; i < sizeToBeAdded; i++) {
+                                pool.add(createObject());
+                            }
+                        } else if (size > maxSize) {
+                            int sizeToBeRemoved = size - maxSize;
+                            for (int i = 0; i < sizeToBeRemoved; i++) {
+                                //                        pool.pollLast();
+                                pool.poll();
+                            }
                         }
                     }
-                }
-    
-            }, validationInterval, validationInterval, TimeUnit.SECONDS);
-        } else {
-            w.unsubscribe();
+        
+                }, validationInterval, validationInterval, TimeUnit.SECONDS);
+            } catch (RejectedExecutionException ex) {
+                RxJavaPluginUtils.handleException(ex);
+                break;
+            }
+            if (!periodicTask.compareAndSet(null, f)) {
+                f.cancel(false);
+            } else {
+                break;
+            }
         }
     }
     
