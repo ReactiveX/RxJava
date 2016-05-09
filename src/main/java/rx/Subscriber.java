@@ -33,7 +33,7 @@ import rx.internal.util.SubscriptionList;
 public abstract class Subscriber<T> implements Observer<T>, Subscription {
     
     // represents requested not set yet
-    private static final Long NOT_SET = Long.MIN_VALUE;
+    private static final long NOT_SET = Long.MIN_VALUE;
 
     private final SubscriptionList subscriptions;
     private final Subscriber<?> subscriber;
