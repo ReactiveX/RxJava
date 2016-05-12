@@ -116,7 +116,8 @@ public class TestObserver<T> implements Observer<T> {
             + ".\n"
             + "Provided values: " + items
             + "\n"
-            + "Actual values: " + onNextEvents);
+            + "Actual values: " + onNextEvents
+            + "\n");
         }
 
         for (int i = 0; i < items.size(); i++) {
@@ -125,12 +126,12 @@ public class TestObserver<T> implements Observer<T> {
             if (expected == null) {
                 // check for null equality
                 if (actual != null) {
-                    assertionError("Value at index: " + i + " expected to be [null] but was: [" + actual + "]");
+                    assertionError("Value at index: " + i + " expected to be [null] but was: [" + actual + "]\n");
                 }
             } else if (!expected.equals(actual)) {
                 assertionError("Value at index: " + i 
                         + " expected to be [" + expected + "] (" + expected.getClass().getSimpleName() 
-                        + ") but was: [" + actual + "] (" + (actual != null ? actual.getClass().getSimpleName() : "null") + ")");
+                        + ") but was: [" + actual + "] (" + (actual != null ? actual.getClass().getSimpleName() : "null") + ")\n");
 
             }
         }
