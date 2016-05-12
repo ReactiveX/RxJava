@@ -612,7 +612,7 @@ public class TestSubscriberTest {
         } catch (AssertionError expected) {
             assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
                     "Provided values: [1, 2]\n" +
-                    "Actual values: [a, b, c] (0 completions)",
+                    "Actual values: [a, b, c]\n (0 completions)",
                     expected.getMessage()
             );
         }
@@ -633,7 +633,7 @@ public class TestSubscriberTest {
         } catch (AssertionError expected) {
             assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
                     "Provided values: [1, 2]\n" +
-                    "Actual values: [a, b, c] (0 completions) (+1 errors)",
+                    "Actual values: [a, b, c]\n (0 completions) (+1 error)",
                     expected.getMessage()
             );
             Throwable ex = expected.getCause();
@@ -658,7 +658,7 @@ public class TestSubscriberTest {
         } catch (AssertionError expected) {
             assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
                     "Provided values: [1, 2]\n" +
-                    "Actual values: [a, b, c] (0 completions) (+2 errors)",
+                    "Actual values: [a, b, c]\n (0 completions) (+2 errors)",
                     expected.getMessage()
             );
             Throwable ex = expected.getCause();
@@ -685,7 +685,7 @@ public class TestSubscriberTest {
         } catch (AssertionError expected) {
             assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
                     "Provided values: [1, 2]\n" +
-                    "Actual values: [a, b, c] (1 completions)",
+                    "Actual values: [a, b, c]\n (1 completion)",
                     expected.getMessage()
             );
         }
@@ -707,7 +707,7 @@ public class TestSubscriberTest {
         } catch (AssertionError expected) {
             assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
                     "Provided values: [1, 2]\n" +
-                    "Actual values: [a, b, c] (2 completions)",
+                    "Actual values: [a, b, c]\n (2 completions)",
                     expected.getMessage()
             );
         }

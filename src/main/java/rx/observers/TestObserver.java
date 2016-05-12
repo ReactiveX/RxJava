@@ -174,13 +174,23 @@ public class TestObserver<T> implements Observer<T> {
         
         
         b.append(" (");
-        b.append(onCompletedEvents.size());
-        b.append(" completions)");
+        int c = onCompletedEvents.size();
+        b.append(c);
+        b.append(" completion");
+        if (c != 1) {
+            b.append("s");
+        }
+        b.append(")");
         
         if (!onErrorEvents.isEmpty()) {
+            int size = onErrorEvents.size();
             b.append(" (+")
-            .append(onErrorEvents.size())
-            .append(" errors)");
+            .append(size)
+            .append(" error");
+            if (size != 1) {
+                b.append("s");
+            }
+            b.append(")");
         }
         
         AssertionError ae = new AssertionError(b.toString());
