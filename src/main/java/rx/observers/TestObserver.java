@@ -15,12 +15,11 @@
  */
 package rx.observers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import rx.Notification;
 import rx.Observer;
+import rx.exceptions.CompositeException;
 
 /**
  * Observer usable for unit testing to perform assertions, inspect received events or wrap a mocked Observer.
@@ -113,7 +112,7 @@ public class TestObserver<T> implements Observer<T> {
      */
     public void assertReceivedOnNext(List<T> items) {
         if (onNextEvents.size() != items.size()) {
-            throw new AssertionError("Number of items does not match. Provided: " + items.size() + "  Actual: " + onNextEvents.size()
+            assertionError("Number of items does not match. Provided: " + items.size() + "  Actual: " + onNextEvents.size()
             + ".\n"
             + "Provided values: " + items
             + "\n"
@@ -126,10 +125,10 @@ public class TestObserver<T> implements Observer<T> {
             if (expected == null) {
                 // check for null equality
                 if (actual != null) {
-                    throw new AssertionError("Value at index: " + i + " expected to be [null] but was: [" + actual + "]");
+                    assertionError("Value at index: " + i + " expected to be [null] but was: [" + actual + "]");
                 }
             } else if (!expected.equals(actual)) {
-                throw new AssertionError("Value at index: " + i 
+                assertionError("Value at index: " + i 
                         + " expected to be [" + expected + "] (" + expected.getClass().getSimpleName() 
                         + ") but was: [" + actual + "] (" + (actual != null ? actual.getClass().getSimpleName() : "null") + ")");
 
@@ -146,22 +145,53 @@ public class TestObserver<T> implements Observer<T> {
      */
     public void assertTerminalEvent() {
         if (onErrorEvents.size() > 1) {
-            throw new AssertionError("Too many onError events: " + onErrorEvents.size());
+            assertionError("Too many onError events: " + onErrorEvents.size());
         }
 
         if (onCompletedEvents.size() > 1) {
-            throw new AssertionError("Too many onCompleted events: " + onCompletedEvents.size());
+            assertionError("Too many onCompleted events: " + onCompletedEvents.size());
         }
 
         if (onCompletedEvents.size() == 1 && onErrorEvents.size() == 1) {
-            throw new AssertionError("Received both an onError and onCompleted. Should be one or the other.");
+            assertionError("Received both an onError and onCompleted. Should be one or the other.");
         }
 
         if (onCompletedEvents.size() == 0 && onErrorEvents.size() == 0) {
-            throw new AssertionError("No terminal events received.");
+            assertionError("No terminal events received.");
         }
     }
 
+    /**
+     * Combines an assertion error message with the current completion and error state of this
+     * TestSubscriber, giving more information when some assertXXX check fails.
+     * @param message the message to use for the error
+     */
+    final void assertionError(String message) {
+        StringBuilder b = new StringBuilder();
+        
+        if (onCompletedEvents.isEmpty()) {
+            b.append("(active) ");
+        }
+        
+        b.append(message);
+        
+        if (!onErrorEvents.isEmpty()) {
+            b.append(" (+ ")
+            .append(onErrorEvents.size())
+            .append(" errors)");
+        }
+        
+        AssertionError ae = new AssertionError(b.toString());
+        if (!onErrorEvents.isEmpty()) {
+            if (onErrorEvents.size() == 1) {
+                ae.initCause(onErrorEvents.get(0));
+            } else {
+                ae.initCause(new CompositeException(onErrorEvents));
+            }
+        }
+        throw ae;
+    }
+    
     // do nothing ... including swallowing errors
     private static Observer<Object> INERT = new Observer<Object>() {
 
