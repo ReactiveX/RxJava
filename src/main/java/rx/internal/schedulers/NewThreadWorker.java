@@ -33,6 +33,7 @@ import static rx.internal.util.PlatformDependent.ANDROID_API_VERSION_IS_NOT_ANDR
  * @warn class description missing
  */
 public class NewThreadWorker extends Scheduler.Worker implements Subscription {
+    private Throwable creationContext = SchedulerContextException.create();
     private final ScheduledExecutorService executor;
     private final RxJavaSchedulersHook schedulersHook;
     volatile boolean isUnsubscribed;
@@ -234,7 +235,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
      */
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
         Action0 decoratedAction = schedulersHook.onSchedule(action);
-        ScheduledAction run = new ScheduledAction(decoratedAction);
+        ScheduledAction run = new ScheduledAction(decoratedAction, creationContext);
         Future<?> f;
         if (delayTime <= 0) {
             f = executor.submit(run);
@@ -247,7 +248,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     }
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit, CompositeSubscription parent) {
         Action0 decoratedAction = schedulersHook.onSchedule(action);
-        ScheduledAction run = new ScheduledAction(decoratedAction, parent);
+        ScheduledAction run = new ScheduledAction(decoratedAction, parent, creationContext);
         parent.add(run);
 
         Future<?> f;
@@ -263,7 +264,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit, SubscriptionList parent) {
         Action0 decoratedAction = schedulersHook.onSchedule(action);
-        ScheduledAction run = new ScheduledAction(decoratedAction, parent);
+        ScheduledAction run = new ScheduledAction(decoratedAction, parent, creationContext);
         parent.add(run);
         
         Future<?> f;
@@ -287,5 +288,9 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     @Override
     public boolean isUnsubscribed() {
         return isUnsubscribed;
+    }
+
+    public void resetContext() {
+        creationContext = SchedulerContextException.create();
     }
 }

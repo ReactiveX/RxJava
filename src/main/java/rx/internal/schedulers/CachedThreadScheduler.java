@@ -78,6 +78,7 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
             while (!expiringWorkerQueue.isEmpty()) {
                 ThreadWorker threadWorker = expiringWorkerQueue.poll();
                 if (threadWorker != null) {
+                    threadWorker.resetContext();
                     return threadWorker;
                 }
             }
