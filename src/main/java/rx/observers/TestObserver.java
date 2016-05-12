@@ -167,16 +167,17 @@ public class TestObserver<T> implements Observer<T> {
      * @param message the message to use for the error
      */
     final void assertionError(String message) {
-        StringBuilder b = new StringBuilder();
-        
-        if (onCompletedEvents.isEmpty()) {
-            b.append("(active) ");
-        }
+        StringBuilder b = new StringBuilder(message.length() + 32);
         
         b.append(message);
         
+        
+        b.append(" (");
+        b.append(onCompletedEvents.size());
+        b.append(" completions)");
+        
         if (!onErrorEvents.isEmpty()) {
-            b.append(" (+ ")
+            b.append(" (+")
             .append(onErrorEvents.size())
             .append(" errors)");
         }

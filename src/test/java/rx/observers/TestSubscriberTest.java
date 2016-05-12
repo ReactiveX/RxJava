@@ -610,9 +610,9 @@ public class TestSubscriberTest {
             ts.assertValues("1", "2");
             fail();
         } catch (AssertionError expected) {
-            assertEquals("(active) Number of items does not match. Provided: 2  Actual: 3.\n" +
+            assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
                     "Provided values: [1, 2]\n" +
-                    "Actual values: [a, b, c]",
+                    "Actual values: [a, b, c] (0 completions)",
                     expected.getMessage()
             );
         }
@@ -631,9 +631,9 @@ public class TestSubscriberTest {
             ts.assertValues("1", "2");
             fail();
         } catch (AssertionError expected) {
-            assertEquals("(active) Number of items does not match. Provided: 2  Actual: 3.\n" +
+            assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
                     "Provided values: [1, 2]\n" +
-                    "Actual values: [a, b, c] (+ 1 errors)",
+                    "Actual values: [a, b, c] (0 completions) (+1 errors)",
                     expected.getMessage()
             );
             Throwable ex = expected.getCause();
@@ -656,9 +656,9 @@ public class TestSubscriberTest {
             ts.assertValues("1", "2");
             fail();
         } catch (AssertionError expected) {
-            assertEquals("(active) Number of items does not match. Provided: 2  Actual: 3.\n" +
+            assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
                     "Provided values: [1, 2]\n" +
-                    "Actual values: [a, b, c] (+ 2 errors)",
+                    "Actual values: [a, b, c] (0 completions) (+2 errors)",
                     expected.getMessage()
             );
             Throwable ex = expected.getCause();
@@ -669,4 +669,48 @@ public class TestSubscriberTest {
             assertEquals("forced failure 2", list.get(1).getMessage());
         }
     }
+
+    @Test
+    public void assertionFailureShowsCompletion() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        ts.onNext("a");
+        ts.onNext("b");
+        ts.onNext("c");
+        ts.onCompleted();
+
+        try {
+            ts.assertValues("1", "2");
+            fail();
+        } catch (AssertionError expected) {
+            assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
+                    "Provided values: [1, 2]\n" +
+                    "Actual values: [a, b, c] (1 completions)",
+                    expected.getMessage()
+            );
+        }
+    }
+
+    @Test
+    public void assertionFailureShowsMultipleCompletions() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        ts.onNext("a");
+        ts.onNext("b");
+        ts.onNext("c");
+        ts.onCompleted();
+        ts.onCompleted();
+
+        try {
+            ts.assertValues("1", "2");
+            fail();
+        } catch (AssertionError expected) {
+            assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
+                    "Provided values: [1, 2]\n" +
+                    "Actual values: [a, b, c] (2 completions)",
+                    expected.getMessage()
+            );
+        }
+    }
+
 }
