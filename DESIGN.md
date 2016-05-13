@@ -353,7 +353,7 @@ The 2.x version will target JDK6+ to let Android users consume the new version o
 
 ### Future work
 
-This section contains current design work which needs more discussion and elaboration before it is merged into this document as a stated goal for 2.x. Our goal is
+This section contains current design work which needs more discussion and elaboration before it is merged into this document as a stated goal for 2.x.
 
 #### Custom Observable, Single, Completable, or Flowable
 
