@@ -22,6 +22,7 @@ import rx.Observable.Operator;
 import rx.Observable;
 import rx.Observer;
 import rx.observers.SerializedSubscriber;
+import rx.subjects.UnicastSubject;
 
 /**
  * Creates non-overlapping windows of items where each window is terminated by

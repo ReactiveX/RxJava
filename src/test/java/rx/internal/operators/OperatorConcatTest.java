@@ -42,7 +42,7 @@ import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
-import rx.subjects.Subject;
+import rx.subjects.*;
 import rx.subscriptions.BooleanSubscription;
 
 public class OperatorConcatTest {

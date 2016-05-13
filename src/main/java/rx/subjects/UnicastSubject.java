@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.internal.operators;
+package rx.subjects;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import rx.*;
+import rx.annotations.Experimental;
 import rx.exceptions.*;
-import rx.functions.*;
+import rx.functions.Action0;
+import rx.internal.operators.*;
 import rx.internal.util.atomic.*;
 import rx.internal.util.unsafe.*;
-import rx.subjects.Subject;
-import rx.subscriptions.Subscriptions;
 
 /**
  * A Subject variant which buffers events until a single Subscriber arrives and replays them to it
@@ -35,6 +35,7 @@ import rx.subscriptions.Subscriptions;
  * 
  * @param <T> the input and output value type
  */
+@Experimental
 public final class UnicastSubject<T> extends Subject<T, T> {
 
     /**
@@ -111,7 +112,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
      *
      * @param <T> the value type
      */
-    static final class State<T> extends AtomicLong implements Producer, Observer<T>, Action0, OnSubscribe<T> {
+    static final class State<T> extends AtomicLong implements Producer, Observer<T>, OnSubscribe<T>, Subscription {
         /** */
         private static final long serialVersionUID = -9044104859202255786L;
         /** The single subscriber. */
@@ -250,7 +251,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         @Override
         public void call(Subscriber<? super T> subscriber) {
             if (this.subscriber.compareAndSet(null, subscriber)) {
-                subscriber.add(Subscriptions.create(this));
+                subscriber.add(this);
                 subscriber.setProducer(this);
             } else {
                 subscriber.onError(new IllegalStateException("Only a single subscriber is allowed"));
@@ -326,7 +327,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
          * Should be called only when the child unsubscribes
          */
         @Override
-        public void call() {
+        public void unsubscribe() {
 
             doTerminate();
 
@@ -339,6 +340,12 @@ public final class UnicastSubject<T> extends Subject<T, T> {
             }
             queue.clear();
         }
+        
+        @Override
+        public boolean isUnsubscribed() {
+            return done;
+        }
+        
         /**
          * Checks if one of the terminal conditions have been met: child unsubscribed,
          * an error happened or the source terminated and the queue is empty

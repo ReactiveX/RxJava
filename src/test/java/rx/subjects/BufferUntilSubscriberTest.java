@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.internal.operators;
+package rx.subjects;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -26,7 +26,6 @@ import rx.exceptions.TestException;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
 
 public class BufferUntilSubscriberTest {
 

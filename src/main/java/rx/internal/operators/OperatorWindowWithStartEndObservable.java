@@ -23,6 +23,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 import rx.observers.*;
+import rx.subjects.UnicastSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**

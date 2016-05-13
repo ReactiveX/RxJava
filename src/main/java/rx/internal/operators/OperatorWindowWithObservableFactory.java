@@ -23,6 +23,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func0;
 import rx.observers.SerializedSubscriber;
+import rx.subjects.UnicastSubject;
 import rx.subscriptions.SerialSubscription;
 
 /**
