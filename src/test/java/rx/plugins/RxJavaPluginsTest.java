@@ -253,6 +253,11 @@ public class RxJavaPluginsTest {
         // just use defaults
     }
 
+    // inside test so it is stripped from Javadocs
+    public static class RxJavaCompletableExecutionHookTestImpl extends RxJavaCompletableExecutionHook {
+        // just use defaults
+    }
+
     private static String getFullClassNameForTestClass(Class<?> cls) {
         return RxJavaPlugins.class.getPackage()
                                   .getName() + "." + RxJavaPluginsTest.class.getSimpleName() + "$" + cls.getSimpleName();

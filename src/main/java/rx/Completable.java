@@ -38,6 +38,12 @@ import rx.subscriptions.*;
  */
 @Experimental
 public class Completable {
+    /** The error handler instance. */
+    static final RxJavaErrorHandler ERROR_HANDLER = RxJavaPlugins.getInstance().getErrorHandler();
+    
+    /** The completable hook. */
+    static RxJavaCompletableExecutionHook HOOK = RxJavaPlugins.getInstance().getCompletableExecutionHook();
+
     /**
      * Callback used for building deferred computations that takes a CompletableSubscriber.
      */
@@ -100,9 +106,6 @@ public class Completable {
             s.onSubscribe(Subscriptions.unsubscribed());
         }
     });
-    
-    /** The error handler instance. */
-    static final RxJavaErrorHandler ERROR_HANDLER = RxJavaPlugins.getInstance().getErrorHandler();
     
     /**
      * Returns a Completable which terminates as soon as one of the source Completables
@@ -975,7 +978,7 @@ public class Completable {
      * not null (not verified)
      */
     protected Completable(CompletableOnSubscribe onSubscribe) {
-        this.onSubscribe = onSubscribe;
+        this.onSubscribe = HOOK.onCreate(onSubscribe);
     }
     
     /**
@@ -1526,9 +1529,8 @@ public class Completable {
             @Override
             public void call(CompletableSubscriber s) {
                 try {
-                    // TODO plugin wrapping
-
-                    CompletableSubscriber sw = onLift.call(s);
+                    CompletableOperator onLiftDecorated = HOOK.onLift(onLift);
+                    CompletableSubscriber sw = onLiftDecorated.call(s);
                     
                     unsafeSubscribe(sw);
                 } catch (NullPointerException ex) {
@@ -1966,13 +1968,14 @@ public class Completable {
     public final void unsafeSubscribe(CompletableSubscriber s) {
         requireNonNull(s);
         try {
-            // TODO plugin wrapping the subscriber
+            CompletableOnSubscribe onSubscribeDecorated = HOOK.onSubscribeStart(this, this.onSubscribe);
             
-            onSubscribe.call(s);
+            onSubscribeDecorated.call(s);
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
+            ex = HOOK.onSubscribeError(ex);
             ERROR_HANDLER.handleError(ex);
             throw toNpe(ex);
         }
@@ -1987,13 +1990,14 @@ public class Completable {
     public final void subscribe(CompletableSubscriber s) {
         requireNonNull(s);
         try {
-            // TODO plugin wrapping the subscriber
+            CompletableOnSubscribe onSubscribeDecorated = HOOK.onSubscribeStart(this, this.onSubscribe);
             
-            onSubscribe.call(new SafeCompletableSubscriber(s));
+            onSubscribeDecorated.call(new SafeCompletableSubscriber(s));
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
+            ex = HOOK.onSubscribeError(ex);
             ERROR_HANDLER.handleError(ex);
             throw toNpe(ex);
         }
@@ -2005,36 +2009,31 @@ public class Completable {
      * @param s the reactive-streams Subscriber, not null
      * @throws NullPointerException if s is null
      */
-    public final <T> void unsafeSubscribe(Subscriber<T> s) {
+    public final <T> void unsafeSubscribe(final Subscriber<T> s) {
         requireNonNull(s);
         try {
-            final Subscriber<?> sw = s; // FIXME hooking in 1.x is kind of strange to me
-            
-            if (sw == null) {
-                throw new NullPointerException("The RxJavaPlugins.onSubscribe returned a null Subscriber");
-            }
-            
             unsafeSubscribe(new CompletableSubscriber() {
                 @Override
                 public void onCompleted() {
-                    sw.onCompleted();
+                    s.onCompleted();
                 }
                 
                 @Override
                 public void onError(Throwable e) {
-                    sw.onError(e);
+                    s.onError(e);
                 }
                 
                 @Override
                 public void onSubscribe(Subscription d) {
-                    sw.add(d);
+                    s.add(d);
                 }
             });
-            
+            RxJavaPlugins.getInstance().getObservableExecutionHook().onSubscribeReturn(s);
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
+            ex = HOOK.onSubscribeError(ex);
             ERROR_HANDLER.handleError(ex);
             throw toNpe(ex);
         }
@@ -2047,36 +2046,31 @@ public class Completable {
      * @param s the reactive-streams Subscriber, not null
      * @throws NullPointerException if s is null
      */
-    public final <T> void subscribe(Subscriber<T> s) {
+    public final <T> void subscribe(final Subscriber<T> s) {
         requireNonNull(s);
         try {
-            final Subscriber<?> sw = s; // FIXME hooking in 1.x is kind of strange to me
-            
-            if (sw == null) {
-                throw new NullPointerException("The RxJavaPlugins.onSubscribe returned a null Subscriber");
-            }
-            
             unsafeSubscribe(new SafeCompletableSubscriber(new CompletableSubscriber() {
                 @Override
                 public void onCompleted() {
-                    sw.onCompleted();
+                    s.onCompleted();
                 }
                 
                 @Override
                 public void onError(Throwable e) {
-                    sw.onError(e);
+                    s.onError(e);
                 }
                 
                 @Override
                 public void onSubscribe(Subscription d) {
-                    sw.add(d);
+                    s.add(d);
                 }
             }));
-            
+            RxJavaPlugins.getInstance().getObservableExecutionHook().onSubscribeReturn(s);
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
+            ex = HOOK.onSubscribeError(ex);
             ERROR_HANDLER.handleError(ex);
             throw toNpe(ex);
         }

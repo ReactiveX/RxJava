@@ -16,6 +16,10 @@
 
 package rx;
 
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -26,14 +30,11 @@ import rx.Completable.*;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.*;
-import rx.observers.TestSubscriber;
-import rx.plugins.RxJavaPlugins;
+import rx.observers.*;
+import rx.plugins.*;
 import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.*;
-
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 /**
  * Test Completable methods and operators.
@@ -4033,6 +4034,50 @@ public class CompletableTest {
             Assert.assertTrue("" + list.get(1), list.get(1) instanceof TestException);
             Assert.assertEquals("Forced failure", list.get(1).getMessage());
         }
+    }
+
+    private static RxJavaCompletableExecutionHook hookSpy;
+
+    @Before
+    public void setUp() throws Exception {
+        hookSpy = spy(
+                new RxJavaPluginsTest.RxJavaCompletableExecutionHookTestImpl());
+        Completable.HOOK = hookSpy;
+    }
+
+    @Test
+    public void testHookCreate() {
+        CompletableOnSubscribe subscriber = mock(CompletableOnSubscribe.class);
+        Completable.create(subscriber);
+
+        verify(hookSpy, times(1)).onCreate(subscriber);
+    }
+
+    @Test
+    public void testHookSubscribeStart() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Completable completable = Completable.create(new CompletableOnSubscribe() {
+            @Override public void call(CompletableSubscriber s) {
+                s.onCompleted();
+            }
+        });
+        completable.subscribe(ts);
+
+        verify(hookSpy, times(1)).onSubscribeStart(eq(completable), any(Completable.CompletableOnSubscribe.class));
+    }
+
+    @Test
+    public void testHookUnsafeSubscribeStart() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Completable completable = Completable.create(new CompletableOnSubscribe() {
+            @Override public void call(CompletableSubscriber s) {
+                s.onCompleted();
+            }
+        });
+        completable.unsafeSubscribe(ts);
+
+        verify(hookSpy, times(1)).onSubscribeStart(eq(completable), any(Completable.CompletableOnSubscribe.class));
     }
 
 }
