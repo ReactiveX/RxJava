@@ -816,7 +816,7 @@ public class SingleTest {
     public void toCompletableSuccess() {
         Completable completable = Single.just("value").toCompletable();
         TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
-        completable.subscribe(testSubscriber);
+        completable.unsafeSubscribe(testSubscriber);
 
         testSubscriber.assertCompleted();
         testSubscriber.assertNoValues();
@@ -828,7 +828,7 @@ public class SingleTest {
         TestException exception = new TestException();
         Completable completable = Single.error(exception).toCompletable();
         TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
-        completable.subscribe(testSubscriber);
+        completable.unsafeSubscribe(testSubscriber);
 
         testSubscriber.assertError(exception);
         testSubscriber.assertNoValues();

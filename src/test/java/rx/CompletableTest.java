@@ -1159,7 +1159,7 @@ public class CompletableTest {
     public void never() {
         final AtomicBoolean onSubscribeCalled = new AtomicBoolean();
         final AtomicInteger calls = new AtomicInteger();
-        Completable.never().subscribe(new CompletableSubscriber() {
+        Completable.never().unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 onSubscribeCalled.set(true);
@@ -1202,7 +1202,7 @@ public class CompletableTest {
         
         final AtomicInteger calls = new AtomicInteger();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1235,7 +1235,7 @@ public class CompletableTest {
         final MultipleAssignmentSubscription mad = new MultipleAssignmentSubscription();
         final AtomicInteger calls = new AtomicInteger();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 mad.set(d);
@@ -1295,7 +1295,7 @@ public class CompletableTest {
         final AtomicBoolean unsubscribedFirst = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1341,7 +1341,7 @@ public class CompletableTest {
         final AtomicBoolean unsubscribedFirst = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1387,7 +1387,7 @@ public class CompletableTest {
         final AtomicBoolean unsubscribedFirst = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1433,7 +1433,7 @@ public class CompletableTest {
         final AtomicBoolean unsubscribedFirst = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1630,7 +1630,7 @@ public class CompletableTest {
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1665,7 +1665,7 @@ public class CompletableTest {
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1699,7 +1699,7 @@ public class CompletableTest {
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1826,7 +1826,7 @@ public class CompletableTest {
             }
         });
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 d.unsubscribe();
@@ -1858,7 +1858,7 @@ public class CompletableTest {
             public void call() { throw new TestException(); }
         });
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 d.unsubscribe();
@@ -2017,7 +2017,7 @@ public class CompletableTest {
             }
         });
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -2173,7 +2173,7 @@ public class CompletableTest {
         
         Completable c = normal.completable.observeOn(Schedulers.computation());
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -2206,7 +2206,7 @@ public class CompletableTest {
         
         Completable c = error.completable.observeOn(Schedulers.computation());
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -2337,7 +2337,7 @@ public class CompletableTest {
             }
         }).repeat();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(final Subscription d) {
                 final Scheduler.Worker w = Schedulers.io().createWorker();
@@ -2680,19 +2680,19 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void subscribeSubscriberNull() {
-        normal.completable.subscribe((Subscriber<Object>)null);
+        normal.completable.unsafeSubscribe((Subscriber<Object>)null);
     }
     
     @Test(expected = NullPointerException.class)
     public void subscribeCompletableSubscriberNull() {
-        normal.completable.subscribe((CompletableSubscriber)null);
+        normal.completable.unsafeSubscribe((CompletableSubscriber)null);
     }
 
     @Test(timeout = 1000)
     public void subscribeSubscriberNormal() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         
-        normal.completable.subscribe(ts);
+        normal.completable.unsafeSubscribe(ts);
         
         ts.assertCompleted();
         ts.assertNoValues();
@@ -2703,7 +2703,7 @@ public class CompletableTest {
     public void subscribeSubscriberError() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         
-        error.completable.subscribe(ts);
+        error.completable.unsafeSubscribe(ts);
         
         ts.assertNotCompleted();
         ts.assertNoValues();
@@ -3028,7 +3028,7 @@ public class CompletableTest {
             }
         })
         .unsubscribeOn(Schedulers.computation())
-        .subscribe(new CompletableSubscriber() {
+        .unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(final Subscription d) {
                 final Scheduler.Worker w = Schedulers.io().createWorker();
@@ -3628,7 +3628,7 @@ public class CompletableTest {
             public Completable call(Integer t) {
                 throw new TestException();
             }
-        }, onDispose).subscribe(ts);
+        }, onDispose).unsafeSubscribe(ts);
         
         verify(onDispose).call(1);
         
@@ -3659,7 +3659,7 @@ public class CompletableTest {
             public Completable call(Integer t) {
                 throw new TestException();
             }
-        }, onDispose).subscribe(ts);
+        }, onDispose).unsafeSubscribe(ts);
         
         ts.assertNoValues();
         ts.assertNotCompleted();
@@ -3693,7 +3693,7 @@ public class CompletableTest {
             public Completable call(Integer t) {
                 return null;
             }
-        }, onDispose).subscribe(ts);
+        }, onDispose).unsafeSubscribe(ts);
         
         verify(onDispose).call(1);
         
@@ -3724,7 +3724,7 @@ public class CompletableTest {
             public Completable call(Integer t) {
                 return null;
             }
-        }, onDispose).subscribe(ts);
+        }, onDispose).unsafeSubscribe(ts);
         
         ts.assertNoValues();
         ts.assertNotCompleted();
@@ -3901,7 +3901,7 @@ public class CompletableTest {
     @Test
     public void safeOnCompleteThrows() {
         try {
-            normal.completable.safeSubscribe(new CompletableSubscriber() {
+            normal.completable.subscribe(new CompletableSubscriber() {
     
                 @Override
                 public void onCompleted() {
@@ -3931,7 +3931,7 @@ public class CompletableTest {
     @Test
     public void safeOnCompleteThrowsRegularSubscriber() {
         try {
-            normal.completable.safeSubscribe(new Subscriber<Object>() {
+            normal.completable.subscribe(new Subscriber<Object>() {
     
                 @Override
                 public void onCompleted() {
@@ -3960,7 +3960,7 @@ public class CompletableTest {
     @Test
     public void safeOnErrorThrows() {
         try {
-            error.completable.safeSubscribe(new CompletableSubscriber() {
+            error.completable.subscribe(new CompletableSubscriber() {
     
                 @Override
                 public void onCompleted() {
@@ -3999,7 +3999,7 @@ public class CompletableTest {
     @Test
     public void safeOnErrorThrowsRegularSubscriber() {
         try {
-            error.completable.safeSubscribe(new Subscriber<Object>() {
+            error.completable.subscribe(new Subscriber<Object>() {
     
                 @Override
                 public void onCompleted() {

@@ -32,7 +32,7 @@ public class OnSubscribeCompletableTest {
     public void testJustSingleItemObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Completable cmp = Observable.just("Hello World!").toCompletable();
-        cmp.subscribe(subscriber);
+        cmp.unsafeSubscribe(subscriber);
 
         subscriber.assertNoValues();
         subscriber.assertCompleted();
@@ -44,7 +44,7 @@ public class OnSubscribeCompletableTest {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         IllegalArgumentException error = new IllegalArgumentException("Error");
         Completable cmp = Observable.<String>error(error).toCompletable();
-        cmp.subscribe(subscriber);
+        cmp.unsafeSubscribe(subscriber);
 
         subscriber.assertError(error);
         subscriber.assertNoValues();
@@ -54,7 +54,7 @@ public class OnSubscribeCompletableTest {
     public void testJustTwoEmissionsObservableThrowsError() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Completable cmp = Observable.just("First", "Second").toCompletable();
-        cmp.subscribe(subscriber);
+        cmp.unsafeSubscribe(subscriber);
 
         subscriber.assertNoErrors();
         subscriber.assertNoValues();
@@ -64,7 +64,7 @@ public class OnSubscribeCompletableTest {
     public void testEmptyObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Completable cmp = Observable.<String>empty().toCompletable();
-        cmp.subscribe(subscriber);
+        cmp.unsafeSubscribe(subscriber);
 
         subscriber.assertNoErrors();
         subscriber.assertNoValues();
@@ -75,7 +75,7 @@ public class OnSubscribeCompletableTest {
     public void testNeverObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Completable cmp = Observable.<String>never().toCompletable();
-        cmp.subscribe(subscriber);
+        cmp.unsafeSubscribe(subscriber);
 
         subscriber.assertNoTerminalEvent();
         subscriber.assertNoValues();
@@ -91,7 +91,7 @@ public class OnSubscribeCompletableTest {
             public void call() {
                 unsubscribed.set(true);
             }}).toCompletable();
-        cmp.subscribe(subscriber);
+        cmp.unsafeSubscribe(subscriber);
         subscriber.assertCompleted();
         assertFalse(unsubscribed.get());
     }

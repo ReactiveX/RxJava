@@ -89,7 +89,7 @@ public final class CompletableOnSubscribeConcatArray implements CompletableOnSub
                     return;
                 }
                 
-                a[idx].subscribe(this);
+                a[idx].unsafeSubscribe(this);
             } while (decrementAndGet() != 0);
         }
     }
