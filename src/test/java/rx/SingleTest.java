@@ -1914,4 +1914,44 @@ public class SingleTest {
             assertEquals("observer is null", ex.getMessage());
         }
     }
+
+    @Test
+    public void unsubscribeComposesThrough() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        Subscription s = ps.toSingle()
+        .flatMap(new Func1<Integer, Single<Integer>>() {
+            @Override
+            public Single<Integer> call(Integer v) {
+                return Single.just(1);
+            }
+        })
+        .subscribe();
+        
+        s.unsubscribe();
+        
+        assertFalse("Observers present?!", ps.hasObservers());
+    }
+
+    @Test(timeout = 1000)
+    public void unsubscribeComposesThroughAsync() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        Subscription s = ps.toSingle()
+        .subscribeOn(Schedulers.io())
+        .flatMap(new Func1<Integer, Single<Integer>>() {
+            @Override
+            public Single<Integer> call(Integer v) {
+                return Single.just(1);
+            }
+        })
+        .subscribe();
+        
+        while (!ps.hasObservers() && !Thread.currentThread().isInterrupted()) ;
+        
+        s.unsubscribe();
+        
+        assertFalse("Observers present?!", ps.hasObservers());
+    }
+
 }
