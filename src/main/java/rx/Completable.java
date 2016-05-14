@@ -26,6 +26,7 @@ import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.util.*;
+import rx.observers.SafeCompletableSubscriber;
 import rx.plugins.*;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.*;
@@ -1971,8 +1972,29 @@ public class Completable {
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
-            ERROR_HANDLER.handleError(ex);
             Exceptions.throwIfFatal(ex);
+            ERROR_HANDLER.handleError(ex);
+            throw toNpe(ex);
+        }
+    }
+
+    /**
+     * Subscribes the given CompletableSubscriber to this Completable instance
+     * and handles exceptions throw by its onXXX methods.
+     * @param s the CompletableSubscriber, not null
+     * @throws NullPointerException if s is null
+     */
+    public final void safeSubscribe(CompletableSubscriber s) {
+        requireNonNull(s);
+        try {
+            // TODO plugin wrapping the subscriber
+            
+            onSubscribe.call(new SafeCompletableSubscriber(s));
+        } catch (NullPointerException ex) {
+            throw ex;
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            ERROR_HANDLER.handleError(ex);
             throw toNpe(ex);
         }
     }
@@ -2012,6 +2034,48 @@ public class Completable {
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            ERROR_HANDLER.handleError(ex);
+            throw toNpe(ex);
+        }
+    }
+
+    /**
+     * Subscribes a reactive-streams Subscriber to this Completable instance which
+     * will receive only an onError or onComplete event.
+     * @param s the reactive-streams Subscriber, not null
+     * @throws NullPointerException if s is null
+     */
+    public final <T> void safeSubscribe(Subscriber<T> s) {
+        requireNonNull(s);
+        try {
+            final Subscriber<?> sw = s; // FIXME hooking in 1.x is kind of strange to me
+            
+            if (sw == null) {
+                throw new NullPointerException("The RxJavaPlugins.onSubscribe returned a null Subscriber");
+            }
+            
+            subscribe(new SafeCompletableSubscriber(new CompletableSubscriber() {
+                @Override
+                public void onCompleted() {
+                    sw.onCompleted();
+                }
+                
+                @Override
+                public void onError(Throwable e) {
+                    sw.onError(e);
+                }
+                
+                @Override
+                public void onSubscribe(Subscription d) {
+                    sw.add(d);
+                }
+            }));
+            
+        } catch (NullPointerException ex) {
+            throw ex;
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             ERROR_HANDLER.handleError(ex);
             throw toNpe(ex);
         }

@@ -3898,4 +3898,141 @@ public class CompletableTest {
         }
     }
 
+    @Test
+    public void safeOnCompleteThrows() {
+        try {
+            normal.completable.safeSubscribe(new CompletableSubscriber() {
+    
+                @Override
+                public void onCompleted() {
+                    throw new TestException("Forced failure");
+                }
+    
+                @Override
+                public void onError(Throwable e) {
+                    
+                }
+    
+                @Override
+                public void onSubscribe(Subscription d) {
+                    
+                }
+                
+            });
+            Assert.fail("Did not propagate exception!");
+        } catch (OnCompletedFailedException ex) {
+            Throwable c = ex.getCause();
+            Assert.assertNotNull(c);
+            
+            Assert.assertEquals("Forced failure", c.getMessage());
+        }
+    }
+
+    @Test
+    public void safeOnCompleteThrowsRegularSubscriber() {
+        try {
+            normal.completable.safeSubscribe(new Subscriber<Object>() {
+    
+                @Override
+                public void onCompleted() {
+                    throw new TestException("Forced failure");
+                }
+    
+                @Override
+                public void onError(Throwable e) {
+                    
+                }
+    
+                @Override
+                public void onNext(Object t) {
+                    
+                }
+            });
+            Assert.fail("Did not propagate exception!");
+        } catch (OnCompletedFailedException ex) {
+            Throwable c = ex.getCause();
+            Assert.assertNotNull(c);
+            
+            Assert.assertEquals("Forced failure", c.getMessage());
+        }
+    }
+
+    @Test
+    public void safeOnErrorThrows() {
+        try {
+            error.completable.safeSubscribe(new CompletableSubscriber() {
+    
+                @Override
+                public void onCompleted() {
+                }
+    
+                @Override
+                public void onError(Throwable e) {
+                    throw new TestException("Forced failure");
+                }
+    
+                @Override
+                public void onSubscribe(Subscription d) {
+                    
+                }
+                
+            });
+            Assert.fail("Did not propagate exception!");
+        } catch (OnErrorFailedException ex) {
+            Throwable c = ex.getCause();
+            Assert.assertTrue("" + c, c instanceof CompositeException);
+            
+            CompositeException ce = (CompositeException)c;
+            
+            List<Throwable> list = ce.getExceptions();
+            
+            Assert.assertEquals(2, list.size());
+
+            Assert.assertTrue("" + list.get(0), list.get(0) instanceof TestException);
+            Assert.assertNull(list.get(0).getMessage());
+
+            Assert.assertTrue("" + list.get(1), list.get(1) instanceof TestException);
+            Assert.assertEquals("Forced failure", list.get(1).getMessage());
+        }
+    }
+
+    @Test
+    public void safeOnErrorThrowsRegularSubscriber() {
+        try {
+            error.completable.safeSubscribe(new Subscriber<Object>() {
+    
+                @Override
+                public void onCompleted() {
+
+                }
+    
+                @Override
+                public void onError(Throwable e) {
+                    throw new TestException("Forced failure");
+                }
+    
+                @Override
+                public void onNext(Object t) {
+                    
+                }
+            });
+            Assert.fail("Did not propagate exception!");
+        } catch (OnErrorFailedException ex) {
+            Throwable c = ex.getCause();
+            Assert.assertTrue("" + c, c instanceof CompositeException);
+            
+            CompositeException ce = (CompositeException)c;
+            
+            List<Throwable> list = ce.getExceptions();
+            
+            Assert.assertEquals(2, list.size());
+
+            Assert.assertTrue("" + list.get(0), list.get(0) instanceof TestException);
+            Assert.assertNull(list.get(0).getMessage());
+
+            Assert.assertTrue("" + list.get(1), list.get(1) instanceof TestException);
+            Assert.assertEquals("Forced failure", list.get(1).getMessage());
+        }
+    }
+
 }
