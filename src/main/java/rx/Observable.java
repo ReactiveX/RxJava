@@ -8247,7 +8247,7 @@ public class Observable<T> {
     private static <T> Subscription subscribe(Subscriber<? super T> subscriber, Observable<T> observable) {
      // validate and proceed
         if (subscriber == null) {
-            throw new IllegalArgumentException("observer can not be null");
+            throw new IllegalArgumentException("subscriber can not be null");
         }
         if (observable.onSubscribe == null) {
             throw new IllegalStateException("onSubscribe function can not be null.");
