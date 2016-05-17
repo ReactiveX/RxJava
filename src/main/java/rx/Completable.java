@@ -26,7 +26,7 @@ import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.util.*;
-import rx.observers.SafeCompletableSubscriber;
+import rx.observers.*;
 import rx.plugins.*;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.*;
@@ -382,8 +382,6 @@ public class Completable {
     public static Completable create(CompletableOnSubscribe onSubscribe) {
         requireNonNull(onSubscribe);
         try {
-            // TODO plugin wrapping onSubscribe
-            
             return new Completable(onSubscribe);
         } catch (NullPointerException ex) {
             throw ex;
@@ -1988,30 +1986,36 @@ public class Completable {
      * @throws NullPointerException if s is null
      */
     public final void subscribe(CompletableSubscriber s) {
-        requireNonNull(s);
-        try {
-            CompletableOnSubscribe onSubscribeDecorated = HOOK.onSubscribeStart(this, this.onSubscribe);
-            
-            onSubscribeDecorated.call(new SafeCompletableSubscriber(s));
-        } catch (NullPointerException ex) {
-            throw ex;
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            ex = HOOK.onSubscribeError(ex);
-            ERROR_HANDLER.handleError(ex);
-            throw toNpe(ex);
+        if (!(s instanceof SafeCompletableSubscriber)) {
+            s = new SafeCompletableSubscriber(s);
         }
+        unsafeSubscribe(s);
     }
 
     /**
      * Subscribes a regular Subscriber to this Completable instance which
      * will receive only an onError or onComplete event.
+     * @param <T> the value type of the subscriber
      * @param s the reactive-streams Subscriber, not null
      * @throws NullPointerException if s is null
      */
     public final <T> void unsafeSubscribe(final Subscriber<T> s) {
+        unsafeSubscribe(s, true);
+    }
+
+    /**
+     * Performs the actual unsafe subscription and calls the onStart if required.
+     * @param <T> the value type of the subscriber
+     * @param s the subscriber instance, not null
+     * @param callOnStart if true, the Subscriber.onStart will be called
+     * @throws NullPointerException if s is null
+     */
+    private final <T> void unsafeSubscribe(final Subscriber<T> s, boolean callOnStart) {
         requireNonNull(s);
         try {
+            if (callOnStart) {
+                s.onStart();
+            }
             unsafeSubscribe(new CompletableSubscriber() {
                 @Override
                 public void onCompleted() {
@@ -2043,37 +2047,16 @@ public class Completable {
      * Subscribes a regular Subscriber to this Completable instance which
      * will receive only an onError or onComplete event
      * and handles exceptions thrown by its onXXX methods.
+     * @param <T> the value type of the subscriber
      * @param s the reactive-streams Subscriber, not null
      * @throws NullPointerException if s is null
      */
-    public final <T> void subscribe(final Subscriber<T> s) {
-        requireNonNull(s);
-        try {
-            unsafeSubscribe(new SafeCompletableSubscriber(new CompletableSubscriber() {
-                @Override
-                public void onCompleted() {
-                    s.onCompleted();
-                }
-                
-                @Override
-                public void onError(Throwable e) {
-                    s.onError(e);
-                }
-                
-                @Override
-                public void onSubscribe(Subscription d) {
-                    s.add(d);
-                }
-            }));
-            RxJavaPlugins.getInstance().getObservableExecutionHook().onSubscribeReturn(s);
-        } catch (NullPointerException ex) {
-            throw ex;
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            ex = HOOK.onSubscribeError(ex);
-            ERROR_HANDLER.handleError(ex);
-            throw toNpe(ex);
+    public final <T> void subscribe(Subscriber<T> s) {
+        s.onStart();
+        if (!(s instanceof SafeSubscriber)) {
+            s = new SafeSubscriber<T>(s);
         }
+        unsafeSubscribe(s, false);
     }
 
     /**

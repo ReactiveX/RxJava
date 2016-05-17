@@ -30,7 +30,7 @@ import rx.Completable.*;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.*;
-import rx.observers.*;
+import rx.observers.TestSubscriber;
 import rx.plugins.*;
 import rx.schedulers.*;
 import rx.subjects.PublishSubject;
@@ -4078,6 +4078,38 @@ public class CompletableTest {
         completable.unsafeSubscribe(ts);
 
         verify(hookSpy, times(1)).onSubscribeStart(eq(completable), any(Completable.CompletableOnSubscribe.class));
+    }
+
+    @Test
+    public void onStartCalledSafe() {
+        TestSubscriber<Object> ts = new TestSubscriber<Object>() {
+            @Override
+            public void onStart() {
+                onNext(1);
+            }
+        };
+        
+        normal.completable.subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void onStartCalledUnsafeSafe() {
+        TestSubscriber<Object> ts = new TestSubscriber<Object>() {
+            @Override
+            public void onStart() {
+                onNext(1);
+            }
+        };
+        
+        normal.completable.unsafeSubscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 
 }
