@@ -671,7 +671,7 @@ public class Single<T> {
 
             @Override
             public void call(final SingleSubscriber<? super T> child) {
-                source.subscribe(new SingleSubscriber<Single<? extends T>>() {
+                SingleSubscriber<Single<? extends T>> parent = new SingleSubscriber<Single<? extends T>>() {
 
                     @Override
                     public void onSuccess(Single<? extends T> innerSingle) {
@@ -683,7 +683,9 @@ public class Single<T> {
                         child.onError(error);
                     }
 
-                });
+                };
+                child.add(parent);
+                source.subscribe(parent);
             }
         });
     }
