@@ -1132,6 +1132,19 @@ public class Completable {
         requireNonNull(next);
         return next.delaySubscription(toObservable());
     }
+
+    /**
+     * Returns a completable that first runs this Completable
+     * and then the other completable.
+     * <p>
+     * This is an alias for {@link #concatWith(Completable)}.
+     * @param next the other Completable, not null
+     * @return the new Completable instance
+     * @throws NullPointerException if other is null
+     */
+    public final Completable andThen(Completable next) {
+        return concatWith(next);
+    }
     
     /**
      * Concatenates this Completable with another Completable.
@@ -1396,9 +1409,11 @@ public class Completable {
      * @param other the other Completable, not null
      * @return the new Completable instance
      * @throws NullPointerException if other is null
+     * @deprecated Use {@link #andThen(rx.Completable)} instead.
      */
+    @Deprecated
     public final Completable endWith(Completable other) {
-        return concatWith(other);
+        return andThen(other);
     }
     
     /**
