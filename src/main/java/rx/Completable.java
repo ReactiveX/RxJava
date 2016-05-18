@@ -1421,10 +1421,11 @@ public class Completable {
      * resumes with the given next Observable.
      * @param next the next Observable to continue
      * @return the new Observable instance
-     * @throws NullPointerException if next is null
+     * @deprecated Use {@link #andThen(rx.Observable)} instead.
      */
+    @Deprecated
     public final <T> Observable<T> endWith(Observable<T> next) {
-        return next.startWith(this.<T>toObservable());
+        return andThen(next);
     }
 
     /**
