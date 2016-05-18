@@ -21,7 +21,7 @@ import rx.Scheduler;
  * @deprecated This type was never publicly instantiable. Use {@link Schedulers#newThread()}.
  */
 @Deprecated
-@SuppressWarnings("unused") // Class was part of public API.
+// Class was part of public API.
 public final class NewThreadScheduler extends Scheduler {
     private NewThreadScheduler() {
         throw new AssertionError();

@@ -36,6 +36,7 @@ public final class PlatformDependent {
 
     /**
      * Returns {@code true} if and only if the current platform is Android.
+     * @return {@code true} if and only if the current platform is Android
      */
     public static boolean isAndroid() {
         return IS_ANDROID;

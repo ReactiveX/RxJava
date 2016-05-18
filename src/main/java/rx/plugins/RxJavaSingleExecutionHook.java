@@ -45,9 +45,10 @@ public abstract class RxJavaSingleExecutionHook {
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
      * logging, metrics and other such things and pass through the function.
      *
+     * @param <T> the value type emitted by Single
      * @param f
-     *            original {@link Single.OnSubscribe}<{@code T}> to be executed
-     * @return {@link Single.OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
+     *            original {@link rx.Single.OnSubscribe}<{@code T}> to be executed
+     * @return {@link rx.Single.OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
     public <T> Single.OnSubscribe<T> onCreate(Single.OnSubscribe<T> f) {
@@ -60,9 +61,11 @@ public abstract class RxJavaSingleExecutionHook {
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
      * logging, metrics and other such things and pass through the function.
      *
+     * @param <T> the value type emitted
+     * @param singleInstance the parent single instance
      * @param onSubscribe
-     *            original {@link Observable.OnSubscribe}<{@code T}> to be executed
-     * @return {@link Observable.OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
+     *            original {@link rx.Observable.OnSubscribe}<{@code T}> to be executed
+     * @return {@link rx.Observable.OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
     public <T> Observable.OnSubscribe<T> onSubscribeStart(Single<? extends T> singleInstance, final Observable.OnSubscribe<T> onSubscribe) {
@@ -77,6 +80,7 @@ public abstract class RxJavaSingleExecutionHook {
      * This can be used to decorate or replace the {@link Subscription} instance or just perform extra logging,
      * metrics and other such things and pass through the subscription.
      *
+     * @param <T> the value type emitted by Single
      * @param subscription
      *            original {@link Subscription}
      * @return {@link Subscription} subscription that can be modified, decorated, replaced or just returned as a
@@ -93,6 +97,7 @@ public abstract class RxJavaSingleExecutionHook {
      * This is <em>not</em> errors emitted via {@link Subscriber#onError(Throwable)} but exceptions thrown when
      * attempting to subscribe to a {@link Func1}<{@link Subscriber}{@code <T>}, {@link Subscription}>.
      *
+     * @param <T> the value type emitted by Single
      * @param e
      *            Throwable thrown by {@link Single#subscribe(Subscriber)}
      * @return Throwable that can be decorated, replaced or just returned as a pass through
@@ -106,12 +111,14 @@ public abstract class RxJavaSingleExecutionHook {
      * Invoked just as the operator functions is called to bind two operations together into a new
      * {@link Single} and the return value is used as the lifted function
      * <p>
-     * This can be used to decorate or replace the {@link Observable.Operator} instance or just perform extra
+     * This can be used to decorate or replace the {@link rx.Observable.Operator} instance or just perform extra
      * logging, metrics and other such things and pass through the onSubscribe.
      *
+     * @param <T> the upstream value type (input)
+     * @param <R> the downstream value type (output)
      * @param lift
-     *            original {@link Observable.Operator}{@code <R, T>}
-     * @return {@link Observable.Operator}{@code <R, T>} function that can be modified, decorated, replaced or just
+     *            original {@link rx.Observable.Operator}{@code <R, T>}
+     * @return {@link rx.Observable.Operator}{@code <R, T>} function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
     public <T, R> Observable.Operator<? extends R, ? super T> onLift(final Observable.Operator<? extends R, ? super T> lift) {

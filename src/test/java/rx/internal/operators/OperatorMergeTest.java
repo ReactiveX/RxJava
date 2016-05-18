@@ -652,6 +652,7 @@ public class OperatorMergeTest {
      * This is the same as the upstreams ones, but now adds the downstream as well by using observeOn.
      * 
      * This requires merge to also obey the Product.request values coming from it's child subscriber.
+     * @throws InterruptedException if the wait is interrupted
      */
     @Test(timeout = 10000)
     public void testBackpressureDownstreamWithConcurrentStreams() throws InterruptedException {
@@ -1334,6 +1335,7 @@ public class OperatorMergeTest {
         ts.assertCompleted();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void negativeMaxConcurrent() {
         try {
@@ -1344,6 +1346,7 @@ public class OperatorMergeTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void zeroMaxConcurrent() {
         try {

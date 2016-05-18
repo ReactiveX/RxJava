@@ -60,6 +60,7 @@ public final class BlockingObservable<T> {
     /**
      * Converts an {@link Observable} into a {@code BlockingObservable}.
      *
+     * @param <T> the observed value type
      * @param o
      *          the {@link Observable} you want to convert
      * @return a {@code BlockingObservable} version of {@code o}
@@ -99,6 +100,7 @@ public final class BlockingObservable<T> {
          * Use 'subscribe' instead of 'unsafeSubscribe' for Rx contract behavior
          * (see http://reactivex.io/documentation/contract.html) as this is the final subscribe in the chain.
          */
+        @SuppressWarnings("unchecked")
         Subscription subscription = ((Observable<T>)o).subscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
@@ -143,6 +145,7 @@ public final class BlockingObservable<T> {
      * @return an {@link Iterator} that can iterate over the items emitted by this {@code BlockingObservable}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
+    @SuppressWarnings({ "unchecked", "cast" })
     public Iterator<T> getIterator() {
         return BlockingOperatorToIterator.toIterator((Observable<T>)o);
     }
@@ -298,6 +301,7 @@ public final class BlockingObservable<T> {
      *         a new item, whereupon the Iterable returns that item
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX documentation: TakeLast</a>
      */
+    @SuppressWarnings({ "cast", "unchecked" })
     public Iterable<T> next() {
         return BlockingOperatorNext.next((Observable<T>)o);
     }
@@ -315,6 +319,7 @@ public final class BlockingObservable<T> {
      * @return an Iterable that always returns the latest item emitted by this {@code BlockingObservable}
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
+    @SuppressWarnings({ "cast", "unchecked" })
     public Iterable<T> latest() {
         return BlockingOperatorLatest.latest((Observable<T>)o);
     }
@@ -397,6 +402,7 @@ public final class BlockingObservable<T> {
      * @return a {@link Future} that expects a single item to be emitted by this {@code BlockingObservable}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
+    @SuppressWarnings({ "cast", "unchecked" })
     public Future<T> toFuture() {
         return BlockingOperatorToFuture.toFuture((Observable<T>)o);
     }
@@ -430,6 +436,7 @@ public final class BlockingObservable<T> {
         final AtomicReference<Throwable> returnException = new AtomicReference<Throwable>();
         final CountDownLatch latch = new CountDownLatch(1);
 
+        @SuppressWarnings("unchecked")
         Subscription subscription = ((Observable<T>)observable).subscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
@@ -467,6 +474,7 @@ public final class BlockingObservable<T> {
     public void subscribe() {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] error = { null };
+        @SuppressWarnings("unchecked")
         Subscription s = ((Observable<T>)o).subscribe(new Subscriber<T>() {
             @Override
             public void onNext(T t) {
@@ -504,6 +512,7 @@ public final class BlockingObservable<T> {
         final NotificationLite<T> nl = NotificationLite.instance();
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
         
+        @SuppressWarnings("unchecked")
         Subscription s = ((Observable<T>)o).subscribe(new Subscriber<T>() {
             @Override
             public void onNext(T t) {
@@ -552,6 +561,7 @@ public final class BlockingObservable<T> {
      * The unsubscription and backpressure is composed through.
      * @param subscriber the subscriber to forward events and calls to in the current thread
      */
+    @SuppressWarnings("unchecked")
     @Experimental
     public void subscribe(Subscriber<? super T> subscriber) {
         final NotificationLite<T> nl = NotificationLite.instance();

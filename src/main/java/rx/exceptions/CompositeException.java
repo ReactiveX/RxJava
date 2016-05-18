@@ -41,7 +41,11 @@ public final class CompositeException extends RuntimeException {
     private final List<Throwable> exceptions;
     private final String message;
 
-    /** @deprecated please use {@link #CompositeException(Collection)} */
+    /** 
+     * Constructs a CompositeException with the given prefix and error collection.
+     * @param messagePrefix the prefix to use (actually unused)
+     * @param errors the collection of errors
+     * @deprecated please use {@link #CompositeException(Collection)} */
     @Deprecated
     public CompositeException(String messagePrefix, Collection<? extends Throwable> errors) {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();

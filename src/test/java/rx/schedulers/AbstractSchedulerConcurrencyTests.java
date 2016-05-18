@@ -51,6 +51,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
 
     /**
      * Bug report: https://github.com/ReactiveX/RxJava/issues/431
+     * @throws InterruptedException if a wait is interrupted
      */
     @Test
     public final void testUnSubscribeForScheduler() throws InterruptedException {

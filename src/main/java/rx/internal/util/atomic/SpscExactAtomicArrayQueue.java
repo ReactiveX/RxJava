@@ -26,6 +26,7 @@ import rx.internal.util.unsafe.Pow2;
  * A single-producer single-consumer bounded queue with exact capacity tracking.
  * <p>This means that a queue of 10 will allow exactly 10 offers, however, the underlying storage is still power-of-2.
  * <p>The implementation uses field updaters and thus should be platform-safe.
+ * @param <T> the value type held by this queue
  */
 public final class SpscExactAtomicArrayQueue<T> extends AtomicReferenceArray<T> implements Queue<T> {
     /** */

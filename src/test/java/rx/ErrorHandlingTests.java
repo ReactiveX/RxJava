@@ -29,6 +29,7 @@ public class ErrorHandlingTests {
 
     /**
      * Test that an error from a user provided Observer.onNext is handled and emitted to the onError
+     * @throws InterruptedException on interrupt
      */
     @Test
     public void testOnNextError() throws InterruptedException {
@@ -64,6 +65,7 @@ public class ErrorHandlingTests {
     /**
      * Test that an error from a user provided Observer.onNext is handled and emitted to the onError
      * even when done across thread boundaries with observeOn
+     * @throws InterruptedException on interrupt
      */
     @Test
     public void testOnNextErrorAcrossThread() throws InterruptedException {

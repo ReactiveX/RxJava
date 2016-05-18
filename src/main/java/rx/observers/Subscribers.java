@@ -32,6 +32,7 @@ public final class Subscribers {
      * from any {@code Observable} it subscribes to.  Will throw an {@link OnErrorNotImplementedException} if {@link Subscriber#onError onError} 
      * method is called
      *
+     * @param <T> the observed value type
      * @return an inert {@code Observer}
      */
     public static <T> Subscriber<T> empty() {
@@ -41,6 +42,7 @@ public final class Subscribers {
     /**
      * Converts an {@link Observer} into a {@link Subscriber}.
      *
+     * @param <T> the observed value type
      * @param o
      *          the {@link Observer} to convert
      * @return a {@link Subscriber} version of {@code o}
@@ -71,9 +73,10 @@ public final class Subscribers {
      * {@link Subscriber#onNext onNext} but ignores {@link Subscriber#onCompleted onCompleted} notifications;
      * it will throw an {@link OnErrorNotImplementedException} if {@link Subscriber#onError onError} is invoked.
      *
+     * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
-     * @throws IllegalArgument Exception
+     * @throws IllegalArgumentException
      *          if {@code onNext} is {@code null}
      * @return a {@code Subscriber} that calls {@code onNext} for each emitted item from the {@code Observable}
      *         the {@code Subscriber} subscribes to
@@ -108,11 +111,12 @@ public final class Subscribers {
      * {@link Subscriber#onNext onNext} and handles any {@link Subscriber#onError onError} notification but
      * ignores an {@link Subscriber#onCompleted onCompleted} notification.
      * 
+     * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
      * @param onError
      *          a function that handles an error notification if one is sent by an {@code Observable}
-     * @throws IllegalArgument Exception
+     * @throws IllegalArgumentException
      *          if either {@code onNext} or {@code onError} are {@code null}
      * @return an {@code Subscriber} that calls {@code onNext} for each emitted item from the {@code Observable}
      *         the {@code Subscriber} subscribes to, and calls {@code onError} if the {@code Observable}
@@ -151,13 +155,14 @@ public final class Subscribers {
      * {@link Subscriber#onNext onNext} and handles any {@link Subscriber#onError onError} or
      * {@link Subscriber#onCompleted onCompleted} notifications.
      * 
+     * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
      * @param onError
      *          a function that handles an error notification if one is sent by an {@code Observable}
      * @param onComplete
      *          a function that handles a sequence complete notification if one is sent by an {@code Observable}
-     * @throws IllegalArgument Exception
+     * @throws IllegalArgumentException
      *          if either {@code onNext}, {@code onError}, or {@code onComplete} are {@code null}
      * @return an {@code Subscriber} that calls {@code onNext} for each emitted item from the {@code Observable}
      *         the {@code Subscriber} subscribes to, calls {@code onError} if the {@code Observable} notifies
@@ -202,6 +207,7 @@ public final class Subscribers {
      * <code>subscriber</code> when {@link Subscriber#add(rx.Subscription)} is
      * called.
      * 
+     * @param <T> the observed value type
      * @param subscriber
      *            the Subscriber to wrap.
      * 

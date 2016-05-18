@@ -191,7 +191,7 @@ public class OperatorMaterializeTest {
     @Test
     public void testUnsubscribeJustBeforeCompletionNotificationShouldPreventThatNotificationArriving() {
         TestSubscriber<Notification<Integer>> ts = TestSubscriber.create(0);
-        IllegalArgumentException ex = new IllegalArgumentException();
+
         Observable.<Integer>empty().materialize()
                 .subscribe(ts);
         ts.assertNoValues();

@@ -46,6 +46,7 @@ public abstract class RxJavaObservableExecutionHook {
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
      * logging, metrics and other such things and pass through the function.
      * 
+     * @param <T> the value type
      * @param f
      *            original {@link OnSubscribe}<{@code T}> to be executed
      * @return {@link OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
@@ -61,6 +62,8 @@ public abstract class RxJavaObservableExecutionHook {
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
      * logging, metrics and other such things and pass through the function.
      * 
+     * @param <T> the value type
+     * @param observableInstance the parent observable instance
      * @param onSubscribe
      *            original {@link OnSubscribe}<{@code T}> to be executed
      * @return {@link OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
@@ -78,6 +81,7 @@ public abstract class RxJavaObservableExecutionHook {
      * This can be used to decorate or replace the {@link Subscription} instance or just perform extra logging,
      * metrics and other such things and pass through the subscription.
      * 
+     * @param <T> the value type
      * @param subscription
      *            original {@link Subscription}
      * @return {@link Subscription} subscription that can be modified, decorated, replaced or just returned as a
@@ -94,6 +98,7 @@ public abstract class RxJavaObservableExecutionHook {
      * This is <em>not</em> errors emitted via {@link Subscriber#onError(Throwable)} but exceptions thrown when
      * attempting to subscribe to a {@link Func1}<{@link Subscriber}{@code <T>}, {@link Subscription}>.
      * 
+     * @param <T> the value type
      * @param e
      *            Throwable thrown by {@link Observable#subscribe(Subscriber)}
      * @return Throwable that can be decorated, replaced or just returned as a pass through
@@ -110,6 +115,8 @@ public abstract class RxJavaObservableExecutionHook {
      * This can be used to decorate or replace the {@link Operator} instance or just perform extra
      * logging, metrics and other such things and pass through the onSubscribe.
      * 
+     * @param <T> the upstream's value type (input)
+     * @param <R> the downstream's value type (output)
      * @param lift
      *            original {@link Operator}{@code <R, T>}
      * @return {@link Operator}{@code <R, T>} function that can be modified, decorated, replaced or just

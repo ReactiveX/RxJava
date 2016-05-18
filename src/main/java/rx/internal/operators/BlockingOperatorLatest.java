@@ -98,7 +98,6 @@ public final class BlockingOperatorLatest {
                         throw Exceptions.propagate(ex);
                     }
 
-                    @SuppressWarnings("unchecked")
                     Notification<? extends T> n = value.getAndSet(null);
                     iNotif = n;
                     if (iNotif.isOnError()) {

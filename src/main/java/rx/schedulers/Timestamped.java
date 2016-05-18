@@ -17,6 +17,7 @@ package rx.schedulers;
 
 /**
  * Composite class that takes a value and a timestamp and wraps them.
+ * @param <T> the value type held along with the timestamp
  */
 public final class Timestamped<T> {
     private final long timestampMillis;

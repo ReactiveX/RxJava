@@ -1581,6 +1581,7 @@ public class OperatorGroupByTest {
         ts2.assertNotCompleted();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testGroupedObservableCollection() {
 
@@ -1637,6 +1638,7 @@ public class OperatorGroupByTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCollectedGroups() {
 

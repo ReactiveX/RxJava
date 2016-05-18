@@ -34,6 +34,8 @@ import rx.subscriptions.Subscriptions;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 /* package */final class SubjectSubscriptionManager<T> extends AtomicReference<SubjectSubscriptionManager.State<T>> implements OnSubscribe<T> {
+    /** */
+    private static final long serialVersionUID = 6035251036011671568L;
     /** Stores the latest value or the terminal value for some Subjects. */
     volatile Object latest;
     /** Indicates that the subject is active (cheaper than checking the state).*/

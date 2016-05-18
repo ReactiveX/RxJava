@@ -31,6 +31,9 @@ import rx.observers.SerializedObserver;
  * <p><pre>{@code
  * mySafeSubject = new SerializedSubject( myUnsafeSubject );
  * }</pre>
+ * 
+ * @param <T> the input value type
+ * @param <R> the output value type
  */
 public class SerializedSubject<T, R> extends Subject<T, R> {
     private final SerializedObserver<T> observer;

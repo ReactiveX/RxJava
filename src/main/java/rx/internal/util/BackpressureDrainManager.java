@@ -29,6 +29,8 @@ import rx.annotations.Experimental;
  */
 @Experimental
 public final class BackpressureDrainManager extends AtomicLong implements Producer {
+    /** */
+    private static final long serialVersionUID = 2826241102729529449L;
     /**
      * Interface representing the minimal callbacks required
      * to operate the drain part of a backpressure system.

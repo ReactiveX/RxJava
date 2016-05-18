@@ -225,11 +225,12 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     }
 
     /**
-     * @warn javadoc missing
-     * @param action
-     * @param delayTime
-     * @param unit
-     * @return
+     * Schedules the given action by wrapping it into a ScheduledAction on the
+     * underlying ExecutorService, returning the ScheduledAction. 
+     * @param action the action to wrap and schedule
+     * @param delayTime the delay in execution
+     * @param unit the time unit of the delay
+     * @return the wrapper ScheduledAction
      */
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
         Action0 decoratedAction = schedulersHook.onSchedule(action);

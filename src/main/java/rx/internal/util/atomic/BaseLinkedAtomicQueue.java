@@ -83,8 +83,6 @@ abstract class BaseLinkedAtomicQueue<E> extends AbstractQueue<E> {
      * Queue is empty when producerNode is the same as consumerNode. An alternative implementation would be to observe
      * the producerNode.value is null, which also means an empty queue because only the consumerNode.value is allowed to
      * be null.
-     * 
-     * @see MessagePassingQueue#isEmpty()
      */
     @Override
     public final boolean isEmpty() {

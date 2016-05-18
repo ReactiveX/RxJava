@@ -172,6 +172,7 @@ public class OperatorConcatTest {
 
     /**
      * Test an async Observable that emits more async Observables
+     * @throws Throwable on any error
      */
     @SuppressWarnings("unchecked")
     @Test

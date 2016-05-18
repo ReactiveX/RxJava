@@ -296,8 +296,8 @@ public final class IndexedRingBuffer<E> implements Subscription {
     /**
      * Add an element and return the index where it was added to allow removal.
      * 
-     * @param e
-     * @return
+     * @param e the element to add
+     * @return the index where the element was added
      */
     public int add(E e) {
         int i = getIndexForAdd();
@@ -429,9 +429,10 @@ public final class IndexedRingBuffer<E> implements Subscription {
     }
 
     /**
-     * 
+     * Loop through each element in the buffer and call a specific function.
      * @param action
      *            that processes each item and returns true if it wants to continue to the next
+     * @param startIndex at which index the loop should start
      * @return int of next index to process, or last index seen if it exited early
      */
     public int forEach(Func1<? super E, Boolean> action, int startIndex) {

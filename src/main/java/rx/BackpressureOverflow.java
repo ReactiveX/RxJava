@@ -37,11 +37,11 @@ public final class BackpressureOverflow {
     }
 
     public static final BackpressureOverflow.Strategy ON_OVERFLOW_DEFAULT = Error.INSTANCE;
-    @SuppressWarnings("unused")
+
     public static final BackpressureOverflow.Strategy ON_OVERFLOW_ERROR = Error.INSTANCE;
-    @SuppressWarnings("unused")
+
     public static final BackpressureOverflow.Strategy ON_OVERFLOW_DROP_OLDEST = DropOldest.INSTANCE;
-    @SuppressWarnings("unused")
+
     public static final BackpressureOverflow.Strategy ON_OVERFLOW_DROP_LATEST = DropLatest.INSTANCE;
 
     /**

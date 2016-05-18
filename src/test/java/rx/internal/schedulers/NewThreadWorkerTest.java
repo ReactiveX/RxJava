@@ -16,17 +16,13 @@
 
 package rx.internal.schedulers;
 
-import org.junit.Test;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static java.lang.reflect.Modifier.FINAL;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+
+import java.lang.reflect.Method;
+import java.util.concurrent.*;
+
+import org.junit.Test;
 
 public class NewThreadWorkerTest {
 
@@ -53,7 +49,7 @@ public class NewThreadWorkerTest {
 
     private static abstract class ScheduledExecutorServiceWithSetRemoveOnCancelPolicy implements ScheduledExecutorService {
         // Just declaration of required method to allow run tests on JDK 6
-        public void setRemoveOnCancelPolicy(@SuppressWarnings("UnusedParameters") boolean value) {}
+        public void setRemoveOnCancelPolicy(boolean value) {}
     }
 
     @Test

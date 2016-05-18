@@ -280,6 +280,6 @@ public class ScalarSynchronousSingleTest {
     @Test
     public void getValue() {
         Single<Integer> s = Single.just(1);
-        assertEquals(1, ((ScalarSynchronousSingle) s).get());
+        assertEquals(1, ((ScalarSynchronousSingle<?>) s).get());
     }
 }

@@ -19,6 +19,8 @@ import rx.*;
 
 /**
  * Represents an object that is both an Observable and an Observer.
+ * @param <T> the input value type
+ * @param <R> the output value type
  */
 public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
     protected Subject(OnSubscribe<R> onSubscribe) {

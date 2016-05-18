@@ -35,10 +35,6 @@ public final class ExecutorScheduler extends Scheduler {
         this.executor = executor;
     }
 
-    /**
-     * @warn javadoc missing
-     * @return
-     */
     @Override
     public Worker createWorker() {
         return new ExecutorSchedulerWorker(executor);

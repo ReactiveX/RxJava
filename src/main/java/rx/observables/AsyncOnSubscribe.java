@@ -39,7 +39,7 @@ import rx.subscriptions.CompositeSubscription;
  *
  * @param <S>
  *            the type of the user-define state used in {@link #generateState() generateState(S)} ,
- *            {@link #next(Object, Long, Subscriber) next(S, Long, Subscriber)}, and
+ *            {@link #next(Object, long, Observer) next(S, Long, Observer)}, and
  *            {@link #onUnsubscribe(Object) onUnsubscribe(S)}.
  * @param <T>
  *            the type of {@code Subscribers} that will be compatible with {@code this}.
@@ -48,7 +48,7 @@ import rx.subscriptions.CompositeSubscription;
 public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
 
     /**
-     * Executed once when subscribed to by a subscriber (via {@link OnSubscribe#call(Subscriber)})
+     * Executed once when subscribed to by a subscriber (via {@link #call(Subscriber)})
      * to produce a state value. This value is passed into {@link #next(Object, long, Observer)
      * next(S state, Observer <T> observer)} on the first iteration. Subsequent iterations of
      * {@code next} will receive the state returned by the previous invocation of {@code next}.
@@ -101,6 +101,8 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * Generates a synchronous {@link AsyncOnSubscribe} that calls the provided {@code next}
      * function to generate data to downstream subscribers.
      * 
+     * @param <T> the type of the generated values
+     * @param <S> the type of the associated state with each Subscriber
      * @param generator
      *            generates the initial state value (see {@link #generateState()})
      * @param next
@@ -127,6 +129,8 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * 
      * This overload creates a AsyncOnSubscribe without an explicit clean up step.
      * 
+     * @param <T> the type of the generated values
+     * @param <S> the type of the associated state with each Subscriber
      * @param generator
      *            generates the initial state value (see {@link #generateState()})
      * @param next
@@ -155,6 +159,8 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * Generates a synchronous {@link AsyncOnSubscribe} that calls the provided {@code next}
      * function to generate data to downstream subscribers.
      * 
+     * @param <T> the type of the generated values
+     * @param <S> the type of the associated state with each Subscriber
      * @param generator
      *            generates the initial state value (see {@link #generateState()})
      * @param next
@@ -176,6 +182,8 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * Generates a synchronous {@link AsyncOnSubscribe} that calls the provided {@code next}
      * function to generate data to downstream subscribers.
      * 
+     * @param <T> the type of the generated values
+     * @param <S> the type of the associated state with each Subscriber
      * @param generator
      *            generates the initial state value (see {@link #generateState()})
      * @param next
@@ -197,6 +205,7 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * This overload creates a "state-less" AsyncOnSubscribe which does not have an explicit state
      * value. This should be used when the {@code next} function closes over it's state.
      * 
+     * @param <T> the type of the generated values
      * @param next
      *            produces data to the downstream subscriber (see
      *            {@link #next(Object, long, Observer) next(S, long, Observer)})
@@ -222,6 +231,7 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * This overload creates a "state-less" AsyncOnSubscribe which does not have an explicit state
      * value. This should be used when the {@code next} function closes over it's state.
      * 
+     * @param <T> the type of the generated values
      * @param next
      *            produces data to the downstream subscriber (see
      *            {@link #next(Object, long, Observer) next(S, long, Observer)})
@@ -582,6 +592,7 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
             subscribeBufferToObservable(t);
         }
 
+        @SuppressWarnings("unchecked")
         private void subscribeBufferToObservable(final Observable<? extends T> t) {
             final BufferUntilSubscriber<T> buffer = BufferUntilSubscriber.<T> create();
 

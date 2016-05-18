@@ -24,6 +24,7 @@ import rx.Observer;
 
 /**
  * Observer usable for unit testing to perform assertions, inspect received events or wrap a mocked Observer.
+ * @param <T> the observed value type
  */
 public class TestObserver<T> implements Observer<T> {
 

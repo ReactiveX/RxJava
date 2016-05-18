@@ -270,8 +270,8 @@ public class SafeSubscriberTest {
             safe.onCompleted();
             Assert.fail();
         } catch(UnsubscribeFailedException e) {
-            assertEquals(1, (int) calls.get());
-            assertEquals(0, (int) errors.get());
+            assertEquals(1, calls.get());
+            assertEquals(0, errors.get());
         }
     }
 
@@ -310,8 +310,8 @@ public class SafeSubscriberTest {
             safe.onCompleted();
             Assert.fail();
         } catch(UnsubscribeFailedException e) {
-            assertEquals(2, (int) calls.get());
-            assertEquals(0, (int) errors.get());
+            assertEquals(2, calls.get());
+            assertEquals(0, errors.get());
         }
     }
 

@@ -23,6 +23,7 @@ public final class Functions {
     /**
      * Converts a {@link Func0} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <R> the result type
      * @param f
      *          the {@code Func0} to convert
      * @return a {@link FuncN} representation of {@code f}
@@ -44,6 +45,8 @@ public final class Functions {
     /**
      * Converts a {@link Func1} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <T0> the first argument type
+     * @param <R> the result type
      * @param f
      *          the {@code Func1} to convert
      * @return a {@link FuncN} representation of {@code f}
@@ -66,6 +69,9 @@ public final class Functions {
     /**
      * Converts a {@link Func2} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <T0> the first argument type
+     * @param <T1> the second argument type
+     * @param <R> the result type
      * @param f
      *          the {@code Func2} to convert
      * @return a {@link FuncN} representation of {@code f}
@@ -88,6 +94,10 @@ public final class Functions {
     /**
      * Converts a {@link Func3} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <T0> the first argument type
+     * @param <T1> the second argument type
+     * @param <T2> the third argument type
+     * @param <R> the result type
      * @param f
      *          the {@code Func3} to convert
      * @return a {@link FuncN} representation of {@code f}
@@ -110,6 +120,11 @@ public final class Functions {
     /**
      * Converts a {@link Func4} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <T0> the first argument type
+     * @param <T1> the second argument type
+     * @param <T2> the third argument type
+     * @param <T3> the fourth argument type
+     * @param <R> the result type
      * @param f
      *          the {@code Func4} to convert
      * @return a {@link FuncN} representation of {@code f}
@@ -132,6 +147,12 @@ public final class Functions {
     /**
      * Converts a {@link Func5} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <T0> the first argument type
+     * @param <T1> the second argument type
+     * @param <T2> the third argument type
+     * @param <T3> the fourth argument type
+     * @param <T4> the fifth argument type
+     * @param <R> the result type
      * @param f
      *          the {@code Func5} to convert
      * @return a {@link FuncN} representation of {@code f}
@@ -154,6 +175,13 @@ public final class Functions {
     /**
      * Converts a {@link Func6} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <T0> the first argument type
+     * @param <T1> the second argument type
+     * @param <T2> the third argument type
+     * @param <T3> the fourth argument type
+     * @param <T4> the fifth argument type
+     * @param <T5> the sixth argument type
+     * @param <R> the result type
      * @param f
      *          the {@code Func6} to convert
      * @return a {@link FuncN} representation of {@code f}
@@ -176,6 +204,14 @@ public final class Functions {
     /**
      * Converts a {@link Func7} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <T0> the first argument type
+     * @param <T1> the second argument type
+     * @param <T2> the third argument type
+     * @param <T3> the fourth argument type
+     * @param <T4> the fifth argument type
+     * @param <T5> the sixth argument type
+     * @param <T6> the seventh argument type
+     * @param <R> the result type
      * @param f
      *          the {@code Func7} to convert
      * @return a {@link FuncN} representation of {@code f}
@@ -198,6 +234,15 @@ public final class Functions {
     /**
      * Converts a {@link Func8} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <T0> the first argument type
+     * @param <T1> the second argument type
+     * @param <T2> the third argument type
+     * @param <T3> the fourth argument type
+     * @param <T4> the fifth argument type
+     * @param <T5> the sixth argument type
+     * @param <T6> the seventh argument type
+     * @param <T7> the eigth argument type
+     * @param <R> the result type
      * @param f
      *          the {@code Func8} to convert
      * @return a {@link FuncN} representation of {@code f}
@@ -220,6 +265,16 @@ public final class Functions {
     /**
      * Converts a {@link Func9} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <T0> the first argument type
+     * @param <T1> the second argument type
+     * @param <T2> the third argument type
+     * @param <T3> the fourth argument type
+     * @param <T4> the fifth argument type
+     * @param <T5> the sixth argument type
+     * @param <T6> the seventh argument type
+     * @param <T7> the eigth argument type
+     * @param <T8> the ninth argument type
+     * @param <R> the result type
      * @param f
      *          the {@code Func9} to convert
      * @return a {@link FuncN} representation of {@code f}
@@ -264,6 +319,7 @@ public final class Functions {
     /**
      * Converts an {@link Action1} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <T0> the first argument type
      * @param f
      *          the {@code Action1} to convert
      * @return a {@link FuncN} representation of {@code f}
@@ -287,6 +343,8 @@ public final class Functions {
     /**
      * Converts an {@link Action2} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <T0> the first argument type
+     * @param <T1> the second argument type
      * @param f
      *          the {@code Action2} to convert
      * @return a {@link FuncN} representation of {@code f}
@@ -310,6 +368,9 @@ public final class Functions {
     /**
      * Converts an {@link Action3} to a {@link FuncN} to allow heterogeneous handling of functions with different arities.
      * 
+     * @param <T0> the first argument type
+     * @param <T1> the second argument type
+     * @param <T2> the third argument type
      * @param f
      *          the {@code Action3} to convert
      * @return a {@link FuncN} representation of {@code f}

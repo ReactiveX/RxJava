@@ -116,6 +116,7 @@ public class Observable<T> {
      * 
      * @param <T>
      *            the type of the items that this Observable emits
+     * @param <S> the state type
      * @param syncOnSubscribe
      *            an implementation of {@link SyncOnSubscribe}. There are many static creation methods 
      *            on the class for convenience.  
@@ -151,6 +152,7 @@ public class Observable<T> {
      * 
      * @param <T>
      *            the type of the items that this Observable emits
+     * @param <S> the state type
      * @param asyncOnSubscribe
      *            an implementation of {@link AsyncOnSubscribe}. There are many static creation methods 
      *            on the class for convenience. 
@@ -167,6 +169,7 @@ public class Observable<T> {
 
     /**
      * Invoked when Observable.subscribe is called.
+     * @param <T> the output value type
      */
     public interface OnSubscribe<T> extends Action1<Subscriber<? super T>> {
         // cover for generics insanity
@@ -174,6 +177,8 @@ public class Observable<T> {
 
     /**
      * Operator function for lifting into an Observable.
+     * @param <T> the upstream's value type (input)
+     * @param <R> the downstream's value type (output)
      */
     public interface Operator<R, T> extends Func1<Subscriber<? super R>, Subscriber<? super T>> {
         // cover for generics insanity

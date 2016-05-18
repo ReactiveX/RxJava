@@ -76,5 +76,8 @@ public class BlockingSingleTest {
     }
 
     private static final class TestCheckedException extends Exception {
+
+        /** */
+        private static final long serialVersionUID = -5601856891331290034L;
     }
 }

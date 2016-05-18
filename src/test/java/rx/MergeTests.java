@@ -17,6 +17,7 @@ package rx;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class MergeTests {
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);
-        assertTrue(values.get(2) instanceof Media);
+        assertNotNull(values.get(2));
         assertTrue(values.get(3) instanceof HorrorMovie);
     }
 
@@ -96,7 +97,7 @@ public class MergeTests {
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);
-        assertTrue(values.get(2) instanceof Media);
+        assertNotNull(values.get(2));
         assertTrue(values.get(3) instanceof HorrorMovie);
     }
 
