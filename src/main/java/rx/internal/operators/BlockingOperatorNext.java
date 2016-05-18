@@ -90,6 +90,7 @@ public final class BlockingOperatorNext {
             return moveToNext();
         }
 
+        @SuppressWarnings("unchecked")
         private boolean moveToNext() {
             try {
                 if (!started) {

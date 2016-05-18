@@ -76,6 +76,7 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
         this.subjectFactory = subjectFactory;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void connect(Action1<? super Subscription> connection) {
         // each time we connect we create a new Subject and Subscription

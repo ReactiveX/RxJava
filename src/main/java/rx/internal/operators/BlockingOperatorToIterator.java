@@ -46,6 +46,7 @@ public final class BlockingOperatorToIterator {
      *            the type of source.
      * @return the iterator that could be used to iterate over the elements of the observable.
      */
+    @SuppressWarnings("unchecked")
     public static <T> Iterator<T> toIterator(Observable<? extends T> source) {
         SubscriberIterator<T> subscriber = new SubscriberIterator<T>();
 

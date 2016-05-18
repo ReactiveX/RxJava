@@ -38,6 +38,7 @@ public final class CachedObservable<T> extends Observable<T> {
      * @param source the source Observable to cache
      * @return the CachedObservable instance
      */
+    @SuppressWarnings("cast")
     public static <T> CachedObservable<T> from(Observable<? extends T> source) {
         return (CachedObservable<T>)from(source, 16);
     }

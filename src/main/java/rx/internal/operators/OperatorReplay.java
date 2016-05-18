@@ -132,6 +132,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
      * @param bufferSize
      * @return
      */
+    @SuppressWarnings("cast")
     public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
             final int bufferSize) {
         if (bufferSize == Integer.MAX_VALUE) {
@@ -153,6 +154,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
      * @param scheduler
      * @return
      */
+    @SuppressWarnings("cast")
     public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
             long maxAge, TimeUnit unit, Scheduler scheduler) {
         return (ConnectableObservable<T>)create(source, maxAge, unit, scheduler, Integer.MAX_VALUE);

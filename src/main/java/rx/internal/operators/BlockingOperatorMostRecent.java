@@ -45,6 +45,7 @@ public final class BlockingOperatorMostRecent {
      */
     public static <T> Iterable<T> mostRecent(final Observable<? extends T> source, final T initialValue) {
         return new Iterable<T>() {
+            @SuppressWarnings("unchecked")
             @Override
             public Iterator<T> iterator() {
                 MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
