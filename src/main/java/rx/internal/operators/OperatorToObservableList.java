@@ -35,6 +35,7 @@ import rx.internal.producers.SingleDelayedProducer;
  * <p>
  * Be careful not to use this operator on {@code Observable}s that emit infinite or very large numbers of items,
  * as you do not have the option to unsubscribe.
+ * @param <T> the value type of the input and the output list's items
  */
 public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
     /** Lazy initialization via inner-class holder. */
@@ -43,6 +44,7 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
         static final OperatorToObservableList<Object> INSTANCE = new OperatorToObservableList<Object>();
     }
     /**
+     * @param <T> the value type of the input and the output list's items
      * @return a singleton instance of this stateless operator.
      */
     @SuppressWarnings({ "unchecked" })

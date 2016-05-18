@@ -38,7 +38,7 @@ import rx.subscriptions.Subscriptions;
  *            the key type
  * @param <T>
  *            the source and group value type
- * @param <R>
+ * @param <V>
  *            the value type of the groups
  */
 public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservable<K, V>, T>{

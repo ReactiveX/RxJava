@@ -33,11 +33,16 @@ import rx.observers.Subscribers;
  * (Map&lt;K, Collection&lt;V>>) where each
  * key entry has a collection of the source's values.
  *
- * @see <a href='https://github.com/ReactiveX/RxJava/issues/97'>Issue #97</a>
+ * @see <a href="https://github.com/ReactiveX/RxJava/issues/97">Issue #97</a>
+ * @param <T> the value type of the input
+ * @param <K> the multimap-key type
+ * @param <V> the multimap-value type
  */
 public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collection<V>>, T> {
     /**
      * The default multimap factory returning a HashMap.
+     * @param <K> the key type
+     * @param <V> the value type
      */
     public static final class DefaultToMultimapFactory<K, V> implements Func0<Map<K, Collection<V>>> {
         @Override
@@ -49,6 +54,8 @@ public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collec
     /**
      * The default collection factory for a key in the multimap returning
      * an ArrayList independent of the key.
+     * @param <K> the key type
+     * @param <V> the value type
      */
     public static final class DefaultMultimapCollectionFactory<K, V>
             implements Func1<K, Collection<V>> {
@@ -66,6 +73,8 @@ public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collec
     /**
      * ToMultimap with key selector, custom value selector,
      * default HashMap factory and default ArrayList collection factory.
+     * @param keySelector the function extracting the map-key from the main value
+     * @param valueSelector the function extracting the map-value from the main value
      */
     public OperatorToMultimap(
             Func1<? super T, ? extends K> keySelector,
@@ -78,6 +87,9 @@ public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collec
     /**
      * ToMultimap with key selector, custom value selector,
      * custom Map factory and default ArrayList collection factory.
+     * @param keySelector the function extracting the map-key from the main value
+     * @param valueSelector the function extracting the map-value from the main value
+     * @param mapFactory function that returns a Map instance to store keys and values into
      */
     public OperatorToMultimap(
             Func1<? super T, ? extends K> keySelector,
@@ -91,6 +103,10 @@ public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collec
     /**
      * ToMultimap with key selector, custom value selector,
      * custom Map factory and custom collection factory.
+     * @param keySelector the function extracting the map-key from the main value
+     * @param valueSelector the function extracting the map-value from the main value
+     * @param mapFactory function that returns a Map instance to store keys and values into
+     * @param collectionFactory function that returns a Collection for a particular key to store values into
      */
     public OperatorToMultimap(
             Func1<? super T, ? extends K> keySelector,

@@ -44,6 +44,7 @@ public final class BlockingOperatorToIterator {
      * 
      * @param <T>
      *            the type of source.
+     * @param source the source Observable
      * @return the iterator that could be used to iterate over the elements of the observable.
      */
     @SuppressWarnings("unchecked")

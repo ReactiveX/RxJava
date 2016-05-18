@@ -27,6 +27,8 @@ import rx.functions.*;
  * this transformation as a new {@code Observable}.
  * <p>
  * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/map.png" alt="">
+ * @param <T> the input value type
+ * @param <R> the output value type
  */
 public final class OperatorMapNotification<T, R> implements Operator<R, T> {
 

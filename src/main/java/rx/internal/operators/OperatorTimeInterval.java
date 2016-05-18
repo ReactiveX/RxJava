@@ -22,6 +22,7 @@ import rx.schedulers.TimeInterval;
 
 /**
  * Records the time interval between consecutive elements in an observable sequence.
+ * @param <T> the value type
  */
 public final class OperatorTimeInterval<T> implements Operator<TimeInterval<T>, T> {
 

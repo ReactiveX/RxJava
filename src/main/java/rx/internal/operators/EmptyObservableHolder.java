@@ -29,6 +29,7 @@ public enum EmptyObservableHolder implements OnSubscribe<Object> {
     
     /**
      * Returns a type-corrected singleton instance of the empty Observable.
+     * @param <T> the value type
      * @return a type-corrected singleton instance of the empty Observable.
      */
     @SuppressWarnings("unchecked")

@@ -44,6 +44,7 @@ public final class NotificationLite<T> {
     /**
      * Gets the {@code NotificationLite} singleton.
      *
+     * @param <T> the value type
      * @return the sole {@code NotificationLite} object
      */
     @SuppressWarnings("unchecked")

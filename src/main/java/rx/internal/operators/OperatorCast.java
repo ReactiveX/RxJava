@@ -22,6 +22,8 @@ import rx.internal.util.RxJavaPluginUtils;
 
 /**
  * Converts the elements of an observable sequence to the specified type.
+ * @param <T> the input value type
+ * @param <R> the output value type
  */
 public class OperatorCast<T, R> implements Operator<R, T> {
 

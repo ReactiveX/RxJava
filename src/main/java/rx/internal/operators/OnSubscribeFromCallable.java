@@ -29,6 +29,7 @@ import java.util.concurrent.Callable;
  * <p>
  * Pass {@code fromCallable} a function, and {@code fromCallable} will call this function to emit result of invocation
  * afresh each time a new Observer subscribes.
+ * @param <T> the value type emitted
  */
 public final class OnSubscribeFromCallable<T> implements Observable.OnSubscribe<T> {
 

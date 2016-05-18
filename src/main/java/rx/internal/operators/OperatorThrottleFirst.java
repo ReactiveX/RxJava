@@ -22,6 +22,7 @@ import rx.Observable.Operator;
 
 /**
  * Throttle by windowing a stream and returning the first value in each window.
+ * @param <T> the value type
  */
 public final class OperatorThrottleFirst<T> implements Operator<T, T> {
 

@@ -32,6 +32,7 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
     }
 
     /**
+     * @param <T> the value type
      * @return a singleton instance of this stateless operator.
      */
     @SuppressWarnings({ "unchecked" })

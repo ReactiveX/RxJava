@@ -24,6 +24,7 @@ import rx.subscriptions.SerialSubscription;
  * If the Observable completes without emitting any items, subscribe to an alternate Observable. Allows for similar
  * functionality to {@link rx.internal.operators.OperatorDefaultIfEmpty} except instead of one item being emitted when
  * empty, the results of the given Observable will be emitted.
+ * @param <T> the value type
  */
 public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T> {
     private final Observable<? extends T> alternate;

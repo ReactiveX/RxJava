@@ -24,6 +24,7 @@ import rx.functions.Func2;
 /**
  * Skips any emitted source items as long as the specified condition holds true. Emits all further source items
  * as soon as the condition becomes false.
+ * @param <T> the value type
  */
 public final class OperatorSkipWhile<T> implements Operator<T, T> {
     final Func2<? super T, Integer, Boolean> predicate;
@@ -68,7 +69,12 @@ public final class OperatorSkipWhile<T> implements Operator<T, T> {
             }
         };
     }
-    /** Convert to Func2 type predicate. */
+    /** 
+     * Convert to Func2 type predicate.
+     * @param <T> the input value type
+     * @param predicate the single argument predicate function
+     * @return The two argument function which ignores its second parameter  
+     */
     public static <T> Func2<T, Integer, Boolean> toPredicate2(final Func1<? super T, Boolean> predicate) {
         return new Func2<T, Integer, Boolean>() {
 

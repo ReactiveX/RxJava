@@ -40,6 +40,7 @@ import rx.subscriptions.SerialSubscription;
  * <p>
  * You can use this to prevent errors from propagating or to supply fallback data should errors be
  * encountered.
+ * @param <T> the value type
  */
 public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T, T> {
 

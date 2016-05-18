@@ -204,6 +204,7 @@ public class Single<T> {
      * <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the value type of the single returned by the transformer function
      * @param transformer
      *            implements the function that transforms the source Single
      * @return the source Single, transformed by the transformer function
@@ -218,6 +219,8 @@ public class Single<T> {
      * Transformer function used by {@link #compose}.
      * 
      * @warn more complete description needed
+     * @param <T> the source Single's value type
+     * @param <R> the transformed Single's value type
      */
     public interface Transformer<T, R> extends Func1<Single<T>, Single<R>> {
         // cover for generics insanity
@@ -266,7 +269,8 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * 
+     * @param <T> the common value type
      * @param t1
      *            an Single to be concatenated
      * @param t2
@@ -287,6 +291,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -309,6 +314,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -333,6 +339,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -359,6 +366,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -387,6 +395,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -417,6 +426,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -449,6 +459,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -710,6 +721,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -733,6 +745,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -758,6 +771,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -785,6 +799,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -814,6 +829,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -845,6 +861,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -878,6 +895,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -913,6 +931,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -948,6 +967,9 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -978,6 +1000,10 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1010,6 +1036,11 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <T4> the fourth source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1044,6 +1075,12 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <T4> the fourth source Single's value type
+     * @param <T5> the fifth source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1080,6 +1117,13 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <T4> the fourth source Single's value type
+     * @param <T5> the fifth source Single's value type
+     * @param <T6> the sixth source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1119,6 +1163,14 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <T4> the fourth source Single's value type
+     * @param <T5> the fifth source Single's value type
+     * @param <T6> the sixth source Single's value type
+     * @param <T7> the seventh source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1160,6 +1212,15 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <T4> the fourth source Single's value type
+     * @param <T5> the fifth source Single's value type
+     * @param <T6> the sixth source Single's value type
+     * @param <T7> the seventh source Single's value type
+     * @param <T8> the eigth source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1203,6 +1264,16 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <T4> the fourth source Single's value type
+     * @param <T5> the fifth source Single's value type
+     * @param <T6> the sixth source Single's value type
+     * @param <T7> the seventh source Single's value type
+     * @param <T8> the eigth source Single's value type
+     * @param <T9> the ninth source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1250,6 +1321,7 @@ public class Single<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <R> the result value type
      * @param singles
      *            an Iterable of source Singles. Should not be empty because {@link Single} either emits result or error.
      *            {@link java.util.NoSuchElementException} will be emit as error if Iterable will be empty.
@@ -1296,6 +1368,7 @@ public class Single<T> {
      * <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the result value type
      * @param func
      *            a function that, when applied to the item emitted by the source Single, returns a Single
      * @return the Single returned from {@code func} when applied to the item emitted by the source Single
@@ -1318,6 +1391,7 @@ public class Single<T> {
      * <dd>{@code flatMapObservable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the result value type
      * @param func
      *            a function that, when applied to the item emitted by the source Single, returns an
      *            Observable
@@ -1338,6 +1412,7 @@ public class Single<T> {
      * <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <R> the result value type
      * @param func
      *            a function to apply to the item emitted by the Single
      * @return a Single that emits the item from the source Single, transformed by the specified function
@@ -1628,6 +1703,7 @@ public class Single<T> {
      * 
      * @param subscriber
      *            the Subscriber that will handle the emission or notification from the Single
+     * @return the subscription that allows unsubscribing
      */
     public final Subscription unsafeSubscribe(Subscriber<? super T> subscriber) {
         try {
@@ -2131,8 +2207,7 @@ public class Single<T> {
      *
      * @return a {@link Completable} that calls {@code onCompleted} on it's subscriber when the source {@link Single}
      *         calls {@code onSuccess}.
-     * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation:
-     *      Completable</a>.
+     * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation: Completable</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
      *        with the release number).
      */
@@ -2674,6 +2749,8 @@ public class Single<T> {
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the value type of the generated source
+     * @param <Resource> the type of the per-subscriber resource
      * @param resourceFactory
      *            the factory function to create a resource object that depends on the Single
      * @param singleFactory
@@ -2686,9 +2763,9 @@ public class Single<T> {
     @Experimental
     public static <T, Resource> Single<T> using(
             final Func0<Resource> resourceFactory,
-            final Func1<? super Resource, ? extends Single<? extends T>> observableFactory,
+            final Func1<? super Resource, ? extends Single<? extends T>> singleFactory,
             final Action1<? super Resource> disposeAction) {
-        return using(resourceFactory, observableFactory, disposeAction, false);
+        return using(resourceFactory, singleFactory, disposeAction, false);
     }
     
     /**
@@ -2704,7 +2781,8 @@ public class Single<T> {
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @warn "Backpressure Support" section missing from javadoc
+     * @param <T> the value type of the generated source
+     * @param <Resource> the type of the per-subscriber resource
      * @param resourceFactory
      *            the factory function to create a resource object that depends on the Single
      * @param singleFactory

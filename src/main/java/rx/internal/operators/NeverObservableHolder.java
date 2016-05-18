@@ -29,6 +29,7 @@ public enum NeverObservableHolder implements OnSubscribe<Object> {
     
     /**
      * Returns a type-corrected singleton instance of the never Observable.
+     * @param <T> the value type
      * @return a type-corrected singleton instance of the never Observable.
      */
     @SuppressWarnings("unchecked")

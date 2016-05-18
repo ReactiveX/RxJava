@@ -26,6 +26,7 @@ public final class OperatorSerialize<T> implements Operator<T, T> {
         static final OperatorSerialize<Object> INSTANCE = new OperatorSerialize<Object>();
     }
     /**
+     * @param <T> the value type
      * @return a singleton instance of this stateless operator.
      */
     @SuppressWarnings({ "unchecked" })

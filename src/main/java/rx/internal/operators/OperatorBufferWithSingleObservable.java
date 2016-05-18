@@ -41,6 +41,7 @@ import rx.observers.Subscribers;
  * </p>
  * 
  * @param <T> the buffered value type
+ * @param <TClosing> the value type of the Observable signaling the end of each buffer
  */
 
 public final class OperatorBufferWithSingleObservable<T, TClosing> implements Operator<List<T>, T> {

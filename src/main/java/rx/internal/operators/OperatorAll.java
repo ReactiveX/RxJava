@@ -26,6 +26,7 @@ import rx.internal.producers.SingleDelayedProducer;
  * Observable satisfy a condition.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/all.png" alt="">
+ * @param <T> the value type
  */
 public final class OperatorAll<T> implements Operator<Boolean, T> {
     final Func1<? super T, Boolean> predicate;

@@ -30,6 +30,7 @@ import rx.plugins.RxJavaPlugins;
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/materialize.png" alt="">
  * <p>
  * See <a href="http://msdn.microsoft.com/en-us/library/hh229453.aspx">here</a> for the Microsoft Rx equivalent.
+ * @param <T> the value type
  */
 public final class OperatorMaterialize<T> implements Operator<Notification<T>, T> {
 
@@ -40,6 +41,7 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
     }
 
     /**
+     * @param <T> the value type
      * @return a singleton instance of this stateless operator.
      */
     @SuppressWarnings("unchecked")

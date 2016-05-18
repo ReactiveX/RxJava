@@ -40,6 +40,7 @@ public final class BlockingOperatorNext {
      * Returns an {@code Iterable} that blocks until the {@code Observable} emits another item, then returns
      * that item.
      *
+     * @param <T> the value type
      * @param items
      *            the {@code Observable} to observe
      * @return an {@code Iterable} that behaves like a blocking version of {@code items}
