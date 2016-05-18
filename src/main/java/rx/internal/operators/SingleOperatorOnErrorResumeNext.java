@@ -20,7 +20,6 @@ import rx.Single;
 import rx.SingleSubscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
-import rx.plugins.RxJavaPlugins;
 
 public class SingleOperatorOnErrorResumeNext<T> implements Single.OnSubscribe<T> {
 

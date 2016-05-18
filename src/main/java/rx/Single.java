@@ -135,6 +135,7 @@ public class Single<T> {
 
     /**
      * Invoked when Single.execute is called.
+     * @param <T> the output value type
      */
     public interface OnSubscribe<T> extends Action1<SingleSubscriber<? super T>> {
         // cover for generics insanity
@@ -157,6 +158,7 @@ public class Single<T> {
      * <dd>{@code lift} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the downstream's value type (output)
      * @param lift
      *            the Operator that implements the Single-operating function to be applied to the source Single
      * @return a Single that is the result of applying the lifted Operator to the source Single
@@ -657,12 +659,14 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the value type of the sources and the output
      * @param source
      *            a {@code Single} that emits a {@code Single}
      * @return a {@code Single} that emits the item that is the result of flattening the {@code Single} emitted
      *         by {@code source}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Single<T> merge(final Single<? extends Single<? extends T>> source) {
         if (source instanceof ScalarSynchronousSingle) {
             return ((ScalarSynchronousSingle<T>) source).scalarFlatMap((Func1) UtilityFunctions.identity());

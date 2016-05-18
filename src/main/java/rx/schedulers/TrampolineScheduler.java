@@ -21,7 +21,7 @@ import rx.Scheduler;
  * @deprecated This type was never publicly instantiable. Use {@link Schedulers#trampoline()}.
  */
 @Deprecated
-@SuppressWarnings("unused") // Class was part of public API.
+// Class was part of public API.
 public final class TrampolineScheduler extends Scheduler {
     private TrampolineScheduler() {
         throw new AssertionError();

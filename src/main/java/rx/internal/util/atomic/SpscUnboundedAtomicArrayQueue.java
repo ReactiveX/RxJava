@@ -28,6 +28,7 @@ import rx.internal.util.unsafe.Pow2;
  * structure if the production overshoots the consumption.
  * <p>Note that the minimum capacity of the 'islands' are 8 due to how the look-ahead optimization works.
  * <p>The implementation uses field updaters and thus should be platform-safe.
+ * @param <T> the value type held by this queue
  */
 public final class SpscUnboundedAtomicArrayQueue<T> implements Queue<T> {
     static final int MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);

@@ -147,7 +147,7 @@ public class OperatorTakeUntilPredicateTest {
         }).subscribe(ts);
         ts.assertTerminalEvent();
         ts.assertNotCompleted();
-        assertEquals(1, (int) ts.getOnErrorEvents().size());
+        assertEquals(1, ts.getOnErrorEvents().size());
         assertTrue(ts.getOnErrorEvents().get(0).getCause().getMessage().contains("abc"));
     }
 }

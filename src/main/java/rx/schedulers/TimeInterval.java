@@ -19,6 +19,7 @@ package rx.schedulers;
  * A {@code TimeInterval} represents an item emitted by an {@code Observable} along with the amount of time that
  * elapsed either since the emission of the previous item or (if there was no previous item) since the
  * {@code Observable} was first subscribed to.
+ * @param <T> the value type held along with the interval length
  */
 public class TimeInterval<T> {
     private final long intervalInMilliseconds;

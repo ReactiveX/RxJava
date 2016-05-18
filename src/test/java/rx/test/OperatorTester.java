@@ -37,8 +37,8 @@ public final class OperatorTester {
     /**
      * Used for mocking of Schedulers since many Scheduler implementations are static/final.
      * 
-     * @param underlying
-     * @return
+     * @param underlying the actual scheduler
+     * @return the wrapping Scheduler instance
      */
     public static Scheduler forwardingScheduler(Scheduler underlying) {
         return new ForwardingScheduler(underlying);

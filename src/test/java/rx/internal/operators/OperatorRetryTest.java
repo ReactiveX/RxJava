@@ -605,7 +605,10 @@ public class OperatorRetryTest {
 
         protected Observer<T> target;
 
-        /** Wrap existing Observer */
+        /**
+         * Wrap existing Observer.
+         * @param target the target observer instance
+         */
         public AsyncObserver(Observer<T> target) {
             this.target = target;
         }
@@ -749,7 +752,7 @@ public class OperatorRetryTest {
                                     for (Throwable t : ts.getOnErrorEvents()) {
                                         onNextEvents.add(t.toString());
                                     }
-                                    for (Object o : ts.getOnCompletedEvents()) {
+                                    for (int k = 0; k < ts.getOnCompletedEvents().size(); k++) {
                                         onNextEvents.add("onCompleted");
                                     }
                                     data.put(j, onNextEvents);

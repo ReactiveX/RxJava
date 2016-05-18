@@ -88,6 +88,7 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
     /**
      * Create a scheduler with pool size equal to the available processor
      * count and using least-recent worker selection policy.
+     * @param threadFactory the factory to use with the executors
      */
     public EventLoopsScheduler(ThreadFactory threadFactory) {
         this.threadFactory = threadFactory;

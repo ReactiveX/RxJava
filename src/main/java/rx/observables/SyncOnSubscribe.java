@@ -24,7 +24,6 @@ import rx.Producer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.annotations.Beta;
-import rx.annotations.Experimental;
 import rx.exceptions.Exceptions;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -42,7 +41,7 @@ import rx.plugins.RxJavaPlugins;
  *
  * @param <S>
  *            the type of the user-define state used in {@link #generateState() generateState(S)} ,
- *            {@link #next(Object, Subscriber) next(S, Subscriber)}, and
+ *            {@link #next(Object, Observer) next(S, Subscriber)}, and
  *            {@link #onUnsubscribe(Object) onUnsubscribe(S)}.
  * @param <T>
  *            the type of {@code Subscribers} that will be compatible with {@code this}.
@@ -71,7 +70,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
     }
 
     /**
-     * Executed once when subscribed to by a subscriber (via {@link OnSubscribe#call(Subscriber)})
+     * Executed once when subscribed to by a subscriber (via {@link #call(Subscriber)})
      * to produce a state value. This value is passed into {@link #next(Object, Observer) next(S
      * state, Observer <T> observer)} on the first iteration. Subsequent iterations of {@code next}
      * will receive the state returned by the previous invocation of {@code next}.
@@ -120,10 +119,12 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * Generates a synchronous {@link SyncOnSubscribe} that calls the provided {@code next} function
      * to generate data to downstream subscribers.
      * 
+     * @param <T> the type of the generated values
+     * @param <S> the type of the associated state with each Subscriber
      * @param generator
      *            generates the initial state value (see {@link #generateState()})
      * @param next
-     *            produces data to the downstream subscriber (see {@link #next(Object, Subscriber)
+     *            produces data to the downstream subscriber (see {@link #next(Object, Observer)
      *            next(S, Subscriber)})
      * @return a SyncOnSubscribe that emits data in a protocol compatible with back-pressure.
      */
@@ -146,10 +147,12 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * 
      * This overload creates a SyncOnSubscribe without an explicit clean up step.
      * 
+     * @param <T> the type of the generated values
+     * @param <S> the type of the associated state with each Subscriber
      * @param generator
      *            generates the initial state value (see {@link #generateState()})
      * @param next
-     *            produces data to the downstream subscriber (see {@link #next(Object, Subscriber)
+     *            produces data to the downstream subscriber (see {@link #next(Object, Observer)
      *            next(S, Subscriber)})
      * @param onUnsubscribe
      *            clean up behavior (see {@link #onUnsubscribe(Object) onUnsubscribe(S)})
@@ -174,10 +177,12 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * Generates a synchronous {@link SyncOnSubscribe} that calls the provided {@code next} function
      * to generate data to downstream subscribers.
      * 
+     * @param <T> the type of the generated values
+     * @param <S> the type of the associated state with each Subscriber
      * @param generator
      *            generates the initial state value (see {@link #generateState()})
      * @param next
-     *            produces data to the downstream subscriber (see {@link #next(Object, Subscriber)
+     *            produces data to the downstream subscriber (see {@link #next(Object, Observer)
      *            next(S, Subscriber)})
      * @param onUnsubscribe
      *            clean up behavior (see {@link #onUnsubscribe(Object) onUnsubscribe(S)})
@@ -195,10 +200,12 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * Generates a synchronous {@link SyncOnSubscribe} that calls the provided {@code next} function
      * to generate data to downstream subscribers.
      * 
+     * @param <T> the type of the generated values
+     * @param <S> the type of the associated state with each Subscriber
      * @param generator
      *            generates the initial state value (see {@link #generateState()})
      * @param next
-     *            produces data to the downstream subscriber (see {@link #next(Object, Subscriber)
+     *            produces data to the downstream subscriber (see {@link #next(Object, Observer)
      *            next(S, Subscriber)})
      * @return a SyncOnSubscribe that emits data downstream in a protocol compatible with
      *         back-pressure.
@@ -216,8 +223,9 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * This overload creates a "state-less" SyncOnSubscribe which does not have an explicit state
      * value. This should be used when the {@code next} function closes over it's state.
      * 
+     * @param <T> the type of the generated values
      * @param next
-     *            produces data to the downstream subscriber (see {@link #next(Object, Subscriber)
+     *            produces data to the downstream subscriber (see {@link #next(Object, Observer)
      *            next(S, Subscriber)})
      * @return a SyncOnSubscribe that emits data downstream in a protocol compatible with
      *         back-pressure.
@@ -241,8 +249,9 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * This overload creates a "state-less" SyncOnSubscribe which does not have an explicit state
      * value. This should be used when the {@code next} function closes over it's state.
      * 
+     * @param <T> the type of the generated values
      * @param next
-     *            produces data to the downstream subscriber (see {@link #next(Object, Subscriber)
+     *            produces data to the downstream subscriber (see {@link #next(Object, Observer)
      *            next(S, Subscriber)})
      * @param onUnsubscribe
      *            clean up behavior (see {@link #onUnsubscribe(Object) onUnsubscribe(S)})

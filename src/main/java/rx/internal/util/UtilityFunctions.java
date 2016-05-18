@@ -32,6 +32,7 @@ public final class UtilityFunctions {
     /**
      * Returns a function that always returns {@code true}.
      *
+     * @param <T> the value type
      * @return a {@link Func1} that accepts an Object and returns the Boolean {@code true}
      */
     public static <T> Func1<? super T, Boolean> alwaysTrue() {
@@ -41,6 +42,7 @@ public final class UtilityFunctions {
     /**
      * Returns a function that always returns {@code false}.
      *
+     * @param <T> the value type
      * @return a {@link Func1} that accepts an Object and returns the Boolean {@code false}
      */
     public static <T> Func1<? super T, Boolean> alwaysFalse() {
@@ -50,6 +52,7 @@ public final class UtilityFunctions {
     /**
      * Returns a function that always returns the Object it is passed.
      *
+     * @param <T> the input and output value type
      * @return a {@link Func1} that accepts an Object and returns the same Object
      */
     public static <T> Func1<T, T> identity() {
@@ -82,6 +85,17 @@ public final class UtilityFunctions {
     /**
      * Returns a function that merely returns {@code null}, without side effects.
      *
+     * @param <T0> the first argument type
+     * @param <T1> the second argument type
+     * @param <T2> the third argument type
+     * @param <T3> the fourth argument type
+     * @param <T4> the fifth argument type
+     * @param <T5> the sixth argument type
+     * @param <T6> the seventh argument type
+     * @param <T7> the eigth argument type
+     * @param <T8> the ninth argument type
+     * @param <T9> the thenth first argument type
+     * @param <R> the result type
      * @return a function that returns {@code null}
      */
     @SuppressWarnings("unchecked")

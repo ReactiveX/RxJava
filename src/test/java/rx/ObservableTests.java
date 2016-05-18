@@ -321,6 +321,7 @@ public class ObservableTests {
      * It is handled by the AtomicObserver that wraps the provided Observer.
      * 
      * Result: Passes (if AtomicObserver functionality exists)
+     * @throws InterruptedException on interrupt
      */
     @Test
     public void testCustomObservableWithErrorInObserverAsynchronous() throws InterruptedException {

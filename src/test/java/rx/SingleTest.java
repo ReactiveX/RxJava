@@ -31,7 +31,6 @@ import rx.exceptions.*;
 import rx.functions.*;
 import rx.observers.SafeSubscriber;
 import rx.observers.TestSubscriber;
-import rx.schedulers.*;
 import rx.plugins.RxJavaPluginsTest;
 import rx.plugins.RxJavaSingleExecutionHook;
 import rx.schedulers.Schedulers;
@@ -292,6 +291,7 @@ public class SingleTest {
     @Test
     public void zipIterableShouldZipListOfSingles() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
+        @SuppressWarnings("unchecked")
         Iterable<Single<Integer>> singles = Arrays.asList(Single.just(1), Single.just(2), Single.just(3));
 
         Single
@@ -396,12 +396,14 @@ public class SingleTest {
 
     @Test
     public void testHookCreate() {
-        OnSubscribe subscriber = mock(OnSubscribe.class);
+        @SuppressWarnings("unchecked")
+        OnSubscribe<Object> subscriber = mock(OnSubscribe.class);
         Single.create(subscriber);
 
         verify(hookSpy, times(1)).onCreate(subscriber);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testHookSubscribeStart() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -416,6 +418,7 @@ public class SingleTest {
         verify(hookSpy, times(1)).onSubscribeStart(eq(single), any(Observable.OnSubscribe.class));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testHookUnsafeSubscribeStart() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -654,6 +657,7 @@ public class SingleTest {
 
     /**
      * Assert that unsubscribe propagates when passing in a SingleSubscriber and not a Subscriber
+     * @throws InterruptedException on interrupt
      */
     @Test
     public void testUnsubscribe2() throws InterruptedException {
@@ -723,6 +727,7 @@ public class SingleTest {
 
     /**
      * Assert that unsubscribe propagates when passing in a SingleSubscriber and not a Subscriber
+     * @throws InterruptedException on interrupt
      */
     @Test
     public void testUnsubscribeViaReturnedSubscription() throws InterruptedException {
@@ -837,6 +842,7 @@ public class SingleTest {
 
     @Test
     public void doOnErrorShouldNotCallActionIfNoErrorHasOccurred() {
+        @SuppressWarnings("unchecked")
         Action1<Throwable> action = mock(Action1.class);
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
@@ -854,6 +860,7 @@ public class SingleTest {
 
     @Test
     public void doOnErrorShouldCallActionIfErrorHasOccurred() {
+        @SuppressWarnings("unchecked")
         Action1<Throwable> action = mock(Action1.class);
 
         TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
@@ -873,6 +880,7 @@ public class SingleTest {
 
     @Test
     public void doOnErrorShouldThrowCompositeExceptionIfOnErrorActionThrows() {
+        @SuppressWarnings("unchecked")
         Action1<Throwable> action = mock(Action1.class);
 
 
@@ -899,6 +907,7 @@ public class SingleTest {
 
     @Test
     public void shouldEmitValueFromCallable() throws Exception {
+        @SuppressWarnings("unchecked")
         Callable<String> callable = mock(Callable.class);
 
         when(callable.call()).thenReturn("value");
@@ -917,6 +926,7 @@ public class SingleTest {
 
     @Test
     public void shouldPassErrorFromCallable() throws Exception {
+        @SuppressWarnings("unchecked")
         Callable<String> callable = mock(Callable.class);
 
         Throwable error = new IllegalStateException();
@@ -937,6 +947,7 @@ public class SingleTest {
 
     @Test
     public void doOnSuccessShouldInvokeAction() {
+        @SuppressWarnings("unchecked")
         Action1<String> action = mock(Action1.class);
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
@@ -954,6 +965,7 @@ public class SingleTest {
 
     @Test
     public void doOnSuccessShouldPassErrorFromActionToSubscriber() {
+        @SuppressWarnings("unchecked")
         Action1<String> action = mock(Action1.class);
 
         Throwable error = new IllegalStateException();
@@ -974,6 +986,7 @@ public class SingleTest {
 
     @Test
     public void doOnSuccessShouldNotCallActionIfSingleThrowsError() {
+        @SuppressWarnings("unchecked")
         Action1<Object> action = mock(Action1.class);
 
         Throwable error = new IllegalStateException();
@@ -993,6 +1006,7 @@ public class SingleTest {
 
     @Test
     public void doOnSuccessShouldNotSwallowExceptionThrownByAction() {
+        @SuppressWarnings("unchecked")
         Action1<String> action = mock(Action1.class);
 
         Throwable exceptionFromAction = new IllegalStateException();
@@ -1090,6 +1104,7 @@ public class SingleTest {
 
     @Test
     public void deferShouldNotCallFactoryFuncUntilSubscriberSubscribes() throws Exception {
+        @SuppressWarnings("unchecked")
         Callable<Single<Object>> singleFactory = mock(Callable.class);
         Single.defer(singleFactory);
         verifyZeroInteractions(singleFactory);
@@ -1097,6 +1112,7 @@ public class SingleTest {
 
     @Test
     public void deferShouldSubscribeSubscriberToSingleFromFactoryFuncAndEmitValue() throws Exception {
+        @SuppressWarnings("unchecked")
         Callable<Single<Object>> singleFactory = mock(Callable.class);
         Object value = new Object();
         Single<Object> single = Single.just(value);
@@ -1117,6 +1133,7 @@ public class SingleTest {
 
     @Test
     public void deferShouldSubscribeSubscriberToSingleFromFactoryFuncAndEmitError() throws Exception {
+        @SuppressWarnings("unchecked")
         Callable<Single<Object>> singleFactory = mock(Callable.class);
         Throwable error = new IllegalStateException();
         Single<Object> single = Single.error(error);
@@ -1137,6 +1154,7 @@ public class SingleTest {
 
     @Test
     public void deferShouldPassErrorFromSingleFactoryToTheSubscriber() throws Exception {
+        @SuppressWarnings("unchecked")
         Callable<Single<Object>> singleFactory = mock(Callable.class);
         Throwable errorFromSingleFactory = new IllegalStateException();
         when(singleFactory.call()).thenThrow(errorFromSingleFactory);
@@ -1155,10 +1173,12 @@ public class SingleTest {
 
     @Test
     public void deferShouldCallSingleFactoryForEachSubscriber() throws Exception {
+        @SuppressWarnings("unchecked")
         Callable<Single<String>> singleFactory = mock(Callable.class);
 
         String[] values = {"1", "2", "3"};
-        final Single[] singles = new Single[] {Single.just(values[0]), Single.just(values[1]), Single.just(values[2])};
+        @SuppressWarnings("unchecked")
+        final Single<String>[] singles = new Single[] {Single.just(values[0]), Single.just(values[1]), Single.just(values[2])};
 
         final AtomicInteger singleFactoryCallsCounter = new AtomicInteger();
 
@@ -1198,6 +1218,7 @@ public class SingleTest {
 
     @Test
     public void deferShouldPassNullPointerExceptionToTheSubscriberIfSingleFactoryReturnsNull() throws Exception {
+        @SuppressWarnings("unchecked")
         Callable<Single<Object>> singleFactory = mock(Callable.class);
         when(singleFactory.call()).thenReturn(null);
 
@@ -1434,6 +1455,7 @@ public class SingleTest {
 
     @Test
     public void iterableToArrayShouldConvertList() {
+        @SuppressWarnings("unchecked")
         List<Single<String>> singlesList = Arrays.asList(Single.just("1"), Single.just("2"));
 
         Single<? extends String>[] singlesArray = Single.iterableToArray(singlesList);

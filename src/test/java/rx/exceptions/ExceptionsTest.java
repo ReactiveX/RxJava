@@ -192,6 +192,7 @@ public class ExceptionsTest {
 
     /**
      * https://github.com/ReactiveX/RxJava/issues/2998
+     * @throws Exception on arbitrary errors
      */
     @Test(expected = OnErrorFailedException.class)
     public void testOnErrorExceptionIsThrownFromGroupBy() throws Exception {
@@ -223,6 +224,7 @@ public class ExceptionsTest {
 
     /**
      * https://github.com/ReactiveX/RxJava/issues/2998
+     * @throws Exception on arbitrary errors
      */
     @Test(expected = OnErrorFailedException.class)
     public void testOnErrorExceptionIsThrownFromOnNext() throws Exception {

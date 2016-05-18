@@ -33,6 +33,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p/>
  * You construct a {@code BlockingSingle} from a {@code Single} with {@link #from(Single)}
  * or {@link Single#toBlocking()}.
+ * 
+ * @param <T> the value type of the sequence
  */
 @Experimental
 public class BlockingSingle<T> {
@@ -45,6 +47,7 @@ public class BlockingSingle<T> {
     /**
      * Converts a {@link Single} into a {@code BlockingSingle}.
      *
+     * @param <T> the value type of the sequence
      * @param single the {@link Single} you want to convert
      * @return a {@code BlockingSingle} version of {@code single}
      */
@@ -98,6 +101,7 @@ public class BlockingSingle<T> {
      *
      * @return a {@link Future} that returns the value
      */
+    @SuppressWarnings("unchecked")
     @Experimental
     public Future<T> toFuture() {
         return BlockingOperatorToFuture.toFuture(((Single<T>)single).toObservable());

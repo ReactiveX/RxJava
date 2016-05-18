@@ -51,7 +51,7 @@ public final class Observers {
      * Returns an inert {@link Observer} that does nothing in response to the emissions or notifications from
      * any {@code Observable} it subscribes to but will throw an exception if its
      * {@link Observer#onError onError} method is called.
-     *
+     * @param <T> the observed value type
      * @return an inert {@code Observer}
      */
     @SuppressWarnings("unchecked")
@@ -64,6 +64,7 @@ public final class Observers {
      * {@link Observer#onNext onNext} but ignores {@link Observer#onCompleted onCompleted} notifications; 
      * it will throw an {@link OnErrorNotImplementedException} if {@link Observer#onError onError} is invoked.
      *
+     * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
      * @throws IllegalArgumentException
@@ -101,6 +102,7 @@ public final class Observers {
      * {@link Observer#onNext onNext} and handles any {@link Observer#onError onError} notification but ignores
      * an {@link Observer#onCompleted onCompleted} notification.
      * 
+     * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
      * @param onError
@@ -144,6 +146,7 @@ public final class Observers {
      * {@link Observer#onNext onNext} and handles any {@link Observer#onError onError} or
      * {@link Observer#onCompleted onCompleted} notifications.
      * 
+     * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
      * @param onError

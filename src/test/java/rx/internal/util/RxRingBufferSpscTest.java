@@ -38,6 +38,7 @@ public class RxRingBufferSpscTest extends RxRingBufferBase {
 
     /**
      * Single producer, single consumer. The request() ensures it gets scheduled back on the same Producer thread.
+     * @throws InterruptedException if the wait is interrupted
      */
     @Test
     public void testConcurrency() throws InterruptedException {

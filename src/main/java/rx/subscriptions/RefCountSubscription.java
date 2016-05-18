@@ -126,6 +126,9 @@ public final class RefCountSubscription implements Subscription {
 
     /** The individual sub-subscriptions. */
     private static final class InnerSubscription extends AtomicInteger implements Subscription {
+        /** */
+        private static final long serialVersionUID = 7005765588239987643L;
+        
         final RefCountSubscription parent;
         public InnerSubscription(RefCountSubscription parent) {
             this.parent = parent;

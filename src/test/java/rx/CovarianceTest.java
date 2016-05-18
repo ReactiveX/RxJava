@@ -188,6 +188,7 @@ public class CovarianceTest {
     };
 
     static Func1<List<List<Movie>>, Observable<Movie>> calculateDelta = new Func1<List<List<Movie>>, Observable<Movie>>() {
+        @Override
         public Observable<Movie> call(List<List<Movie>> listOfLists) {
             if (listOfLists.size() == 1) {
                 return Observable.from(listOfLists.get(0));

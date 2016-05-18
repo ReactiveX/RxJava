@@ -163,6 +163,8 @@ public enum InternalObservableUtils {
     /**
      * Creates a Func1 which calls the selector function with the received argument, applies an
      * observeOn on the result and returns the resulting Observable.
+     * @param <T> the input value type
+     * @param <R> the output value type
      * @param selector the selector function
      * @param scheduler the scheduler to apply on the output of the selector
      * @return the new Func1 instance
@@ -226,6 +228,7 @@ public enum InternalObservableUtils {
     
     /**
      * Returns a Func0 that supplies the ConnectableObservable returned by calling replay() on the source.
+     * @param <T> the input value type
      * @param source the source to call replay on by the supplier function
      * @return the new Func0 instance
      */
@@ -247,6 +250,7 @@ public enum InternalObservableUtils {
     }
     /**
      * Returns a Func0 that supplies the ConnectableObservable returned by calling a parameterized replay() on the source.
+     * @param <T> the input value type
      * @param source the source to call replay on by the supplier function
      * @param bufferSize
      *            the buffer size that limits the number of items the connectable observable can replay
@@ -273,14 +277,17 @@ public enum InternalObservableUtils {
 
     /**
      * Returns a Func0 that supplies the ConnectableObservable returned by calling a parameterized replay() on the source.
+     * @param <T> the input value type
      * @param source the source to call replay on by the supplier function
      * @param time
      *            the duration of the window in which the replayed items must have been emitted
      * @param unit
      *            the time unit of {@code time}
+     * @param scheduler the scheduler to use for timing information
      * @return the new Func0 instance
      */
-    public static <T> Func0<ConnectableObservable<T>> createReplaySupplier(final Observable<T> source, final long time, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> Func0<ConnectableObservable<T>> createReplaySupplier(final Observable<T> source, 
+            final long time, final TimeUnit unit, final Scheduler scheduler) {
         return new ReplaySupplierBufferTime<T>(source, time, unit, scheduler);
     }
 
@@ -305,6 +312,7 @@ public enum InternalObservableUtils {
 
     /**
      * Returns a Func0 that supplies the ConnectableObservable returned by calling a parameterized replay() on the source.
+     * @param <T> the input value type
      * @param source the source to call replay on by the supplier function
      * @param bufferSize
      *            the buffer size that limits the number of items the connectable observable can replay
@@ -312,9 +320,11 @@ public enum InternalObservableUtils {
      *            the duration of the window in which the replayed items must have been emitted
      * @param unit
      *            the time unit of {@code time}
+     * @param scheduler the scheduler to use for timing information
      * @return the new Func0 instance
      */
-    public static <T> Func0<ConnectableObservable<T>> createReplaySupplier(final Observable<T> source, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> Func0<ConnectableObservable<T>> createReplaySupplier(final Observable<T> source, 
+            final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
         return new ReplaySupplierTime<T>(source, bufferSize, time, unit, scheduler);
     }
 
@@ -342,6 +352,8 @@ public enum InternalObservableUtils {
 
     /**
      * Returns a Func2 which calls a collector with its parameters and returns the first (R) parameter.
+     * @param <T> the input value type
+     * @param <R> the result value type
      * @param collector the collector action to call
      * @return the new Func2 instance
      */

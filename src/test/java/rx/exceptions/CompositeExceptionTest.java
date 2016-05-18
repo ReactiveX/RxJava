@@ -183,6 +183,9 @@ public class CompositeExceptionTest {
     @Test(timeout = 1000)
     public void testCompositeExceptionWithUnsupportedInitCause() {
         Throwable t = new Throwable() {
+            /** */
+            private static final long serialVersionUID = -3282577447436848385L;
+
             @Override
             public synchronized Throwable initCause(Throwable cause) {
                 throw new UnsupportedOperationException();
@@ -204,6 +207,9 @@ public class CompositeExceptionTest {
     @Test(timeout = 1000)
     public void testCompositeExceptionWithNullInitCause() {
         Throwable t = new Throwable("ThrowableWithNullInitCause") {
+            /** */
+            private static final long serialVersionUID = -7984762607894527888L;
+
             @Override
             public synchronized Throwable initCause(Throwable cause) {
                 return null;

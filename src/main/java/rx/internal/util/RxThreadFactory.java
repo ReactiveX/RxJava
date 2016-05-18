@@ -19,6 +19,9 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
 public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
+    /** */
+    private static final long serialVersionUID = -8841098858898482335L;
+
     public static final ThreadFactory NONE = new ThreadFactory() {
         @Override public Thread newThread(Runnable r) {
             throw new AssertionError("No threads allowed.");

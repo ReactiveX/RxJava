@@ -27,7 +27,7 @@ public final class OnCompletedFailedException extends RuntimeException {
     /**
      * Wraps the {@code Throwable} before it is to be re-thrown as an {@code OnCompletedFailedException}.
      *
-     * @param e
+     * @param throwable
      *          the {@code Throwable} to re-throw; if null, a NullPointerException is constructed
      */
     public OnCompletedFailedException(Throwable throwable) {
@@ -40,7 +40,7 @@ public final class OnCompletedFailedException extends RuntimeException {
      *
      * @param message
      *          the message to assign to the {@code Throwable} to re-throw
-     * @param e
+     * @param throwable
      *          the {@code Throwable} to re-throw; if null, a NullPointerException is constructed
      */
     public OnCompletedFailedException(String message, Throwable throwable) {

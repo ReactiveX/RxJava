@@ -60,6 +60,8 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
 
     /** The common state. */
     static final class State<T> extends AtomicReference<Observer<? super T>> {
+        /** */
+        private static final long serialVersionUID = 8026705089538090368L;
         boolean casObserverRef(Observer<? super T>  expected, Observer<? super T>  next) {
             return compareAndSet(expected, next);
         }
