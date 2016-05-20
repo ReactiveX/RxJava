@@ -1932,7 +1932,7 @@ public class Completable {
                     try {
                         onComplete.call();
                     } catch (Throwable e) {
-                        onError(e);
+                        callOnError(e);
                         return;
                     }
                     mad.unsubscribe();
@@ -1943,18 +1943,22 @@ public class Completable {
             public void onError(Throwable e) {
                 if (!done) {
                     done = true;
-                    try {
-                        onError.call(e);
-                    } catch (Throwable ex) {
-                        e = new CompositeException(Arrays.asList(e, ex));
-                        ERROR_HANDLER.handleError(e);
-                        deliverUncaughtException(e);
-                    } finally {
-                        mad.unsubscribe();
-                    }
+                    callOnError(e);
                 } else {
                     ERROR_HANDLER.handleError(e);
                     deliverUncaughtException(e);
+                }
+            }
+            
+            void callOnError(Throwable e) {
+                try {
+                    onError.call(e);
+                } catch (Throwable ex) {
+                    e = new CompositeException(Arrays.asList(e, ex));
+                    ERROR_HANDLER.handleError(e);
+                    deliverUncaughtException(e);
+                } finally {
+                    mad.unsubscribe();
                 }
             }
             
