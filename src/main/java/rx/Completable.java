@@ -1878,15 +1878,19 @@ public class Completable {
         
         final MultipleAssignmentSubscription mad = new MultipleAssignmentSubscription();
         unsafeSubscribe(new CompletableSubscriber() {
+            boolean done;
             @Override
             public void onCompleted() {
-                try {
-                    onComplete.call();
-                } catch (Throwable e) {
-                    ERROR_HANDLER.handleError(e);
-                    deliverUncaughtException(e);
-                } finally {
-                    mad.unsubscribe();
+                if (!done) {
+                    done = true;
+                    try {
+                        onComplete.call();
+                    } catch (Throwable e) {
+                        ERROR_HANDLER.handleError(e);
+                        deliverUncaughtException(e);
+                    } finally {
+                        mad.unsubscribe();
+                    }
                 }
             }
             
@@ -1920,27 +1924,37 @@ public class Completable {
         
         final MultipleAssignmentSubscription mad = new MultipleAssignmentSubscription();
         unsafeSubscribe(new CompletableSubscriber() {
+            boolean done;
             @Override
             public void onCompleted() {
-                try {
-                    onComplete.call();
-                } catch (Throwable e) {
-                    onError(e);
-                    return;
+                if (!done) {
+                    done = true;
+                    try {
+                        onComplete.call();
+                    } catch (Throwable e) {
+                        onError(e);
+                        return;
+                    }
+                    mad.unsubscribe();
                 }
-                mad.unsubscribe();
             }
             
             @Override
             public void onError(Throwable e) {
-                try {
-                    onError.call(e);
-                } catch (Throwable ex) {
-                    e = new CompositeException(Arrays.asList(e, ex));
+                if (!done) {
+                    done = true;
+                    try {
+                        onError.call(e);
+                    } catch (Throwable ex) {
+                        e = new CompositeException(Arrays.asList(e, ex));
+                        ERROR_HANDLER.handleError(e);
+                        deliverUncaughtException(e);
+                    } finally {
+                        mad.unsubscribe();
+                    }
+                } else {
                     ERROR_HANDLER.handleError(e);
                     deliverUncaughtException(e);
-                } finally {
-                    mad.unsubscribe();
                 }
             }
             
