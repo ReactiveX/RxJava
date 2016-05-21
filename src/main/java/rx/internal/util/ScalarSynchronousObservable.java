@@ -23,6 +23,7 @@ import rx.functions.*;
 import rx.internal.producers.SingleProducer;
 import rx.internal.schedulers.EventLoopsScheduler;
 import rx.observers.Subscribers;
+import rx.plugins.*;
 
 /**
  * An Observable that emits a single constant scalar value to Subscribers.
@@ -33,6 +34,8 @@ import rx.observers.Subscribers;
  * @param <T> the value type
  */
 public final class ScalarSynchronousObservable<T> extends Observable<T> {
+    /** The execution hook instance. */
+    static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
     /**
      * Indicates that the Producer used by this Observable should be fully
      * threadsafe. It is possible, but unlikely that multiple concurrent
@@ -72,14 +75,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
     final T t;
 
     protected ScalarSynchronousObservable(final T t) {
-        super(new OnSubscribe<T>() {
-
-            @Override
-            public void call(Subscriber<? super T> s) {
-                s.setProducer(createProducer(s, t));
-            }
-
-        });
+        super(hook.onCreate(new JustOnSubscribe<T>(t)));
         this.t = t;
     }
 
@@ -131,6 +127,20 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
         return create(new ScalarAsyncOnSubscribe<T>(t, onSchedule));
     }
     
+    /** The OnSubscribe callback for the Observable constructor. */
+    static final class JustOnSubscribe<T> implements OnSubscribe<T> {
+        private final T t;
+
+        private JustOnSubscribe(T t) {
+            this.t = t;
+        }
+
+        @Override
+        public void call(Subscriber<? super T> s) {
+            s.setProducer(createProducer(s, t));
+        }
+    }
+
     /**
      * The OnSubscribe implementation that creates the ScalarAsyncProducer for each
      * incoming subscriber.

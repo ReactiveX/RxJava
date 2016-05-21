@@ -16,12 +16,16 @@
 
 package rx.internal.util;
 
-import org.junit.Test;
+import java.util.concurrent.atomic.*;
+
+import org.junit.*;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.exceptions.TestException;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
+import rx.plugins.*;
 import rx.schedulers.Schedulers;
 
 public class ScalarSynchronousObservableTest {
@@ -229,5 +233,31 @@ public class ScalarSynchronousObservableTest {
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void hookCalled() {
+        RxJavaObservableExecutionHook save = ScalarSynchronousObservable.hook;
+        try {
+            final AtomicInteger c = new AtomicInteger();
+            
+            ScalarSynchronousObservable.hook = new RxJavaObservableExecutionHook() {
+                @Override
+                public <T> OnSubscribe<T> onCreate(OnSubscribe<T> f) {
+                    c.getAndIncrement();
+                    return f;
+                }
+            };
+            
+            int n = 10;
+            
+            for (int i = 0; i < n; i++) {
+                Observable.just(1).subscribe();
+            }
+            
+            Assert.assertEquals(n, c.get());
+        } finally {
+            ScalarSynchronousObservable.hook = save;
+        }
     }
 }
