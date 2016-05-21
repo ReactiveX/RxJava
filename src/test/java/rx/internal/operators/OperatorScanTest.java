@@ -469,4 +469,54 @@ public class OperatorScanTest {
         
         assertEquals(Arrays.asList(Long.MAX_VALUE), requests);
     }
+    
+    @Test
+    public void withFactory() {
+        Func0<List<Integer>> factory = new Func0<List<Integer>>() {
+            @Override
+            public List<Integer> call() {
+                return new ArrayList<Integer>();
+            }
+        };
+        
+        Observable<List<Integer>> source = Observable.range(1, 10).scan(new Func2<List<Integer>, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> call(List<Integer> t1, Integer t2) {
+                t1.add(t2);
+                return t1;
+            }
+        }, factory);
+        
+        int n = 10;
+        
+        for (int i = 0; i < n; i++) {
+            
+            List<Integer> list = source.toBlocking().last();
+            
+            Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), list);
+        }
+    }
+    
+    @Test
+    public void withoutFactory() {
+        Observable<List<Integer>> source = Observable.range(1, 3).scan(new ArrayList<Integer>(), new Func2<List<Integer>, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> call(List<Integer> t1, Integer t2) {
+                t1.add(t2);
+                return t1;
+            }
+        });
+        
+        List<Integer> list = source.toBlocking().last();
+        
+        Assert.assertEquals(Arrays.asList(1, 2, 3), list);
+        
+        list = source.toBlocking().last();
+        
+        Assert.assertEquals(Arrays.asList(1, 2, 3, 1, 2, 3), list);
+
+        list = source.toBlocking().last();
+        
+        Assert.assertEquals(Arrays.asList(1, 2, 3, 1, 2, 3, 1, 2, 3), list);
+    }
 }
