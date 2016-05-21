@@ -34,7 +34,13 @@ import rx.plugins.*;
  * @param <T> the value type
  */
 public final class ScalarSynchronousObservable<T> extends Observable<T> {
-    /** The execution hook instance. */
+    /** 
+     * The execution hook instance. 
+     * <p>
+     * Can't be final to allow tests overriding it in place; if the class
+     * has been initialized, the plugin reset has no effect because
+     * how RxJavaPlugins was designed.
+     */
     static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
     /**
      * Indicates that the Producer used by this Observable should be fully
@@ -129,15 +135,15 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
     
     /** The OnSubscribe callback for the Observable constructor. */
     static final class JustOnSubscribe<T> implements OnSubscribe<T> {
-        private final T t;
+        final T value;
 
-        private JustOnSubscribe(T t) {
-            this.t = t;
+        JustOnSubscribe(T value) {
+            this.value = value;
         }
 
         @Override
         public void call(Subscriber<? super T> s) {
-            s.setProducer(createProducer(s, t));
+            s.setProducer(createProducer(s, value));
         }
     }
 

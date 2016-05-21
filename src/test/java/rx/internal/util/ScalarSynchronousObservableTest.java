@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.TestException;
 import rx.functions.Func1;
@@ -260,4 +260,40 @@ public class ScalarSynchronousObservableTest {
             ScalarSynchronousObservable.hook = save;
         }
     }
+
+    @Test
+    public void hookChangesBehavior() {
+        RxJavaObservableExecutionHook save = ScalarSynchronousObservable.hook;
+        try {
+            ScalarSynchronousObservable.hook = new RxJavaObservableExecutionHook() {
+                @Override
+                public <T> OnSubscribe<T> onCreate(OnSubscribe<T> f) {
+                    if (f instanceof ScalarSynchronousObservable.JustOnSubscribe) {
+                        final T v = ((ScalarSynchronousObservable.JustOnSubscribe<T>) f).value;
+                        return new OnSubscribe<T>() {
+                            @Override
+                            public void call(Subscriber<? super T> t) {
+                                t.onNext(v);
+                                t.onNext(v);
+                                t.onCompleted();
+                            }
+                        };
+                    }
+                    return f;
+                }
+            };
+            
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            
+            Observable.just(1).subscribe(ts);
+            
+            ts.assertValues(1, 1);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+            
+        } finally {
+            ScalarSynchronousObservable.hook = save;
+        }
+    }
+
 }
