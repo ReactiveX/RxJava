@@ -16,12 +16,16 @@
 
 package rx.internal.util;
 
-import org.junit.Test;
+import java.util.concurrent.atomic.*;
 
-import rx.Observable;
+import org.junit.*;
+
+import rx.*;
+import rx.Observable.OnSubscribe;
 import rx.exceptions.TestException;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
+import rx.plugins.*;
 import rx.schedulers.Schedulers;
 
 public class ScalarSynchronousObservableTest {
@@ -230,4 +234,66 @@ public class ScalarSynchronousObservableTest {
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
     }
+    
+    @Test
+    public void hookCalled() {
+        RxJavaObservableExecutionHook save = ScalarSynchronousObservable.hook;
+        try {
+            final AtomicInteger c = new AtomicInteger();
+            
+            ScalarSynchronousObservable.hook = new RxJavaObservableExecutionHook() {
+                @Override
+                public <T> OnSubscribe<T> onCreate(OnSubscribe<T> f) {
+                    c.getAndIncrement();
+                    return f;
+                }
+            };
+            
+            int n = 10;
+            
+            for (int i = 0; i < n; i++) {
+                Observable.just(1).subscribe();
+            }
+            
+            Assert.assertEquals(n, c.get());
+        } finally {
+            ScalarSynchronousObservable.hook = save;
+        }
+    }
+
+    @Test
+    public void hookChangesBehavior() {
+        RxJavaObservableExecutionHook save = ScalarSynchronousObservable.hook;
+        try {
+            ScalarSynchronousObservable.hook = new RxJavaObservableExecutionHook() {
+                @Override
+                public <T> OnSubscribe<T> onCreate(OnSubscribe<T> f) {
+                    if (f instanceof ScalarSynchronousObservable.JustOnSubscribe) {
+                        final T v = ((ScalarSynchronousObservable.JustOnSubscribe<T>) f).value;
+                        return new OnSubscribe<T>() {
+                            @Override
+                            public void call(Subscriber<? super T> t) {
+                                t.onNext(v);
+                                t.onNext(v);
+                                t.onCompleted();
+                            }
+                        };
+                    }
+                    return f;
+                }
+            };
+            
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            
+            Observable.just(1).subscribe(ts);
+            
+            ts.assertValues(1, 1);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+            
+        } finally {
+            ScalarSynchronousObservable.hook = save;
+        }
+    }
+
 }
