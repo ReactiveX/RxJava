@@ -292,7 +292,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      */
     public void assertUnsubscribed() {
         if (!isUnsubscribed()) {
-            throw new AssertionError("Not unsubscribed.");
+            testObserver.assertionError("Not unsubscribed.");
         }
     }
 
@@ -393,10 +393,10 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public void assertCompleted() {
         int s = testObserver.getOnCompletedEvents().size();
         if (s == 0) {
-            throw new AssertionError("Not completed!");
+            testObserver.assertionError("Not completed!");
         } else
         if (s > 1) {
-            throw new AssertionError("Completed multiple times: " + s);
+            testObserver.assertionError("Completed multiple times: " + s);
         }
     }
 
@@ -409,10 +409,10 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public void assertNotCompleted() {
         int s = testObserver.getOnCompletedEvents().size();
         if (s == 1) {
-            throw new AssertionError("Completed!");
+            testObserver.assertionError("Completed!");
         } else
         if (s > 1) {
-            throw new AssertionError("Completed multiple times: " + s);
+            testObserver.assertionError("Completed multiple times: " + s);
         }
     }
 
@@ -427,7 +427,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public void assertError(Class<? extends Throwable> clazz) {
         List<Throwable> err = testObserver.getOnErrorEvents();
         if (err.size() == 0) {
-            throw new AssertionError("No errors");
+            testObserver.assertionError("No errors");
         } else
         if (err.size() > 1) {
             AssertionError ae = new AssertionError("Multiple errors: " + err.size());
@@ -452,7 +452,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public void assertError(Throwable throwable) {
         List<Throwable> err = testObserver.getOnErrorEvents();
         if (err.size() == 0) {
-            throw new AssertionError("No errors");
+            testObserver.assertionError("No errors");
         } else
         if (err.size() > 1) {
             AssertionError ae = new AssertionError("Multiple errors: " + err.size());
@@ -477,7 +477,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         int s = testObserver.getOnCompletedEvents().size();
         if (err.size() > 0 || s > 0) {
             if (err.isEmpty()) {
-                throw new AssertionError("Found " + err.size() + " errors and " + s + " completion events instead of none");
+                testObserver.assertionError("Found " + err.size() + " errors and " + s + " completion events instead of none");
             } else
             if (err.size() == 1) {
                 AssertionError ae = new AssertionError("Found " + err.size() + " errors and " + s + " completion events instead of none");
@@ -500,7 +500,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public void assertNoValues() {
         int s = testObserver.getOnNextEvents().size();
         if (s > 0) {
-            throw new AssertionError("No onNext events expected yet some received: " + s);
+            testObserver.assertionError("No onNext events expected yet some received: " + s);
         }
     }
 
@@ -514,7 +514,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public void assertValueCount(int count) {
         int s = testObserver.getOnNextEvents().size();
         if (s != count) {
-            throw new AssertionError("Number of onNext events differ; expected: " + count + ", actual: " + s);
+            testObserver.assertionError("Number of onNext events differ; expected: " + count + ", actual: " + s);
         }
     }
     

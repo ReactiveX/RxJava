@@ -18,7 +18,7 @@ package rx.observers;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,8 +26,10 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 
-import rx.*;
+import rx.Observable;
+import rx.Observer;
 import rx.Scheduler.Worker;
+import rx.Subscriber;
 import rx.exceptions.*;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
@@ -610,9 +612,105 @@ public class TestSubscriberTest {
         } catch (AssertionError expected) {
             assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
                     "Provided values: [1, 2]\n" +
-                    "Actual values: [a, b, c]",
+                    "Actual values: [a, b, c]\n (0 completions)",
                     expected.getMessage()
             );
         }
     }
+    
+    @Test
+    public void assertionFailureGivesActiveDetails() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        ts.onNext("a");
+        ts.onNext("b");
+        ts.onNext("c");
+        ts.onError(new TestException("forced failure"));
+
+        try {
+            ts.assertValues("1", "2");
+            fail();
+        } catch (AssertionError expected) {
+            assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
+                    "Provided values: [1, 2]\n" +
+                    "Actual values: [a, b, c]\n (0 completions) (+1 error)",
+                    expected.getMessage()
+            );
+            Throwable ex = expected.getCause();
+            assertEquals(TestException.class, ex.getClass());
+            assertEquals("forced failure", ex.getMessage());
+        }
+    }
+    
+    @Test
+    public void assertionFailureShowsMultipleErrors() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        ts.onNext("a");
+        ts.onNext("b");
+        ts.onNext("c");
+        ts.onError(new TestException("forced failure"));
+        ts.onError(new TestException("forced failure 2"));
+
+        try {
+            ts.assertValues("1", "2");
+            fail();
+        } catch (AssertionError expected) {
+            assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
+                    "Provided values: [1, 2]\n" +
+                    "Actual values: [a, b, c]\n (0 completions) (+2 errors)",
+                    expected.getMessage()
+            );
+            Throwable ex = expected.getCause();
+            assertEquals(CompositeException.class, ex.getClass());
+            List<Throwable> list = ((CompositeException)ex).getExceptions();
+            assertEquals(2, list.size());
+            assertEquals("forced failure", list.get(0).getMessage());
+            assertEquals("forced failure 2", list.get(1).getMessage());
+        }
+    }
+
+    @Test
+    public void assertionFailureShowsCompletion() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        ts.onNext("a");
+        ts.onNext("b");
+        ts.onNext("c");
+        ts.onCompleted();
+
+        try {
+            ts.assertValues("1", "2");
+            fail();
+        } catch (AssertionError expected) {
+            assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
+                    "Provided values: [1, 2]\n" +
+                    "Actual values: [a, b, c]\n (1 completion)",
+                    expected.getMessage()
+            );
+        }
+    }
+
+    @Test
+    public void assertionFailureShowsMultipleCompletions() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        ts.onNext("a");
+        ts.onNext("b");
+        ts.onNext("c");
+        ts.onCompleted();
+        ts.onCompleted();
+
+        try {
+            ts.assertValues("1", "2");
+            fail();
+        } catch (AssertionError expected) {
+            assertEquals("Number of items does not match. Provided: 2  Actual: 3.\n" +
+                    "Provided values: [1, 2]\n" +
+                    "Actual values: [a, b, c]\n (2 completions)",
+                    expected.getMessage()
+            );
+        }
+    }
+
 }
