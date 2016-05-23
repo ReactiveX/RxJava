@@ -3530,20 +3530,20 @@ public class CompletableTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void endWithCompletableNull() {
-        normal.completable.endWith((Completable)null);
+    public void andThenCompletableNull() {
+        normal.completable.andThen((Completable)null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void endWithFlowableNull() {
-        normal.completable.endWith((Observable<Object>)null);
+    public void andThenFlowableNull() {
+        normal.completable.andThen((Observable<Object>)null);
     }
 
     @Test(timeout = 1000)
-    public void endWithCompletableNormal() {
+    public void andThenCompletableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Completable c = normal.completable
-                .endWith(Completable.fromCallable(new Callable<Object>() {
+                .andThen(Completable.fromCallable(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
                         run.set(normal.get() == 0);
@@ -3558,8 +3558,8 @@ public class CompletableTest {
     }
     
     @Test(timeout = 1000)
-    public void endWithCompletableError() {
-        Completable c = normal.completable.endWith(error.completable);
+    public void andThenCompletableError() {
+        Completable c = normal.completable.andThen(error.completable);
         
         try {
             c.await();
@@ -3571,10 +3571,10 @@ public class CompletableTest {
     }
     
     @Test(timeout = 1000)
-    public void endWithFlowableNormal() {
+    public void andThenFlowableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Observable<Object> c = normal.completable
-                .endWith(Observable.fromCallable(new Callable<Object>() {
+                .andThen(Observable.fromCallable(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
                         run.set(normal.get() == 0);
@@ -3595,9 +3595,9 @@ public class CompletableTest {
     }
     
     @Test(timeout = 1000)
-    public void endWithFlowableError() {
+    public void andThenFlowableError() {
         Observable<Object> c = normal.completable
-                .endWith(Observable.error(new TestException()));
+                .andThen(Observable.error(new TestException()));
         
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         
