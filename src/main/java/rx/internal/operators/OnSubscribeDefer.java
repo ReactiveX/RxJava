@@ -31,6 +31,7 @@ import rx.observers.Subscribers;
  * Pass defer an Observable factory function (a function that generates Observables), and defer will
  * return an Observable that will call this function to generate its Observable sequence afresh
  * each time a new Observer subscribes.
+ * @param <T> the value type
  */
 public final class OnSubscribeDefer<T> implements OnSubscribe<T> {
     final Func0<? extends Observable<? extends T>> observableFactory;

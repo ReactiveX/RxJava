@@ -25,6 +25,7 @@ import java.util.NoSuchElementException;
 /**
  * Allows conversion of an Observable to a Single ensuring that exactly one item is emitted - no more and no less.
  * Also forwards errors as appropriate.
+ * @param <T> the value type
  */
 public class OnSubscribeSingle<T> implements Single.OnSubscribe<T> {
 

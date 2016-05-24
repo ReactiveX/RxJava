@@ -26,6 +26,7 @@ import rx.schedulers.Timestamped;
 
 /**
  * Skip delivering values in the time window before the values.
+ * @param <T> the value type
  */
 public class OperatorSkipLastTimed<T> implements Operator<T, T> {
 

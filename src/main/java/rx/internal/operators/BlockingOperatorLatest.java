@@ -39,6 +39,7 @@ public final class BlockingOperatorLatest {
      * Returns an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
      * been returned by the {@code Iterable}, then returns that item
      *
+     * @param <T> the value type
      * @param source
      *            the source {@code Observable}
      * @return an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
@@ -46,6 +47,7 @@ public final class BlockingOperatorLatest {
      */
     public static <T> Iterable<T> latest(final Observable<? extends T> source) {
         return new Iterable<T>() {
+            @SuppressWarnings("unchecked")
             @Override
             public Iterator<T> iterator() {
                 LatestObserverIterator<T> lio = new LatestObserverIterator<T>();

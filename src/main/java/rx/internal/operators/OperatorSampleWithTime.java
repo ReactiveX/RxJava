@@ -66,7 +66,7 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
         private static final Object EMPTY_TOKEN = new Object();
         /** The shared value between the observer and the timed action. */
         final AtomicReference<Object> value = new AtomicReference<Object>(EMPTY_TOKEN);
-        /** Updater for the value field. */
+
         public SamplerSubscriber(Subscriber<? super T> subscriber) {
             this.subscriber = subscriber;
         }

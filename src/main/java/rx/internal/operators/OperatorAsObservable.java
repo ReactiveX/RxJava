@@ -31,6 +31,7 @@ public final class OperatorAsObservable<T> implements Operator<T, T> {
         static final OperatorAsObservable<Object> INSTANCE = new OperatorAsObservable<Object>();
     }
     /**
+     * @param <T> the value type
      * @return a singleton instance of this stateless operator.
      */
     @SuppressWarnings("unchecked")

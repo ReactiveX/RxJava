@@ -25,6 +25,7 @@ import rx.functions.*;
  * condition is true.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/takeWhile.png" alt="">
+ * @param <T> the value type
  */
 public final class OperatorTakeWhile<T> implements Operator<T, T> {
 

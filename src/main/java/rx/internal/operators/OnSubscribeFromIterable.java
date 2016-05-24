@@ -29,6 +29,7 @@ import rx.exceptions.Exceptions;
  * <p>
  * You can convert any object that supports the Iterable interface into an Observable that emits each item in
  * the object, with the {@code toObservable} operation.
+ * @param <T> the value type of the items
  */
 public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 

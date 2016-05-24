@@ -25,6 +25,7 @@ import rx.*;
  * <p>
  * You can ignore the first <code>num</code> items emitted by an Observable and attend only to
  * those items that come after, by modifying the Observable with the {@code skip} operator.
+ * @param <T> the value type
  */
 public final class OperatorSkip<T> implements Observable.Operator<T, T> {
 

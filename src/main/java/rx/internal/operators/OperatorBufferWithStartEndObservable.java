@@ -45,6 +45,8 @@ import rx.subscriptions.CompositeSubscription;
  * </p>
  * 
  * @param <T> the buffered value type
+ * @param <TOpening> the value type of the Observable opening buffers
+ * @param <TClosing> the value type of the Observable closing buffers
  */
 
 public final class OperatorBufferWithStartEndObservable<T, TOpening, TClosing> implements Operator<List<T>, T> {

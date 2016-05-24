@@ -127,6 +127,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
             this.error = new AtomicReference<Throwable>();
         }
         
+        @SuppressWarnings("unchecked")
         public void subscribe(Observable<? extends T>[] sources) {
             Subscriber<T>[] as = subscribers;
             int len = as.length;

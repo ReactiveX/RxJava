@@ -35,15 +35,18 @@ public final class CachedObservable<T> extends Observable<T> {
 
     /**
      * Creates a cached Observable with a default capacity hint of 16.
+     * @param <T> the value type
      * @param source the source Observable to cache
      * @return the CachedObservable instance
      */
+    @SuppressWarnings("cast")
     public static <T> CachedObservable<T> from(Observable<? extends T> source) {
         return (CachedObservable<T>)from(source, 16);
     }
     
     /**
      * Creates a cached Observable with the given capacity hint.
+     * @param <T> the value type
      * @param source the source Observable to cache
      * @param capacityHint the hint for the internal buffer size
      * @return the CachedObservable instance
@@ -308,8 +311,8 @@ public final class CachedObservable<T> extends Observable<T> {
         }
         /**
          * Updates the request count to reflect values have been produced.
-         * @param n
-         * @return
+         * @param n the produced item count, positive, not validated
+         * @return the latest request amount after subtracting n
          */
         public long produced(long n) {
             return addAndGet(-n);

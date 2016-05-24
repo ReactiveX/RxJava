@@ -24,6 +24,7 @@ import rx.functions.Func1;
  * Returns an Observable that emits items emitted by the source Observable until
  * the provided predicate returns false
  * <p>
+ * @param <T> the value type
  */
 public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
     /** Subscriber returned to the upstream. */

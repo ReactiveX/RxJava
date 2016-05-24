@@ -23,6 +23,7 @@ import rx.exceptions.*;
 
 /**
  * Converts the elements of an observable sequence to the specified type.
+ * @param <T> the value type
  */
 public class OperatorDoOnEach<T> implements Operator<T, T> {
     final Observer<? super T> doOnEachObserver;

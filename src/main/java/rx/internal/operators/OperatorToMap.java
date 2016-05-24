@@ -30,12 +30,17 @@ import rx.observers.Subscribers;
  * Maps the elements of the source observable into a java.util.Map instance and
  * emits that once the source observable completes.
  * 
- * @see <a href='https://github.com/ReactiveX/RxJava/issues/96'>Issue #96</a>
+ * @see <a href="https://github.com/ReactiveX/RxJava/issues/96">Issue #96</a>
+ * @param <T> the value type of the input
+ * @param <K> the map-key type
+ * @param <V> the map-value type
  */
 public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
 
     /**
      * The default map factory.
+     * @param <K> the key type
+     * @param <V> the value type
      */
     public static final class DefaultToMapFactory<K, V> implements Func0<Map<K, V>> {
         @Override
@@ -54,6 +59,8 @@ public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
 
     /**
      * ToMap with key selector, value selector and default HashMap factory.
+     * @param keySelector the function extracting the map-key from the main value
+     * @param valueSelector the function extracting the map-value from the main value
      */
     public OperatorToMap(
             Func1<? super T, ? extends K> keySelector,
@@ -64,6 +71,9 @@ public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
 
     /**
      * ToMap with key selector, value selector and custom Map factory.
+     * @param keySelector the function extracting the map-key from the main value
+     * @param valueSelector the function extracting the map-value from the main value
+     * @param mapFactory function that returns a Map instance to store keys and values into
      */
     public OperatorToMap(
             Func1<? super T, ? extends K> keySelector,

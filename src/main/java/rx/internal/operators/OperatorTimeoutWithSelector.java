@@ -30,6 +30,9 @@ import rx.subscriptions.Subscriptions;
  * item emitted by the source Observable or any subsequent item don't arrive
  * within time windows defined by provided Observables, switch to the
  * <code>other</code> Observable if provided, or emit a TimeoutException .
+ * @param <T> the value type of the main Observable
+ * @param <U> the value type of the first timeout Observable
+ * @param <V> the value type of the subsequent timeout Observable
  */
 public class OperatorTimeoutWithSelector<T, U, V> extends
         OperatorTimeoutBase<T> {

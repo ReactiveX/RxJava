@@ -35,6 +35,7 @@ public final class BlockingOperatorMostRecent {
     /**
      * Returns an {@code Iterable} that always returns the item most recently emitted by the {@code Observable}.
      *
+     * @param <T> the value type
      * @param source
      *            the source {@code Observable}
      * @param initialValue
@@ -45,6 +46,7 @@ public final class BlockingOperatorMostRecent {
      */
     public static <T> Iterable<T> mostRecent(final Observable<? extends T> source, final T initialValue) {
         return new Iterable<T>() {
+            @SuppressWarnings("unchecked")
             @Override
             public Iterator<T> iterator() {
                 MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
@@ -86,7 +88,7 @@ public final class BlockingOperatorMostRecent {
         /**
          * The {@link Iterator} return is not thread safe. In other words don't call {@link Iterator#hasNext()} in one
          * thread expect {@link Iterator#next()} called from a different thread to work.
-         * @return
+         * @return the Iterator instance
          */
         public Iterator<T> getIterable() {
             return new Iterator<T>() {

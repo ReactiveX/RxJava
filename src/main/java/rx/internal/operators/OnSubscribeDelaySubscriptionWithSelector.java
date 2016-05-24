@@ -26,6 +26,7 @@ import rx.observers.Subscribers;
  * 
  * @param <T>
  *            the value type
+ * @param <U> the value type of the Observable triggering the delayed subscription
  */
 public final class OnSubscribeDelaySubscriptionWithSelector<T, U> implements OnSubscribe<T> {
     final Observable<? extends T> source;

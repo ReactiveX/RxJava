@@ -23,6 +23,7 @@ import rx.*;
 /**
  * An operator which drops all but the last received value in case the downstream
  * doesn't request more.
+ * @param <T> the value type
  */
 public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
     /** Holds a singleton instance initialized on class-loading. */
@@ -32,6 +33,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
     
     /**
      * Returns a singleton instance of the OnBackpressureLatest operator since it is stateless.
+     * @param <T> the value type
      * @return the single instanceof OperatorOnBackpressureLatest
      */
     @SuppressWarnings("unchecked")

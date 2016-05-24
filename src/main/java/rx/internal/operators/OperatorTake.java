@@ -30,6 +30,7 @@ import rx.Subscriber;
  * the {@code take} operator. This operator returns an {@code Observable} that will invoke a subscriber's
  * {@link Subscriber#onNext onNext} function a maximum of {@code num} times before invoking
  * {@link Subscriber#onCompleted onCompleted}.
+ * @param <T> the value type
  */
 public final class OperatorTake<T> implements Operator<T, T> {
 

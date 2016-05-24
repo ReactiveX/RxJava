@@ -32,6 +32,7 @@ public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe
     final int maxConcurrency;
     final boolean delayErrors;
     
+    @SuppressWarnings("unchecked")
     public CompletableOnSubscribeMerge(Observable<? extends Completable> source, int maxConcurrency, boolean delayErrors) {
         this.source = (Observable<Completable>)source;
         this.maxConcurrency = maxConcurrency;

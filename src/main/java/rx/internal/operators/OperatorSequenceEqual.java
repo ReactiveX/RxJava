@@ -50,6 +50,7 @@ public final class OperatorSequenceEqual {
      * Tests whether two {@code Observable} sequences are identical, emitting {@code true} if both sequences
      * complete without differing, and {@code false} if the two sequences diverge at any point.
      *
+     * @param <T> the value type
      * @param first
      *      the first of the two {@code Observable}s to compare
      * @param second

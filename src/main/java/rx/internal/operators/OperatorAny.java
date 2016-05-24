@@ -25,6 +25,7 @@ import rx.internal.producers.SingleDelayedProducer;
 /**
  * Returns an {@link Observable} that emits <code>true</code> if any element of
  * an observable sequence satisfies a condition, otherwise <code>false</code>.
+ * @param <T> the input value type
  */
 public final class OperatorAny<T> implements Operator<Boolean, T> {
     final Func1<? super T, Boolean> predicate;

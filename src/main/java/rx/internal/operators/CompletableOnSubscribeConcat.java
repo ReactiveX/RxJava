@@ -29,6 +29,7 @@ public final class CompletableOnSubscribeConcat implements CompletableOnSubscrib
     final Observable<Completable> sources;
     final int prefetch;
     
+    @SuppressWarnings("unchecked")
     public CompletableOnSubscribeConcat(Observable<? extends Completable> sources, int prefetch) {
         this.sources = (Observable<Completable>)sources;
         this.prefetch = prefetch;

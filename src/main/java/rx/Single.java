@@ -204,6 +204,7 @@ public class Single<T> {
      * <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the value type of the single returned by the transformer function
      * @param transformer
      *            implements the function that transforms the source Single
      * @return the source Single, transformed by the transformer function
@@ -218,6 +219,8 @@ public class Single<T> {
      * Transformer function used by {@link #compose}.
      * 
      * @warn more complete description needed
+     * @param <T> the source Single's value type
+     * @param <R> the transformed Single's value type
      */
     public interface Transformer<T, R> extends Func1<Single<T>, Single<R>> {
         // cover for generics insanity
@@ -248,6 +251,7 @@ public class Single<T> {
      * @return a Single that emits an Observable that emits the same item as the source Single
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
+    @SuppressWarnings("unused")
     private Single<Observable<T>> nest() {
         return Single.just(asObservable(this));
     }
@@ -265,7 +269,8 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * 
+     * @param <T> the common value type
      * @param t1
      *            an Single to be concatenated
      * @param t2
@@ -286,6 +291,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -308,6 +314,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -332,6 +339,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -358,6 +366,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -386,6 +395,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -416,6 +426,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -448,6 +459,7 @@ public class Single<T> {
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
      * @param t2
@@ -525,6 +537,7 @@ public class Single<T> {
      * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
+    @SuppressWarnings("cast")
     public static <T> Single<T> from(Future<? extends T> future) {
         return new Single<T>((Observable.OnSubscribe<T>)OnSubscribeToObservableFuture.toObservableFuture(future));
     }
@@ -556,6 +569,7 @@ public class Single<T> {
      * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
+    @SuppressWarnings("cast")
     public static <T> Single<T> from(Future<? extends T> future, long timeout, TimeUnit unit) {
         return new Single<T>((Observable.OnSubscribe<T>)OnSubscribeToObservableFuture.toObservableFuture(future, timeout, unit));
     }
@@ -584,6 +598,7 @@ public class Single<T> {
      * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
+    @SuppressWarnings("cast")
     public static <T> Single<T> from(Future<? extends T> future, Scheduler scheduler) {
         return new Single<T>((Observable.OnSubscribe<T>)OnSubscribeToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
     }
@@ -706,6 +721,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -729,6 +745,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -754,6 +771,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -781,6 +799,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -810,6 +829,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -841,6 +861,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -874,6 +895,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -909,6 +931,7 @@ public class Single<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common value type
      * @param t1
      *            a Single to be merged
      * @param t2
@@ -944,6 +967,9 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -954,6 +980,7 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T1, T2, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, final Func2<? super T1, ? super T2, ? extends R> zipFunction) {
         return SingleOperatorZip.zip(new Single[] {s1, s2}, new FuncN<R>() {
             @Override
@@ -973,6 +1000,10 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -985,6 +1016,7 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, final Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
         return SingleOperatorZip.zip(new Single[] {s1, s2, s3}, new FuncN<R>() {
             @Override
@@ -1004,6 +1036,11 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <T4> the fourth source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1018,6 +1055,7 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, final Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
         return SingleOperatorZip.zip(new Single[] {s1, s2, s3, s4}, new FuncN<R>() {
             @Override
@@ -1037,6 +1075,12 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <T4> the fourth source Single's value type
+     * @param <T5> the fifth source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1053,6 +1097,7 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, final Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
         return SingleOperatorZip.zip(new Single[] {s1, s2, s3, s4, s5}, new FuncN<R>() {
             @Override
@@ -1072,6 +1117,13 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <T4> the fourth source Single's value type
+     * @param <T5> the fifth source Single's value type
+     * @param <T6> the sixth source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1090,6 +1142,7 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, Single<? extends T6> s6,
                                                             final Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipFunction) {
         return SingleOperatorZip.zip(new Single[] {s1, s2, s3, s4, s5, s6}, new FuncN<R>() {
@@ -1110,6 +1163,14 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <T4> the fourth source Single's value type
+     * @param <T5> the fifth source Single's value type
+     * @param <T6> the sixth source Single's value type
+     * @param <T7> the seventh source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1130,6 +1191,7 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, Single<? extends T6> s6, Single<? extends T7> s7,
                                                                 final Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipFunction) {
         return SingleOperatorZip.zip(new Single[] {s1, s2, s3, s4, s5, s6, s7}, new FuncN<R>() {
@@ -1150,6 +1212,15 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <T4> the fourth source Single's value type
+     * @param <T5> the fifth source Single's value type
+     * @param <T6> the sixth source Single's value type
+     * @param <T7> the seventh source Single's value type
+     * @param <T8> the eigth source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1172,6 +1243,7 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, Single<? extends T6> s6, Single<? extends T7> s7, Single<? extends T8> s8,
                                                                     final Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipFunction) {
         return SingleOperatorZip.zip(new Single[] {s1, s2, s3, s4, s5, s6, s7, s8}, new FuncN<R>() {
@@ -1192,6 +1264,16 @@ public class Single<T> {
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the first source Single's value type
+     * @param <T2> the second source Single's value type
+     * @param <T3> the third source Single's value type
+     * @param <T4> the fourth source Single's value type
+     * @param <T5> the fifth source Single's value type
+     * @param <T6> the sixth source Single's value type
+     * @param <T7> the seventh source Single's value type
+     * @param <T8> the eigth source Single's value type
+     * @param <T9> the ninth source Single's value type
+     * @param <R> the result value type
      * @param s1
      *            the first source Single
      * @param s2
@@ -1216,6 +1298,7 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Single<R> zip(Single<? extends T1> s1, Single<? extends T2> s2, Single<? extends T3> s3, Single<? extends T4> s4, Single<? extends T5> s5, Single<? extends T6> s6, Single<? extends T7> s7, Single<? extends T8> s8,
                                                                         Single<? extends T9> s9, final Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipFunction) {
         return SingleOperatorZip.zip(new Single[] {s1, s2, s3, s4, s5, s6, s7, s8, s9}, new FuncN<R>() {
@@ -1238,6 +1321,7 @@ public class Single<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <R> the result value type
      * @param singles
      *            an Iterable of source Singles. Should not be empty because {@link Single} either emits result or error.
      *            {@link java.util.NoSuchElementException} will be emit as error if Iterable will be empty.
@@ -1247,7 +1331,9 @@ public class Single<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @SuppressWarnings("unchecked")
     public static <R> Single<R> zip(Iterable<? extends Single<?>> singles, FuncN<? extends R> zipFunction) {
+        @SuppressWarnings("rawtypes")
         Single[] iterableToArray = iterableToArray(singles);
         return SingleOperatorZip.zip(iterableToArray, zipFunction);
     }
@@ -1282,6 +1368,7 @@ public class Single<T> {
      * <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the result value type
      * @param func
      *            a function that, when applied to the item emitted by the source Single, returns a Single
      * @return the Single returned from {@code func} when applied to the item emitted by the source Single
@@ -1304,6 +1391,7 @@ public class Single<T> {
      * <dd>{@code flatMapObservable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the result value type
      * @param func
      *            a function that, when applied to the item emitted by the source Single, returns an
      *            Observable
@@ -1324,6 +1412,7 @@ public class Single<T> {
      * <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <R> the result value type
      * @param func
      *            a function to apply to the item emitted by the Single
      * @return a Single that emits the item from the source Single, transformed by the specified function
@@ -1407,6 +1496,7 @@ public class Single<T> {
      * @return the original Single with appropriately modified behavior
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
+    @SuppressWarnings("cast")
     public final Single<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) {
         return lift((Operator<T, T>)OperatorOnErrorResumeNextViaFunction.withSingle(resumeFunction));
     }
@@ -1613,6 +1703,7 @@ public class Single<T> {
      * 
      * @param subscriber
      *            the Subscriber that will handle the emission or notification from the Single
+     * @return the subscription that allows unsubscribing
      */
     public final Subscription unsafeSubscribe(Subscriber<? super T> subscriber) {
         try {
@@ -2116,8 +2207,7 @@ public class Single<T> {
      *
      * @return a {@link Completable} that calls {@code onCompleted} on it's subscriber when the source {@link Single}
      *         calls {@code onSuccess}.
-     * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation:
-     *      Completable</a>.
+     * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation: Completable</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
      *        with the release number).
      */
@@ -2265,6 +2355,7 @@ public class Single<T> {
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @SuppressWarnings("cast")
     public final <T2, R> Single<R> zipWith(Single<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
         return (Single<R>)zip(this, other, zipFunction);
     }
@@ -2658,6 +2749,8 @@ public class Single<T> {
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the value type of the generated source
+     * @param <Resource> the type of the per-subscriber resource
      * @param resourceFactory
      *            the factory function to create a resource object that depends on the Single
      * @param singleFactory
@@ -2670,9 +2763,9 @@ public class Single<T> {
     @Experimental
     public static <T, Resource> Single<T> using(
             final Func0<Resource> resourceFactory,
-            final Func1<? super Resource, ? extends Single<? extends T>> observableFactory,
+            final Func1<? super Resource, ? extends Single<? extends T>> singleFactory,
             final Action1<? super Resource> disposeAction) {
-        return using(resourceFactory, observableFactory, disposeAction, false);
+        return using(resourceFactory, singleFactory, disposeAction, false);
     }
     
     /**
@@ -2688,7 +2781,8 @@ public class Single<T> {
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @warn "Backpressure Support" section missing from javadoc
+     * @param <T> the value type of the generated source
+     * @param <Resource> the type of the per-subscriber resource
      * @param resourceFactory
      *            the factory function to create a resource object that depends on the Single
      * @param singleFactory

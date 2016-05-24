@@ -47,9 +47,13 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     /**
      * Given a connectable observable factory, it multicasts over the generated
      * ConnectableObservable via a selector function.
-     * @param connectableFactory
-     * @param selector
-     * @return
+     * @param <T> the upstream's value type
+     * @param <U> the intermediate value type of the ConnectableObservable
+     * @param <R> the final value type provided by the selector function
+     * @param connectableFactory the factory that returns a ConnectableObservable instance
+     * @param selector the function applied on the ConnectableObservable and returns the Observable
+     * the downstream will subscribe to.
+     * @return the Observable multicasting over a transformation of a ConnectableObserable
      */
     public static <T, U, R> Observable<R> multicastSelector(
             final Func0<? extends ConnectableObservable<U>> connectableFactory,
@@ -82,9 +86,10 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     /**
      * Child Subscribers will observe the events of the ConnectableObservable on the
      * specified scheduler.
-     * @param co
-     * @param scheduler
-     * @return
+     * @param <T> the value type
+     * @param co the ConnectableObservable to schedule on the specified scheduler
+     * @param scheduler the target Scheduler instance
+     * @return the ConnectableObservable instance that is observed on the specified scheduler
      */
     public static <T> ConnectableObservable<T> observeOn(final ConnectableObservable<T> co, final Scheduler scheduler) {
         final Observable<T> observable = co.observeOn(scheduler);
@@ -118,8 +123,9 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     
     /**
      * Creates a replaying ConnectableObservable with an unbounded buffer.
-     * @param source
-     * @return
+     * @param <T> the value type
+     * @param source the source Observable
+     * @return the replaying ConnectableObservable
      */
     @SuppressWarnings("unchecked")
     public static <T> ConnectableObservable<T> create(Observable<? extends T> source) {
@@ -128,10 +134,12 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     
     /**
      * Creates a replaying ConnectableObservable with a size bound buffer.
-     * @param source
-     * @param bufferSize
-     * @return
+     * @param <T> the value type
+     * @param source the source Observable
+     * @param bufferSize the maximum number of elements buffered
+     * @return the replaying ConnectableObservable
      */
+    @SuppressWarnings("cast")
     public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
             final int bufferSize) {
         if (bufferSize == Integer.MAX_VALUE) {
@@ -147,12 +155,14 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
 
     /**
      * Creates a replaying ConnectableObservable with a time bound buffer.
-     * @param source
-     * @param maxAge
-     * @param unit
-     * @param scheduler
-     * @return
+     * @param <T> the value type
+     * @param source the source Observable
+     * @param maxAge the maximum age (exclusive) of each item when timestamped with the given scheduler
+     * @param unit the time unit of the maximum age
+     * @param scheduler the scheduler providing the notion of current time
+     * @return the replaying ConnectableObservable
      */
+    @SuppressWarnings("cast")
     public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
             long maxAge, TimeUnit unit, Scheduler scheduler) {
         return (ConnectableObservable<T>)create(source, maxAge, unit, scheduler, Integer.MAX_VALUE);
@@ -160,12 +170,13 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
 
     /**
      * Creates a replaying ConnectableObservable with a size and time bound buffer.
-     * @param source
-     * @param maxAge
-     * @param unit
-     * @param scheduler
-     * @param bufferSize
-     * @return
+     * @param <T> the value type
+     * @param source the source Observable
+     * @param maxAge the maximum age (exclusive) of each item when timestamped with the given scheduler
+     * @param unit the time unit of the maximum age
+     * @param scheduler the scheduler providing the notion of current time
+     * @param bufferSize the maximum number of elements buffered
+     * @return the replaying ConnectableObservable
      */
     public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
             long maxAge, TimeUnit unit, final Scheduler scheduler, final int bufferSize) {
@@ -856,8 +867,6 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     
     /**
      * Represents a node in a bounded replay buffer's linked list.
-     *
-     * @param <T> the contained value type
      */
     static final class Node extends AtomicReference<Node> {
         /** */

@@ -17,6 +17,7 @@ package rx;
 
 /**
  * An object representing a notification sent to an {@link Observable}.
+ * @param <T> the actual value type held by the Notification
  */
 public final class Notification<T> {
 
@@ -29,6 +30,7 @@ public final class Notification<T> {
     /**
      * Creates and returns a {@code Notification} of variety {@code Kind.OnNext}, and assigns it a value.
      *
+     * @param <T> the actual value type held by the Notification
      * @param t
      *          the item to assign to the notification as its value
      * @return an {@code OnNext} variety of {@code Notification}
@@ -40,6 +42,7 @@ public final class Notification<T> {
     /**
      * Creates and returns a {@code Notification} of variety {@code Kind.OnError}, and assigns it an exception.
      *
+     * @param <T> the actual value type held by the Notification
      * @param e
      *          the exception to assign to the notification
      * @return an {@code OnError} variety of {@code Notification}
@@ -51,6 +54,7 @@ public final class Notification<T> {
     /**
      * Creates and returns a {@code Notification} of variety {@code Kind.OnCompleted}.
      *
+     * @param <T> the actual value type held by the Notification
      * @return an {@code OnCompleted} variety of {@code Notification}
      */
     @SuppressWarnings("unchecked")
@@ -61,7 +65,7 @@ public final class Notification<T> {
     /**
      * Creates and returns a {@code Notification} of variety {@code Kind.OnCompleted}.
      *
-     * @warn param "type" undescribed
+     * @param <T> the actual value type held by the Notification
      * @param type
      * @return an {@code OnCompleted} variety of {@code Notification}
      */
@@ -151,6 +155,7 @@ public final class Notification<T> {
 
     /**
      * Forwards this notification on to a specified {@link Observer}.
+     * @param observer the target observer to call onXXX methods on based on the kind of this Notification instance
      */
     public void accept(Observer<? super T> observer) {
         if (isOnNext()) {

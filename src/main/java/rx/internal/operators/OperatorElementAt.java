@@ -23,6 +23,7 @@ import rx.Subscriber;
 
 /**
  * Returns the element at a specified index in a sequence.
+ * @param <T> the value type
  */
 public final class OperatorElementAt<T> implements Operator<T, T> {
 

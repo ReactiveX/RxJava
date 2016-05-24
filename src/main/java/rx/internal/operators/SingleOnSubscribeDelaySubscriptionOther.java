@@ -38,6 +38,7 @@ public final class SingleOnSubscribeDelaySubscriptionOther<T> implements Single.
         this.other = other;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void call(final SingleSubscriber<? super T> subscriber) {
         final SingleSubscriber<T> child = new SingleSubscriber<T>() {

@@ -24,7 +24,7 @@ import rx.observers.SerializedSubscriber;
 /**
  * Sample with the help of another observable.
  * 
- * @see <a href='http://msdn.microsoft.com/en-us/library/hh229742.aspx'>MSDN: Observable.Sample</a>
+ * @see <a href="http://msdn.microsoft.com/en-us/library/hh229742.aspx">MSDN: Observable.Sample</a>
  * 
  * @param <T> the source and result value type
  * @param <U> the element type of the sampler Observable
