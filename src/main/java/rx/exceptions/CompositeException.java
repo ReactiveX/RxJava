@@ -155,7 +155,7 @@ public final class CompositeException extends RuntimeException {
                     chain = e;
                 }
             }
-            cause = _cause;
+            cause = chain;
         }
         return cause;
     }
