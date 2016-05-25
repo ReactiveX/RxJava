@@ -27,10 +27,16 @@ import rx.SingleSubscriber;
 import rx.Subscriber;
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.subjects.PublishSubject;
+import rx.Subscription;
+import rx.observers.TestSubscriber;
+
+import static org.mockito.Mockito.*;
 
 public class ExceptionsTest {
 
@@ -159,6 +165,21 @@ public class ExceptionsTest {
 
         });
     }
+
+	@Test(expected = AssertionError.class)
+	public void testAssertionErrorIsNotSwallowedByOnErrorResumeNext() {
+		Observable<Integer> subject = Observable.just(42);
+		TestSubscriber<Integer> subscriber = new TestSubscriber();
+		subject.doOnNext(new Action1<Integer>() {
+				@Override
+				public void call(Integer i) {
+					throw new AssertionError("Unexpected method call");
+				}
+			})
+			.onErrorResumeNext(Observable.<Integer>empty())
+			.subscribe(subscriber);
+		subscriber.assertNoErrors();
+	}
 
     /**
      * https://github.com/ReactiveX/RxJava/issues/969
@@ -360,4 +381,5 @@ public class ExceptionsTest {
         public void onNext(Integer value) {
         }
     }
+
 }

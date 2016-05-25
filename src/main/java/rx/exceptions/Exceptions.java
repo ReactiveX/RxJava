@@ -93,6 +93,8 @@ public final class Exceptions {
             throw (ThreadDeath) t;
         } else if (t instanceof LinkageError) {
             throw (LinkageError) t;
+        } else if (t instanceof AssertionError) {
+            throw (AssertionError) t;
         }
     }
 

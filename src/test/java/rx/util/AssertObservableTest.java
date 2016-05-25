@@ -31,12 +31,12 @@ public class AssertObservableTest {
         AssertObservable.assertObservableEqualsBlocking("foo", null, null);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = AssertionError.class)
     public void testFailNotNull() {
         AssertObservable.assertObservableEqualsBlocking("foo", Observable.just(1, 2), Observable.just(1));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = AssertionError.class)
     public void testFailNull() {
         AssertObservable.assertObservableEqualsBlocking("foo", Observable.just(1, 2), null);
     }
