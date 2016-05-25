@@ -61,6 +61,24 @@ public class CompositeExceptionTest {
         assertNotNull(getRootCause(ce));
         System.err.println("----------------------------- print cause stacktrace");
         ce.getCause().printStackTrace();
+
+        assertEquals(e1, ce.getCause());
+    }
+
+    @Test(timeout = 1000)
+    public void testCompositeExceptionCause() {
+        Throwable error = new Throwable("TheCause");
+        CompositeException ce = new CompositeException(error);
+
+        System.err.println("----------------------------- print composite stacktrace");
+        ce.printStackTrace();
+
+        assertNoCircularReferences(ce);
+        assertNotNull(getRootCause(ce));
+        System.err.println("----------------------------- print cause stacktrace");
+        ce.getCause().printStackTrace();
+
+        assertEquals(error, ce.getCause());
     }
 
     @Test(timeout = 1000)
