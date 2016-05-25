@@ -32,7 +32,9 @@ import static rx.internal.util.PlatformDependent.ANDROID_API_VERSION_IS_NOT_ANDR
 /**
  * @warn class description missing
  */
-public class NewThreadWorker extends Scheduler.Worker implements Subscription {
+public class NewThreadWorker extends Scheduler.Worker implements Subscription, WorkerCallback {
+    final Throwable site;
+    
     private final ScheduledExecutorService executor;
     private final RxJavaSchedulersHook schedulersHook;
     volatile boolean isUnsubscribed;
@@ -200,15 +202,16 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     }
     
     /* package */
-    public NewThreadWorker(ThreadFactory threadFactory) {
+    public NewThreadWorker(ThreadFactory threadFactory, Throwable site) {
         ScheduledExecutorService exec = Executors.newScheduledThreadPool(1, threadFactory);
         // Java 7+: cancelled future tasks can be removed from the executor thus avoiding memory leak
         boolean cancelSupported = tryEnableCancelPolicy(exec);
         if (!cancelSupported && exec instanceof ScheduledThreadPoolExecutor) {
             registerExecutor((ScheduledThreadPoolExecutor)exec);
         }
-        schedulersHook = RxJavaPlugins.getInstance().getSchedulersHook();
-        executor = exec;
+        this.site = site;
+        this.schedulersHook = RxJavaPlugins.getInstance().getSchedulersHook();
+        this.executor = exec;
     }
 
     @Override
@@ -221,7 +224,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
         if (isUnsubscribed) {
             return Subscriptions.unsubscribed();
         }
-        return scheduleActual(action, delayTime, unit);
+        return scheduleActual(action, delayTime, unit, this);
     }
 
     /**
@@ -230,25 +233,18 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
      * @param action the action to wrap and schedule
      * @param delayTime the delay in execution
      * @param unit the time unit of the delay
+     * @param parent the optional parent callback in case the action needs to be tracked
      * @return the wrapper ScheduledAction
      */
-    public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
+    public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit, WorkerCallback parent) {
         Action0 decoratedAction = schedulersHook.onSchedule(action);
-        ScheduledAction run = new ScheduledAction(decoratedAction);
-        Future<?> f;
-        if (delayTime <= 0) {
-            f = executor.submit(run);
+        ScheduledAction run;
+        if (parent != null) {
+            run = new ScheduledAction(decoratedAction, parent);
+            parent.add(run);
         } else {
-            f = executor.schedule(run, delayTime, unit);
+            run = new ScheduledAction(decoratedAction);
         }
-        run.add(f);
-
-        return run;
-    }
-    public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit, CompositeSubscription parent) {
-        Action0 decoratedAction = schedulersHook.onSchedule(action);
-        ScheduledAction run = new ScheduledAction(decoratedAction, parent);
-        parent.add(run);
 
         Future<?> f;
         if (delayTime <= 0) {
@@ -261,22 +257,6 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
         return run;
     }
     
-    public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit, SubscriptionList parent) {
-        Action0 decoratedAction = schedulersHook.onSchedule(action);
-        ScheduledAction run = new ScheduledAction(decoratedAction, parent);
-        parent.add(run);
-        
-        Future<?> f;
-        if (delayTime <= 0) {
-            f = executor.submit(run);
-        } else {
-            f = executor.schedule(run, delayTime, unit);
-        }
-        run.add(f);
-
-        return run;
-    }
-
     @Override
     public void unsubscribe() {
         isUnsubscribed = true;
@@ -287,5 +267,20 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     @Override
     public boolean isUnsubscribed() {
         return isUnsubscribed;
+    }
+    
+    @Override
+    public void add(ScheduledAction action) {
+        // NewThreadWorker doesn't track tasks on its own
+    }
+    
+    @Override
+    public void remove(ScheduledAction action) {
+        // NewThreadWorker doesn't track tasks on its own
+    }
+    
+    @Override
+    public Throwable workerCreationSite() {
+        return site;
     }
 }

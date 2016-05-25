@@ -30,6 +30,10 @@ public final class NewThreadScheduler extends Scheduler {
 
     @Override
     public Worker createWorker() {
-        return new NewThreadWorker(threadFactory);
+        Throwable site = null;
+        if (WorkerDebugSupport.isEnabled()) {
+            site = new RuntimeException("createWorker() called");
+        }
+        return new NewThreadWorker(threadFactory, site);
     }
 }

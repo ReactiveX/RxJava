@@ -37,11 +37,16 @@ public final class ExecutorScheduler extends Scheduler {
 
     @Override
     public Worker createWorker() {
-        return new ExecutorSchedulerWorker(executor);
+        Throwable site = null;
+        if (WorkerDebugSupport.isEnabled()) {
+            site = new RuntimeException("createWorker() called");
+        }
+        return new ExecutorSchedulerWorker(executor, site);
     }
 
     /** Worker that schedules tasks on the executor indirectly through a trampoline mechanism. */
-    static final class ExecutorSchedulerWorker extends Scheduler.Worker implements Runnable {
+    static final class ExecutorSchedulerWorker extends Scheduler.Worker 
+    implements Runnable, WorkerCallback {
         final Executor executor;
         // TODO: use a better performing structure for task tracking
         final CompositeSubscription tasks;
@@ -51,12 +56,15 @@ public final class ExecutorScheduler extends Scheduler {
         
         final ScheduledExecutorService service;
         
-        public ExecutorSchedulerWorker(Executor executor) {
+        final Throwable site;
+        
+        public ExecutorSchedulerWorker(Executor executor, Throwable site) {
             this.executor = executor;
             this.queue = new ConcurrentLinkedQueue<ScheduledAction>();
             this.wip = new AtomicInteger();
             this.tasks = new CompositeSubscription();
             this.service = GenericScheduledExecutorService.getInstance();
+            this.site = site;
         }
 
         @Override
@@ -64,7 +72,7 @@ public final class ExecutorScheduler extends Scheduler {
             if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
-            ScheduledAction ea = new ScheduledAction(action, tasks);
+            ScheduledAction ea = new ScheduledAction(action, this);
             tasks.add(ea);
             queue.offer(ea);
             if (wip.getAndIncrement() == 0) {
@@ -180,5 +188,19 @@ public final class ExecutorScheduler extends Scheduler {
             queue.clear();
         }
         
+        @Override
+        public void add(ScheduledAction action) {
+            tasks.add(action);
+        }
+        
+        @Override
+        public void remove(ScheduledAction action) {
+            tasks.remove(action);
+        }
+        
+        @Override
+        public Throwable workerCreationSite() {
+            return site;
+        }
     }
 }

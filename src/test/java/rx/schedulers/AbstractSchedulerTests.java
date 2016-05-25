@@ -15,34 +15,26 @@
  */
 package rx.schedulers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import rx.Scheduler.Worker;
+import rx.exceptions.*;
+import rx.functions.*;
+import rx.internal.schedulers.WorkerDebugSupport;
+import rx.plugins.*;
 
 /**
  * Base tests for all schedulers including Immediate/Current.
@@ -502,4 +494,158 @@ public abstract class AbstractSchedulerTests {
 
     }
 
+    void workerCreationSiteCaptured(boolean timed) throws Exception {
+        Scheduler scheduler = getScheduler();
+
+        if ((scheduler instanceof rx.internal.schedulers.TrampolineScheduler) 
+                || (scheduler instanceof rx.internal.schedulers.ImmediateScheduler)) {
+            // we don't care about these schedulers
+            return;
+        }
+        
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        RxJavaPlugins plugin = RxJavaPlugins.getInstance();
+        plugin.reset();
+        plugin.registerErrorHandler(new RxJavaErrorHandler() {
+            @Override
+            public void handleError(Throwable e) {
+                error.set(e);
+            }
+        });
+        
+        boolean state = WorkerDebugSupport.isEnabled();
+
+        Schedulers.setWorkerTracking(true);
+        
+        Worker w = scheduler.createWorker();
+        try {
+
+            if (timed) {
+                w.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        throw new TestException("Forced failure");
+                    }
+                }, 50, TimeUnit.MILLISECONDS);
+                Thread.sleep(100);
+            } else {
+                w.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        throw new TestException("Forced failure");
+                    }
+                });
+                
+                Thread.sleep(10);
+            }
+            
+            while (error.get() == null) ;
+            
+            Throwable ex = error.get();
+            Assert.assertTrue(ex.toString(), ex instanceof IllegalStateException);
+            
+            Throwable cause = ex.getCause();
+            
+            Assert.assertTrue(cause.toString(), cause instanceof CompositeException);
+
+            CompositeException ce = (CompositeException)ex.getCause();
+            List<Throwable> list = ce.getExceptions();
+            
+            Assert.assertEquals(2, list.size());
+            
+            Throwable ex2 = list.get(1);
+            
+            for (StackTraceElement ste : ex2.getStackTrace()) {
+                if (ste.getMethodName().equals("workerCreationSiteCaptured")) {
+                    return;
+                }
+            }
+            
+            Assert.fail("Couldn't find the current method in the stacktrace");
+            
+        } finally {
+            Schedulers.setWorkerTracking(state);
+            w.unsubscribe();
+        }
+    }
+    
+    void workerCreationSiteNotCaptured(boolean timed) throws Exception {
+        Scheduler scheduler = getScheduler();
+
+        if ((scheduler instanceof rx.internal.schedulers.TrampolineScheduler) 
+                || (scheduler instanceof rx.internal.schedulers.ImmediateScheduler)) {
+            // we don't care about these schedulers
+            return;
+        }
+        
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        RxJavaPlugins plugin = RxJavaPlugins.getInstance();
+        plugin.reset();
+        plugin.registerErrorHandler(new RxJavaErrorHandler() {
+            @Override
+            public void handleError(Throwable e) {
+                error.set(e);
+            }
+        });
+        
+        boolean state = WorkerDebugSupport.isEnabled();
+        
+        Schedulers.setWorkerTracking(false);
+        
+        Worker w = scheduler.createWorker();
+        try {
+
+            if (timed) {
+                w.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        throw new TestException("Forced failure");
+                    }
+                }, 50, TimeUnit.MILLISECONDS);
+                Thread.sleep(100);
+            } else {
+                w.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        throw new TestException("Forced failure");
+                    }
+                });
+                
+                Thread.sleep(10);
+            }
+            
+            while (error.get() == null) ;
+            
+            Throwable ex = error.get();
+            Assert.assertTrue(ex.toString(), ex instanceof IllegalStateException);
+            
+            Throwable cause = ex.getCause();
+            
+            Assert.assertTrue(ex.toString(), cause instanceof TestException);
+            Assert.assertEquals("Forced failure", cause.getMessage());
+        } finally {
+            Schedulers.setWorkerTracking(state);
+            w.unsubscribe();
+        }
+    }
+    
+    @Test(timeout = 1500)
+    public void workerCreationSiteCaptured() throws Exception {
+        workerCreationSiteCaptured(false);
+    }
+
+    @Test(timeout = 1500)
+    public void workerCreationSiteCapturedTimed() throws Exception {
+        workerCreationSiteCaptured(true);
+    }
+
+    @Test(timeout = 1500)
+    public void workerCreationSiteNotCaptured() throws Exception {
+        workerCreationSiteNotCaptured(false);
+    }
+
+    @Test(timeout = 1500)
+    public void workerCreationSiteNotCapturedTimed() throws Exception {
+        workerCreationSiteNotCaptured(true);
+    }
 }
