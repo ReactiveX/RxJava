@@ -63,10 +63,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> child) {
-        if (scheduler instanceof ImmediateScheduler) {
-            // avoid overhead, execute directly
-            return child;
-        } else if (scheduler instanceof TrampolineScheduler) {
+        if (scheduler instanceof TrampolineScheduler) {
             // avoid overhead, execute directly
             return child;
         } else {
