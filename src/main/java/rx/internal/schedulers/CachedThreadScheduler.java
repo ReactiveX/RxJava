@@ -170,10 +170,16 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
     
     @Override
     public Worker createWorker() {
-        return new EventLoopWorker(pool.get());
+        Throwable site = null;
+        if (WorkerDebugSupport.isEnabled()) {
+            site = new RuntimeException("createWorker() called");
+        }
+        return new EventLoopWorker(pool.get(), site);
     }
 
-    private static final class EventLoopWorker extends Scheduler.Worker {
+    private static final class EventLoopWorker extends Scheduler.Worker 
+    implements WorkerCallback {
+        final Throwable site;
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final CachedWorkerPool pool;
         private final ThreadWorker threadWorker;
@@ -182,8 +188,9 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         static final AtomicIntegerFieldUpdater<EventLoopWorker> ONCE_UPDATER
                 = AtomicIntegerFieldUpdater.newUpdater(EventLoopWorker.class, "once");
 
-        EventLoopWorker(CachedWorkerPool pool) {
+        EventLoopWorker(CachedWorkerPool pool, Throwable site) {
             this.pool = pool;
+            this.site = site;
             this.threadWorker = pool.get();
         }
 
@@ -221,10 +228,23 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
                     }
                     action.call();
                 }
-            }, delayTime, unit);
-            innerSubscription.add(s);
-            s.addParent(innerSubscription);
+            }, delayTime, unit, this);
             return s;
+        }
+        
+        @Override
+        public void add(ScheduledAction action) {
+            innerSubscription.add(action);
+        }
+        
+        @Override
+        public void remove(ScheduledAction action) {
+            innerSubscription.remove(action);
+        }
+        
+        @Override
+        public Throwable workerCreationSite() {
+            return site;
         }
     }
 
@@ -232,7 +252,7 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         private long expirationTime;
 
         ThreadWorker(ThreadFactory threadFactory) {
-            super(threadFactory);
+            super(threadFactory, null);
             this.expirationTime = 0L;
         }
 

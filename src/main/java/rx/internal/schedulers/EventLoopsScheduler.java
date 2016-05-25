@@ -45,7 +45,7 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
     
     static final PoolWorker SHUTDOWN_WORKER;
     static {
-        SHUTDOWN_WORKER = new PoolWorker(RxThreadFactory.NONE);
+        SHUTDOWN_WORKER = new PoolWorker(RxThreadFactory.NONE, null);
         SHUTDOWN_WORKER.unsubscribe();
     }
     
@@ -60,7 +60,7 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
             this.cores = maxThreads;
             this.eventLoops = new PoolWorker[maxThreads];
             for (int i = 0; i < maxThreads; i++) {
-                this.eventLoops[i] = new PoolWorker(threadFactory);
+                this.eventLoops[i] = new PoolWorker(threadFactory, null);
             }
         }
 
@@ -98,7 +98,11 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
     
     @Override
     public Worker createWorker() {
-        return new EventLoopWorker(pool.get().getEventLoop());
+        Throwable site = null;
+        if (WorkerDebugSupport.isEnabled()) {
+            site = new RuntimeException("createWorker() called");
+        }
+        return new EventLoopWorker(pool.get().getEventLoop(), site);
     }
     
     @Override
@@ -131,7 +135,7 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
      */
     public Subscription scheduleDirect(Action0 action) {
        PoolWorker pw = pool.get().getEventLoop();
-       return pw.scheduleActual(action, -1, TimeUnit.NANOSECONDS);
+       return pw.scheduleActual(action, -1, TimeUnit.NANOSECONDS, null);
     }
 
     private static class EventLoopWorker extends Scheduler.Worker {
@@ -139,10 +143,43 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
         private final CompositeSubscription timed = new CompositeSubscription();
         private final SubscriptionList both = new SubscriptionList(serial, timed);
         private final PoolWorker poolWorker;
+        final WorkerCallback timedCallback;
+        final WorkerCallback serialCallback;
 
-        EventLoopWorker(PoolWorker poolWorker) {
+        EventLoopWorker(PoolWorker poolWorker, final Throwable site) {
             this.poolWorker = poolWorker;
-            
+            this.timedCallback = new WorkerCallback() {
+                @Override
+                public void add(ScheduledAction action) {
+                    timed.add(action);
+                }
+                
+                @Override
+                public void remove(ScheduledAction action) {
+                    timed.remove(action);
+                }
+                
+                @Override
+                public Throwable workerCreationSite() {
+                    return site;
+                }
+            };
+            this.serialCallback = new WorkerCallback() {
+                @Override
+                public void add(ScheduledAction action) {
+                    serial.add(action);
+                }
+                
+                @Override
+                public void remove(ScheduledAction action) {
+                    serial.remove(action);
+                }
+                
+                @Override
+                public Throwable workerCreationSite() {
+                    return site;
+                }
+            };
         }
 
         @Override
@@ -169,7 +206,7 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
                     }
                     action.call();
                 }
-            }, 0, null, serial);
+            }, 0, null, serialCallback);
         }
 
         @Override
@@ -186,13 +223,13 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
                     }
                     action.call();
                 }
-            }, delayTime, unit, timed);
+            }, delayTime, unit, timedCallback);
         }
     }
 
     static final class PoolWorker extends NewThreadWorker {
-        PoolWorker(ThreadFactory threadFactory) {
-            super(threadFactory);
+        PoolWorker(ThreadFactory threadFactory, Throwable site) {
+            super(threadFactory, site);
         }
     }
 }

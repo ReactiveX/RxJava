@@ -15,13 +15,13 @@
  */
 package rx.schedulers;
 
+import java.util.concurrent.Executor;
+
 import rx.Scheduler;
+import rx.annotations.Experimental;
 import rx.internal.schedulers.*;
 import rx.internal.util.RxRingBuffer;
-import rx.plugins.RxJavaPlugins;
-import rx.plugins.RxJavaSchedulersHook;
-
-import java.util.concurrent.Executor;
+import rx.plugins.*;
 
 /**
  * Static factory methods for creating Schedulers.
@@ -188,5 +188,18 @@ public final class Schedulers {
             
             RxRingBuffer.SPMC_POOL.shutdown();
         }
+    }
+    
+    /**
+     * Enable or disable worker tracking; if a scheduled task crashes,
+     * the error reported to the RxJavaPlugins will contain an IllegalStateException
+     * with a CompositeException cause of the original crash exception 
+     * along with a RuntimeException holding the
+     * stacktrace where the parent worker has been instantiated.
+     * @param value the state
+     */
+    @Experimental
+    public static void setWorkerTracking(boolean value) {
+        WorkerDebugSupport.setEnabled(value);
     }
 }
