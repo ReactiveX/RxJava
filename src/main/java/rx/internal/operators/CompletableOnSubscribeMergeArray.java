@@ -30,6 +30,17 @@ public final class CompletableOnSubscribeMergeArray implements CompletableOnSubs
         this.sources = sources;
     }
     
+    public CompletableOnSubscribeMergeArray mergeWith(Completable source) {
+        Completable[] oldSources = sources;
+        
+        int oldLen = oldSources.length;
+        Completable[] newSources = new Completable[oldLen + 1];
+        System.arraycopy(oldSources, 0, newSources, 0, oldLen);
+        newSources[oldLen] = source;
+        
+        return new CompletableOnSubscribeMergeArray(newSources);
+    }
+    
     @Override
     public void call(final CompletableSubscriber s) {
         final CompositeSubscription set = new CompositeSubscription();

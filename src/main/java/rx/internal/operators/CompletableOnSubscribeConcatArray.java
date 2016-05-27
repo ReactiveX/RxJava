@@ -36,6 +36,28 @@ public final class CompletableOnSubscribeConcatArray implements CompletableOnSub
         inner.next();
     }
     
+    public CompletableOnSubscribe startWith(Completable source) {
+        Completable[] oldSources = sources;
+        
+        int oldLen = oldSources.length;
+        Completable[] newSources = new Completable[oldLen + 1];
+        newSources[0] = source;
+        System.arraycopy(oldSources, 0, newSources, 1, oldLen);
+        
+        return new CompletableOnSubscribeConcatArray(newSources);
+    }
+
+    public CompletableOnSubscribe endWith(Completable source) {
+        Completable[] oldSources = sources;
+        
+        int oldLen = oldSources.length;
+        Completable[] newSources = new Completable[oldLen + 1];
+        System.arraycopy(oldSources, 0, newSources, 0, oldLen);
+        newSources[oldLen] = source;
+        
+        return new CompletableOnSubscribeConcatArray(newSources);
+    }
+
     static final class ConcatInnerSubscriber extends AtomicInteger implements CompletableSubscriber {
         /** */
         private static final long serialVersionUID = -7965400327305809232L;

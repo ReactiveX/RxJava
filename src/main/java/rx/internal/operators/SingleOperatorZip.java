@@ -29,8 +29,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SingleOperatorZip {
 
-    public static <T, R> Single<R> zip(final Single<? extends T>[] singles, final FuncN<? extends R> zipper) {
-        return Single.create(new Single.OnSubscribe<R>() {
+    public static <T, R> Single.OnSubscribe<R> zip(final Single<? extends T>[] singles, final FuncN<? extends R> zipper) {
+        return new Single.OnSubscribe<R>() {
             @Override
             public void call(final SingleSubscriber<? super R> subscriber) {
                 if (singles.length == 0) {
@@ -89,6 +89,6 @@ public class SingleOperatorZip {
                     singles[i].subscribe(singleSubscriber);
                 }
             }
-        });
+        };
     }
 }
