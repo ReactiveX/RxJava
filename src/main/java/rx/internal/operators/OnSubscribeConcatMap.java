@@ -69,8 +69,9 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
         this.delayErrorMode = delayErrorMode;
     }
     
-    @Override
-    public void call(Subscriber<? super R> child) {
+    public static <T, R> ConcatMapSubscriber<T, R> prepare(Subscriber<? super R> child, 
+            Func1<? super T, ? extends Observable<? extends R>> mapper, 
+                    int prefetch, int delayErrorMode) {
         Subscriber<? super R> s;
         
         if (delayErrorMode == IMMEDIATE) {
@@ -89,7 +90,12 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                 parent.requestMore(n);
             }
         });
-        
+        return parent;
+    }
+    
+    @Override
+    public void call(Subscriber<? super R> child) {
+        Subscriber<T> parent = prepare(child, mapper, prefetch, delayErrorMode);
         if (!child.isUnsubscribed()) {
             source.unsafeSubscribe(parent);
         }

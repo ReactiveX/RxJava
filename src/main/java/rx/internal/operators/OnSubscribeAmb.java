@@ -360,6 +360,19 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
     }
     
+    public OnSubscribeAmb<T> ambWith(Observable<? extends T> source) {
+        if (sources instanceof List) {
+            List<? extends Observable<? extends T>> list = (List<? extends Observable<? extends T>>) sources;
+            
+            List<Observable<? extends T>> newList = new ArrayList<Observable<? extends T>>(list.size() + 1);
+            newList.addAll(list);
+            newList.add(source);
+            
+            return new OnSubscribeAmb<T>(newList);
+        }
+        return null; // won't work with generic iterable because those need deferred evaluation
+    }
+    
     //give default access instead of private as a micro-optimization 
     //for access from anonymous classes below
     final Iterable<? extends Observable<? extends T>> sources;

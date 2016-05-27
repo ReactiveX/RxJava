@@ -965,8 +965,9 @@ public class Observable<T> {
      *         without interleaving them
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2) {
-        return concat(just(t1, t2));
+        return create(new OnSubscribeConcatArray<T>(new Observable[] { t1, t2 }));
     }
 
     /**
@@ -989,8 +990,9 @@ public class Observable<T> {
      *         without interleaving them
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
-        return concat(just(t1, t2, t3));
+        return create(new OnSubscribeConcatArray<T>(new Observable[] { t1, t2, t3 }));
     }
 
     /**
@@ -1015,8 +1017,9 @@ public class Observable<T> {
      *         without interleaving them
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
-        return concat(just(t1, t2, t3, t4));
+        return create(new OnSubscribeConcatArray<T>(new Observable[] { t1, t2, t3, t4 }));
     }
 
     /**
@@ -1043,8 +1046,9 @@ public class Observable<T> {
      *         without interleaving them
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
-        return concat(just(t1, t2, t3, t4, t5));
+        return create(new OnSubscribeConcatArray<T>(new Observable[] { t1, t2, t3, t4, t5 }));
     }
 
     /**
@@ -1073,8 +1077,9 @@ public class Observable<T> {
      *         without interleaving them
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
-        return concat(just(t1, t2, t3, t4, t5, t6));
+        return create(new OnSubscribeConcatArray<T>(new Observable[] { t1, t2, t3, t4, t5, t6 }));
     }
 
     /**
@@ -1105,8 +1110,9 @@ public class Observable<T> {
      *         without interleaving them
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
-        return concat(just(t1, t2, t3, t4, t5, t6, t7));
+        return create(new OnSubscribeConcatArray<T>(new Observable[] { t1, t2, t3, t4, t5, t6, t7 }));
     }
 
     /**
@@ -1140,7 +1146,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
-        return concat(just(t1, t2, t3, t4, t5, t6, t7, t8));
+        return create(new OnSubscribeConcatArray<T>(new Observable[] { t1, t2, t3, t4, t5, t6, t7, t8 }));
     }
 
     /**
@@ -1175,8 +1181,9 @@ public class Observable<T> {
      *         without interleaving them
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
+    @SuppressWarnings("unchecked")
     public static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
-        return concat(just(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+        return create(new OnSubscribeConcatArray<T>(new Observable[] { t1, t2, t3, t4, t5, t6, t7, t8, t9 }));
     }
 
     /**
@@ -2246,7 +2253,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public static <T> Observable<T> merge(Observable<? extends T>[] sequences) {
-        return merge(from(sequences));
+        return create(new OnSubscribeMergeArray<T>(sequences));
     }
     
     /**
@@ -3490,6 +3497,13 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public final Observable<T> ambWith(Observable<? extends T> t1) {
+        if (onSubscribe instanceof OnSubscribeAmb) {
+            OnSubscribeAmb o = (OnSubscribeAmb) onSubscribe;
+            OnSubscribeAmb ambWith = o.ambWith(t1);
+            if (ambWith != null) {
+                return create(ambWith);
+            }
+        }
         return amb(this, t1);
     }
 
@@ -4089,6 +4103,10 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     public final Observable<T> concatWith(Observable<? extends T> t1) {
+        if (onSubscribe instanceof OnSubscribeConcatArray) {
+            OnSubscribeConcatArray<T> o = (OnSubscribeConcatArray<T>) onSubscribe;
+            return create(o.endWith(t1));
+        }
         return concat(this, t1);
     }
 
@@ -6196,6 +6214,10 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final Observable<T> mergeWith(Observable<? extends T> t1) {
+        if (onSubscribe instanceof OnSubscribeMergeArray) {
+            OnSubscribeMergeArray o = (OnSubscribeMergeArray) onSubscribe;
+            return create(o.mergeWith(t1));
+        }
         return merge(this, t1);
     }
     
@@ -8033,6 +8055,10 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/startwith.html">ReactiveX operators documentation: StartWith</a>
      */
     public final Observable<T> startWith(Observable<T> values) {
+        if (onSubscribe instanceof OnSubscribeConcatArray) {
+            OnSubscribeConcatArray<T> o = (OnSubscribeConcatArray<T>) onSubscribe;
+            return create(o.startWith(values));
+        }
         return concat(values, this);
     }
 
@@ -10337,6 +10363,10 @@ public class Observable<T> {
      */
     @SuppressWarnings("cast")
     public final <T2, R> Observable<R> zipWith(Observable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
-        return (Observable<R>)zip(this, other, zipFunction);
+        if (onSubscribe instanceof OnSubscribeZipArray) {
+            OnSubscribeZipArray o = (OnSubscribeZipArray) onSubscribe;
+            return create(o.zipWith(other, zipFunction));
+        }
+        return create(new OnSubscribeZipArray<Object, R>(new Observable[] { this, other }, zipFunction));
     }
 }

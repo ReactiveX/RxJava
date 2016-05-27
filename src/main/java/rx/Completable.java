@@ -119,63 +119,7 @@ public class Completable {
             return sources[0];
         }
         
-        return create(new CompletableOnSubscribe() {
-            @Override
-            public void call(final CompletableSubscriber s) {
-                final CompositeSubscription set = new CompositeSubscription();
-                s.onSubscribe(set);
-
-                final AtomicBoolean once = new AtomicBoolean();
-                
-                CompletableSubscriber inner = new CompletableSubscriber() {
-                    @Override
-                    public void onCompleted() {
-                        if (once.compareAndSet(false, true)) {
-                            set.unsubscribe();
-                            s.onCompleted();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (once.compareAndSet(false, true)) {
-                            set.unsubscribe();
-                            s.onError(e);
-                        } else {
-                            ERROR_HANDLER.handleError(e);
-                        }
-                    }
-
-                    @Override
-                    public void onSubscribe(Subscription d) {
-                        set.add(d);
-                    }
-                    
-                };
-                
-                for (Completable c : sources) {
-                    if (set.isUnsubscribed()) {
-                        return;
-                    }
-                    if (c == null) {
-                        NullPointerException npe = new NullPointerException("One of the sources is null");
-                        if (once.compareAndSet(false, true)) {
-                            set.unsubscribe();
-                            s.onError(npe);
-                        } else {
-                            ERROR_HANDLER.handleError(npe);
-                        }
-                        return;
-                    }
-                    if (once.get() || set.isUnsubscribed()) {
-                        return;
-                    }
-                    
-                    // no need to have separate subscribers because inner is stateless
-                    c.subscribe(inner);
-                }
-            }
-        });
+        return create(new CompletableOnSubscribeAmbArray(sources));
     }
     
     /**
@@ -986,6 +930,10 @@ public class Completable {
      */
     public final Completable ambWith(Completable other) {
         requireNonNull(other);
+        if (this.onSubscribe instanceof CompletableOnSubscribeAmbArray) {
+            CompletableOnSubscribeAmbArray o = (CompletableOnSubscribeAmbArray) this.onSubscribe;
+            return create(o.ambWith(other));
+        }
         return amb(this, other);
     }
     
@@ -1154,6 +1102,10 @@ public class Completable {
      */
     public final Completable concatWith(Completable other) {
         requireNonNull(other);
+        if (this.onSubscribe instanceof CompletableOnSubscribeConcatArray) {
+            CompletableOnSubscribeConcatArray o = (CompletableOnSubscribeConcatArray) this.onSubscribe;
+            return create(o.endWith(other));
+        }
         return concat(this, other);
     }
 
@@ -1564,6 +1516,10 @@ public class Completable {
      */
     public final Completable mergeWith(Completable other) {
         requireNonNull(other);
+        if (onSubscribe instanceof CompletableOnSubscribeMergeArray) {
+            CompletableOnSubscribeMergeArray o = (CompletableOnSubscribeMergeArray) onSubscribe;
+            return create(o.mergeWith(other));
+        }
         return merge(this, other);
     }
     
@@ -1837,6 +1793,10 @@ public class Completable {
      */
     public final Completable startWith(Completable other) {
         requireNonNull(other);
+        if (this.onSubscribe instanceof CompletableOnSubscribeConcatArray) {
+            CompletableOnSubscribeConcatArray o = (CompletableOnSubscribeConcatArray) this.onSubscribe;
+            return create(o.startWith(other));
+        }
         return concat(other, this);
     }
 
