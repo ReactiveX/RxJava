@@ -18,10 +18,10 @@ package rx.internal.operators;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.functions.Func1;
 import rx.internal.operators.OnSubscribeConcatMap.ConcatMapSubscriber;
+import rx.internal.util.UtilityFunctions;
 
-public final class OnSubscribeConcatArray<T> implements OnSubscribe<T>, Func1<Observable<T>, Observable<T>> {
+public final class OnSubscribeConcatArray<T> implements OnSubscribe<T> {
     final Observable<T>[] sources;
     
     public OnSubscribeConcatArray(Observable<T>[] sources) {
@@ -54,14 +54,9 @@ public final class OnSubscribeConcatArray<T> implements OnSubscribe<T>, Func1<Ob
     
     @Override
     public void call(final Subscriber<? super T> s) {
-        ConcatMapSubscriber<Observable<T>, T> parent = OnSubscribeConcatMap.prepare(s, this, 2, OnSubscribeConcatMap.IMMEDIATE);
+        ConcatMapSubscriber<Observable<T>, T> parent = OnSubscribeConcatMap.prepare(s, UtilityFunctions.<Observable<T>>identity(), 2, OnSubscribeConcatMap.IMMEDIATE);
         if (!s.isUnsubscribed()) {
             parent.setProducer(new OnSubscribeFromArray.FromArrayProducer<Observable<T>>(parent, sources));
         }
-    }
-
-    @Override
-    public Observable<T> call(Observable<T> t) {
-        return t;
     }
 }
