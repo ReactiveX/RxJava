@@ -6692,6 +6692,30 @@ public class Observable<T> {
     }
 
     /**
+     * Requests {@code n} initially from the upstream and then 75% of {@code n} subsequently
+     * after 75% of {@code n} values have been emitted to the downstream.
+     * 
+     * <p>This operator allows preventing the downstream to trigger unbounded mode via {@code request(Long.MAX_VALUE)}
+     * or compensate for the per-item overhead of small and frequent requests.
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator expects backpressure from upstream and honors backpressure from downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *  
+     * @param n the initial request amount, further request will happen after 75% of this value
+     * @return the Observable that rebatches request amounts from downstream
+     */
+    public final Observable<T> rebatchRequests(int n) {
+        if (n <= 0) {
+            throw new IllegalArgumentException("n > 0 required but it was " + n);
+        }
+        return lift(OperatorObserveOn.<T>rebatch(n));
+    }
+    
+    /**
      * Returns an Observable that applies a specified accumulator function to the first item emitted by a source
      * Observable, then feeds the result of that function along with the second item emitted by the source
      * Observable into the same function, and so on until all items have been emitted by the source Observable,

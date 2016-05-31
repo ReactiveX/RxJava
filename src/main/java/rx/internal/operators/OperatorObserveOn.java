@@ -27,6 +27,7 @@ import rx.internal.util.*;
 import rx.internal.util.atomic.SpscAtomicArrayQueue;
 import rx.internal.util.unsafe.*;
 import rx.plugins.RxJavaPlugins;
+import rx.schedulers.Schedulers;
 
 /**
  * Delivers events on the specified {@code Scheduler} asynchronously via an unbounded buffer.
@@ -74,6 +75,17 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             parent.init();
             return parent;
         }
+    }
+    
+    public static <T> Operator<T, T> rebatch(final int n) {
+        return new Operator<T, T>() {
+            @Override
+            public Subscriber<? super T> call(Subscriber<? super T> child) {
+                ObserveOnSubscriber<T> parent = new ObserveOnSubscriber<T>(Schedulers.immediate(), child, false, n);
+                parent.init();
+                return parent;
+            }
+        };
     }
 
     /** Observe through individual queue per observer. */
