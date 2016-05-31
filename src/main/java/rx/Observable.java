@@ -6702,12 +6702,14 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects backpressure from upstream and honors backpressure from downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code rebatchRequests} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *  
      * @param n the initial request amount, further request will happen after 75% of this value
      * @return the Observable that rebatches request amounts from downstream
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
+    @Experimental
     public final Observable<T> rebatchRequests(int n) {
         if (n <= 0) {
             throw new IllegalArgumentException("n > 0 required but it was " + n);
