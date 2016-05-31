@@ -2846,6 +2846,9 @@ public class Observable<T> {
      * these emitted Observables, the Observable returned by {@code switchOnNext} begins emitting the items
      * emitted by that Observable. When a new Observable is emitted, {@code switchOnNext} stops emitting items
      * from the earlier-emitted Observable and begins emitting items from the new one.
+     * <p>
+     * The resulting Observable completes if both the outer Observable and the last inner Observable, if any, complete.
+     * If the outer Observable signals an onError, the inner Observable is unsubscribed and the error delivered in-sequence.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2872,6 +2875,10 @@ public class Observable<T> {
      * these emitted Observables, the Observable returned by {@code switchOnNext} begins emitting the items
      * emitted by that Observable. When a new Observable is emitted, {@code switchOnNext} stops emitting items
      * from the earlier-emitted Observable and begins emitting items from the new one.
+     * <p>
+     * The resulting Observable completes if both the main Observable and the last inner Observable, if any, complete.
+     * If the main Observable signals an onError, the termination of the last inner Observable will emit that error as is
+     * or wrapped into a CompositeException along with the other possible errors the former inner Observables signalled.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8619,6 +8626,9 @@ public class Observable<T> {
      * Observable that returns an Observable, and then emitting the items emitted by the most recently emitted
      * of these Observables.
      * <p>
+     * The resulting Observable completes if both the upstream Observable and the last inner Observable, if any, complete.
+     * If the upstream Observable signals an onError, the inner Observable is unsubscribed and the error delivered in-sequence.
+     * <p>
      * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -8639,6 +8649,10 @@ public class Observable<T> {
      * Returns a new Observable by applying a function that you supply to each item emitted by the source
      * Observable that returns an Observable, and then emitting the items emitted by the most recently emitted
      * of these Observables and delays any error until all Observables terminate.
+     * <p>
+     * The resulting Observable completes if both the upstream Observable and the last inner Observable, if any, complete.
+     * If the upstream Observable signals an onError, the termination of the last inner Observable will emit that error as is
+     * or wrapped into a CompositeException along with the other possible errors the former inner Observables signalled.
      * <p>
      * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
      * <dl>
