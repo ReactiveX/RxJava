@@ -956,4 +956,14 @@ public class OperatorObserveOnTest {
        
        assertEquals(Arrays.asList(20L, 15L, 15L, 15L), requests);
     }
+    
+    @Test
+    public void rebatchRequestsArgumentCheck() {
+        try {
+            Observable.never().rebatchRequests(-99);
+            fail("Didn't throw IAE");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("n > 0 required but it was -99", ex.getMessage());
+        }
+    }
 }
