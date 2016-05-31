@@ -16,6 +16,7 @@
 package rx.subjects;
 
 import rx.*;
+import rx.annotations.Experimental;
 
 /**
  * Represents an object that is both an Observable and an Observer.
@@ -56,5 +57,62 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
             return (SerializedSubject<T, R>)this;
         }
         return new SerializedSubject<T, R>(this);
+    }
+    
+    /**
+     * Lifts an Operator into the front of this Subject allowing custom
+     * behavior to be performed on the signals the returned Subject receives
+     * while still presenting the Subject API to the outside world.
+     * 
+     * <p>
+     * This allows staying in the Subject world while adding front behavior
+     * to incoming onXXX calls.
+     * 
+     * @param <A> the new input value type
+     * @param operator the operator that transforms the onXXX calls
+     * @return the new Subject wrapping this Subject and having a front-side operator.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public final <A> Subject<A, R> frontLift(Operator<T, A> operator) {
+        return lift(operator, LiftedSubject.<R>identity());
+    }
+    
+    /**
+     * Lifts an Operator into the back of this Subject allowing custom
+     * behavior to be performed on the output signals of this Subject 
+     * while still presenting the Subject API to the outside world.
+     * 
+     * <p>
+     * This is similar to a regular application of subject.lift() but the
+     * wrapping allows staying in the Subject world.
+     * 
+     * @param <Z> the new output value type
+     * @param operator the operator to lift as the back transformation
+     * @return the new Subject wrapping this Subject and having a back-side operator
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public final <Z> Subject<T, Z> backLift(Operator<Z, R> operator) {
+        return lift(LiftedSubject.<T>identity(), operator);
+    }
+    
+    /**
+     * Lifts a front and a back Operator into this Subject and allowing
+     * custom behavior on both sides while still presenting the Subject
+     * API to the outside world.
+     * 
+     * @param <A> the new input value type
+     * @param <Z> the new output value type
+     * @param frontOperator the operator that transforms the onXXX calls
+     * @param backOperator the operator to lift as the back transformation
+     * @return the new Subject wrapping this Subject and having
+     * a front-side operator and back-side operator
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public final <A, Z> Subject<A, Z> lift(Operator<T, A> frontOperator, 
+            Operator<Z, R> backOperator) {
+        return LiftedSubject.create(this, frontOperator, backOperator);
     }
 }
