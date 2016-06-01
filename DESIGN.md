@@ -366,15 +366,29 @@ Therefore, new standard factory methods will try to address the common entry poi
   - `create(Consumer<? super FlowEmitter<T>>)` to relay multiple values or error from multi-valued reactive-sources (i.e., button-clicks) while also give flow control options right there (buffer, drop, error, etc.).
   - `create(Consumer<? super CompletionEmitter)>` signal a completion or error from valueless reactive sources
 
-The following table lists where these create methods will be available in respect of the base types:
+The `Flowable` will contain the following `create` methods:
 
-| Method | Flowable | Observable | Single | Completable |
-|--------|----------|------------|--------|-------------|
-| `create(SyncGenerator<T, S>)` | Yes | Yes | No | No |
-| `create(AsyncOnSubscribe<T, S>)` | Yes | No | No | No |
-| `create(Consumer<? super SingleEmitter<T>>)` | Yes | Yes | Yes | No |
-| `create(Consumer<? super FlowEmitter<T>>)` | Yes | Yes | No | No |
-| `create(Consumer<? super CompletionEmitter>)` | Yes | Yes | No | Yes |
+   - `create(SyncGenerator<T, S>)`
+   - `create(AsyncOnSubscribe<T, S>)`
+   - `create(Consumer<? super SingleEmitter<T>>)`
+   - `create(Consumer<? super FlowEmitter<T>>)`
+   - `create(Consumer<? super CompletionEmitter>)`
+   
+The `Observable` will contain the following `create` methods:
+
+   - `create(SyncGenerator<T, S>)`
+   - `create(Consumer<? super SingleEmitter<T>>)`
+   - `create(Consumer<? super FlowEmitter<T>>)`
+   - `create(Consumer<? super CompletionEmitter>)`
+
+The `Single` will contain the following `create` method:
+
+   - `create(Consumer<? super SingleEmitter<T>>)`
+   
+The `Completable` will contain the following `create` method:
+
+   - `create(Consumer<? super CompletionEmitter>)`
+
 
 The first two `create` methods take an implementation of an interface which provides state and the generator methods:
 
