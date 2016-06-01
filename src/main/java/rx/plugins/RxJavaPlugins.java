@@ -221,7 +221,9 @@ public class RxJavaPlugins {
      * full classname to load.
      *
      * @return {@link RxJavaCompletableExecutionHook} implementation to use
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
+    @Experimental
     public RxJavaCompletableExecutionHook getCompletableExecutionHook() {
         if (completableExecutionHook.get() == null) {
             // check for an implementation from System.getProperty first
@@ -247,7 +249,9 @@ public class RxJavaPlugins {
      * @throws IllegalStateException
      *             if called more than once or after the default was initialized (if usage occurs before trying
      *             to register)
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
+    @Experimental
     public void registerCompletableExecutionHook(RxJavaCompletableExecutionHook impl) {
         if (!completableExecutionHook.compareAndSet(null, impl)) {
             throw new IllegalStateException("Another strategy was already registered: " + singleExecutionHook.get());

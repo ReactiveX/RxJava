@@ -16,14 +16,18 @@
 package rx.observers;
 
 import rx.Completable.CompletableSubscriber;
-import rx.exceptions.*;
 import rx.Subscription;
+import rx.annotations.Experimental;
+import rx.exceptions.*;
 import rx.internal.util.RxJavaPluginUtils;
 
 /**
  * Wraps another CompletableSubscriber and handles exceptions thrown
  * from onError and onCompleted.
+ * 
+ * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
  */
+@Experimental
 public final class SafeCompletableSubscriber implements CompletableSubscriber, Subscription {
     final CompletableSubscriber actual;
 
