@@ -23,7 +23,7 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.functions.Action0;
 import rx.internal.util.atomic.SpscLinkedArrayQueue;
-import rx.subjects.Subject;
+import rx.subjects.*;
 import rx.subscriptions.Subscriptions;
 
 /**

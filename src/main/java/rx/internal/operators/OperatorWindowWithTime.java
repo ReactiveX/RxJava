@@ -25,6 +25,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Action0;
 import rx.observers.*;
+import rx.subjects.UnicastSubject;
 import rx.subscriptions.Subscriptions;
 
 /**
