@@ -933,4 +933,37 @@ public class OperatorObserveOnTest {
             ts.assertNoErrors();
         }
     }
+    
+    @Test
+    public void synchronousRebatching() {
+        final List<Long> requests = new ArrayList<Long>();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            
+        Observable.range(1, 50)
+        .doOnRequest(new Action1<Long>() {
+            @Override
+            public void call(Long r) {
+                requests.add(r);
+            }
+        })
+       .rebatchRequests(20)
+       .subscribe(ts);
+       
+       ts.assertValueCount(50);
+       ts.assertNoErrors();
+       ts.assertCompleted();
+       
+       assertEquals(Arrays.asList(20L, 15L, 15L, 15L), requests);
+    }
+    
+    @Test
+    public void rebatchRequestsArgumentCheck() {
+        try {
+            Observable.never().rebatchRequests(-99);
+            fail("Didn't throw IAE");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("n > 0 required but it was -99", ex.getMessage());
+        }
+    }
 }
