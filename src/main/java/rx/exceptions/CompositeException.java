@@ -155,7 +155,7 @@ public final class CompositeException extends RuntimeException {
                     chain = e;
                 }
             }
-            cause = _cause;
+            cause = !exceptions.isEmpty() ? exceptions.get(0) : _cause;
         }
         return cause;
     }
