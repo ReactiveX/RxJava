@@ -61,7 +61,7 @@ Examples:
 
 ##### Async Pull (Async Interactive)
 
-Consumer requests data when it wishes, and the data is then pushed when the producer wishes to. 
+Consumer requests data when it wishes, and the data is then pushed when the producer wishes to.
 
 Examples:
 
@@ -90,7 +90,7 @@ Examples:
 
 Containing object immediately start work when it is created.
 
-Examples: 
+Examples:
 
 - A `Future` once created has work being performed and represents the eventual value of that work. It can not be deferred once created.
 
@@ -171,13 +171,6 @@ You get a flowable from:
 class Flowable<T> implements Flow.Publisher<T>, io.reactivestreams.Publisher<T> {
   void subscribe(Subscriber<T> subscriber);
 
-  interface Subscriber<T> implements Flow.Subscriber<T>, io.reactivestreams.Subscriber<T> {
-    void onNext(T t);
-    void onError(Throwable t);
-    void onComplete();
-    void onSubscribe(Flowable.Subscription d);
-  }
-
   interface Subscription implements Flow.Subscription, io.reactivestreams.Subscription {
     void cancel();
     void request(long n);
@@ -212,12 +205,12 @@ Flow control:
 ```java
 class Single<T> {
   void subscribe(Single.Subscriber<T> subscriber);
+}
 
-  interface Subscriber<T> {
-    void onSuccess(T t);
-    void onError(Throwable t);
-    void onSubscribe(Disposable d);
-  }
+interface SingleSubscriber<T> {
+  void onSuccess(T t);
+  void onError(Throwable t);
+  void onSubscribe(Disposable d);
 }
 ```
 
@@ -228,7 +221,7 @@ class Single<T> {
 
 Lazy representation of a unit of work that can complete or fail
 
-- Semantic equivalent of `Observable.empty().doOnSubscribe()`. 
+- Semantic equivalent of `Observable.empty().doOnSubscribe()`.
 - Alternative for scenarios often represented with types such as `Single<Void>` or `Observable<Void>`.
 
 Usable for:
@@ -241,12 +234,12 @@ Usable for:
 ```java
 class Completable {
   void subscribe(Completable.Subscriber subscriber);
+}
 
-  interface Subscriber {
-    void onComplete();
-    void onError(Throwable t);
-    void onSubscribe(Disposable d);
-  }
+interface CompletableSubscriber {
+  void onComplete();
+  void onError(Throwable t);
+  void onSubscribe(Disposable d);
 }
 ```
 
@@ -272,7 +265,7 @@ Interactive consumer of events (with consumer-driven flow control). Involved in 
 
 [Reactive Streams state](https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.0/README.md#3-subscription-code) of subscription supporting flow control and cancellation.
 
-`Disposable` is a similar type used for lifecycle management on the `Observable` type without interactive flow control. 
+`Disposable` is a similar type used for lifecycle management on the `Observable` type without interactive flow control.
 
 ##### Processor
 
@@ -298,7 +291,7 @@ Subject s = PublishSubject.create();
 Publisher p = s.toPublisher(onBackpressureStrategy);
 
 // now the request(n) semantics are handled by default
-p.subscribe(subscriber1); 
+p.subscribe(subscriber1);
 p.subscribe(subscriber2);
 ```
 
@@ -307,11 +300,11 @@ In this example, `subscriber1` and `subscriber2` can consume at different rates,
 
 ##### Disposable
 
-A type representing work that can be cancelled or disposed.
+A type representing work or resource that can be cancelled or disposed.
 
 Examples:
 
-- An `Observable.subscribe` passes a `Disposable` to the `Observable.onSubscribe` to allow the `Observer` to dispose of the subscription. 
+- An `Observable.subscribe` passes a `Disposable` to the `Observable.onSubscribe` to allow the `Observer` to dispose of the subscription.
 - A `Scheduler` returns a `Disposable` that you use for disposing of the `Scheduler`.
 
 `Subscription` is a similar type used for lifecycle management on the `Flowable` type with interactive flow control.
@@ -356,27 +349,15 @@ The final `subscribe` will *not* invoke `cancel`/`dispose` after receiving an `o
 
 ### JVM target and source compatibility
 
-The 2.x version will target JDK6+ but the source will be using some of the Java 8 features.
-We'll use the retrolambda project to generate JDK6 Byte-code from the Java 8 sources.
-The only Java 8 features we intend to use are: lambda expressions, method references and try-with-resources statements.
-Default methods may be considered if retrolambda support reach an acceptable level of maturity.
+The 2.x version will target JDK6+ to let Android users consume the new version of RxJava.
 
-It still up to discussion to know how we will generate multiple targets?
-Options are:
+### Future work
 
-- two artifcat ids: rxjava-jdk6, rxjava-jdk8
-- classifiers: jdk6, jdk8
-
-The intent is to let Android users consume the new version of RxJava.
-(Not sure if JDK6 is the appropriate requirement, JDK7+ is maybe sufficient).
-
-### Future work 
-
-This section contains current design work which needs more discussion and elaboration before it is merged into this document as a stated goal for 2.x. Our goal is 
+This section contains current design work which needs more discussion and elaboration before it is merged into this document as a stated goal for 2.x.
 
 #### Custom Observable, Single, Completable, or Flowable
 
-We are investigate a base interface (similar to `Publisher`) for the `Observable`, `Single`, and `Completable` (currently referred to as `Consumable` or `ConsumableObservable`). This would empower library owners and api developers to implement their own type of `Observable`, `Single`, or `Completable` without extending the class. This would result in a change the type signatures of `subscribe` as well as any operator that operates over an `Observable`, `Single`, or `Completable` to accept a more generic type (i.e. `ConsumableObservable`). For more information see the proof of concept project [Consumable](https://github.com/stealthcode/Consumable). 
+We are investigate a base interface (similar to `Publisher`) for the `Observable`, `Single`, and `Completable` (currently referred to as `Consumable` or `ConsumableObservable`). This would empower library owners and api developers to implement their own type of `Observable`, `Single`, or `Completable` without extending the class. This would result in a change the type signatures of `subscribe` as well as any operator that operates over an `Observable`, `Single`, or `Completable` to accept a more generic type (i.e. `ConsumableObservable`). For more information see the proof of concept project [Consumable](https://github.com/stealthcode/Consumable).
 
 #### Fusion (To be confirmed)
 
