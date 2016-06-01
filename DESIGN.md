@@ -364,21 +364,21 @@ Therefore, new standard factory methods will try to address the common entry poi
 The `Flowable` will contain the following `create` methods:
 
    - `create(SyncGenerator<T, S>)`: safe, synchronous generation of signals, one-by-one
-   - `create(AsyncOnSubscribe<T, S>)`: to batch-create signals based on request patterns
-   - `create(Consumer<? super FlowEmitter<T>>)`: to relay multiple values or error from multi-valued reactive-sources (i.e., button-clicks) while also give flow control options right there (buffer, drop, error, etc.).
-   - `createSingle(Consumer<? super SingleEmitter<T>>)`: to relay a single value or error from other reactive sources (i.e., addListener callbacks)
-   - `createEmpty(Consumer<? super CompletionEmitter>)`
+   - `create(AsyncOnSubscribe<T, S>)`: batch-create signals based on request patterns
+   - `create(Consumer<? super FlowEmitter<T>>)`: relay multiple values or error from multi-valued reactive-sources (i.e., button-clicks) while also give flow control options right there (buffer, drop, error, etc.).
+   - `createSingle(Consumer<? super SingleEmitter<T>>)`: relay a single value or error from other reactive sources (i.e., addListener callbacks)
+   - `createEmpty(Consumer<? super CompletionEmitter>)`: signal a completion or error from valueless reactive sources
    
 The `Observable` will contain the following `create` methods:
 
    - `create(SyncGenerator<T, S>)`: safe, synchronous generation of signals, one-by-one
-   - `create(Consumer<? super FlowEmitter<T>>)`: to relay multiple values or error from multi-valued reactive-sources (i.e., button-clicks) while also give flow control options right there (buffer, drop, error, etc.).
-   - `createSingle(Consumer<? super SingleEmitter<T>>)`: to relay a single value or error from other reactive sources (i.e., addListener callbacks)
+   - `create(Consumer<? super FlowEmitter<T>>)`: relay multiple values or error from multi-valued reactive-sources (i.e., button-clicks) while also give flow control options right there (buffer, drop, error, etc.).
+   - `createSingle(Consumer<? super SingleEmitter<T>>)`: relay a single value or error from other reactive sources (i.e., addListener callbacks)
    - `createEmpty(Consumer<? super CompletionEmitter>)`: signal a completion or error from valueless reactive sources
 
 The `Single` will contain the following `create` method:
 
-   - `create(Consumer<? super SingleEmitter<T>>)`: to relay a single value or error from other reactive sources (i.e., addListener callbacks)
+   - `create(Consumer<? super SingleEmitter<T>>)`: relay a single value or error from other reactive sources (i.e., addListener callbacks)
    
 The `Completable` will contain the following `create` method:
 
