@@ -55,14 +55,9 @@ public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe
         
         volatile boolean done;
         
-        volatile Queue<Throwable> errors;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<CompletableMergeSubscriber, Queue> ERRORS =
-                AtomicReferenceFieldUpdater.newUpdater(CompletableMergeSubscriber.class, Queue.class, "errors");
+        final AtomicReference<Queue<Throwable>> errors;
         
-        volatile int once;
-        static final AtomicIntegerFieldUpdater<CompletableMergeSubscriber> ONCE =
-                AtomicIntegerFieldUpdater.newUpdater(CompletableMergeSubscriber.class, "once");
+        final AtomicBoolean once;
         
         final AtomicInteger wip;
         
@@ -72,6 +67,8 @@ public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe
             this.delayErrors = delayErrors;
             this.set = new CompositeSubscription();
             this.wip = new AtomicInteger(1);
+            this.once = new AtomicBoolean();
+            this.errors = new AtomicReference<Queue<Throwable>>();
             if (maxConcurrency == Integer.MAX_VALUE) {
                 request(Long.MAX_VALUE);
             } else {
@@ -80,17 +77,17 @@ public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe
         }
         
         Queue<Throwable> getOrCreateErrors() {
-            Queue<Throwable> q = errors;
+            Queue<Throwable> q = errors.get();
             
             if (q != null) {
                 return q;
             }
             
             q = new ConcurrentLinkedQueue<Throwable>();
-            if (ERRORS.compareAndSet(this, null, q)) {
+            if (errors.compareAndSet(null, q)) {
                 return q;
             }
-            return errors;
+            return errors.get();
         }
 
         @Override
@@ -167,12 +164,12 @@ public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe
 
         void terminate() {
             if (wip.decrementAndGet() == 0) {
-                Queue<Throwable> q = errors;
+                Queue<Throwable> q = errors.get();
                 if (q == null || q.isEmpty()) {
                     actual.onCompleted();
                 } else {
                     Throwable e = collectErrors(q);
-                    if (ONCE.compareAndSet(this, 0, 1)) {
+                    if (once.compareAndSet(false, true)) {
                         actual.onError(e);
                     } else {
                         RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
@@ -180,10 +177,10 @@ public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe
                 }
             } else
             if (!delayErrors) {
-                Queue<Throwable> q = errors;
+                Queue<Throwable> q = errors.get();
                 if (q != null && !q.isEmpty()) {
                     Throwable e = collectErrors(q);
-                    if (ONCE.compareAndSet(this, 0, 1)) {
+                    if (once.compareAndSet(false, true)) {
                         actual.onError(e);
                     } else {
                         RxJavaPlugins.getInstance().getErrorHandler().handleError(e);

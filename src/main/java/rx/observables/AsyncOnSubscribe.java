@@ -17,7 +17,7 @@
 package rx.observables;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.*;
 import rx.Observable;
@@ -25,8 +25,8 @@ import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.annotations.Experimental;
 import rx.functions.*;
-import rx.internal.operators.*;
-import rx.observers.*;
+import rx.internal.operators.BufferUntilSubscriber;
+import rx.observers.SerializedObserver;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.CompositeSubscription;
 
@@ -359,9 +359,7 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
 
     static final class AsyncOuterManager<S, T> implements Producer, Subscription, Observer<Observable<? extends T>> {
 
-        private volatile int isUnsubscribed;
-        @SuppressWarnings("rawtypes")
-        private static final AtomicIntegerFieldUpdater<AsyncOuterManager> IS_UNSUBSCRIBED = AtomicIntegerFieldUpdater.newUpdater(AsyncOuterManager.class, "isUnsubscribed");
+        final AtomicBoolean isUnsubscribed;
 
         private final AsyncOnSubscribe<S, T> parent;
         private final SerializedObserver<Observable<? extends T>> serializedSubscriber;
@@ -385,11 +383,12 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
             this.serializedSubscriber = new SerializedObserver<Observable<? extends T>>(this);
             this.state = initialState;
             this.merger = merger;
+            this.isUnsubscribed = new AtomicBoolean();
         }
 
         @Override
         public void unsubscribe() {
-            if (IS_UNSUBSCRIBED.compareAndSet(this, 0, 1)) {
+            if (isUnsubscribed.compareAndSet(false, true)) {
                 synchronized (this) {
                     if (emitting) {
                         requests = new ArrayList<Long>();
@@ -411,7 +410,7 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
         
         @Override
         public boolean isUnsubscribed() {
-            return isUnsubscribed != 0;
+            return isUnsubscribed.get();
         }
 
         public void nextIteration(long requestCount) {
