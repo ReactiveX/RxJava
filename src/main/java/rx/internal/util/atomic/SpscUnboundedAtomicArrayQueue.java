@@ -32,25 +32,21 @@ import rx.internal.util.unsafe.Pow2;
  */
 public final class SpscUnboundedAtomicArrayQueue<T> implements Queue<T> {
     static final int MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
-    protected volatile long producerIndex;
-    @SuppressWarnings("rawtypes")
-    static final AtomicLongFieldUpdater<SpscUnboundedAtomicArrayQueue> PRODUCER_INDEX =
-            AtomicLongFieldUpdater.newUpdater(SpscUnboundedAtomicArrayQueue.class, "producerIndex");
+    final AtomicLong producerIndex;
     protected int producerLookAheadStep;
     protected long producerLookAhead;
     protected int producerMask;
     protected AtomicReferenceArray<Object> producerBuffer;
     protected int consumerMask;
     protected AtomicReferenceArray<Object> consumerBuffer;
-    protected volatile long consumerIndex;
-    @SuppressWarnings("rawtypes")
-    static final AtomicLongFieldUpdater<SpscUnboundedAtomicArrayQueue> CONSUMER_INDEX =
-            AtomicLongFieldUpdater.newUpdater(SpscUnboundedAtomicArrayQueue.class, "consumerIndex");
+    final AtomicLong consumerIndex;
     private static final Object HAS_NEXT = new Object();
 
     public SpscUnboundedAtomicArrayQueue(final int bufferSize) {
         int p2capacity = Pow2.roundToPowerOfTwo(Math.max(8, bufferSize)); // lookahead doesn't work with capacity < 8
         int mask = p2capacity - 1;
+        this.producerIndex = new AtomicLong();
+        this.consumerIndex = new AtomicLong();
         AtomicReferenceArray<Object> buffer = new AtomicReferenceArray<Object>(p2capacity + 1);
         producerBuffer = buffer;
         producerMask = mask;
@@ -221,27 +217,27 @@ public final class SpscUnboundedAtomicArrayQueue<T> implements Queue<T> {
     }
 
     private long lvProducerIndex() {
-        return producerIndex;
+        return producerIndex.get();
     }
 
     private long lvConsumerIndex() {
-        return consumerIndex;
+        return consumerIndex.get();
     }
 
     private long lpProducerIndex() {
-        return producerIndex;
+        return producerIndex.get();
     }
 
     private long lpConsumerIndex() {
-        return consumerIndex;
+        return consumerIndex.get();
     }
 
     private void soProducerIndex(long v) {
-        PRODUCER_INDEX.lazySet(this, v);
+        producerIndex.lazySet(v);
     }
 
     private void soConsumerIndex(long v) {
-        CONSUMER_INDEX.lazySet(this, v);
+        consumerIndex.lazySet(v);
     }
 
     private static int calcWrappedOffset(long index, int mask) {

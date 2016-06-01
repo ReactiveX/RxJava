@@ -52,9 +52,7 @@ public final class CompletableOnSubscribeConcat implements CompletableOnSubscrib
         
         volatile boolean done;
 
-        volatile int once;
-        static final AtomicIntegerFieldUpdater<CompletableConcatSubscriber> ONCE =
-                AtomicIntegerFieldUpdater.newUpdater(CompletableConcatSubscriber.class, "once");
+        final AtomicBoolean once;
         
         final ConcatInnerSubscriber inner;
         
@@ -67,6 +65,7 @@ public final class CompletableOnSubscribeConcat implements CompletableOnSubscrib
             this.sr = new SerialSubscription();
             this.inner = new ConcatInnerSubscriber();
             this.wip = new AtomicInteger();
+            this.once = new AtomicBoolean();
             add(sr);
             request(prefetch);
         }
@@ -84,7 +83,7 @@ public final class CompletableOnSubscribeConcat implements CompletableOnSubscrib
         
         @Override
         public void onError(Throwable t) {
-            if (ONCE.compareAndSet(this, 0, 1)) {
+            if (once.compareAndSet(false, true)) {
                 actual.onError(t);
                 return;
             }
@@ -121,7 +120,7 @@ public final class CompletableOnSubscribeConcat implements CompletableOnSubscrib
             Completable c = queue.poll();
             if (c == null) {
                 if (d) {
-                    if (ONCE.compareAndSet(this, 0, 1)) {
+                    if (once.compareAndSet(false, true)) {
                         actual.onCompleted();
                     }
                     return;

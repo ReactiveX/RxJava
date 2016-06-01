@@ -33,21 +33,16 @@ public final class SpscExactAtomicArrayQueue<T> extends AtomicReferenceArray<T> 
     private static final long serialVersionUID = 6210984603741293445L;
     final int mask;
     final int capacitySkip;
-    volatile long producerIndex;
-    volatile long consumerIndex;
-
-    @SuppressWarnings("rawtypes")
-    static final AtomicLongFieldUpdater<SpscExactAtomicArrayQueue> PRODUCER_INDEX =
-            AtomicLongFieldUpdater.newUpdater(SpscExactAtomicArrayQueue.class, "producerIndex");
-    @SuppressWarnings("rawtypes")
-    static final AtomicLongFieldUpdater<SpscExactAtomicArrayQueue> CONSUMER_INDEX =
-            AtomicLongFieldUpdater.newUpdater(SpscExactAtomicArrayQueue.class, "consumerIndex");
+    final AtomicLong producerIndex;
+    final AtomicLong consumerIndex;
     
     public SpscExactAtomicArrayQueue(int capacity) {
         super(Pow2.roundToPowerOfTwo(capacity));
         int len = length();
         this.mask = len - 1;
-        this.capacitySkip = len - capacity; 
+        this.capacitySkip = len - capacity;
+        this.producerIndex = new AtomicLong();
+        this.consumerIndex = new AtomicLong();
     }
     
     
@@ -57,7 +52,7 @@ public final class SpscExactAtomicArrayQueue<T> extends AtomicReferenceArray<T> 
             throw new NullPointerException();
         }
         
-        long pi = producerIndex;
+        long pi = producerIndex.get();
         int m = mask;
         
         int fullCheck = (int)(pi + capacitySkip) & m;
@@ -65,25 +60,25 @@ public final class SpscExactAtomicArrayQueue<T> extends AtomicReferenceArray<T> 
             return false;
         }
         int offset = (int)pi & m;
-        PRODUCER_INDEX.lazySet(this, pi + 1);
+        producerIndex.lazySet(pi + 1);
         lazySet(offset, value);
         return true;
     }
     @Override
     public T poll() {
-        long ci = consumerIndex;
+        long ci = consumerIndex.get();
         int offset = (int)ci & mask;
         T value = get(offset);
         if (value == null) {
             return null;
         }
-        CONSUMER_INDEX.lazySet(this, ci + 1);
+        consumerIndex.lazySet(ci + 1);
         lazySet(offset, null);
         return value;
     }
     @Override
     public T peek() {
-        return get((int)consumerIndex & mask);
+        return get((int)consumerIndex.get() & mask);
     }
     @Override
     public void clear() {
@@ -96,10 +91,10 @@ public final class SpscExactAtomicArrayQueue<T> extends AtomicReferenceArray<T> 
     
     @Override
     public int size() {
-        long ci = consumerIndex;
+        long ci = consumerIndex.get();
         for (;;) {
-            long pi = producerIndex;
-            long ci2 = consumerIndex;
+            long pi = producerIndex.get();
+            long ci2 = consumerIndex.get();
             if (ci == ci2) {
                 return (int)(pi - ci2);
             }

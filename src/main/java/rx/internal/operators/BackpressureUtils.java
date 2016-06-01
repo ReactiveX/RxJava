@@ -45,7 +45,9 @@ public final class BackpressureUtils {
      * @param n
      *            the number of requests to add to the requested count
      * @return requested value just prior to successful addition
+     * @deprecated Android has issues with reflection-based atomics
      */
+    @Deprecated
     public static <T> long getAndAddRequest(AtomicLongFieldUpdater<T> requested, T object, long n) {
         // add n to field but check for overflow
         while (true) {

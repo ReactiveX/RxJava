@@ -106,28 +106,16 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         
         final ProducerArbiter s;
         
-        volatile int cancelled;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<GroupBySubscriber> CANCELLED =
-                AtomicIntegerFieldUpdater.newUpdater(GroupBySubscriber.class, "cancelled");
+        final AtomicBoolean cancelled;
 
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<GroupBySubscriber> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(GroupBySubscriber.class, "requested");
-        
-        volatile int groupCount;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<GroupBySubscriber> GROUP_COUNT =
-                AtomicIntegerFieldUpdater.newUpdater(GroupBySubscriber.class, "groupCount");
+        final AtomicLong requested;
+
+        final AtomicInteger groupCount;
         
         Throwable error;
         volatile boolean done;
 
-        volatile int wip;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<GroupBySubscriber> WIP =
-                AtomicIntegerFieldUpdater.newUpdater(GroupBySubscriber.class, "wip");
+        final AtomicInteger wip;
         
         public GroupBySubscriber(Subscriber<? super GroupedObservable<K, V>> actual, Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
             this.actual = actual;
@@ -137,10 +125,13 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             this.delayError = delayError;
             this.groups = new ConcurrentHashMap<Object, GroupedUnicast<K, V>>();
             this.queue = new ConcurrentLinkedQueue<GroupedObservable<K, V>>();
-            GROUP_COUNT.lazySet(this, 1);
             this.s = new ProducerArbiter();
             this.s.request(bufferSize);
             this.producer = new GroupByProducer(this);
+            this.cancelled = new AtomicBoolean();
+            this.requested = new AtomicLong();
+            this.groupCount = new AtomicInteger(1);
+            this.wip = new AtomicInteger();
         }
         
         @Override
@@ -172,11 +163,11 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             if (group == null) {
                 // if the main has been cancelled, stop creating groups
                 // and skip this value
-                if (cancelled == 0) {
+                if (!cancelled.get()) {
                     group = GroupedUnicast.createWith(key, bufferSize, this, delayError);
                     groups.put(mapKey, group);
                     
-                    GROUP_COUNT.getAndIncrement(this);
+                    groupCount.getAndIncrement();
                     
                     notNew = false;
                     q.offer(group);
@@ -210,7 +201,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             }
             error = t;
             done = true;
-            GROUP_COUNT.decrementAndGet(this);
+            groupCount.decrementAndGet();
             drain();
         }
         
@@ -226,7 +217,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             groups.clear();
 
             done = true;
-            GROUP_COUNT.decrementAndGet(this);
+            groupCount.decrementAndGet();
             drain();
         }
 
@@ -235,15 +226,15 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                 throw new IllegalArgumentException("n >= 0 required but it was " + n);
             }
             
-            BackpressureUtils.getAndAddRequest(REQUESTED, this, n);
+            BackpressureUtils.getAndAddRequest(requested, n);
             drain();
         }
         
         public void cancel() {
             // cancelling the main source means we don't want any more groups
             // but running groups still require new values
-            if (CANCELLED.compareAndSet(this, 0, 1)) {
-                if (GROUP_COUNT.decrementAndGet(this) == 0) {
+            if (cancelled.compareAndSet(false, true)) {
+                if (groupCount.decrementAndGet() == 0) {
                     unsubscribe();
                 }
             }
@@ -252,14 +243,14 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         public void cancel(K key) {
             Object mapKey = key != null ? key : NULL_KEY;
             if (groups.remove(mapKey) != null) {
-                if (GROUP_COUNT.decrementAndGet(this) == 0) {
+                if (groupCount.decrementAndGet() == 0) {
                     unsubscribe();
                 }
             }
         }
         
         void drain() {
-            if (WIP.getAndIncrement(this) != 0) {
+            if (wip.getAndIncrement() != 0) {
                 return;
             }
             
@@ -274,7 +265,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                     return;
                 }
                 
-                long r = requested;
+                long r = requested.get();
                 boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0L;
                 
@@ -301,12 +292,12 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                 
                 if (e != 0L) {
                     if (!unbounded) {
-                        REQUESTED.addAndGet(this, e);
+                        requested.addAndGet(e);
                     }
                     s.request(-e);
                 }
                 
-                missed = WIP.addAndGet(this, -missed);
+                missed = wip.addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
@@ -378,28 +369,16 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         final GroupBySubscriber<?, K, T> parent;
         final boolean delayError;
         
-        volatile long requested;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<State> REQUESTED =
-                AtomicLongFieldUpdater.newUpdater(State.class, "requested");
+        final AtomicLong requested;
         
         volatile boolean done;
         Throwable error;
         
-        volatile int cancelled;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<State> CANCELLED =
-                AtomicIntegerFieldUpdater.newUpdater(State.class, "cancelled");
-        
-        volatile Subscriber<? super T> actual;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<State, Subscriber> ACTUAL =
-                AtomicReferenceFieldUpdater.newUpdater(State.class, Subscriber.class, "actual");
+        final AtomicBoolean cancelled;
 
-        volatile int once;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<State> ONCE =
-                AtomicIntegerFieldUpdater.newUpdater(State.class, "once");
+        final AtomicReference<Subscriber<? super T>> actual;
+
+        final AtomicBoolean once;
 
         
         public State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) {
@@ -407,6 +386,10 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             this.parent = parent;
             this.key = key;
             this.delayError = delayError;
+            this.cancelled = new AtomicBoolean();
+            this.actual = new AtomicReference<Subscriber<? super T>>();
+            this.once = new AtomicBoolean();
+            this.requested = new AtomicLong();
         }
         
         @Override
@@ -415,19 +398,19 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                 throw new IllegalArgumentException("n >= required but it was " + n);
             }
             if (n != 0L) {
-                BackpressureUtils.getAndAddRequest(REQUESTED, this, n);
+                BackpressureUtils.getAndAddRequest(requested, n);
                 drain();
             }
         }
         
         @Override
         public boolean isUnsubscribed() {
-            return cancelled != 0;
+            return cancelled.get();
         }
         
         @Override
         public void unsubscribe() {
-            if (CANCELLED.compareAndSet(this, 0, 1)) {
+            if (cancelled.compareAndSet(false, true)) {
                 if (getAndIncrement() == 0) {
                     parent.cancel(key);
                 }
@@ -436,10 +419,10 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         
         @Override
         public void call(Subscriber<? super T> s) {
-            if (ONCE.compareAndSet(this, 0, 1)) {
+            if (once.compareAndSet(false, true)) {
                 s.add(this);
                 s.setProducer(this);
-                ACTUAL.lazySet(this, s);
+                actual.lazySet(s);
                 drain();
             } else {
                 s.onError(new IllegalStateException("Only one Subscriber allowed!"));
@@ -475,7 +458,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             
             final Queue<Object> q = queue;
             final boolean delayError = this.delayError;
-            Subscriber<? super T> a = actual;
+            Subscriber<? super T> a = actual.get();
             NotificationLite<T> nl = NotificationLite.instance();
             for (;;) {
                 if (a != null) {
@@ -483,7 +466,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                         return;
                     }
                     
-                    long r = requested;
+                    long r = requested.get();
                     boolean unbounded = r == Long.MAX_VALUE;
                     long e = 0;
                     
@@ -508,7 +491,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                     
                     if (e != 0L) {
                         if (!unbounded) {
-                            REQUESTED.addAndGet(this, e);
+                            requested.addAndGet(e);
                         }
                         parent.s.request(-e);
                     }
@@ -519,13 +502,13 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                     break;
                 }
                 if (a == null) {
-                    a = actual;
+                    a = actual.get();
                 }
             }
         }
         
         boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a, boolean delayError) {
-            if (cancelled != 0) {
+            if (cancelled.get()) {
                 queue.clear();
                 parent.cancel(key);
                 return true;
