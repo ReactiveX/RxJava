@@ -28,6 +28,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import rx.exceptions.CompositeException.CompositeExceptionCausalChain;
+
 public class CompositeExceptionTest {
 
     private final Throwable ex1 = new Throwable("Ex1");
@@ -238,5 +240,40 @@ public class CompositeExceptionTest {
     public void messageVarargs() {
         CompositeException compositeException = new CompositeException(ex1, ex2, ex3);
         assertEquals("3 exceptions occurred. ", compositeException.getMessage());
+    }
+
+    @Test
+    public void complexCauses() {
+        Throwable e1 = new Throwable("1");
+        Throwable e2 = new Throwable("2");
+        e1.initCause(e2);
+
+        Throwable e3 = new Throwable("3");
+        Throwable e4 = new Throwable("4");
+        e3.initCause(e4);
+
+        Throwable e5 = new Throwable("5");
+        Throwable e6 = new Throwable("6");
+        e5.initCause(e6);
+
+        CompositeException compositeException = new CompositeException(e1, e3, e5);
+        assert(compositeException.getCause() instanceof CompositeExceptionCausalChain);
+
+        List<Throwable> causeChain = new ArrayList<Throwable>();
+        Throwable cause = compositeException.getCause().getCause();
+        while (cause != null) {
+            causeChain.add(cause);
+            cause = cause.getCause();
+        }
+        // The original relations
+        //
+        // e1 -> e2
+        // e3 -> e4
+        // e5 -> e6
+        //
+        // will be set to
+        //
+        // e1 -> e2 -> e3 -> e4 -> e5 -> e6
+        assertEquals(Arrays.asList(e1, e2, e3, e4, e5, e6), causeChain);
     }
 }

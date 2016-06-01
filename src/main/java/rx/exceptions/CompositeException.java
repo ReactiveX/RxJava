@@ -147,13 +147,12 @@ public final class CompositeException extends RuntimeException {
                 // we now have 'e' as the last in the chain
                 try {
                     chain.initCause(e);
-                    chain = chain.getCause();
                 } catch (Throwable t) {
                     // ignore
                     // the javadocs say that some Throwables (depending on how they're made) will never
                     // let me call initCause without blowing up even if it returns null
-                    chain = e;
                 }
+                chain = getRootCause(chain);
             }
             cause = _cause;
         }
@@ -280,16 +279,38 @@ public final class CompositeException extends RuntimeException {
     private List<Throwable> getListOfCauses(Throwable ex) {
         List<Throwable> list = new ArrayList<Throwable>();
         Throwable root = ex.getCause();
-        if (root == null) {
+        if (root == null || root == ex) {
             return list;
         } else {
             while(true) {
                 list.add(root);
-                if (root.getCause() == null) {
+                Throwable cause = root.getCause();
+                if (cause == null || cause == root) {
                     return list;
                 } else {
                     root = root.getCause();
                 }
+            }
+        }
+    }
+
+    /**
+     * Returns the root cause of {@code e}. If {@code e.getCause()} returns {@null} or {@code e}, just return {@code e} itself.
+     *
+     * @param e the {@link Throwable} {@code e}.
+     * @return The root cause of {@code e}. If {@code e.getCause()} returns {@null} or {@code e}, just return {@code e} itself.
+     */
+    private Throwable getRootCause(Throwable e) {
+        Throwable root = e.getCause();
+        if (root == null || root == e) {
+            return e;
+        } else {
+            while(true) {
+                Throwable cause = root.getCause();
+                if (cause == null || cause == root) {
+                    return root;
+                }
+                root = root.getCause();
             }
         }
     }
