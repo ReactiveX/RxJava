@@ -51,7 +51,7 @@ public final class CompletableOnSubscribeMergeDelayErrorArray implements Complet
                 continue;
             }
             
-            c.subscribe(new CompletableSubscriber() {
+            c.unsafeSubscribe(new CompletableSubscriber() {
                 @Override
                 public void onSubscribe(Subscription d) {
                     set.add(d);

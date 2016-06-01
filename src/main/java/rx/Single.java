@@ -2024,7 +2024,7 @@ public class Single<T> {
                 serial.add(main);
                 child.add(serial);
 
-                other.subscribe(so);
+                other.unsafeSubscribe(so);
 
                 return main;
             }

@@ -52,6 +52,7 @@ public class RxJavaPlugins {
     private final AtomicReference<RxJavaErrorHandler> errorHandler = new AtomicReference<RxJavaErrorHandler>();
     private final AtomicReference<RxJavaObservableExecutionHook> observableExecutionHook = new AtomicReference<RxJavaObservableExecutionHook>();
     private final AtomicReference<RxJavaSingleExecutionHook> singleExecutionHook = new AtomicReference<RxJavaSingleExecutionHook>();
+    private final AtomicReference<RxJavaCompletableExecutionHook> completableExecutionHook = new AtomicReference<RxJavaCompletableExecutionHook>();
     private final AtomicReference<RxJavaSchedulersHook> schedulersHook = new AtomicReference<RxJavaSchedulersHook>();
 
     /**
@@ -207,6 +208,52 @@ public class RxJavaPlugins {
      */
     public void registerSingleExecutionHook(RxJavaSingleExecutionHook impl) {
         if (!singleExecutionHook.compareAndSet(null, impl)) {
+            throw new IllegalStateException("Another strategy was already registered: " + singleExecutionHook.get());
+        }
+    }
+
+    /**
+     * Retrieves the instance of {@link RxJavaCompletableExecutionHook} to use based on order of precedence as
+     * defined in {@link RxJavaPlugins} class header.
+     * <p>
+     * Override the default by calling {@link #registerCompletableExecutionHook(RxJavaCompletableExecutionHook)}
+     * or by setting the property {@code rxjava.plugin.RxJavaCompletableExecutionHook.implementation} with the
+     * full classname to load.
+     *
+     * @return {@link RxJavaCompletableExecutionHook} implementation to use
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public RxJavaCompletableExecutionHook getCompletableExecutionHook() {
+        if (completableExecutionHook.get() == null) {
+            // check for an implementation from System.getProperty first
+            Object impl = getPluginImplementationViaProperty(RxJavaCompletableExecutionHook.class, System.getProperties());
+            if (impl == null) {
+                // nothing set via properties so initialize with default
+                completableExecutionHook.compareAndSet(null, new RxJavaCompletableExecutionHook() { });
+                // we don't return from here but call get() again in case of thread-race so the winner will always get returned
+            } else {
+                // we received an implementation from the system property so use it
+                completableExecutionHook.compareAndSet(null, (RxJavaCompletableExecutionHook) impl);
+            }
+        }
+        return completableExecutionHook.get();
+    }
+
+    /**
+     * Register an {@link RxJavaCompletableExecutionHook} implementation as a global override of any injected or
+     * default implementations.
+     *
+     * @param impl
+     *            {@link RxJavaCompletableExecutionHook} implementation
+     * @throws IllegalStateException
+     *             if called more than once or after the default was initialized (if usage occurs before trying
+     *             to register)
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public void registerCompletableExecutionHook(RxJavaCompletableExecutionHook impl) {
+        if (!completableExecutionHook.compareAndSet(null, impl)) {
             throw new IllegalStateException("Another strategy was already registered: " + singleExecutionHook.get());
         }
     }

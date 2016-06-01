@@ -130,7 +130,7 @@ public final class CompletableOnSubscribeConcat implements CompletableOnSubscrib
                 return;
             }
             
-            c.subscribe(inner);
+            c.unsafeSubscribe(inner);
         }
         
         final class ConcatInnerSubscriber implements CompletableSubscriber {

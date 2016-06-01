@@ -101,7 +101,7 @@ public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe
 
             wip.getAndIncrement();
             
-            t.subscribe(new CompletableSubscriber() {
+            t.unsafeSubscribe(new CompletableSubscriber() {
                 Subscription d;
                 boolean innerDone;
                 @Override

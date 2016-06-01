@@ -26,6 +26,7 @@ import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.util.*;
+import rx.observers.*;
 import rx.plugins.*;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.*;
@@ -37,6 +38,12 @@ import rx.subscriptions.*;
  */
 @Experimental
 public class Completable {
+    /** The error handler instance. */
+    static final RxJavaErrorHandler ERROR_HANDLER = RxJavaPlugins.getInstance().getErrorHandler();
+    
+    /** The completable hook. */
+    static RxJavaCompletableExecutionHook HOOK = RxJavaPlugins.getInstance().getCompletableExecutionHook();
+
     /**
      * Callback used for building deferred computations that takes a CompletableSubscriber.
      */
@@ -99,9 +106,6 @@ public class Completable {
             s.onSubscribe(Subscriptions.unsubscribed());
         }
     });
-    
-    /** The error handler instance. */
-    static final RxJavaErrorHandler ERROR_HANDLER = RxJavaPlugins.getInstance().getErrorHandler();
     
     /**
      * Returns a Completable which terminates as soon as one of the source Completables
@@ -172,7 +176,7 @@ public class Completable {
                     }
                     
                     // no need to have separate subscribers because inner is stateless
-                    c.subscribe(inner);
+                    c.unsafeSubscribe(inner);
                 }
             }
         });
@@ -300,7 +304,7 @@ public class Completable {
                     }
                     
                     // no need to have separate subscribers because inner is stateless
-                    c.subscribe(inner);
+                    c.unsafeSubscribe(inner);
                 }
             }
         });
@@ -378,8 +382,6 @@ public class Completable {
     public static Completable create(CompletableOnSubscribe onSubscribe) {
         requireNonNull(onSubscribe);
         try {
-            // TODO plugin wrapping onSubscribe
-            
             return new Completable(onSubscribe);
         } catch (NullPointerException ex) {
             throw ex;
@@ -415,7 +417,7 @@ public class Completable {
                     return;
                 }
                 
-                c.subscribe(s);
+                c.unsafeSubscribe(s);
             }
         });
     }
@@ -898,7 +900,7 @@ public class Completable {
                 
                 final AtomicBoolean once = new AtomicBoolean();
                 
-                cs.subscribe(new CompletableSubscriber() {
+                cs.unsafeSubscribe(new CompletableSubscriber() {
                     Subscription d;
                     void dispose() {
                         d.unsubscribe();
@@ -974,7 +976,7 @@ public class Completable {
      * not null (not verified)
      */
     protected Completable(CompletableOnSubscribe onSubscribe) {
-        this.onSubscribe = onSubscribe;
+        this.onSubscribe = HOOK.onCreate(onSubscribe);
     }
     
     /**
@@ -998,7 +1000,7 @@ public class Completable {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
         
-        subscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new CompletableSubscriber() {
 
             @Override
             public void onCompleted() {
@@ -1049,7 +1051,7 @@ public class Completable {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
         
-        subscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new CompletableSubscriber() {
 
             @Override
             public void onCompleted() {
@@ -1202,7 +1204,7 @@ public class Completable {
                 final Scheduler.Worker w = scheduler.createWorker();
                 set.add(w);
                 
-                subscribe(new CompletableSubscriber() {
+                unsafeSubscribe(new CompletableSubscriber() {
 
                     
                     @Override
@@ -1314,7 +1316,7 @@ public class Completable {
         return create(new CompletableOnSubscribe() {
             @Override
             public void call(final CompletableSubscriber s) {
-                subscribe(new CompletableSubscriber() {
+                unsafeSubscribe(new CompletableSubscriber() {
 
                     @Override
                     public void onCompleted() {
@@ -1449,7 +1451,7 @@ public class Completable {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
         
-        subscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new CompletableSubscriber() {
 
             @Override
             public void onCompleted() {
@@ -1493,7 +1495,7 @@ public class Completable {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
         
-        subscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new CompletableSubscriber() {
 
             @Override
             public void onCompleted() {
@@ -1541,11 +1543,10 @@ public class Completable {
             @Override
             public void call(CompletableSubscriber s) {
                 try {
-                    // TODO plugin wrapping
-
-                    CompletableSubscriber sw = onLift.call(s);
+                    CompletableOperator onLiftDecorated = HOOK.onLift(onLift);
+                    CompletableSubscriber sw = onLiftDecorated.call(s);
                     
-                    subscribe(sw);
+                    unsafeSubscribe(sw);
                 } catch (NullPointerException ex) {
                     throw ex;
                 } catch (Throwable ex) {
@@ -1586,7 +1587,7 @@ public class Completable {
                 
                 s.onSubscribe(ad);
                 
-                subscribe(new CompletableSubscriber() {
+                unsafeSubscribe(new CompletableSubscriber() {
 
                     @Override
                     public void onCompleted() {
@@ -1648,7 +1649,7 @@ public class Completable {
         return create(new CompletableOnSubscribe() {
             @Override
             public void call(final CompletableSubscriber s) {
-                subscribe(new CompletableSubscriber() {
+                unsafeSubscribe(new CompletableSubscriber() {
 
                     @Override
                     public void onCompleted() {
@@ -1697,7 +1698,7 @@ public class Completable {
             @Override
             public void call(final CompletableSubscriber s) {
                 final SerialSubscription sd = new SerialSubscription();
-                subscribe(new CompletableSubscriber() {
+                unsafeSubscribe(new CompletableSubscriber() {
 
                     @Override
                     public void onCompleted() {
@@ -1723,7 +1724,7 @@ public class Completable {
                             return;
                         }
                         
-                        c.subscribe(new CompletableSubscriber() {
+                        c.unsafeSubscribe(new CompletableSubscriber() {
 
                             @Override
                             public void onCompleted() {
@@ -1859,7 +1860,7 @@ public class Completable {
      */
     public final Subscription subscribe() {
         final MultipleAssignmentSubscription mad = new MultipleAssignmentSubscription();
-        subscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onCompleted() {
                 mad.unsubscribe();
@@ -1892,16 +1893,20 @@ public class Completable {
         requireNonNull(onComplete);
         
         final MultipleAssignmentSubscription mad = new MultipleAssignmentSubscription();
-        subscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new CompletableSubscriber() {
+            boolean done;
             @Override
             public void onCompleted() {
-                try {
-                    onComplete.call();
-                } catch (Throwable e) {
-                    ERROR_HANDLER.handleError(e);
-                    deliverUncaughtException(e);
-                } finally {
-                    mad.unsubscribe();
+                if (!done) {
+                    done = true;
+                    try {
+                        onComplete.call();
+                    } catch (Throwable e) {
+                        ERROR_HANDLER.handleError(e);
+                        deliverUncaughtException(e);
+                    } finally {
+                        mad.unsubscribe();
+                    }
                 }
             }
             
@@ -1934,20 +1939,34 @@ public class Completable {
         requireNonNull(onComplete);
         
         final MultipleAssignmentSubscription mad = new MultipleAssignmentSubscription();
-        subscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new CompletableSubscriber() {
+            boolean done;
             @Override
             public void onCompleted() {
-                try {
-                    onComplete.call();
-                } catch (Throwable e) {
-                    onError(e);
-                    return;
+                if (!done) {
+                    done = true;
+                    try {
+                        onComplete.call();
+                    } catch (Throwable e) {
+                        callOnError(e);
+                        return;
+                    }
+                    mad.unsubscribe();
                 }
-                mad.unsubscribe();
             }
             
             @Override
             public void onError(Throwable e) {
+                if (!done) {
+                    done = true;
+                    callOnError(e);
+                } else {
+                    ERROR_HANDLER.handleError(e);
+                    deliverUncaughtException(e);
+                }
+            }
+            
+            void callOnError(Throwable e) {
                 try {
                     onError.call(e);
                 } catch (Throwable ex) {
@@ -1978,59 +1997,100 @@ public class Completable {
      * @param s the CompletableSubscriber, not null
      * @throws NullPointerException if s is null
      */
-    public final void subscribe(CompletableSubscriber s) {
+    public final void unsafeSubscribe(CompletableSubscriber s) {
         requireNonNull(s);
         try {
-            // TODO plugin wrapping the subscriber
+            CompletableOnSubscribe onSubscribeDecorated = HOOK.onSubscribeStart(this, this.onSubscribe);
             
-            onSubscribe.call(s);
+            onSubscribeDecorated.call(s);
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
-            ERROR_HANDLER.handleError(ex);
             Exceptions.throwIfFatal(ex);
+            ex = HOOK.onSubscribeError(ex);
+            ERROR_HANDLER.handleError(ex);
             throw toNpe(ex);
         }
     }
 
     /**
-     * Subscribes a reactive-streams Subscriber to this Completable instance which
+     * Subscribes the given CompletableSubscriber to this Completable instance
+     * and handles exceptions thrown by its onXXX methods.
+     * @param s the CompletableSubscriber, not null
+     * @throws NullPointerException if s is null
+     */
+    public final void subscribe(CompletableSubscriber s) {
+        if (!(s instanceof SafeCompletableSubscriber)) {
+            s = new SafeCompletableSubscriber(s);
+        }
+        unsafeSubscribe(s);
+    }
+
+    /**
+     * Subscribes a regular Subscriber to this Completable instance which
      * will receive only an onError or onComplete event.
+     * @param <T> the value type of the subscriber
      * @param s the reactive-streams Subscriber, not null
      * @throws NullPointerException if s is null
      */
-    public final <T> void subscribe(Subscriber<T> s) {
+    public final <T> void unsafeSubscribe(final Subscriber<T> s) {
+        unsafeSubscribe(s, true);
+    }
+
+    /**
+     * Performs the actual unsafe subscription and calls the onStart if required.
+     * @param <T> the value type of the subscriber
+     * @param s the subscriber instance, not null
+     * @param callOnStart if true, the Subscriber.onStart will be called
+     * @throws NullPointerException if s is null
+     */
+    private final <T> void unsafeSubscribe(final Subscriber<T> s, boolean callOnStart) {
         requireNonNull(s);
         try {
-            final Subscriber<?> sw = s; // FIXME hooking in 1.x is kind of strange to me
-            
-            if (sw == null) {
-                throw new NullPointerException("The RxJavaPlugins.onSubscribe returned a null Subscriber");
+            if (callOnStart) {
+                s.onStart();
             }
-            
-            subscribe(new CompletableSubscriber() {
+            unsafeSubscribe(new CompletableSubscriber() {
                 @Override
                 public void onCompleted() {
-                    sw.onCompleted();
+                    s.onCompleted();
                 }
                 
                 @Override
                 public void onError(Throwable e) {
-                    sw.onError(e);
+                    s.onError(e);
                 }
                 
                 @Override
                 public void onSubscribe(Subscription d) {
-                    sw.add(d);
+                    s.add(d);
                 }
             });
-            
+            RxJavaPlugins.getInstance().getObservableExecutionHook().onSubscribeReturn(s);
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            ex = HOOK.onSubscribeError(ex);
             ERROR_HANDLER.handleError(ex);
             throw toNpe(ex);
         }
+    }
+
+    /**
+     * Subscribes a regular Subscriber to this Completable instance which
+     * will receive only an onError or onComplete event
+     * and handles exceptions thrown by its onXXX methods.
+     * @param <T> the value type of the subscriber
+     * @param s the reactive-streams Subscriber, not null
+     * @throws NullPointerException if s is null
+     */
+    public final <T> void subscribe(Subscriber<T> s) {
+        s.onStart();
+        if (!(s instanceof SafeSubscriber)) {
+            s = new SafeSubscriber<T>(s);
+        }
+        unsafeSubscribe(s, false);
     }
 
     /**
@@ -2054,7 +2114,7 @@ public class Completable {
                     @Override
                     public void call() {
                         try {
-                            subscribe(s);
+                            unsafeSubscribe(s);
                         } finally {
                             w.unsubscribe();
                         }
@@ -2157,7 +2217,7 @@ public class Completable {
         return Observable.create(new OnSubscribe<T>() {
             @Override
             public void call(Subscriber<? super T> s) {
-                subscribe(s);
+                unsafeSubscribe(s);
             }
         });
     }
@@ -2174,7 +2234,7 @@ public class Completable {
         return Single.create(new rx.Single.OnSubscribe<T>() {
             @Override
             public void call(final SingleSubscriber<? super T> s) {
-                subscribe(new CompletableSubscriber() {
+                unsafeSubscribe(new CompletableSubscriber() {
 
                     @Override
                     public void onCompleted() {
@@ -2238,7 +2298,7 @@ public class Completable {
         return create(new CompletableOnSubscribe() {
             @Override
             public void call(final CompletableSubscriber s) {
-                subscribe(new CompletableSubscriber() {
+                unsafeSubscribe(new CompletableSubscriber() {
 
                     @Override
                     public void onCompleted() {

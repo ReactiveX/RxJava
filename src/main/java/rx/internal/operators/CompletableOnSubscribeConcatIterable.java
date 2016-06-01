@@ -128,7 +128,7 @@ public final class CompletableOnSubscribeConcatIterable implements CompletableOn
                     return;
                 }
                 
-                c.subscribe(this);
+                c.unsafeSubscribe(this);
             } while (decrementAndGet() != 0);
         }
     }

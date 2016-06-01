@@ -16,6 +16,10 @@
 
 package rx;
 
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -27,13 +31,10 @@ import rx.Observable.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.*;
 import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.*;
-
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 /**
  * Test Completable methods and operators.
@@ -1159,7 +1160,7 @@ public class CompletableTest {
     public void never() {
         final AtomicBoolean onSubscribeCalled = new AtomicBoolean();
         final AtomicInteger calls = new AtomicInteger();
-        Completable.never().subscribe(new CompletableSubscriber() {
+        Completable.never().unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 onSubscribeCalled.set(true);
@@ -1202,7 +1203,7 @@ public class CompletableTest {
         
         final AtomicInteger calls = new AtomicInteger();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1235,7 +1236,7 @@ public class CompletableTest {
         final MultipleAssignmentSubscription mad = new MultipleAssignmentSubscription();
         final AtomicInteger calls = new AtomicInteger();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 mad.set(d);
@@ -1295,7 +1296,7 @@ public class CompletableTest {
         final AtomicBoolean unsubscribedFirst = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1341,7 +1342,7 @@ public class CompletableTest {
         final AtomicBoolean unsubscribedFirst = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1387,7 +1388,7 @@ public class CompletableTest {
         final AtomicBoolean unsubscribedFirst = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1433,7 +1434,7 @@ public class CompletableTest {
         final AtomicBoolean unsubscribedFirst = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1630,7 +1631,7 @@ public class CompletableTest {
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1665,7 +1666,7 @@ public class CompletableTest {
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1699,7 +1700,7 @@ public class CompletableTest {
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -1826,7 +1827,7 @@ public class CompletableTest {
             }
         });
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 d.unsubscribe();
@@ -1858,7 +1859,7 @@ public class CompletableTest {
             public void call() { throw new TestException(); }
         });
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 d.unsubscribe();
@@ -2017,7 +2018,7 @@ public class CompletableTest {
             }
         });
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -2173,7 +2174,7 @@ public class CompletableTest {
         
         Completable c = normal.completable.observeOn(Schedulers.computation());
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -2206,7 +2207,7 @@ public class CompletableTest {
         
         Completable c = error.completable.observeOn(Schedulers.computation());
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Subscription d) {
                 
@@ -2337,7 +2338,7 @@ public class CompletableTest {
             }
         }).repeat();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(final Subscription d) {
                 final Scheduler.Worker w = Schedulers.io().createWorker();
@@ -2680,19 +2681,19 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void subscribeSubscriberNull() {
-        normal.completable.subscribe((Subscriber<Object>)null);
+        normal.completable.unsafeSubscribe((Subscriber<Object>)null);
     }
     
     @Test(expected = NullPointerException.class)
     public void subscribeCompletableSubscriberNull() {
-        normal.completable.subscribe((CompletableSubscriber)null);
+        normal.completable.unsafeSubscribe((CompletableSubscriber)null);
     }
 
     @Test(timeout = 1000)
     public void subscribeSubscriberNormal() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         
-        normal.completable.subscribe(ts);
+        normal.completable.unsafeSubscribe(ts);
         
         ts.assertCompleted();
         ts.assertNoValues();
@@ -2703,7 +2704,7 @@ public class CompletableTest {
     public void subscribeSubscriberError() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         
-        error.completable.subscribe(ts);
+        error.completable.unsafeSubscribe(ts);
         
         ts.assertNotCompleted();
         ts.assertNoValues();
@@ -3028,7 +3029,7 @@ public class CompletableTest {
             }
         })
         .unsubscribeOn(Schedulers.computation())
-        .subscribe(new CompletableSubscriber() {
+        .unsafeSubscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(final Subscription d) {
                 final Scheduler.Worker w = Schedulers.io().createWorker();
@@ -3628,7 +3629,7 @@ public class CompletableTest {
             public Completable call(Integer t) {
                 throw new TestException();
             }
-        }, onDispose).subscribe(ts);
+        }, onDispose).unsafeSubscribe(ts);
         
         verify(onDispose).call(1);
         
@@ -3659,7 +3660,7 @@ public class CompletableTest {
             public Completable call(Integer t) {
                 throw new TestException();
             }
-        }, onDispose).subscribe(ts);
+        }, onDispose).unsafeSubscribe(ts);
         
         ts.assertNoValues();
         ts.assertNotCompleted();
@@ -3693,7 +3694,7 @@ public class CompletableTest {
             public Completable call(Integer t) {
                 return null;
             }
-        }, onDispose).subscribe(ts);
+        }, onDispose).unsafeSubscribe(ts);
         
         verify(onDispose).call(1);
         
@@ -3724,7 +3725,7 @@ public class CompletableTest {
             public Completable call(Integer t) {
                 return null;
             }
-        }, onDispose).subscribe(ts);
+        }, onDispose).unsafeSubscribe(ts);
         
         ts.assertNoValues();
         ts.assertNotCompleted();
@@ -3896,6 +3897,219 @@ public class CompletableTest {
         } finally {
             Thread.setDefaultUncaughtExceptionHandler(originalHandler);
         }
+    }
+
+    @Test
+    public void safeOnCompleteThrows() {
+        try {
+            normal.completable.subscribe(new CompletableSubscriber() {
+    
+                @Override
+                public void onCompleted() {
+                    throw new TestException("Forced failure");
+                }
+    
+                @Override
+                public void onError(Throwable e) {
+                    
+                }
+    
+                @Override
+                public void onSubscribe(Subscription d) {
+                    
+                }
+                
+            });
+            Assert.fail("Did not propagate exception!");
+        } catch (OnCompletedFailedException ex) {
+            Throwable c = ex.getCause();
+            Assert.assertNotNull(c);
+            
+            Assert.assertEquals("Forced failure", c.getMessage());
+        }
+    }
+
+    @Test
+    public void safeOnCompleteThrowsRegularSubscriber() {
+        try {
+            normal.completable.subscribe(new Subscriber<Object>() {
+    
+                @Override
+                public void onCompleted() {
+                    throw new TestException("Forced failure");
+                }
+    
+                @Override
+                public void onError(Throwable e) {
+                    
+                }
+    
+                @Override
+                public void onNext(Object t) {
+                    
+                }
+            });
+            Assert.fail("Did not propagate exception!");
+        } catch (OnCompletedFailedException ex) {
+            Throwable c = ex.getCause();
+            Assert.assertNotNull(c);
+            
+            Assert.assertEquals("Forced failure", c.getMessage());
+        }
+    }
+
+    @Test
+    public void safeOnErrorThrows() {
+        try {
+            error.completable.subscribe(new CompletableSubscriber() {
+    
+                @Override
+                public void onCompleted() {
+                }
+    
+                @Override
+                public void onError(Throwable e) {
+                    throw new TestException("Forced failure");
+                }
+    
+                @Override
+                public void onSubscribe(Subscription d) {
+                    
+                }
+                
+            });
+            Assert.fail("Did not propagate exception!");
+        } catch (OnErrorFailedException ex) {
+            Throwable c = ex.getCause();
+            Assert.assertTrue("" + c, c instanceof CompositeException);
+            
+            CompositeException ce = (CompositeException)c;
+            
+            List<Throwable> list = ce.getExceptions();
+            
+            Assert.assertEquals(2, list.size());
+
+            Assert.assertTrue("" + list.get(0), list.get(0) instanceof TestException);
+            Assert.assertNull(list.get(0).getMessage());
+
+            Assert.assertTrue("" + list.get(1), list.get(1) instanceof TestException);
+            Assert.assertEquals("Forced failure", list.get(1).getMessage());
+        }
+    }
+
+    @Test
+    public void safeOnErrorThrowsRegularSubscriber() {
+        try {
+            error.completable.subscribe(new Subscriber<Object>() {
+    
+                @Override
+                public void onCompleted() {
+
+                }
+    
+                @Override
+                public void onError(Throwable e) {
+                    throw new TestException("Forced failure");
+                }
+    
+                @Override
+                public void onNext(Object t) {
+                    
+                }
+            });
+            Assert.fail("Did not propagate exception!");
+        } catch (OnErrorFailedException ex) {
+            Throwable c = ex.getCause();
+            Assert.assertTrue("" + c, c instanceof CompositeException);
+            
+            CompositeException ce = (CompositeException)c;
+            
+            List<Throwable> list = ce.getExceptions();
+            
+            Assert.assertEquals(2, list.size());
+
+            Assert.assertTrue("" + list.get(0), list.get(0) instanceof TestException);
+            Assert.assertNull(list.get(0).getMessage());
+
+            Assert.assertTrue("" + list.get(1), list.get(1) instanceof TestException);
+            Assert.assertEquals("Forced failure", list.get(1).getMessage());
+        }
+    }
+
+    private static RxJavaCompletableExecutionHook hookSpy;
+
+    @Before
+    public void setUp() throws Exception {
+        hookSpy = spy(
+                new RxJavaPluginsTest.RxJavaCompletableExecutionHookTestImpl());
+        Completable.HOOK = hookSpy;
+    }
+
+    @Test
+    public void testHookCreate() {
+        CompletableOnSubscribe subscriber = mock(CompletableOnSubscribe.class);
+        Completable.create(subscriber);
+
+        verify(hookSpy, times(1)).onCreate(subscriber);
+    }
+
+    @Test
+    public void testHookSubscribeStart() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Completable completable = Completable.create(new CompletableOnSubscribe() {
+            @Override public void call(CompletableSubscriber s) {
+                s.onCompleted();
+            }
+        });
+        completable.subscribe(ts);
+
+        verify(hookSpy, times(1)).onSubscribeStart(eq(completable), any(Completable.CompletableOnSubscribe.class));
+    }
+
+    @Test
+    public void testHookUnsafeSubscribeStart() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Completable completable = Completable.create(new CompletableOnSubscribe() {
+            @Override public void call(CompletableSubscriber s) {
+                s.onCompleted();
+            }
+        });
+        completable.unsafeSubscribe(ts);
+
+        verify(hookSpy, times(1)).onSubscribeStart(eq(completable), any(Completable.CompletableOnSubscribe.class));
+    }
+
+    @Test
+    public void onStartCalledSafe() {
+        TestSubscriber<Object> ts = new TestSubscriber<Object>() {
+            @Override
+            public void onStart() {
+                onNext(1);
+            }
+        };
+        
+        normal.completable.subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void onStartCalledUnsafeSafe() {
+        TestSubscriber<Object> ts = new TestSubscriber<Object>() {
+            @Override
+            public void onStart() {
+                onNext(1);
+            }
+        };
+        
+        normal.completable.unsafeSubscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 
 }

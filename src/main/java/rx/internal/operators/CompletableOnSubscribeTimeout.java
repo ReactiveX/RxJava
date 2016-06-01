@@ -60,7 +60,7 @@ public final class CompletableOnSubscribeTimeout implements CompletableOnSubscri
                     if (other == null) {
                         s.onError(new TimeoutException());
                     } else {
-                        other.subscribe(new CompletableSubscriber() {
+                        other.unsafeSubscribe(new CompletableSubscriber() {
    
                             @Override
                             public void onSubscribe(Subscription d) {
@@ -85,7 +85,7 @@ public final class CompletableOnSubscribeTimeout implements CompletableOnSubscri
             }
         }, timeout, unit);
         
-        source.subscribe(new CompletableSubscriber() {
+        source.unsafeSubscribe(new CompletableSubscriber() {
 
             @Override
             public void onSubscribe(Subscription d) {

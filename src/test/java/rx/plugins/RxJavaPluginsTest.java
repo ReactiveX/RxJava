@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 
+import rx.*;
 import rx.Observable;
-import rx.Subscriber;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 
@@ -253,6 +253,11 @@ public class RxJavaPluginsTest {
         // just use defaults
     }
 
+    // inside test so it is stripped from Javadocs
+    public static class RxJavaCompletableExecutionHookTestImpl extends RxJavaCompletableExecutionHook {
+        // just use defaults
+    }
+
     private static String getFullClassNameForTestClass(Class<?> cls) {
         return RxJavaPlugins.class.getPackage()
                                   .getName() + "." + RxJavaPluginsTest.class.getSimpleName() + "$" + cls.getSimpleName();
@@ -285,5 +290,57 @@ public class RxJavaPluginsTest {
         props.setProperty("rxjava.plugin.1.class", "Map");
 
         RxJavaPlugins.getPluginImplementationViaProperty(Map.class, props);
+    }
+
+    @Test
+    public void testOnErrorWhenUsingCompletable() {
+        RxJavaErrorHandlerTestImpl errorHandler = new RxJavaErrorHandlerTestImpl();
+           RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+
+        RuntimeException re = new RuntimeException("test onError");
+        Completable.error(re).subscribe(new Subscriber<Object>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+        });
+        assertEquals(re, errorHandler.e);
+        assertEquals(1, errorHandler.count);
+    }
+
+    @Test
+    public void testOnErrorWhenUsingSingle() {
+        RxJavaErrorHandlerTestImpl errorHandler = new RxJavaErrorHandlerTestImpl();
+        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+
+        RuntimeException re = new RuntimeException("test onError");
+        Single.error(re).subscribe(new Subscriber<Object>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+        });
+        assertEquals(re, errorHandler.e);
+        assertEquals(1, errorHandler.count);
     }
 }
