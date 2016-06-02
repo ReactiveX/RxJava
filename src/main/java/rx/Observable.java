@@ -3081,8 +3081,24 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@code onNext} as many times as
      * the number of {@code onNext} invocations of the source Observable that emits the fewest items.
      * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if 
+     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
+     * is possible those other sources will never be able to run to completion (and thus not calling 
+     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will unsubscribe B immediately. For example:
+     * <pre><code>zip(Arrays.asList(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2)), (a) -&gt; a)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
+     * or unsubscription.
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3115,8 +3131,24 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@code onNext} as many times as
      * the number of {@code onNext} invocations of the source Observable that emits the fewest items.
      * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if 
+     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
+     * is possible those other sources will never be able to run to completion (and thus not calling 
+     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will unsubscribe B immediately. For example:
+     * <pre><code>zip(just(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2)), (a) -&gt; a)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
+     * or unsubscription.
+     * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.o.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3147,7 +3179,23 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
+     * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if 
+     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
+     * is possible those other sources will never be able to run to completion (and thus not calling 
+     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will unsubscribe B immediately. For example:
+     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), (a, b) -&gt; a + b)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
+     * or unsubscription.
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3181,7 +3229,23 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
+     * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if 
+     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
+     * is possible those other sources will never be able to run to completion (and thus not calling 
+     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will unsubscribe B immediately. For example:
+     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c) -&gt; a + b)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
+     * or unsubscription.
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3217,7 +3281,23 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
+     * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if 
+     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
+     * is possible those other sources will never be able to run to completion (and thus not calling 
+     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will unsubscribe B immediately. For example:
+     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c, d) -&gt; a + b)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
+     * or unsubscription.
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3255,7 +3335,23 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
+     * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if 
+     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
+     * is possible those other sources will never be able to run to completion (and thus not calling 
+     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will unsubscribe B immediately. For example:
+     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c, d, e) -&gt; a + b)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
+     * or unsubscription.
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3294,7 +3390,23 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
+     * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if 
+     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
+     * is possible those other sources will never be able to run to completion (and thus not calling 
+     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will unsubscribe B immediately. For example:
+     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c, d, e, f) -&gt; a + b)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
+     * or unsubscription.
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3336,7 +3448,23 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
+     * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if 
+     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
+     * is possible those other sources will never be able to run to completion (and thus not calling 
+     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will unsubscribe B immediately. For example:
+     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c, d, e, f, g) -&gt; a + b)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
+     * or unsubscription.
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3380,7 +3508,23 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
+     * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if 
+     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
+     * is possible those other sources will never be able to run to completion (and thus not calling 
+     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will unsubscribe B immediately. For example:
+     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c, d, e, f, g, h) -&gt; a + b)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
+     * or unsubscription.
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3426,7 +3570,23 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
+     * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if 
+     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
+     * is possible those other sources will never be able to run to completion (and thus not calling 
+     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will unsubscribe B immediately. For example:
+     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c, d, e, f, g, h, i) -&gt; a + b)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
+     * or unsubscription.
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -10331,6 +10491,10 @@ public class Observable<T> {
      * Note that the {@code other} Iterable is evaluated as items are observed from the source Observable; it is
      * not pre-consumed. This allows you to zip infinite streams on either side.
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -10356,8 +10520,25 @@ public class Observable<T> {
      * Returns an Observable that emits items that are the result of applying a specified function to pairs of
      * values, one each from the source Observable and another specified Observable.
      * <p>
+     * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if 
+     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
+     * is possible those other sources will never be able to run to completion (and thus not calling 
+     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will unsubscribe B immediately. For example:
+     * <pre><code>range(1, 5).doOnCompleted(action1).zipWith(range(6, 5).doOnCompleted(action2), (a, b) -&gt; a + b)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
+     * or unsubscription.
+     * 
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
