@@ -867,7 +867,7 @@ public class OperatorSwitchTest {
                             });
                 }
             })
-            .timeout(10, TimeUnit.SECONDS)
+            .timeout(20, TimeUnit.SECONDS)
             .subscribe(ts);
             
             ts.awaitTerminalEvent(45, TimeUnit.SECONDS);
