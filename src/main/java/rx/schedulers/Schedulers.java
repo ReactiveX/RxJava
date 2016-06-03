@@ -163,11 +163,8 @@ public final class Schedulers {
 
     /**
      * Resets the current {@link Schedulers} instance.
-     * <p>
-     * This API is experimental. Resetting the schedulers is dangerous
-     * during application runtime and also bad code could invoke it in
-     * the middle of an application life-cycle and really break applications
-     * if not used cautiously.
+     * This will re-init the cached schedulers on the next usage,
+     * which can be useful in testing.
      */
     @Experimental
     public static void reset() {
