@@ -16,12 +16,16 @@
 package rx.schedulers;
 
 import rx.Scheduler;
-import rx.internal.schedulers.*;
+import rx.annotations.Experimental;
+import rx.internal.schedulers.ExecutorScheduler;
+import rx.internal.schedulers.GenericScheduledExecutorService;
+import rx.internal.schedulers.SchedulerLifecycle;
 import rx.internal.util.RxRingBuffer;
 import rx.plugins.RxJavaPlugins;
 import rx.plugins.RxJavaSchedulersHook;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Static factory methods for creating Schedulers.
@@ -32,7 +36,22 @@ public final class Schedulers {
     private final Scheduler ioScheduler;
     private final Scheduler newThreadScheduler;
 
-    private static final Schedulers INSTANCE = new Schedulers();
+    private static final AtomicReference<Schedulers> INSTANCE = new AtomicReference<Schedulers>();
+
+    private static Schedulers getInstance() {
+        for (;;) {
+            Schedulers current = INSTANCE.get();
+            if (current != null) {
+                return current;
+            }
+            current = new Schedulers();
+            if (INSTANCE.compareAndSet(null, current)) {
+                return current;
+            } else {
+                shutdown();
+            }
+        }
+    }
 
     private Schedulers() {
         RxJavaSchedulersHook hook = RxJavaPlugins.getInstance().getSchedulersHook();
@@ -86,7 +105,7 @@ public final class Schedulers {
      * @return a {@link Scheduler} that creates new threads
      */
     public static Scheduler newThread() {
-        return INSTANCE.newThreadScheduler;
+        return getInstance().newThreadScheduler;
     }
 
     /**
@@ -101,7 +120,7 @@ public final class Schedulers {
      * @return a {@link Scheduler} meant for computation-bound work
      */
     public static Scheduler computation() {
-        return INSTANCE.computationScheduler;
+        return getInstance().computationScheduler;
     }
 
     /**
@@ -118,7 +137,7 @@ public final class Schedulers {
      * @return a {@link Scheduler} meant for IO-bound work
      */
     public static Scheduler io() {
-        return INSTANCE.ioScheduler;
+        return getInstance().ioScheduler;
     }
 
     /**
@@ -141,13 +160,27 @@ public final class Schedulers {
     public static Scheduler from(Executor executor) {
         return new ExecutorScheduler(executor);
     }
+
+    /**
+     * Resets the current {@link Schedulers} instance.
+     * <p>
+     * This API is experimental. Resetting the schedulers is dangerous
+     * during application runtime and also bad code could invoke it in
+     * the middle of an application life-cycle and really break applications
+     * if not used cautiously.
+     */
+    @Experimental
+    public static void reset() {
+        shutdown();
+        INSTANCE.set(null);
+    }
     
     /**
      * Starts those standard Schedulers which support the SchedulerLifecycle interface.
      * <p>The operation is idempotent and threadsafe.
      */
     /* public test only */ static void start() {
-        Schedulers s = INSTANCE;
+        Schedulers s = getInstance();
         synchronized (s) {
             if (s.computationScheduler instanceof SchedulerLifecycle) {
                 ((SchedulerLifecycle) s.computationScheduler).start();
@@ -170,7 +203,7 @@ public final class Schedulers {
      * <p>The operation is idempotent and threadsafe.
      */
     public static void shutdown() {
-        Schedulers s = INSTANCE;
+        Schedulers s = getInstance();
         synchronized (s) {
             if (s.computationScheduler instanceof SchedulerLifecycle) {
                 ((SchedulerLifecycle) s.computationScheduler).shutdown();
@@ -181,11 +214,11 @@ public final class Schedulers {
             if (s.newThreadScheduler instanceof SchedulerLifecycle) {
                 ((SchedulerLifecycle) s.newThreadScheduler).shutdown();
             }
-            
+
             GenericScheduledExecutorService.INSTANCE.shutdown();
-            
+
             RxRingBuffer.SPSC_POOL.shutdown();
-            
+
             RxRingBuffer.SPMC_POOL.shutdown();
         }
     }
