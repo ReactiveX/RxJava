@@ -48,7 +48,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
     
-    @Test(timeout = 30000)
+    @Test(timeout = 60000)
     public void testCancelledTaskRetention() throws InterruptedException {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         Scheduler s = Schedulers.from(exec);
