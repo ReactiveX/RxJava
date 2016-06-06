@@ -178,9 +178,7 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         private final CachedWorkerPool pool;
         private final ThreadWorker threadWorker;
         @SuppressWarnings("unused")
-        volatile int once;
-        static final AtomicIntegerFieldUpdater<EventLoopWorker> ONCE_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(EventLoopWorker.class, "once");
+        final AtomicInteger once = new AtomicInteger();
 
         EventLoopWorker(CachedWorkerPool pool) {
             this.pool = pool;
@@ -189,7 +187,7 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
 
         @Override
         public void unsubscribe() {
-            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
+            if (once.compareAndSet(0, 1)) {
                 // unsubscribe should be idempotent, so only do this once
                 pool.release(threadWorker);
             }
