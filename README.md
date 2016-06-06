@@ -12,6 +12,7 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 - Non-opinionated about source of concurrency (threads, pools, event loops, fibers, actors, etc)
 - Async or synchronous execution
 - Virtual time and schedulers for parameterized concurrency
+- Here's a dummy line to force a change in travis
 
 Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
 
