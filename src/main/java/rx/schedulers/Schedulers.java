@@ -48,7 +48,7 @@ public final class Schedulers {
             if (INSTANCE.compareAndSet(null, current)) {
                 return current;
             } else {
-                shutdown();
+                current.shutdownInstance();
             }
         }
     }
@@ -168,8 +168,10 @@ public final class Schedulers {
      */
     @Experimental
     public static void reset() {
-        shutdown();
-        INSTANCE.set(null);
+        Schedulers s = INSTANCE.getAndSet(null);
+        if (s != null) {
+            s.shutdownInstance();
+        }
     }
     
     /**
@@ -178,16 +180,10 @@ public final class Schedulers {
      */
     /* public test only */ static void start() {
         Schedulers s = getInstance();
+        
+        s.startInstance();
+        
         synchronized (s) {
-            if (s.computationScheduler instanceof SchedulerLifecycle) {
-                ((SchedulerLifecycle) s.computationScheduler).start();
-            }
-            if (s.ioScheduler instanceof SchedulerLifecycle) {
-                ((SchedulerLifecycle) s.ioScheduler).start();
-            }
-            if (s.newThreadScheduler instanceof SchedulerLifecycle) {
-                ((SchedulerLifecycle) s.newThreadScheduler).start();
-            }
             GenericScheduledExecutorService.INSTANCE.start();
             
             RxRingBuffer.SPSC_POOL.start();
@@ -201,22 +197,44 @@ public final class Schedulers {
      */
     public static void shutdown() {
         Schedulers s = getInstance();
+        s.shutdownInstance();
+
         synchronized (s) {
-            if (s.computationScheduler instanceof SchedulerLifecycle) {
-                ((SchedulerLifecycle) s.computationScheduler).shutdown();
-            }
-            if (s.ioScheduler instanceof SchedulerLifecycle) {
-                ((SchedulerLifecycle) s.ioScheduler).shutdown();
-            }
-            if (s.newThreadScheduler instanceof SchedulerLifecycle) {
-                ((SchedulerLifecycle) s.newThreadScheduler).shutdown();
-            }
-
             GenericScheduledExecutorService.INSTANCE.shutdown();
-
+            
             RxRingBuffer.SPSC_POOL.shutdown();
 
             RxRingBuffer.SPMC_POOL.shutdown();
+        }
+    }
+    
+    /**
+     * Start the instance-specific schedulers.
+     */
+    synchronized void startInstance() {
+        if (computationScheduler instanceof SchedulerLifecycle) {
+            ((SchedulerLifecycle) computationScheduler).start();
+        }
+        if (ioScheduler instanceof SchedulerLifecycle) {
+            ((SchedulerLifecycle) ioScheduler).start();
+        }
+        if (newThreadScheduler instanceof SchedulerLifecycle) {
+            ((SchedulerLifecycle) newThreadScheduler).start();
+        }
+    }
+    
+    /**
+     * Start the instance-specific schedulers.
+     */
+    synchronized void shutdownInstance() {
+        if (computationScheduler instanceof SchedulerLifecycle) {
+            ((SchedulerLifecycle) computationScheduler).shutdown();
+        }
+        if (ioScheduler instanceof SchedulerLifecycle) {
+            ((SchedulerLifecycle) ioScheduler).shutdown();
+        }
+        if (newThreadScheduler instanceof SchedulerLifecycle) {
+            ((SchedulerLifecycle) newThreadScheduler).shutdown();
         }
     }
 }
