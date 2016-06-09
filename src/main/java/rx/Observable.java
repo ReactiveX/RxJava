@@ -4780,24 +4780,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
      */
     public final Observable<T> distinctUntilChanged(Func2<? super T, ? super T, Boolean> comparator) {
-        return lift(new OperatorDistinctUntilChanged<>(new Func1<T, Object>() {
-			T previousValue;
-
-			@Override
-			public Object call(T t) {
-				if (previousValue != null) {
-					if (comparator.call(previousValue, t)) {
-						return previousValue;
-					} else {
-						previousValue = t;
-						return t;
-					}
-				} else {
-					previousValue = t;
-					return previousValue;
-				}
-			}
-		}));
+        return lift(new OperatorDistinctUntilChanged<T, Void>(comparator));
     }
 
     /**
