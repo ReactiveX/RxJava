@@ -4761,6 +4761,44 @@ public class Observable<T> {
     public final <U> Observable<T> distinctUntilChanged(Func1<? super T, ? extends U> keySelector) {
         return lift(new OperatorDistinctUntilChanged<T, U>(keySelector));
     }
+    
+    /**
+     * Returns an Observable that emits all items emitted by the source Observable that are distinct from their
+     * immediate predecessors, according to a comparator function.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.key.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param comparator
+     *            a function that compares two successive items and decide whether an item
+     *            is distinct from another one or not
+     * @return an Observable that emits those items from the source Observable whose keys are distinct from
+     *         those of their immediate predecessors
+     * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
+     */
+    public final Observable<T> distinctUntilChanged(Func2<? super T, ? super T, Boolean> comparator) {
+        return lift(new OperatorDistinctUntilChanged<>(new Func1<T, Object>() {
+			T previousValue;
+
+			@Override
+			public Object call(T t) {
+				if (previousValue != null) {
+					if (comparator.call(previousValue, t)) {
+						return previousValue;
+					} else {
+						previousValue = t;
+						return t;
+					}
+				} else {
+					previousValue = t;
+					return previousValue;
+				}
+			}
+		}));
+    }
 
     /**
      * Modifies the source Observable so that it invokes an action when it calls {@code onCompleted}.
