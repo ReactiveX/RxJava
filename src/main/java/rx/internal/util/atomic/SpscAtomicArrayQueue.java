@@ -64,8 +64,8 @@ public final class SpscAtomicArrayQueue<E> extends AtomicReferenceArrayQueue<E> 
                 return false;
             }
         }
-        soProducerIndex(index + 1); // ordered store -> atomic and ordered for size()
         soElement(buffer, offset, e); // StoreStore
+        soProducerIndex(index + 1); // ordered store -> atomic and ordered for size()
         return true;
     }
 
@@ -79,8 +79,8 @@ public final class SpscAtomicArrayQueue<E> extends AtomicReferenceArrayQueue<E> 
         if (null == e) {
             return null;
         }
-        soConsumerIndex(index + 1); // ordered store -> atomic and ordered for size()
         soElement(lElementBuffer, offset, null);// StoreStore
+        soConsumerIndex(index + 1); // ordered store -> atomic and ordered for size()
         return e;
     }
 

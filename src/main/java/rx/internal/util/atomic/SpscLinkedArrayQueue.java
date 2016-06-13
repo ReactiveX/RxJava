@@ -90,8 +90,8 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     }
 
     private boolean writeToQueue(final AtomicReferenceArray<Object> buffer, final T e, final long index, final int offset) {
-        soProducerIndex(index + 1);// this ensures atomic write of long on 32bit platforms
         soElement(buffer, offset, e);// StoreStore
+        soProducerIndex(index + 1);// this ensures atomic write of long on 32bit platforms
         return true;
     }
 
@@ -101,11 +101,11 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
         final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<Object>(capacity);
         producerBuffer = newBuffer;
         producerLookAhead = currIndex + mask - 1;
-        soProducerIndex(currIndex + 1);// this ensures correctness on 32bit platforms
         soElement(newBuffer, offset, e);// StoreStore
         soNext(oldBuffer, newBuffer);
         soElement(oldBuffer, offset, HAS_NEXT); // new buffer is visible after element is
                                                                  // inserted
+        soProducerIndex(currIndex + 1);// this ensures correctness on 32bit platforms
     }
 
     private void soNext(AtomicReferenceArray<Object> curr, AtomicReferenceArray<Object> next) {
@@ -131,8 +131,8 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
         final Object e = lvElement(buffer, offset);// LoadLoad
         boolean isNextBuffer = e == HAS_NEXT;
         if (null != e && !isNextBuffer) {
-            soConsumerIndex(index + 1);// this ensures correctness on 32bit platforms
             soElement(buffer, offset, null);// StoreStore
+            soConsumerIndex(index + 1);// this ensures correctness on 32bit platforms
             return (T) e;
         } else if (isNextBuffer) {
             return newBufferPoll(lvNext(buffer), index, mask);
@@ -149,8 +149,8 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
         if (null == n) {
             return null;
         } else {
-            soConsumerIndex(index + 1);// this ensures correctness on 32bit platforms
             soElement(nextBuffer, offsetInNew, null);// StoreStore
+            soConsumerIndex(index + 1);// this ensures correctness on 32bit platforms
             return n;
         }
     }
@@ -330,8 +330,8 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
         if (null == lvElement(buffer, pi)) {
             pi = calcWrappedOffset(p, m);
             soElement(buffer, pi + 1, second);
-            soProducerIndex(p + 2);
             soElement(buffer, pi, first);
+            soProducerIndex(p + 2);
         } else {
             final int capacity = buffer.length();
             final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<Object>(capacity);
@@ -342,9 +342,9 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
             soElement(newBuffer, pi, first);
             soNext(buffer, newBuffer);
             
-            soProducerIndex(p + 2);// this ensures correctness on 32bit platforms
-            
             soElement(buffer, pi, HAS_NEXT); // new buffer is visible after element is
+            
+            soProducerIndex(p + 2);// this ensures correctness on 32bit platforms
         }
 
         return true;
