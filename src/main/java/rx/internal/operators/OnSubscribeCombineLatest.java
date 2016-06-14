@@ -23,7 +23,7 @@ import rx.exceptions.CompositeException;
 import rx.functions.FuncN;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.atomic.SpscLinkedArrayQueue;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 
 public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
     final Observable<? extends T>[] sources;
@@ -386,7 +386,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
         @Override
         public void onError(Throwable t) {
             if (done) {
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(t);
+                RxJavaHooks.onError(t);
                 return;
             }
             parent.onError(t);

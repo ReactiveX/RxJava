@@ -16,19 +16,14 @@ import java.util.Collection;
 import java.util.concurrent.*;
 
 import rx.Observable.Operator;
-import rx.annotations.Beta;
-import rx.annotations.Experimental;
-import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorNotImplementedException;
+import rx.annotations.*;
+import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.producers.SingleDelayedProducer;
-import rx.internal.util.ScalarSynchronousSingle;
-import rx.internal.util.UtilityFunctions;
-import rx.observers.SafeSubscriber;
-import rx.observers.SerializedSubscriber;
-import rx.plugins.RxJavaPlugins;
-import rx.plugins.RxJavaSingleExecutionHook;
+import rx.internal.util.*;
+import rx.observers.*;
+import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
 import rx.singles.BlockingSingle;
 import rx.subscriptions.Subscriptions;
@@ -69,7 +64,8 @@ public class Single<T> {
      *            {@code OnExecute} to be executed when {@code execute(SingleSubscriber)} or
      *            {@code subscribe(Subscriber)} is called
      */
-    protected Single(final OnSubscribe<T> f) {
+    protected Single(OnSubscribe<T> f) {
+        final OnSubscribe<T> g = RxJavaHooks.onCreate(f);
         // bridge between OnSubscribe (which all Operators and Observables use) and OnExecute (for Single)
         this.onSubscribe = new Observable.OnSubscribe<T>() {
 
@@ -91,17 +87,15 @@ public class Single<T> {
 
                 };
                 child.add(ss);
-                f.call(ss);
+                g.call(ss);
             }
 
         };
     }
 
     private Single(final Observable.OnSubscribe<T> f) {
-        this.onSubscribe = f;
+        this.onSubscribe = RxJavaHooks.onCreate(f);
     }
-
-    static RxJavaSingleExecutionHook hook = RxJavaPlugins.getInstance().getSingleExecutionHook();
 
     /**
      * Returns a Single that will execute the specified function when a {@link SingleSubscriber} executes it or
@@ -130,7 +124,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
      */
     public static <T> Single<T> create(OnSubscribe<T> f) {
-        return new Single<T>(hook.onCreate(f));
+        return new Single<T>(f);
     }
 
     /**
@@ -170,7 +164,7 @@ public class Single<T> {
             @Override
             public void call(Subscriber<? super R> o) {
                 try {
-                    final Subscriber<? super T> st = hook.onLift(lift).call(o);
+                    final Subscriber<? super T> st = RxJavaHooks.onSingleLift(lift).call(o);
                     try {
                         // new Subscriber created and being subscribed with so 'onStart' it
                         st.onStart();
@@ -1709,21 +1703,21 @@ public class Single<T> {
         try {
             // new Subscriber so onStart it
             subscriber.onStart();
-            hook.onSubscribeStart(this, onSubscribe).call(subscriber);
-            return hook.onSubscribeReturn(subscriber);
+            RxJavaHooks.onSingleStart(this, onSubscribe).call(subscriber);
+            return RxJavaHooks.onSingleReturn(subscriber);
         } catch (Throwable e) {
             // special handling for certain Throwable/Error/Exception types
             Exceptions.throwIfFatal(e);
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
-                subscriber.onError(hook.onSubscribeError(e));
+                subscriber.onError(RxJavaHooks.onSingleError(e));
             } catch (Throwable e2) {
                 Exceptions.throwIfFatal(e2);
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
                 // TODO could the hook be the cause of the error in the on error handling.
-                hook.onSubscribeError(r);
+                RxJavaHooks.onSingleError(r);
                 // TODO why aren't we throwing the hook's return value.
                 throw r;
             }
@@ -1819,21 +1813,21 @@ public class Single<T> {
         // The code below is exactly the same an unsafeSubscribe but not used because it would add a significant depth to already huge call stacks.
         try {
             // allow the hook to intercept and/or decorate
-            hook.onSubscribeStart(this, onSubscribe).call(subscriber);
-            return hook.onSubscribeReturn(subscriber);
+            RxJavaHooks.onSingleStart(this, onSubscribe).call(subscriber);
+            return RxJavaHooks.onSingleReturn(subscriber);
         } catch (Throwable e) {
             // special handling for certain Throwable/Error/Exception types
             Exceptions.throwIfFatal(e);
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
-                subscriber.onError(hook.onSubscribeError(e));
+                subscriber.onError(RxJavaHooks.onSingleError(e));
             } catch (Throwable e2) {
                 Exceptions.throwIfFatal(e2);
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
                 // TODO could the hook be the cause of the error in the on error handling.
-                hook.onSubscribeError(r);
+                RxJavaHooks.onSingleError(r);
                 // TODO why aren't we throwing the hook's return value.
                 throw r;
             }

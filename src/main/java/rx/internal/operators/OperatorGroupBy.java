@@ -25,7 +25,7 @@ import rx.functions.*;
 import rx.internal.producers.ProducerArbiter;
 import rx.internal.util.*;
 import rx.observables.GroupedObservable;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -196,7 +196,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         @Override
         public void onError(Throwable t) {
             if (done) {
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(t);
+                RxJavaHooks.onError(t);
                 return;
             }
             error = t;

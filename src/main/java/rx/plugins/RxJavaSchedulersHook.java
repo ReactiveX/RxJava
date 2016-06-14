@@ -148,6 +148,7 @@ public class RxJavaSchedulersHook {
      * @param action action to schedule
      * @return wrapped action to schedule
      */
+    @Deprecated
     public Action0 onSchedule(Action0 action) {
         return action;
     }

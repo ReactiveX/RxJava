@@ -50,6 +50,7 @@ public abstract class RxJavaCompletableExecutionHook {
      * @return {@link rx.Completable.CompletableOnSubscribe} function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
+    @Deprecated
     public Completable.CompletableOnSubscribe onCreate(Completable.CompletableOnSubscribe f) {
         return f;
     }
@@ -66,6 +67,7 @@ public abstract class RxJavaCompletableExecutionHook {
      * @return {@link rx.Completable.CompletableOnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
+    @Deprecated
     public Completable.CompletableOnSubscribe onSubscribeStart(Completable completableInstance, final Completable.CompletableOnSubscribe onSubscribe) {
         // pass through by default
         return onSubscribe;
@@ -81,6 +83,7 @@ public abstract class RxJavaCompletableExecutionHook {
      *            Throwable thrown by {@link Completable#subscribe(Subscriber)}
      * @return Throwable that can be decorated, replaced or just returned as a pass through
      */
+    @Deprecated
     public Throwable onSubscribeError(Throwable e) {
         // pass through by default
         return e;
@@ -98,6 +101,7 @@ public abstract class RxJavaCompletableExecutionHook {
      * @return {@link rx.Completable.CompletableOperator}{@code <R, T>} function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
+    @Deprecated
     public Completable.CompletableOperator onLift(final Completable.CompletableOperator lift) {
         return lift;
     }

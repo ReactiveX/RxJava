@@ -27,7 +27,7 @@ import rx.annotations.Experimental;
 import rx.functions.*;
 import rx.internal.operators.BufferUntilSubscriber;
 import rx.observers.SerializedObserver;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -554,7 +554,7 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
 
         private void handleThrownError(Throwable ex) {
             if (hasTerminated) {
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(ex);
+                RxJavaHooks.onError(ex);
             } else {
                 hasTerminated = true;
                 merger.onError(ex);

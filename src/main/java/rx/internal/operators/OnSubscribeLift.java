@@ -29,8 +29,6 @@ import rx.plugins.*;
  */
 public final class OnSubscribeLift<T, R> implements OnSubscribe<R> {
     
-    static final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
-
     final OnSubscribe<T> parent;
 
     final Operator<? extends R, ? super T> operator;
@@ -43,7 +41,7 @@ public final class OnSubscribeLift<T, R> implements OnSubscribe<R> {
     @Override
     public void call(Subscriber<? super R> o) {
         try {
-            Subscriber<? super T> st = hook.onLift(operator).call(o);
+            Subscriber<? super T> st = RxJavaHooks.onObservableLift(operator).call(o);
             try {
                 // new Subscriber created and being subscribed with so 'onStart' it
                 st.onStart();

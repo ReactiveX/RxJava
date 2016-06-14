@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ResetSchedulersTest {
 
+    @SuppressWarnings("deprecation")
     @Test
     public void reset() {
         RxJavaPlugins.getInstance().reset();

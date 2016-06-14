@@ -23,10 +23,10 @@ import rx.Observable.Operator;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
 import rx.internal.schedulers.*;
-import rx.internal.util.*;
+import rx.internal.util.RxRingBuffer;
 import rx.internal.util.atomic.SpscAtomicArrayQueue;
 import rx.internal.util.unsafe.*;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
 
 /**
@@ -177,7 +177,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         @Override
         public void onError(final Throwable e) {
             if (isUnsubscribed() || finished) {
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                RxJavaHooks.onError(e);
                 return;
             }
             error = e;

@@ -21,33 +21,64 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import rx.Single.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.*;
-import rx.observers.SafeSubscriber;
-import rx.observers.TestSubscriber;
-import rx.plugins.RxJavaPluginsTest;
-import rx.plugins.RxJavaSingleExecutionHook;
-import rx.schedulers.Schedulers;
-import rx.schedulers.TestScheduler;
+import rx.observers.*;
+import rx.plugins.RxJavaHooks;
+import rx.schedulers.*;
 import rx.singles.BlockingSingle;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
 public class SingleTest {
 
-    private static RxJavaSingleExecutionHook hookSpy;
+    @SuppressWarnings("rawtypes")
+    private Func1<Single.OnSubscribe, Single.OnSubscribe> onCreate;
+    
+    @SuppressWarnings("rawtypes")
+    private Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> onStart;
 
+    private Func1<Subscription, Subscription> onReturn;
+
+    @SuppressWarnings("rawtypes")
     @Before
     public void setUp() throws Exception {
-        hookSpy = spy(
-                new RxJavaPluginsTest.RxJavaSingleExecutionHookTestImpl());
-        Single.hook = hookSpy;
+        onCreate = spy(new Func1<Single.OnSubscribe, Single.OnSubscribe>() {
+            @Override
+            public Single.OnSubscribe call(Single.OnSubscribe t) {
+                return t;
+            }
+        });
+        
+        RxJavaHooks.setOnSingleCreate(onCreate);
+        
+        onStart = spy(new Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe>() {
+            @Override
+            public Observable.OnSubscribe call(Single t1, Observable.OnSubscribe t2) {
+                return t2;
+            }
+        });
+        
+        RxJavaHooks.setOnSingleStart(onStart);
+        
+        onReturn = spy(new Func1<Subscription, Subscription>() {
+            @Override
+            public Subscription call(Subscription t) {
+                return t;
+            }
+        });
+        
+        RxJavaHooks.setOnSingleReturn(onReturn);
+    }
+    
+    @After
+    public void after() {
+        RxJavaHooks.reset();
     }
 
     @Test
@@ -400,10 +431,9 @@ public class SingleTest {
         OnSubscribe<Object> subscriber = mock(OnSubscribe.class);
         Single.create(subscriber);
 
-        verify(hookSpy, times(1)).onCreate(subscriber);
+        verify(onCreate, times(1)).call(subscriber);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testHookSubscribeStart() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -415,10 +445,9 @@ public class SingleTest {
         });
         single.subscribe(ts);
 
-        verify(hookSpy, times(1)).onSubscribeStart(eq(single), any(Observable.OnSubscribe.class));
+        verify(onStart, times(1)).call(eq(single), any(Observable.OnSubscribe.class));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testHookUnsafeSubscribeStart() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -429,7 +458,7 @@ public class SingleTest {
         });
         single.unsafeSubscribe(ts);
 
-        verify(hookSpy, times(1)).onSubscribeStart(eq(single), any(Observable.OnSubscribe.class));
+        verify(onStart, times(1)).call(eq(single), any(Observable.OnSubscribe.class));
     }
 
     @Test
@@ -443,7 +472,7 @@ public class SingleTest {
         });
         single.subscribe(ts);
 
-        verify(hookSpy, times(1)).onSubscribeReturn(any(SafeSubscriber.class));
+        verify(onReturn, times(1)).call(any(SafeSubscriber.class));
     }
 
     @Test
@@ -457,7 +486,7 @@ public class SingleTest {
         });
         single.unsafeSubscribe(ts);
 
-        verify(hookSpy, times(1)).onSubscribeReturn(ts);
+        verify(onReturn, times(1)).call(ts);
     }
 
     @Test

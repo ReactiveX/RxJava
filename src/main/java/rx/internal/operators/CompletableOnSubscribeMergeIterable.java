@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.*;
 
 import rx.*;
 import rx.Completable.*;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
 public final class CompletableOnSubscribeMergeIterable implements CompletableOnSubscribe {
@@ -66,7 +66,7 @@ public final class CompletableOnSubscribeMergeIterable implements CompletableOnS
                 if (once.compareAndSet(false, true)) {
                     s.onError(e);
                 } else {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                    RxJavaHooks.onError(e);
                 }
                 return;
             }
@@ -88,7 +88,7 @@ public final class CompletableOnSubscribeMergeIterable implements CompletableOnS
                 if (once.compareAndSet(false, true)) {
                     s.onError(e);
                 } else {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                    RxJavaHooks.onError(e);
                 }
                 return;
             }
@@ -103,7 +103,7 @@ public final class CompletableOnSubscribeMergeIterable implements CompletableOnS
                 if (once.compareAndSet(false, true)) {
                     s.onError(npe);
                 } else {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(npe);
+                    RxJavaHooks.onError(npe);
                 }
                 return;
             }
@@ -122,7 +122,7 @@ public final class CompletableOnSubscribeMergeIterable implements CompletableOnS
                     if (once.compareAndSet(false, true)) {
                         s.onError(e);
                     } else {
-                        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                        RxJavaHooks.onError(e);
                     }
                 }
 

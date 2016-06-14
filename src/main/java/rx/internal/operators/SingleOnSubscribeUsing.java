@@ -21,7 +21,7 @@ import java.util.Arrays;
 import rx.*;
 import rx.exceptions.*;
 import rx.functions.*;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Generates a resource, derives a Single from it and disposes that resource once the
@@ -91,7 +91,7 @@ public final class SingleOnSubscribeUsing<T, Resource> implements Single.OnSubsc
                         disposeAction.call(resource);
                     } catch (Throwable ex2) {
                         Exceptions.throwIfFatal(ex2);
-                        RxJavaPlugins.getInstance().getErrorHandler().handleError(ex2);
+                        RxJavaHooks.onError(ex2);
                     }
                 }
             }
@@ -125,7 +125,7 @@ public final class SingleOnSubscribeUsing<T, Resource> implements Single.OnSubsc
                 disposeAction.call(resource);
             } catch (Throwable ex2) {
                 Exceptions.throwIfFatal(ex2);
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(ex2);
+                RxJavaHooks.onError(ex2);
             }
         }
     }

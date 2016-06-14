@@ -59,8 +59,6 @@ public class Observable<T> {
         this.onSubscribe = f;
     }
 
-    static final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
-
     /**
      * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
      * it.
@@ -91,7 +89,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
      */
     public static <T> Observable<T> create(OnSubscribe<T> f) {
-        return new Observable<T>(hook.onCreate(f));
+        return new Observable<T>(RxJavaHooks.onCreate(f));
     }
 
     /**
@@ -128,7 +126,7 @@ public class Observable<T> {
      */
     @Beta
     public static <S, T> Observable<T> create(SyncOnSubscribe<S, T> syncOnSubscribe) {
-        return new Observable<T>(hook.onCreate(syncOnSubscribe));
+        return create((OnSubscribe<T>)syncOnSubscribe);
     }
 
     /**
@@ -164,7 +162,7 @@ public class Observable<T> {
      */
     @Experimental
     public static <S, T> Observable<T> create(AsyncOnSubscribe<S, T> asyncOnSubscribe) {
-        return new Observable<T>(hook.onCreate(asyncOnSubscribe));
+        return create((OnSubscribe<T>)asyncOnSubscribe);
     }
 
     /**
@@ -238,7 +236,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
     public final <R> Observable<R> lift(final Operator<? extends R, ? super T> operator) {
-        return new Observable<R>(new OnSubscribeLift<T, R>(onSubscribe, operator));
+        return create(new OnSubscribeLift<T, R>(onSubscribe, operator));
     }
     
     /**
@@ -8663,21 +8661,21 @@ public class Observable<T> {
             // new Subscriber so onStart it
             subscriber.onStart();
             // allow the hook to intercept and/or decorate
-            hook.onSubscribeStart(this, onSubscribe).call(subscriber);
-            return hook.onSubscribeReturn(subscriber);
+            RxJavaHooks.onObservableStart(this, onSubscribe).call(subscriber);
+            return RxJavaHooks.onObservableReturn(subscriber);
         } catch (Throwable e) {
             // special handling for certain Throwable/Error/Exception types
             Exceptions.throwIfFatal(e);
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
-                subscriber.onError(hook.onSubscribeError(e));
+                subscriber.onError(RxJavaHooks.onObservableError(e));
             } catch (Throwable e2) {
                 Exceptions.throwIfFatal(e2);
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
                 // TODO could the hook be the cause of the error in the on error handling.
-                hook.onSubscribeError(r);
+                RxJavaHooks.onObservableError(r);
                 // TODO why aren't we throwing the hook's return value.
                 throw r;
             }
@@ -8756,25 +8754,25 @@ public class Observable<T> {
         // add a significant depth to already huge call stacks.
         try {
             // allow the hook to intercept and/or decorate
-            hook.onSubscribeStart(observable, observable.onSubscribe).call(subscriber);
-            return hook.onSubscribeReturn(subscriber);
+            RxJavaHooks.onObservableStart(observable, observable.onSubscribe).call(subscriber);
+            return RxJavaHooks.onObservableReturn(subscriber);
         } catch (Throwable e) {
             // special handling for certain Throwable/Error/Exception types
             Exceptions.throwIfFatal(e);
             // in case the subscriber can't listen to exceptions anymore
             if (subscriber.isUnsubscribed()) {
-                RxJavaPluginUtils.handleException(hook.onSubscribeError(e));
+                RxJavaPluginUtils.handleException(RxJavaHooks.onObservableError(e));
             } else {
                 // if an unhandled error occurs executing the onSubscribe we will propagate it
                 try {
-                    subscriber.onError(hook.onSubscribeError(e));
+                    subscriber.onError(RxJavaHooks.onObservableError(e));
                 } catch (Throwable e2) {
                     Exceptions.throwIfFatal(e2);
                     // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                     // so we are unable to propagate the error correctly and will just throw
                     RuntimeException r = new OnErrorFailedException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
                     // TODO could the hook be the cause of the error in the on error handling.
-                    hook.onSubscribeError(r);
+                    RxJavaHooks.onObservableError(r);
                     // TODO why aren't we throwing the hook's return value.
                     throw r;
                 }

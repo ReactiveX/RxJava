@@ -16,11 +16,8 @@
 
 package rx.internal.operators;
 
-import rx.Observable;
-import rx.Single;
-import rx.SingleSubscriber;
-import rx.Subscriber;
-import rx.plugins.RxJavaPlugins;
+import rx.*;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.SerialSubscription;
 
 /**
@@ -66,7 +63,7 @@ public final class SingleOnSubscribeDelaySubscriptionOther<T> implements Single.
             @Override
             public void onError(Throwable e) {
                 if (done) {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                    RxJavaHooks.onError(e);
                     return;
                 }
                 done = true;

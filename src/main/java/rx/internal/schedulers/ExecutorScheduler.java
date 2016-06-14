@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.*;
 import rx.functions.Action0;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.*;
 
 /**
@@ -79,7 +79,7 @@ public final class ExecutorScheduler extends Scheduler {
                     tasks.remove(ea);
                     wip.decrementAndGet();
                     // report the error to the plugin
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(t);
+                    RxJavaHooks.onError(t);
                     // throw it to the caller
                     throw t;
                 }
@@ -158,7 +158,7 @@ public final class ExecutorScheduler extends Scheduler {
                 ea.add(f);
             } catch (RejectedExecutionException t) {
                 // report the rejection to plugins
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(t);
+                RxJavaHooks.onError(t);
                 throw t;
             }
             

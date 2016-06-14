@@ -51,6 +51,7 @@ public abstract class RxJavaSingleExecutionHook {
      * @return {@link rx.Single.OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
+    @Deprecated
     public <T> Single.OnSubscribe<T> onCreate(Single.OnSubscribe<T> f) {
         return f;
     }
@@ -68,6 +69,7 @@ public abstract class RxJavaSingleExecutionHook {
      * @return {@link rx.Observable.OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
+    @Deprecated
     public <T> Observable.OnSubscribe<T> onSubscribeStart(Single<? extends T> singleInstance, final Observable.OnSubscribe<T> onSubscribe) {
         // pass through by default
         return onSubscribe;
@@ -86,6 +88,7 @@ public abstract class RxJavaSingleExecutionHook {
      * @return {@link Subscription} subscription that can be modified, decorated, replaced or just returned as a
      *         pass through
      */
+    @Deprecated
     public <T> Subscription onSubscribeReturn(Subscription subscription) {
         // pass through by default
         return subscription;
@@ -102,6 +105,7 @@ public abstract class RxJavaSingleExecutionHook {
      *            Throwable thrown by {@link Single#subscribe(Subscriber)}
      * @return Throwable that can be decorated, replaced or just returned as a pass through
      */
+    @Deprecated
     public <T> Throwable onSubscribeError(Throwable e) {
         // pass through by default
         return e;
@@ -121,6 +125,7 @@ public abstract class RxJavaSingleExecutionHook {
      * @return {@link rx.Observable.Operator}{@code <R, T>} function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
+    @Deprecated
     public <T, R> Observable.Operator<? extends R, ? super T> onLift(final Observable.Operator<? extends R, ? super T> lift) {
         return lift;
     }

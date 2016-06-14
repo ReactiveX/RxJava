@@ -38,12 +38,6 @@ import rx.subscriptions.*;
  */
 @Experimental
 public class Completable {
-    /** The error handler instance. */
-    static final RxJavaErrorHandler ERROR_HANDLER = RxJavaPlugins.getInstance().getErrorHandler();
-    
-    /** The completable hook. */
-    static RxJavaCompletableExecutionHook HOOK = RxJavaPlugins.getInstance().getCompletableExecutionHook();
-
     /**
      * Callback used for building deferred computations that takes a CompletableSubscriber.
      */
@@ -146,7 +140,7 @@ public class Completable {
                             set.unsubscribe();
                             s.onError(e);
                         } else {
-                            ERROR_HANDLER.handleError(e);
+                            RxJavaHooks.onError(e);
                         }
                     }
 
@@ -167,7 +161,7 @@ public class Completable {
                             set.unsubscribe();
                             s.onError(npe);
                         } else {
-                            ERROR_HANDLER.handleError(npe);
+                            RxJavaHooks.onError(npe);
                         }
                         return;
                     }
@@ -215,7 +209,7 @@ public class Completable {
                             set.unsubscribe();
                             s.onError(e);
                         } else {
-                            ERROR_HANDLER.handleError(e);
+                            RxJavaHooks.onError(e);
                         }
                     }
 
@@ -256,7 +250,7 @@ public class Completable {
                             set.unsubscribe();
                             s.onError(e);
                         } else {
-                            ERROR_HANDLER.handleError(e);
+                            RxJavaHooks.onError(e);
                         }
                         return;
                     }
@@ -283,7 +277,7 @@ public class Completable {
                             set.unsubscribe();
                             s.onError(e);
                         } else {
-                            ERROR_HANDLER.handleError(e);
+                            RxJavaHooks.onError(e);
                         }
                         return;
                     }
@@ -294,7 +288,7 @@ public class Completable {
                             set.unsubscribe();
                             s.onError(npe);
                         } else {
-                            ERROR_HANDLER.handleError(npe);
+                            RxJavaHooks.onError(npe);
                         }
                         return;
                     }
@@ -386,7 +380,7 @@ public class Completable {
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
-            ERROR_HANDLER.handleError(ex);
+            RxJavaHooks.onError(ex);
             throw toNpe(ex);
         } 
     }
@@ -908,7 +902,7 @@ public class Completable {
                             try {
                                 disposer.call(resource);
                             } catch (Throwable ex) {
-                                ERROR_HANDLER.handleError(ex);
+                                RxJavaHooks.onError(ex);
                             }
                         }
                     }
@@ -976,7 +970,7 @@ public class Completable {
      * not null (not verified)
      */
     protected Completable(CompletableOnSubscribe onSubscribe) {
-        this.onSubscribe = HOOK.onCreate(onSubscribe);
+        this.onSubscribe = RxJavaHooks.onCreate(onSubscribe);
     }
     
     /**
@@ -1332,7 +1326,7 @@ public class Completable {
                         try {
                             onAfterComplete.call();
                         } catch (Throwable e) {
-                            ERROR_HANDLER.handleError(e);
+                            RxJavaHooks.onError(e);
                         }
                     }
 
@@ -1365,7 +1359,7 @@ public class Completable {
                                 try {
                                     onUnsubscribe.call();
                                 } catch (Throwable e) {
-                                    ERROR_HANDLER.handleError(e);
+                                    RxJavaHooks.onError(e);
                                 }
                                 d.unsubscribe();
                             }
@@ -1543,7 +1537,7 @@ public class Completable {
             @Override
             public void call(CompletableSubscriber s) {
                 try {
-                    CompletableOperator onLiftDecorated = HOOK.onLift(onLift);
+                    CompletableOperator onLiftDecorated = RxJavaHooks.onCompletableLift(onLift);
                     CompletableSubscriber sw = onLiftDecorated.call(s);
                     
                     unsafeSubscribe(sw);
@@ -1868,7 +1862,7 @@ public class Completable {
             
             @Override
             public void onError(Throwable e) {
-                ERROR_HANDLER.handleError(e);
+                RxJavaHooks.onError(e);
                 mad.unsubscribe();
                 deliverUncaughtException(e);
             }
@@ -1885,7 +1879,7 @@ public class Completable {
      * Subscribes to this Completable and calls the given Action0 when this Completable
      * completes normally.
      * <p>
-     * If this Completable emits an error, it is sent to ERROR_HANDLER.handleError and gets swallowed.
+     * If this Completable emits an error, it is sent to RxJavaHooks.onError and gets swallowed.
      * @param onComplete the runnable called when this Completable completes normally
      * @return the Subscription that allows cancelling the subscription
      */
@@ -1902,7 +1896,7 @@ public class Completable {
                     try {
                         onComplete.call();
                     } catch (Throwable e) {
-                        ERROR_HANDLER.handleError(e);
+                        RxJavaHooks.onError(e);
                         deliverUncaughtException(e);
                     } finally {
                         mad.unsubscribe();
@@ -1912,7 +1906,7 @@ public class Completable {
             
             @Override
             public void onError(Throwable e) {
-                ERROR_HANDLER.handleError(e);
+                RxJavaHooks.onError(e);
                 mad.unsubscribe();
                 deliverUncaughtException(e);
             }
@@ -1961,7 +1955,7 @@ public class Completable {
                     done = true;
                     callOnError(e);
                 } else {
-                    ERROR_HANDLER.handleError(e);
+                    RxJavaHooks.onError(e);
                     deliverUncaughtException(e);
                 }
             }
@@ -1971,7 +1965,7 @@ public class Completable {
                     onError.call(e);
                 } catch (Throwable ex) {
                     e = new CompositeException(Arrays.asList(e, ex));
-                    ERROR_HANDLER.handleError(e);
+                    RxJavaHooks.onError(e);
                     deliverUncaughtException(e);
                 } finally {
                     mad.unsubscribe();
@@ -2000,15 +1994,15 @@ public class Completable {
     public final void unsafeSubscribe(CompletableSubscriber s) {
         requireNonNull(s);
         try {
-            CompletableOnSubscribe onSubscribeDecorated = HOOK.onSubscribeStart(this, this.onSubscribe);
+            CompletableOnSubscribe onSubscribeDecorated = RxJavaHooks.onCompletableStart(this, this.onSubscribe);
             
             onSubscribeDecorated.call(s);
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            ex = HOOK.onSubscribeError(ex);
-            ERROR_HANDLER.handleError(ex);
+            ex = RxJavaHooks.onCompletableError(ex);
+            RxJavaHooks.onError(ex);
             throw toNpe(ex);
         }
     }
@@ -2066,13 +2060,13 @@ public class Completable {
                     s.add(d);
                 }
             });
-            RxJavaPlugins.getInstance().getObservableExecutionHook().onSubscribeReturn(s);
+            RxJavaHooks.onObservableReturn(s);
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            ex = HOOK.onSubscribeError(ex);
-            ERROR_HANDLER.handleError(ex);
+            ex = RxJavaHooks.onObservableError(ex);
+            RxJavaHooks.onError(ex);
             throw toNpe(ex);
         }
     }

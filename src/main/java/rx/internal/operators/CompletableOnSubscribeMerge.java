@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.*;
 
 import rx.*;
 import rx.Completable.*;
-import rx.exceptions.CompositeException;
 import rx.Observable;
-import rx.plugins.RxJavaPlugins;
+import rx.exceptions.CompositeException;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
 public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe {
@@ -110,7 +110,7 @@ public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe
                 @Override
                 public void onError(Throwable e) {
                     if (innerDone) {
-                        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                        RxJavaHooks.onError(e);
                         return;
                     }
                     innerDone = true;
@@ -145,7 +145,7 @@ public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe
         @Override
         public void onError(Throwable t) {
             if (done) {
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(t);
+                RxJavaHooks.onError(t);
                 return;
             }
             getOrCreateErrors().offer(t);
@@ -172,7 +172,7 @@ public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe
                     if (once.compareAndSet(false, true)) {
                         actual.onError(e);
                     } else {
-                        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                        RxJavaHooks.onError(e);
                     }
                 }
             } else
@@ -183,7 +183,7 @@ public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe
                     if (once.compareAndSet(false, true)) {
                         actual.onError(e);
                     } else {
-                        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                        RxJavaHooks.onError(e);
                     }
                 }
             }

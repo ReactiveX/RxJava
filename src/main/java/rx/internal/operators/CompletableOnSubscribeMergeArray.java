@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.*;
 
 import rx.*;
 import rx.Completable.*;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
 public final class CompletableOnSubscribeMergeArray implements CompletableOnSubscribe {
@@ -50,7 +50,7 @@ public final class CompletableOnSubscribeMergeArray implements CompletableOnSubs
                     s.onError(npe);
                     return;
                 } else {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(npe);
+                    RxJavaHooks.onError(npe);
                 }
             }
             
@@ -66,7 +66,7 @@ public final class CompletableOnSubscribeMergeArray implements CompletableOnSubs
                     if (once.compareAndSet(false, true)) {
                         s.onError(e);
                     } else {
-                        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                        RxJavaHooks.onError(e);
                     }
                 }
 

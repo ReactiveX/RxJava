@@ -22,7 +22,7 @@ import rx.*;
 import rx.Completable.*;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.util.unsafe.SpscArrayQueue;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.SerialSubscription;
 
 public final class CompletableOnSubscribeConcat implements CompletableOnSubscribe {
@@ -87,7 +87,7 @@ public final class CompletableOnSubscribeConcat implements CompletableOnSubscrib
                 actual.onError(t);
                 return;
             }
-            RxJavaPlugins.getInstance().getErrorHandler().handleError(t);
+            RxJavaHooks.onError(t);
         }
         
         @Override
@@ -125,7 +125,7 @@ public final class CompletableOnSubscribeConcat implements CompletableOnSubscrib
                     }
                     return;
                 }
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(new IllegalStateException("Queue is empty?!"));
+                RxJavaHooks.onError(new IllegalStateException("Queue is empty?!"));
                 return;
             }
             

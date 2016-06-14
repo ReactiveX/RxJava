@@ -19,7 +19,7 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Action0;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Registers an action to be called after an Observable invokes {@code onComplete} or {@code onError}.
@@ -73,7 +73,7 @@ public final class OperatorDoAfterTerminate<T> implements Operator<T, T> {
                     action.call();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(ex);
+                    RxJavaHooks.onError(ex);
                 }
             }
         };

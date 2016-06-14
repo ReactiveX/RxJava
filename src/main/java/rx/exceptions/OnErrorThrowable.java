@@ -191,6 +191,7 @@ public final class OnErrorThrowable extends RuntimeException {
                 return ((Enum<?>) value).name();
             }
 
+            @SuppressWarnings("deprecation")
             String pluggedRendering = RxJavaPlugins.getInstance().getErrorHandler().handleOnNextValueRendering(value);
             if (pluggedRendering != null) {
                 return pluggedRendering;

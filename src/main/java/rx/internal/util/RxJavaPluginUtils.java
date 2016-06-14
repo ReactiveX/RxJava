@@ -15,13 +15,13 @@
  */
 package rx.internal.util;
 
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 
 public final class RxJavaPluginUtils {
 
     public static void handleException(Throwable e) {
         try {
-            RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+            RxJavaHooks.onError(e);
         } catch (Throwable pluginException) {
             handlePluginException(pluginException);
         }

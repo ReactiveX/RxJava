@@ -235,19 +235,21 @@ public class ScalarSynchronousObservableTest {
         ts.assertNotCompleted();
     }
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void hookCalled() {
-        RxJavaObservableExecutionHook save = ScalarSynchronousObservable.hook;
+        Func1<OnSubscribe, OnSubscribe> save = RxJavaHooks.getOnObservableCreate();
         try {
             final AtomicInteger c = new AtomicInteger();
             
-            ScalarSynchronousObservable.hook = new RxJavaObservableExecutionHook() {
+            
+            RxJavaHooks.setOnObservableCreate(new Func1<OnSubscribe, OnSubscribe>() {
                 @Override
-                public <T> OnSubscribe<T> onCreate(OnSubscribe<T> f) {
+                public OnSubscribe call(OnSubscribe t) {
                     c.getAndIncrement();
-                    return f;
+                    return t;
                 }
-            };
+            });
             
             int n = 10;
             
@@ -257,22 +259,23 @@ public class ScalarSynchronousObservableTest {
             
             Assert.assertEquals(n, c.get());
         } finally {
-            ScalarSynchronousObservable.hook = save;
+            RxJavaHooks.setOnObservableCreate(save);
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void hookChangesBehavior() {
-        RxJavaObservableExecutionHook save = ScalarSynchronousObservable.hook;
+        Func1<OnSubscribe, OnSubscribe> save = RxJavaHooks.getOnObservableCreate();
         try {
-            ScalarSynchronousObservable.hook = new RxJavaObservableExecutionHook() {
+            RxJavaHooks.setOnObservableCreate(new Func1<OnSubscribe, OnSubscribe>() {
                 @Override
-                public <T> OnSubscribe<T> onCreate(OnSubscribe<T> f) {
+                public OnSubscribe call(OnSubscribe f) {
                     if (f instanceof ScalarSynchronousObservable.JustOnSubscribe) {
-                        final T v = ((ScalarSynchronousObservable.JustOnSubscribe<T>) f).value;
-                        return new OnSubscribe<T>() {
+                        final Object v = ((ScalarSynchronousObservable.JustOnSubscribe) f).value;
+                        return new OnSubscribe<Object>() {
                             @Override
-                            public void call(Subscriber<? super T> t) {
+                            public void call(Subscriber<? super Object> t) {
                                 t.onNext(v);
                                 t.onNext(v);
                                 t.onCompleted();
@@ -281,7 +284,7 @@ public class ScalarSynchronousObservableTest {
                     }
                     return f;
                 }
-            };
+            });
             
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             
@@ -292,7 +295,7 @@ public class ScalarSynchronousObservableTest {
             ts.assertCompleted();
             
         } finally {
-            ScalarSynchronousObservable.hook = save;
+            RxJavaHooks.setOnObservableCreate(save);
         }
     }
 
