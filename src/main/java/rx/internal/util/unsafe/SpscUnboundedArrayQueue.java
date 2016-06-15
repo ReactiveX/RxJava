@@ -132,8 +132,8 @@ public class SpscUnboundedArrayQueue<E> extends SpscUnboundedArrayQueueConsumerF
     }
 
     private boolean writeToQueue(final E[] buffer, final E e, final long index, final long offset) {
-        soProducerIndex(index + 1);// this ensures atomic write of long on 32bit platforms
         soElement(buffer, offset, e);// StoreStore
+        soProducerIndex(index + 1);// this ensures atomic write of long on 32bit platforms
         return true;
     }
 
@@ -144,11 +144,11 @@ public class SpscUnboundedArrayQueue<E> extends SpscUnboundedArrayQueueConsumerF
         final E[] newBuffer = (E[]) new Object[capacity];
         producerBuffer = newBuffer;
         producerLookAhead = currIndex + mask - 1;
-        soProducerIndex(currIndex + 1);// this ensures correctness on 32bit platforms
         soElement(newBuffer, offset, e);// StoreStore
         soNext(oldBuffer, newBuffer);
         soElement(oldBuffer, offset, HAS_NEXT); // new buffer is visible after element is
                                                                  // inserted
+        soProducerIndex(currIndex + 1);// this ensures correctness on 32bit platforms
     }
 
     private void soNext(E[] curr, E[] next) {
@@ -174,8 +174,8 @@ public class SpscUnboundedArrayQueue<E> extends SpscUnboundedArrayQueueConsumerF
         final Object e = lvElement(buffer, offset);// LoadLoad
         boolean isNextBuffer = e == HAS_NEXT;
         if (null != e && !isNextBuffer) {
-            soConsumerIndex(index + 1);// this ensures correctness on 32bit platforms
             soElement(buffer, offset, null);// StoreStore
+            soConsumerIndex(index + 1);// this ensures correctness on 32bit platforms
             return (E) e;
         } else if (isNextBuffer) {
             return newBufferPoll(lvNext(buffer), index, mask);
@@ -192,8 +192,8 @@ public class SpscUnboundedArrayQueue<E> extends SpscUnboundedArrayQueueConsumerF
         if (null == n) {
             return null;
         } else {
-            soConsumerIndex(index + 1);// this ensures correctness on 32bit platforms
             soElement(nextBuffer, offsetInNew, null);// StoreStore
+            soConsumerIndex(index + 1);// this ensures correctness on 32bit platforms
             return n;
         }
     }

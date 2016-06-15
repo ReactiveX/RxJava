@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -32,6 +32,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.exceptions.*;
 import rx.functions.*;
+import rx.internal.util.UtilityFunctions;
 import rx.observers.TestSubscriber;
 import rx.schedulers.*;
 import rx.subjects.PublishSubject;
@@ -877,6 +878,32 @@ public class OperatorSwitchTest {
             ts.assertNoErrors();
             if (ts.getOnCompletedEvents().size() == 0) {
                 fail("switchAsyncHeavily timed out @ " + j + " (" + ts.getOnNextEvents().size() + " onNexts received, last was " + (System.currentTimeMillis() - lastSeen[0]) + " ms ago");
+            }
+        }
+    }
+    
+    @Test
+    public void asyncInner() throws Throwable {
+        for (int i = 0; i < 100; i++) {
+            
+            final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+            
+            Observable.just(Observable.range(1, 1000 * 1000).subscribeOn(Schedulers.computation()))
+            .switchMap(UtilityFunctions.<Observable<Integer>>identity())
+            .observeOn(Schedulers.computation())
+            .ignoreElements()
+            .timeout(5, TimeUnit.SECONDS)
+            .toBlocking()
+            .subscribe(Actions.empty(), new Action1<Throwable>() {
+                @Override
+                public void call(Throwable e) {
+                    error.set(e);
+                }
+            });
+            
+            Throwable ex = error.get();
+            if (ex != null) {
+                throw ex;
             }
         }
     }
