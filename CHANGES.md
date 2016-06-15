@@ -1,5 +1,34 @@
 # RxJava Releases #
 
+### Version 1.1.6 - June 15, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.6%7C))
+
+#### API enhancements
+
+  - [Pull 3934](https://github.com/ReactiveX/RxJava/pull/3934): `TestSubscriber` extra info on assertion failures
+  - [Pull 3948](https://github.com/ReactiveX/RxJava/pull/3948): add `Completable.andThen(Completable)`
+  - [Pull 3942](https://github.com/ReactiveX/RxJava/pull/3942): add `Completable.subscribe` to be safe, add `unsafeSubscribe` option + `RxJavaPlugins` hook support 
+  - [Pull 3936](https://github.com/ReactiveX/RxJava/pull/3936): promote `UnicastSubject` to be a standard+experimental `Subject`
+  - [Pull 3971](https://github.com/ReactiveX/RxJava/pull/3971): add `Observable.rebatchRequests` operator to change and stabilize request amounts of the downstream.
+  - [Pull 3986](https://github.com/ReactiveX/RxJava/pull/3986): add `Schedulers.reset()` for better testing
+  - [Pull 3918](https://github.com/ReactiveX/RxJava/pull/3918): `ReplaySubject` now supports backpressure 
+
+#### API deprecations
+
+  - [Pull 3948](https://github.com/ReactiveX/RxJava/pull/3948) deprecate `Completable.endWith()` in favor of `andThen()`
+
+#### Performance enhancements
+
+  - [Pull 3470](https://github.com/ReactiveX/RxJava/pull/3470): `replay` request coordination reduce overhead
+
+#### Bugfixes
+
+  - [Pull 3924](https://github.com/ReactiveX/RxJava/pull/3924): fix `RxRingBuffer`-pool depending on the `computation` scheduler 
+  - [Pull 3922](https://github.com/ReactiveX/RxJava/pull/3922): fix `using()` resource cleanup when factory throws or being non-eager 
+  - [Pull 3941](https://github.com/ReactiveX/RxJava/pull/3941): fix `Single.flatMap` not composing subscription through 
+  - [Pull 3958](https://github.com/ReactiveX/RxJava/pull/3958): fix `just()` construction to call the `onCreate` execution hook 
+  - [Pull 3977](https://github.com/ReactiveX/RxJava/pull/3977): Use the correct `Throwable` to set the cause for `CompositeException`
+  - [Pull 4005](https://github.com/ReactiveX/RxJava/pull/4005): Fix Spsc queues reporting not empty but then poll() returns null.
+
 ### Version 1.1.5 - May 5, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.5%7C))
 
 #### Bugfixes
