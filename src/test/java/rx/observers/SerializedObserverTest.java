@@ -792,7 +792,7 @@ public class SerializedObserverTest {
     @Test
     public void testSerializeNull() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t != null && t == 0) {
@@ -812,7 +812,7 @@ public class SerializedObserverTest {
     
     @Test
     public void testSerializeAllowsOnError() {
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
@@ -834,7 +834,7 @@ public class SerializedObserverTest {
     @Test
     public void testSerializeReentrantNullAndComplete() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 serial.get().onCompleted();
@@ -853,13 +853,13 @@ public class SerializedObserverTest {
         
         assertEquals(1, to.getOnErrorEvents().size());
         assertTrue(to.getOnErrorEvents().get(0) instanceof TestException);
-        assertTrue(to.getOnCompletedEvents().isEmpty());
+        assertEquals(0, to.getCompletions());
     }
     
     @Test
     public void testSerializeReentrantNullAndError() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 serial.get().onError(new RuntimeException());
@@ -878,13 +878,13 @@ public class SerializedObserverTest {
         
         assertEquals(1, to.getOnErrorEvents().size());
         assertTrue(to.getOnErrorEvents().get(0) instanceof TestException);
-        assertTrue(to.getOnCompletedEvents().isEmpty());
+        assertEquals(0, to.getCompletions());
     }
     
     @Test
     public void testSerializeDrainPhaseThrows() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t != null && t == 0) {

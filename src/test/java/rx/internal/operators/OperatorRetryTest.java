@@ -752,7 +752,7 @@ public class OperatorRetryTest {
                                     for (Throwable t : ts.getOnErrorEvents()) {
                                         onNextEvents.add(t.toString());
                                     }
-                                    for (int k = 0; k < ts.getOnCompletedEvents().size(); k++) {
+                                    for (int k = 0; k < ts.getCompletions(); k++) {
                                         onNextEvents.add("onCompleted");
                                     }
                                     data.put(j, onNextEvents);

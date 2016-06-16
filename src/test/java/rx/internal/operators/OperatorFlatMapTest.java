@@ -449,7 +449,7 @@ public class OperatorFlatMapTest {
             .subscribe(ts);
 
             ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
-            if (ts.getOnCompletedEvents().isEmpty()) {
+            if (ts.getCompletions() == 0) {
                 System.out.println(ts.getOnNextEvents().size());
             }
             ts.assertTerminalEvent();
@@ -491,7 +491,7 @@ public class OperatorFlatMapTest {
             .subscribe(ts);
 
             ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
-            if (ts.getOnCompletedEvents().isEmpty()) {
+            if (ts.getCompletions() == 0) {
                 System.out.println(ts.getOnNextEvents().size());
             }
             ts.assertTerminalEvent();

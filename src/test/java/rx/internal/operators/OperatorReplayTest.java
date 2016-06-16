@@ -905,7 +905,7 @@ public class OperatorReplayTest {
         source.subscribe(ts);
 
         ts.assertNoErrors();
-        assertTrue(ts.getOnCompletedEvents().isEmpty());
+        assertEquals(0, ts.getCompletions());
         List<Integer> onNextEvents = ts.getOnNextEvents();
         assertEquals(10, onNextEvents.size());
 
@@ -1090,14 +1090,14 @@ public class OperatorReplayTest {
         source.subscribe(ts);
         
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-        Assert.assertTrue(ts.getOnCompletedEvents().isEmpty());
+        Assert.assertEquals(0, ts.getCompletions());
         Assert.assertEquals(1, ts.getOnErrorEvents().size());
         
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
         source.subscribe(ts2);
         
         ts2.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-        Assert.assertTrue(ts2.getOnCompletedEvents().isEmpty());
+        Assert.assertEquals(0, ts2.getCompletions());
         Assert.assertEquals(1, ts2.getOnErrorEvents().size());
     }
     

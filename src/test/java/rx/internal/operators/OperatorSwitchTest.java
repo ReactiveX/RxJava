@@ -876,7 +876,7 @@ public class OperatorSwitchTest {
                 throw new AssertionError("Dropped exceptions", new CompositeException(q));
             }
             ts.assertNoErrors();
-            if (ts.getOnCompletedEvents().size() == 0) {
+            if (ts.getCompletions() == 0) {
                 fail("switchAsyncHeavily timed out @ " + j + " (" + ts.getOnNextEvents().size() + " onNexts received, last was " + (System.currentTimeMillis() - lastSeen[0]) + " ms ago");
             }
         }

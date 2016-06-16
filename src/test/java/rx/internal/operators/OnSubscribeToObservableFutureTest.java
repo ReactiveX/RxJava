@@ -39,7 +39,7 @@ public class OnSubscribeToObservableFutureTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = Observable.from(future).subscribe(new TestObserver<Object>(o));
+        Subscription sub = Observable.from(future).subscribe(new TestSubscriber<Object>(o));
         sub.unsubscribe();
 
         verify(o, times(1)).onNext(value);
@@ -57,7 +57,7 @@ public class OnSubscribeToObservableFutureTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = Observable.from(future).subscribe(new TestObserver<Object>(o));
+        Subscription sub = Observable.from(future).subscribe(new TestSubscriber<Object>(o));
         sub.unsubscribe();
 
         verify(o, never()).onNext(null);
@@ -79,7 +79,7 @@ public class OnSubscribeToObservableFutureTest {
         testSubscriber.unsubscribe();
         Observable.from(future).subscribe(testSubscriber);
         assertEquals(0, testSubscriber.getOnErrorEvents().size());
-        assertEquals(0, testSubscriber.getOnCompletedEvents().size());
+        assertEquals(0, testSubscriber.getCompletions());
     }
 
     @Test
@@ -125,7 +125,7 @@ public class OnSubscribeToObservableFutureTest {
         Subscription sub = futureObservable.subscribeOn(Schedulers.computation()).subscribe(testSubscriber);
         sub.unsubscribe();
         assertEquals(0, testSubscriber.getOnErrorEvents().size());
-        assertEquals(0, testSubscriber.getOnCompletedEvents().size());
+        assertEquals(0, testSubscriber.getCompletions());
         assertEquals(0, testSubscriber.getOnNextEvents().size());
     }
     

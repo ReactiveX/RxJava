@@ -30,6 +30,7 @@ import rx.Observer;
 import rx.exceptions.TestException;
 import rx.subjects.PublishSubject;
 
+@Deprecated
 public class TestObserverTest {
 
     @Rule

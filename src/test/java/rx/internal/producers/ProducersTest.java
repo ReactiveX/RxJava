@@ -51,7 +51,7 @@ public class ProducersTest {
         
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
-        Assert.assertTrue(ts.getOnCompletedEvents().isEmpty());
+        Assert.assertEquals(0, ts.getCompletions());
         
         ts.requestMore(2);
         
@@ -68,7 +68,7 @@ public class ProducersTest {
 
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
-        Assert.assertTrue(ts.getOnCompletedEvents().isEmpty());
+        Assert.assertEquals(0, ts.getCompletions());
         
         sdp.setValue(1);
         
@@ -89,13 +89,13 @@ public class ProducersTest {
 
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
-        Assert.assertTrue(ts.getOnCompletedEvents().isEmpty());
+        Assert.assertEquals(0, ts.getCompletions());
         
         sdp.setValue(1);
 
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
-        Assert.assertTrue(ts.getOnCompletedEvents().isEmpty());
+        Assert.assertEquals(0, ts.getCompletions());
         
         ts.requestMore(2);
         

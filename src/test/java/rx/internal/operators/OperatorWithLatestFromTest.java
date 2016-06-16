@@ -155,7 +155,7 @@ public class OperatorWithLatestFromTest {
         
         ts.assertReceivedOnNext(Arrays.asList((1 << 8) + 1));
         ts.assertNoErrors();
-        assertEquals(0, ts.getOnCompletedEvents().size());
+        assertEquals(0, ts.getCompletions());
         
         assertFalse(source.hasObservers());
         assertFalse(other.hasObservers());

@@ -179,11 +179,12 @@ public class TestSubscriberTest {
     
     @Test
     public void testDelegate1() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        @SuppressWarnings("unchecked")
+        Observer<Integer> to = mock(Observer.class);
         TestSubscriber<Integer> ts = TestSubscriber.create(to);
         ts.onCompleted();
         
-        to.assertTerminalEvent();
+        verify(to).onCompleted();
     }
     
     @Test
@@ -562,10 +563,20 @@ public class TestSubscriberTest {
     
     @Test(timeout = 1000)
     public void testOnCompletedCrashCountsDownLatch() {
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        Observer<Integer> to = new Observer<Integer>() {
             @Override
             public void onCompleted() {
                 throw new TestException();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                
             }
         };
         TestSubscriber<Integer> ts = TestSubscriber.create(to);
@@ -581,10 +592,20 @@ public class TestSubscriberTest {
     
     @Test(timeout = 1000)
     public void testOnErrorCrashCountsDownLatch() {
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        Observer<Integer> to = new Observer<Integer>() {
             @Override
             public void onError(Throwable e) {
                 throw new TestException();
+            }
+
+            @Override
+            public void onCompleted() {
+                
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                
             }
         };
         TestSubscriber<Integer> ts = TestSubscriber.create(to);
@@ -713,4 +734,42 @@ public class TestSubscriberTest {
         }
     }
 
+    @Test
+    public void completionCount() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        Assert.assertEquals(0, ts.getCompletions());
+
+        ts.onCompleted();
+        
+        Assert.assertEquals(1, ts.getCompletions());
+
+        ts.onCompleted();
+        
+        Assert.assertEquals(2, ts.getCompletions());
+    }
+    
+    @Test
+    public void awaitValueCount() throws Exception {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(1, 5).delay(100, TimeUnit.MILLISECONDS)
+        .subscribe(ts);
+        
+        Assert.assertTrue(ts.awaitValueCount(2, 5, TimeUnit.SECONDS));
+        
+        Assert.assertEquals(1, ts.getOnNextEvents().get(0).intValue());
+        Assert.assertEquals(2, ts.getOnNextEvents().get(1).intValue());
+    }
+    
+    @Test
+    public void awaitValueCountFails() throws Exception {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(1, 2).delay(100, TimeUnit.MILLISECONDS)
+        .subscribe(ts);
+        
+        Assert.assertFalse(ts.awaitValueCount(5, 1, TimeUnit.SECONDS));
+        
+    }
 }

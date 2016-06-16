@@ -486,10 +486,10 @@ public class OperatorMergeTest {
             ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
             ts.assertTerminalEvent();
             ts.assertNoErrors();
-            assertEquals(1, ts.getOnCompletedEvents().size());
+            assertEquals(1, ts.getCompletions());
             List<Integer> onNextEvents = ts.getOnNextEvents();
             assertEquals(30000, onNextEvents.size());
-            //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
+            //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getCompletions().size());
         }
     }
 
@@ -531,10 +531,10 @@ public class OperatorMergeTest {
             merge.subscribe(ts);
 
             ts.awaitTerminalEvent();
-            assertEquals(1, ts.getOnCompletedEvents().size());
+            assertEquals(1, ts.getCompletions());
             List<Integer> onNextEvents = ts.getOnNextEvents();
             assertEquals(300, onNextEvents.size());
-            //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
+            //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getCompletions().size());
         }
     }
 
@@ -573,10 +573,10 @@ public class OperatorMergeTest {
 
             ts.awaitTerminalEvent();
             ts.assertNoErrors();
-            assertEquals(1, ts.getOnCompletedEvents().size());
+            assertEquals(1, ts.getCompletions());
             List<Integer> onNextEvents = ts.getOnNextEvents();
             assertEquals(30000, onNextEvents.size());
-            //                System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
+            //                System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getCompletions().size());
         }
     }
 
@@ -1034,11 +1034,11 @@ public class OperatorMergeTest {
         source.subscribe(subscriber);
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
         subscriber.assertReceivedOnNext(Collections.<Long>emptyList());
-        assertEquals(Collections.<Notification<Long>>emptyList(), subscriber.getOnCompletedEvents());
+        assertEquals(0, subscriber.getCompletions());
         subscriber.requestMore(1);
         subscriber.assertReceivedOnNext(asList(1L));
 // TODO: it should be acceptable to get a completion event without requests
-//        assertEquals(Collections.<Notification<Long>>emptyList(), subscriber.getOnCompletedEvents());
+//        assertEquals(Collections.<Notification<Long>>emptyList(), subscriber.getCompletions());
 //        subscriber.requestMore(1);
         subscriber.assertTerminalEvent();
     }

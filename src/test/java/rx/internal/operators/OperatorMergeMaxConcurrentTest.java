@@ -281,7 +281,7 @@ public class OperatorMergeMaxConcurrentTest {
         
         ts.assertNoErrors();
         assertEquals(5, ts.getOnNextEvents().size());
-        assertEquals(0, ts.getOnCompletedEvents().size());
+        assertEquals(0, ts.getCompletions());
         
         ts.unsubscribe();
     }
