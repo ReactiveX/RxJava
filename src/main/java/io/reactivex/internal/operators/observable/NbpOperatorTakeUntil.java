@@ -23,8 +23,8 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class NbpOperatorTakeUntil<T, U> implements NbpOperator<T, T> {
-    final Observable<? extends U> other;
-    public NbpOperatorTakeUntil(Observable<? extends U> other) {
+    final ConsumableObservable<? extends U> other;
+    public NbpOperatorTakeUntil(ConsumableObservable<? extends U> other) {
         this.other = other;
     }
     @Override

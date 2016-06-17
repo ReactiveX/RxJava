@@ -32,7 +32,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorSwitchTest {
@@ -450,7 +450,7 @@ public class OperatorSwitchTest {
 
         
         final TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
-        Flowable.switchOnNext(o).subscribe(new DefaultObserver<String>() {
+        Flowable.switchOnNext(o).subscribe(new DefaultSubscriber<String>() {
 
             private int requested = 0;
 

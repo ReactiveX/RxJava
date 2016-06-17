@@ -28,7 +28,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OnSubscribeFromIterableTest {
@@ -174,7 +174,7 @@ public class OnSubscribeFromIterableTest {
         final CountDownLatch latch = new CountDownLatch(expectedCount);
         
         o.subscribeOn(Schedulers.computation())
-        .subscribe(new DefaultObserver<Integer>() {
+        .subscribe(new DefaultSubscriber<Integer>() {
             
             @Override
             public void onStart() {
@@ -204,7 +204,7 @@ public class OnSubscribeFromIterableTest {
         
         final AtomicBoolean completed = new AtomicBoolean(false);
         
-        Flowable.fromIterable(Collections.emptyList()).subscribe(new DefaultObserver<Object>() {
+        Flowable.fromIterable(Collections.emptyList()).subscribe(new DefaultSubscriber<Object>() {
 
             @Override
             public void onStart() {
@@ -298,7 +298,7 @@ public class OnSubscribeFromIterableTest {
                 };
             }
         };
-        Flowable.fromIterable(iterable).subscribe(new DefaultObserver<Integer>() {
+        Flowable.fromIterable(iterable).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {

@@ -308,7 +308,7 @@ public class PublishSubjectTest {
                         return Flowable.just(t1 + ", " + t1);
                     }
                 })
-                .subscribe(new DefaultObserver<String>() {
+                .subscribe(new DefaultSubscriber<String>() {
                     @Override
                     public void onNext(String t) {
                         o.onNext(t);

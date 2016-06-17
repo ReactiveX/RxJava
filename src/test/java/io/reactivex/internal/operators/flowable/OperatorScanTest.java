@@ -27,7 +27,7 @@ import io.reactivex.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorScanTest {
@@ -143,7 +143,7 @@ public class OperatorScanTest {
                     }
 
                 })
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onStart() {
@@ -184,7 +184,7 @@ public class OperatorScanTest {
                     }
 
                 })
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onStart() {
@@ -225,7 +225,7 @@ public class OperatorScanTest {
                     }
 
                 })
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onComplete() {

@@ -18,7 +18,7 @@ import java.util.*;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.internal.util.*;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 /**
  * Returns an Iterable that always returns the item most recently emitted by an Observable, or a
@@ -57,7 +57,7 @@ public enum BlockingOperatorMostRecent {
         };
     }
 
-    private static final class MostRecentObserver<T> extends DefaultObserver<T> {
+    private static final class MostRecentObserver<T> extends DefaultSubscriber<T> {
         volatile Object value;
         
         private MostRecentObserver(T value) {

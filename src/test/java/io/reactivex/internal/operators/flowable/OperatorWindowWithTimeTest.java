@@ -26,7 +26,7 @@ import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 
@@ -135,7 +135,7 @@ public class OperatorWindowWithTimeTest {
         return new Consumer<Flowable<T>>() {
             @Override
             public void accept(Flowable<T> stringObservable) {
-                stringObservable.subscribe(new DefaultObserver<T>() {
+                stringObservable.subscribe(new DefaultSubscriber<T>() {
                     @Override
                     public void onComplete() {
                         lists.add(new ArrayList<T>(list));

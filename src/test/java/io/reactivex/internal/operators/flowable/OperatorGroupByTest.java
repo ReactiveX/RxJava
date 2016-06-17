@@ -32,7 +32,7 @@ import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorGroupByTest {
@@ -118,7 +118,7 @@ public class OperatorGroupByTest {
                     }
                 });
             }
-        }).subscribe(new DefaultObserver<String>() {
+        }).subscribe(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -229,7 +229,7 @@ public class OperatorGroupByTest {
                 });
 
             }
-        }).subscribe(new DefaultObserver<String>() {
+        }).subscribe(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -311,7 +311,7 @@ public class OperatorGroupByTest {
                                 });
 
                     }
-                }).subscribe(new DefaultObserver<String>() {
+                }).subscribe(new DefaultSubscriber<String>() {
 
                     @Override
                     public void onComplete() {
@@ -470,7 +470,7 @@ public class OperatorGroupByTest {
                         }
                     }
                 })
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onComplete() {
@@ -510,7 +510,7 @@ public class OperatorGroupByTest {
                         return i % 2;
                     }
                 })
-                .subscribe(new DefaultObserver<GroupedFlowable<Integer, Integer>>() {
+                .subscribe(new DefaultSubscriber<GroupedFlowable<Integer, Integer>>() {
 
                     @Override
                     public void onComplete() {
@@ -993,9 +993,9 @@ public class OperatorGroupByTest {
 
         // create two observers
         @SuppressWarnings("unchecked")
-        DefaultObserver<GroupedFlowable<Boolean, Long>> o1 = mock(DefaultObserver.class);
+        DefaultSubscriber<GroupedFlowable<Boolean, Long>> o1 = mock(DefaultSubscriber.class);
         @SuppressWarnings("unchecked")
-        DefaultObserver<GroupedFlowable<Boolean, Long>> o2 = mock(DefaultObserver.class);
+        DefaultSubscriber<GroupedFlowable<Boolean, Long>> o2 = mock(DefaultSubscriber.class);
 
         // subscribe with the observers
         stream.subscribe(o1);
@@ -1222,7 +1222,7 @@ public class OperatorGroupByTest {
         inner.get().subscribe();
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o2 = mock(DefaultObserver.class);
+        DefaultSubscriber<Integer> o2 = mock(DefaultSubscriber.class);
 
         inner.get().subscribe(o2);
 
@@ -1410,7 +1410,7 @@ public class OperatorGroupByTest {
         final TestSubscriber<Integer> inner2 = new TestSubscriber<Integer>();
 
         final TestSubscriber<GroupedFlowable<Integer, Integer>> outer
-                = new TestSubscriber<GroupedFlowable<Integer, Integer>>(new DefaultObserver<GroupedFlowable<Integer, Integer>>() {
+                = new TestSubscriber<GroupedFlowable<Integer, Integer>>(new DefaultSubscriber<GroupedFlowable<Integer, Integer>>() {
 
             @Override
             public void onComplete() {
@@ -1470,7 +1470,7 @@ public class OperatorGroupByTest {
                         return g;
                     }
                 })
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() {
                     
                     @Override
                     public void onStart() {

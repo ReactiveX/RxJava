@@ -16,9 +16,9 @@ package io.reactivex.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.ConsumableObservable;
+import io.reactivex.Observable.NbpOperator;
 import io.reactivex.Observer;
-import io.reactivex.Observable;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
@@ -27,13 +27,13 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.Pow2;
 
 public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
-    final Function<? super T, ? extends Observable<? extends U>> mapper;
+    final Function<? super T, ? extends ConsumableObservable<? extends U>> mapper;
     final boolean delayErrors;
     final int maxConcurrency;
     final int bufferSize;
     
     public NbpOperatorFlatMap( 
-            Function<? super T, ? extends Observable<? extends U>> mapper,
+            Function<? super T, ? extends ConsumableObservable<? extends U>> mapper,
             boolean delayErrors, int maxConcurrency, int bufferSize) {
         this.mapper = mapper;
         this.delayErrors = delayErrors;
@@ -51,7 +51,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         private static final long serialVersionUID = -2117620485640801370L;
         
         final Observer<? super U> actual;
-        final Function<? super T, ? extends Observable<? extends U>> mapper;
+        final Function<? super T, ? extends ConsumableObservable<? extends U>> mapper;
         final boolean delayErrors;
         final int maxConcurrency;
         final int bufferSize;
@@ -78,11 +78,11 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         long lastId;
         int lastIndex;
         
-        Queue<Observable<? extends U>> sources;
+        Queue<ConsumableObservable<? extends U>> sources;
         
         int wip;
         
-        public MergeSubscriber(Observer<? super U> actual, Function<? super T, ? extends Observable<? extends U>> mapper,
+        public MergeSubscriber(Observer<? super U> actual, Function<? super T, ? extends ConsumableObservable<? extends U>> mapper,
                 boolean delayErrors, int maxConcurrency, int bufferSize) {
             this.actual = actual;
             this.mapper = mapper;
@@ -90,7 +90,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
             this.maxConcurrency = maxConcurrency;
             this.bufferSize = bufferSize;
             if (maxConcurrency != Integer.MAX_VALUE) {
-                sources = new ArrayDeque<Observable<? extends U>>(maxConcurrency);
+                sources = new ArrayDeque<ConsumableObservable<? extends U>>(maxConcurrency);
             }
             this.subscribers = new AtomicReference<InnerSubscriber<?, ?>[]>(EMPTY);
         }
@@ -110,7 +110,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
             if (done) {
                 return;
             }
-            Observable<? extends U> p;
+            ConsumableObservable<? extends U> p;
             try {
                 p = mapper.apply(t);
             } catch (Throwable e) {
@@ -135,7 +135,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
             }
         }
         
-        void subscribeInner(Observable<? extends U> p) {
+        void subscribeInner(ConsumableObservable<? extends U> p) {
             InnerSubscriber<T, U> inner = new InnerSubscriber<T, U>(this, uniqueId++);
             addInner(inner);
             p.subscribe(inner);
@@ -413,7 +413,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
                 
                 if (innerCompleted) {
                     if (maxConcurrency != Integer.MAX_VALUE) {
-                        Observable<? extends U> p;
+                        ConsumableObservable<? extends U> p;
                         synchronized (this) {
                             p = sources.poll();
                             if (p == null) {

@@ -162,7 +162,7 @@ public class TestSubscriberTest {
 
     @Test(expected = NullPointerException.class)
     public void testNullDelegate1() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((DefaultObserver<Integer>)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((DefaultSubscriber<Integer>)null);
         ts.onComplete();
     }
     

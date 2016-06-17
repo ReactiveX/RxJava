@@ -135,7 +135,7 @@ public class OperatorOnErrorResumeNextViaObservableTest {
         Flowable<String> observable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeNext(resume);
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
         TestSubscriber<String> ts = new TestSubscriber<String>(observer, Long.MAX_VALUE);
         observable.subscribe(ts);
 

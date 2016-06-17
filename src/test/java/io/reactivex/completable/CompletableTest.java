@@ -575,12 +575,12 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void fromNbpObservableNull() {
-        Completable.fromNbpObservable(null);
+        Completable.fromObservable(null);
     }
     
     @Test(timeout = 1000)
     public void fromNbpObservableEmpty() {
-        Completable c = Completable.fromNbpObservable(Observable.empty());
+        Completable c = Completable.fromObservable(Observable.empty());
         
         c.await();
     }
@@ -588,7 +588,7 @@ public class CompletableTest {
     @Test(timeout = 5000)
     public void fromNbpObservableSome() {
         for (int n = 1; n < 10000; n *= 10) {
-            Completable c = Completable.fromNbpObservable(Observable.range(1, n));
+            Completable c = Completable.fromObservable(Observable.range(1, n));
             
             c.await();
         }
@@ -596,7 +596,7 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void fromNbpObservableError() {
-        Completable c = Completable.fromNbpObservable(Observable.error(new Supplier<Throwable>() {
+        Completable c = Completable.fromObservable(Observable.error(new Supplier<Throwable>() {
             @Override
             public Throwable get() {
                 return new TestException();
@@ -2859,12 +2859,12 @@ public class CompletableTest {
 
     @Test(timeout = 1000)
     public void toNbpObservableNormal() {
-        normal.completable.toNbpObservable().toBlocking().forEach(Functions.emptyConsumer());
+        normal.completable.toObservable().toBlocking().forEach(Functions.emptyConsumer());
     }
     
     @Test(timeout = 1000, expected = TestException.class)
     public void toNbpObservableError() {
-        error.completable.toNbpObservable().toBlocking().forEach(Functions.emptyConsumer());
+        error.completable.toObservable().toBlocking().forEach(Functions.emptyConsumer());
     }
     
     @Test(timeout = 1000)
@@ -3459,7 +3459,7 @@ public class CompletableTest {
 
     @Test(expected = NullPointerException.class)
     public void startWithFlowableNull() {
-        normal.completable.startWith((Flowable<Object>)null);
+        normal.completable.startWith((Publisher<Object>)null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -3469,24 +3469,24 @@ public class CompletableTest {
 
     @Test(expected = NullPointerException.class)
     public void endWithCompletableNull() {
-        normal.completable.endWith((Completable)null);
+        normal.completable.andThen((Completable)null);
     }
 
     @Test(expected = NullPointerException.class)
     public void endWithFlowableNull() {
-        normal.completable.endWith((Flowable<Object>)null);
+        normal.completable.andThen((Publisher<Object>)null);
     }
 
     @Test(expected = NullPointerException.class)
     public void endWithNbpObservableNull() {
-        normal.completable.endWith((Observable<Object>)null);
+        normal.completable.andThen((Observable<Object>)null);
     }
     
     @Test(timeout = 1000)
     public void endWithCompletableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Completable c = normal.completable
-                .endWith(Completable.fromCallable(new Callable<Object>() {
+                .andThen(Completable.fromCallable(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
                         run.set(normal.get() == 0);
@@ -3502,7 +3502,7 @@ public class CompletableTest {
     
     @Test(timeout = 1000)
     public void endWithCompletableError() {
-        Completable c = normal.completable.endWith(error.completable);
+        Completable c = normal.completable.andThen(error.completable);
         
         try {
             c.await();
@@ -3517,7 +3517,7 @@ public class CompletableTest {
     public void endWithFlowableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Flowable<Object> c = normal.completable
-                .endWith(Flowable.fromCallable(new Callable<Object>() {
+                .andThen(Flowable.fromCallable(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
                         run.set(normal.get() == 0);
@@ -3540,7 +3540,7 @@ public class CompletableTest {
     @Test(timeout = 1000)
     public void endWithFlowableError() {
         Flowable<Object> c = normal.completable
-                .endWith(Flowable.error(new TestException()));
+                .andThen(Flowable.error(new TestException()));
         
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         
@@ -3557,7 +3557,7 @@ public class CompletableTest {
     public void endWithNbpObservableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Observable<Object> c = normal.completable
-                .endWith(Observable.fromCallable(new Callable<Object>() {
+                .andThen(Observable.fromCallable(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
                         run.set(normal.get() == 0);
@@ -3580,7 +3580,7 @@ public class CompletableTest {
     @Test(timeout = 1000)
     public void endWithNbpObservableError() {
         Observable<Object> c = normal.completable
-                .endWith(Observable.error(new TestException()));
+                .andThen(Observable.error(new TestException()));
         
         TestObserver<Object> ts = new TestObserver<Object>();
         

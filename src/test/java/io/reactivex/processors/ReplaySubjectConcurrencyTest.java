@@ -25,7 +25,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class ReplaySubjectConcurrencyTest {
@@ -62,7 +62,7 @@ public class ReplaySubjectConcurrencyTest {
 
             @Override
             public void run() {
-                Subscriber<Long> slow = new DefaultObserver<Long>() {
+                Subscriber<Long> slow = new DefaultSubscriber<Long>() {
 
                     @Override
                     public void onComplete() {
@@ -103,7 +103,7 @@ public class ReplaySubjectConcurrencyTest {
             @Override
             public void run() {
                 final CountDownLatch fastLatch = new CountDownLatch(1);
-                Subscriber<Long> fast = new DefaultObserver<Long>() {
+                Subscriber<Long> fast = new DefaultSubscriber<Long>() {
 
                     @Override
                     public void onComplete() {
@@ -348,7 +348,7 @@ public class ReplaySubjectConcurrencyTest {
                 final AtomicReference<Object> o = new AtomicReference<Object>();
                 
                 rs.subscribeOn(s).observeOn(Schedulers.io())
-                .subscribe(new DefaultObserver<Object>() {
+                .subscribe(new DefaultSubscriber<Object>() {
     
                     @Override
                     public void onComplete() {

@@ -17,14 +17,14 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Completable;
+import io.reactivex.*;
 import io.reactivex.Completable.*;
 import io.reactivex.disposables.*;
 
 public final class CompletableOnSubscribeMergeDelayErrorArray implements CompletableOnSubscribe {
-    final Completable[] sources;
+    final ConsumableCompletable[] sources;
     
-    public CompletableOnSubscribeMergeDelayErrorArray(Completable[] sources) {
+    public CompletableOnSubscribeMergeDelayErrorArray(ConsumableCompletable[] sources) {
         this.sources = sources;
     }
     
@@ -37,7 +37,7 @@ public final class CompletableOnSubscribeMergeDelayErrorArray implements Complet
         
         s.onSubscribe(set);
         
-        for (Completable c : sources) {
+        for (ConsumableCompletable c : sources) {
             if (set.isDisposed()) {
                 return;
             }

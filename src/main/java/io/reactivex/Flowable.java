@@ -32,7 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
-public class Flowable<T> implements Publisher<T> {
+public class Flowable<T> implements Publisher<T>, ConsumableFlowable<T> {
     /**
      * Interface to map/wrap a downstream subscriber to an upstream subscriber.
      *
@@ -1190,7 +1190,7 @@ public class Flowable<T> implements Publisher<T> {
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerKind.NONE)
-    public final Flowable<T> asObservable() {
+    public final Flowable<T> asFlowable() {
         return create(new Publisher<T>() {
             @Override
             public void subscribe(Subscriber<? super T> s) {
@@ -1876,6 +1876,8 @@ public class Flowable<T> implements Publisher<T> {
         }
         return concatArray(this, fromArray);
     }
+    
+    
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerKind.NONE)
@@ -2942,6 +2944,13 @@ public class Flowable<T> implements Publisher<T> {
         subscribeActual(s);
     }
     
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerKind.NONE)
+//    @Override
+    public final void subscribe(Observer<? super T> o) {
+        toObservable().subscribe(o);
+    }
+    
     private void subscribeActual(Subscriber<? super T> s) {
         try {
             s = RxJavaPlugins.onSubscribe(s);
@@ -3491,7 +3500,7 @@ public class Flowable<T> implements Publisher<T> {
     
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerKind.NONE)
-    public final Observable<T> toNbpObservable() {
+    public final Observable<T> toObservable() {
         return Observable.fromPublisher(this);
     }
     
@@ -3746,5 +3755,4 @@ public class Flowable<T> implements Publisher<T> {
     public final <U, R> Flowable<R> zipWith(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError, int bufferSize) {
         return zip(this, other, zipper, delayError, bufferSize);
     }
-
 }

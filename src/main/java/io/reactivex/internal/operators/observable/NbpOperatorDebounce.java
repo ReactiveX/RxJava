@@ -25,9 +25,9 @@ import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
-    final Function<? super T, ? extends Observable<U>> debounceSelector;
+    final Function<? super T, ? extends ConsumableObservable<U>> debounceSelector;
 
-    public NbpOperatorDebounce(Function<? super T, ? extends Observable<U>> debounceSelector) {
+    public NbpOperatorDebounce(Function<? super T, ? extends ConsumableObservable<U>> debounceSelector) {
         this.debounceSelector = debounceSelector;
     }
     
@@ -39,7 +39,7 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
     static final class DebounceSubscriber<T, U> 
     implements Observer<T>, Disposable {
         final Observer<? super T> actual;
-        final Function<? super T, ? extends Observable<U>> debounceSelector;
+        final Function<? super T, ? extends ConsumableObservable<U>> debounceSelector;
         
         volatile boolean gate;
 
@@ -57,7 +57,7 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
         boolean done;
 
         public DebounceSubscriber(Observer<? super T> actual,
-                Function<? super T, ? extends Observable<U>> debounceSelector) {
+                Function<? super T, ? extends ConsumableObservable<U>> debounceSelector) {
             this.actual = actual;
             this.debounceSelector = debounceSelector;
         }
@@ -86,7 +86,7 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
                 d.dispose();
             }
             
-            Observable<U> p;
+            ConsumableObservable<U> p;
             
             try {
                 p = debounceSelector.apply(t);

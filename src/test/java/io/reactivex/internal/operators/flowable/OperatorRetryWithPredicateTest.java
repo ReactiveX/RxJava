@@ -33,7 +33,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorRetryWithPredicateTest {
@@ -91,7 +91,7 @@ public class OperatorRetryWithPredicateTest {
         });
         
         @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
         
         source.retry(retryTwice).subscribe(o);
@@ -119,7 +119,7 @@ public class OperatorRetryWithPredicateTest {
         });
         
         @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
         
         source.retry(retryTwice).subscribe(o);
@@ -155,7 +155,7 @@ public class OperatorRetryWithPredicateTest {
         });
         
         @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
         
         source.retry(retryOnTestException).subscribe(o);
@@ -192,7 +192,7 @@ public class OperatorRetryWithPredicateTest {
         });
         
         @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
         
         source.retry(retryOnTestException).subscribe(o);

@@ -17,9 +17,9 @@ import java.util.concurrent.CountDownLatch;
 
 import org.openjdk.jmh.infra.Blackhole;
 
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
-public class LatchedObserver<T> extends DefaultObserver<T> {
+public class LatchedObserver<T> extends DefaultSubscriber<T> {
 
     public CountDownLatch latch = new CountDownLatch(1);
     private final Blackhole bh;

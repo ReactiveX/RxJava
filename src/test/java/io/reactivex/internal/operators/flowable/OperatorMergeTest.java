@@ -31,7 +31,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.*;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class OperatorMergeTest {
@@ -228,7 +228,7 @@ public class OperatorMergeTest {
         final AtomicInteger totalCounter = new AtomicInteger();
 
         Flowable<String> m = Flowable.merge(Flowable.create(o1), Flowable.create(o2));
-        m.subscribe(new DefaultObserver<String>() {
+        m.subscribe(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -1258,7 +1258,7 @@ public class OperatorMergeTest {
                 .mergeWith(Flowable.fromIterable(Arrays.asList(3,4)));
         final int expectedCount = 4;
         final CountDownLatch latch = new CountDownLatch(expectedCount);
-        o.subscribeOn(Schedulers.computation()).subscribe(new DefaultObserver<Integer>() {
+        o.subscribeOn(Schedulers.computation()).subscribe(new DefaultSubscriber<Integer>() {
             
             @Override
             public void onStart() {
@@ -1319,7 +1319,7 @@ public class OperatorMergeTest {
     Function<Integer, Flowable<Integer>> toHiddenScalar = new Function<Integer, Flowable<Integer>>() {
         @Override
         public Flowable<Integer> apply(Integer t) {
-            return Flowable.just(t).asObservable();
+            return Flowable.just(t).asFlowable();
         }
     };
     ;

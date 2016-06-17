@@ -17,9 +17,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -55,12 +55,12 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
      */
     public static <U, R> Observable<R> multicastSelector(
             final Supplier<? extends ConnectableObservable<U>> connectableFactory,
-            final Function<? super Observable<U>, ? extends Observable<R>> selector) {
+            final Function<? super Observable<U>, ? extends ConsumableObservable<R>> selector) {
         return Observable.create(new NbpOnSubscribe<R>() {
             @Override
             public void accept(Observer<? super R> child) {
                 ConnectableObservable<U> co;
-                Observable<R> observable;
+                ConsumableObservable<R> observable;
                 try {
                     co = connectableFactory.get();
                     observable = selector.apply(co);

@@ -13,15 +13,15 @@
 
 package io.reactivex.internal.operators.single;
 
-import io.reactivex.Single;
+import io.reactivex.*;
 import io.reactivex.Single.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
 
 public final class SingleOperatorFlatMap<T, R> implements SingleOperator<R, T> {
-    final Function<? super T, ? extends Single<? extends R>> mapper;
+    final Function<? super T, ? extends ConsumableSingle<? extends R>> mapper;
 
-    public SingleOperatorFlatMap(Function<? super T, ? extends Single<? extends R>> mapper) {
+    public SingleOperatorFlatMap(Function<? super T, ? extends ConsumableSingle<? extends R>> mapper) {
         this.mapper = mapper;
     }
     
@@ -32,12 +32,12 @@ public final class SingleOperatorFlatMap<T, R> implements SingleOperator<R, T> {
     
     static final class SingleFlatMapCallback<T, R> implements SingleSubscriber<T> {
         final SingleSubscriber<? super R> actual;
-        final Function<? super T, ? extends Single<? extends R>> mapper;
+        final Function<? super T, ? extends ConsumableSingle<? extends R>> mapper;
         
         final MultipleAssignmentDisposable mad;
 
         public SingleFlatMapCallback(SingleSubscriber<? super R> actual,
-                Function<? super T, ? extends Single<? extends R>> mapper) {
+                Function<? super T, ? extends ConsumableSingle<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
             this.mad = new MultipleAssignmentDisposable();
@@ -50,7 +50,7 @@ public final class SingleOperatorFlatMap<T, R> implements SingleOperator<R, T> {
         
         @Override
         public void onSuccess(T value) {
-            Single<? extends R> o;
+            ConsumableSingle<? extends R> o;
             
             try {
                 o = mapper.apply(value);

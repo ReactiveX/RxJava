@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import java.util.concurrent.*;
 
 import io.reactivex.*;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 final class SchedulerTests {
     private SchedulerTests() {
@@ -110,7 +110,7 @@ final class SchedulerTests {
         }
     }
 
-    private static final class CapturingObserver<T> extends DefaultObserver<T> {
+    private static final class CapturingObserver<T> extends DefaultSubscriber<T> {
         CountDownLatch completed = new CountDownLatch(1);
         int errorCount = 0;
         int nextCount = 0;

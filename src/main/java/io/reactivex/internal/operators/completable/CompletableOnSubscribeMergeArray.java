@@ -15,15 +15,15 @@ package io.reactivex.internal.operators.completable;
 
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.Completable;
+import io.reactivex.*;
 import io.reactivex.Completable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableOnSubscribeMergeArray implements CompletableOnSubscribe {
-    final Completable[] sources;
+    final ConsumableCompletable[] sources;
     
-    public CompletableOnSubscribeMergeArray(Completable[] sources) {
+    public CompletableOnSubscribeMergeArray(ConsumableCompletable[] sources) {
         this.sources = sources;
     }
     
@@ -35,7 +35,7 @@ public final class CompletableOnSubscribeMergeArray implements CompletableOnSubs
         
         s.onSubscribe(set);
         
-        for (Completable c : sources) {
+        for (ConsumableCompletable c : sources) {
             if (set.isDisposed()) {
                 return;
             }

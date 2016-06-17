@@ -27,10 +27,10 @@ public final class CompletableOnSubscribeTimeout implements CompletableOnSubscri
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
-    final Completable other;
+    final ConsumableCompletable other;
 
     public CompletableOnSubscribeTimeout(Completable source, long timeout, 
-            TimeUnit unit, Scheduler scheduler, Completable other) {
+            TimeUnit unit, Scheduler scheduler, ConsumableCompletable other) {
         this.source = source;
         this.timeout = timeout;
         this.unit = unit;

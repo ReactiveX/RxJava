@@ -17,7 +17,6 @@ import java.util.concurrent.CountDownLatch;
 
 import org.openjdk.jmh.infra.Blackhole;
 
-import io.reactivex.Single.SingleSubscriber;
 import io.reactivex.disposables.Disposable;
 
 public final class LatchedSingleObserver<T> implements SingleSubscriber<T> {

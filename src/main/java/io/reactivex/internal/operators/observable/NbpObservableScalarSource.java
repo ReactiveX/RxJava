@@ -39,11 +39,11 @@ public final class NbpObservableScalarSource<T> extends Observable<T> {
         return value;
     }
     
-    public <U> NbpOnSubscribe<U> scalarFlatMap(final Function<? super T, ? extends Observable<? extends U>> mapper) {
+    public <U> NbpOnSubscribe<U> scalarFlatMap(final Function<? super T, ? extends ConsumableObservable<? extends U>> mapper) {
         return new NbpOnSubscribe<U>() {
             @Override
             public void accept(Observer<? super U> s) {
-                Observable<? extends U> other;
+                ConsumableObservable<? extends U> other;
                 try {
                     other = mapper.apply(value);
                 } catch (Throwable e) {

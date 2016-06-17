@@ -226,7 +226,7 @@ public class OnSubscribeTimerTest {
     public void testOnceObserverThrows() {
         Flowable<Long> source = Flowable.timer(100, TimeUnit.MILLISECONDS, scheduler);
         
-        source.safeSubscribe(new DefaultObserver<Long>() {
+        source.safeSubscribe(new DefaultSubscriber<Long>() {
 
             @Override
             public void onNext(Long t) {
@@ -256,7 +256,7 @@ public class OnSubscribeTimerTest {
         
         InOrder inOrder = inOrder(observer);
         
-        source.safeSubscribe(new DefaultObserver<Long>() {
+        source.safeSubscribe(new DefaultSubscriber<Long>() {
 
             @Override
             public void onNext(Long t) {

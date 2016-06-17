@@ -17,7 +17,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
+import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
@@ -28,12 +28,12 @@ import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
-    final Supplier<? extends Observable<U>> firstTimeoutSelector; 
-    final Function<? super T, ? extends Observable<V>> timeoutSelector; 
-    final Observable<? extends T> other;
+    final Supplier<? extends ConsumableObservable<U>> firstTimeoutSelector; 
+    final Function<? super T, ? extends ConsumableObservable<V>> timeoutSelector; 
+    final ConsumableObservable<? extends T> other;
 
-    public NbpOperatorTimeout(Supplier<? extends Observable<U>> firstTimeoutSelector,
-            Function<? super T, ? extends Observable<V>> timeoutSelector, Observable<? extends T> other) {
+    public NbpOperatorTimeout(Supplier<? extends ConsumableObservable<U>> firstTimeoutSelector,
+            Function<? super T, ? extends ConsumableObservable<V>> timeoutSelector, ConsumableObservable<? extends T> other) {
         this.firstTimeoutSelector = firstTimeoutSelector;
         this.timeoutSelector = timeoutSelector;
         this.other = other;
@@ -51,8 +51,8 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
     
     static final class TimeoutSubscriber<T, U, V> implements Observer<T>, Disposable, OnTimeout {
         final Observer<? super T> actual;
-        final Supplier<? extends Observable<U>> firstTimeoutSelector; 
-        final Function<? super T, ? extends Observable<V>> timeoutSelector; 
+        final Supplier<? extends ConsumableObservable<U>> firstTimeoutSelector; 
+        final Function<? super T, ? extends ConsumableObservable<V>> timeoutSelector; 
 
         Disposable s;
         
@@ -68,8 +68,8 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
         };
 
         public TimeoutSubscriber(Observer<? super T> actual, 
-                Supplier<? extends Observable<U>> firstTimeoutSelector,
-                Function<? super T, ? extends Observable<V>> timeoutSelector) {
+                Supplier<? extends ConsumableObservable<U>> firstTimeoutSelector,
+                Function<? super T, ? extends ConsumableObservable<V>> timeoutSelector) {
             this.actual = actual;
             this.firstTimeoutSelector = firstTimeoutSelector;
             this.timeoutSelector = timeoutSelector;
@@ -84,7 +84,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
             
             Observer<? super T> a = actual;
             
-            Observable<U> p;
+            ConsumableObservable<U> p;
             
             if (firstTimeoutSelector != null) {
                 try {
@@ -124,7 +124,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                 d.dispose();
             }
             
-            Observable<V> p;
+            ConsumableObservable<V> p;
             
             try {
                 p = timeoutSelector.apply(t);
@@ -228,9 +228,9 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
     
     static final class TimeoutOtherSubscriber<T, U, V> implements Observer<T>, Disposable, OnTimeout {
         final Observer<? super T> actual;
-        final Supplier<? extends Observable<U>> firstTimeoutSelector; 
-        final Function<? super T, ? extends Observable<V>> timeoutSelector;
-        final Observable<? extends T> other;
+        final Supplier<? extends ConsumableObservable<U>> firstTimeoutSelector; 
+        final Function<? super T, ? extends ConsumableObservable<V>> timeoutSelector;
+        final ConsumableObservable<? extends T> other;
         final NbpFullArbiter<T> arbiter;
         
         Disposable s;
@@ -249,8 +249,8 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
         };
 
         public TimeoutOtherSubscriber(Observer<? super T> actual,
-                Supplier<? extends Observable<U>> firstTimeoutSelector,
-                Function<? super T, ? extends Observable<V>> timeoutSelector, Observable<? extends T> other) {
+                Supplier<? extends ConsumableObservable<U>> firstTimeoutSelector,
+                Function<? super T, ? extends ConsumableObservable<V>> timeoutSelector, ConsumableObservable<? extends T> other) {
             this.actual = actual;
             this.firstTimeoutSelector = firstTimeoutSelector;
             this.timeoutSelector = timeoutSelector;
@@ -271,7 +271,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
             Observer<? super T> a = actual;
             
             if (firstTimeoutSelector != null) {
-                Observable<U> p;
+                ConsumableObservable<U> p;
                 
                 try {
                     p = firstTimeoutSelector.get();
@@ -315,7 +315,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                 d.dispose();
             }
             
-            Observable<V> p;
+            ConsumableObservable<V> p;
             
             try {
                 p = timeoutSelector.apply(t);

@@ -17,7 +17,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public abstract class DefaultObserver<T> implements Subscriber<T> {
+public abstract class DefaultSubscriber<T> implements Subscriber<T> {
     private Subscription s;
     @Override
     public final void onSubscribe(Subscription s) {

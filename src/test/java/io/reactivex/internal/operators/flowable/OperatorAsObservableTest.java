@@ -24,14 +24,14 @@ import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 public class OperatorAsObservableTest {
     @Test
     public void testHiding() {
         PublishProcessor<Integer> src = PublishProcessor.create();
         
-        Flowable<Integer> dst = src.asObservable();
+        Flowable<Integer> dst = src.asFlowable();
         
         assertFalse(dst instanceof PublishProcessor);
         
@@ -50,12 +50,12 @@ public class OperatorAsObservableTest {
     public void testHidingError() {
         PublishProcessor<Integer> src = PublishProcessor.create();
         
-        Flowable<Integer> dst = src.asObservable();
+        Flowable<Integer> dst = src.asFlowable();
         
         assertFalse(dst instanceof PublishProcessor);
         
         @SuppressWarnings("unchecked")
-        DefaultObserver<Object> o = mock(DefaultObserver.class);
+        DefaultSubscriber<Object> o = mock(DefaultSubscriber.class);
         
         dst.subscribe(o);
         

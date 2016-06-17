@@ -25,7 +25,7 @@ import io.reactivex.Flowable.Operator;
 import io.reactivex.functions.*;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class ObservableConversionTest {
@@ -139,7 +139,7 @@ public class ObservableConversionTest {
     
     @Test
     public void testConversionBetweenObservableClasses() {
-        final TestSubscriber<String> subscriber = new TestSubscriber<String>(new DefaultObserver<String>() {
+        final TestSubscriber<String> subscriber = new TestSubscriber<String>(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -221,7 +221,7 @@ public class ObservableConversionTest {
                         @Override
                         public ConcurrentLinkedQueue<Integer> apply(Flowable<Integer> onSubscribe) {
                             final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<Integer>();
-                            onSubscribe.subscribe(new DefaultObserver<Integer>(){
+                            onSubscribe.subscribe(new DefaultSubscriber<Integer>(){
                                 @Override
                                 public void onComplete() {
                                     isFinished.set(true);
