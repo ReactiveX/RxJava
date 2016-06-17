@@ -1663,8 +1663,9 @@ public class Completable {
                         try {
                             b = predicate.call(e);
                         } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
                             e = new CompositeException(Arrays.asList(e, ex));
-                            return;
+                            b = false;
                         }
                         
                         if (b) {
