@@ -26,8 +26,9 @@ import rx.internal.producers.SingleProducer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**
- * Subject that publishes only the last item observed to each {@link Observer} that has subscribed, when the
- * source {@code Observable} completes.
+ * Subject that publishes only the last item observed to each {@link Observer} once the source {@code Observable}
+ * has completed.  The last item is cached and published to any {@code Observer}s which subscribe after the source
+ * has completed.  If the source emitted no items, {@code AsyncSubject} completes without emitting anything.  
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.AsyncSubject.png" alt="">
  * <p>
