@@ -498,21 +498,18 @@ public class ObservableTests {
         }).takeLast(1).publish();
 
         // subscribe once
-        final CountDownLatch latch = new CountDownLatch(1);
-        connectable.subscribe(new Action1<String>() {
+        final CountDownLatch latch = new CountDownLatch(2);
+        Action1<String> subscriptionAction = new Action1<String>() {
             @Override
             public void call(String value) {
                 assertEquals("last", value);
                 latch.countDown();
             }
-        });
+        };
+        connectable.subscribe(subscriptionAction);
 
         // subscribe twice
-        connectable.subscribe(new Action1<String>() {
-            @Override
-            public void call(String ignored) {
-            }
-        });
+        connectable.subscribe(subscriptionAction);
 
         Subscription subscription = connectable.connect();
         assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
