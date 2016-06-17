@@ -4805,21 +4805,22 @@ public class Observable<T> {
     }
 
     /**
-     * Modifies the source Observable so that it notifies an Observer for each item it emits.
+     * Modifies the source Observable so that it notifies an Observer for each item and terminal event it emits.
      * <p>
      * In case the {@code onError} of the supplied observer throws, the downstream will receive a composite
      * exception containing the original exception and the exception thrown by {@code onError}. If either the
      * {@code onNext} or the {@code onCompleted} method of the supplied observer throws, the downstream will be
      * terminated and will receive this thrown exception.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param observer
-     *            the action to invoke for each item emitted by the source Observable
+     *            the observer to be notified about onNext, onError and onCompleted events on its
+     *            respective methods before the actual downstream Subscriber gets notified.
      * @return the source Observable with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
