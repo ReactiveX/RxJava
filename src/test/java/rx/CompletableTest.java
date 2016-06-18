@@ -4112,4 +4112,29 @@ public class CompletableTest {
         ts.assertCompleted();
     }
 
+    @Test
+    public void onErrorCompleteFunctionThrows() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        
+        error.completable.onErrorComplete(new Func1<Throwable, Boolean>() {
+            @Override
+            public Boolean call(Throwable t) {
+                throw new TestException("Forced inner failure");
+            }
+        }).subscribe(ts);
+
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+        ts.assertError(CompositeException.class);
+        
+        CompositeException composite = (CompositeException)ts.getOnErrorEvents().get(0);
+        
+        List<Throwable> errors = composite.getExceptions();
+        Assert.assertEquals(2, errors.size());
+        
+        Assert.assertTrue(errors.get(0).toString(), errors.get(0) instanceof TestException);
+        Assert.assertEquals(errors.get(0).toString(), null, errors.get(0).getMessage());
+        Assert.assertTrue(errors.get(1).toString(), errors.get(1) instanceof TestException);
+        Assert.assertEquals(errors.get(1).toString(), "Forced inner failure", errors.get(1).getMessage());
+    }
 }
