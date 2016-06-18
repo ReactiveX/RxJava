@@ -4027,27 +4027,48 @@ public class Observable<T> {
     }
 
     /**
-     * Caches the emissions from the source Observable and replays them in order to any subsequent Subscribers.
-     * This method has similar behavior to {@link #replay} except that this auto-subscribes to the source
-     * Observable rather than returning a {@link ConnectableObservable} for which you must call
-     * {@code connect} to activate the subscription.
+     * Returns an Observable that subscribes to this Observable lazily, caches all of its events 
+     * and replays them, in the same order as received, to all the downstream subscribers.
      * <p>
      * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
      * <p>
      * This is useful when you want an Observable to cache responses and you can't control the
      * subscribe/unsubscribe behavior of all the {@link Subscriber}s.
      * <p>
-     * When you call {@code cache}, it does not yet subscribe to the source Observable and so does not yet
-     * begin caching items. This only happens when the first Subscriber calls the resulting Observable's
-     * {@code subscribe} method.
+     * The operator subscribes only when the first downstream subscriber subscribes and maintains
+     * a single subscription towards this Observable. In contrast, the operator family of {@link #replay()}
+     * that return a {@link ConnectableObservable} require an explicit call to {@link ConnectableObservable#connect()}.  
      * <p>
      * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
      * Observer so be careful not to use this Observer on Observables that emit an infinite or very large number
-     * of items that will use up memory.
+     * of items that will use up memory. 
+     * A possible workaround is to apply `takeUntil` with a predicate or
+     * another source before (and perhaps after) the application of cache().
+     * <pre><code>
+     * AtomicBoolean shouldStop = new AtomicBoolean();
+     * 
+     * source.takeUntil(v -&gt; shouldStop.get())
+     *       .cache()
+     *       .takeUntil(v -&gt; shouldStop.get())
+     *       .subscribe(...);
+     * </code></pre>
+     * Since the operator doesn't allow clearing the cached values either, the possible workaround is
+     * to forget all references to it via {@link #onTerminateDetach()} applied along with the previous
+     * workaround: 
+     * <pre><code>
+     * AtomicBoolean shouldStop = new AtomicBoolean();
+     * 
+     * source.takeUntil(v -&gt; shouldStop.get())
+     *       .onTerminateDetach()
+     *       .cache()
+     *       .takeUntil(v -&gt; shouldStop.get())
+     *       .onTerminateDetach()
+     *       .subscribe(...);
+     * </code></pre>
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support upstream backpressure as it is purposefully requesting and caching
-     *      everything emitted.</dd>
+     *  <dd>The operator consumes this Observable in an unbounded fashion but respects the backpressure
+     *  of each downstream Subscriber individually.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -4070,27 +4091,48 @@ public class Observable<T> {
     }
 
     /**
-     * Caches emissions from the source Observable and replays them in order to any subsequent Subscribers.
-     * This method has similar behavior to {@link #replay} except that this auto-subscribes to the source
-     * Observable rather than returning a {@link ConnectableObservable} for which you must call
-     * {@code connect} to activate the subscription.
+     * Returns an Observable that subscribes to this Observable lazily, caches all of its events 
+     * and replays them, in the same order as received, to all the downstream subscribers.
      * <p>
      * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
      * <p>
      * This is useful when you want an Observable to cache responses and you can't control the
      * subscribe/unsubscribe behavior of all the {@link Subscriber}s.
      * <p>
-     * When you call {@code cache}, it does not yet subscribe to the source Observable and so does not yet
-     * begin caching items. This only happens when the first Subscriber calls the resulting Observable's
-     * {@code subscribe} method.
+     * The operator subscribes only when the first downstream subscriber subscribes and maintains
+     * a single subscription towards this Observable. In contrast, the operator family of {@link #replay()}
+     * that return a {@link ConnectableObservable} require an explicit call to {@link ConnectableObservable#connect()}.  
      * <p>
      * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
      * Observer so be careful not to use this Observer on Observables that emit an infinite or very large number
      * of items that will use up memory.
+     * A possible workaround is to apply `takeUntil` with a predicate or
+     * another source before (and perhaps after) the application of cache().
+     * <pre><code>
+     * AtomicBoolean shouldStop = new AtomicBoolean();
+     * 
+     * source.takeUntil(v -&gt; shouldStop.get())
+     *       .cache()
+     *       .takeUntil(v -&gt; shouldStop.get())
+     *       .subscribe(...);
+     * </code></pre>
+     * Since the operator doesn't allow clearing the cached values either, the possible workaround is
+     * to forget all references to it via {@link #onTerminateDetach()} applied along with the previous
+     * workaround: 
+     * <pre><code>
+     * AtomicBoolean shouldStop = new AtomicBoolean();
+     * 
+     * source.takeUntil(v -&gt; shouldStop.get())
+     *       .onTerminateDetach()
+     *       .cache()
+     *       .takeUntil(v -&gt; shouldStop.get())
+     *       .onTerminateDetach()
+     *       .subscribe(...);
+     * </code></pre>
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support upstream backpressure as it is purposefully requesting and caching
-     *      everything emitted.</dd>
+     *  <dd>The operator consumes this Observable in an unbounded fashion but respects the backpressure
+     *  of each downstream Subscriber individually.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
