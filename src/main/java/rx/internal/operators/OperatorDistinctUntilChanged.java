@@ -19,6 +19,7 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.internal.util.UtilityFunctions;
 
 /**
@@ -27,7 +28,7 @@ import rx.internal.util.UtilityFunctions;
  * @param <U> the key type
  */
 public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T> {
-    final Func1<? super T, ? extends U> keySelector;
+    final Func1<Subscriber<? super T>, Subscriber<T>> subscriberProvider;
     
     private static class Holder {
         static final OperatorDistinctUntilChanged<?,?> INSTANCE = new OperatorDistinctUntilChanged<Object,Object>(UtilityFunctions.identity());
@@ -46,50 +47,101 @@ public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T> 
         return (OperatorDistinctUntilChanged<T, T>) Holder.INSTANCE;
     }
 
-    public OperatorDistinctUntilChanged(Func1<? super T, ? extends U> keySelector) {
-        this.keySelector = keySelector;
+    public OperatorDistinctUntilChanged(final Func1<? super T, ? extends U> keySelector) {
+        subscriberProvider = new Func1<Subscriber<? super T>, Subscriber<T>>() {
+            @Override
+            public Subscriber<T> call(final Subscriber<? super T> child) {
+                return new Subscriber<T>(child) {
+                    U previousKey;
+                    boolean hasPrevious;
+
+                    @Override
+                    public void onNext(T t) {
+                        U currentKey = previousKey;
+                        final U key;
+                        try {
+                            key = keySelector.call(t);
+                        } catch (Throwable e) {
+                            Exceptions.throwOrReport(e, child, t);
+                            return;
+                        }
+                        previousKey = key;
+
+                        if (hasPrevious) {
+                            if (!(currentKey == key || (key != null && key.equals(currentKey)))) {
+                                child.onNext(t);
+                            } else {
+                                request(1);
+                            }
+                        } else {
+                            hasPrevious = true;
+                            child.onNext(t);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        child.onError(e);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        child.onCompleted();
+                    }
+
+                };
+            }
+        };
+    }
+
+    public OperatorDistinctUntilChanged(final Func2<? super T, ? super T, Boolean> comparator) {
+        subscriberProvider = new Func1<Subscriber<? super T>, Subscriber<T>>() {
+            @Override
+            public Subscriber<T> call(final Subscriber<? super T> child) {
+                return new Subscriber<T>(child) {
+                    T previousValue;
+                    boolean hasPrevious;
+
+                    @Override
+                    public void onNext(T t) {
+                        if (hasPrevious) {
+                            boolean valuesAreEqual;
+                            try {
+                                valuesAreEqual = comparator.call(previousValue, t);
+                            } catch (Throwable e) {
+                                Exceptions.throwOrReport(e, child, t);
+                                return;
+                            }
+                            if (valuesAreEqual) {
+                                request(1);
+                            } else {
+                                previousValue = t;
+                                child.onNext(t);
+                            }
+                        } else {
+                            hasPrevious = true;
+                            previousValue = t;
+                            child.onNext(t);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        child.onError(e);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        child.onCompleted();
+                    }
+
+                };
+            }
+        };
     }
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        return new Subscriber<T>(child) {
-            U previousKey;
-            boolean hasPrevious;
-            @Override
-            public void onNext(T t) {
-                U currentKey = previousKey;
-                final U key;
-                try {
-                    key = keySelector.call(t);
-                } catch (Throwable e) {
-                    Exceptions.throwOrReport(e, child, t);
-                    return;
-                }
-                previousKey = key;
-                
-                if (hasPrevious) {
-                    if (!(currentKey == key || (key != null && key.equals(currentKey)))) {
-                        child.onNext(t);
-                    } else {
-                        request(1);
-                    }
-                } else {
-                    hasPrevious = true;
-                    child.onNext(t);
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                child.onError(e);
-            }
-
-            @Override
-            public void onCompleted() {
-                child.onCompleted();
-            }
-            
-        };
+        return subscriberProvider.call(child);
     }
-    
 }
