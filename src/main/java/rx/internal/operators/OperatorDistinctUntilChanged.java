@@ -83,7 +83,7 @@ public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T>,
                 previousKey = key;
                 
                 if (hasPrevious) {
-                    Boolean comparison;
+                    boolean comparison;
                     
                     try {
                         comparison = comparator.call(currentKey, key);
