@@ -4819,7 +4819,10 @@ public class Observable<T> {
      * @return an Observable that emits those items from the source Observable that are distinct from their
      *         immediate predecessors
      * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
+     *        with the release number)
      */
+    @Experimental
     public final Observable<T> distinctUntilChanged(Func2<? super T, ? super T, Boolean> comparator) {
         return lift(new OperatorDistinctUntilChanged<T, T>(comparator));
     }
