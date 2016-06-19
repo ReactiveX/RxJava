@@ -18,7 +18,7 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.functions.Func1;
+import rx.functions.*;
 import rx.internal.util.UtilityFunctions;
 
 /**
@@ -26,8 +26,10 @@ import rx.internal.util.UtilityFunctions;
  * @param <T> the value type
  * @param <U> the key type
  */
-public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T> {
+public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T>, Func2<U, U, Boolean> {
     final Func1<? super T, ? extends U> keySelector;
+    
+    final Func2<? super U, ? super U, Boolean> comparator;
     
     private static class Holder {
         static final OperatorDistinctUntilChanged<?,?> INSTANCE = new OperatorDistinctUntilChanged<Object,Object>(UtilityFunctions.identity());
@@ -48,6 +50,19 @@ public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T> 
 
     public OperatorDistinctUntilChanged(Func1<? super T, ? extends U> keySelector) {
         this.keySelector = keySelector;
+        this.comparator = this;
+        
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public OperatorDistinctUntilChanged(Func2<? super U, ? super U, Boolean> comparator) {
+        this.keySelector = (Func1)UtilityFunctions.identity();
+        this.comparator = comparator;
+    }
+    
+    @Override
+    public Boolean call(U t1, U t2) {
+        return (t1 == t2 || (t1 != null && t1.equals(t2)));
     }
 
     @Override
@@ -68,7 +83,16 @@ public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T> 
                 previousKey = key;
                 
                 if (hasPrevious) {
-                    if (!(currentKey == key || (key != null && key.equals(currentKey)))) {
+                    Boolean comparison;
+                    
+                    try {
+                        comparison = comparator.call(currentKey, key);
+                    } catch (Throwable e) {
+                        Exceptions.throwOrReport(e, child, key);
+                        return;
+                    }
+                    
+                    if (!comparison) {
                         child.onNext(t);
                     } else {
                         request(1);

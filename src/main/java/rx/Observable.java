@@ -4805,6 +4805,26 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits all items emitted by the source Observable that are distinct from their
+     * immediate predecessors when compared with each other via the provided comparator function.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param comparator the function that receives the previous item and the current item and is
+     *                   expected to return true if the two are equal, thus skipping the current value.
+     * @return an Observable that emits those items from the source Observable that are distinct from their
+     *         immediate predecessors
+     * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
+     */
+    public final Observable<T> distinctUntilChanged(Func2<? super T, ? super T, Boolean> comparator) {
+        return lift(new OperatorDistinctUntilChanged<T, T>(comparator));
+    }
+
+    /**
      * Modifies the source Observable so that it invokes an action when it calls {@code onCompleted}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnCompleted.png" alt="">
