@@ -3,6 +3,8 @@ buildscript {
   dependencies { classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:4.0.0' }
 }
 
+group = 'io.reactivex.rxjava2'
+
 description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
 
 apply plugin: 'java'
