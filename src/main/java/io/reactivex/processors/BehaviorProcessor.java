@@ -28,8 +28,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class BehaviorProcessor<T> extends FlowProcessor<T, T> {
 
     public static <T> BehaviorProcessor<T> create() {
-        State<T> state = new State<T>();
-        return new BehaviorProcessor<T>(state);
+        return new BehaviorProcessor<T>(new State<T>());
     }
     
     // TODO a plain create() would create a method ambiguity with Observable.create with javac
@@ -41,9 +40,14 @@ public final class BehaviorProcessor<T> extends FlowProcessor<T, T> {
     }
     
     final State<T> state;
+    
     protected BehaviorProcessor(State<T> state) {
-        super(state);
         this.state = state;
+    }
+    
+    @Override
+    protected void subscribeActual(Subscriber<? super T> s) {
+        state.subscribe(s);
     }
     
     @Override

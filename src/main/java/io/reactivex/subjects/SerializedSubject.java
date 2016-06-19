@@ -13,6 +13,7 @@
 
 package io.reactivex.subjects;
 
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.util.*;
@@ -40,15 +41,15 @@ import io.reactivex.plugins.RxJavaPlugins;
      * @param actual the subject wrapped
      */
     public SerializedSubject(final Subject<T, R> actual) {
-        super(new io.reactivex.Observable.NbpOnSubscribe<R>() {
-            @Override
-            public void accept(io.reactivex.Observer<? super R> s) {
-                actual.subscribe(s);
-            }
-        });
         this.actual = actual;
     }
-    
+
+    @Override
+    protected void subscribeActual(Observer<? super R> observer) {
+        actual.subscribe(observer);
+    }
+
+
     @Override
     public void onSubscribe(Disposable s) {
         // NO-OP

@@ -81,10 +81,14 @@ public final class UnicastProcessor<T> extends FlowProcessor<T, T> {
      * @param state the subject state
      */
     protected UnicastProcessor(State<T> state) {
-        super(state);
         this.state = state;
     }
 
+    @Override
+    protected void subscribeActual(Subscriber<? super T> s) {
+        state.subscribe(s);
+    }
+    
     // TODO may need to have a direct WIP field to avoid clashing on the object header
     /** Pads the WIP counter. */
     static abstract class StatePad0 extends AtomicInteger {

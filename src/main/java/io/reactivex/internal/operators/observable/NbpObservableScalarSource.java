@@ -24,15 +24,14 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 public final class NbpObservableScalarSource<T> extends Observable<T> {
     private final T value;
     public NbpObservableScalarSource(final T value) {
-        super(new NbpOnSubscribe<T>() {
-            @Override
-            public void accept(Observer<? super T> s) {
-                s.onSubscribe(EmptyDisposable.INSTANCE);
-                s.onNext(value);
-                s.onComplete();
-            }
-        });
         this.value = value;
+    }
+
+    @Override
+    protected void subscribeActual(Observer<? super T> s) {
+        s.onSubscribe(EmptyDisposable.INSTANCE);
+        s.onNext(value);
+        s.onComplete();
     }
     
     public T value() {

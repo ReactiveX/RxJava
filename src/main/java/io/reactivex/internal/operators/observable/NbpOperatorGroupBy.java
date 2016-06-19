@@ -181,8 +181,13 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<GroupedObs
         final State<T, K> state;
         
         protected GroupedUnicast(K key, State<T, K> state) {
-            super(state, key);
+            super(key);
             this.state = state;
+        }
+        
+        @Override
+        protected void subscribeActual(Observer<? super T> observer) {
+            state.accept(observer);
         }
         
         public void onNext(T t) {

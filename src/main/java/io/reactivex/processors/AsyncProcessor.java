@@ -40,8 +40,7 @@ public final class AsyncProcessor<T> extends FlowProcessor<T, T> {
      * @return the new AsyncSubject instance.
      */
     public static <T> AsyncProcessor<T> create() {
-        State<T> state = new State<T>();
-        return new AsyncProcessor<T>(state);
+        return new AsyncProcessor<T>();
     }
     
     /** The state holding onto the latest value or error and the array of subscribers. */
@@ -53,9 +52,8 @@ public final class AsyncProcessor<T> extends FlowProcessor<T, T> {
      */
     boolean done;
     
-    protected AsyncProcessor(State<T> state) {
-        super(state);
-        this.state = state;
+    protected AsyncProcessor() {
+        this.state = new State<T>();
     }
     
     @Override
@@ -168,6 +166,11 @@ public final class AsyncProcessor<T> extends FlowProcessor<T, T> {
             }
         }
         return array;
+    }
+    
+    @Override
+    protected void subscribeActual(Subscriber<? super T> s) {
+        state.subscribe(s);
     }
     /**
      * The state of the AsyncSubject.

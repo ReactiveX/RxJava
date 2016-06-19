@@ -14,10 +14,11 @@ package io.reactivex.observables;
 
 import io.reactivex.Observable;
 
-public class GroupedObservable<K, T> extends Observable<T> {
+public abstract class GroupedObservable<K, T> extends Observable<T> {
+    
     final K key;
-    protected GroupedObservable(NbpOnSubscribe<T> onSubscribe, K key) {
-        super(onSubscribe);
+    
+    protected GroupedObservable(K key) {
         this.key = key;
     }
     

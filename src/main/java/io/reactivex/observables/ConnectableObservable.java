@@ -36,10 +36,6 @@ import io.reactivex.internal.operators.observable.*;
  */
 public abstract class ConnectableObservable<T> extends Observable<T> {
     
-    protected ConnectableObservable(NbpOnSubscribe<T> onSubscribe) {
-        super(onSubscribe);
-    }
-    
     /**
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
      * {@link Flowable} to its {@link Subscriber}s.

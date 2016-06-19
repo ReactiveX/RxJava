@@ -36,10 +36,6 @@ import io.reactivex.internal.operators.flowable.*;
  */
 public abstract class ConnectableFlowable<T> extends Flowable<T> {
     
-    protected ConnectableFlowable(Publisher<T> onSubscribe) {
-        super(onSubscribe);
-    }
-    
     /**
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
      * {@link Flowable} to its {@link Subscriber}s.

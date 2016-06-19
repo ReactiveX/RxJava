@@ -38,7 +38,7 @@ import io.reactivex.schedulers.*;
  * Observable for delivering a sequence of values without backpressure. 
  * @param <T>
  */
-public class Observable<T> {
+public abstract class Observable<T> {
 
     public interface NbpOnSubscribe<T> extends Consumer<Observer<? super T>> {
         
@@ -358,7 +358,7 @@ public class Observable<T> {
     public static <T> Observable<T> create(NbpOnSubscribe<T> onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         // TODO plugin wrapper
-        return new Observable<T>(onSubscribe);
+        return new ObservableWrapper<T>(onSubscribe);
     }
 
     @SchedulerSupport(SchedulerKind.NONE)
@@ -1089,12 +1089,6 @@ public class Observable<T> {
     }
 
     
-    protected final NbpOnSubscribe<T> onSubscribe;
-
-    protected Observable(NbpOnSubscribe<T> onSubscribe) {
-        this.onSubscribe = onSubscribe;
-    }
-
     @SchedulerSupport(SchedulerKind.NONE)
     public final Observable<Boolean> all(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -2634,10 +2628,15 @@ public class Observable<T> {
         return ls;
     }
 
-    public final void subscribe(Observer<? super T> subscriber) {
-        Objects.requireNonNull(subscriber, "subscriber is null");
-        onSubscribe.accept(subscriber);
+    public final void subscribe(Observer<? super T> observer) {
+        Objects.requireNonNull(observer, "observer is null");
+        
+        // TODO plugin wrappings
+        
+        subscribeActual(observer);
     }
+    
+    protected abstract void subscribeActual(Observer<? super T> observer);
 
     @SchedulerSupport(SchedulerKind.CUSTOM)
     public final Observable<T> subscribeOn(Scheduler scheduler) {

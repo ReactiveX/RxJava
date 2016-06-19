@@ -32,7 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
-public class Flowable<T> implements Publisher<T> {
+public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Interface to map/wrap a downstream subscriber to an upstream subscriber.
      *
@@ -385,7 +385,7 @@ public class Flowable<T> implements Publisher<T> {
     public static <T> Flowable<T> create(Publisher<T> onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         onSubscribe = RxJavaPlugins.onCreate(onSubscribe);
-        return new Flowable<T>(onSubscribe);
+        return fromPublisher(onSubscribe);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -497,12 +497,7 @@ public class Flowable<T> implements Publisher<T> {
         }
         Objects.requireNonNull(publisher, "publisher is null");
 
-        return create(new Publisher<T>() {
-            @Override
-            public void subscribe(Subscriber<? super T> s) {
-                publisher.subscribe(s);
-            }
-        });
+        return new FlowableWrapper<T>(publisher);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1160,12 +1155,6 @@ public class Flowable<T> implements Publisher<T> {
         return create(new PublisherZip<T, R>(null, sources, zipper, bufferSize, delayError));
     }
 
-    final Publisher<T> onSubscribe;
-    
-    protected Flowable(Publisher<T> onSubscribe) {
-        this.onSubscribe = onSubscribe;
-    }
-    
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerKind.NONE)
     public final Flowable<Boolean> all(Predicate<? super T> predicate) {
@@ -2162,7 +2151,7 @@ public class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> lift(Operator<? extends R, ? super T> lifter) {
         Objects.requireNonNull(lifter, "lifter is null");
         // using onSubscribe so the fusing has access to the underlying raw Publisher
-        return create(new PublisherLift<R, T>(onSubscribe, lifter));
+        return create(new PublisherLift<R, T>(this, lifter));
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -2939,10 +2928,6 @@ public class Flowable<T> implements Publisher<T> {
     @Override
     public final void subscribe(Subscriber<? super T> s) {
         Objects.requireNonNull(s, "s is null");
-        subscribeActual(s);
-    }
-    
-    private void subscribeActual(Subscriber<? super T> s) {
         try {
             s = RxJavaPlugins.onSubscribe(s);
 
@@ -2950,7 +2935,7 @@ public class Flowable<T> implements Publisher<T> {
                 throw new NullPointerException("Plugin returned null Subscriber");
             }
             
-            onSubscribe.subscribe(s);
+            subscribeActual(s);
         } catch (NullPointerException e) {
             throw e;
         } catch (Throwable e) {
@@ -2964,6 +2949,8 @@ public class Flowable<T> implements Publisher<T> {
             throw npe;
         }
     }
+    
+    protected abstract void subscribeActual(Subscriber<? super T> s);
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerKind.CUSTOM)

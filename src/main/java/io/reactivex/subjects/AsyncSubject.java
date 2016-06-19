@@ -35,14 +35,18 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class AsyncSubject<T> extends Subject<T, T> {
     public static <T> AsyncSubject<T> create() {
-        State<T> state = new State<T>();
-        return new AsyncSubject<T>(state);
+        return new AsyncSubject<T>();
     }
     
     final State<T> state;
-    protected AsyncSubject(State<T> state) {
-        super(state);
-        this.state = state;
+    
+    protected AsyncSubject() {
+        this.state = new State<T>();
+    }
+    
+    @Override
+    protected void subscribeActual(Observer<? super T> observer) {
+        state.accept(observer);
     }
     
     @Override

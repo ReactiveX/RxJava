@@ -41,8 +41,12 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     
     final State<T> state;
     protected BehaviorSubject(State<T> state) {
-        super(state);
         this.state = state;
+    }
+    
+    @Override
+    protected void subscribeActual(Observer<? super T> observer) {
+        state.accept(observer);
     }
     
     @Override

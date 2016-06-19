@@ -139,14 +139,21 @@ public final class OperatorPublish<T> extends ConnectableFlowable<T> {
         });
     }
 
+    final Publisher<T> onSubscribe;
+    
     private OperatorPublish(Publisher<T> onSubscribe, Publisher<? extends T> source, 
             final AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
-        super(onSubscribe);
+        this.onSubscribe = onSubscribe;
         this.source = source;
         this.current = current;
         this.bufferSize = bufferSize;
     }
 
+    @Override
+    protected void subscribeActual(Subscriber<? super T> s) {
+        onSubscribe.subscribe(s);
+    }
+    
     @Override
     public void connect(Consumer<? super Disposable> connection) {
         boolean doConnect = false;
