@@ -6,13 +6,34 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 
 #### Version 2.x
 
-Version 2.x and 1.x will live side-by-side for several years. They will have different namespaces (io.reactivex vs rx). 
+Version 2.x and 1.x will live side-by-side for several years. They will have different group ids (`io.reactivex.rxjava2` vs `io.reactivex`) and namespaces (`io.reactivex` vs `rx`). 
 
 The purpose for 2.x is:
 
-- leverage Java 8+ features
+- continued support for Java 6+ & [Android](https://github.com/ReactiveX/RxAndroid) 2.3+
 - [Reactive Streams](http://www.reactive-streams.org) compatibility
 - performance gains through design changes learned through the 1.x cycle
+
+##### Releases
+
+The release plan for 2.x is as [follows](https://github.com/ReactiveX/RxJava/issues/4016):
+
+  - 26/08/2016: Release Candidate 1: stabilized API and feature set
+  - 23/09/2016: Release Candidate 2: addressing feedback from RC 1
+  - 21/10/2016: Release Candidate 3: addressing feedback from RC 2
+  - 29/10/2016: Stable Release: General availability
+  
+The snapshots of merges into the 2.x branch (developer preview) are available as follows:
+
+```
+repositories {
+    maven { url 'https://oss.jfrog.org/libs-snapshot' }
+}
+
+dependencies {
+    compile 'io.reactivex.rxjava2:rxjava:2.0.0-DP0-SNAPSHOT'
+}
+```
 
 #### Version 1.x
 
