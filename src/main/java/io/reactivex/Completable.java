@@ -37,7 +37,7 @@ import io.reactivex.schedulers.Schedulers;
  * 
  * The class follows a similar event pattern as Reactive-Streams: onSubscribe (onError|onComplete)?
  */
-public class Completable {
+public abstract class Completable {
     /**
      * Callback used for building deferred computations that takes a CompletableSubscriber.
      */
@@ -386,7 +386,7 @@ public class Completable {
         try {
             // TODO plugin wrapping onSubscribe
             
-            return new Completable(onSubscribe);
+            return new CompletableWrapper(onSubscribe);
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
@@ -984,18 +984,6 @@ public class Completable {
                 });
             }
         });
-    }
-    
-    /** The actual subscription action. */
-    private final CompletableOnSubscribe onSubscribe;
-    
-    /**
-     * Constructs a Completable instance with the given onSubscribe callback.
-     * @param onSubscribe the callback that will receive CompletableSubscribers when they subscribe,
-     * not null (not verified)
-     */
-    protected Completable(CompletableOnSubscribe onSubscribe) {
-        this.onSubscribe = onSubscribe;
     }
     
     /**
@@ -1929,7 +1917,7 @@ public class Completable {
         try {
             // TODO plugin wrapping the subscriber
             
-            onSubscribe.accept(s);
+            subscribeActual(s);
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {
@@ -1937,6 +1925,8 @@ public class Completable {
             throw toNpe(ex);
         }
     }
+    
+    protected abstract void subscribeActual(CompletableSubscriber s);
 
     /**
      * Subscribes to this Completable and calls back either the onError or onComplete functions.

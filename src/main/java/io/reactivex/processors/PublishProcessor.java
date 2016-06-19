@@ -46,8 +46,7 @@ public final class PublishProcessor<T> extends FlowProcessor<T, T> {
      * @return the new PublishSubject
      */
     public static <T> PublishProcessor<T> create() {
-        State<T> state = new State<T>();
-        return new PublishProcessor<T>(state);
+        return new PublishProcessor<T>();
     }
     
     /** Holds the terminal event and manages the array of subscribers. */
@@ -59,9 +58,13 @@ public final class PublishProcessor<T> extends FlowProcessor<T, T> {
      */
     boolean done;
     
-    protected PublishProcessor(State<T> state) {
-        super(state);
-        this.state = state;
+    protected PublishProcessor() {
+        this.state = new State<T>();
+    }
+
+    @Override
+    protected void subscribeActual(Subscriber<? super T> s) {
+        state.subscribe(s);
     }
     
     @Override

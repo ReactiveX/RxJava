@@ -88,8 +88,12 @@ public final class ReplayProcessor<T> extends FlowProcessor<T, T> {
     final State<T> state;
     
     protected ReplayProcessor(State<T> state) {
-        super(state);
         this.state = state;
+    }
+    
+    @Override
+    protected void subscribeActual(Subscriber<? super T> s) {
+        state.subscribe(s);
     }
     
     @Override

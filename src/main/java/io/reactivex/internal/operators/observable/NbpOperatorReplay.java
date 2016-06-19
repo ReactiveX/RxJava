@@ -93,15 +93,15 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
      */
     public static <T> ConnectableObservable<T> observeOn(final ConnectableObservable<T> co, final Scheduler scheduler) {
         final Observable<T> observable = co.observeOn(scheduler);
-        return new ConnectableObservable<T>(new NbpOnSubscribe<T>() {
-            @Override
-            public void accept(Observer<? super T> s) {
-                observable.subscribe(s);
-            }
-        }) {
+        return new ConnectableObservable<T>() {
             @Override
             public void connect(Consumer<? super Disposable> connection) {
                 co.connect(connection);
+            }
+            
+            @Override
+            protected void subscribeActual(Observer<? super T> observer) {
+                observable.subscribe(observer);
             }
         };
     }
@@ -224,13 +224,21 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
         };
         return new NbpOperatorReplay<T>(onSubscribe, source, curr, bufferFactory);
     }
+    
+    final NbpOnSubscribe<T> onSubscribe;
+    
     private NbpOperatorReplay(NbpOnSubscribe<T> onSubscribe, Observable<? extends T> source, 
             final AtomicReference<ReplaySubscriber<T>> current,
             final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
-        super(onSubscribe);
+        this.onSubscribe = onSubscribe;
         this.source = source;
         this.current = current;
         this.bufferFactory = bufferFactory;
+    }
+    
+    @Override
+    protected void subscribeActual(Observer<? super T> observer) {
+        onSubscribe.accept(observer);
     }
 
     @Override

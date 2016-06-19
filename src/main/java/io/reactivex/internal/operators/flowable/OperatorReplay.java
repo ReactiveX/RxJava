@@ -107,10 +107,15 @@ public final class OperatorReplay<T> extends ConnectableFlowable<T> {
      */
     public static <T> ConnectableFlowable<T> observeOn(final ConnectableFlowable<T> co, final Scheduler scheduler) {
         final Flowable<T> observable = co.observeOn(scheduler);
-        return new ConnectableFlowable<T>(observable) {
+        return new ConnectableFlowable<T>() {
             @Override
             public void connect(Consumer<? super Disposable> connection) {
                 co.connect(connection);
+            }
+            
+            @Override
+            protected void subscribeActual(Subscriber<? super T> s) {
+                observable.subscribe(s);
             }
         };
     }
@@ -231,15 +236,23 @@ public final class OperatorReplay<T> extends ConnectableFlowable<T> {
         };
         return new OperatorReplay<T>(onSubscribe, source, curr, bufferFactory);
     }
+    
+    final Publisher<T> onSubscribe;
+    
     private OperatorReplay(Publisher<T> onSubscribe, Flowable<? extends T> source, 
             final AtomicReference<ReplaySubscriber<T>> current,
             final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
-        super(onSubscribe);
+        this.onSubscribe = onSubscribe;
         this.source = source;
         this.current = current;
         this.bufferFactory = bufferFactory;
     }
 
+    @Override
+    protected void subscribeActual(Subscriber<? super T> s) {
+        onSubscribe.subscribe(s);
+    }
+    
     @Override
     public void connect(Consumer<? super Disposable> connection) {
         boolean doConnect = false;

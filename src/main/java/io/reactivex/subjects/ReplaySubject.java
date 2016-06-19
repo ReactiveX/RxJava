@@ -87,10 +87,14 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     final State<T> state;
     
     protected ReplaySubject(State<T> state) {
-        super(state);
         this.state = state;
     }
     
+    @Override
+    protected void subscribeActual(Observer<? super T> observer) {
+        state.accept(observer);
+    }
+
     @Override
     public void onSubscribe(Disposable s) {
         state.onSubscribe(s);

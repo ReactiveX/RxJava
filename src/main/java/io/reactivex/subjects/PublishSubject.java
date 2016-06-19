@@ -23,16 +23,19 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class PublishSubject<T> extends Subject<T, T> {
     public static <T> PublishSubject<T> create() {
-        State<T> state = new State<T>();
-        return new PublishSubject<T>(state);
+        return new PublishSubject<T>();
     }
     
     final State<T> state;
-    protected PublishSubject(State<T> state) {
-        super(state);
-        this.state = state;
+    protected PublishSubject() {
+        this.state = new State<T>();
     }
-    
+
+    @Override
+    protected void subscribeActual(Observer<? super T> observer) {
+        state.accept(observer);
+    }
+
     @Override
     public void onSubscribe(Disposable d) {
         if (state.done) {

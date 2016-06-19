@@ -12,14 +12,11 @@
  */
 package io.reactivex.flowables;
 
-import org.reactivestreams.Publisher;
-
 import io.reactivex.Flowable;
 
-public class GroupedFlowable<K, T> extends Flowable<T> {
+public abstract class GroupedFlowable<K, T> extends Flowable<T> {
     final K key;
-    protected GroupedFlowable(Publisher<T> onSubscribe, K key) {
-        super(onSubscribe);
+    protected GroupedFlowable(K key) {
         this.key = key;
     }
     

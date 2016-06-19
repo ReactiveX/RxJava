@@ -305,8 +305,13 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedFlowable<
         final State<T, K> state;
         
         protected GroupedUnicast(K key, State<T, K> state) {
-            super(state, key);
+            super(key);
             this.state = state;
+        }
+        
+        @Override
+        protected void subscribeActual(Subscriber<? super T> s) {
+            state.subscribe(s);
         }
         
         public void onNext(T t) {

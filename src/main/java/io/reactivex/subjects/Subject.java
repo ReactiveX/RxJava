@@ -26,10 +26,6 @@ import io.reactivex.*;
  */
 public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
     
-    protected Subject(NbpOnSubscribe<R> onSubscribe) {
-        super(onSubscribe);
-    }
-    
     /**
      * Returns true if the subject has subscribers.
      * <p>The method is thread-safe.

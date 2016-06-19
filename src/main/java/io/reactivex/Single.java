@@ -36,7 +36,7 @@ import io.reactivex.schedulers.Schedulers;
  * 
  * @param <T> the value type
  */
-public class Single<T> {
+public abstract class Single<T> {
     
     public interface SingleOnSubscribe<T> extends Consumer<SingleSubscriber<? super T>> {
         
@@ -356,7 +356,7 @@ public class Single<T> {
     public static <T> Single<T> create(SingleOnSubscribe<T> onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         // TODO plugin wrapper
-        return new Single<T>(onSubscribe);
+        return new SingleWrapper<T>(onSubscribe);
     }
     
     public static <T> Single<T> defer(final Supplier<? extends Single<? extends T>> singleSupplier) {
@@ -1003,12 +1003,6 @@ public class Single<T> {
         return Flowable.zipArray(zipper, false, 1, sourcePublishers).toSingle();
     }
 
-    protected final SingleOnSubscribe<T> onSubscribe;
-
-    protected Single(SingleOnSubscribe<T> onSubscribe) {
-        this.onSubscribe = onSubscribe;
-    }
-
     @SuppressWarnings("unchecked")
     public final Single<T> ambWith(Single<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
@@ -1374,7 +1368,7 @@ public class Single<T> {
                         throw new NullPointerException("The onLift returned a null subscriber");
                     }
                     // TODO plugin wrapper
-                    onSubscribe.accept(sr);
+                    subscribe(sr);
                 } catch (NullPointerException ex) {
                     throw ex;
                 } catch (Throwable ex) {
@@ -1690,8 +1684,10 @@ public class Single<T> {
     public final void subscribe(SingleSubscriber<? super T> subscriber) {
         Objects.requireNonNull(subscriber, "subscriber is null");
         // TODO plugin wrapper
-        onSubscribe.accept(subscriber);
+        subscribeActual(subscriber);
     }
+    
+    protected abstract void subscribeActual(SingleSubscriber<? super T> subscriber);
     
     public final void subscribe(Subscriber<? super T> s) {
         toFlowable().subscribe(s);

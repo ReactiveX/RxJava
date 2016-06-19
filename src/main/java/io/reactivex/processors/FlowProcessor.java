@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 
 /**
- * Represents a Subscriber and an Observable (Publisher) at the same time, allowing
+ * Represents a Subscriber and an Flowable (Publisher) at the same time, allowing
  * multicasting events from a single source to multiple child Subscribers.
  * <p>All methods except the onSubscribe, onNext, onError and onComplete are thread-safe.
  * Use {@link #toSerialized()} to make these methods thread-safe as well.
@@ -27,10 +27,6 @@ import io.reactivex.Flowable;
  * @param <R> the emission value type
  */
 public abstract class FlowProcessor<T, R> extends Flowable<R> implements Processor<T, R> {
-    
-    protected FlowProcessor(Publisher<R> onSubscribe) {
-        super(onSubscribe);
-    }
     
     /**
      * Returns true if the subject has subscribers.

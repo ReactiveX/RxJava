@@ -80,10 +80,14 @@ public final class UnicastSubject<T> extends Subject<T, T> {
      * @param state the subject state
      */
     protected UnicastSubject(State<T> state) {
-        super(state);
         this.state = state;
     }
 
+    @Override
+    protected void subscribeActual(Observer<? super T> observer) {
+        state.accept(observer);
+    }
+    
     // TODO may need to have a direct WIP field to avoid clashing on the object header
     /** Pads the WIP counter. */
     static abstract class StatePad0 extends AtomicInteger {

@@ -41,13 +41,12 @@ import io.reactivex.plugins.RxJavaPlugins;
      * @param actual the subject wrapped
      */
     public SerializedProcessor(final FlowProcessor<T, R> actual) {
-        super(new Publisher<R>() {
-            @Override
-            public void subscribe(Subscriber<? super R> s) {
-                actual.subscribe(s);
-            }
-        });
         this.actual = actual;
+    }
+
+    @Override
+    protected void subscribeActual(Subscriber<? super R> s) {
+        actual.subscribe(s);
     }
     
     @Override

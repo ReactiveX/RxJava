@@ -26,13 +26,12 @@ import io.reactivex.internal.subscriptions.*;
 public final class ObservableScalarSource<T> extends Flowable<T> {
     private final T value;
     public ObservableScalarSource(final T value) {
-        super(new Publisher<T>() {
-            @Override
-            public void subscribe(Subscriber<? super T> s) {
-                s.onSubscribe(new ScalarSubscription<T>(s, value));
-            }
-        });
         this.value = value;
+    }
+
+    @Override
+    protected void subscribeActual(Subscriber<? super T> s) {
+        s.onSubscribe(new ScalarSubscription<T>(s, value));
     }
     
     public T value() {

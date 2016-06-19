@@ -29,6 +29,8 @@ import io.reactivex.internal.util.*;
 public final class NbpCachedObservable<T> extends Observable<T> {
     /** The cache and replay state. */
     private CacheState<T> state;
+    
+    final AtomicBoolean once;
 
     /**
      * Creates a cached Observable with a default capacity hint of 16.
@@ -52,8 +54,7 @@ public final class NbpCachedObservable<T> extends Observable<T> {
             throw new IllegalArgumentException("capacityHint > 0 required");
         }
         CacheState<T> state = new CacheState<T>(source, capacityHint);
-        CachedSubscribe<T> onSubscribe = new CachedSubscribe<T>(state);
-        return new NbpCachedObservable<T>(onSubscribe, state);
+        return new NbpCachedObservable<T>(state);
     }
     
     /**
@@ -62,11 +63,27 @@ public final class NbpCachedObservable<T> extends Observable<T> {
      * @param onSubscribe
      * @param state
      */
-    private NbpCachedObservable(NbpOnSubscribe<T> onSubscribe, CacheState<T> state) {
-        super(onSubscribe);
+    private NbpCachedObservable(CacheState<T> state) {
         this.state = state;
+        this.once = new AtomicBoolean();
     }
 
+    @Override
+    protected void subscribeActual(Observer<? super T> t) {
+        // we can connect first because we replay everything anyway
+        ReplaySubscription<T> rp = new ReplaySubscription<T>(t, state);
+        state.addProducer(rp);
+        
+        t.onSubscribe(rp);
+
+        // we ensure a single connection here to save an instance field of AtomicBoolean in state.
+        if (!once.get() && once.compareAndSet(false, true)) {
+            state.connect();
+        }
+        
+        rp.replay();
+    }
+    
     /**
      * Check if this cached observable is connected to its source.
      * @return true if already connected
@@ -214,35 +231,6 @@ public final class NbpCachedObservable<T> extends Observable<T> {
             for (ReplaySubscription<?> rp : a) {
                 rp.replay();
             }
-        }
-    }
-    
-    /**
-     * Manages the subscription of child subscribers by setting up a replay producer and
-     * performs auto-connection of the very first subscription.
-     * @param <T> the value type emitted
-     */
-    static final class CachedSubscribe<T> extends AtomicBoolean implements NbpOnSubscribe<T> {
-        /** */
-        private static final long serialVersionUID = -2817751667698696782L;
-        final CacheState<T> state;
-        public CachedSubscribe(CacheState<T> state) {
-            this.state = state;
-        }
-        @Override
-        public void accept(Observer<? super T> t) {
-            // we can connect first because we replay everything anyway
-            ReplaySubscription<T> rp = new ReplaySubscription<T>(t, state);
-            state.addProducer(rp);
-            
-            t.onSubscribe(rp);
-
-            // we ensure a single connection here to save an instance field of AtomicBoolean in state.
-            if (!get() && compareAndSet(false, true)) {
-                state.connect();
-            }
-            
-            rp.replay();
         }
     }
     

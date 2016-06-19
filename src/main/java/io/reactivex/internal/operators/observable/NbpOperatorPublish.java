@@ -136,12 +136,19 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
         });
     }
 
+    final NbpOnSubscribe<T> onSubscribe;
+    
     private NbpOperatorPublish(NbpOnSubscribe<T> onSubscribe, Observable<? extends T> source, 
             final AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
-        super(onSubscribe);
+        this.onSubscribe = onSubscribe;
         this.source = source;
         this.current = current;
         this.bufferSize = bufferSize;
+    }
+    
+    @Override
+    protected void subscribeActual(Observer<? super T> observer) {
+        onSubscribe.accept(observer);
     }
 
     @Override
