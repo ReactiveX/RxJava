@@ -8,6 +8,7 @@ group = 'io.reactivex.rxjava2'
 description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
 
 apply plugin: 'java'
+apply plugin: 'jacoco'
 apply plugin: 'nebula.rxjava-project'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
@@ -40,3 +41,16 @@ if (project.hasProperty('release.useLastTag')) {
 test{
      maxHeapSize = "2g"
 }
+
+jacoco {
+    toolVersion = '0.7.7.201606060606' // See http://www.eclemma.org/jacoco/.
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+build.dependsOn jacocoTestReport
