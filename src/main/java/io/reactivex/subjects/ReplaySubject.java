@@ -18,8 +18,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.*;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.util.NotificationLite;
@@ -92,7 +92,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        state.accept(observer);
+        state.subscribe(observer);
     }
 
     @Override
@@ -171,7 +171,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         return state.buffer.size();
     }
     
-    static final class State<T> extends AtomicReference<Object> implements NbpOnSubscribe<T>, Observer<T> {
+    static final class State<T> extends AtomicReference<Object> implements ObservableConsumable<T>, Observer<T> {
         /** */
         private static final long serialVersionUID = -4673197222000219014L;
 
@@ -194,7 +194,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void accept(Observer<? super T> s) {
+        public void subscribe(Observer<? super T> s) {
             ReplayDisposable<T> rs = new ReplayDisposable<T>(s, this);
             s.onSubscribe(rs);
             

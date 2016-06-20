@@ -22,7 +22,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -46,9 +45,9 @@ public class NbpOperatorSampleTest {
 
     @Test
     public void testSample() {
-        Observable<Long> source = Observable.create(new NbpOnSubscribe<Long>() {
+        Observable<Long> source = Observable.create(new ObservableConsumable<Long>() {
             @Override
-            public void accept(final Observer<? super Long> observer1) {
+            public void subscribe(final Observer<? super Long> observer1) {
                 observer1.onSubscribe(EmptyDisposable.INSTANCE);
                 innerScheduler.schedule(new Runnable() {
                     @Override
@@ -268,9 +267,9 @@ public class NbpOperatorSampleTest {
     public void testSampleUnsubscribe() {
         final Disposable s = mock(Disposable.class);
         Observable<Integer> o = Observable.create(
-                new NbpOnSubscribe<Integer>() {
+                new ObservableConsumable<Integer>() {
                     @Override
-                    public void accept(Observer<? super Integer> NbpSubscriber) {
+                    public void subscribe(Observer<? super Integer> NbpSubscriber) {
                         NbpSubscriber.onSubscribe(s);
                     }
                 }

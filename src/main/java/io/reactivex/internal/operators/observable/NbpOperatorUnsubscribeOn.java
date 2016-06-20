@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
+import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 

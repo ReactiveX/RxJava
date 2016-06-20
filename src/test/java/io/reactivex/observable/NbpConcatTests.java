@@ -19,7 +19,7 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.observable.NbpCovarianceTest.*;
 
@@ -145,9 +145,9 @@ public class NbpConcatTests {
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
         
-        Observable<Movie> o1 = Observable.create(new NbpOnSubscribe<Movie>() {
+        Observable<Movie> o1 = Observable.create(new ObservableConsumable<Movie>() {
             @Override
-            public void accept(Observer<? super Movie> o) {
+            public void subscribe(Observer<? super Movie> o) {
                     o.onNext(horrorMovie1);
                     o.onNext(movie);
                     //                o.onNext(new Media()); // correctly doesn't compile

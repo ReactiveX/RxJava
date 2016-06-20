@@ -14,17 +14,16 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
 import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
-public final class NbpOnSubscribeDefer<T> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeDefer<T> implements ObservableConsumable<T> {
     final Supplier<? extends Observable<? extends T>> supplier;
     public NbpOnSubscribeDefer(Supplier<? extends Observable<? extends T>> supplier) {
         this.supplier = supplier;
     }
     @Override
-    public void accept(Observer<? super T> s) {
+    public void subscribe(Observer<? super T> s) {
         Observable<? extends T> pub;
         try {
             pub = supplier.get();

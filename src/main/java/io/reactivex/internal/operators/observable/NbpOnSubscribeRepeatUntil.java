@@ -16,11 +16,10 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.BooleanSupplier;
 
-public final class NbpOnSubscribeRepeatUntil<T> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeRepeatUntil<T> implements ObservableConsumable<T> {
     final Observable<? extends T> source;
     final BooleanSupplier until;
     public NbpOnSubscribeRepeatUntil(Observable<? extends T> source, BooleanSupplier until) {
@@ -29,7 +28,7 @@ public final class NbpOnSubscribeRepeatUntil<T> implements NbpOnSubscribe<T> {
     }
     
     @Override
-    public void accept(Observer<? super T> s) {
+    public void subscribe(Observer<? super T> s) {
         MultipleAssignmentDisposable sa = new MultipleAssignmentDisposable();
         s.onSubscribe(sa);
         

@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
+import io.reactivex.Observable.NbpOperator;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;

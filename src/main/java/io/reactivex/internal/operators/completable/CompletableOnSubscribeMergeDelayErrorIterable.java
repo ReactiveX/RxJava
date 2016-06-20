@@ -16,12 +16,11 @@ package io.reactivex.internal.operators.completable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Completable;
-import io.reactivex.Completable.*;
+import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 
-public final class CompletableOnSubscribeMergeDelayErrorIterable implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeMergeDelayErrorIterable implements CompletableConsumable {
     final Iterable<? extends Completable> sources;
     
     public CompletableOnSubscribeMergeDelayErrorIterable(Iterable<? extends Completable> sources) {
@@ -29,7 +28,7 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements Comp
     }
     
     @Override
-    public void accept(final CompletableSubscriber s) {
+    public void subscribe(final CompletableSubscriber s) {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicInteger wip = new AtomicInteger(1);
         

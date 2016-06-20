@@ -16,7 +16,7 @@ package io.reactivex.subjects;
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.Observer;
+import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -46,7 +46,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        state.accept(observer);
+        state.subscribe(observer);
     }
     
     @Override
@@ -142,7 +142,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
     }
     
-    static final class State<T> extends AtomicReference<Object> implements NbpOnSubscribe<T>, Observer<T> {
+    static final class State<T> extends AtomicReference<Object> implements ObservableConsumable<T>, Observer<T> {
         /** */
         private static final long serialVersionUID = 4876574210612691772L;
 
@@ -236,7 +236,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void accept(final Observer<? super T> t) {
+        public void subscribe(final Observer<? super T> t) {
             BooleanDisposable bd = new BooleanDisposable(new Runnable() {
                 @Override
                 public void run() {

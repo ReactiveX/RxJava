@@ -98,9 +98,9 @@ public class CompletableTest {
         /** */
         private static final long serialVersionUID = 7192337844700923752L;
         
-        public final Completable completable = Completable.create(new CompletableOnSubscribe() {
+        public final Completable completable = Completable.create(new CompletableConsumable() {
             @Override
-            public void accept(CompletableSubscriber s) {
+            public void subscribe(CompletableSubscriber s) {
                 getAndIncrement();
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onComplete();
@@ -124,9 +124,9 @@ public class CompletableTest {
         /** */
         private static final long serialVersionUID = 7192337844700923752L;
         
-        public final Completable completable = Completable.create(new CompletableOnSubscribe() {
+        public final Completable completable = Completable.create(new CompletableConsumable() {
             @Override
-            public void accept(CompletableSubscriber s) {
+            public void subscribe(CompletableSubscriber s) {
                 getAndIncrement();
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onError(new TestException());
@@ -374,9 +374,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = NullPointerException.class)
     public void createOnSubscribeThrowsNPE() {
-        Completable c = Completable.create(new CompletableOnSubscribe() {
+        Completable c = Completable.create(new CompletableConsumable() {
             @Override
-            public void accept(CompletableSubscriber s) { throw new NullPointerException(); }
+            public void subscribe(CompletableSubscriber s) { throw new NullPointerException(); }
         });
         
         c.await();
@@ -385,9 +385,9 @@ public class CompletableTest {
     @Test(timeout = 1000)
     public void createOnSubscribeThrowsRuntimeException() {
         try {
-            Completable c = Completable.create(new CompletableOnSubscribe() {
+            Completable c = Completable.create(new CompletableConsumable() {
                 @Override
-                public void accept(CompletableSubscriber s) {
+                public void subscribe(CompletableSubscriber s) {
                     throw new TestException();
                 }
             });
@@ -2742,9 +2742,9 @@ public class CompletableTest {
     public void subscribeOnNormal() {
         final AtomicReference<String> name = new  AtomicReference<String>();
         
-        Completable c = Completable.create(new CompletableOnSubscribe() {
+        Completable c = Completable.create(new CompletableConsumable() {
             @Override
-            public void accept(CompletableSubscriber s) { 
+            public void subscribe(CompletableSubscriber s) { 
                 name.set(Thread.currentThread().getName());
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onComplete();
@@ -2760,9 +2760,9 @@ public class CompletableTest {
     public void subscribeOnError() {
         final AtomicReference<String> name = new  AtomicReference<String>();
         
-        Completable c = Completable.create(new CompletableOnSubscribe() {
+        Completable c = Completable.create(new CompletableConsumable() {
             @Override
-            public void accept(CompletableSubscriber s) { 
+            public void subscribe(CompletableSubscriber s) { 
                 name.set(Thread.currentThread().getName());
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onError(new TestException());

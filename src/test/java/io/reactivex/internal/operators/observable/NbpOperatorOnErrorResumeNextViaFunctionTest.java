@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
+import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
@@ -37,10 +37,10 @@ public class NbpOperatorOnErrorResumeNextViaFunctionTest {
     @Test
     public void testResumeNextWithSynchronousExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
-        Observable<String> w = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> w = Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 NbpObserver.onNext("one");
                 NbpObserver.onError(new Throwable("injected failure"));
@@ -275,7 +275,7 @@ public class NbpOperatorOnErrorResumeNextViaFunctionTest {
         verify(NbpObserver, times(1)).onNext("threeResume");
     }
 
-    private static class TestObservable implements NbpOnSubscribe<String> {
+    private static class TestObservable implements ObservableConsumable<String> {
 
         final String[] values;
         Thread t = null;
@@ -285,7 +285,7 @@ public class NbpOperatorOnErrorResumeNextViaFunctionTest {
         }
 
         @Override
-        public void accept(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> NbpObserver) {
             System.out.println("TestObservable subscribed to ...");
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             t = new Thread(new Runnable() {

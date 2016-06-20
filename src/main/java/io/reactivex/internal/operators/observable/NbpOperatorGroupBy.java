@@ -17,8 +17,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.Observable.NbpOperator;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -187,7 +188,7 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<GroupedObs
         
         @Override
         protected void subscribeActual(Observer<? super T> observer) {
-            state.accept(observer);
+            state.subscribe(observer);
         }
         
         public void onNext(T t) {
@@ -203,7 +204,7 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<GroupedObs
         }
     }
     
-    static final class State<T, K> extends AtomicInteger implements Disposable, NbpOnSubscribe<T> {
+    static final class State<T, K> extends AtomicInteger implements Disposable, ObservableConsumable<T> {
         /** */
         private static final long serialVersionUID = -3852313036005250360L;
 
@@ -236,7 +237,7 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<GroupedObs
         }
         
         @Override
-        public void accept(Observer<? super T> s) {
+        public void subscribe(Observer<? super T> s) {
             if (actual.compareAndSet(null, s)) {
                 s.onSubscribe(this);
                 drain();

@@ -16,11 +16,10 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class NbpOnSubscribeSubscribeOn<T> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeSubscribeOn<T> implements ObservableConsumable<T> {
     final Observable<? extends T> source;
     final Scheduler scheduler;
     
@@ -30,7 +29,7 @@ public final class NbpOnSubscribeSubscribeOn<T> implements NbpOnSubscribe<T> {
     }
     
     @Override
-    public void accept(final Observer<? super T> s) {
+    public void subscribe(final Observer<? super T> s) {
         /*
          * TODO can't use the returned disposable because to dispose it,
          * one must set a Subscription on s on the current thread, but

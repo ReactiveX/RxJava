@@ -27,7 +27,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowable.TestHelper;
@@ -327,9 +326,9 @@ public class NbpOperatorTimeoutWithSelectorTest {
             public Observable<Integer> apply(Integer t1) {
                 if (t1 == 1) {
                     // Force "unsubscribe" run on another thread
-                    return Observable.create(new NbpOnSubscribe<Integer>() {
+                    return Observable.create(new ObservableConsumable<Integer>() {
                         @Override
-                        public void accept(Observer<? super Integer> NbpSubscriber) {
+                        public void subscribe(Observer<? super Integer> NbpSubscriber) {
                             NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
                             enteredTimeoutOne.countDown();
                             // force the timeout message be sent after NbpObserver.onNext(2)

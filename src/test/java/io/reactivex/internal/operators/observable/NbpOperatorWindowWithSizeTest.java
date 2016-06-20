@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.BooleanDisposable;
 import io.reactivex.functions.*;
@@ -198,9 +198,9 @@ public class NbpOperatorWindowWithSizeTest {
     
 
     public static Observable<Integer> hotStream() {
-        return Observable.create(new NbpOnSubscribe<Integer>() {
+        return Observable.create(new ObservableConsumable<Integer>() {
             @Override
-            public void accept(Observer<? super Integer> s) {
+            public void subscribe(Observer<? super Integer> s) {
                 BooleanDisposable bs = new BooleanDisposable();
                 s.onSubscribe(bs);
                 while (!bs.isDisposed()) {

@@ -18,8 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observable.*;
-import io.reactivex.Single.*;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
@@ -37,43 +35,13 @@ import io.reactivex.schedulers.Schedulers;
  * 
  * The class follows a similar event pattern as Reactive-Streams: onSubscribe (onError|onComplete)?
  */
-public abstract class Completable {
-    /**
-     * Callback used for building deferred computations that takes a CompletableSubscriber.
-     */
-    public interface CompletableOnSubscribe extends Consumer<CompletableSubscriber> {
-        
-    }
-    
+public abstract class Completable implements CompletableConsumable {
     /**
      * Convenience interface and callback used by the lift operator that given a child CompletableSubscriber,
      * return a parent CompletableSubscriber that does any kind of lifecycle-related transformations.
      */
     public interface CompletableOperator extends Function<CompletableSubscriber, CompletableSubscriber> {
         
-    }
-    
-    /**
-     * Represents the subscription API callbacks when subscribing to a Completable instance.
-     */
-    public interface CompletableSubscriber {
-        /**
-         * Called once the deferred computation completes normally.
-         */
-        void onComplete();
-        
-        /**
-         * Called once if the deferred computation 'throws' an exception.
-         * @param e the exception, not null.
-         */
-        void onError(Throwable e);
-        
-        /**
-         * Called once by the Completable to set a Disposable on this instance which
-         * then can be used to cancel the subscription at any time.
-         * @param d the Disposable instance to call dispose on for cancellation, not null
-         */
-        void onSubscribe(Disposable d);
     }
     
     /**
@@ -85,18 +53,18 @@ public abstract class Completable {
     }
     
     /** Single instance of a complete Completable. */
-    static final Completable COMPLETE = create(new CompletableOnSubscribe() {
+    static final Completable COMPLETE = create(new CompletableConsumable() {
         @Override
-        public void accept(CompletableSubscriber s) {
+        public void subscribe(CompletableSubscriber s) {
             s.onSubscribe(EmptyDisposable.INSTANCE);
             s.onComplete();
         }
     });
     
     /** Single instance of a never Completable. */
-    static final Completable NEVER = create(new CompletableOnSubscribe() {
+    static final Completable NEVER = create(new CompletableConsumable() {
         @Override
-        public void accept(CompletableSubscriber s) {
+        public void subscribe(CompletableSubscriber s) {
             s.onSubscribe(EmptyDisposable.INSTANCE);
         }
     });
@@ -118,9 +86,9 @@ public abstract class Completable {
             return sources[0];
         }
         
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
+            public void subscribe(final CompletableSubscriber s) {
                 final CompositeDisposable set = new CompositeDisposable();
                 s.onSubscribe(set);
 
@@ -188,9 +156,9 @@ public abstract class Completable {
     public static Completable amb(final Iterable<? extends Completable> sources) {
         Objects.requireNonNull(sources, "sources is null");
         
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
+            public void subscribe(final CompletableSubscriber s) {
                 final CompositeDisposable set = new CompositeDisposable();
                 s.onSubscribe(set);
 
@@ -381,7 +349,7 @@ public abstract class Completable {
      * @throws NullPointerException if onSubscribe is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public static Completable create(CompletableOnSubscribe onSubscribe) {
+    public static Completable create(CompletableConsumable onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         try {
             // TODO plugin wrapping onSubscribe
@@ -403,9 +371,9 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.NONE)
     public static Completable defer(final Supplier<? extends Completable> completableSupplier) {
         Objects.requireNonNull(completableSupplier, "completableSupplier");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(CompletableSubscriber s) {
+            public void subscribe(CompletableSubscriber s) {
                 Completable c;
                 
                 try {
@@ -440,9 +408,9 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.NONE)
     public static Completable error(final Supplier<? extends Throwable> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(CompletableSubscriber s) {
+            public void subscribe(CompletableSubscriber s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 Throwable error;
                 
@@ -469,9 +437,9 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.NONE)
     public static Completable error(final Throwable error) {
         Objects.requireNonNull(error, "error is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(CompletableSubscriber s) {
+            public void subscribe(CompletableSubscriber s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onError(error);
             }
@@ -487,9 +455,9 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.NONE)
     public static Completable fromCallable(final Callable<?> callable) {
         Objects.requireNonNull(callable, "callable is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(CompletableSubscriber s) {
+            public void subscribe(CompletableSubscriber s) {
                 BooleanDisposable bs = new BooleanDisposable();
                 s.onSubscribe(bs);
                 try {
@@ -519,9 +487,9 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.NONE)
     public static <T> Completable fromFlowable(final Flowable<T> flowable) {
         Objects.requireNonNull(flowable, "flowable is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber cs) {
+            public void subscribe(final CompletableSubscriber cs) {
                 flowable.subscribe(new Subscriber<T>() {
 
                     @Override
@@ -561,9 +529,9 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.NONE)
     public static <T> Completable fromNbpObservable(final Observable<T> observable) {
         Objects.requireNonNull(observable, "observable is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
+            public void subscribe(final CompletableSubscriber s) {
                 observable.subscribe(new Observer<T>() {
 
                     @Override
@@ -601,9 +569,9 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.NONE)
     public static Completable fromRunnable(final Runnable run) {
         Objects.requireNonNull(run, "run is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(CompletableSubscriber s) {
+            public void subscribe(CompletableSubscriber s) {
                 BooleanDisposable bs = new BooleanDisposable();
                 s.onSubscribe(bs);
                 try {
@@ -632,9 +600,9 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.NONE)
     public static <T> Completable fromSingle(final Single<T> single) {
         Objects.requireNonNull(single, "single is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
+            public void subscribe(final CompletableSubscriber s) {
                 single.subscribe(new SingleSubscriber<T>() {
 
                     @Override
@@ -816,9 +784,9 @@ public abstract class Completable {
     public static Completable timer(final long delay, final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
+            public void subscribe(final CompletableSubscriber s) {
                 MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
                 s.onSubscribe(mad);
                 if (!mad.isDisposed()) {
@@ -888,9 +856,9 @@ public abstract class Completable {
         Objects.requireNonNull(completableFunction, "completableFunction is null");
         Objects.requireNonNull(disposer, "disposer is null");
         
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
+            public void subscribe(final CompletableSubscriber s) {
                 final R resource;
                 
                 try {
@@ -1165,12 +1133,12 @@ public abstract class Completable {
     public final Completable delay(final long delay, final TimeUnit unit, final Scheduler scheduler, final boolean delayError) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
+            public void subscribe(final CompletableSubscriber s) {
                 final CompositeDisposable set = new CompositeDisposable();
                 
-                subscribe(new CompletableSubscriber() {
+                Completable.this.subscribe(new CompletableSubscriber() {
 
                     
                     @Override
@@ -1264,10 +1232,10 @@ public abstract class Completable {
         Objects.requireNonNull(onComplete, "onComplete is null");
         Objects.requireNonNull(onAfterComplete, "onAfterComplete is null");
         Objects.requireNonNull(onDisposed, "onDisposed is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
-                subscribe(new CompletableSubscriber() {
+            public void subscribe(final CompletableSubscriber s) {
+                Completable.this.subscribe(new CompletableSubscriber() {
 
                     @Override
                     public void onComplete() {
@@ -1510,15 +1478,15 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.NONE)
     public final Completable lift(final CompletableOperator onLift) {
         Objects.requireNonNull(onLift, "onLift is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(CompletableSubscriber s) {
+            public void subscribe(CompletableSubscriber s) {
                 try {
                     // TODO plugin wrapping
 
                     CompletableSubscriber sw = onLift.apply(s);
                     
-                    subscribe(sw);
+                    Completable.this.subscribe(sw);
                 } catch (NullPointerException ex) {
                     throw ex;
                 } catch (Throwable ex) {
@@ -1550,9 +1518,9 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.CUSTOM)
     public final Completable observeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
+            public void subscribe(final CompletableSubscriber s) {
                 
                 final ArrayCompositeResource<Disposable> ad = new ArrayCompositeResource<Disposable>(2, Disposables.consumeAndDispose());
                 final Scheduler.Worker w = scheduler.createWorker();
@@ -1560,7 +1528,7 @@ public abstract class Completable {
                 
                 s.onSubscribe(ad);
                 
-                subscribe(new CompletableSubscriber() {
+                Completable.this.subscribe(new CompletableSubscriber() {
 
                     @Override
                     public void onComplete() {
@@ -1621,10 +1589,10 @@ public abstract class Completable {
     public final Completable onErrorComplete(final Predicate<? super Throwable> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
-                subscribe(new CompletableSubscriber() {
+            public void subscribe(final CompletableSubscriber s) {
+                Completable.this.subscribe(new CompletableSubscriber() {
 
                     @Override
                     public void onComplete() {
@@ -1670,11 +1638,11 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.NONE)
     public final Completable onErrorResumeNext(final Function<? super Throwable, ? extends Completable> errorMapper) {
         Objects.requireNonNull(errorMapper, "errorMapper is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
+            public void subscribe(final CompletableSubscriber s) {
                 final SerialDisposable sd = new SerialDisposable();
-                subscribe(new CompletableSubscriber() {
+                Completable.this.subscribe(new CompletableSubscriber() {
 
                     @Override
                     public void onComplete() {
@@ -1912,6 +1880,7 @@ public abstract class Completable {
      * @throws NullPointerException if s is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
+    @Override
     public final void subscribe(CompletableSubscriber s) {
         Objects.requireNonNull(s, "s is null");
         try {
@@ -2099,14 +2068,14 @@ public abstract class Completable {
     public final Completable subscribeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
+            public void subscribe(final CompletableSubscriber s) {
                 // FIXME cancellation of this schedule
                 scheduler.scheduleDirect(new Runnable() {
                     @Override
                     public void run() {
-                        subscribe(s);
+                        Completable.this.subscribe(s);
                     }
                 });
             }
@@ -2228,10 +2197,10 @@ public abstract class Completable {
      */
     @SchedulerSupport(SchedulerKind.NONE)
     public final <T> Observable<T> toNbpObservable() {
-        return Observable.create(new NbpOnSubscribe<T>() {
+        return Observable.create(new ObservableConsumable<T>() {
             @Override
-            public void accept(Observer<? super T> s) {
-                subscribe(s);
+            public void subscribe(Observer<? super T> s) {
+                Completable.this.subscribe(s);
             }
         });
     }
@@ -2247,10 +2216,10 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.NONE)
     public final <T> Single<T> toSingle(final Supplier<? extends T> completionValueSupplier) {
         Objects.requireNonNull(completionValueSupplier, "completionValueSupplier is null");
-        return Single.create(new SingleOnSubscribe<T>() {
+        return Single.create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
-                subscribe(new CompletableSubscriber() {
+            public void subscribe(final SingleSubscriber<? super T> s) {
+                Completable.this.subscribe(new CompletableSubscriber() {
 
                     @Override
                     public void onComplete() {
@@ -2314,10 +2283,10 @@ public abstract class Completable {
     @SchedulerSupport(SchedulerKind.CUSTOM)
     public final Completable unsubscribeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new CompletableOnSubscribe() {
+        return create(new CompletableConsumable() {
             @Override
-            public void accept(final CompletableSubscriber s) {
-                subscribe(new CompletableSubscriber() {
+            public void subscribe(final CompletableSubscriber s) {
+                Completable.this.subscribe(new CompletableSubscriber() {
 
                     @Override
                     public void onComplete() {

@@ -48,9 +48,9 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
     public static <T> ConnectableObservable<T> create(Observable<? extends T> source, final int bufferSize) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<PublishSubscriber<T>> curr = new AtomicReference<PublishSubscriber<T>>();
-        NbpOnSubscribe<T> onSubscribe = new NbpOnSubscribe<T>() {
+        ObservableConsumable<T> onSubscribe = new ObservableConsumable<T>() {
             @Override
-            public void accept(Observer<? super T> child) {
+            public void subscribe(Observer<? super T> child) {
                 // concurrent connection/disconnection may change the state, 
                 // we loop to be atomic while the child subscribes
                 for (;;) {
@@ -117,9 +117,9 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
 
     public static <T, R> Observable<R> create(final Observable<? extends T> source, 
             final Function<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize) {
-        return create(new NbpOnSubscribe<R>() {
+        return create(new ObservableConsumable<R>() {
             @Override
-            public void accept(Observer<? super R> sr) {
+            public void subscribe(Observer<? super R> sr) {
                 ConnectableObservable<T> op = create(source, bufferSize);
                 
                 final NbpSubscriberResourceWrapper<R, Disposable> srw = new NbpSubscriberResourceWrapper<R, Disposable>(sr, Disposables.consumeAndDispose());
@@ -136,9 +136,9 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
         });
     }
 
-    final NbpOnSubscribe<T> onSubscribe;
+    final ObservableConsumable<T> onSubscribe;
     
-    private NbpOperatorPublish(NbpOnSubscribe<T> onSubscribe, Observable<? extends T> source, 
+    private NbpOperatorPublish(ObservableConsumable<T> onSubscribe, Observable<? extends T> source, 
             final AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
         this.onSubscribe = onSubscribe;
         this.source = source;
@@ -148,7 +148,7 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
     
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        onSubscribe.accept(observer);
+        onSubscribe.subscribe(observer);
     }
 
     @Override

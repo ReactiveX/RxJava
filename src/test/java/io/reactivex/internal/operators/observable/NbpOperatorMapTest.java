@@ -251,7 +251,7 @@ public class NbpOperatorMapTest {
 //    @Test(expected = OnErrorNotImplementedException.class)
 //    public void verifyExceptionIsThrownIfThereIsNoExceptionHandler() {
 //
-//        NbpOnSubscribe<Object> creator = new NbpOnSubscribe<Object>() {
+//        ObservableConsumable<Object> creator = new ObservableConsumable<Object>() {
 //
 //            @Override
 //            public void accept(NbpSubscriber<? super Object> NbpObserver) {

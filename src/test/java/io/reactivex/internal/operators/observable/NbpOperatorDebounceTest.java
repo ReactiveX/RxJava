@@ -22,7 +22,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
@@ -46,9 +45,9 @@ public class NbpOperatorDebounceTest {
 
     @Test
     public void testDebounceWithCompleted() {
-        Observable<String> source = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 publishNext(NbpObserver, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
                 publishNext(NbpObserver, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
@@ -72,9 +71,9 @@ public class NbpOperatorDebounceTest {
 
     @Test
     public void testDebounceNeverEmits() {
-        Observable<String> source = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 // all should be skipped since they are happening faster than the 200ms timeout
                 publishNext(NbpObserver, 100, "a");    // Should be skipped
@@ -102,9 +101,9 @@ public class NbpOperatorDebounceTest {
 
     @Test
     public void testDebounceWithError() {
-        Observable<String> source = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 Exception error = new TestException();
                 publishNext(NbpObserver, 100, "one");    // Should be published since "two" will arrive after the timeout expires.

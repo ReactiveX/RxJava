@@ -23,7 +23,6 @@ import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -47,9 +46,9 @@ public class NbpOperatorWindowWithTimeTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 push(NbpObserver, "one", 10);
                 push(NbpObserver, "two", 90);
@@ -81,9 +80,9 @@ public class NbpOperatorWindowWithTimeTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 push(NbpObserver, "one", 98);
                 push(NbpObserver, "two", 99);

@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -34,10 +33,10 @@ public class NbpOperatorUnsubscribeOnTest {
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
-            Observable<Integer> w = Observable.create(new NbpOnSubscribe<Integer>() {
+            Observable<Integer> w = Observable.create(new ObservableConsumable<Integer>() {
 
                 @Override
-                public void accept(Observer<? super Integer> t1) {
+                public void subscribe(Observer<? super Integer> t1) {
                     subscribeThread.set(Thread.currentThread());
                     t1.onSubscribe(subscription);
                     t1.onNext(1);
@@ -78,10 +77,10 @@ public class NbpOperatorUnsubscribeOnTest {
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
-            Observable<Integer> w = Observable.create(new NbpOnSubscribe<Integer>() {
+            Observable<Integer> w = Observable.create(new ObservableConsumable<Integer>() {
 
                 @Override
-                public void accept(Observer<? super Integer> t1) {
+                public void subscribe(Observer<? super Integer> t1) {
                     subscribeThread.set(Thread.currentThread());
                     t1.onSubscribe(subscription);
                     t1.onNext(1);

@@ -25,7 +25,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowable.TestHelper;
@@ -111,9 +110,9 @@ public class NbpOperatorTakeTest {
 
     @Test
     public void testTakeDoesntLeakErrors() {
-        Observable<String> source = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 NbpObserver.onNext("one");
                 NbpObserver.onError(new Throwable("test failed"));
@@ -137,9 +136,9 @@ public class NbpOperatorTakeTest {
     public void testTakeZeroDoesntLeakError() {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final BooleanDisposable bs = new BooleanDisposable();
-        Observable<String> source = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 subscribed.set(true);
                 NbpObserver.onSubscribe(bs);
                 NbpObserver.onError(new Throwable("test failed"));
@@ -205,10 +204,10 @@ public class NbpOperatorTakeTest {
     @Test(timeout = 2000)
     public void testMultiTake() {
         final AtomicInteger count = new AtomicInteger();
-        Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(Observer<? super Integer> s) {
+            public void subscribe(Observer<? super Integer> s) {
                 BooleanDisposable bs = new BooleanDisposable();
                 s.onSubscribe(bs);
                 for (int i = 0; !bs.isDisposed(); i++) {
@@ -231,7 +230,7 @@ public class NbpOperatorTakeTest {
         assertEquals(1, count.get());
     }
 
-    private static class TestObservableFunc implements NbpOnSubscribe<String> {
+    private static class TestObservableFunc implements ObservableConsumable<String> {
 
         final String[] values;
         Thread t = null;
@@ -241,7 +240,7 @@ public class NbpOperatorTakeTest {
         }
 
         @Override
-        public void accept(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
@@ -267,10 +266,10 @@ public class NbpOperatorTakeTest {
         }
     }
 
-    private static Observable<Long> INFINITE_OBSERVABLE = Observable.create(new NbpOnSubscribe<Long>() {
+    private static Observable<Long> INFINITE_OBSERVABLE = Observable.create(new ObservableConsumable<Long>() {
 
         @Override
-        public void accept(Observer<? super Long> op) {
+        public void subscribe(Observer<? super Long> op) {
             BooleanDisposable bs = new BooleanDisposable();
             op.onSubscribe(bs);
             long l = 1;

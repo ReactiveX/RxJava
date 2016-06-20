@@ -17,7 +17,7 @@ import java.util.ArrayDeque;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
+import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.subjects.UnicastSubject;

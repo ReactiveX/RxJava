@@ -23,7 +23,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -240,10 +239,10 @@ public class NbpOperatorTimeoutTests {
 
             @Override
             public void run() {
-                Observable.create(new NbpOnSubscribe<String>() {
+                Observable.create(new ObservableConsumable<String>() {
 
                     @Override
-                    public void accept(Observer<? super String> NbpSubscriber) {
+                    public void subscribe(Observer<? super String> NbpSubscriber) {
                         NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
                         try {
                             timeoutSetuped.countDown();
@@ -275,9 +274,9 @@ public class NbpOperatorTimeoutTests {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Disposable s = mock(Disposable.class);
 
-        Observable<String> never = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> never = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpSubscriber) {
+            public void subscribe(Observer<? super String> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(s);
             }
         });
@@ -304,9 +303,9 @@ public class NbpOperatorTimeoutTests {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Disposable s = mock(Disposable.class);
 
-        Observable<String> immediatelyComplete = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> immediatelyComplete = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpSubscriber) {
+            public void subscribe(Observer<? super String> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(s);
                 NbpSubscriber.onComplete();
             }
@@ -335,9 +334,9 @@ public class NbpOperatorTimeoutTests {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Disposable s = mock(Disposable.class);
 
-        Observable<String> immediatelyError = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> immediatelyError = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpSubscriber) {
+            public void subscribe(Observer<? super String> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(s);
                 NbpSubscriber.onError(new IOException("Error"));
             }

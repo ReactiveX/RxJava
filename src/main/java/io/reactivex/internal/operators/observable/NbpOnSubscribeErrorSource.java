@@ -13,18 +13,17 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.Observer;
-import io.reactivex.Observable.*;
+import io.reactivex.*;
 import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
-public final class NbpOnSubscribeErrorSource<T> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeErrorSource<T> implements ObservableConsumable<T> {
     final Supplier<? extends Throwable> errorSupplier;
     public NbpOnSubscribeErrorSource(Supplier<? extends Throwable> errorSupplier) {
         this.errorSupplier = errorSupplier;
     }
     @Override
-    public void accept(Observer<? super T> s) {
+    public void subscribe(Observer<? super T> s) {
         Throwable error;
         try {
             error = errorSupplier.get();

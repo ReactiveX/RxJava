@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.Single.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -128,9 +127,9 @@ public class SingleTest {
     public void testCreateSuccess() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         
-        Single.create(new SingleOnSubscribe<Object>() {
+        Single.create(new SingleConsumable<Object>() {
             @Override
-            public void accept(SingleSubscriber<? super Object> s) {
+            public void subscribe(SingleSubscriber<? super Object> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onSuccess("Hello");
             }
@@ -142,9 +141,9 @@ public class SingleTest {
     @Test
     public void testCreateError() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
-        Single.create(new SingleOnSubscribe<Object>() {
+        Single.create(new SingleConsumable<Object>() {
             @Override
-            public void accept(SingleSubscriber<? super Object> s) {
+            public void subscribe(SingleSubscriber<? super Object> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onError(new RuntimeException("fail"));
             }
@@ -196,9 +195,9 @@ public class SingleTest {
     @Test
     public void testTimeout() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Single<String> s1 = Single.<String>create(new SingleOnSubscribe<String>() {
+        Single<String> s1 = Single.<String>create(new SingleConsumable<String>() {
             @Override
-            public void accept(SingleSubscriber<? super String> s) {
+            public void subscribe(SingleSubscriber<? super String> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 try {
                     Thread.sleep(5000);
@@ -218,9 +217,9 @@ public class SingleTest {
     @Test
     public void testTimeoutWithFallback() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Single<String> s1 = Single.<String>create(new SingleOnSubscribe<String>() {
+        Single<String> s1 = Single.<String>create(new SingleConsumable<String>() {
             @Override
-            public void accept(SingleSubscriber<? super String> s) {
+            public void subscribe(SingleSubscriber<? super String> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                     try {
                         Thread.sleep(5000);
@@ -245,9 +244,9 @@ public class SingleTest {
         final AtomicBoolean interrupted = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(2);
 
-        Single<String> s1 = Single.<String>create(new SingleOnSubscribe<String>() {
+        Single<String> s1 = Single.<String>create(new SingleConsumable<String>() {
             @Override
-            public void accept(final SingleSubscriber<? super String> s) {
+            public void subscribe(final SingleSubscriber<? super String> s) {
                 MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
                 s.onSubscribe(mad);
                 final Thread t = new Thread(new Runnable() {
@@ -319,9 +318,9 @@ public class SingleTest {
         final AtomicBoolean interrupted = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(2);
 
-        Single<String> s1 = Single.create(new SingleOnSubscribe<String>() {
+        Single<String> s1 = Single.create(new SingleConsumable<String>() {
             @Override
-            public void accept(final SingleSubscriber<? super String> s) {
+            public void subscribe(final SingleSubscriber<? super String> s) {
                 MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
                 s.onSubscribe(mad);
                 final Thread t = new Thread(new Runnable() {
@@ -375,9 +374,9 @@ public class SingleTest {
         final AtomicBoolean interrupted = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(2);
 
-        Single<String> s1 = Single.create(new SingleOnSubscribe<String>() {
+        Single<String> s1 = Single.create(new SingleConsumable<String>() {
             @Override
-            public void accept(final SingleSubscriber<? super String> s) {
+            public void subscribe(final SingleSubscriber<? super String> s) {
                 MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
                 s.onSubscribe(mad);
                 final Thread t = new Thread(new Runnable() {
@@ -423,9 +422,9 @@ public class SingleTest {
     
     @Test
     public void testBackpressureAsObservable() {
-        Single<String> s = Single.create(new SingleOnSubscribe<String>() {
+        Single<String> s = Single.create(new SingleConsumable<String>() {
             @Override
-            public void accept(SingleSubscriber<? super String> t) {
+            public void subscribe(SingleSubscriber<? super String> t) {
                 t.onSubscribe(EmptyDisposable.INSTANCE);
                 t.onSuccess("hello");
             }

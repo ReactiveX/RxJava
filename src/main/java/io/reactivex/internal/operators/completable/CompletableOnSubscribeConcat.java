@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Completable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.disposables.SerialResource;
@@ -26,7 +25,7 @@ import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class CompletableOnSubscribeConcat implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeConcat implements CompletableConsumable {
     final Flowable<? extends Completable> sources;
     final int prefetch;
     
@@ -36,7 +35,7 @@ public final class CompletableOnSubscribeConcat implements CompletableOnSubscrib
     }
     
     @Override
-    public void accept(CompletableSubscriber s) {
+    public void subscribe(CompletableSubscriber s) {
         CompletableConcatSubscriber parent = new CompletableConcatSubscriber(s, prefetch);
         sources.subscribe(parent);
     }

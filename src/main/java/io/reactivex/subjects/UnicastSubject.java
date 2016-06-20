@@ -16,7 +16,7 @@ package io.reactivex.subjects;
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.Observer;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -85,7 +85,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        state.accept(observer);
+        state.subscribe(observer);
     }
     
     // TODO may need to have a direct WIP field to avoid clashing on the object header
@@ -100,7 +100,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
     }
     
     /** The state of the UnicastSubject. */
-    static final class State<T> extends StatePad0 implements NbpOnSubscribe<T>, Disposable, Observer<T> {
+    static final class State<T> extends StatePad0 implements ObservableConsumable<T>, Disposable, Observer<T> {
         /** */
         private static final long serialVersionUID = 5058617037583835632L;
 
@@ -142,7 +142,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void accept(Observer<? super T> s) {
+        public void subscribe(Observer<? super T> s) {
             if (!once.get() && once.compareAndSet(false, true)) {
                 s.onSubscribe(this);
                 subscriber.lazySet(s); // full barrier in drain

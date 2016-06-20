@@ -17,11 +17,10 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Completable;
-import io.reactivex.Completable.*;
+import io.reactivex.*;
 import io.reactivex.disposables.*;
 
-public final class CompletableOnSubscribeMergeDelayErrorArray implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeMergeDelayErrorArray implements CompletableConsumable {
     final Completable[] sources;
     
     public CompletableOnSubscribeMergeDelayErrorArray(Completable[] sources) {
@@ -29,7 +28,7 @@ public final class CompletableOnSubscribeMergeDelayErrorArray implements Complet
     }
     
     @Override
-    public void accept(final CompletableSubscriber s) {
+    public void subscribe(final CompletableSubscriber s) {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicInteger wip = new AtomicInteger(sources.length + 1);
         

@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.Optional;
 import io.reactivex.functions.Consumer;
@@ -133,7 +132,7 @@ public class NbpOperatorMaterializeTest {
 
     }
 
-    private static class TestAsyncErrorObservable implements NbpOnSubscribe<String> {
+    private static class TestAsyncErrorObservable implements ObservableConsumable<String> {
 
         String[] valuesToReturn;
 
@@ -144,7 +143,7 @@ public class NbpOperatorMaterializeTest {
         volatile Thread t;
 
         @Override
-        public void accept(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             t = new Thread(new Runnable() {
 

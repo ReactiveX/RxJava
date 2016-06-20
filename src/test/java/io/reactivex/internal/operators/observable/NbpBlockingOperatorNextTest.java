@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -235,10 +235,10 @@ public class NbpBlockingOperatorNextTest {
         final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
         final AtomicBoolean running = new AtomicBoolean(true);
         final AtomicInteger count = new AtomicInteger(0);
-        final Observable<Integer> obs = Observable.create(new NbpOnSubscribe<Integer>() {
+        final Observable<Integer> obs = Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(final Observer<? super Integer> o) {
+            public void subscribe(final Observer<? super Integer> o) {
                 o.onSubscribe(EmptyDisposable.INSTANCE);
                 new Thread(new Runnable() {
 

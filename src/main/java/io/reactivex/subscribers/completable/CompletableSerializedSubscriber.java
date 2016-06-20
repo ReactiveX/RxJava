@@ -15,7 +15,7 @@ package io.reactivex.subscribers.completable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.Completable.CompletableSubscriber;
+import io.reactivex.CompletableSubscriber;
 import io.reactivex.disposables.Disposable;
 
 public final class CompletableSerializedSubscriber implements CompletableSubscriber {

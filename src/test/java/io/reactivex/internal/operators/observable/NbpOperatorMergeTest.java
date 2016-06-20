@@ -25,7 +25,6 @@ import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.*;
@@ -75,10 +74,10 @@ public class NbpOperatorMergeTest {
         final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableConsumable<Observable<String>>() {
 
             @Override
-            public void accept(Observer<? super Observable<String>> NbpObserver) {
+            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 // simulate what would happen in an NbpObservable
                 NbpObserver.onNext(o1);
@@ -130,10 +129,10 @@ public class NbpOperatorMergeTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Observable<Observable<Long>> source = Observable.create(new NbpOnSubscribe<Observable<Long>>() {
+        Observable<Observable<Long>> source = Observable.create(new ObservableConsumable<Observable<Long>>() {
 
             @Override
-            public void accept(final Observer<? super Observable<Long>> NbpObserver) {
+            public void subscribe(final Observer<? super Observable<Long>> NbpObserver) {
                 // verbose on purpose so I can track the inside of it
                 final Disposable s = new Disposable() {
                     @Override
@@ -338,10 +337,10 @@ public class NbpOperatorMergeTest {
     @Ignore("Subscribe should not throw")
     public void testThrownErrorHandling() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable<String> o1 = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> o1 = Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> s) {
                 throw new RuntimeException("fail");
             }
 
@@ -353,22 +352,22 @@ public class NbpOperatorMergeTest {
         System.out.println("Error: " + ts.errors());
     }
 
-    private static class TestSynchronousObservable implements NbpOnSubscribe<String> {
+    private static class TestSynchronousObservable implements ObservableConsumable<String> {
 
         @Override
-        public void accept(Observer<? super String> NbpObserver) {
+        public void subscribe(Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             NbpObserver.onNext("hello");
             NbpObserver.onComplete();
         }
     }
 
-    private static class TestASynchronousObservable implements NbpOnSubscribe<String> {
+    private static class TestASynchronousObservable implements ObservableConsumable<String> {
         Thread t;
         final CountDownLatch onNextBeingSent = new CountDownLatch(1);
 
         @Override
-        public void accept(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             t = new Thread(new Runnable() {
 
@@ -390,7 +389,7 @@ public class NbpOperatorMergeTest {
         }
     }
 
-    private static class TestErrorObservable implements NbpOnSubscribe<String> {
+    private static class TestErrorObservable implements ObservableConsumable<String> {
 
         String[] valuesToReturn;
 
@@ -399,7 +398,7 @@ public class NbpOperatorMergeTest {
         }
 
         @Override
-        public void accept(Observer<? super String> NbpObserver) {
+        public void subscribe(Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             for (String s : valuesToReturn) {
                 if (s == null) {
@@ -492,10 +491,10 @@ public class NbpOperatorMergeTest {
     }
 
     private Observable<Long> createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(final Scheduler scheduler, final AtomicBoolean unsubscribed) {
-        return Observable.create(new NbpOnSubscribe<Long>() {
+        return Observable.create(new ObservableConsumable<Long>() {
 
             @Override
-            public void accept(final Observer<? super Long> child) {
+            public void subscribe(final Observer<? super Long> child) {
                 Observable.interval(1, TimeUnit.SECONDS, scheduler)
                 .take(5)
                 .subscribe(new Observer<Long>() {
@@ -554,10 +553,10 @@ public class NbpOperatorMergeTest {
     @Test
     public void testConcurrencyWithSleeping() {
 
-        Observable<Integer> o = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> o = Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(final Observer<? super Integer> s) {
+            public void subscribe(final Observer<? super Integer> s) {
                 Worker inner = Schedulers.newThread().createWorker();
                 final CompositeDisposable as = new CompositeDisposable();
                 as.add(EmptyDisposable.INSTANCE);
@@ -604,10 +603,10 @@ public class NbpOperatorMergeTest {
 
     @Test
     public void testConcurrencyWithBrokenOnCompleteContract() {
-        Observable<Integer> o = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> o = Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(final Observer<? super Integer> s) {
+            public void subscribe(final Observer<? super Integer> s) {
                 Worker inner = Schedulers.newThread().createWorker();
                 final CompositeDisposable as = new CompositeDisposable();
                 as.add(EmptyDisposable.INSTANCE);
@@ -833,10 +832,10 @@ public class NbpOperatorMergeTest {
     public void mergeWithTerminalEventAfterUnsubscribe() {
         System.out.println("mergeWithTerminalEventAfterUnsubscribe");
         TestObserver<String> ts = new TestObserver<String>();
-        Observable<String> bad = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> bad = Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> s) {
                 s.onNext("two");
                 // FIXME can't cancel downstream
 //                s.unsubscribe();
@@ -1016,10 +1015,10 @@ public class NbpOperatorMergeTest {
 
             @Override
             public Observable<Integer> apply(final Integer i) {
-                return Observable.create(new NbpOnSubscribe<Integer>() {
+                return Observable.create(new ObservableConsumable<Integer>() {
 
                     @Override
-                    public void accept(Observer<? super Integer> s) {
+                    public void subscribe(Observer<? super Integer> s) {
                         s.onSubscribe(EmptyDisposable.INSTANCE);
                         if (i < 500) {
                             try {

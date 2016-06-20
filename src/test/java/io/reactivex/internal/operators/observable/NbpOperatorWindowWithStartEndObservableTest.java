@@ -22,7 +22,6 @@ import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -46,9 +45,9 @@ public class NbpOperatorWindowWithStartEndObservableTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 push(NbpObserver, "one", 10);
                 push(NbpObserver, "two", 60);
@@ -59,9 +58,9 @@ public class NbpOperatorWindowWithStartEndObservableTest {
             }
         });
 
-        Observable<Object> openings = Observable.create(new NbpOnSubscribe<Object>() {
+        Observable<Object> openings = Observable.create(new ObservableConsumable<Object>() {
             @Override
-            public void accept(Observer<? super Object> NbpObserver) {
+            public void subscribe(Observer<? super Object> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 push(NbpObserver, new Object(), 50);
                 push(NbpObserver, new Object(), 200);
@@ -72,9 +71,9 @@ public class NbpOperatorWindowWithStartEndObservableTest {
         Function<Object, Observable<Object>> closer = new Function<Object, Observable<Object>>() {
             @Override
             public Observable<Object> apply(Object opening) {
-                return Observable.create(new NbpOnSubscribe<Object>() {
+                return Observable.create(new ObservableConsumable<Object>() {
                     @Override
-                    public void accept(Observer<? super Object> NbpObserver) {
+                    public void subscribe(Observer<? super Object> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         push(NbpObserver, new Object(), 100);
                         complete(NbpObserver, 101);
@@ -97,9 +96,9 @@ public class NbpOperatorWindowWithStartEndObservableTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 push(NbpObserver, "one", 10);
                 push(NbpObserver, "two", 60);
@@ -114,9 +113,9 @@ public class NbpOperatorWindowWithStartEndObservableTest {
             int calls;
             @Override
             public Observable<Object> get() {
-                return Observable.create(new NbpOnSubscribe<Object>() {
+                return Observable.create(new ObservableConsumable<Object>() {
                     @Override
-                    public void accept(Observer<? super Object> NbpObserver) {
+                    public void subscribe(Observer<? super Object> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         int c = calls++;
                         if (c == 0) {

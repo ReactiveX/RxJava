@@ -22,7 +22,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -44,9 +43,9 @@ public class NbpOperatorThrottleFirstTest {
 
     @Test
     public void testThrottlingWithCompleted() {
-        Observable<String> source = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 publishNext(NbpObserver, 100, "one");    // publish as it's first
                 publishNext(NbpObserver, 300, "two");    // skip as it's last within the first 400
@@ -72,9 +71,9 @@ public class NbpOperatorThrottleFirstTest {
 
     @Test
     public void testThrottlingWithError() {
-        Observable<String> source = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 Exception error = new TestException();
                 publishNext(NbpObserver, 100, "one");    // Should be published since it is first

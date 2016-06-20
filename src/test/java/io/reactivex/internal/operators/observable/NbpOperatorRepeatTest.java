@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowable.TestHelper;
@@ -39,10 +39,10 @@ public class NbpOperatorRepeatTest {
     public void testRepetition() {
         int NUM = 10;
         final AtomicInteger count = new AtomicInteger();
-        int value = Observable.create(new NbpOnSubscribe<Integer>() {
+        int value = Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(final Observer<? super Integer> o) {
+            public void subscribe(final Observer<? super Integer> o) {
                 o.onNext(count.incrementAndGet());
                 o.onComplete();
             }
@@ -68,10 +68,10 @@ public class NbpOperatorRepeatTest {
     public void testRepeatTakeWithSubscribeOn() throws InterruptedException {
 
         final AtomicInteger counter = new AtomicInteger();
-        Observable<Integer> oi = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> oi = Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(Observer<? super Integer> sub) {
+            public void subscribe(Observer<? super Integer> sub) {
                 sub.onSubscribe(EmptyDisposable.INSTANCE);
                 counter.incrementAndGet();
                 sub.onNext(1);

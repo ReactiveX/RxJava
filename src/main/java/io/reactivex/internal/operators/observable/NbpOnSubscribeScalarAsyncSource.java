@@ -15,17 +15,16 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.concurrent.Callable;
 
-import io.reactivex.Observer;
-import io.reactivex.Observable.*;
+import io.reactivex.*;
 import io.reactivex.disposables.BooleanDisposable;
 
-public final class NbpOnSubscribeScalarAsyncSource<T> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeScalarAsyncSource<T> implements ObservableConsumable<T> {
     final Callable<? extends T> callable;
     public NbpOnSubscribeScalarAsyncSource(Callable<? extends T> callable) {
         this.callable = callable;
     }
     @Override
-    public void accept(Observer<? super T> s) {
+    public void subscribe(Observer<? super T> s) {
         BooleanDisposable bd = new BooleanDisposable();
         s.onSubscribe(bd);
         if (bd.isDisposed()) {

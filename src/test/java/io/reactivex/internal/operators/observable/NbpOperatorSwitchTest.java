@@ -24,7 +24,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.BooleanDisposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowable.TestHelper;
@@ -48,13 +47,13 @@ public class NbpOperatorSwitchTest {
 
     @Test
     public void testSwitchWhenOuterCompleteBeforeInner() {
-        Observable<Observable<String>> source = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.create(new ObservableConsumable<Observable<String>>() {
             @Override
-            public void accept(Observer<? super Observable<String>> NbpObserver) {
+            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 50, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 50, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(Observer<? super String> NbpObserver) {
+                    public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 70, "one");
                         publishNext(NbpObserver, 100, "two");
@@ -77,13 +76,13 @@ public class NbpOperatorSwitchTest {
 
     @Test
     public void testSwitchWhenInnerCompleteBeforeOuter() {
-        Observable<Observable<String>> source = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.create(new ObservableConsumable<Observable<String>>() {
             @Override
-            public void accept(Observer<? super Observable<String>> NbpObserver) {
+            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 10, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 10, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(Observer<? super String> NbpObserver) {
+                    public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 0, "one");
                         publishNext(NbpObserver, 10, "two");
@@ -91,9 +90,9 @@ public class NbpOperatorSwitchTest {
                     }
                 }));
 
-                publishNext(NbpObserver, 100, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 100, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(Observer<? super String> NbpObserver) {
+                    public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 0, "three");
                         publishNext(NbpObserver, 10, "four");
@@ -123,22 +122,22 @@ public class NbpOperatorSwitchTest {
 
     @Test
     public void testSwitchWithComplete() {
-        Observable<Observable<String>> source = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.create(new ObservableConsumable<Observable<String>>() {
             @Override
-            public void accept(Observer<? super Observable<String>> NbpObserver) {
+            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 50, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 50, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(final Observer<? super String> NbpObserver) {
+                    public void subscribe(final Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 60, "one");
                         publishNext(NbpObserver, 100, "two");
                     }
                 }));
 
-                publishNext(NbpObserver, 200, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 200, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(final Observer<? super String> NbpObserver) {
+                    public void subscribe(final Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 0, "three");
                         publishNext(NbpObserver, 100, "four");
@@ -182,22 +181,22 @@ public class NbpOperatorSwitchTest {
 
     @Test
     public void testSwitchWithError() {
-        Observable<Observable<String>> source = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.create(new ObservableConsumable<Observable<String>>() {
             @Override
-            public void accept(Observer<? super Observable<String>> NbpObserver) {
+            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 50, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 50, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(final Observer<? super String> NbpObserver) {
+                    public void subscribe(final Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 50, "one");
                         publishNext(NbpObserver, 100, "two");
                     }
                 }));
 
-                publishNext(NbpObserver, 200, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 200, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(Observer<? super String> NbpObserver) {
+                    public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 0, "three");
                         publishNext(NbpObserver, 100, "four");
@@ -241,30 +240,30 @@ public class NbpOperatorSwitchTest {
 
     @Test
     public void testSwitchWithSubsequenceComplete() {
-        Observable<Observable<String>> source = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.create(new ObservableConsumable<Observable<String>>() {
             @Override
-            public void accept(Observer<? super Observable<String>> NbpObserver) {
+            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 50, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 50, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(Observer<? super String> NbpObserver) {
+                    public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 50, "one");
                         publishNext(NbpObserver, 100, "two");
                     }
                 }));
 
-                publishNext(NbpObserver, 130, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 130, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(Observer<? super String> NbpObserver) {
+                    public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishCompleted(NbpObserver, 0);
                     }
                 }));
 
-                publishNext(NbpObserver, 150, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 150, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(Observer<? super String> NbpObserver) {
+                    public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 50, "three");
                     }
@@ -295,30 +294,30 @@ public class NbpOperatorSwitchTest {
 
     @Test
     public void testSwitchWithSubsequenceError() {
-        Observable<Observable<String>> source = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.create(new ObservableConsumable<Observable<String>>() {
             @Override
-            public void accept(Observer<? super Observable<String>> NbpObserver) {
+            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 50, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 50, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(Observer<? super String> NbpObserver) {
+                    public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 50, "one");
                         publishNext(NbpObserver, 100, "two");
                     }
                 }));
 
-                publishNext(NbpObserver, 130, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 130, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(Observer<? super String> NbpObserver) {
+                    public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishError(NbpObserver, 0, new TestException());
                     }
                 }));
 
-                publishNext(NbpObserver, 150, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 150, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(Observer<? super String> NbpObserver) {
+                    public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 50, "three");
                     }
@@ -378,13 +377,13 @@ public class NbpOperatorSwitchTest {
     @Test
     public void testSwitchIssue737() {
         // https://github.com/ReactiveX/RxJava/issues/737
-        Observable<Observable<String>> source = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.create(new ObservableConsumable<Observable<String>>() {
             @Override
-            public void accept(Observer<? super Observable<String>> NbpObserver) {
+            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 0, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 0, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(Observer<? super String> NbpObserver) {
+                    public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 10, "1-one");
                         publishNext(NbpObserver, 20, "1-two");
@@ -393,9 +392,9 @@ public class NbpOperatorSwitchTest {
                         publishCompleted(NbpObserver, 40);
                     }
                 }));
-                publishNext(NbpObserver, 25, Observable.create(new NbpOnSubscribe<String>() {
+                publishNext(NbpObserver, 25, Observable.create(new ObservableConsumable<String>() {
                     @Override
-                    public void accept(Observer<? super String> NbpObserver) {
+                    public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                         publishNext(NbpObserver, 10, "2-one");
                         publishNext(NbpObserver, 20, "2-two");
@@ -426,9 +425,9 @@ public class NbpOperatorSwitchTest {
     public void testUnsubscribe() {
         final AtomicBoolean isUnsubscribed = new AtomicBoolean();
         Observable.switchOnNext(
-                Observable.create(new NbpOnSubscribe<Observable<Integer>>() {
+                Observable.create(new ObservableConsumable<Observable<Integer>>() {
                     @Override
-                    public void accept(final Observer<? super Observable<Integer>> NbpSubscriber) {
+                    public void subscribe(final Observer<? super Observable<Integer>> NbpSubscriber) {
                         BooleanDisposable bs = new BooleanDisposable();
                         NbpSubscriber.onSubscribe(bs);
                         NbpSubscriber.onNext(Observable.just(1));

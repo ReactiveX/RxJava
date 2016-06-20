@@ -23,7 +23,6 @@ import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -39,10 +38,10 @@ public class NbpReplaySubjectConcurrencyTest {
 
             @Override
             public void run() {
-                Observable.create(new NbpOnSubscribe<Long>() {
+                Observable.create(new ObservableConsumable<Long>() {
 
                     @Override
-                    public void accept(Observer<? super Long> o) {
+                    public void subscribe(Observer<? super Long> o) {
                         o.onSubscribe(EmptyDisposable.INSTANCE);
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
@@ -149,10 +148,10 @@ public class NbpReplaySubjectConcurrencyTest {
 
             @Override
             public void run() {
-                Observable.create(new NbpOnSubscribe<Long>() {
+                Observable.create(new ObservableConsumable<Long>() {
 
                     @Override
-                    public void accept(Observer<? super Long> o) {
+                    public void subscribe(Observer<? super Long> o) {
                         o.onSubscribe(EmptyDisposable.INSTANCE);
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {

@@ -26,7 +26,6 @@ import org.mockito.Matchers;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.Optional;
 import io.reactivex.disposables.*;
@@ -184,10 +183,10 @@ public class NbpOperatorGroupByTest {
         final int count = 100;
         final int groupCount = 2;
 
-        Observable<Event> es = Observable.create(new NbpOnSubscribe<Event>() {
+        Observable<Event> es = Observable.create(new ObservableConsumable<Event>() {
 
             @Override
-            public void accept(final Observer<? super Event> NbpObserver) {
+            public void subscribe(final Observer<? super Event> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 System.out.println("*** Subscribing to EventStream ***");
                 subscribeCounter.incrementAndGet();
@@ -596,10 +595,10 @@ public class NbpOperatorGroupByTest {
     public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsAndThenComplete() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
-        Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(Observer<? super Integer> sub) {
+            public void subscribe(Observer<? super Integer> sub) {
                 sub.onSubscribe(EmptyDisposable.INSTANCE);
                 sub.onNext(1);
                 sub.onNext(2);
@@ -675,10 +674,10 @@ public class NbpOperatorGroupByTest {
         System.err.println("----------------------------------------------------------------------------------------------");
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
-        Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(Observer<? super Integer> sub) {
+            public void subscribe(Observer<? super Integer> sub) {
                 sub.onSubscribe(EmptyDisposable.INSTANCE);
                 sub.onNext(1);
                 sub.onNext(2);
@@ -767,10 +766,10 @@ public class NbpOperatorGroupByTest {
     public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenObservesOnAndDelaysAndThenCompletes() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
-        Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(Observer<? super Integer> sub) {
+            public void subscribe(Observer<? super Integer> sub) {
                 sub.onSubscribe(EmptyDisposable.INSTANCE);
                 sub.onNext(1);
                 sub.onNext(2);
@@ -844,10 +843,10 @@ public class NbpOperatorGroupByTest {
     @Test
     public void testGroupsWithNestedSubscribeOn() throws InterruptedException {
         final ArrayList<String> results = new ArrayList<String>();
-        Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(Observer<? super Integer> sub) {
+            public void subscribe(Observer<? super Integer> sub) {
                 sub.onSubscribe(EmptyDisposable.INSTANCE);
                 sub.onNext(1);
                 sub.onNext(2);
@@ -901,10 +900,10 @@ public class NbpOperatorGroupByTest {
     @Test
     public void testGroupsWithNestedObserveOn() throws InterruptedException {
         final ArrayList<String> results = new ArrayList<String>();
-        Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(Observer<? super Integer> sub) {
+            public void subscribe(Observer<? super Integer> sub) {
                 sub.onSubscribe(EmptyDisposable.INSTANCE);
                 sub.onNext(1);
                 sub.onNext(2);
@@ -962,10 +961,10 @@ public class NbpOperatorGroupByTest {
     };
 
     Observable<Event> SYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
-        return Observable.create(new NbpOnSubscribe<Event>() {
+        return Observable.create(new ObservableConsumable<Event>() {
 
             @Override
-            public void accept(final Observer<? super Event> op) {
+            public void subscribe(final Observer<? super Event> op) {
                 BooleanDisposable bs = new BooleanDisposable();
                 op.onSubscribe(bs);
                 subscribeCounter.incrementAndGet();
@@ -1376,9 +1375,9 @@ public class NbpOperatorGroupByTest {
     public void testGroupByUnsubscribe() {
         final Disposable s = mock(Disposable.class);
         Observable<Integer> o = Observable.create(
-                new NbpOnSubscribe<Integer>() {
+                new ObservableConsumable<Integer>() {
                     @Override
-                    public void accept(Observer<? super Integer> NbpSubscriber) {
+                    public void subscribe(Observer<? super Integer> NbpSubscriber) {
                         NbpSubscriber.onSubscribe(s);
                     }
                 }
@@ -1425,9 +1424,9 @@ public class NbpOperatorGroupByTest {
             }
         });
         Observable.create(
-                new NbpOnSubscribe<Integer>() {
+                new ObservableConsumable<Integer>() {
                     @Override
-                    public void accept(Observer<? super Integer> NbpSubscriber) {
+                    public void subscribe(Observer<? super Integer> NbpSubscriber) {
                         NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
                         NbpSubscriber.onNext(0);
                         NbpSubscriber.onNext(1);

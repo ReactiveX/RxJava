@@ -25,7 +25,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowable.TestHelper;
@@ -276,9 +276,9 @@ public class NbpObservableTests {
         Observer<String> observer = TestHelper.mockNbpSubscriber();
 
         final RuntimeException re = new RuntimeException("bad impl");
-        Observable<String> o = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> o = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> s) { throw re; }
+            public void subscribe(Observer<? super String> s) { throw re; }
         });
         
         o.subscribe(observer);
@@ -443,9 +443,9 @@ public class NbpObservableTests {
     @Test
     public void testPublishLast() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
-        ConnectableObservable<String> connectable = Observable.<String>create(new NbpOnSubscribe<String>() {
+        ConnectableObservable<String> connectable = Observable.<String>create(new ObservableConsumable<String>() {
             @Override
-            public void accept(final Observer<? super String> observer) {
+            public void subscribe(final Observer<? super String> observer) {
                 observer.onSubscribe(EmptyDisposable.INSTANCE);
                 count.incrementAndGet();
                 new Thread(new Runnable() {
@@ -481,9 +481,9 @@ public class NbpObservableTests {
     @Test
     public void testReplay() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.<String>create(new NbpOnSubscribe<String>() {
+        ConnectableObservable<String> o = Observable.<String>create(new ObservableConsumable<String>() {
             @Override
-            public void accept(final Observer<? super String> observer) {
+            public void subscribe(final Observer<? super String> observer) {
                     observer.onSubscribe(EmptyDisposable.INSTANCE);
                     new Thread(new Runnable() {
 
@@ -534,9 +534,9 @@ public class NbpObservableTests {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.<String>create(new NbpOnSubscribe<String>() {
+        Observable<String> o = Observable.<String>create(new ObservableConsumable<String>() {
             @Override
-            public void accept(final Observer<? super String> observer) {
+            public void subscribe(final Observer<? super String> observer) {
                     observer.onSubscribe(EmptyDisposable.INSTANCE);
                     new Thread(new Runnable() {
                         @Override
@@ -579,9 +579,9 @@ public class NbpObservableTests {
     @Test
     public void testCacheWithCapacity() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.<String>create(new NbpOnSubscribe<String>() {
+        Observable<String> o = Observable.<String>create(new ObservableConsumable<String>() {
             @Override
-            public void accept(final Observer<? super String> observer) {
+            public void subscribe(final Observer<? super String> observer) {
                 observer.onSubscribe(EmptyDisposable.INSTANCE);
                 new Thread(new Runnable() {
                     @Override
@@ -658,9 +658,9 @@ public class NbpObservableTests {
     public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        Observable.create(new NbpOnSubscribe<Object>() {
+        Observable.create(new ObservableConsumable<Object>() {
             @Override
-            public void accept(final Observer<? super Object> observer) {
+            public void subscribe(final Observer<? super Object> observer) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

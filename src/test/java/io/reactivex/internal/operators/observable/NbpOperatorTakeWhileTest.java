@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowable.TestHelper;
@@ -102,9 +101,9 @@ public class NbpOperatorTakeWhileTest {
 
     @Test
     public void testTakeWhileDoesntLeakErrors() {
-        Observable<String> source = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 NbpObserver.onNext("one");
                 NbpObserver.onError(new Throwable("test failed"));
@@ -178,7 +177,7 @@ public class NbpOperatorTakeWhileTest {
         verify(s, times(1)).dispose();
     }
 
-    private static class TestObservable implements NbpOnSubscribe<String> {
+    private static class TestObservable implements ObservableConsumable<String> {
 
         final Disposable s;
         final String[] values;
@@ -190,7 +189,7 @@ public class NbpOperatorTakeWhileTest {
         }
 
         @Override
-        public void accept(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> NbpObserver) {
             System.out.println("TestObservable subscribed to ...");
             NbpObserver.onSubscribe(s);
             t = new Thread(new Runnable() {

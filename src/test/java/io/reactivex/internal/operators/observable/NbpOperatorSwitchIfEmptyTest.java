@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DefaultObserver;
@@ -58,9 +57,9 @@ public class NbpOperatorSwitchIfEmptyTest {
 
         final BooleanDisposable bs = new BooleanDisposable();
         
-        Observable<Long> withProducer = Observable.create(new NbpOnSubscribe<Long>() {
+        Observable<Long> withProducer = Observable.create(new ObservableConsumable<Long>() {
             @Override
-            public void accept(final Observer<? super Long> NbpSubscriber) {
+            public void subscribe(final Observer<? super Long> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(bs);
                 NbpSubscriber.onNext(42L);
             }
@@ -101,9 +100,9 @@ public class NbpOperatorSwitchIfEmptyTest {
     public void testSwitchShouldTriggerUnsubscribe() {
         final BooleanDisposable bs = new BooleanDisposable();
         
-        Observable.create(new NbpOnSubscribe<Long>() {
+        Observable.create(new ObservableConsumable<Long>() {
             @Override
-            public void accept(final Observer<? super Long> NbpSubscriber) {
+            public void subscribe(final Observer<? super Long> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(bs);
                 NbpSubscriber.onComplete();
             }

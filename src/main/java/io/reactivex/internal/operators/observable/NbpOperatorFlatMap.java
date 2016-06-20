@@ -16,9 +16,9 @@ package io.reactivex.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.Observer;
 import io.reactivex.Observable;
-import io.reactivex.Observable.*;
+import io.reactivex.Observable.NbpOperator;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;

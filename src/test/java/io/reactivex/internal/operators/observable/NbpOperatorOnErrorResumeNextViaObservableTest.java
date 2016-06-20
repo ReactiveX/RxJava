@@ -21,7 +21,6 @@ import org.junit.*;
 import org.mockito.Mockito;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
@@ -102,10 +101,10 @@ public class NbpOperatorOnErrorResumeNextViaObservableTest {
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribe() {
-        Observable<String> testObservable = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> testObservable = Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(Observer<? super String> t1) {
+            public void subscribe(Observer<? super String> t1) {
                 throw new RuntimeException("force failure");
             }
             
@@ -124,10 +123,10 @@ public class NbpOperatorOnErrorResumeNextViaObservableTest {
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribeAsync() {
-        Observable<String> testObservable = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> testObservable = Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(Observer<? super String> t1) {
+            public void subscribe(Observer<? super String> t1) {
                 throw new RuntimeException("force failure");
             }
             
@@ -147,7 +146,7 @@ public class NbpOperatorOnErrorResumeNextViaObservableTest {
         verify(NbpObserver, times(1)).onNext("resume");
     }
 
-    private static class TestObservable implements NbpOnSubscribe<String> {
+    private static class TestObservable implements ObservableConsumable<String> {
 
         final Disposable s;
         final String[] values;
@@ -159,7 +158,7 @@ public class NbpOperatorOnErrorResumeNextViaObservableTest {
         }
 
         @Override
-        public void accept(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> NbpObserver) {
             System.out.println("TestObservable subscribed to ...");
             NbpObserver.onSubscribe(s);
             t = new Thread(new Runnable() {

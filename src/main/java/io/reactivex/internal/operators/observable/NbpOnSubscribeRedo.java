@@ -16,13 +16,12 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscribers.observable.NbpToNotificationSubscriber;
 import io.reactivex.subjects.BehaviorSubject;
 
-public final class NbpOnSubscribeRedo<T> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeRedo<T> implements ObservableConsumable<T> {
     final Observable<? extends T> source;
     final Function<? super Observable<Try<Optional<Object>>>, ? extends Observable<?>> manager;
 
@@ -33,7 +32,7 @@ public final class NbpOnSubscribeRedo<T> implements NbpOnSubscribe<T> {
     }
     
     @Override
-    public void accept(Observer<? super T> s) {
+    public void subscribe(Observer<? super T> s) {
         
         // FIXE use BehaviorSubject? (once available)
         BehaviorSubject<Try<Optional<Object>>> subject = BehaviorSubject.create();

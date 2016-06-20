@@ -15,8 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Observer;
-import io.reactivex.Observable.*;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observables.ConnectableObservable;
@@ -27,7 +26,7 @@ import io.reactivex.observables.ConnectableObservable;
  *
  * @param <T> the value type of the chain
  */
-public final class NbpOnSubscribeAutoConnect<T> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeAutoConnect<T> implements ObservableConsumable<T> {
     final ConnectableObservable<? extends T> source;
     final int numberOfSubscribers;
     final Consumer<? super Disposable> connection;
@@ -46,7 +45,7 @@ public final class NbpOnSubscribeAutoConnect<T> implements NbpOnSubscribe<T> {
     }
     
     @Override
-    public void accept(Observer<? super T> child) {
+    public void subscribe(Observer<? super T> child) {
         source.unsafeSubscribe(child);
         if (clients.incrementAndGet() == numberOfSubscribers) {
             source.connect(connection);

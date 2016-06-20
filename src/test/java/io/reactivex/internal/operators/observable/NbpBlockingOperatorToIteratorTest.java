@@ -20,7 +20,6 @@ import java.util.Iterator;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
@@ -47,10 +46,10 @@ public class NbpBlockingOperatorToIteratorTest {
 
     @Test(expected = TestException.class)
     public void testToIteratorWithException() {
-        Observable<String> obs = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> obs = Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(Observer<? super String> NbpObserver) {
+            public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 NbpObserver.onNext("one");
                 NbpObserver.onError(new TestException());
@@ -69,9 +68,9 @@ public class NbpBlockingOperatorToIteratorTest {
     @Ignore("subscribe() should not throw")
     @Test(expected = TestException.class)
     public void testExceptionThrownFromOnSubscribe() {
-        Iterable<String> strings = Observable.create(new NbpOnSubscribe<String>() {
+        Iterable<String> strings = Observable.create(new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> NbpSubscriber) {
+            public void subscribe(Observer<? super String> NbpSubscriber) {
                 throw new TestException("intentional");
             }
         }).toBlocking();

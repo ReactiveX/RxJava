@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.*;
@@ -24,7 +23,7 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpOnSubscribeUsing<T, D> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeUsing<T, D> implements ObservableConsumable<T> {
     final Supplier<? extends D> resourceSupplier;
     final Function<? super D, ? extends Observable<? extends T>> sourceSupplier;
     final Consumer<? super D> disposer;
@@ -41,7 +40,7 @@ public final class NbpOnSubscribeUsing<T, D> implements NbpOnSubscribe<T> {
     }
     
     @Override
-    public void accept(Observer<? super T> s) {
+    public void subscribe(Observer<? super T> s) {
         D resource;
         
         try {

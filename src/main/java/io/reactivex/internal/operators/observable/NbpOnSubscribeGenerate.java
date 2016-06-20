@@ -13,14 +13,13 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.Observer;
-import io.reactivex.Observable.*;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpOnSubscribeGenerate<T, S> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeGenerate<T, S> implements ObservableConsumable<T> {
     final Supplier<S> stateSupplier;
     final BiFunction<S, Observer<T>, S> generator;
     final Consumer<? super S> disposeState;
@@ -33,7 +32,7 @@ public final class NbpOnSubscribeGenerate<T, S> implements NbpOnSubscribe<T> {
     }
     
     @Override
-    public void accept(Observer<? super T> s) {
+    public void subscribe(Observer<? super T> s) {
         S state;
         
         try {

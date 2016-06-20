@@ -17,11 +17,10 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
-import io.reactivex.Completable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class CompletableOnSubscribeTimeout implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeTimeout implements CompletableConsumable {
     
     final Completable source;
     final long timeout;
@@ -39,7 +38,7 @@ public final class CompletableOnSubscribeTimeout implements CompletableOnSubscri
     }
 
     @Override
-    public void accept(final CompletableSubscriber s) {
+    public void subscribe(final CompletableSubscriber s) {
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
         

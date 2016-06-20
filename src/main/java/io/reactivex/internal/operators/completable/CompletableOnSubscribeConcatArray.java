@@ -15,11 +15,10 @@ package io.reactivex.internal.operators.completable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Completable;
-import io.reactivex.Completable.*;
+import io.reactivex.*;
 import io.reactivex.disposables.*;
 
-public final class CompletableOnSubscribeConcatArray implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeConcatArray implements CompletableConsumable {
     final Completable[] sources;
     
     public CompletableOnSubscribeConcatArray(Completable[] sources) {
@@ -27,7 +26,7 @@ public final class CompletableOnSubscribeConcatArray implements CompletableOnSub
     }
     
     @Override
-    public void accept(CompletableSubscriber s) {
+    public void subscribe(CompletableSubscriber s) {
         ConcatInnerSubscriber inner = new ConcatInnerSubscriber(s, sources);
         s.onSubscribe(inner.sd);
         inner.next();

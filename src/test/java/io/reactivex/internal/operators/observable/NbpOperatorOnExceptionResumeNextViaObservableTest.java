@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
@@ -216,7 +215,7 @@ public class NbpOperatorOnExceptionResumeNextViaObservableTest {
     }
 
 
-    private static class TestObservable implements NbpOnSubscribe<String> {
+    private static class TestObservable implements ObservableConsumable<String> {
 
         final String[] values;
         Thread t = null;
@@ -226,7 +225,7 @@ public class NbpOperatorOnExceptionResumeNextViaObservableTest {
         }
 
         @Override
-        public void accept(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {

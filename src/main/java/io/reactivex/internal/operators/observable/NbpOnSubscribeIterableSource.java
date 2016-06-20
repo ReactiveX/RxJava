@@ -15,19 +15,18 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.Iterator;
 
-import io.reactivex.Observer;
-import io.reactivex.Observable.*;
+import io.reactivex.*;
 import io.reactivex.disposables.BooleanDisposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
-public final class NbpOnSubscribeIterableSource<T> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeIterableSource<T> implements ObservableConsumable<T> {
     final Iterable<? extends T> source;
     public NbpOnSubscribeIterableSource(Iterable<? extends T> source) {
         this.source = source;
     }
     
     @Override
-    public void accept(Observer<? super T> s) {
+    public void subscribe(Observer<? super T> s) {
         Iterator<? extends T> it;
         try {
             it = source.iterator();

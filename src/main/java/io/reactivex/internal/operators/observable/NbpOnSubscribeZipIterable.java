@@ -16,14 +16,13 @@ package io.reactivex.internal.operators.observable;
 import java.util.Iterator;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpOnSubscribeZipIterable<T, U, V> implements NbpOnSubscribe<V> {
+public final class NbpOnSubscribeZipIterable<T, U, V> implements ObservableConsumable<V> {
     final Observable<? extends T> source;
     final Iterable<U> other;
     final BiFunction<? super T, ? super U, ? extends V> zipper;
@@ -37,7 +36,7 @@ public final class NbpOnSubscribeZipIterable<T, U, V> implements NbpOnSubscribe<
     }
     
     @Override
-    public void accept(Observer<? super V> t) {
+    public void subscribe(Observer<? super V> t) {
         Iterator<U> it;
         
         try {

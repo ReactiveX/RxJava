@@ -16,8 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.ReentrantLock;
 
-import io.reactivex.Observer;
-import io.reactivex.Observable.*;
+import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.SetCompositeResource;
@@ -31,7 +30,7 @@ import io.reactivex.observables.ConnectableObservable;
  * @param <T>
  *            the value type
  */
-public final class NbpOnSubscribeRefCount<T> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeRefCount<T> implements ObservableConsumable<T> {
 
     final class ConnectionSubscriber implements Observer<T>, Disposable {
         final Observer<? super T> subscriber;
@@ -117,7 +116,7 @@ public final class NbpOnSubscribeRefCount<T> implements NbpOnSubscribe<T> {
     }
 
     @Override
-    public void accept(final Observer<? super T> subscriber) {
+    public void subscribe(final Observer<? super T> subscriber) {
 
         lock.lock();
         if (subscriptionCount.incrementAndGet() == 1) {

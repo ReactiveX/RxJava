@@ -161,7 +161,7 @@ public class NbpOperatorDoOnEachTest {
         assertEquals(expectedCount, count.get());
     }
 
-    // FIXME crashing NbpOnSubscribe can't propagate to a NbpSubscriber
+    // FIXME crashing ObservableConsumable can't propagate to a NbpSubscriber
 //    @Test
 //    public void testFatalError() {
 //        try {
@@ -169,7 +169,7 @@ public class NbpOperatorDoOnEachTest {
 //                    .flatMap(new Function<Integer, NbpObservable<?>>() {
 //                        @Override
 //                        public NbpObservable<?> apply(Integer integer) {
-//                            return NbpObservable.create(new NbpOnSubscribe<Object>() {
+//                            return NbpObservable.create(new ObservableConsumable<Object>() {
 //                                @Override
 //                                public void accept(NbpSubscriber<Object> o) {
 //                                    throw new NullPointerException("Test NPE");

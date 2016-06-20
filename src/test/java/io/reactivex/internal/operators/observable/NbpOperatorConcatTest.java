@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.flowable.TestHelper;
@@ -82,10 +81,10 @@ public class NbpOperatorConcatTest {
         final Observable<String> odds = Observable.fromArray(o);
         final Observable<String> even = Observable.fromArray(e);
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableConsumable<Observable<String>>() {
 
             @Override
-            public void accept(Observer<? super Observable<String>> NbpObserver) {
+            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 // simulate what would happen in an NbpObservable
                 NbpObserver.onNext(odds);
@@ -158,10 +157,10 @@ public class NbpOperatorConcatTest {
         final CountDownLatch parentHasFinished = new CountDownLatch(1);
         
         
-        Observable<Observable<String>> observableOfObservables = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableConsumable<Observable<String>>() {
 
             @Override
-            public void accept(final Observer<? super Observable<String>> NbpObserver) {
+            public void subscribe(final Observer<? super Observable<String>> NbpObserver) {
                 final BooleanDisposable s = new BooleanDisposable();
                 NbpObserver.onSubscribe(s);
                 parent.set(new Thread(new Runnable() {
@@ -345,10 +344,10 @@ public class NbpOperatorConcatTest {
 
         Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
         
-        Observable<Observable<String>> observableOfObservables = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableConsumable<Observable<String>>() {
 
             @Override
-            public void accept(Observer<? super Observable<String>> NbpObserver) {
+            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 // simulate what would happen in an NbpObservable
                 NbpObserver.onNext(Observable.create(w1));
@@ -471,7 +470,7 @@ public class NbpOperatorConcatTest {
         verify(NbpObserver, never()).onError(any(Throwable.class));
     }
 
-    private static class TestObservable<T> implements NbpOnSubscribe<T> {
+    private static class TestObservable<T> implements ObservableConsumable<T> {
 
         private final Disposable s = new Disposable() {
             @Override
@@ -510,7 +509,7 @@ public class NbpOperatorConcatTest {
         }
 
         @Override
-        public void accept(final Observer<? super T> NbpObserver) {
+        public void subscribe(final Observer<? super T> NbpObserver) {
             NbpObserver.onSubscribe(s);
             t = new Thread(new Runnable() {
 
@@ -655,10 +654,10 @@ public class NbpOperatorConcatTest {
     // https://github.com/ReactiveX/RxJava/issues/1818
     @Test
     public void testConcatWithNonCompliantSourceDoubleOnComplete() {
-        Observable<String> o = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> o = Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onNext("hello");
                 s.onComplete();

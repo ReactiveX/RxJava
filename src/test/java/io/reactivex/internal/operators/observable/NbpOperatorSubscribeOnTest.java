@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
@@ -39,9 +38,9 @@ public class NbpOperatorSubscribeOnTest {
         TestObserver<Integer> NbpObserver = new TestObserver<Integer>();
 
         Observable
-        .create(new NbpOnSubscribe<Integer>() {
+        .create(new ObservableConsumable<Integer>() {
             @Override
-            public void accept(
+            public void subscribe(
                     final Observer<? super Integer> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
                 scheduled.countDown();
@@ -73,13 +72,13 @@ public class NbpOperatorSubscribeOnTest {
     }
 
     @Test
-    @Ignore("NbpOnSubscribe.subscribe can't throw")
+    @Ignore("ObservableConsumable.subscribe can't throw")
     public void testThrownErrorHandling() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable.create(new NbpOnSubscribe<String>() {
+        Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> s) {
                 throw new RuntimeException("fail");
             }
 
@@ -91,10 +90,10 @@ public class NbpOperatorSubscribeOnTest {
     @Test
     public void testOnError() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable.create(new NbpOnSubscribe<String>() {
+        Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onError(new RuntimeException("fail"));
             }
@@ -163,10 +162,10 @@ public class NbpOperatorSubscribeOnTest {
     public void testUnsubscribeInfiniteStream() throws InterruptedException {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         final AtomicInteger count = new AtomicInteger();
-        Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(Observer<? super Integer> sub) {
+            public void subscribe(Observer<? super Integer> sub) {
                 BooleanDisposable bs = new BooleanDisposable();
                 sub.onSubscribe(bs);
                 for (int i = 1; !bs.isDisposed(); i++) {

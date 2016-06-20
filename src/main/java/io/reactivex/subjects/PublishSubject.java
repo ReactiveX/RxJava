@@ -15,7 +15,7 @@ package io.reactivex.subjects;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.Observer;
+import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.util.NotificationLite;
@@ -33,7 +33,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        state.accept(observer);
+        state.subscribe(observer);
     }
 
     @Override
@@ -101,7 +101,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
         return false;
     }
     
-    static final class State<T> extends AtomicReference<Object> implements NbpOnSubscribe<T>, Observer<T> {
+    static final class State<T> extends AtomicReference<Object> implements ObservableConsumable<T>, Observer<T> {
         /** */
         private static final long serialVersionUID = 4876574210612691772L;
 
@@ -191,7 +191,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void accept(final Observer<? super T> t) {
+        public void subscribe(final Observer<? super T> t) {
             Object v = get();
             if (v != null) {
                 t.onSubscribe(EmptyDisposable.INSTANCE);

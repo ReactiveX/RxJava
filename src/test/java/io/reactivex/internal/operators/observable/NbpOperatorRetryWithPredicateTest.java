@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
@@ -72,10 +72,10 @@ public class NbpOperatorRetryWithPredicateTest {
     }
     @Test
     public void testRetryTwice() {
-        Observable<Integer> source = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.create(new ObservableConsumable<Integer>() {
             int count;
             @Override
-            public void accept(Observer<? super Integer> t1) {
+            public void subscribe(Observer<? super Integer> t1) {
                 t1.onSubscribe(EmptyDisposable.INSTANCE);
                 count++;
                 t1.onNext(0);
@@ -108,9 +108,9 @@ public class NbpOperatorRetryWithPredicateTest {
     }
     @Test
     public void testRetryTwiceAndGiveUp() {
-        Observable<Integer> source = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.create(new ObservableConsumable<Integer>() {
             @Override
-            public void accept(Observer<? super Integer> t1) {
+            public void subscribe(Observer<? super Integer> t1) {
                 t1.onSubscribe(EmptyDisposable.INSTANCE);
                 t1.onNext(0);
                 t1.onNext(1);
@@ -136,10 +136,10 @@ public class NbpOperatorRetryWithPredicateTest {
     }
     @Test
     public void testRetryOnSpecificException() {
-        Observable<Integer> source = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.create(new ObservableConsumable<Integer>() {
             int count;
             @Override
-            public void accept(Observer<? super Integer> t1) {
+            public void subscribe(Observer<? super Integer> t1) {
                 t1.onSubscribe(EmptyDisposable.INSTANCE);
                 count++;
                 t1.onNext(0);
@@ -173,10 +173,10 @@ public class NbpOperatorRetryWithPredicateTest {
     public void testRetryOnSpecificExceptionAndNotOther() {
         final IOException ioe = new IOException();
         final TestException te = new TestException();
-        Observable<Integer> source = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.create(new ObservableConsumable<Integer>() {
             int count;
             @Override
-            public void accept(Observer<? super Integer> t1) {
+            public void subscribe(Observer<? super Integer> t1) {
                 t1.onSubscribe(EmptyDisposable.INSTANCE);
                 count++;
                 t1.onNext(0);

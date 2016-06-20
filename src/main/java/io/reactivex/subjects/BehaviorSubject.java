@@ -17,7 +17,7 @@ import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.*;
 
-import io.reactivex.Observer;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.functions.Objects;
@@ -46,7 +46,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        state.accept(observer);
+        state.subscribe(observer);
     }
     
     @Override
@@ -145,7 +145,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
     }
     
-    static final class State<T> extends AtomicReference<Object> implements NbpOnSubscribe<T>, Observer<T> {
+    static final class State<T> extends AtomicReference<Object> implements ObservableConsumable<T>, Observer<T> {
         /** */
         private static final long serialVersionUID = -4311717003288339429L;
 
@@ -239,7 +239,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void accept(Observer<? super T> s) {
+        public void subscribe(Observer<? super T> s) {
             BehaviorDisposable<T> bs = new BehaviorDisposable<T>(s, this);
             s.onSubscribe(bs);
             if (!bs.cancelled) {

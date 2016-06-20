@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.DefaultObserver;
@@ -209,7 +208,7 @@ public class NbpOperatorSerializeTest {
     /**
      * This spawns a single thread for the subscribe execution
      */
-    private static class TestSingleThreadedObservable implements NbpOnSubscribe<String> {
+    private static class TestSingleThreadedObservable implements ObservableConsumable<String> {
 
         final String[] values;
         private Thread t = null;
@@ -220,7 +219,7 @@ public class NbpOperatorSerializeTest {
         }
 
         @Override
-        public void accept(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
@@ -258,7 +257,7 @@ public class NbpOperatorSerializeTest {
     /**
      * This spawns a thread for the subscription, then a separate thread for each onNext call.
      */
-    private static class TestMultiThreadedObservable implements NbpOnSubscribe<String> {
+    private static class TestMultiThreadedObservable implements ObservableConsumable<String> {
         final String[] values;
         Thread t = null;
         AtomicInteger threadsRunning = new AtomicInteger();
@@ -271,7 +270,7 @@ public class NbpOperatorSerializeTest {
         }
 
         @Override
-        public void accept(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             System.out.println("TestMultiThreadedObservable subscribed to ...");
             final NullPointerException npe = new NullPointerException();

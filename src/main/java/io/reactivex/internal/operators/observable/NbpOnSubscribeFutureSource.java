@@ -15,11 +15,10 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.concurrent.*;
 
-import io.reactivex.Observer;
-import io.reactivex.Observable.*;
+import io.reactivex.*;
 import io.reactivex.disposables.BooleanDisposable;
 
-public final class NbpOnSubscribeFutureSource<T> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeFutureSource<T> implements ObservableConsumable<T> {
     final Future<? extends T> future;
     final long timeout;
     final TimeUnit unit;
@@ -31,7 +30,7 @@ public final class NbpOnSubscribeFutureSource<T> implements NbpOnSubscribe<T> {
     }
     
     @Override
-    public void accept(Observer<? super T> s) {
+    public void subscribe(Observer<? super T> s) {
         BooleanDisposable bd = new BooleanDisposable();
         s.onSubscribe(bd);
         if (!bd.isDisposed()) {

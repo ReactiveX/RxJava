@@ -1,17 +1,17 @@
 package io.reactivex.internal.operators.completable;
 
-import io.reactivex.Completable;
+import io.reactivex.*;
 
 public final class CompletableWrapper extends Completable {
 
-    final CompletableOnSubscribe onSubscribe;
+    final CompletableConsumable onSubscribe;
 
-    public CompletableWrapper(CompletableOnSubscribe onSubscribe) {
+    public CompletableWrapper(CompletableConsumable onSubscribe) {
         this.onSubscribe = onSubscribe;
     }
     
     @Override
     protected void subscribeActual(CompletableSubscriber s) {
-        onSubscribe.accept(s);
+        onSubscribe.subscribe(s);
     }
 }

@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -68,10 +67,10 @@ public class NbpOperatorDoOnSubscribeTest {
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();
         final AtomicReference<Observer<? super Integer>> sref = new AtomicReference<Observer<? super Integer>>();
-        Observable<Integer> o = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> o = Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(Observer<? super Integer> s) {
+            public void subscribe(Observer<? super Integer> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 onSubscribed.incrementAndGet();
                 sref.set(s);

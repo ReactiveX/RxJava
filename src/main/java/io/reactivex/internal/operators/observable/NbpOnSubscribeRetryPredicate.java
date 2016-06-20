@@ -16,12 +16,11 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Predicate;
 
-public final class NbpOnSubscribeRetryPredicate<T> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeRetryPredicate<T> implements ObservableConsumable<T> {
     final Observable<? extends T> source;
     final Predicate<? super Throwable> predicate;
     final long count;
@@ -34,7 +33,7 @@ public final class NbpOnSubscribeRetryPredicate<T> implements NbpOnSubscribe<T> 
     }
     
     @Override
-    public void accept(Observer<? super T> s) {
+    public void subscribe(Observer<? super T> s) {
         SerialDisposable sa = new SerialDisposable();
         s.onSubscribe(sa);
         

@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Single.*;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
@@ -38,12 +37,8 @@ import io.reactivex.schedulers.*;
  * Observable for delivering a sequence of values without backpressure. 
  * @param <T>
  */
-public abstract class Observable<T> {
+public abstract class Observable<T> implements ObservableConsumable<T> {
 
-    public interface NbpOnSubscribe<T> extends Consumer<Observer<? super T>> {
-        
-    }
-    
     public interface NbpOperator<Downstream, Upstream> extends Function<Observer<? super Downstream>, Observer<? super Upstream>> {
         
     }
@@ -53,18 +48,18 @@ public abstract class Observable<T> {
     }
     
     /** An empty observable instance as there is no need to instantiate this more than once. */
-    static final Observable<Object> EMPTY = create(new NbpOnSubscribe<Object>() {
+    static final Observable<Object> EMPTY = create(new ObservableConsumable<Object>() {
         @Override
-        public void accept(Observer<? super Object> s) {
+        public void subscribe(Observer<? super Object> s) {
             s.onSubscribe(EmptyDisposable.INSTANCE);
             s.onComplete();
         }
     });
     
     /** A never NbpObservable instance as there is no need to instantiate this more than once. */
-    static final Observable<Object> NEVER = create(new NbpOnSubscribe<Object>() {
+    static final Observable<Object> NEVER = create(new ObservableConsumable<Object>() {
         @Override
-        public void accept(Observer<? super Object> s) {
+        public void subscribe(Observer<? super Object> s) {
             s.onSubscribe(EmptyDisposable.INSTANCE);
         }
     });
@@ -355,7 +350,7 @@ public abstract class Observable<T> {
         return fromArray(sources).concatMap((Function)Functions.identity());
     }
 
-    public static <T> Observable<T> create(NbpOnSubscribe<T> onSubscribe) {
+    public static <T> Observable<T> create(ObservableConsumable<T> onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         // TODO plugin wrapper
         return new ObservableWrapper<T>(onSubscribe);
@@ -449,9 +444,9 @@ public abstract class Observable<T> {
 
     public static <T> Observable<T> fromPublisher(final Publisher<? extends T> publisher) {
         Objects.requireNonNull(publisher, "publisher is null");
-        return create(new NbpOnSubscribe<T>() {
+        return create(new ObservableConsumable<T>() {
             @Override
-            public void accept(final Observer<? super T> s) {
+            public void subscribe(final Observer<? super T> s) {
                 publisher.subscribe(new Subscriber<T>() {
 
                     @Override
@@ -871,9 +866,9 @@ public abstract class Observable<T> {
         if ((long)start + (count - 1) > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Integer overflow");
         }
-        return create(new NbpOnSubscribe<Integer>() {
+        return create(new ObservableConsumable<Integer>() {
             @Override
-            public void accept(Observer<? super Integer> s) {
+            public void subscribe(Observer<? super Integer> s) {
                 BooleanDisposable d = new BooleanDisposable();
                 s.onSubscribe(d);
                 
@@ -1110,9 +1105,9 @@ public abstract class Observable<T> {
 
     @SchedulerSupport(SchedulerKind.NONE)
     public final Observable<T> asObservable() {
-        return create(new NbpOnSubscribe<T>() {
+        return create(new ObservableConsumable<T>() {
             @Override
-            public void accept(Observer<? super T> s) {
+            public void subscribe(Observer<? super T> s) {
                 Observable.this.subscribe(s);
             }
         });
@@ -2628,6 +2623,7 @@ public abstract class Observable<T> {
         return ls;
     }
 
+    @Override
     public final void subscribe(Observer<? super T> observer) {
         Objects.requireNonNull(observer, "observer is null");
         
@@ -3154,9 +3150,9 @@ public abstract class Observable<T> {
     
     @SchedulerSupport(SchedulerKind.NONE)
     public final Single<T> toSingle() {
-        return Single.create(new SingleOnSubscribe<T>() {
+        return Single.create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 Observable.this.subscribe(new Observer<T>() {
                     T last;
                     @Override

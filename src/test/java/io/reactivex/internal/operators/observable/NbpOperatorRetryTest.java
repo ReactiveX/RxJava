@@ -26,7 +26,6 @@ import org.mockito.*;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowable.TestHelper;
@@ -44,13 +43,13 @@ public class NbpOperatorRetryTest {
     public void iterativeBackoff() {
         Observer<String> consumer = TestHelper.mockNbpSubscriber();
         
-        Observable<String> producer = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> producer = Observable.create(new ObservableConsumable<String>() {
 
             private AtomicInteger count = new AtomicInteger(4);
             long last = System.currentTimeMillis();
 
             @Override
-            public void accept(Observer<? super String> t1) {
+            public void subscribe(Observer<? super String> t1) {
                 t1.onSubscribe(EmptyDisposable.INSTANCE);
                 System.out.println(count.get() + " @ " + String.valueOf(last - System.currentTimeMillis()));
                 last = System.currentTimeMillis();
@@ -244,9 +243,9 @@ public class NbpOperatorRetryTest {
     @Test
     public void testSingleSubscriptionOnFirst() throws Exception {
         final AtomicInteger inc = new AtomicInteger(0);
-        NbpOnSubscribe<Integer> onSubscribe = new NbpOnSubscribe<Integer>() {
+        ObservableConsumable<Integer> onSubscribe = new ObservableConsumable<Integer>() {
             @Override
-            public void accept(Observer<? super Integer> NbpSubscriber) {
+            public void subscribe(Observer<? super Integer> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
                 final int emit = inc.incrementAndGet();
                 NbpSubscriber.onNext(emit);
@@ -386,7 +385,7 @@ public class NbpOperatorRetryTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    public static class FuncWithErrors implements NbpOnSubscribe<String> {
+    public static class FuncWithErrors implements ObservableConsumable<String> {
 
         private final int numFailures;
         private final AtomicInteger count = new AtomicInteger(0);
@@ -396,7 +395,7 @@ public class NbpOperatorRetryTest {
         }
 
         @Override
-        public void accept(final Observer<? super String> o) {
+        public void subscribe(final Observer<? super String> o) {
             o.onSubscribe(EmptyDisposable.INSTANCE);
             o.onNext("beginningEveryTime");
             int i = count.getAndIncrement();
@@ -428,9 +427,9 @@ public class NbpOperatorRetryTest {
     @Test
     public void testRetryAllowsSubscriptionAfterAllSubscriptionsUnsubscribed() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
-        NbpOnSubscribe<String> onSubscribe = new NbpOnSubscribe<String>() {
+        ObservableConsumable<String> onSubscribe = new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> s) {
                 subsCount.incrementAndGet();
                 s.onSubscribe(new Disposable() {
                     @Override
@@ -457,9 +456,9 @@ public class NbpOperatorRetryTest {
 
         final TestObserver<String> ts = new TestObserver<String>();
 
-        NbpOnSubscribe<String> onSubscribe = new NbpOnSubscribe<String>() {
+        ObservableConsumable<String> onSubscribe = new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> s) {
                 BooleanSubscription bs = new BooleanSubscription();
                 // if isUnsubscribed is true that means we have a bug such as
                 // https://github.com/ReactiveX/RxJava/issues/1024
@@ -488,9 +487,9 @@ public class NbpOperatorRetryTest {
 
         final TestObserver<String> ts = new TestObserver<String>();
 
-        NbpOnSubscribe<String> onSubscribe = new NbpOnSubscribe<String>() {
+        ObservableConsumable<String> onSubscribe = new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 subsCount.incrementAndGet();
                 s.onError(new RuntimeException("failed"));
@@ -507,9 +506,9 @@ public class NbpOperatorRetryTest {
 
         final TestObserver<String> ts = new TestObserver<String>();
 
-        NbpOnSubscribe<String> onSubscribe = new NbpOnSubscribe<String>() {
+        ObservableConsumable<String> onSubscribe = new ObservableConsumable<String>() {
             @Override
-            public void accept(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 subsCount.incrementAndGet();
                 s.onError(new RuntimeException("failed"));
@@ -520,7 +519,7 @@ public class NbpOperatorRetryTest {
         assertEquals(1, subsCount.get());
     }
 
-    static final class SlowObservable implements NbpOnSubscribe<Long> {
+    static final class SlowObservable implements ObservableConsumable<Long> {
 
         final AtomicInteger efforts = new AtomicInteger(0);
         final AtomicInteger active = new AtomicInteger(0), maxActive = new AtomicInteger(0);
@@ -534,7 +533,7 @@ public class NbpOperatorRetryTest {
         }
 
         @Override
-        public void accept(final Observer<? super Long> NbpSubscriber) {
+        public void subscribe(final Observer<? super Long> NbpSubscriber) {
             final AtomicBoolean terminate = new AtomicBoolean(false);
             NbpSubscriber.onSubscribe(new Disposable() {
                 @Override
@@ -830,10 +829,10 @@ public class NbpOperatorRetryTest {
         final int NUM_MSG = 1034;
         final AtomicInteger count = new AtomicInteger();
 
-        Observable<String> origin = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> origin = Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(Observer<? super String> o) {
+            public void subscribe(Observer<? super String> o) {
                 o.onSubscribe(EmptyDisposable.INSTANCE);
                 for(int i=0; i<NUM_MSG; i++) {
                     o.onNext("msg:" + count.incrementAndGet());

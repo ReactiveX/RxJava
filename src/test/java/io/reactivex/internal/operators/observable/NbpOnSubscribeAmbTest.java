@@ -24,7 +24,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.*;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Consumer;
@@ -45,10 +44,10 @@ public class NbpOnSubscribeAmbTest {
 
     private Observable<String> createObservable(final String[] values,
             final long interval, final Throwable e) {
-        return Observable.create(new NbpOnSubscribe<String>() {
+        return Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(final Observer<? super String> NbpSubscriber) {
+            public void subscribe(final Observer<? super String> NbpSubscriber) {
                 CompositeDisposable parentSubscription = new CompositeDisposable();
                 
                 NbpSubscriber.onSubscribe(parentSubscription);

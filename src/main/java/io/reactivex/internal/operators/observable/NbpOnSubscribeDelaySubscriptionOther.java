@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -24,7 +23,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the main type
  * @param <U> the other value type, ignored
  */
-public final class NbpOnSubscribeDelaySubscriptionOther<T, U> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeDelaySubscriptionOther<T, U> implements ObservableConsumable<T> {
     final Observable<? extends T> main;
     final Observable<U> other;
     
@@ -34,7 +33,7 @@ public final class NbpOnSubscribeDelaySubscriptionOther<T, U> implements NbpOnSu
     }
     
     @Override
-    public void accept(final Observer<? super T> child) {
+    public void subscribe(final Observer<? super T> child) {
         final SerialDisposable serial = new SerialDisposable();
         child.onSubscribe(serial);
         

@@ -36,24 +36,10 @@ import io.reactivex.schedulers.Schedulers;
  * 
  * @param <T> the value type
  */
-public abstract class Single<T> {
-    
-    public interface SingleOnSubscribe<T> extends Consumer<SingleSubscriber<? super T>> {
-        
-    }
+public abstract class Single<T> implements SingleConsumable<T> {
     
     public interface SingleOperator<Downstream, Upstream> extends Function<SingleSubscriber<? super Downstream>, SingleSubscriber<? super Upstream>> {
         
-    }
-    
-    public interface SingleSubscriber<T> {
-        
-        
-        void onSubscribe(Disposable d);
-        
-        void onSuccess(T value);
-
-        void onError(Throwable e);
     }
     
     public interface SingleTransformer<Upstream, Downstream> extends Function<Single<Upstream>, Single<Downstream>> {
@@ -62,9 +48,9 @@ public abstract class Single<T> {
     
     public static <T> Single<T> amb(final Iterable<? extends Single<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 final AtomicBoolean once = new AtomicBoolean();
                 final CompositeDisposable set = new CompositeDisposable();
                 s.onSubscribe(set);
@@ -172,9 +158,9 @@ public abstract class Single<T> {
         if (sources.length == 1) {
             return (Single<T>)sources[0];
         }
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 final AtomicBoolean once = new AtomicBoolean();
                 final CompositeDisposable set = new CompositeDisposable();
                 s.onSubscribe(set);
@@ -353,7 +339,7 @@ public abstract class Single<T> {
         return concat(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
     }
     
-    public static <T> Single<T> create(SingleOnSubscribe<T> onSubscribe) {
+    public static <T> Single<T> create(SingleConsumable<T> onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         // TODO plugin wrapper
         return new SingleWrapper<T>(onSubscribe);
@@ -361,9 +347,9 @@ public abstract class Single<T> {
     
     public static <T> Single<T> defer(final Supplier<? extends Single<? extends T>> singleSupplier) {
         Objects.requireNonNull(singleSupplier, "singleSupplier is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(SingleSubscriber<? super T> s) {
+            public void subscribe(SingleSubscriber<? super T> s) {
                 Single<? extends T> next;
                 
                 try {
@@ -387,9 +373,9 @@ public abstract class Single<T> {
     
     public static <T> Single<T> error(final Supplier<? extends Throwable> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(SingleSubscriber<? super T> s) {
+            public void subscribe(SingleSubscriber<? super T> s) {
                 Throwable error;
                 
                 try {
@@ -420,9 +406,9 @@ public abstract class Single<T> {
     
     public static <T> Single<T> fromCallable(final Callable<? extends T> callable) {
         Objects.requireNonNull(callable, "callable is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(SingleSubscriber<? super T> s) {
+            public void subscribe(SingleSubscriber<? super T> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 try {
                     T v = callable.call();
@@ -456,9 +442,9 @@ public abstract class Single<T> {
 
     public static <T> Single<T> fromPublisher(final Publisher<? extends T> publisher) {
         Objects.requireNonNull(publisher, "publisher is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 publisher.subscribe(new Subscriber<T>() {
                     T value;
                     @Override
@@ -496,9 +482,9 @@ public abstract class Single<T> {
 
     public static <T> Single<T> just(final T value) {
         Objects.requireNonNull(value, "value is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(SingleSubscriber<? super T> s) {
+            public void subscribe(SingleSubscriber<? super T> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onSuccess(value);
             }
@@ -639,9 +625,9 @@ public abstract class Single<T> {
         return merge(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
     }
     
-    static final Single<Object> NEVER = create(new SingleOnSubscribe<Object>() {
+    static final Single<Object> NEVER = create(new SingleConsumable<Object>() {
         @Override
-        public void accept(SingleSubscriber<? super Object> s) {
+        public void subscribe(SingleSubscriber<? super Object> s) {
             s.onSubscribe(EmptyDisposable.INSTANCE);
         }
     });
@@ -658,9 +644,9 @@ public abstract class Single<T> {
     public static Single<Long> timer(final long delay, final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new SingleOnSubscribe<Long>() {
+        return create(new SingleConsumable<Long>() {
             @Override
-            public void accept(final SingleSubscriber<? super Long> s) {
+            public void subscribe(final SingleSubscriber<? super Long> s) {
                 MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
                 
                 s.onSubscribe(mad);
@@ -678,9 +664,9 @@ public abstract class Single<T> {
     public static <T> Single<Boolean> equals(final Single<? extends T> first, final Single<? extends T> second) {
         Objects.requireNonNull(first, "first is null");
         Objects.requireNonNull(second, "second is null");
-        return create(new SingleOnSubscribe<Boolean>() {
+        return create(new SingleConsumable<Boolean>() {
             @Override
-            public void accept(final SingleSubscriber<? super Boolean> s) {
+            public void subscribe(final SingleSubscriber<? super Boolean> s) {
                 final AtomicInteger count = new AtomicInteger();
                 final Object[] values = { null, null };
                 
@@ -743,9 +729,9 @@ public abstract class Single<T> {
         Objects.requireNonNull(singleFunction, "singleFunction is null");
         Objects.requireNonNull(disposer, "disposer is null");
         
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 final U resource;
                 
                 try {
@@ -1010,9 +996,9 @@ public abstract class Single<T> {
     }
     
     public final Single<T> asSingle() {
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(SingleSubscriber<? super T> s) {
+            public void subscribe(SingleSubscriber<? super T> s) {
                 subscribe(s);
             }
         });
@@ -1027,9 +1013,9 @@ public abstract class Single<T> {
         final AtomicReference<Object> notification = new AtomicReference<Object>();
         final List<SingleSubscriber<? super T>> subscribers = new ArrayList<SingleSubscriber<? super T>>();
         
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(SingleSubscriber<? super T> s) {
+            public void subscribe(SingleSubscriber<? super T> s) {
                 Object o = notification.get();
                 if (o != null) {
                     s.onSubscribe(EmptyDisposable.INSTANCE);
@@ -1101,10 +1087,10 @@ public abstract class Single<T> {
     
     public final <U> Single<U> cast(final Class<? extends U> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-        return create(new SingleOnSubscribe<U>() {
+        return create(new SingleConsumable<U>() {
             @Override
-            public void accept(final SingleSubscriber<? super U> s) {
-                subscribe(new SingleSubscriber<T>() {
+            public void subscribe(final SingleSubscriber<? super U> s) {
+                Single.this.subscribe(new SingleSubscriber<T>() {
 
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -1144,9 +1130,9 @@ public abstract class Single<T> {
     public final Single<T> delay(final long time, final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
                 s.onSubscribe(mad);
                 subscribe(new SingleSubscriber<T>() {
@@ -1177,9 +1163,9 @@ public abstract class Single<T> {
     
     public final Single<T> doOnSubscribe(final Consumer<? super Disposable> onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 subscribe(new SingleSubscriber<T>() {
                     boolean done;
                     @Override
@@ -1221,9 +1207,9 @@ public abstract class Single<T> {
     
     public final Single<T> doOnSuccess(final Consumer<? super T> onSuccess) {
         Objects.requireNonNull(onSuccess, "onSuccess is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 subscribe(new SingleSubscriber<T>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -1253,9 +1239,9 @@ public abstract class Single<T> {
     
     public final Single<T> doOnError(final Consumer<? super Throwable> onError) {
         Objects.requireNonNull(onError, "onError is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 subscribe(new SingleSubscriber<T>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -1284,9 +1270,9 @@ public abstract class Single<T> {
     
     public final Single<T> doOnCancel(final Runnable onCancel) {
         Objects.requireNonNull(onCancel, "onCancel is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 subscribe(new SingleSubscriber<T>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -1358,9 +1344,9 @@ public abstract class Single<T> {
     
     public final <R> Single<R> lift(final SingleOperator<? extends R, ? super T> onLift) {
         Objects.requireNonNull(onLift, "onLift is null");
-        return create(new SingleOnSubscribe<R>() {
+        return create(new SingleConsumable<R>() {
             @Override
-            public void accept(SingleSubscriber<? super R> s) {
+            public void subscribe(SingleSubscriber<? super R> s) {
                 try {
                     SingleSubscriber<? super T> sr = onLift.apply(s);
                     
@@ -1368,7 +1354,7 @@ public abstract class Single<T> {
                         throw new NullPointerException("The onLift returned a null subscriber");
                     }
                     // TODO plugin wrapper
-                    subscribe(sr);
+                    Single.this.subscribe(sr);
                 } catch (NullPointerException ex) {
                     throw ex;
                 } catch (Throwable ex) {
@@ -1392,10 +1378,10 @@ public abstract class Single<T> {
     public final Single<Boolean> contains(final Object value, final BiPredicate<Object, Object> comparer) {
         Objects.requireNonNull(value, "value is null");
         Objects.requireNonNull(comparer, "comparer is null");
-        return create(new SingleOnSubscribe<Boolean>() {
+        return create(new SingleConsumable<Boolean>() {
             @Override
-            public void accept(final SingleSubscriber<? super Boolean> s) {
-                subscribe(new SingleSubscriber<T>() {
+            public void subscribe(final SingleSubscriber<? super Boolean> s) {
+                Single.this.subscribe(new SingleSubscriber<T>() {
 
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -1427,13 +1413,13 @@ public abstract class Single<T> {
     
     public final Single<T> observeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 final CompositeDisposable mad = new CompositeDisposable();
                 s.onSubscribe(mad);
                 
-                subscribe(new SingleSubscriber<T>() {
+                Single.this.subscribe(new SingleSubscriber<T>() {
 
                     @Override
                     public void onError(final Throwable e) {
@@ -1467,10 +1453,10 @@ public abstract class Single<T> {
 
     public final Single<T> onErrorReturn(final Supplier<? extends T> valueSupplier) {
         Objects.requireNonNull(valueSupplier, "valueSupplier is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
-                subscribe(new SingleSubscriber<T>() {
+            public void subscribe(final SingleSubscriber<? super T> s) {
+                Single.this.subscribe(new SingleSubscriber<T>() {
 
                     @Override
                     public void onError(Throwable e) {
@@ -1521,13 +1507,13 @@ public abstract class Single<T> {
     public final Single<T> onErrorResumeNext(
             final Function<? super Throwable, ? extends Single<? extends T>> nextFunction) {
         Objects.requireNonNull(nextFunction, "nextFunction is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
                 s.onSubscribe(mad);
                 
-                subscribe(new SingleSubscriber<T>() {
+                Single.this.subscribe(new SingleSubscriber<T>() {
 
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -1681,6 +1667,7 @@ public abstract class Single<T> {
         return mad;
     }
     
+    @Override
     public final void subscribe(SingleSubscriber<? super T> subscriber) {
         Objects.requireNonNull(subscriber, "subscriber is null");
         // TODO plugin wrapper
@@ -1695,13 +1682,13 @@ public abstract class Single<T> {
     
     public final Single<T> subscribeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 scheduler.scheduleDirect(new Runnable() {
                     @Override
                     public void run() {
-                        subscribe(s);
+                        Single.this.subscribe(s);
                     }
                 });
             }
@@ -1729,9 +1716,9 @@ public abstract class Single<T> {
     private Single<T> timeout0(final long timeout, final TimeUnit unit, final Scheduler scheduler, final Single<? extends T> other) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new SingleOnSubscribe<T>() {
+        return create(new SingleConsumable<T>() {
             @Override
-            public void accept(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleSubscriber<? super T> s) {
                 final CompositeDisposable set = new CompositeDisposable();
                 s.onSubscribe(set);
                 
@@ -1773,7 +1760,7 @@ public abstract class Single<T> {
                 
                 set.add(timer);
                 
-                subscribe(new SingleSubscriber<T>() {
+                Single.this.subscribe(new SingleSubscriber<T>() {
 
                     @Override
                     public void onError(Throwable e) {

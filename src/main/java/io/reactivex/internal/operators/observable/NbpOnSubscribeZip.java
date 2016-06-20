@@ -17,14 +17,13 @@ import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
+public final class NbpOnSubscribeZip<T, R> implements ObservableConsumable<R> {
     
     final Observable<? extends T>[] sources;
     final Iterable<? extends Observable<? extends T>> sourcesIterable;
@@ -46,7 +45,7 @@ public final class NbpOnSubscribeZip<T, R> implements NbpOnSubscribe<R> {
     
     @Override
     @SuppressWarnings("unchecked")
-    public void accept(Observer<? super R> s) {
+    public void subscribe(Observer<? super R> s) {
         Observable<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {

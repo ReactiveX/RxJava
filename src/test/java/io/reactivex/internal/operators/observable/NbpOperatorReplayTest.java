@@ -25,7 +25,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
@@ -800,10 +800,10 @@ public class NbpOperatorReplayTest {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> o = Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(final Observer<? super String> NbpObserver) {
+            public void subscribe(final Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 new Thread(new Runnable() {
 
@@ -936,9 +936,9 @@ public class NbpOperatorReplayTest {
     @Test
     public void testNoMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
-        Observable<Integer> firehose = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> firehose = Observable.create(new ObservableConsumable<Integer>() {
             @Override
-            public void accept(Observer<? super Integer> t) {
+            public void subscribe(Observer<? super Integer> t) {
                 t.onSubscribe(EmptyDisposable.INSTANCE);
                 for (int i = 0; i < m; i++) {
                     t.onNext(i);

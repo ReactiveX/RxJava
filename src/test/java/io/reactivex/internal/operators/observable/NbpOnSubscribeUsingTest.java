@@ -22,7 +22,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
@@ -253,9 +253,9 @@ public class NbpOnSubscribeUsingTest {
         Function<Disposable, Observable<Integer>> observableFactory = new Function<Disposable, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Disposable subscription) {
-                return Observable.create(new NbpOnSubscribe<Integer>() {
+                return Observable.create(new ObservableConsumable<Integer>() {
                     @Override
-                    public void accept(Observer<? super Integer> t1) {
+                    public void subscribe(Observer<? super Integer> t1) {
                         throw new TestException();
                     }
                 });

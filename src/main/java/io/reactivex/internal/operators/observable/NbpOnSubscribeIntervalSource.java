@@ -17,11 +17,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpOnSubscribeIntervalSource implements NbpOnSubscribe<Long> {
+public final class NbpOnSubscribeIntervalSource implements ObservableConsumable<Long> {
     final Scheduler scheduler;
     final long initialDelay;
     final long period;
@@ -35,7 +34,7 @@ public final class NbpOnSubscribeIntervalSource implements NbpOnSubscribe<Long> 
     }
     
     @Override
-    public void accept(Observer<? super Long> s) {
+    public void subscribe(Observer<? super Long> s) {
         IntervalSubscriber is = new IntervalSubscriber(s);
         s.onSubscribe(is);
         

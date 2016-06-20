@@ -16,9 +16,9 @@ package io.reactivex.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.Observer;
 import io.reactivex.Observable;
-import io.reactivex.Observable.*;
+import io.reactivex.ObservableConsumable;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Function;
@@ -27,7 +27,7 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R> {
+public final class NbpOnSubscribeCombineLatest<T, R> implements ObservableConsumable<R> {
     final Observable<? extends T>[] sources;
     final Iterable<? extends Observable<? extends T>> sourcesIterable;
     final Function<? super Object[], ? extends R> combiner;
@@ -48,7 +48,7 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements NbpOnSubscribe<R
     
     @Override
     @SuppressWarnings("unchecked")
-    public void accept(Observer<? super R> s) {
+    public void subscribe(Observer<? super R> s) {
         Observable<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {

@@ -17,9 +17,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -56,9 +56,9 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
     public static <U, R> Observable<R> multicastSelector(
             final Supplier<? extends ConnectableObservable<U>> connectableFactory,
             final Function<? super Observable<U>, ? extends Observable<R>> selector) {
-        return Observable.create(new NbpOnSubscribe<R>() {
+        return Observable.create(new ObservableConsumable<R>() {
             @Override
-            public void accept(Observer<? super R> child) {
+            public void subscribe(Observer<? super R> child) {
                 ConnectableObservable<U> co;
                 Observable<R> observable;
                 try {
@@ -181,9 +181,9 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
             final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<ReplaySubscriber<T>> curr = new AtomicReference<ReplaySubscriber<T>>();
-        NbpOnSubscribe<T> onSubscribe = new NbpOnSubscribe<T>() {
+        ObservableConsumable<T> onSubscribe = new ObservableConsumable<T>() {
             @Override
-            public void accept(Observer<? super T> child) {
+            public void subscribe(Observer<? super T> child) {
                 // concurrent connection/disconnection may change the state, 
                 // we loop to be atomic while the child subscribes
                 for (;;) {
@@ -225,9 +225,9 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
         return new NbpOperatorReplay<T>(onSubscribe, source, curr, bufferFactory);
     }
     
-    final NbpOnSubscribe<T> onSubscribe;
+    final ObservableConsumable<T> onSubscribe;
     
-    private NbpOperatorReplay(NbpOnSubscribe<T> onSubscribe, Observable<? extends T> source, 
+    private NbpOperatorReplay(ObservableConsumable<T> onSubscribe, Observable<? extends T> source, 
             final AtomicReference<ReplaySubscriber<T>> current,
             final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
         this.onSubscribe = onSubscribe;
@@ -238,7 +238,7 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
     
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        onSubscribe.accept(observer);
+        onSubscribe.subscribe(observer);
     }
 
     @Override

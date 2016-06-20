@@ -16,13 +16,12 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
+public final class NbpOnSubscribeAmb<T> implements ObservableConsumable<T> {
     final Observable<? extends T>[] sources;
     final Iterable<? extends Observable<? extends T>> sourcesIterable;
     
@@ -33,7 +32,7 @@ public final class NbpOnSubscribeAmb<T> implements NbpOnSubscribe<T> {
     
     @Override
     @SuppressWarnings("unchecked")
-    public void accept(Observer<? super T> s) {
+    public void subscribe(Observer<? super T> s) {
         Observable<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {

@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.observers.TestObserver;
@@ -153,7 +152,7 @@ public class NbpOperatorTakeUntilTest {
 
     }
 
-    private static class TestObservable implements NbpOnSubscribe<String> {
+    private static class TestObservable implements ObservableConsumable<String> {
 
         Observer<? super String> NbpObserver;
         Disposable s;
@@ -178,7 +177,7 @@ public class NbpOperatorTakeUntilTest {
         }
 
         @Override
-        public void accept(Observer<? super String> NbpObserver) {
+        public void subscribe(Observer<? super String> NbpObserver) {
             this.NbpObserver = NbpObserver;
             NbpObserver.onSubscribe(s);
         }

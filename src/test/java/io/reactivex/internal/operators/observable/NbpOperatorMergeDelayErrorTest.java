@@ -24,7 +24,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.*;
 import io.reactivex.flowable.TestHelper;
@@ -216,10 +216,10 @@ public class NbpOperatorMergeDelayErrorTest {
         final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableConsumable<Observable<String>>() {
 
             @Override
-            public void accept(Observer<? super Observable<String>> NbpObserver) {
+            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 // simulate what would happen in an NbpObservable
                 NbpObserver.onNext(o1);
@@ -314,21 +314,21 @@ public class NbpOperatorMergeDelayErrorTest {
         }
     }
 
-    private static class TestSynchronousObservable implements NbpOnSubscribe<String> {
+    private static class TestSynchronousObservable implements ObservableConsumable<String> {
 
         @Override
-        public void accept(Observer<? super String> NbpObserver) {
+        public void subscribe(Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             NbpObserver.onNext("hello");
             NbpObserver.onComplete();
         }
     }
 
-    private static class TestASynchronousObservable implements NbpOnSubscribe<String> {
+    private static class TestASynchronousObservable implements ObservableConsumable<String> {
         Thread t;
 
         @Override
-        public void accept(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             t = new Thread(new Runnable() {
 
@@ -343,7 +343,7 @@ public class NbpOperatorMergeDelayErrorTest {
         }
     }
 
-    private static class TestErrorObservable implements NbpOnSubscribe<String> {
+    private static class TestErrorObservable implements ObservableConsumable<String> {
 
         String[] valuesToReturn;
 
@@ -352,7 +352,7 @@ public class NbpOperatorMergeDelayErrorTest {
         }
 
         @Override
-        public void accept(Observer<? super String> NbpObserver) {
+        public void subscribe(Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             boolean errorThrown = false;
             for (String s : valuesToReturn) {
@@ -372,7 +372,7 @@ public class NbpOperatorMergeDelayErrorTest {
         }
     }
 
-    private static class TestAsyncErrorObservable implements NbpOnSubscribe<String> {
+    private static class TestAsyncErrorObservable implements ObservableConsumable<String> {
 
         String[] valuesToReturn;
 
@@ -383,7 +383,7 @@ public class NbpOperatorMergeDelayErrorTest {
         Thread t;
 
         @Override
-        public void accept(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             t = new Thread(new Runnable() {
 
@@ -434,9 +434,9 @@ public class NbpOperatorMergeDelayErrorTest {
     @Test
     @Ignore("Subscribers should not throw")
     public void testMergeSourceWhichDoesntPropagateExceptionBack() {
-        Observable<Integer> source = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.create(new ObservableConsumable<Integer>() {
             @Override
-            public void accept(Observer<? super Integer> t1) {
+            public void subscribe(Observer<? super Integer> t1) {
                 t1.onSubscribe(EmptyDisposable.INSTANCE);
                 try {
                     t1.onNext(0);
@@ -506,9 +506,9 @@ public class NbpOperatorMergeDelayErrorTest {
         for (int i = 0; i < 50; i++) {
             final TestASynchronous1sDelayedObservable o1 = new TestASynchronous1sDelayedObservable();
             final TestASynchronous1sDelayedObservable o2 = new TestASynchronous1sDelayedObservable();
-            Observable<Observable<String>> parentObservable = Observable.create(new NbpOnSubscribe<Observable<String>>() {
+            Observable<Observable<String>> parentObservable = Observable.create(new ObservableConsumable<Observable<String>>() {
                 @Override
-                public void accept(Observer<? super Observable<String>> op) {
+                public void subscribe(Observer<? super Observable<String>> op) {
                     op.onSubscribe(EmptyDisposable.INSTANCE);
                     op.onNext(Observable.create(o1));
                     op.onNext(Observable.create(o2));
@@ -531,11 +531,11 @@ public class NbpOperatorMergeDelayErrorTest {
         }
     }
 
-    private static class TestASynchronous1sDelayedObservable implements NbpOnSubscribe<String> {
+    private static class TestASynchronous1sDelayedObservable implements ObservableConsumable<String> {
         Thread t;
 
         @Override
-        public void accept(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> NbpObserver) {
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
             t = new Thread(new Runnable() {
 

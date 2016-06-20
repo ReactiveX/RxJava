@@ -16,7 +16,7 @@ import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
+import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;

@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
@@ -37,10 +36,10 @@ public class NbpOperatorPublishTest {
     @Test
     public void testPublish() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.create(new NbpOnSubscribe<String>() {
+        ConnectableObservable<String> o = Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(final Observer<? super String> NbpObserver) {
+            public void subscribe(final Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 new Thread(new Runnable() {
 
@@ -345,9 +344,9 @@ public class NbpOperatorPublishTest {
     @Test
     public void testConnectIsIdempotent() {
         final AtomicInteger calls = new AtomicInteger();
-        Observable<Integer> source = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.create(new ObservableConsumable<Integer>() {
             @Override
-            public void accept(Observer<? super Integer> t) {
+            public void subscribe(Observer<? super Integer> t) {
                 t.onSubscribe(EmptyDisposable.INSTANCE);
                 calls.getAndIncrement();
             }

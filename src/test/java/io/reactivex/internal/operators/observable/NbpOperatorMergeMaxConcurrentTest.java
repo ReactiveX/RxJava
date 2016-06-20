@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -86,7 +86,7 @@ public class NbpOperatorMergeMaxConcurrentTest {
         }
     }
 
-    private static class SubscriptionCheckObservable implements NbpOnSubscribe<String> {
+    private static class SubscriptionCheckObservable implements ObservableConsumable<String> {
 
         private final AtomicInteger subscriptionCount;
         private final int maxConcurrent;
@@ -98,7 +98,7 @@ public class NbpOperatorMergeMaxConcurrentTest {
         }
 
         @Override
-        public void accept(final Observer<? super String> t1) {
+        public void subscribe(final Observer<? super String> t1) {
             t1.onSubscribe(EmptyDisposable.INSTANCE);
             new Thread(new Runnable() {
 

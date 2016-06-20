@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowable.TestHelper;
@@ -292,9 +292,9 @@ public class NbpOnSubscribeRefCountTest {
     }
 
     private Observable<Long> synchronousInterval() {
-        return Observable.create(new NbpOnSubscribe<Long>() {
+        return Observable.create(new ObservableConsumable<Long>() {
             @Override
-            public void accept(Observer<? super Long> NbpSubscriber) {
+            public void subscribe(Observer<? super Long> NbpSubscriber) {
                 final AtomicBoolean cancel = new AtomicBoolean();
                 NbpSubscriber.onSubscribe(new Disposable() {
                     @Override
@@ -320,9 +320,9 @@ public class NbpOnSubscribeRefCountTest {
     public void onlyFirstShouldSubscribeAndLastUnsubscribe() {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         final AtomicInteger unsubscriptionCount = new AtomicInteger();
-        Observable<Integer> o = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> o = Observable.create(new ObservableConsumable<Integer>() {
             @Override
-            public void accept(Observer<? super Integer> NbpObserver) {
+            public void subscribe(Observer<? super Integer> NbpObserver) {
                 subscriptionCount.incrementAndGet();
                 NbpObserver.onSubscribe(new Disposable() {
                     @Override

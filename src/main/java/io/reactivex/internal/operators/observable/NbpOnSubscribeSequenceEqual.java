@@ -17,13 +17,12 @@ import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.disposables.ArrayCompositeResource;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 
-public final class NbpOnSubscribeSequenceEqual<T> implements NbpOnSubscribe<Boolean> {
+public final class NbpOnSubscribeSequenceEqual<T> implements ObservableConsumable<Boolean> {
     final Observable<? extends T> first;
     final Observable<? extends T> second;
     final BiPredicate<? super T, ? super T> comparer;
@@ -38,7 +37,7 @@ public final class NbpOnSubscribeSequenceEqual<T> implements NbpOnSubscribe<Bool
     }
     
     @Override
-    public void accept(Observer<? super Boolean> s) {
+    public void subscribe(Observer<? super Boolean> s) {
         EqualCoordinator<T> ec = new EqualCoordinator<T>(s, bufferSize, first, second, comparer);
         ec.subscribe();
     }

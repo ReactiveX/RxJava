@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
@@ -58,10 +58,10 @@ public class NbpCachedObservableTest {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.create(new NbpOnSubscribe<String>() {
+        Observable<String> o = Observable.create(new ObservableConsumable<String>() {
 
             @Override
-            public void accept(final Observer<? super String> NbpObserver) {
+            public void subscribe(final Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 new Thread(new Runnable() {
 
@@ -192,9 +192,9 @@ public class NbpCachedObservableTest {
     @Test
     public void testNoMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
-        Observable<Integer> firehose = Observable.create(new NbpOnSubscribe<Integer>() {
+        Observable<Integer> firehose = Observable.create(new ObservableConsumable<Integer>() {
             @Override
-            public void accept(Observer<? super Integer> t) {
+            public void subscribe(Observer<? super Integer> t) {
                 t.onSubscribe(EmptyDisposable.INSTANCE);
                 for (int i = 0; i < m; i++) {
                     t.onNext(i);

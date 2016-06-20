@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.Optional;
 import io.reactivex.disposables.BooleanDisposable;
@@ -618,12 +617,12 @@ public class NbpOperatorZipTest {
         }
     }
 
-    private static class TestObservable implements NbpOnSubscribe<String> {
+    private static class TestObservable implements ObservableConsumable<String> {
 
         Observer<? super String> NbpObserver;
 
         @Override
-        public void accept(Observer<? super String> NbpObserver) {
+        public void subscribe(Observer<? super String> NbpObserver) {
             // just store the variable where it can be accessed so we can manually trigger it
             this.NbpObserver = NbpObserver;
             NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -1053,10 +1052,10 @@ public class NbpOperatorZipTest {
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
 
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS(final AtomicInteger numEmitted) {
-        return Observable.create(new NbpOnSubscribe<Integer>() {
+        return Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(final Observer<? super Integer> o) {
+            public void subscribe(final Observer<? super Integer> o) {
                 BooleanDisposable bs = new BooleanDisposable();
                 o.onSubscribe(bs);
                 for (int i = 1; i <= 5; i++) {
@@ -1074,10 +1073,10 @@ public class NbpOperatorZipTest {
     }
 
     Observable<Integer> ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(final CountDownLatch latch) {
-        return Observable.create(new NbpOnSubscribe<Integer>() {
+        return Observable.create(new ObservableConsumable<Integer>() {
 
             @Override
-            public void accept(final Observer<? super Integer> o) {
+            public void subscribe(final Observer<? super Integer> o) {
                 final BooleanDisposable bs = new BooleanDisposable();
                 o.onSubscribe(bs);
                 Thread t = new Thread(new Runnable() {

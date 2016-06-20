@@ -15,8 +15,8 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.ArrayDeque;
 
+import io.reactivex.Observable.NbpOperator;
 import io.reactivex.Observer;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.Disposable;
 
 public final class NbpOperatorSkipLast<T> implements NbpOperator<T, T> {

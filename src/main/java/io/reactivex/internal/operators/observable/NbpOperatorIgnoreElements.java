@@ -13,8 +13,8 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.Observable.NbpOperator;
 import io.reactivex.Observer;
-import io.reactivex.Observable.*;
 import io.reactivex.disposables.Disposable;
 
 public enum NbpOperatorIgnoreElements implements NbpOperator<Object, Object> {

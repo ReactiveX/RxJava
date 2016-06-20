@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.Observable.*;
+import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.*;
 
 public final class NbpOperatorSwitchIfEmpty<T> implements NbpOperator<T, T> {
