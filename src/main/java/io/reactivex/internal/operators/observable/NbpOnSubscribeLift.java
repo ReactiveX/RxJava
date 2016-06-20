@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOperator;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -26,13 +25,13 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the upstream value type
  * @param <R> the downstream parameter type
  */
-public final class NbpOnSubscribeLift<R, T> implements ObservableConsumable<R> {
+public final class NbpOnSubscribeLift<R, T> extends Observable<R> {
     /** The actual operator. */
     final NbpOperator<? extends R, ? super T> operator;
     /** The source publisher. */
-    final Observable<? extends T> source;
+    final ObservableConsumable<? extends T> source;
     
-    public NbpOnSubscribeLift(Observable<? extends T> source, NbpOperator<? extends R, ? super T> operator) {
+    public NbpOnSubscribeLift(ObservableConsumable<? extends T> source, NbpOperator<? extends R, ? super T> operator) {
         this.source = source;
         this.operator = operator;
     }
@@ -49,12 +48,12 @@ public final class NbpOnSubscribeLift<R, T> implements ObservableConsumable<R> {
      * Returns the source of this lift publisher.
      * @return the source of this lift publisher
      */
-    public Observable<? extends T> source() {
+    public ObservableConsumable<? extends T> source() {
         return source;
     }
     
     @Override
-    public void subscribe(Observer<? super R> s) {
+    public void subscribeActual(Observer<? super R> s) {
         try {
             if (s == null) {
                 throw new NullPointerException("Operator " + operator + " received a null Subscriber");

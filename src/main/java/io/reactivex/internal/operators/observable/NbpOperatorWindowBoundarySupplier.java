@@ -29,10 +29,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
 public final class NbpOperatorWindowBoundarySupplier<T, B> implements NbpOperator<Observable<T>, T> {
-    final Supplier<? extends Observable<B>> other;
+    final Supplier<? extends ObservableConsumable<B>> other;
     final int bufferSize;
     
-    public NbpOperatorWindowBoundarySupplier(Supplier<? extends Observable<B>> other, int bufferSize) {
+    public NbpOperatorWindowBoundarySupplier(Supplier<? extends ObservableConsumable<B>> other, int bufferSize) {
         this.other = other;
         this.bufferSize = bufferSize;
     }
@@ -46,7 +46,7 @@ public final class NbpOperatorWindowBoundarySupplier<T, B> implements NbpOperato
     extends NbpQueueDrainSubscriber<T, Object, Observable<T>> 
     implements Disposable {
         
-        final Supplier<? extends Observable<B>> other;
+        final Supplier<? extends ObservableConsumable<B>> other;
         final int bufferSize;
         
         Disposable s;
@@ -64,7 +64,7 @@ public final class NbpOperatorWindowBoundarySupplier<T, B> implements NbpOperato
         
         final AtomicLong windows = new AtomicLong();
 
-        public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, Supplier<? extends Observable<B>> other,
+        public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, Supplier<? extends ObservableConsumable<B>> other,
                 int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.other = other;
@@ -86,7 +86,7 @@ public final class NbpOperatorWindowBoundarySupplier<T, B> implements NbpOperato
                 return;
             }
             
-            Observable<B> p;
+            ObservableConsumable<B> p;
             
             try {
                 p = other.get();
@@ -230,7 +230,7 @@ public final class NbpOperatorWindowBoundarySupplier<T, B> implements NbpOperato
                             continue;
                         }
                         
-                        Observable<B> p;
+                        ObservableConsumable<B> p;
 
                         try {
                             p = other.get();

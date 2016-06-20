@@ -22,9 +22,9 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, T> {
-    final Observable<?> other;
+    final ObservableConsumable<?> other;
     
-    public NbpOperatorSampleWithObservable(Observable<?> other) {
+    public NbpOperatorSampleWithObservable(ObservableConsumable<?> other) {
         this.other = other;
     }
     
@@ -40,7 +40,7 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
         private static final long serialVersionUID = -3517602651313910099L;
 
         final Observer<? super T> actual;
-        final Observable<?> sampler;
+        final ObservableConsumable<?> sampler;
         
         final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
         
@@ -51,7 +51,7 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
         
         Disposable s;
         
-        public SamplePublisherSubscriber(Observer<? super T> actual, Observable<?> other) {
+        public SamplePublisherSubscriber(Observer<? super T> actual, ObservableConsumable<?> other) {
             this.actual = actual;
             this.sampler = other;
         }

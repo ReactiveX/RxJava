@@ -28,10 +28,10 @@ import io.reactivex.internal.util.Pow2;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
-    final Function<? super T, ? extends Observable<? extends R>> mapper;
+    final Function<? super T, ? extends ObservableConsumable<? extends R>> mapper;
     final int bufferSize;
 
-    public NbpOperatorSwitchMap(Function<? super T, ? extends Observable<? extends R>> mapper, int bufferSize) {
+    public NbpOperatorSwitchMap(Function<? super T, ? extends ObservableConsumable<? extends R>> mapper, int bufferSize) {
         this.mapper = mapper;
         this.bufferSize = bufferSize;
     }
@@ -45,7 +45,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
         /** */
         private static final long serialVersionUID = -3491074160481096299L;
         final Observer<? super R> actual;
-        final Function<? super T, ? extends Observable<? extends R>> mapper;
+        final Function<? super T, ? extends ObservableConsumable<? extends R>> mapper;
         final int bufferSize;
         
         
@@ -66,7 +66,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
         
         volatile long unique;
         
-        public SwitchMapSubscriber(Observer<? super R> actual, Function<? super T, ? extends Observable<? extends R>> mapper, int bufferSize) {
+        public SwitchMapSubscriber(Observer<? super R> actual, Function<? super T, ? extends ObservableConsumable<? extends R>> mapper, int bufferSize) {
             this.actual = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
@@ -91,7 +91,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
                 inner.cancel();
             }
             
-            Observable<? extends R> p;
+            ObservableConsumable<? extends R> p;
             try {
                 p = mapper.apply(t);
             } catch (Throwable e) {

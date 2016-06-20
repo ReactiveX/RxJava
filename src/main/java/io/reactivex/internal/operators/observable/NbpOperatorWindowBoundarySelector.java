@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.Observable;
 import io.reactivex.Observable.NbpOperator;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
@@ -31,11 +32,11 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
 public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOperator<Observable<T>, T> {
-    final Observable<B> open;
-    final Function<? super B, ? extends Observable<V>> close;
+    final ObservableConsumable<B> open;
+    final Function<? super B, ? extends ObservableConsumable<V>> close;
     final int bufferSize;
     
-    public NbpOperatorWindowBoundarySelector(Observable<B> open, Function<? super B, ? extends Observable<V>> close,
+    public NbpOperatorWindowBoundarySelector(ObservableConsumable<B> open, Function<? super B, ? extends ObservableConsumable<V>> close,
             int bufferSize) {
         this.open = open;
         this.close = close;
@@ -52,8 +53,8 @@ public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOper
     static final class WindowBoundaryMainSubscriber<T, B, V>
     extends NbpQueueDrainSubscriber<T, Object, Observable<T>>
     implements Disposable {
-        final Observable<B> open;
-        final Function<? super B, ? extends Observable<V>> close;
+        final ObservableConsumable<B> open;
+        final Function<? super B, ? extends ObservableConsumable<V>> close;
         final int bufferSize;
         final SetCompositeResource<Disposable> resources;
 
@@ -71,7 +72,7 @@ public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOper
         final AtomicLong windows = new AtomicLong();
 
         public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual,
-                Observable<B> open, Function<? super B, ? extends Observable<V>> close, int bufferSize) {
+                ObservableConsumable<B> open, Function<? super B, ? extends ObservableConsumable<V>> close, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.open = open;
             this.close = close;
@@ -259,7 +260,7 @@ public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOper
                         ws.add(w);
                         a.onNext(w);
                         
-                        Observable<V> p;
+                        ObservableConsumable<V> p;
                         
                         try {
                             p = close.apply(wo.open);

@@ -21,10 +21,10 @@ import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOperatorOnErrorNext<T> implements NbpOperator<T, T> {
-    final Function<? super Throwable, ? extends Observable<? extends T>> nextSupplier;
+    final Function<? super Throwable, ? extends ObservableConsumable<? extends T>> nextSupplier;
     final boolean allowFatal;
     
-    public NbpOperatorOnErrorNext(Function<? super Throwable, ? extends Observable<? extends T>> nextSupplier, boolean allowFatal) {
+    public NbpOperatorOnErrorNext(Function<? super Throwable, ? extends ObservableConsumable<? extends T>> nextSupplier, boolean allowFatal) {
         this.nextSupplier = nextSupplier;
         this.allowFatal = allowFatal;
     }
@@ -38,7 +38,7 @@ public final class NbpOperatorOnErrorNext<T> implements NbpOperator<T, T> {
     
     static final class OnErrorNextSubscriber<T> implements Observer<T> {
         final Observer<? super T> actual;
-        final Function<? super Throwable, ? extends Observable<? extends T>> nextSupplier;
+        final Function<? super Throwable, ? extends ObservableConsumable<? extends T>> nextSupplier;
         final boolean allowFatal;
         final MultipleAssignmentDisposable arbiter;
         
@@ -46,7 +46,7 @@ public final class NbpOperatorOnErrorNext<T> implements NbpOperator<T, T> {
         
         boolean done;
         
-        public OnErrorNextSubscriber(Observer<? super T> actual, Function<? super Throwable, ? extends Observable<? extends T>> nextSupplier, boolean allowFatal) {
+        public OnErrorNextSubscriber(Observer<? super T> actual, Function<? super Throwable, ? extends ObservableConsumable<? extends T>> nextSupplier, boolean allowFatal) {
             this.actual = actual;
             this.nextSupplier = nextSupplier;
             this.allowFatal = allowFatal;
@@ -83,7 +83,7 @@ public final class NbpOperatorOnErrorNext<T> implements NbpOperator<T, T> {
                 return;
             }
             
-            Observable<? extends T> p;
+            ObservableConsumable<? extends T> p;
             
             try {
                 p = nextSupplier.apply(t);

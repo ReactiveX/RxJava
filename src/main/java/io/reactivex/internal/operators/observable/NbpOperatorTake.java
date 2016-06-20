@@ -13,20 +13,22 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.Observable.NbpOperator;
+import io.reactivex.*;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class NbpOperatorTake<T> implements NbpOperator<T, T> {
+public final class NbpOperatorTake<T> extends Observable<T> {
+    final ObservableConsumable<? extends T> source;
     final long limit;
-    public NbpOperatorTake(long limit) {
+    public NbpOperatorTake(ObservableConsumable<? extends T> source, long limit) {
+        this.source = source;
         this.limit = limit;
     }
     
     @Override
-    public Observer<? super T> apply(Observer<? super T> t) {
-        return new TakeSubscriber<T>(t, limit);
+    protected void subscribeActual(Observer<? super T> observer) {
+        source.subscribe(new TakeSubscriber<T>(observer, limit));
     }
     
     static final class TakeSubscriber<T> implements Observer<T> {

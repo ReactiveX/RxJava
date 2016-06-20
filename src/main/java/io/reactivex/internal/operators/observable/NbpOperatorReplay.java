@@ -55,12 +55,12 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
      */
     public static <U, R> Observable<R> multicastSelector(
             final Supplier<? extends ConnectableObservable<U>> connectableFactory,
-            final Function<? super Observable<U>, ? extends Observable<R>> selector) {
+            final Function<? super Observable<U>, ? extends ObservableConsumable<R>> selector) {
         return Observable.create(new ObservableConsumable<R>() {
             @Override
             public void subscribe(Observer<? super R> child) {
                 ConnectableObservable<U> co;
-                Observable<R> observable;
+                ObservableConsumable<R> observable;
                 try {
                     co = connectableFactory.get();
                     observable = selector.apply(co);

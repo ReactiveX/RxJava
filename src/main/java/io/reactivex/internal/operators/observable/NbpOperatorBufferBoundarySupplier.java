@@ -29,10 +29,10 @@ import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? super T>, B> implements NbpOperator<U, T> {
-    final Supplier<? extends Observable<B>> boundarySupplier;
+    final Supplier<? extends ObservableConsumable<B>> boundarySupplier;
     final Supplier<U> bufferSupplier;
     
-    public NbpOperatorBufferBoundarySupplier(Supplier<? extends Observable<B>> boundarySupplier, Supplier<U> bufferSupplier) {
+    public NbpOperatorBufferBoundarySupplier(Supplier<? extends ObservableConsumable<B>> boundarySupplier, Supplier<U> bufferSupplier) {
         this.boundarySupplier = boundarySupplier;
         this.bufferSupplier = bufferSupplier;
     }
@@ -46,7 +46,7 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
     extends NbpQueueDrainSubscriber<T, U, U> implements Observer<T>, Disposable {
         /** */
         final Supplier<U> bufferSupplier;
-        final Supplier<? extends Observable<B>> boundarySupplier;
+        final Supplier<? extends ObservableConsumable<B>> boundarySupplier;
         
         Disposable s;
         
@@ -60,7 +60,7 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
         U buffer;
         
         public BufferBondarySupplierSubscriber(Observer<? super U> actual, Supplier<U> bufferSupplier,
-                Supplier<? extends Observable<B>> boundarySupplier) {
+                Supplier<? extends ObservableConsumable<B>> boundarySupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundarySupplier = boundarySupplier;
@@ -94,7 +94,7 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
             }
             buffer = b;
             
-            Observable<B> boundary;
+            ObservableConsumable<B> boundary;
             
             try {
                 boundary = boundarySupplier.get();
@@ -199,7 +199,7 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
                 return;
             }
             
-            Observable<B> boundary;
+            ObservableConsumable<B> boundary;
             
             try {
                 boundary = boundarySupplier.get();
