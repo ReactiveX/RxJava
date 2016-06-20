@@ -27,11 +27,11 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableOnSubscribeMerge implements CompletableConsumable {
-    final Flowable<? extends Completable> source;
+    final Publisher<? extends CompletableConsumable> source;
     final int maxConcurrency;
     final boolean delayErrors;
     
-    public CompletableOnSubscribeMerge(Flowable<? extends Completable> source, int maxConcurrency, boolean delayErrors) {
+    public CompletableOnSubscribeMerge(Publisher<? extends CompletableConsumable> source, int maxConcurrency, boolean delayErrors) {
         this.source = source;
         this.maxConcurrency = maxConcurrency;
         this.delayErrors = delayErrors;
@@ -45,7 +45,7 @@ public final class CompletableOnSubscribeMerge implements CompletableConsumable 
     
     static final class CompletableMergeSubscriber
     extends AtomicInteger
-    implements Subscriber<Completable>, Disposable {
+    implements Subscriber<CompletableConsumable>, Disposable {
         /** */
         private static final long serialVersionUID = -2108443387387077490L;
         
@@ -106,7 +106,7 @@ public final class CompletableOnSubscribeMerge implements CompletableConsumable 
         }
 
         @Override
-        public void onNext(Completable t) {
+        public void onNext(CompletableConsumable t) {
             if (done) {
                 return;
             }

@@ -26,7 +26,6 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.operators.single.*;
-import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
@@ -42,11 +41,19 @@ public abstract class Single<T> implements SingleConsumable<T> {
         
     }
     
-    public interface SingleTransformer<Upstream, Downstream> extends Function<Single<Upstream>, Single<Downstream>> {
+    public interface SingleTransformer<Upstream, Downstream> extends Function<Single<Upstream>, SingleConsumable<Downstream>> {
         
     }
     
-    public static <T> Single<T> amb(final Iterable<? extends Single<? extends T>> sources) {
+    static <T> Single<T> wrap(SingleConsumable<T> source) {
+        Objects.requireNonNull(source, "source is null");
+        if (source instanceof Single) {
+            return (Single<T>)source;
+        }
+        return new SingleWrapper<T>(source);
+    }
+    
+    public static <T> Single<T> amb(final Iterable<? extends SingleConsumable<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return create(new SingleConsumable<T>() {
             @Override
@@ -56,7 +63,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
                 s.onSubscribe(set);
                 
                 int c = 0;
-                Iterator<? extends Single<? extends T>> iterator;
+                Iterator<? extends SingleConsumable<? extends T>> iterator;
                 
                 try {
                     iterator = sources.iterator();
@@ -91,7 +98,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
                         break;
                     }
                     
-                    Single<? extends T> s1;
+                    SingleConsumable<? extends T> s1;
 
                     if (once.get()) {
                         return;
@@ -146,7 +153,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> Single<T> amb(final Single<? extends T>... sources) {
+    public static <T> Single<T> amb(final SingleConsumable<? extends T>... sources) {
         if (sources.length == 0) {
             return error(new Supplier<Throwable>() {
                 @Override
@@ -156,7 +163,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
             });
         }
         if (sources.length == 1) {
-            return (Single<T>)sources[0];
+            return wrap((SingleConsumable<T>)sources[0]);
         }
         return create(new SingleConsumable<T>() {
             @Override
@@ -165,7 +172,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
                 final CompositeDisposable set = new CompositeDisposable();
                 s.onSubscribe(set);
                 
-                for (Single<? extends T> s1 : sources) {
+                for (SingleConsumable<? extends T> s1 : sources) {
                     if (once.get()) {
                         return;
                     }
@@ -210,22 +217,22 @@ public abstract class Single<T> implements SingleConsumable<T> {
         });
     }
 
-    public static <T> Flowable<T> concat(Iterable<? extends Single<? extends T>> sources) {
+    public static <T> Flowable<T> concat(Iterable<? extends SingleConsumable<? extends T>> sources) {
         return concat(Flowable.fromIterable(sources));
     }
     
-    public static <T> Flowable<T> concat(Flowable<? extends Single<? extends T>> sources) {
-        return sources.concatMap(new Function<Single<? extends T>, Publisher<? extends T>>() {
+    public static <T> Flowable<T> concat(Flowable<? extends SingleConsumable<? extends T>> sources) {
+        return sources.concatMap(new Function<SingleConsumable<? extends T>, Publisher<? extends T>>() {
             @Override 
-            public Publisher<? extends T> apply(Single<? extends T> v){
-                return v.toFlowable();
+            public Publisher<? extends T> apply(SingleConsumable<? extends T> v){
+                return new SingleToFlowable<T>(v);
             }
         });
     }
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -234,8 +241,8 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -245,8 +252,8 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3, SingleConsumable<? extends T> s4
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -257,9 +264,9 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3, SingleConsumable<? extends T> s4,
+            SingleConsumable<? extends T> s5
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -271,9 +278,9 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5, Single<? extends T> s6
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3, SingleConsumable<? extends T> s4,
+            SingleConsumable<? extends T> s5, SingleConsumable<? extends T> s6
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -286,10 +293,10 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5, Single<? extends T> s6,
-            Single<? extends T> s7
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3, SingleConsumable<? extends T> s4,
+            SingleConsumable<? extends T> s5, SingleConsumable<? extends T> s6,
+            SingleConsumable<? extends T> s7
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -303,10 +310,10 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5, Single<? extends T> s6,
-            Single<? extends T> s7, Single<? extends T> s8
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3, SingleConsumable<? extends T> s4,
+            SingleConsumable<? extends T> s5, SingleConsumable<? extends T> s6,
+            SingleConsumable<? extends T> s7, SingleConsumable<? extends T> s8
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -321,11 +328,11 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5, Single<? extends T> s6,
-            Single<? extends T> s7, Single<? extends T> s8,
-            Single<? extends T> s9
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3, SingleConsumable<? extends T> s4,
+            SingleConsumable<? extends T> s5, SingleConsumable<? extends T> s6,
+            SingleConsumable<? extends T> s7, SingleConsumable<? extends T> s8,
+            SingleConsumable<? extends T> s9
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -345,12 +352,12 @@ public abstract class Single<T> implements SingleConsumable<T> {
         return new SingleWrapper<T>(onSubscribe);
     }
     
-    public static <T> Single<T> defer(final Supplier<? extends Single<? extends T>> singleSupplier) {
+    public static <T> Single<T> defer(final Supplier<? extends SingleConsumable<? extends T>> singleSupplier) {
         Objects.requireNonNull(singleSupplier, "singleSupplier is null");
         return create(new SingleConsumable<T>() {
             @Override
             public void subscribe(SingleSubscriber<? super T> s) {
-                Single<? extends T> next;
+                SingleConsumable<? extends T> next;
                 
                 try {
                     next = singleSupplier.get();
@@ -491,27 +498,28 @@ public abstract class Single<T> implements SingleConsumable<T> {
         });
     }
 
-    public static <T> Flowable<T> merge(Iterable<? extends Single<? extends T>> sources) {
+    public static <T> Flowable<T> merge(Iterable<? extends SingleConsumable<? extends T>> sources) {
         return merge(Flowable.fromIterable(sources));
     }
 
-    public static <T> Flowable<T> merge(Flowable<? extends Single<? extends T>> sources) {
-        return sources.flatMap(new Function<Single<? extends T>, Publisher<? extends T>>() {
+    public static <T> Flowable<T> merge(Flowable<? extends SingleConsumable<? extends T>> sources) {
+        return sources.flatMap(new Function<SingleConsumable<? extends T>, Publisher<? extends T>>() {
             @Override 
-            public Publisher<? extends T> apply(Single<? extends T> v){
-                return v.toFlowable();
+            public Publisher<? extends T> apply(SingleConsumable<? extends T> v){
+                return new SingleToFlowable<T>(v);
             }
         });
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Single<T> merge(Single<? extends Single<? extends T>> source) {
-        return source.flatMap((Function)Functions.identity());
+    public static <T> Single<T> merge(SingleConsumable<? extends SingleConsumable<? extends T>> source) {
+        Objects.requireNonNull(source, "source is null");
+        return new SingleOperatorFlatMap<SingleConsumable<? extends T>, T>(source, (Function)Functions.identity());
     }
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
-            Single<? extends T> s1, Single<? extends T> s2
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -520,8 +528,8 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -531,8 +539,8 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3, SingleConsumable<? extends T> s4
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -543,9 +551,9 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3, SingleConsumable<? extends T> s4,
+            SingleConsumable<? extends T> s5
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -557,9 +565,9 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5, Single<? extends T> s6
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3, SingleConsumable<? extends T> s4,
+            SingleConsumable<? extends T> s5, SingleConsumable<? extends T> s6
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -572,10 +580,10 @@ public abstract class Single<T> implements SingleConsumable<T> {
 
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5, Single<? extends T> s6,
-            Single<? extends T> s7
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3, SingleConsumable<? extends T> s4,
+            SingleConsumable<? extends T> s5, SingleConsumable<? extends T> s6,
+            SingleConsumable<? extends T> s7
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -589,10 +597,10 @@ public abstract class Single<T> implements SingleConsumable<T> {
 
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5, Single<? extends T> s6,
-            Single<? extends T> s7, Single<? extends T> s8
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3, SingleConsumable<? extends T> s4,
+            SingleConsumable<? extends T> s5, SingleConsumable<? extends T> s6,
+            SingleConsumable<? extends T> s7, SingleConsumable<? extends T> s8
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -607,11 +615,11 @@ public abstract class Single<T> implements SingleConsumable<T> {
 
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
-            Single<? extends T> s1, Single<? extends T> s2,
-            Single<? extends T> s3, Single<? extends T> s4,
-            Single<? extends T> s5, Single<? extends T> s6,
-            Single<? extends T> s7, Single<? extends T> s8,
-            Single<? extends T> s9
+            SingleConsumable<? extends T> s1, SingleConsumable<? extends T> s2,
+            SingleConsumable<? extends T> s3, SingleConsumable<? extends T> s4,
+            SingleConsumable<? extends T> s5, SingleConsumable<? extends T> s6,
+            SingleConsumable<? extends T> s7, SingleConsumable<? extends T> s8,
+            SingleConsumable<? extends T> s9
      ) {
         Objects.requireNonNull(s1, "s1 is null");
         Objects.requireNonNull(s2, "s2 is null");
@@ -661,7 +669,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
         });
     }
     
-    public static <T> Single<Boolean> equals(final Single<? extends T> first, final Single<? extends T> second) {
+    public static <T> Single<Boolean> equals(final SingleConsumable<? extends T> first, final SingleConsumable<? extends T> second) {
         Objects.requireNonNull(first, "first is null");
         Objects.requireNonNull(second, "second is null");
         return create(new SingleConsumable<Boolean>() {
@@ -716,13 +724,13 @@ public abstract class Single<T> implements SingleConsumable<T> {
     }
 
     public static <T, U> Single<T> using(Supplier<U> resourceSupplier, 
-            Function<? super U, ? extends Single<? extends T>> singleFunction, Consumer<? super U> disposer) {
+            Function<? super U, ? extends SingleConsumable<? extends T>> singleFunction, Consumer<? super U> disposer) {
         return using(resourceSupplier, singleFunction, disposer, true);
     }
         
     public static <T, U> Single<T> using(
             final Supplier<U> resourceSupplier, 
-            final Function<? super U, ? extends Single<? extends T>> singleFunction, 
+            final Function<? super U, ? extends SingleConsumable<? extends T>> singleFunction, 
             final Consumer<? super U> disposer, 
             final boolean eager) {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
@@ -742,7 +750,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
                     return;
                 }
                 
-                Single<? extends T> s1;
+                SingleConsumable<? extends T> s1;
                 
                 try {
                     s1 = singleFunction.apply(resource);
@@ -824,14 +832,13 @@ public abstract class Single<T> implements SingleConsumable<T> {
         });
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T, R> Single<R> zip(final Iterable<? extends Single<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
+    public static <T, R> Single<R> zip(final Iterable<? extends SingleConsumable<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(sources, "sources is null");
         
         Iterable<? extends Flowable<T>> it = new Iterable<Flowable<T>>() {
             @Override
             public Iterator<Flowable<T>> iterator() {
-                final Iterator<? extends Single<? extends T>> sit = sources.iterator();
+                final Iterator<? extends SingleConsumable<? extends T>> sit = sources.iterator();
                 return new Iterator<Flowable<T>>() {
 
                     @Override
@@ -841,7 +848,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
 
                     @Override
                     public Flowable<T> next() {
-                        return ((Flowable<T>)sit.next().toFlowable());
+                        return new SingleToFlowable<T>(sit.next());
                     }
                     
                     @Override
@@ -856,7 +863,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
 
     @SuppressWarnings("unchecked")
     public static <T1, T2, R> Single<R> zip(
-            Single<? extends T1> s1, Single<? extends T2> s2,
+            SingleConsumable<? extends T1> s1, SingleConsumable<? extends T2> s2,
             BiFunction<? super T1, ? super T2, ? extends R> zipper
      ) {
         Objects.requireNonNull(s1, "s1 is null");
@@ -866,8 +873,8 @@ public abstract class Single<T> implements SingleConsumable<T> {
 
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, R> Single<R> zip(
-            Single<? extends T1> s1, Single<? extends T2> s2,
-            Single<? extends T3> s3,
+            SingleConsumable<? extends T1> s1, SingleConsumable<? extends T2> s2,
+            SingleConsumable<? extends T3> s3,
             Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper
      ) {
         Objects.requireNonNull(s1, "s1 is null");
@@ -878,8 +885,8 @@ public abstract class Single<T> implements SingleConsumable<T> {
 
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, R> Single<R> zip(
-            Single<? extends T1> s1, Single<? extends T2> s2,
-            Single<? extends T3> s3, Single<? extends T4> s4,
+            SingleConsumable<? extends T1> s1, SingleConsumable<? extends T2> s2,
+            SingleConsumable<? extends T3> s3, SingleConsumable<? extends T4> s4,
             Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipper
      ) {
         Objects.requireNonNull(s1, "s1 is null");
@@ -891,9 +898,9 @@ public abstract class Single<T> implements SingleConsumable<T> {
 
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, R> Single<R> zip(
-            Single<? extends T1> s1, Single<? extends T2> s2,
-            Single<? extends T3> s3, Single<? extends T4> s4,
-            Single<? extends T5> s5,
+            SingleConsumable<? extends T1> s1, SingleConsumable<? extends T2> s2,
+            SingleConsumable<? extends T3> s3, SingleConsumable<? extends T4> s4,
+            SingleConsumable<? extends T5> s5,
             Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipper
      ) {
         Objects.requireNonNull(s1, "s1 is null");
@@ -906,9 +913,9 @@ public abstract class Single<T> implements SingleConsumable<T> {
 
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, R> Single<R> zip(
-            Single<? extends T1> s1, Single<? extends T2> s2,
-            Single<? extends T3> s3, Single<? extends T4> s4,
-            Single<? extends T5> s5, Single<? extends T6> s6,
+            SingleConsumable<? extends T1> s1, SingleConsumable<? extends T2> s2,
+            SingleConsumable<? extends T3> s3, SingleConsumable<? extends T4> s4,
+            SingleConsumable<? extends T5> s5, SingleConsumable<? extends T6> s6,
             Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipper
      ) {
         Objects.requireNonNull(s1, "s1 is null");
@@ -922,10 +929,10 @@ public abstract class Single<T> implements SingleConsumable<T> {
 
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, R> Single<R> zip(
-            Single<? extends T1> s1, Single<? extends T2> s2,
-            Single<? extends T3> s3, Single<? extends T4> s4,
-            Single<? extends T5> s5, Single<? extends T6> s6,
-            Single<? extends T7> s7, 
+            SingleConsumable<? extends T1> s1, SingleConsumable<? extends T2> s2,
+            SingleConsumable<? extends T3> s3, SingleConsumable<? extends T4> s4,
+            SingleConsumable<? extends T5> s5, SingleConsumable<? extends T6> s6,
+            SingleConsumable<? extends T7> s7, 
             Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipper
      ) {
         Objects.requireNonNull(s1, "s1 is null");
@@ -940,10 +947,10 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Single<R> zip(
-            Single<? extends T1> s1, Single<? extends T2> s2,
-            Single<? extends T3> s3, Single<? extends T4> s4,
-            Single<? extends T5> s5, Single<? extends T6> s6,
-            Single<? extends T7> s7, Single<? extends T8> s8,
+            SingleConsumable<? extends T1> s1, SingleConsumable<? extends T2> s2,
+            SingleConsumable<? extends T3> s3, SingleConsumable<? extends T4> s4,
+            SingleConsumable<? extends T5> s5, SingleConsumable<? extends T6> s6,
+            SingleConsumable<? extends T7> s7, SingleConsumable<? extends T8> s8,
             Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipper
      ) {
         Objects.requireNonNull(s1, "s1 is null");
@@ -959,11 +966,11 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Single<R> zip(
-            Single<? extends T1> s1, Single<? extends T2> s2,
-            Single<? extends T3> s3, Single<? extends T4> s4,
-            Single<? extends T5> s5, Single<? extends T6> s6,
-            Single<? extends T7> s7, Single<? extends T8> s8,
-            Single<? extends T9> s9,
+            SingleConsumable<? extends T1> s1, SingleConsumable<? extends T2> s2,
+            SingleConsumable<? extends T3> s3, SingleConsumable<? extends T4> s4,
+            SingleConsumable<? extends T5> s5, SingleConsumable<? extends T6> s6,
+            SingleConsumable<? extends T7> s7, SingleConsumable<? extends T8> s8,
+            SingleConsumable<? extends T9> s9,
             Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipper
      ) {
         Objects.requireNonNull(s1, "s1 is null");
@@ -979,18 +986,20 @@ public abstract class Single<T> implements SingleConsumable<T> {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static <T, R> Single<R> zipArray(Function<? super Object[], ? extends R> zipper, Single<? extends T>... sources) {
+    public static <T, R> Single<R> zipArray(Function<? super Object[], ? extends R> zipper, SingleConsumable<? extends T>... sources) {
+        Objects.requireNonNull(sources, "sources is null");
         Publisher[] sourcePublishers = new Publisher[sources.length];
         int i = 0;
-        for (Single<? extends T> s : sources) {
-            sourcePublishers[i] = s.toFlowable();
+        for (SingleConsumable<? extends T> s : sources) {
+            Objects.requireNonNull(s, "The " + i + "th source is null");
+            sourcePublishers[i] = new SingleToFlowable<T>(s);
             i++;
         }
         return Flowable.zipArray(zipper, false, 1, sourcePublishers).toSingle();
     }
 
     @SuppressWarnings("unchecked")
-    public final Single<T> ambWith(Single<? extends T> other) {
+    public final Single<T> ambWith(SingleConsumable<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return amb(this, other);
     }
@@ -1004,8 +1013,8 @@ public abstract class Single<T> implements SingleConsumable<T> {
         });
     }
     
-    public final <R> Single<R> compose(Function<? super Single<T>, ? extends Single<R>> convert) {
-        return to(convert);
+    public final <R> Single<R> compose(Function<? super Single<T>, ? extends SingleConsumable<R>> convert) {
+        return wrap(to(convert));
     }
 
     public final Single<T> cache() {
@@ -1119,7 +1128,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
         });
     }
     
-    public final Flowable<T> concatWith(Single<? extends T> other) {
+    public final Flowable<T> concatWith(SingleConsumable<? extends T> other) {
         return concat(this, other);
     }
     
@@ -1297,9 +1306,9 @@ public abstract class Single<T> implements SingleConsumable<T> {
         });
     }
 
-    public final <R> Single<R> flatMap(Function<? super T, ? extends Single<? extends R>> mapper) {
+    public final <R> Single<R> flatMap(Function<? super T, ? extends SingleConsumable<? extends R>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return lift(new SingleOperatorFlatMap<T, R>(mapper));   
+        return new SingleOperatorFlatMap<T, R>(this, mapper);
     }
 
     public final <R> Flowable<R> flatMapPublisher(Function<? super T, ? extends Publisher<? extends R>> mapper) {
@@ -1403,7 +1412,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
         });
     }
     
-    public final Flowable<T> mergeWith(Single<? extends T> other) {
+    public final Flowable<T> mergeWith(SingleConsumable<? extends T> other) {
         return merge(this, other);
     }
     
@@ -1505,7 +1514,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
     }
 
     public final Single<T> onErrorResumeNext(
-            final Function<? super Throwable, ? extends Single<? extends T>> nextFunction) {
+            final Function<? super Throwable, ? extends SingleConsumable<? extends T>> nextFunction) {
         Objects.requireNonNull(nextFunction, "nextFunction is null");
         return create(new SingleConsumable<T>() {
             @Override
@@ -1527,7 +1536,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
 
                     @Override
                     public void onError(Throwable e) {
-                        Single<? extends T> next;
+                        SingleConsumable<? extends T> next;
                         
                         try {
                             next = nextFunction.apply(e);
@@ -1703,17 +1712,17 @@ public abstract class Single<T> implements SingleConsumable<T> {
         return timeout0(timeout, unit, scheduler, null);
     }
 
-    public final Single<T> timeout(long timeout, TimeUnit unit, Scheduler scheduler, Single<? extends T> other) {
+    public final Single<T> timeout(long timeout, TimeUnit unit, Scheduler scheduler, SingleConsumable<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return timeout0(timeout, unit, scheduler, other);
     }
 
-    public final Single<T> timeout(long timeout, TimeUnit unit, Single<? extends T> other) {
+    public final Single<T> timeout(long timeout, TimeUnit unit, SingleConsumable<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return timeout0(timeout, unit, Schedulers.computation(), other);
     }
 
-    private Single<T> timeout0(final long timeout, final TimeUnit unit, final Scheduler scheduler, final Single<? extends T> other) {
+    private Single<T> timeout0(final long timeout, final TimeUnit unit, final Scheduler scheduler, final SingleConsumable<? extends T> other) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
         return create(new SingleConsumable<T>() {
@@ -1793,40 +1802,14 @@ public abstract class Single<T> implements SingleConsumable<T> {
     }
     
     public final Flowable<T> toFlowable() {
-        return Flowable.create(new Publisher<T>() {
-            @Override
-            public void subscribe(final Subscriber<? super T> s) {
-                final ScalarAsyncSubscription<T> sas = new ScalarAsyncSubscription<T>(s);
-                final AsyncSubscription as = new AsyncSubscription();
-                as.setSubscription(sas);
-                s.onSubscribe(as);
-                
-                Single.this.subscribe(new SingleSubscriber<T>() {
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        as.setResource(d);
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        sas.setValue(value);
-                    }
-                    
-                });
-            }
-        });
+        return new SingleToFlowable<T>(this);
     }
     
     public final void unsafeSubscribe(Subscriber<? super T> s) {
         toFlowable().unsafeSubscribe(s);
     }
     
-    public final <U, R> Single<R> zipWith(Single<U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
+    public final <U, R> Single<R> zipWith(SingleConsumable<U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
         return zip(this, other, zipper);
     }
 }

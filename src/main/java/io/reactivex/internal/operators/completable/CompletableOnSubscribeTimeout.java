@@ -22,14 +22,14 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableOnSubscribeTimeout implements CompletableConsumable {
     
-    final Completable source;
+    final CompletableConsumable source;
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
-    final Completable other;
+    final CompletableConsumable other;
 
-    public CompletableOnSubscribeTimeout(Completable source, long timeout, 
-            TimeUnit unit, Scheduler scheduler, Completable other) {
+    public CompletableOnSubscribeTimeout(CompletableConsumable source, long timeout, 
+            TimeUnit unit, Scheduler scheduler, CompletableConsumable other) {
         this.source = source;
         this.timeout = timeout;
         this.unit = unit;
