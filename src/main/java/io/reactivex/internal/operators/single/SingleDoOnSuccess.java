@@ -13,43 +13,47 @@
 
 package io.reactivex.internal.operators.single;
 
-import io.reactivex.Single.*;
-import io.reactivex.SingleSubscriber;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.Consumer;
 
-public final class SingleOperatorMap<T, R> implements SingleOperator<R, T> {
-    final Function<? super T, ? extends R> mapper;
+public class SingleDoOnSuccess<T> extends Single<T> {
 
-    public SingleOperatorMap(Function<? super T, ? extends R> mapper) {
-        this.mapper = mapper;
+    final SingleConsumable<T> source;
+    
+    final Consumer<? super T> onSuccess;
+    
+    public SingleDoOnSuccess(SingleConsumable<T> source, Consumer<? super T> onSuccess) {
+        this.source = source;
+        this.onSuccess = onSuccess;
     }
 
     @Override
-    public SingleSubscriber<? super T> apply(final SingleSubscriber<? super R> t) {
-        return new SingleSubscriber<T>() {
+    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+
+        source.subscribe(new SingleSubscriber<T>() {
             @Override
             public void onSubscribe(Disposable d) {
-                t.onSubscribe(d);
+                s.onSubscribe(d);
             }
 
             @Override
             public void onSuccess(T value) {
-                R v;
                 try {
-                    v = mapper.apply(value);
-                } catch (Throwable e) {
-                    onError(e);
+                    onSuccess.accept(value);
+                } catch (Throwable ex) {
+                    s.onError(ex);
                     return;
                 }
-                
-                t.onSuccess(v);
+                s.onSuccess(value);
             }
 
             @Override
             public void onError(Throwable e) {
-                t.onError(e);
+                s.onError(e);
             }
-        };
+            
+        });
     }
+
 }
