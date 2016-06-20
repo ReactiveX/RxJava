@@ -16,25 +16,19 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mock;
+import org.junit.*;
+import org.mockito.*;
 
-import rx.Observable;
-import rx.Observer;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import rx.*;
+import rx.exceptions.TestException;
+import rx.functions.*;
+import rx.observers.TestSubscriber;
 
 public class OperatorDistinctUntilChangedTest {
 
@@ -164,4 +158,43 @@ public class OperatorDistinctUntilChangedTest {
           .subscribe(w);
         assertFalse(errorOccurred.get());
     }
+    
+    @Test
+    public void customComparator() {
+        Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
+        
+        TestSubscriber<String> ts = TestSubscriber.create();
+        
+        source.distinctUntilChanged(new Func2<String, String, Boolean>() {
+            @Override
+            public Boolean call(String a, String b) {
+                return a.compareToIgnoreCase(b) == 0;
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValues("a", "b", "A", "C");
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void customComparatorThrows() {
+        Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
+        
+        TestSubscriber<String> ts = TestSubscriber.create();
+        
+        source.distinctUntilChanged(new Func2<String, String, Boolean>() {
+            @Override
+            public Boolean call(String a, String b) {
+                throw new TestException();
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue("a");
+        ts.assertNotCompleted();
+        ts.assertError(TestException.class);
+    }
+
 }
