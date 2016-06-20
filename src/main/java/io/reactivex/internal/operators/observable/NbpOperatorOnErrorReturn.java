@@ -18,7 +18,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class NbpOperatorOnErrorReturn<T> implements NbpOperator<T, T> {
     final Function<? super Throwable, ? extends T> valueSupplier;
@@ -46,11 +46,10 @@ public final class NbpOperatorOnErrorReturn<T> implements NbpOperator<T, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(s);
             }
-            this.s = s;
-            actual.onSubscribe(s);
         }
         
         @Override

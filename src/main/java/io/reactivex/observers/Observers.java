@@ -13,12 +13,12 @@
 
 package io.reactivex.observers;
 
-import io.reactivex.*;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.subscribers.observable.*;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -371,22 +371,22 @@ public final class Observers {
             Disposable s;
             @Override
             public void onSubscribe(Disposable s) {
-                if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                    return;
-                }
-                this.s = s;
-                try {
-                    onStart.accept(s);
-                } catch (Throwable e) {
-                    done = true;
-                    s.dispose();
+                if (DisposableHelper.validate(this.s, s)) {
+                    this.s = s;
                     try {
-                        onError.accept(e);
-                    } catch (Throwable ex) {
-                        RxJavaPlugins.onError(ex);
-                        RxJavaPlugins.onError(e);
+                        onStart.accept(s);
+                    } catch (Throwable e) {
+                        done = true;
+                        s.dispose();
+                        try {
+                            onError.accept(e);
+                        } catch (Throwable ex) {
+                            RxJavaPlugins.onError(ex);
+                            RxJavaPlugins.onError(e);
+                        }
                     }
                 }
+                
             }
             @Override
             public void onNext(T t) {

@@ -4,22 +4,24 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.CompletableSubscriber;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class CompletableConsumingSubscriber 
+public final class EmptyCompletableSubscriber 
 extends AtomicReference<Disposable>
 implements CompletableSubscriber, Disposable {
 
+    /** */
+    private static final long serialVersionUID = -7545121636549663526L;
+
     @Override
     public void dispose() {
-        // TODO Auto-generated method stub
-        
+        DisposableHelper.dispose(this);
     }
 
     @Override
     public void onComplete() {
-        // TODO Auto-generated method stub
-        
+        // no-op
     }
 
     @Override
@@ -29,8 +31,7 @@ implements CompletableSubscriber, Disposable {
 
     @Override
     public void onSubscribe(Disposable d) {
-        // TODO Auto-generated method stub
-        
+        DisposableHelper.setOnce(this, d);
     }
 
 }

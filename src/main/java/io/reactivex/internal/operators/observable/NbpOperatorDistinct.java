@@ -20,10 +20,9 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.subscribers.observable.NbpCancelledSubscriber;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class NbpOperatorDistinct<T, K> implements NbpOperator<T, T> {
     final Function<? super T, K> keySelector;
@@ -142,11 +141,10 @@ public final class NbpOperatorDistinct<T, K> implements NbpOperator<T, T> {
 
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(s);
             }
-            this.s = s;
-            actual.onSubscribe(s);
         }
         
         @Override

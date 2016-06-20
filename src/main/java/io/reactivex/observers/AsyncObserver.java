@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
-import io.reactivex.internal.disposables.ListCompositeResource;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
@@ -94,15 +94,9 @@ public abstract class AsyncObserver<T> implements Observer<T>, Disposable {
     
     @Override
     public final void onSubscribe(Disposable s) {
-        if (!this.s.compareAndSet(null, s)) {
-            s.dispose();
-            if (this.s.get() != CANCELLED) {
-                SubscriptionHelper.reportDisposableSet();
-            }
-            return;
+        if (!DisposableHelper.setOnce(this.s, s)) {
+            onStart();
         }
-        
-        onStart();
     }
     
     /**

@@ -19,10 +19,9 @@ import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Supplier;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.SerializedObserver;
 
@@ -61,37 +60,36 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            
-            U b;
-            
-            try {
-                b = bufferSupplier.get();
-            } catch (Throwable e) {
-                cancelled = true;
-                s.dispose();
-                EmptyDisposable.error(e, actual);
-                return;
-            }
-            
-            if (b == null) {
-                cancelled = true;
-                s.dispose();
-                EmptyDisposable.error(new NullPointerException("The buffer supplied is null"), actual);
-                return;
-            }
-            buffer = b;
-            
-            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
-            other = bs;
-            
-            actual.onSubscribe(this);
-            
-            if (!cancelled) {
-                boundary.subscribe(bs);
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                U b;
+                
+                try {
+                    b = bufferSupplier.get();
+                } catch (Throwable e) {
+                    cancelled = true;
+                    s.dispose();
+                    EmptyDisposable.error(e, actual);
+                    return;
+                }
+                
+                if (b == null) {
+                    cancelled = true;
+                    s.dispose();
+                    EmptyDisposable.error(new NullPointerException("The buffer supplied is null"), actual);
+                    return;
+                }
+                buffer = b;
+                
+                BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
+                other = bs;
+                
+                actual.onSubscribe(this);
+                
+                if (!cancelled) {
+                    boundary.subscribe(bs);
+                }
             }
         }
         

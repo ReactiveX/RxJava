@@ -18,7 +18,7 @@ import java.util.ArrayDeque;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class NbpOperatorTakeLast<T> implements NbpOperator<T, T> {
     final int count;
@@ -50,11 +50,10 @@ public final class NbpOperatorTakeLast<T> implements NbpOperator<T, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
             }
-            this.s = s;
-            actual.onSubscribe(this);
         }
         
         @Override

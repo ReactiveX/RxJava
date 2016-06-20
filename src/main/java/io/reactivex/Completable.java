@@ -17,12 +17,11 @@ import java.util.concurrent.*;
 import org.reactivestreams.*;
 
 import io.reactivex.annotations.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.operators.completable.*;
-import io.reactivex.internal.subscribers.completable.CompletableConsumingSubscriber;
-import io.reactivex.internal.subscriptions.DisposableSubscription;
+import io.reactivex.internal.subscribers.completable.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
@@ -1025,7 +1024,7 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerKind.NONE)
     public final Disposable subscribe() {
-        CompletableConsumingSubscriber s = new CompletableConsumingSubscriber();
+        EmptyCompletableSubscriber s = new EmptyCompletableSubscriber();
         subscribe(s);
         return s;
     }
@@ -1065,71 +1064,24 @@ public abstract class Completable implements CompletableConsumable {
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
         
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-        subscribe(new CompletableSubscriber() {
-            @Override
-            public void onComplete() {
-                try {
-                    onComplete.run();
-                } catch (Throwable e) {
-                    onError(e);
-                }
-            }
-            
-            @Override
-            public void onError(Throwable e) {
-                try {
-                    onError.accept(e);
-                } catch (Throwable ex) {
-                    RxJavaPlugins.onError(ex);
-                    RxJavaPlugins.onError(e);
-                }
-            }
-            
-            @Override
-            public void onSubscribe(Disposable d) {
-                mad.set(d);
-            }
-        });
-        
-        return mad;
+        CallbackCompletableSubscriber s = new CallbackCompletableSubscriber(onError, onComplete);
+        subscribe(s);
+        return s;
     }
     
     /**
      * Subscribes a non-backpressure NbpSubscriberto this Completable instance which
      * will receive only an onError or onComplete event.
+     * @param <T> the Observer's value type
      * @param s the NbpSubscriber instance, not null
      * @throws NullPointerException if s is null
      */
     @SchedulerSupport(SchedulerKind.NONE)
-    public final void subscribe(final Observer<?> s) {
+    public final <T> void subscribe(final Observer<? super T> s) {
         Objects.requireNonNull(s, "s is null");
-        try {
-            // TODO plugin wrapping the subscriber
-            
-            subscribe(new CompletableSubscriber() {
-                @Override
-                public void onComplete() {
-                    s.onComplete();
-                }
-                
-                @Override
-                public void onError(Throwable e) {
-                    s.onError(e);
-                }
-                
-                @Override
-                public void onSubscribe(Disposable d) {
-                    s.onSubscribe(d);
-                }
-            });
-            
-        } catch (NullPointerException ex) {
-            throw ex;
-        } catch (Throwable ex) {
-            RxJavaPlugins.onError(ex);
-            throw toNpe(ex);
-        }
+        
+        ObserverCompletableSubscriber<T> os = new ObserverCompletableSubscriber<T>(s);
+        subscribe(os);
     }
     
     /**
@@ -1144,29 +1096,9 @@ public abstract class Completable implements CompletableConsumable {
     public final Disposable subscribe(final Runnable onComplete) {
         Objects.requireNonNull(onComplete, "onComplete is null");
         
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-        subscribe(new CompletableSubscriber() {
-            @Override
-            public void onComplete() {
-                try {
-                    onComplete.run();
-                } catch (Throwable e) {
-                    RxJavaPlugins.onError(e);
-                }
-            }
-            
-            @Override
-            public void onError(Throwable e) {
-                RxJavaPlugins.onError(e);
-            }
-            
-            @Override
-            public void onSubscribe(Disposable d) {
-                mad.set(d);
-            }
-        });
-        
-        return mad;
+        CallbackCompletableSubscriber s = new CallbackCompletableSubscriber(onComplete);
+        subscribe(s);
+        return s;
     }
 
     /**
@@ -1179,37 +1111,8 @@ public abstract class Completable implements CompletableConsumable {
     @SchedulerSupport(SchedulerKind.NONE)
     public final <T> void subscribe(Subscriber<T> s) {
         Objects.requireNonNull(s, "s is null");
-        try {
-            final Subscriber<?> sw = RxJavaPlugins.onSubscribe(s);
-            
-            if (sw == null) {
-                throw new NullPointerException("The RxJavaPlugins.onSubscribe returned a null Subscriber");
-            }
-            
-            subscribe(new CompletableSubscriber() {
-                @Override
-                public void onComplete() {
-                    sw.onComplete();
-                }
-                
-                @Override
-                public void onError(Throwable e) {
-                    sw.onError(e);
-                }
-                
-                @Override
-                public void onSubscribe(Disposable d) {
-                    DisposableSubscription ds = new DisposableSubscription(d);
-                    sw.onSubscribe(ds);
-                }
-            });
-            
-        } catch (NullPointerException ex) {
-            throw ex;
-        } catch (Throwable ex) {
-            RxJavaPlugins.onError(ex);
-            throw toNpe(ex);
-        }
+        SubscriberCompletableSubscriber<T> os = new SubscriberCompletableSubscriber<T>(s);
+        subscribe(os);
     }
 
     /**
@@ -1223,18 +1126,7 @@ public abstract class Completable implements CompletableConsumable {
     public final Completable subscribeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         
-        return create(new CompletableConsumable() {
-            @Override
-            public void subscribe(final CompletableSubscriber s) {
-                // FIXME cancellation of this schedule
-                scheduler.scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        Completable.this.subscribe(s);
-                    }
-                });
-            }
-        });
+        return new CompletableSubscribeOn(this, scheduler);
     }
 
     /**
@@ -1313,7 +1205,7 @@ public abstract class Completable implements CompletableConsumable {
     public final Completable timeout0(long timeout, TimeUnit unit, Scheduler scheduler, CompletableConsumable other) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new CompletableOnSubscribeTimeout(this, timeout, unit, scheduler, other));
+        return new CompletableTimeout(this, timeout, unit, scheduler, other);
     }
     
     /**
@@ -1336,12 +1228,7 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerKind.NONE)
     public final <T> Flowable<T> toFlowable() {
-        return Flowable.create(new Publisher<T>() {
-            @Override
-            public void subscribe(Subscriber<? super T> s) {
-                Completable.this.subscribe(s);
-            }
-        });
+        return new CompletableToFlowable<T>(this);
     }
     
     /**
@@ -1352,12 +1239,7 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerKind.NONE)
     public final <T> Observable<T> toObservable() {
-        return Observable.create(new ObservableConsumable<T>() {
-            @Override
-            public void subscribe(Observer<? super T> s) {
-                Completable.this.subscribe(s);
-            }
-        });
+        return new CompletableToObservable<T>(this);
     }
     
     /**
@@ -1371,42 +1253,7 @@ public abstract class Completable implements CompletableConsumable {
     @SchedulerSupport(SchedulerKind.NONE)
     public final <T> Single<T> toSingle(final Supplier<? extends T> completionValueSupplier) {
         Objects.requireNonNull(completionValueSupplier, "completionValueSupplier is null");
-        return Single.create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                Completable.this.subscribe(new CompletableSubscriber() {
-
-                    @Override
-                    public void onComplete() {
-                        T v;
-
-                        try {
-                            v = completionValueSupplier.get();
-                        } catch (Throwable e) {
-                            s.onError(e);
-                            return;
-                        }
-                        
-                        if (v == null) {
-                            s.onError(new NullPointerException("The value supplied is null"));
-                        } else {
-                            s.onSuccess(v);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        s.onSubscribe(d);
-                    }
-                    
-                });
-            }
-        });
+        return new CompletableToSingle<T>(this, completionValueSupplier, null);
     }
     
     /**
@@ -1420,12 +1267,7 @@ public abstract class Completable implements CompletableConsumable {
     @SchedulerSupport(SchedulerKind.NONE)
     public final <T> Single<T> toSingleDefault(final T completionValue) {
         Objects.requireNonNull(completionValue, "completionValue is null");
-        return toSingle(new Supplier<T>() {
-            @Override
-            public T get() {
-                return completionValue;
-            }
-        });
+        return new CompletableToSingle<T>(this, null, completionValue);
     }
     
     /**
@@ -1438,38 +1280,6 @@ public abstract class Completable implements CompletableConsumable {
     @SchedulerSupport(SchedulerKind.CUSTOM)
     public final Completable unsubscribeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new CompletableConsumable() {
-            @Override
-            public void subscribe(final CompletableSubscriber s) {
-                Completable.this.subscribe(new CompletableSubscriber() {
-
-                    @Override
-                    public void onComplete() {
-                        s.onComplete();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-
-                    @Override
-                    public void onSubscribe(final Disposable d) {
-                        s.onSubscribe(new Disposable() {
-                            @Override
-                            public void dispose() {
-                                scheduler.scheduleDirect(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        d.dispose();
-                                    }
-                                });
-                            }
-                        });
-                    }
-                    
-                });
-            }
-        });
+        return new CompletableUnsubscribeOn(this, scheduler);
     }
 }

@@ -19,8 +19,8 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscArrayQueue;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observables.ConnectableObservable;
 
@@ -226,11 +226,6 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
         
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         public PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
             this.queue = new SpscArrayQueue<Object>(bufferSize);
             
@@ -247,13 +242,7 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
                 if (ps != TERMINATED) {
                     current.compareAndSet(PublishSubscriber.this, null);
                     
-                    Disposable a = s.get();
-                    if (a != CANCELLED) {
-                        a = s.getAndSet(CANCELLED);
-                        if (a != CANCELLED && a != null) {
-                            a.dispose();
-                        }
-                    }
+                    DisposableHelper.dispose(s);
                 }
             }
         }
@@ -264,13 +253,7 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (!this.s.compareAndSet(null, s)) {
-                s.dispose();
-                if (this.s.get() != CANCELLED) {
-                    SubscriptionHelper.reportSubscriptionSet();
-                }
-                return;
-            }
+            DisposableHelper.setOnce(this.s, s);
         }
         
         @Override

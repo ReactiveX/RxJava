@@ -21,6 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -59,11 +60,6 @@ public final class PublisherIntervalSource implements Publisher<Long> {
         
         volatile boolean cancelled;
         
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
         
         public IntervalSubscriber(Subscriber<? super Long> actual) {
@@ -88,13 +84,7 @@ public final class PublisherIntervalSource implements Publisher<Long> {
         }
         
         void disposeResource() {
-            Disposable d = resource.get();
-            if (d != DISPOSED) {
-                d = resource.getAndSet(DISPOSED);
-                if (d != DISPOSED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(resource);
         }
         
         @Override
@@ -119,20 +109,7 @@ public final class PublisherIntervalSource implements Publisher<Long> {
         }
         
         public void setResource(Disposable d) {
-            for (;;) {
-                Disposable current = resource.get();
-                if (current == DISPOSED) {
-                    d.dispose();
-                    return;
-                }
-                if (current != null) {
-                    RxJavaPlugins.onError(new IllegalStateException("Resource already set!"));
-                    return;
-                }
-                if (resource.compareAndSet(null, d)) {
-                    return;
-                }
-            }
+            DisposableHelper.setOnce(resource, d);
         }
     }
 }

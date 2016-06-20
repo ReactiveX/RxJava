@@ -22,8 +22,8 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.*;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.Pow2;
 
 public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
@@ -97,11 +97,10 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
             }
-            this.s = s;
-            actual.onSubscribe(this);
         }
         
         @Override
@@ -512,24 +511,13 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         volatile boolean done;
         volatile Queue<U> queue;
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         public InnerSubscriber(MergeSubscriber<T, U> parent, long id) {
             this.id = id;
             this.parent = parent;
         }
         @Override
         public void onSubscribe(Disposable s) {
-            if (!compareAndSet(null, s)) {
-                s.dispose();
-                if (get() != CANCELLED) {
-                    SubscriptionHelper.reportDisposableSet();
-                }
-                return;
-            }
+            DisposableHelper.setOnce(this, s);
         }
         @Override
         public void onNext(U t) {
@@ -549,13 +537,7 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         
         @Override
         public void dispose() {
-            Disposable s = get();
-            if (s != CANCELLED) {
-                s = getAndSet(CANCELLED);
-                if (s != CANCELLED && s != null) {
-                    s.dispose();
-                }
-            }
+            DisposableHelper.dispose(this);
         }
     }
     

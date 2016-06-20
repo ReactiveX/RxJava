@@ -19,8 +19,8 @@ import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -66,10 +66,9 @@ public final class NbpOperatorConcatMap<T, U> implements NbpOperator<U, T> {
         }
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
             }
-            this.s = s;
         }
         @Override
         public void onNext(T t) {

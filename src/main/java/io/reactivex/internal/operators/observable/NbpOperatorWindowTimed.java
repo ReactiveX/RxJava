@@ -24,9 +24,9 @@ import io.reactivex.Observer;
 import io.reactivex.Scheduler;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.NbpQueueDrainSubscriber;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.subjects.UnicastSubject;
@@ -106,25 +106,24 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            
-            window = UnicastSubject.<T>create(bufferSize);
-            
-            Observer<? super Observable<T>> a = actual;
-            a.onSubscribe(this);
-            
-            a.onNext(window);
-            
-            if (!cancelled) {
-                Disposable d = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
-                if (!timer.compareAndSet(null, d)) {
-                    d.dispose();
-                    return;
-                }
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
                 
+                window = UnicastSubject.<T>create(bufferSize);
+                
+                Observer<? super Observable<T>> a = actual;
+                a.onSubscribe(this);
+                
+                a.onNext(window);
+                
+                if (!cancelled) {
+                    Disposable d = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
+                    if (!timer.compareAndSet(null, d)) {
+                        d.dispose();
+                        return;
+                    }
+                    
+                }
             }
         }
         
@@ -312,38 +311,36 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            
-            this.s = s;
-            
-            Observer<? super Observable<T>> a = actual;
-            
-            a.onSubscribe(this);
-            
-            if (cancelled) {
-                return;
-            }
-            
-            UnicastSubject<T> w = UnicastSubject.create(bufferSize);
-            window = w;
-            
-            a.onNext(w);
-            
-            Disposable d;
-            ConsumerIndexHolder consumerIndexHolder = new ConsumerIndexHolder(producerIndex, this);
-            if (restartTimerOnMaxSize) {
-                Scheduler.Worker sw = scheduler.createWorker();
-                sw.schedulePeriodically(consumerIndexHolder, timespan, timespan, unit);
-                d = sw;
-            } else {
-                d = scheduler.schedulePeriodicallyDirect(consumerIndexHolder, timespan, timespan, unit);
-            }
-            
-            if (!timer.compareAndSet(null, d)) {
-                d.dispose();
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                Observer<? super Observable<T>> a = actual;
+                
+                a.onSubscribe(this);
+                
+                if (cancelled) {
+                    return;
+                }
+                
+                UnicastSubject<T> w = UnicastSubject.create(bufferSize);
+                window = w;
+                
+                a.onNext(w);
+                
+                Disposable d;
+                ConsumerIndexHolder consumerIndexHolder = new ConsumerIndexHolder(producerIndex, this);
+                if (restartTimerOnMaxSize) {
+                    Scheduler.Worker sw = scheduler.createWorker();
+                    sw.schedulePeriodically(consumerIndexHolder, timespan, timespan, unit);
+                    d = sw;
+                } else {
+                    d = scheduler.schedulePeriodicallyDirect(consumerIndexHolder, timespan, timespan, unit);
+                }
+                
+                if (!timer.compareAndSet(null, d)) {
+                    d.dispose();
+                    return;
+                }
             }
         }
         
@@ -583,30 +580,29 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            
-            this.s = s;
-            
-            actual.onSubscribe(this);
-            
-            if (cancelled) {
-                return;
-            }
-            
-            final UnicastSubject<T> w = UnicastSubject.create(bufferSize);
-            windows.add(w);
-            
-            actual.onNext(w);
-            worker.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    complete(w);
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                actual.onSubscribe(this);
+                
+                if (cancelled) {
+                    return;
                 }
-            }, timespan, unit);
+                
+                final UnicastSubject<T> w = UnicastSubject.create(bufferSize);
+                windows.add(w);
+                
+                actual.onNext(w);
+                worker.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        complete(w);
+                    }
+                }, timespan, unit);
+                
+                worker.schedulePeriodically(this, timeskip, timeskip, unit);
+            }
             
-            worker.schedulePeriodically(this, timeskip, timeskip, unit);
         }
         
         @Override

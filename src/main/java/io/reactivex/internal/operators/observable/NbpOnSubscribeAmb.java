@@ -17,8 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOnSubscribeAmb<T> implements ObservableConsumable<T> {
@@ -144,13 +143,7 @@ public final class NbpOnSubscribeAmb<T> implements ObservableConsumable<T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (!compareAndSet(null, s)) {
-                s.dispose();
-                if (get() != CANCELLED) {
-                    SubscriptionHelper.reportDisposableSet();
-                }
-                return;
-            }
+            DisposableHelper.setOnce(this, s);
         }
         
         @Override

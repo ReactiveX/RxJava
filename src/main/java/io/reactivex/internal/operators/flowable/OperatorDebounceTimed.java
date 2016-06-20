@@ -22,6 +22,7 @@ import io.reactivex.Flowable.Operator;
 import io.reactivex.Scheduler;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -189,11 +190,6 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
         /** */
         private static final long serialVersionUID = 6812032969491025141L;
 
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         final T value;
         final long idx;
         final DebounceTimedSubscriber<T> parent;
@@ -220,26 +216,11 @@ public final class OperatorDebounceTimed<T> implements Operator<T, T> {
         
         @Override
         public void dispose() {
-            Disposable d = get();
-            if (d != DISPOSED) {
-                d = getAndSet(DISPOSED);
-                if (d != DISPOSED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(this);
         }
         
         public void setResource(Disposable d) {
-            for (;;) {
-                Disposable a = get();
-                if (a == DISPOSED) {
-                    d.dispose();
-                    return;
-                }
-                if (compareAndSet(a, d)) {
-                    return;
-                }
-            }
+            DisposableHelper.replace(this, d);
         }
     }
 }

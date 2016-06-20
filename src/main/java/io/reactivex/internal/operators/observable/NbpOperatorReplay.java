@@ -22,8 +22,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.schedulers.Timed;
@@ -425,11 +424,10 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
         
         @Override
         public void onSubscribe(Disposable p) {
-            if (SubscriptionHelper.validateDisposable(this.subscription, p)) {
-                return;
+            if (DisposableHelper.validate(this.subscription, p)) {
+                subscription = p;
+                replay();
             }
-            subscription = p;
-            replay();
         }
         
         @Override

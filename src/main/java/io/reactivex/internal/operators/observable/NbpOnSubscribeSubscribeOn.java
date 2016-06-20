@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class NbpOnSubscribeSubscribeOn<T> implements ObservableConsumable<T> {
     final Observable<? extends T> source;
@@ -58,12 +58,11 @@ public final class NbpOnSubscribeSubscribeOn<T> implements ObservableConsumable<
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                lazySet(Thread.currentThread());
+                actual.onSubscribe(this);
             }
-            this.s = s;
-            lazySet(Thread.currentThread());
-            actual.onSubscribe(this);
         }
         
         @Override

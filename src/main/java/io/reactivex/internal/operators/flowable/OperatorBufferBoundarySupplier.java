@@ -21,6 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable.Operator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Supplier;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.*;
@@ -51,11 +52,6 @@ public final class OperatorBufferBoundarySupplier<T, U extends Collection<? supe
         Subscription s;
         
         final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
-        
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
         
         U buffer;
         
@@ -177,13 +173,7 @@ public final class OperatorBufferBoundarySupplier<T, U extends Collection<? supe
         }
         
         void disposeOther() {
-            Disposable d = other.get();
-            if (d != DISPOSED) {
-                d = other.getAndSet(DISPOSED);
-                if (d != DISPOSED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(other);
         }
         
         void next() {

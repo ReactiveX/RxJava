@@ -17,7 +17,7 @@ import io.reactivex.Observable.NbpOperator;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class NbpOperatorScan<T> implements NbpOperator<T, T> {
     final BiFunction<T, T, T> accumulator;
@@ -45,11 +45,10 @@ public final class NbpOperatorScan<T> implements NbpOperator<T, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(s);
             }
-            this.s = s;
-            actual.onSubscribe(s);
         }
         
         @Override

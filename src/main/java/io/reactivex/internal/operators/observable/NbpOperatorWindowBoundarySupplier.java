@@ -20,9 +20,9 @@ import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Supplier;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -74,46 +74,45 @@ public final class NbpOperatorWindowBoundarySupplier<T, B> implements NbpOperato
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            
-            Observer<? super Observable<T>> a = actual;
-            a.onSubscribe(this);
-            
-            if (cancelled) {
-                return;
-            }
-            
-            ObservableConsumable<B> p;
-            
-            try {
-                p = other.get();
-            } catch (Throwable e) {
-                s.dispose();
-                a.onError(e);
-                return;
-            }
-            
-            if (p == null) {
-                s.dispose();
-                a.onError(new NullPointerException("The first window NbpObservable supplied is null"));
-                return;
-            }
-            
-            UnicastSubject<T> w = UnicastSubject.create(bufferSize);
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                Observer<? super Observable<T>> a = actual;
+                a.onSubscribe(this);
+                
+                if (cancelled) {
+                    return;
+                }
+                
+                ObservableConsumable<B> p;
+                
+                try {
+                    p = other.get();
+                } catch (Throwable e) {
+                    s.dispose();
+                    a.onError(e);
+                    return;
+                }
+                
+                if (p == null) {
+                    s.dispose();
+                    a.onError(new NullPointerException("The first window NbpObservable supplied is null"));
+                    return;
+                }
+                
+                UnicastSubject<T> w = UnicastSubject.create(bufferSize);
 
-            window = w;
+                window = w;
 
-            a.onNext(w);
-            
-            WindowBoundaryInnerSubscriber<T, B> inner = new WindowBoundaryInnerSubscriber<T, B>(this);
-            
-            if (boundary.compareAndSet(null, inner)) {
-                windows.getAndIncrement();
-                p.subscribe(inner);
-                return;
+                a.onNext(w);
+                
+                WindowBoundaryInnerSubscriber<T, B> inner = new WindowBoundaryInnerSubscriber<T, B>(this);
+                
+                if (boundary.compareAndSet(null, inner)) {
+                    windows.getAndIncrement();
+                    p.subscribe(inner);
+                    return;
+                }
             }
         }
         

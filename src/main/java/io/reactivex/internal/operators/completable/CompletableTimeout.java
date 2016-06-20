@@ -20,7 +20,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class CompletableOnSubscribeTimeout implements CompletableConsumable {
+public final class CompletableTimeout extends Completable {
     
     final CompletableConsumable source;
     final long timeout;
@@ -28,7 +28,7 @@ public final class CompletableOnSubscribeTimeout implements CompletableConsumabl
     final Scheduler scheduler;
     final CompletableConsumable other;
 
-    public CompletableOnSubscribeTimeout(CompletableConsumable source, long timeout, 
+    public CompletableTimeout(CompletableConsumable source, long timeout, 
             TimeUnit unit, Scheduler scheduler, CompletableConsumable other) {
         this.source = source;
         this.timeout = timeout;
@@ -38,7 +38,7 @@ public final class CompletableOnSubscribeTimeout implements CompletableConsumabl
     }
 
     @Override
-    public void subscribe(final CompletableSubscriber s) {
+    public void subscribeActual(final CompletableSubscriber s) {
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
         

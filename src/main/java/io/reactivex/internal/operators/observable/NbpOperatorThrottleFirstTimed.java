@@ -20,7 +20,7 @@ import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -85,12 +85,10 @@ public final class NbpOperatorThrottleFirstTimed<T> implements NbpOperator<T, T>
         }
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
             }
-            
-            this.s = s;
-            actual.onSubscribe(this);
         }
         
         @Override

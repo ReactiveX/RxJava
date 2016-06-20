@@ -20,7 +20,7 @@ import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -86,12 +86,10 @@ public final class NbpOperatorDebounceTimed<T> implements NbpOperator<T, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
             }
-            
-            this.s = s;
-            actual.onSubscribe(this);
         }
         
         @Override
@@ -165,11 +163,6 @@ public final class NbpOperatorDebounceTimed<T> implements NbpOperator<T, T> {
         /** */
         private static final long serialVersionUID = 6812032969491025141L;
 
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         final T value;
         final long idx;
         final DebounceTimedSubscriber<T> parent;
@@ -196,26 +189,11 @@ public final class NbpOperatorDebounceTimed<T> implements NbpOperator<T, T> {
         
         @Override
         public void dispose() {
-            Disposable d = get();
-            if (d != DISPOSED) {
-                d = getAndSet(DISPOSED);
-                if (d != DISPOSED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(this);
         }
         
         public void setResource(Disposable d) {
-            for (;;) {
-                Disposable a = get();
-                if (a == DISPOSED) {
-                    d.dispose();
-                    return;
-                }
-                if (compareAndSet(a, d)) {
-                    return;
-                }
-            }
+            DisposableHelper.replace(this, d);
         }
     }
 }

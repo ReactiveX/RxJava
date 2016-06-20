@@ -19,8 +19,7 @@ import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
-import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -84,13 +83,8 @@ public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, 
         }
         @Override
         public void onSubscribe(Disposable s) {
-            if (this.s.compareAndSet(null, s)) {
+            if (DisposableHelper.setOnce(this.s, s)) {
                 actual.onSubscribe(this);
-            } else {
-                s.dispose();
-                if (this.s.get() != CANCELLED) {
-                    SubscriptionHelper.reportDisposableSet();
-                }
             }
         }
         

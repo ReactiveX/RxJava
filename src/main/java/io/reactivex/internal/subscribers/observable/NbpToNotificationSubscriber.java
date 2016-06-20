@@ -16,7 +16,7 @@ package io.reactivex.internal.subscribers.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class NbpToNotificationSubscriber<T> implements Observer<T> {
     final Consumer<? super Try<Optional<Object>>> consumer;
@@ -29,10 +29,9 @@ public final class NbpToNotificationSubscriber<T> implements Observer<T> {
     
     @Override
     public void onSubscribe(Disposable s) {
-        if (SubscriptionHelper.validateDisposable(this.s, s)) {
-            return;
+        if (DisposableHelper.validate(this.s, s)) {
+            this.s = s;
         }
-        this.s = s;
     }
     
     @Override

@@ -23,10 +23,9 @@ import io.reactivex.Scheduler;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Supplier;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.NbpQueueDrainSubscriber;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.SerializedObserver;
 
@@ -106,35 +105,34 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            
-            U b;
-            
-            try {
-                b = bufferSupplier.get();
-            } catch (Throwable e) {
-                dispose();
-                EmptyDisposable.error(e, actual);
-                return;
-            }
-            
-            if (b == null) {
-                dispose();
-                EmptyDisposable.error(new NullPointerException("buffer supplied is null"), actual);
-                return;
-            }
-            
-            buffer = b;
-            
-            actual.onSubscribe(this);
-            
-            if (!cancelled) {
-                Disposable d = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
-                if (!timer.compareAndSet(null, d)) {
-                    d.dispose();
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                U b;
+                
+                try {
+                    b = bufferSupplier.get();
+                } catch (Throwable e) {
+                    dispose();
+                    EmptyDisposable.error(e, actual);
+                    return;
+                }
+                
+                if (b == null) {
+                    dispose();
+                    EmptyDisposable.error(new NullPointerException("buffer supplied is null"), actual);
+                    return;
+                }
+                
+                buffer = b;
+                
+                actual.onSubscribe(this);
+                
+                if (!cancelled) {
+                    Disposable d = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
+                    if (!timer.compareAndSet(null, d)) {
+                        d.dispose();
+                    }
                 }
             }
         }
@@ -273,45 +271,44 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
     
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            
-            final U b;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                final U b;
 
-            try {
-                b = bufferSupplier.get();
-            } catch (Throwable e) {
-                w.dispose();
-                s.dispose();
-                EmptyDisposable.error(e, actual);
-                return;
-            }
-            
-            if (b == null) {
-                w.dispose();
-                s.dispose();
-                EmptyDisposable.error(new NullPointerException("The supplied buffer is null"), actual);
-                return;
-            }
-            
-            buffers.add(b);
-
-            actual.onSubscribe(this);
-            
-            w.schedulePeriodically(this, timeskip, timeskip, unit);
-            
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (BufferSkipBoundedSubscriber.this) {
-                        buffers.remove(b);
-                    }
-                    
-                    fastpathOrderedEmit(b, false, w);
+                try {
+                    b = bufferSupplier.get();
+                } catch (Throwable e) {
+                    w.dispose();
+                    s.dispose();
+                    EmptyDisposable.error(e, actual);
+                    return;
                 }
-            }, timespan, unit);
+                
+                if (b == null) {
+                    w.dispose();
+                    s.dispose();
+                    EmptyDisposable.error(new NullPointerException("The supplied buffer is null"), actual);
+                    return;
+                }
+                
+                buffers.add(b);
+
+                actual.onSubscribe(this);
+                
+                w.schedulePeriodically(this, timeskip, timeskip, unit);
+                
+                w.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (BufferSkipBoundedSubscriber.this) {
+                            buffers.remove(b);
+                        }
+                        
+                        fastpathOrderedEmit(b, false, w);
+                    }
+                }, timespan, unit);
+            }
         }
         
         @Override
@@ -444,34 +441,33 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            
-            U b;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                U b;
 
-            try {
-                b = bufferSupplier.get();
-            } catch (Throwable e) {
-                w.dispose();
-                s.dispose();
-                EmptyDisposable.error(e, actual);
-                return;
-            }
-            
-            if (b == null) {
-                w.dispose();
-                s.dispose();
-                EmptyDisposable.error(new NullPointerException("The supplied buffer is null"), actual);
-                return;
-            }
-            
-            buffer = b;
-            
-            actual.onSubscribe(this);
+                try {
+                    b = bufferSupplier.get();
+                } catch (Throwable e) {
+                    w.dispose();
+                    s.dispose();
+                    EmptyDisposable.error(e, actual);
+                    return;
+                }
+                
+                if (b == null) {
+                    w.dispose();
+                    s.dispose();
+                    EmptyDisposable.error(new NullPointerException("The supplied buffer is null"), actual);
+                    return;
+                }
+                
+                buffer = b;
+                
+                actual.onSubscribe(this);
 
-            timer = w.schedulePeriodically(this, timespan, timespan, unit);
+                timer = w.schedulePeriodically(this, timespan, timespan, unit);
+            }
         }
         
         @Override

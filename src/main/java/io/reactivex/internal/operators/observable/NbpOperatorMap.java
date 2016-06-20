@@ -18,7 +18,7 @@ import io.reactivex.Observable.NbpOperator;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOperatorMap<T, U> implements NbpOperator<U, T> {
@@ -47,11 +47,10 @@ public final class NbpOperatorMap<T, U> implements NbpOperator<U, T> {
         }
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.subscription, s)) {
-                return;
+            if (DisposableHelper.validate(this.subscription, s)) {
+                subscription = s;
+                actual.onSubscribe(s);
             }
-            subscription = s;
-            actual.onSubscribe(s);
         }
         @Override
         public void onNext(T t) {
