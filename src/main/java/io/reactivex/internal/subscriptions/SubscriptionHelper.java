@@ -13,9 +13,12 @@
 
 package io.reactivex.internal.subscriptions;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.reactivestreams.Subscription;
 
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -75,8 +78,89 @@ public enum SubscriptionHelper {
     /**
      * Returns a consumer which calls cancel on the supplied Subscription.
      * @return  a consumer which calls cancel on the supplied Subscription
+     * @deprecated use different resource management
      */
+    @Deprecated
     public static Consumer<Subscription> consumeAndCancel() {
         return CONSUME_AND_CANCEL;
+    }
+    
+    public static final Subscription CANCELLED = Cancelled.INSTANCE;
+    
+    public static boolean isCancelled(Subscription d) {
+        return d == CANCELLED;
+    }
+    
+    public static boolean set(AtomicReference<Subscription> field, Subscription d) {
+        for (;;) {
+            Subscription current = field.get();
+            if (current == CANCELLED) {
+                if (d != null) {
+                    d.cancel();
+                }
+                return false;
+            }
+            if (field.compareAndSet(current, d)) {
+                if (current != null) {
+                    current.cancel();
+                }
+                return true;
+            }
+        }
+    }
+    
+    public static boolean setOnce(AtomicReference<Subscription> field, Subscription d) {
+        Objects.requireNonNull(d, "d is null");
+        if (!field.compareAndSet(null, d)) {
+            d.cancel();
+            if (field.get() != CANCELLED) {
+                reportSubscriptionSet();
+            }
+            return false;
+        }
+        return true;
+    }
+    
+    public static boolean replace(AtomicReference<Subscription> field, Subscription d) {
+        for (;;) {
+            Subscription current = field.get();
+            if (current == CANCELLED) {
+                if (d != null) {
+                    d.cancel();
+                }
+                return false;
+            }
+            if (field.compareAndSet(current, d)) {
+                return true;
+            }
+        }
+    }
+    
+    public static boolean dispose(AtomicReference<Subscription> field) {
+        Subscription current = field.get();
+        if (current != CANCELLED) {
+            current = field.getAndSet(CANCELLED);
+            if (current != null && current != CANCELLED) {
+                current.cancel();
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    enum Cancelled implements Subscription {
+        INSTANCE
+        ;
+
+        @Override
+        public void request(long n) {
+            // deliberately ignored
+        }
+
+        @Override
+        public void cancel() {
+         // deliberately ignored
+        }
+        
     }
 }

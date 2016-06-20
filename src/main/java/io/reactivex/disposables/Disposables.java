@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Objects;
 
 /**
@@ -65,14 +66,8 @@ public final class Disposables {
         return EMPTY;
     }
 
-    // TODO there is no way to distinguish a disposed and non-disposed resource
-    static final Disposable DISPOSED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
-    
     public static Disposable disposed() {
-        return DISPOSED;
+        return DisposableHelper.DISPOSED;
     }
     
     public static CompositeDisposable from(Disposable... resources) {
@@ -175,7 +170,9 @@ public final class Disposables {
     /**
      * Returns a consumer that calls dispose on the received Disposable.
      * @return the consumer that calls dispose on the received Disposable.
+     * @deprecated that generic resource management will be removed
      */
+    @Deprecated
     public static Consumer<Disposable> consumeAndDispose() {
         return DISPOSER;
     }

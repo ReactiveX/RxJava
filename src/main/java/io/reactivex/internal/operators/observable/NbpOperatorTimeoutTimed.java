@@ -21,7 +21,7 @@ import io.reactivex.Observable.NbpOperator;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.subscribers.flowable.NbpFullArbiterSubscriber;
+import io.reactivex.internal.subscribers.observable.NbpFullArbiterSubscriber;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 

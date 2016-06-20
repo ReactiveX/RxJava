@@ -23,6 +23,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
+import io.reactivex.internal.subscribers.flowable.SubscriberResourceWrapper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;

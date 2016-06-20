@@ -317,15 +317,15 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
     }
     
     public Iterable<T> mostRecent(T initialValue) {
-        return BlockingOperatorMostRecent.mostRecent(o, initialValue);
+        return BlockingFlowableMostRecent.mostRecent(o, initialValue);
     }
     
     public Iterable<T> next() {
-        return BlockingOperatorNext.next(o);
+        return BlockingFlowableNext.next(o);
     }
     
     public Iterable<T> latest() {
-        return BlockingOperatorLatest.latest(o);
+        return BlockingFlowableLatest.latest(o);
     }
     
     public Future<T> toFuture() {

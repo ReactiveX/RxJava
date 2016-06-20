@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static io.reactivex.internal.operators.flowable.BlockingOperatorMostRecent.mostRecent;
+import static io.reactivex.internal.operators.flowable.BlockingFlowableMostRecent.mostRecent;
 import static org.junit.Assert.*;
 
 import java.util.Iterator;
