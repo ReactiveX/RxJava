@@ -20,15 +20,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 
-public final class CompletableOnSubscribeMergeDelayErrorArray implements CompletableConsumable {
+public final class CompletableMergeDelayErrorArray extends Completable {
     final CompletableConsumable[] sources;
     
-    public CompletableOnSubscribeMergeDelayErrorArray(CompletableConsumable[] sources) {
+    public CompletableMergeDelayErrorArray(CompletableConsumable[] sources) {
         this.sources = sources;
     }
     
     @Override
-    public void subscribe(final CompletableSubscriber s) {
+    public void subscribeActual(final CompletableSubscriber s) {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicInteger wip = new AtomicInteger(sources.length + 1);
         
@@ -69,7 +69,7 @@ public final class CompletableOnSubscribeMergeDelayErrorArray implements Complet
                         if (q.isEmpty()) {
                             s.onComplete();
                         } else {
-                            s.onError(CompletableOnSubscribeMerge.collectErrors(q));
+                            s.onError(CompletableMerge.collectErrors(q));
                         }
                     }
                 }
@@ -81,7 +81,7 @@ public final class CompletableOnSubscribeMergeDelayErrorArray implements Complet
             if (q.isEmpty()) {
                 s.onComplete();
             } else {
-                s.onError(CompletableOnSubscribeMerge.collectErrors(q));
+                s.onError(CompletableMerge.collectErrors(q));
             }
         }
         

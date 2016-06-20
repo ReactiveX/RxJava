@@ -19,15 +19,15 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class CompletableOnSubscribeMergeArray implements CompletableConsumable {
+public final class CompletableMergeArray extends Completable {
     final CompletableConsumable[] sources;
     
-    public CompletableOnSubscribeMergeArray(CompletableConsumable[] sources) {
+    public CompletableMergeArray(CompletableConsumable[] sources) {
         this.sources = sources;
     }
     
     @Override
-    public void subscribe(final CompletableSubscriber s) {
+    public void subscribeActual(final CompletableSubscriber s) {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicInteger wip = new AtomicInteger(sources.length + 1);
         final AtomicBoolean once = new AtomicBoolean();

@@ -26,7 +26,9 @@ import io.reactivex.functions.Consumer;
  * and should be used by internal means only.
  * 
  * @param <T> the resource tpye
+ * @deprecated Use more type-specific and inlined resource management
  */
+@Deprecated
 public final class ArrayCompositeResource<T> extends AtomicReferenceArray<Object> implements Disposable {
     /** */
     private static final long serialVersionUID = 2746389416410565408L;

@@ -575,12 +575,12 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void fromNbpObservableNull() {
-        Completable.fromNbpObservable(null);
+        Completable.fromObservable(null);
     }
     
     @Test(timeout = 1000)
     public void fromNbpObservableEmpty() {
-        Completable c = Completable.fromNbpObservable(Observable.empty());
+        Completable c = Completable.fromObservable(Observable.empty());
         
         c.await();
     }
@@ -588,7 +588,7 @@ public class CompletableTest {
     @Test(timeout = 5000)
     public void fromNbpObservableSome() {
         for (int n = 1; n < 10000; n *= 10) {
-            Completable c = Completable.fromNbpObservable(Observable.range(1, n));
+            Completable c = Completable.fromObservable(Observable.range(1, n));
             
             c.await();
         }
@@ -596,7 +596,7 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void fromNbpObservableError() {
-        Completable c = Completable.fromNbpObservable(Observable.error(new Supplier<Throwable>() {
+        Completable c = Completable.fromObservable(Observable.error(new Supplier<Throwable>() {
             @Override
             public Throwable get() {
                 return new TestException();
@@ -2859,12 +2859,12 @@ public class CompletableTest {
 
     @Test(timeout = 1000)
     public void toNbpObservableNormal() {
-        normal.completable.toNbpObservable().toBlocking().forEach(Functions.emptyConsumer());
+        normal.completable.toObservable().toBlocking().forEach(Functions.emptyConsumer());
     }
     
     @Test(timeout = 1000, expected = TestException.class)
     public void toNbpObservableError() {
-        error.completable.toNbpObservable().toBlocking().forEach(Functions.emptyConsumer());
+        error.completable.toObservable().toBlocking().forEach(Functions.emptyConsumer());
     }
     
     @Test(timeout = 1000)

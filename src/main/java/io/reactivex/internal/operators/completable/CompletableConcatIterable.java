@@ -13,21 +13,40 @@
 
 package io.reactivex.internal.operators.completable;
 
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.internal.disposables.EmptyDisposable;
 
-public final class CompletableOnSubscribeConcatArray implements CompletableConsumable {
-    final CompletableConsumable[] sources;
+public final class CompletableConcatIterable extends Completable {
+    final Iterable<? extends CompletableConsumable> sources;
     
-    public CompletableOnSubscribeConcatArray(CompletableConsumable[] sources) {
+    public CompletableConcatIterable(Iterable<? extends CompletableConsumable> sources) {
         this.sources = sources;
     }
     
     @Override
-    public void subscribe(CompletableSubscriber s) {
-        ConcatInnerSubscriber inner = new ConcatInnerSubscriber(s, sources);
+    public void subscribeActual(CompletableSubscriber s) {
+        
+        Iterator<? extends CompletableConsumable> it;
+        
+        try {
+            it = sources.iterator();
+        } catch (Throwable e) {
+            s.onSubscribe(EmptyDisposable.INSTANCE);
+            s.onError(e);
+            return;
+        }
+        
+        if (it == null) {
+            s.onSubscribe(EmptyDisposable.INSTANCE);
+            s.onError(new NullPointerException("The iterator returned is null"));
+            return;
+        }
+        
+        ConcatInnerSubscriber inner = new ConcatInnerSubscriber(s, it);
         s.onSubscribe(inner.sd);
         inner.next();
     }
@@ -37,13 +56,13 @@ public final class CompletableOnSubscribeConcatArray implements CompletableConsu
         private static final long serialVersionUID = -7965400327305809232L;
 
         final CompletableSubscriber actual;
-        final CompletableConsumable[] sources;
+        final Iterator<? extends CompletableConsumable> sources;
         
         int index;
         
         final SerialDisposable sd;
         
-        public ConcatInnerSubscriber(CompletableSubscriber actual, CompletableConsumable[] sources) {
+        public ConcatInnerSubscriber(CompletableSubscriber actual, Iterator<? extends CompletableConsumable> sources) {
             this.actual = actual;
             this.sources = sources;
             this.sd = new SerialDisposable();
@@ -73,19 +92,40 @@ public final class CompletableOnSubscribeConcatArray implements CompletableConsu
                 return;
             }
 
-            CompletableConsumable[] a = sources;
+            Iterator<? extends CompletableConsumable> a = sources;
             do {
                 if (sd.isDisposed()) {
                     return;
                 }
                 
-                int idx = index++;
-                if (idx == a.length) {
+                boolean b;
+                try {
+                    b = a.hasNext();
+                } catch (Throwable ex) {
+                    actual.onError(ex);
+                    return;
+                }
+                
+                if (!b) {
                     actual.onComplete();
                     return;
                 }
                 
-                a[idx].subscribe(this);
+                CompletableConsumable c;
+                
+                try {
+                    c = a.next();
+                } catch (Throwable ex) {
+                    actual.onError(ex);
+                    return;
+                }
+                
+                if (c == null) {
+                    actual.onError(new NullPointerException("The completable returned is null"));
+                    return;
+                }
+                
+                c.subscribe(this);
             } while (decrementAndGet() != 0);
         }
     }

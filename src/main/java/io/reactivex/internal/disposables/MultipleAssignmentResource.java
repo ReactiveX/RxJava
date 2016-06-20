@@ -31,7 +31,9 @@ import io.reactivex.internal.util.TerminalAtomicsHelper;
  * and should be used by internal means only.
  * 
  * @param <T> the resource type
+ * @deprecated Use more type-specific and inlined resource management
  */
+@Deprecated
 public final class MultipleAssignmentResource<T> extends AtomicReference<Object> implements Disposable {
     /** */
     private static final long serialVersionUID = 5247635821051810205L;

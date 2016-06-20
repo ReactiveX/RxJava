@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.util;
 
+import io.reactivex.exceptions.*;
+
 public enum Exceptions {
     ;
     /**
@@ -37,6 +39,47 @@ public enum Exceptions {
             throw (Error) t;
         } else {
             throw new RuntimeException(t);
+        }
+    }
+    
+    /**
+     * Throws a particular {@code Throwable} only if it belongs to a set of "fatal" error varieties. These
+     * varieties are as follows:
+     * <ul>
+     * <li>{@link OnErrorNotImplementedException}</li>
+     * <li>{@link OnErrorFailedException}</li>
+     * <li>{@link OnCompleteFailedException}</li>
+     * <li>{@code StackOverflowError}</li>
+     * <li>{@code VirtualMachineError}</li>
+     * <li>{@code ThreadDeath}</li>
+     * <li>{@code LinkageError}</li>
+     * </ul>
+     * This can be useful if you are writing an operator that calls user-supplied code, and you want to
+     * notify subscribers of errors encountered in that code by calling their {@code onError} methods, but only
+     * if the errors are not so catastrophic that such a call would be futile, in which case you simply want to
+     * rethrow the error.
+     *
+     * @param t
+     *         the {@code Throwable} to test and perhaps throw
+     * @see <a href="https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495">RxJava: StackOverflowError is swallowed (Issue #748)</a>
+     */
+    public static void throwIfFatal(Throwable t) {
+        if (t instanceof OnErrorNotImplementedException) {
+            throw (OnErrorNotImplementedException) t;
+        } else if (t instanceof OnErrorFailedException) {
+            throw (OnErrorFailedException) t;
+        } else if (t instanceof OnCompleteFailedException) {
+            throw (OnCompleteFailedException) t;
+        }
+        // values here derived from https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495
+        else if (t instanceof StackOverflowError) {
+            throw (StackOverflowError) t;
+        } else if (t instanceof VirtualMachineError) {
+            throw (VirtualMachineError) t;
+        } else if (t instanceof ThreadDeath) {
+            throw (ThreadDeath) t;
+        } else if (t instanceof LinkageError) {
+            throw (LinkageError) t;
         }
     }
 
