@@ -15,18 +15,15 @@ package io.reactivex;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.disposables.*;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.operators.single.*;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.subscribers.single.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
@@ -55,101 +52,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     public static <T> Single<T> amb(final Iterable<? extends SingleConsumable<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                final AtomicBoolean once = new AtomicBoolean();
-                final CompositeDisposable set = new CompositeDisposable();
-                s.onSubscribe(set);
-                
-                int c = 0;
-                Iterator<? extends SingleConsumable<? extends T>> iterator;
-                
-                try {
-                    iterator = sources.iterator();
-                } catch (Throwable e) {
-                    s.onError(e);
-                    return;
-                }
-                
-                if (iterator == null) {
-                    s.onError(new NullPointerException("The iterator returned is null"));
-                    return;
-                }
-                for (;;) {
-                    if (once.get()) {
-                        return;
-                    }
-                    
-                    boolean b;
-                    
-                    try {
-                        b = iterator.hasNext();
-                    } catch (Throwable e) {
-                        s.onError(e);
-                        return;
-                    }
-                    
-                    if (once.get()) {
-                        return;
-                    }
-
-                    if (!b) {
-                        break;
-                    }
-                    
-                    SingleConsumable<? extends T> s1;
-
-                    if (once.get()) {
-                        return;
-                    }
-
-                    try {
-                        s1 = iterator.next();
-                    } catch (Throwable e) {
-                        set.dispose();
-                        s.onError(e);
-                        return;
-                    }
-                    
-                    if (s1 == null) {
-                        set.dispose();
-                        s.onError(new NullPointerException("The single source returned by the iterator is null"));
-                        return;
-                    }
-                    
-                    s1.subscribe(new SingleSubscriber<T>() {
-
-                        @Override
-                        public void onSubscribe(Disposable d) {
-                            set.add(d);
-                        }
-
-                        @Override
-                        public void onSuccess(T value) {
-                            if (once.compareAndSet(false, true)) {
-                                s.onSuccess(value);
-                            }
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            if (once.compareAndSet(false, true)) {
-                                s.onError(e);
-                            } else {
-                                RxJavaPlugins.onError(e);
-                            }
-                        }
-                        
-                    });
-                    c++;
-                }
-                
-                if (c == 0 && !set.isDisposed()) {
-                    s.onError(new NoSuchElementException());
-                }
-            }
-        });
+        return new SingleAmbIterable<T>(sources);
     }
     
     @SuppressWarnings("unchecked")
@@ -165,63 +68,14 @@ public abstract class Single<T> implements SingleConsumable<T> {
         if (sources.length == 1) {
             return wrap((SingleConsumable<T>)sources[0]);
         }
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                final AtomicBoolean once = new AtomicBoolean();
-                final CompositeDisposable set = new CompositeDisposable();
-                s.onSubscribe(set);
-                
-                for (SingleConsumable<? extends T> s1 : sources) {
-                    if (once.get()) {
-                        return;
-                    }
-                    
-                    if (s1 == null) {
-                        set.dispose();
-                        Throwable e = new NullPointerException("One of the sources is null");
-                        if (once.compareAndSet(false, true)) {
-                            s.onError(e);
-                        } else {
-                            RxJavaPlugins.onError(e);
-                        }
-                        return;
-                    }
-                    
-                    s1.subscribe(new SingleSubscriber<T>() {
-
-                        @Override
-                        public void onSubscribe(Disposable d) {
-                            set.add(d);
-                        }
-
-                        @Override
-                        public void onSuccess(T value) {
-                            if (once.compareAndSet(false, true)) {
-                                s.onSuccess(value);
-                            }
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            if (once.compareAndSet(false, true)) {
-                                s.onError(e);
-                            } else {
-                                RxJavaPlugins.onError(e);
-                            }
-                        }
-                        
-                    });
-                }
-            }
-        });
+        return new SingleAmbArray<T>(sources);
     }
 
     public static <T> Flowable<T> concat(Iterable<? extends SingleConsumable<? extends T>> sources) {
         return concat(Flowable.fromIterable(sources));
     }
     
-    public static <T> Flowable<T> concat(Flowable<? extends SingleConsumable<? extends T>> sources) {
+    public static <T> Flowable<T> concat(Flowable<? extends SingleConsumable<? extends T>> sources) { // FIXME Publisher
         return sources.concatMap(new Function<SingleConsumable<? extends T>, Publisher<? extends T>>() {
             @Override 
             public Publisher<? extends T> apply(SingleConsumable<? extends T> v){
@@ -354,51 +208,12 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     public static <T> Single<T> defer(final Supplier<? extends SingleConsumable<? extends T>> singleSupplier) {
         Objects.requireNonNull(singleSupplier, "singleSupplier is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(SingleSubscriber<? super T> s) {
-                SingleConsumable<? extends T> next;
-                
-                try {
-                    next = singleSupplier.get();
-                } catch (Throwable e) {
-                    s.onSubscribe(EmptyDisposable.INSTANCE);
-                    s.onError(e);
-                    return;
-                }
-                
-                if (next == null) {
-                    s.onSubscribe(EmptyDisposable.INSTANCE);
-                    s.onError(new NullPointerException("The Single supplied was null"));
-                    return;
-                }
-                
-                next.subscribe(s);
-            }
-        });
+        return new SingleDefer<T>(singleSupplier);
     }
     
     public static <T> Single<T> error(final Supplier<? extends Throwable> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(SingleSubscriber<? super T> s) {
-                Throwable error;
-                
-                try {
-                    error = errorSupplier.get();
-                } catch (Throwable e) {
-                    error = e;
-                }
-                
-                if (error == null) {
-                    error = new NullPointerException();
-                }
-                
-                s.onSubscribe(EmptyDisposable.INSTANCE);
-                s.onError(error);
-            }
-        });
+        return new SingleError<T>(errorSupplier);
     }
     
     public static <T> Single<T> error(final Throwable error) {
@@ -413,22 +228,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     public static <T> Single<T> fromCallable(final Callable<? extends T> callable) {
         Objects.requireNonNull(callable, "callable is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(SingleSubscriber<? super T> s) {
-                s.onSubscribe(EmptyDisposable.INSTANCE);
-                try {
-                    T v = callable.call();
-                    if (v != null) {
-                        s.onSuccess(v);
-                    } else {
-                        s.onError(new NullPointerException());
-                    }
-                } catch (Throwable e) {
-                    s.onError(e);
-                }
-            }
-        });
+        return new SingleFromCallable<T>(callable);
     }
     
     public static <T> Single<T> fromFuture(Future<? extends T> future) {
@@ -449,60 +249,19 @@ public abstract class Single<T> implements SingleConsumable<T> {
 
     public static <T> Single<T> fromPublisher(final Publisher<? extends T> publisher) {
         Objects.requireNonNull(publisher, "publisher is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                publisher.subscribe(new Subscriber<T>() {
-                    T value;
-                    @Override
-                    public void onComplete() {
-                        T v = value;
-                        value = null;
-                        if (v != null) {
-                            s.onSuccess(v);
-                        } else {
-                            s.onError(new NoSuchElementException());
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        value = null;
-                        s.onError(t);
-                    }
-
-                    @Override
-                    public void onNext(T t) {
-                        value = t;
-                    }
-
-                    @Override
-                    public void onSubscribe(Subscription inner) {
-                        s.onSubscribe(Disposables.from(inner));
-                        inner.request(Long.MAX_VALUE);
-                    }
-                    
-                });
-            }
-        });
+        return new SingleFromPublisher<T>(publisher);
     }
 
     public static <T> Single<T> just(final T value) {
         Objects.requireNonNull(value, "value is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(SingleSubscriber<? super T> s) {
-                s.onSubscribe(EmptyDisposable.INSTANCE);
-                s.onSuccess(value);
-            }
-        });
+        return new SingleJust<T>(value);
     }
 
     public static <T> Flowable<T> merge(Iterable<? extends SingleConsumable<? extends T>> sources) {
         return merge(Flowable.fromIterable(sources));
     }
 
-    public static <T> Flowable<T> merge(Flowable<? extends SingleConsumable<? extends T>> sources) {
+    public static <T> Flowable<T> merge(Flowable<? extends SingleConsumable<? extends T>> sources) { // FIXME Publisher
         return sources.flatMap(new Function<SingleConsumable<? extends T>, Publisher<? extends T>>() {
             @Override 
             public Publisher<? extends T> apply(SingleConsumable<? extends T> v){
@@ -514,7 +273,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Single<T> merge(SingleConsumable<? extends SingleConsumable<? extends T>> source) {
         Objects.requireNonNull(source, "source is null");
-        return new SingleOperatorFlatMap<SingleConsumable<? extends T>, T>(source, (Function)Functions.identity());
+        return new SingleFlatMap<SingleConsumable<? extends T>, T>(source, (Function)Functions.identity());
     }
     
     @SuppressWarnings("unchecked")
@@ -633,12 +392,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
         return merge(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
     }
     
-    static final Single<Object> NEVER = create(new SingleConsumable<Object>() {
-        @Override
-        public void subscribe(SingleSubscriber<? super Object> s) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-        }
-    });
+    static final Single<Object> NEVER = new SingleNever<Object>();
     
     @SuppressWarnings("unchecked")
     public static <T> Single<T> never() {
@@ -652,75 +406,13 @@ public abstract class Single<T> implements SingleConsumable<T> {
     public static Single<Long> timer(final long delay, final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new SingleConsumable<Long>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super Long> s) {
-                MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-                
-                s.onSubscribe(mad);
-                
-                mad.set(scheduler.scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        s.onSuccess(0L);
-                    }
-                }, delay, unit));
-            }
-        });
+        return new SingleTimer(delay, unit, scheduler);
     }
     
     public static <T> Single<Boolean> equals(final SingleConsumable<? extends T> first, final SingleConsumable<? extends T> second) {
         Objects.requireNonNull(first, "first is null");
         Objects.requireNonNull(second, "second is null");
-        return create(new SingleConsumable<Boolean>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super Boolean> s) {
-                final AtomicInteger count = new AtomicInteger();
-                final Object[] values = { null, null };
-                
-                final CompositeDisposable set = new CompositeDisposable();
-                s.onSubscribe(set);
-                
-                class InnerSubscriber implements SingleSubscriber<T> {
-                    final int index;
-                    public InnerSubscriber(int index) {
-                        this.index = index;
-                    }
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        set.add(d);
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        values[index] = value;
-                        
-                        if (count.incrementAndGet() == 2) {
-                            s.onSuccess(Objects.equals(values[0], values[1]));
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        for (;;) {
-                            int state = count.get();
-                            if (state >= 2) {
-                                RxJavaPlugins.onError(e);
-                                return;
-                            }
-                            if (count.compareAndSet(state, 2)) {
-                                s.onError(e);
-                                return;
-                            }
-                        }
-                    }
-                    
-                }
-                
-                first.subscribe(new InnerSubscriber(0));
-                second.subscribe(new InnerSubscriber(1));
-            }
-        });
+        return new SingleEquals<T>(first, second);
     }
 
     public static <T, U> Single<T> using(Supplier<U> resourceSupplier, 
@@ -737,99 +429,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
         Objects.requireNonNull(singleFunction, "singleFunction is null");
         Objects.requireNonNull(disposer, "disposer is null");
         
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                final U resource;
-                
-                try {
-                    resource = resourceSupplier.get();
-                } catch (Throwable ex) {
-                    s.onSubscribe(EmptyDisposable.INSTANCE);
-                    s.onError(ex);
-                    return;
-                }
-                
-                SingleConsumable<? extends T> s1;
-                
-                try {
-                    s1 = singleFunction.apply(resource);
-                } catch (Throwable ex) {
-                    s.onSubscribe(EmptyDisposable.INSTANCE);
-                    s.onError(ex);
-                    return;
-                }
-                
-                if (s1 == null) {
-                    s.onSubscribe(EmptyDisposable.INSTANCE);
-                    s.onError(new NullPointerException("The Single supplied by the function was null"));
-                    return;
-                }
-                
-                s1.subscribe(new SingleSubscriber<T>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        if (eager) {
-                            CompositeDisposable set = new CompositeDisposable();
-                            set.add(d);
-                            set.add(new Disposable() {
-                                @Override
-                                public void dispose() {
-                                    try {
-                                        disposer.accept(resource);
-                                    } catch (Throwable e) {
-                                        RxJavaPlugins.onError(e);
-                                    }
-                                }
-                            });
-                        } else {
-                            s.onSubscribe(d);
-                        }
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        if (eager) {
-                            try {
-                                disposer.accept(resource);
-                            } catch (Throwable e) {
-                                s.onError(e);
-                                return;
-                            }
-                        }
-                        s.onSuccess(value);
-                        if (!eager) {
-                            try {
-                                disposer.accept(resource);
-                            } catch (Throwable e) {
-                                RxJavaPlugins.onError(e);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (eager) {
-                            try {
-                                disposer.accept(resource);
-                            } catch (Throwable ex) {
-                                e = new CompositeException(ex, e);
-                            }
-                        }
-                        s.onError(e);
-                        if (!eager) {
-                            try {
-                                disposer.accept(resource);
-                            } catch (Throwable ex) {
-                                RxJavaPlugins.onError(ex);
-                            }
-                        }
-                    }
-                    
-                });
-            }
-        });
+        return new SingleUsing<T, U>(resourceSupplier, singleFunction, disposer, eager);
     }
 
     public static <T, R> Single<R> zip(final Iterable<? extends SingleConsumable<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
@@ -1005,12 +605,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
     }
     
     public final Single<T> asSingle() {
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(SingleSubscriber<? super T> s) {
-                subscribe(s);
-            }
-        });
+        return new SingleHide<T>(this);
     }
     
     public final <R> Single<R> compose(Function<? super Single<T>, ? extends SingleConsumable<R>> convert) {
@@ -1018,112 +613,15 @@ public abstract class Single<T> implements SingleConsumable<T> {
     }
 
     public final Single<T> cache() {
-        final AtomicInteger wip = new AtomicInteger();
-        final AtomicReference<Object> notification = new AtomicReference<Object>();
-        final List<SingleSubscriber<? super T>> subscribers = new ArrayList<SingleSubscriber<? super T>>();
-        
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(SingleSubscriber<? super T> s) {
-                Object o = notification.get();
-                if (o != null) {
-                    s.onSubscribe(EmptyDisposable.INSTANCE);
-                    if (NotificationLite.isError(o)) {
-                        s.onError(NotificationLite.getError(o));
-                    } else {
-                        s.onSuccess(NotificationLite.<T>getValue(o));
-                    }
-                    return;
-                }
-                
-                synchronized (subscribers) {
-                    o = notification.get();
-                    if (o == null) {
-                        subscribers.add(s);
-                    }
-                }
-                if (o != null) {
-                    s.onSubscribe(EmptyDisposable.INSTANCE);
-                    if (NotificationLite.isError(o)) {
-                        s.onError(NotificationLite.getError(o));
-                    } else {
-                        s.onSuccess(NotificationLite.<T>getValue(o));
-                    }
-                    return;
-                }
-                
-                if (wip.getAndIncrement() != 0) {
-                    return;
-                }
-                
-                subscribe(new SingleSubscriber<T>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        notification.set(NotificationLite.next(value));
-                        List<SingleSubscriber<? super T>> list;
-                        synchronized (subscribers) {
-                            list = new ArrayList<SingleSubscriber<? super T>>(subscribers);
-                            subscribers.clear();
-                        }
-                        for (SingleSubscriber<? super T> s1 : list) {
-                            s1.onSuccess(value);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        notification.set(NotificationLite.error(e));
-                        List<SingleSubscriber<? super T>> list;
-                        synchronized (subscribers) {
-                            list = new ArrayList<SingleSubscriber<? super T>>(subscribers);
-                            subscribers.clear();
-                        }
-                        for (SingleSubscriber<? super T> s1 : list) {
-                            s1.onError(e);
-                        }
-                    }
-                    
-                });
-            }
-        });
+        return new SingleCache<T>(this);
     }
     
     public final <U> Single<U> cast(final Class<? extends U> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-        return create(new SingleConsumable<U>() {
+        return map(new Function<T, U>() {
             @Override
-            public void subscribe(final SingleSubscriber<? super U> s) {
-                Single.this.subscribe(new SingleSubscriber<T>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        s.onSubscribe(d);
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        U v;
-                        try {
-                            v = clazz.cast(value);
-                        } catch (ClassCastException ex) {
-                            s.onError(ex);
-                            return;
-                        }
-                        s.onSuccess(v);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-                    
-                });
+            public U apply(T v) {
+                return clazz.cast(v);
             }
         });
     }
@@ -1139,176 +637,32 @@ public abstract class Single<T> implements SingleConsumable<T> {
     public final Single<T> delay(final long time, final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-                s.onSubscribe(mad);
-                subscribe(new SingleSubscriber<T>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        mad.set(d);
-                    }
-
-                    @Override
-                    public void onSuccess(final T value) {
-                        mad.set(scheduler.scheduleDirect(new Runnable() {
-                            @Override
-                            public void run() {
-                                s.onSuccess(value);
-                            }
-                        }, time, unit));
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-                    
-                });
-            }
-        });
+        return new SingleDelay<T>(this, time, unit, scheduler);
     }
     
     public final Single<T> doOnSubscribe(final Consumer<? super Disposable> onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                subscribe(new SingleSubscriber<T>() {
-                    boolean done;
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        try {
-                            onSubscribe.accept(d);
-                        } catch (Throwable ex) {
-                            done = true;
-                            d.dispose();
-                            s.onSubscribe(EmptyDisposable.INSTANCE);
-                            s.onError(ex);
-                            return;
-                        }
-                        
-                        s.onSubscribe(d);
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        if (done) {
-                            return;
-                        }
-                        s.onSuccess(value);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (done) {
-                            RxJavaPlugins.onError(e);
-                            return;
-                        }
-                        s.onError(e);
-                    }
-                    
-                });
-            }
-        });
+        return new SingleDoOnSubscribe<T>(this, onSubscribe);
     }
     
     public final Single<T> doOnSuccess(final Consumer<? super T> onSuccess) {
         Objects.requireNonNull(onSuccess, "onSuccess is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                subscribe(new SingleSubscriber<T>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        s.onSubscribe(d);
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        try {
-                            onSuccess.accept(value);
-                        } catch (Throwable ex) {
-                            s.onError(ex);
-                            return;
-                        }
-                        s.onSuccess(value);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-                    
-                });
-            }
-        });
+        return new SingleDoOnSuccess<T>(this, onSuccess);
     }
     
     public final Single<T> doOnError(final Consumer<? super Throwable> onError) {
         Objects.requireNonNull(onError, "onError is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                subscribe(new SingleSubscriber<T>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        s.onSubscribe(d);
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        s.onSuccess(value);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        try {
-                            onError.accept(e);
-                        } catch (Throwable ex) {
-                            e = new CompositeException(ex, e);
-                        }
-                        s.onError(e);
-                    }
-                    
-                });
-            }
-        });
+        return new SingleDoOnError<T>(this, onError);
     }
     
     public final Single<T> doOnCancel(final Runnable onCancel) {
         Objects.requireNonNull(onCancel, "onCancel is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                subscribe(new SingleSubscriber<T>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        CompositeDisposable set = new CompositeDisposable();
-                        set.add(Disposables.from(onCancel));
-                        set.add(d);
-                        s.onSubscribe(set);
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        s.onSuccess(value);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-                    
-                });
-            }
-        });
+        return new SingleDoOnCancel<T>(this, onCancel);
     }
 
     public final <R> Single<R> flatMap(Function<? super T, ? extends SingleConsumable<? extends R>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return new SingleOperatorFlatMap<T, R>(this, mapper);
+        return new SingleFlatMap<T, R>(this, mapper);
     }
 
     public final <R> Flowable<R> flatMapPublisher(Function<? super T, ? extends Publisher<? extends R>> mapper) {
@@ -1316,68 +670,16 @@ public abstract class Single<T> implements SingleConsumable<T> {
     }
     
     public final T get() {
-        final AtomicReference<T> valueRef = new AtomicReference<T>();
-        final AtomicReference<Throwable> errorRef = new AtomicReference<Throwable>();
-        final CountDownLatch cdl = new CountDownLatch(1);
-        
-        subscribe(new SingleSubscriber<T>() {
-            @Override
-            public void onError(Throwable e) {
-                errorRef.lazySet(e);
-                cdl.countDown();
-            }
-
-            @Override
-            public void onSubscribe(Disposable d) {
-            }
-            @Override
-            public void onSuccess(T value) {
-                valueRef.lazySet(value);
-                cdl.countDown();
-            }
-        });
-        
-        if (cdl.getCount() != 0L) {
-            try {
-                cdl.await();
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-        Throwable e = errorRef.get();
-        if (e != null) {
-            throw Exceptions.propagate(e);
-        }
-        return valueRef.get();
+        return SingleAwait.get(this);
     }
     
     public final <R> Single<R> lift(final SingleOperator<? extends R, ? super T> onLift) {
         Objects.requireNonNull(onLift, "onLift is null");
-        return create(new SingleConsumable<R>() {
-            @Override
-            public void subscribe(SingleSubscriber<? super R> s) {
-                try {
-                    SingleSubscriber<? super T> sr = onLift.apply(s);
-                    
-                    if (sr == null) {
-                        throw new NullPointerException("The onLift returned a null subscriber");
-                    }
-                    // TODO plugin wrapper
-                    Single.this.subscribe(sr);
-                } catch (NullPointerException ex) {
-                    throw ex;
-                } catch (Throwable ex) {
-                    RxJavaPlugins.onError(ex);
-                    NullPointerException npe = new NullPointerException("Not really but can't throw other than NPE");
-                    npe.initCause(ex);
-                    throw npe;
-                }
-            }
-        });
+        return new SingleLift<T, R>(this, onLift);
     }
     
     public final <R> Single<R> map(Function<? super T, ? extends R> mapper) {
-        return lift(new SingleOperatorMap<T, R>(mapper));
+        return new SingleMap<T, R>(this, mapper);
     }
 
     public final Single<Boolean> contains(Object value) {
@@ -1387,29 +689,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
     public final Single<Boolean> contains(final Object value, final BiPredicate<Object, Object> comparer) {
         Objects.requireNonNull(value, "value is null");
         Objects.requireNonNull(comparer, "comparer is null");
-        return create(new SingleConsumable<Boolean>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super Boolean> s) {
-                Single.this.subscribe(new SingleSubscriber<T>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        s.onSubscribe(d);
-                    }
-
-                    @Override
-                    public void onSuccess(T v) {
-                        s.onSuccess(comparer.test(v, value));
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-                    
-                });
-            }
-        });
+        return new SingleContains<T>(this, value, comparer);
     }
     
     public final Flowable<T> mergeWith(SingleConsumable<? extends T> other) {
@@ -1422,159 +702,23 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     public final Single<T> observeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                final CompositeDisposable mad = new CompositeDisposable();
-                s.onSubscribe(mad);
-                
-                Single.this.subscribe(new SingleSubscriber<T>() {
-
-                    @Override
-                    public void onError(final Throwable e) {
-                        mad.add(scheduler.scheduleDirect(new Runnable() {
-                            @Override
-                            public void run() {
-                                s.onError(e);
-                            }
-                        }));
-                    }
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        mad.add(d);
-                    }
-
-                    @Override
-                    public void onSuccess(final T value) {
-                        mad.add(scheduler.scheduleDirect(new Runnable() {
-                            @Override
-                            public void run() {
-                                s.onSuccess(value);
-                            }
-                        }));
-                    }
-                    
-                });
-            }
-        });
+        return new SingleObserveOn<T>(this, scheduler);
     }
 
     public final Single<T> onErrorReturn(final Supplier<? extends T> valueSupplier) {
         Objects.requireNonNull(valueSupplier, "valueSupplier is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                Single.this.subscribe(new SingleSubscriber<T>() {
-
-                    @Override
-                    public void onError(Throwable e) {
-                        T v;
-                        
-                        try {
-                            v = valueSupplier.get();
-                        } catch (Throwable ex) {
-                            s.onError(new CompositeException(ex, e));
-                            return;
-                        }
-                        
-                        if (v == null) {
-                            NullPointerException npe = new NullPointerException("Value supplied was null");
-                            npe.initCause(e);
-                            s.onError(npe);
-                            return;
-                        }
-                        
-                        s.onSuccess(v);
-                    }
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        s.onSubscribe(d);
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        s.onSuccess(value);
-                    }
-                    
-                });
-            }
-        });
+        return new SingleOnErrorReturn<T>(this, valueSupplier, null);
     }
     
     public final Single<T> onErrorReturn(final T value) {
         Objects.requireNonNull(value, "value is null");
-        return onErrorReturn(new Supplier<T>() {
-            @Override
-            public T get() {
-                return value;
-            }
-        });
+        return new SingleOnErrorReturn<T>(this, null, value);
     }
 
     public final Single<T> onErrorResumeNext(
             final Function<? super Throwable, ? extends SingleConsumable<? extends T>> nextFunction) {
         Objects.requireNonNull(nextFunction, "nextFunction is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-                s.onSubscribe(mad);
-                
-                Single.this.subscribe(new SingleSubscriber<T>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        mad.set(d);
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        s.onSuccess(value);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        SingleConsumable<? extends T> next;
-                        
-                        try {
-                            next = nextFunction.apply(e);
-                        } catch (Throwable ex) {
-                            s.onError(new CompositeException(ex, e));
-                            return;
-                        }
-                        
-                        if (next == null) {
-                            NullPointerException npe = new NullPointerException("The next Single supplied was null");
-                            npe.initCause(e);
-                            s.onError(npe);
-                            return;
-                        }
-                        
-                        next.subscribe(new SingleSubscriber<T>() {
-
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                mad.set(d);
-                            }
-
-                            @Override
-                            public void onSuccess(T value) {
-                                s.onSuccess(value);
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                s.onError(e);
-                            }
-                            
-                        });
-                    }
-                    
-                });
-            }
-        });
+        return new SingleResumeNext<T>(this, nextFunction);
     }
     
     public final Flowable<T> repeat() {
@@ -1624,26 +768,9 @@ public abstract class Single<T> implements SingleConsumable<T> {
     public final Disposable subscribe(final BiConsumer<? super T, ? super Throwable> onCallback) {
         Objects.requireNonNull(onCallback, "onCallback is null");
         
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-        
-        subscribe(new SingleSubscriber<T>() {
-            @Override
-            public void onError(Throwable e) {
-                onCallback.accept(null, e);
-            }
-            
-            @Override
-            public void onSubscribe(Disposable d) {
-                mad.set(d);
-            }
-            
-            @Override
-            public void onSuccess(T value) {
-                onCallback.accept(value, null);
-            }
-        });
-        
-        return mad;
+        BiConsumerSingleSubscriber<T> s = new BiConsumerSingleSubscriber<T>(onCallback);
+        subscribe(s);
+        return s;
     }
     
     public final Disposable subscribe(Consumer<? super T> onSuccess) {
@@ -1654,26 +781,9 @@ public abstract class Single<T> implements SingleConsumable<T> {
         Objects.requireNonNull(onSuccess, "onSuccess is null");
         Objects.requireNonNull(onError, "onError is null");
         
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-        
-        subscribe(new SingleSubscriber<T>() {
-            @Override
-            public void onError(Throwable e) {
-                onError.accept(e);
-            }
-            
-            @Override
-            public void onSubscribe(Disposable d) {
-                mad.set(d);
-            }
-            
-            @Override
-            public void onSuccess(T value) {
-                onSuccess.accept(value);
-            }
-        });
-        
-        return mad;
+        ConsumerSingleSubscriber<T> s = new ConsumerSingleSubscriber<T>(onSuccess, onError);
+        subscribe(s);
+        return s;
     }
     
     @Override
@@ -1691,17 +801,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     public final Single<T> subscribeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                scheduler.scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        Single.this.subscribe(s);
-                    }
-                });
-            }
-        });
+        return new SingleSubscribeOn<T>(this, scheduler);
     }
     
     public final Single<T> timeout(long timeout, TimeUnit unit) {
@@ -1725,76 +825,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
     private Single<T> timeout0(final long timeout, final TimeUnit unit, final Scheduler scheduler, final SingleConsumable<? extends T> other) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new SingleConsumable<T>() {
-            @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
-                final CompositeDisposable set = new CompositeDisposable();
-                s.onSubscribe(set);
-                
-                final AtomicBoolean once = new AtomicBoolean();
-                
-                Disposable timer = scheduler.scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (once.compareAndSet(false, true)) {
-                            if (other != null) {
-                                set.clear();
-                                other.subscribe(new SingleSubscriber<T>() {
-
-                                    @Override
-                                    public void onError(Throwable e) {
-                                        set.dispose();
-                                        s.onError(e);
-                                    }
-
-                                    @Override
-                                    public void onSubscribe(Disposable d) {
-                                        set.add(d);
-                                    }
-
-                                    @Override
-                                    public void onSuccess(T value) {
-                                        set.dispose();
-                                        s.onSuccess(value);
-                                    }
-                                    
-                                });
-                            } else {
-                                set.dispose();
-                                s.onError(new TimeoutException());
-                            }
-                        }
-                    }
-                }, timeout, unit);
-                
-                set.add(timer);
-                
-                Single.this.subscribe(new SingleSubscriber<T>() {
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (once.compareAndSet(false, true)) {
-                            set.dispose();
-                            s.onError(e);
-                        }
-                    }
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        set.add(d);
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        if (once.compareAndSet(false, true)) {
-                            set.dispose();
-                            s.onSuccess(value);
-                        }
-                    }
-                    
-                });
-            }
-        });
+        return new SingleTimeout<T>(this, timeout, unit, scheduler, other);
     }
 
     public final <R> R to(Function<? super Single<T>, R> convert) {

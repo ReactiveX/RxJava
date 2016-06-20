@@ -17,12 +17,12 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
 
-public final class SingleOperatorFlatMap<T, R> extends Single<R> {
+public final class SingleFlatMap<T, R> extends Single<R> {
     final SingleConsumable<? extends T> source;
     
     final Function<? super T, ? extends SingleConsumable<? extends R>> mapper;
 
-    public SingleOperatorFlatMap(SingleConsumable<? extends T> source, Function<? super T, ? extends SingleConsumable<? extends R>> mapper) {
+    public SingleFlatMap(SingleConsumable<? extends T> source, Function<? super T, ? extends SingleConsumable<? extends R>> mapper) {
         this.mapper = mapper;
         this.source = source;
     }
