@@ -30,9 +30,9 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
-    final Observable<? extends T> other;
+    final ObservableConsumable<? extends T> other;
     
-    public NbpOperatorTimeoutTimed(long timeout, TimeUnit unit, Scheduler scheduler, Observable<? extends T> other) {
+    public NbpOperatorTimeoutTimed(long timeout, TimeUnit unit, Scheduler scheduler, ObservableConsumable<? extends T> other) {
         this.timeout = timeout;
         this.unit = unit;
         this.scheduler = scheduler;
@@ -56,7 +56,7 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
-        final Observable<? extends T> other;
+        final ObservableConsumable<? extends T> other;
         
         Disposable s; 
         
@@ -79,7 +79,7 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
         volatile boolean done;
         
         public TimeoutTimedOtherSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker,
-                Observable<? extends T> other) {
+                ObservableConsumable<? extends T> other) {
             this.actual = actual;
             this.timeout = timeout;
             this.unit = unit;

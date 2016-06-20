@@ -31,7 +31,7 @@ import io.reactivex.observables.ConnectableObservable;
  */
 public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
     /** The source observable. */
-    final Observable<? extends T> source;
+    final ObservableConsumable<? extends T> source;
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
     final AtomicReference<PublishSubscriber<T>> current;
     
@@ -45,7 +45,7 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
      * @param bufferSize the size of the prefetch buffer
      * @return the connectable observable
      */
-    public static <T> ConnectableObservable<T> create(Observable<? extends T> source, final int bufferSize) {
+    public static <T> ConnectableObservable<T> create(ObservableConsumable<? extends T> source, final int bufferSize) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<PublishSubscriber<T>> curr = new AtomicReference<PublishSubscriber<T>>();
         ObservableConsumable<T> onSubscribe = new ObservableConsumable<T>() {
@@ -115,8 +115,8 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
         return new NbpOperatorPublish<T>(onSubscribe, source, curr, bufferSize);
     }
 
-    public static <T, R> Observable<R> create(final Observable<? extends T> source, 
-            final Function<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize) {
+    public static <T, R> Observable<R> create(final ObservableConsumable<? extends T> source, 
+            final Function<? super Observable<T>, ? extends ObservableConsumable<R>> selector, final int bufferSize) {
         return create(new ObservableConsumable<R>() {
             @Override
             public void subscribe(Observer<? super R> sr) {
@@ -138,7 +138,7 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
 
     final ObservableConsumable<T> onSubscribe;
     
-    private NbpOperatorPublish(ObservableConsumable<T> onSubscribe, Observable<? extends T> source, 
+    private NbpOperatorPublish(ObservableConsumable<T> onSubscribe, ObservableConsumable<? extends T> source, 
             final AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
         this.onSubscribe = onSubscribe;
         this.source = source;

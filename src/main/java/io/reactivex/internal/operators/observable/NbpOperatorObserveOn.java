@@ -17,7 +17,6 @@ import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -25,25 +24,27 @@ import io.reactivex.internal.schedulers.TrampolineScheduler;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpOperatorObserveOn<T> implements NbpOperator<T, T> {
+public final class NbpOperatorObserveOn<T> extends Observable<T> {
+    final ObservableConsumable<? extends T> source;
     final Scheduler scheduler;
     final boolean delayError;
     final int bufferSize;
-    public NbpOperatorObserveOn(Scheduler scheduler, boolean delayError, int bufferSize) {
+    public NbpOperatorObserveOn(ObservableConsumable<? extends T> source, Scheduler scheduler, boolean delayError, int bufferSize) {
+        this.source = source;
         this.scheduler = scheduler;
         this.delayError = delayError;
         this.bufferSize = bufferSize;
     }
     
     @Override
-    public Observer<? super T> apply(Observer<? super T> t) {
+    protected void subscribeActual(Observer<? super T> observer) {
         if (scheduler instanceof TrampolineScheduler) {
-            return t;
+            source.subscribe(observer);
+        } else {
+            Scheduler.Worker w = scheduler.createWorker();
+            
+            source.subscribe(new ObserveOnSubscriber<T>(observer, w, delayError, bufferSize));
         }
-        
-        Scheduler.Worker w = scheduler.createWorker();
-        
-        return new ObserveOnSubscriber<T>(t, w, delayError, bufferSize);
     }
     
     /**

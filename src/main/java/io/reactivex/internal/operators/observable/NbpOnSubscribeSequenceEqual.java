@@ -23,12 +23,12 @@ import io.reactivex.internal.disposables.ArrayCompositeResource;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 
 public final class NbpOnSubscribeSequenceEqual<T> implements ObservableConsumable<Boolean> {
-    final Observable<? extends T> first;
-    final Observable<? extends T> second;
+    final ObservableConsumable<? extends T> first;
+    final ObservableConsumable<? extends T> second;
     final BiPredicate<? super T, ? super T> comparer;
     final int bufferSize;
     
-    public NbpOnSubscribeSequenceEqual(Observable<? extends T> first, Observable<? extends T> second,
+    public NbpOnSubscribeSequenceEqual(ObservableConsumable<? extends T> first, ObservableConsumable<? extends T> second,
             BiPredicate<? super T, ? super T> comparer, int bufferSize) {
         this.first = first;
         this.second = second;
@@ -48,14 +48,14 @@ public final class NbpOnSubscribeSequenceEqual<T> implements ObservableConsumabl
         final Observer<? super Boolean> actual;
         final BiPredicate<? super T, ? super T> comparer;
         final ArrayCompositeResource<Disposable> resources;
-        final Observable<? extends T> first;
-        final Observable<? extends T> second;
+        final ObservableConsumable<? extends T> first;
+        final ObservableConsumable<? extends T> second;
         final EqualSubscriber<T>[] subscribers;
         
         volatile boolean cancelled;
         
         public EqualCoordinator(Observer<? super Boolean> actual, int bufferSize,
-                Observable<? extends T> first, Observable<? extends T> second,
+                ObservableConsumable<? extends T> first, ObservableConsumable<? extends T> second,
                 BiPredicate<? super T, ? super T> comparer) {
             this.actual = actual;
             this.first = first;

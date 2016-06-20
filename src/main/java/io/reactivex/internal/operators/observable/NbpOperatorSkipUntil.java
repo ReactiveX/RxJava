@@ -23,8 +23,8 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class NbpOperatorSkipUntil<T, U> implements NbpOperator<T, T> {
-    final Observable<U> other;
-    public NbpOperatorSkipUntil(Observable<U> other) {
+    final ObservableConsumable<U> other;
+    public NbpOperatorSkipUntil(ObservableConsumable<U> other) {
         this.other = other;
     }
     

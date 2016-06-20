@@ -25,9 +25,9 @@ import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOperatorConcatMap<T, U> implements NbpOperator<U, T> {
-    final Function<? super T, ? extends Observable<? extends U>> mapper;
+    final Function<? super T, ? extends ObservableConsumable<? extends U>> mapper;
     final int bufferSize;
-    public NbpOperatorConcatMap(Function<? super T, ? extends Observable<? extends U>> mapper, int bufferSize) {
+    public NbpOperatorConcatMap(Function<? super T, ? extends ObservableConsumable<? extends U>> mapper, int bufferSize) {
         this.mapper = mapper;
         this.bufferSize = Math.max(8, bufferSize);
     }
@@ -44,7 +44,7 @@ public final class NbpOperatorConcatMap<T, U> implements NbpOperator<U, T> {
         private static final long serialVersionUID = 8828587559905699186L;
         final Observer<? super U> actual;
         final SerialDisposable sa;
-        final Function<? super T, ? extends Observable<? extends U>> mapper;
+        final Function<? super T, ? extends ObservableConsumable<? extends U>> mapper;
         final Observer<U> inner;
         final Queue<T> queue;
         final int bufferSize;
@@ -56,7 +56,7 @@ public final class NbpOperatorConcatMap<T, U> implements NbpOperator<U, T> {
         volatile long index;
         
         public SourceSubscriber(Observer<? super U> actual, SerialDisposable sa,
-                Function<? super T, ? extends Observable<? extends U>> mapper, int bufferSize) {
+                Function<? super T, ? extends ObservableConsumable<? extends U>> mapper, int bufferSize) {
             this.actual = actual;
             this.sa = sa;
             this.mapper = mapper;
@@ -129,7 +129,7 @@ public final class NbpOperatorConcatMap<T, U> implements NbpOperator<U, T> {
                 RxJavaPlugins.onError(new IllegalStateException("Queue is empty?!"));
                 return;
             }
-            Observable<? extends U> p;
+            ObservableConsumable<? extends U> p;
             try {
                 p = mapper.apply(o);
             } catch (Throwable e) {

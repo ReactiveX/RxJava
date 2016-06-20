@@ -28,10 +28,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
 public final class NbpOperatorWindowBoundary<T, B> implements NbpOperator<Observable<T>, T> {
-    final Observable<B> other;
+    final ObservableConsumable<B> other;
     final int bufferSize;
     
-    public NbpOperatorWindowBoundary(Observable<B> other, int bufferSize) {
+    public NbpOperatorWindowBoundary(ObservableConsumable<B> other, int bufferSize) {
         this.other = other;
         this.bufferSize = bufferSize;
     }
@@ -45,7 +45,7 @@ public final class NbpOperatorWindowBoundary<T, B> implements NbpOperator<Observ
     extends NbpQueueDrainSubscriber<T, Object, Observable<T>> 
     implements Disposable {
         
-        final Observable<B> other;
+        final ObservableConsumable<B> other;
         final int bufferSize;
         
         Disposable s;
@@ -63,7 +63,7 @@ public final class NbpOperatorWindowBoundary<T, B> implements NbpOperator<Observ
         
         final AtomicLong windows = new AtomicLong();
         
-        public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, Observable<B> other,
+        public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, ObservableConsumable<B> other,
                 int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.other = other;

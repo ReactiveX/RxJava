@@ -26,8 +26,8 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, T> {
     final BiFunction<? super T, ? super U, ? extends R> combiner;
-    final Observable<? extends U> other;
-    public NbpOperatorWithLatestFrom(BiFunction<? super T, ? super U, ? extends R> combiner, Observable<? extends U> other) {
+    final ObservableConsumable<? extends U> other;
+    public NbpOperatorWithLatestFrom(BiFunction<? super T, ? super U, ? extends R> combiner, ObservableConsumable<? extends U> other) {
         this.combiner = combiner;
         this.other = other;
     }

@@ -25,14 +25,14 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOnSubscribeZip<T, R> implements ObservableConsumable<R> {
     
-    final Observable<? extends T>[] sources;
-    final Iterable<? extends Observable<? extends T>> sourcesIterable;
+    final ObservableConsumable<? extends T>[] sources;
+    final Iterable<? extends ObservableConsumable<? extends T>> sourcesIterable;
     final Function<? super Object[], ? extends R> zipper;
     final int bufferSize;
     final boolean delayError;
     
-    public NbpOnSubscribeZip(Observable<? extends T>[] sources,
-            Iterable<? extends Observable<? extends T>> sourcesIterable,
+    public NbpOnSubscribeZip(ObservableConsumable<? extends T>[] sources,
+            Iterable<? extends ObservableConsumable<? extends T>> sourcesIterable,
             Function<? super Object[], ? extends R> zipper,
             int bufferSize,
             boolean delayError) {
@@ -46,11 +46,11 @@ public final class NbpOnSubscribeZip<T, R> implements ObservableConsumable<R> {
     @Override
     @SuppressWarnings("unchecked")
     public void subscribe(Observer<? super R> s) {
-        Observable<? extends T>[] sources = this.sources;
+        ObservableConsumable<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
             sources = new Observable[8];
-            for (Observable<? extends T> p : sourcesIterable) {
+            for (ObservableConsumable<? extends T> p : sourcesIterable) {
                 if (count == sources.length) {
                     Observable<? extends T>[] b = new Observable[count + (count >> 2)];
                     System.arraycopy(sources, 0, b, 0, count);
@@ -93,7 +93,7 @@ public final class NbpOnSubscribeZip<T, R> implements ObservableConsumable<R> {
             this.delayError = delayError;
         }
         
-        public void subscribe(Observable<? extends T>[] sources, int bufferSize) {
+        public void subscribe(ObservableConsumable<? extends T>[] sources, int bufferSize) {
             ZipSubscriber<T, R>[] s = subscribers;
             int len = s.length;
             for (int i = 0; i < len; i++) {

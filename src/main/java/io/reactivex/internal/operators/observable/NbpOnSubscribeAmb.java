@@ -22,10 +22,10 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOnSubscribeAmb<T> implements ObservableConsumable<T> {
-    final Observable<? extends T>[] sources;
-    final Iterable<? extends Observable<? extends T>> sourcesIterable;
+    final ObservableConsumable<? extends T>[] sources;
+    final Iterable<? extends ObservableConsumable<? extends T>> sourcesIterable;
     
-    public NbpOnSubscribeAmb(Observable<? extends T>[] sources, Iterable<? extends Observable<? extends T>> sourcesIterable) {
+    public NbpOnSubscribeAmb(ObservableConsumable<? extends T>[] sources, Iterable<? extends ObservableConsumable<? extends T>> sourcesIterable) {
         this.sources = sources;
         this.sourcesIterable = sourcesIterable;
     }
@@ -33,11 +33,11 @@ public final class NbpOnSubscribeAmb<T> implements ObservableConsumable<T> {
     @Override
     @SuppressWarnings("unchecked")
     public void subscribe(Observer<? super T> s) {
-        Observable<? extends T>[] sources = this.sources;
+        ObservableConsumable<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
             sources = new Observable[8];
-            for (Observable<? extends T> p : sourcesIterable) {
+            for (ObservableConsumable<? extends T> p : sourcesIterable) {
                 if (count == sources.length) {
                     Observable<? extends T>[] b = new Observable[count + (count >> 2)];
                     System.arraycopy(sources, 0, b, 0, count);
@@ -74,7 +74,7 @@ public final class NbpOnSubscribeAmb<T> implements ObservableConsumable<T> {
             this.subscribers = new AmbInnerSubscriber[count];
         }
         
-        public void subscribe(Observable<? extends T>[] sources) {
+        public void subscribe(ObservableConsumable<? extends T>[] sources) {
             AmbInnerSubscriber<T>[] as = subscribers;
             int len = as.length;
             for (int i = 0; i < len; i++) {

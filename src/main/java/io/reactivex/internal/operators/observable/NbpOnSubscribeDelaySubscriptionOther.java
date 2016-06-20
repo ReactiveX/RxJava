@@ -24,10 +24,10 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <U> the other value type, ignored
  */
 public final class NbpOnSubscribeDelaySubscriptionOther<T, U> implements ObservableConsumable<T> {
-    final Observable<? extends T> main;
-    final Observable<U> other;
+    final ObservableConsumable<? extends T> main;
+    final ObservableConsumable<U> other;
     
-    public NbpOnSubscribeDelaySubscriptionOther(Observable<? extends T> main, Observable<U> other) {
+    public NbpOnSubscribeDelaySubscriptionOther(ObservableConsumable<? extends T> main, ObservableConsumable<U> other) {
         this.main = main;
         this.other = other;
     }
@@ -66,7 +66,7 @@ public final class NbpOnSubscribeDelaySubscriptionOther<T, U> implements Observa
                 }
                 done = true;
                 
-                main.unsafeSubscribe(new Observer<T>() {
+                main.subscribe(new Observer<T>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         serial.set(d);
@@ -90,6 +90,6 @@ public final class NbpOnSubscribeDelaySubscriptionOther<T, U> implements Observa
             }
         };
         
-        other.unsafeSubscribe(otherSubscriber);
+        other.subscribe(otherSubscriber);
     }
 }
