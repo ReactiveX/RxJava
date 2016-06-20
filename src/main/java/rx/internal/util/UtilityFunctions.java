@@ -92,9 +92,9 @@ public final class UtilityFunctions {
      * @param <T4> the fifth argument type
      * @param <T5> the sixth argument type
      * @param <T6> the seventh argument type
-     * @param <T7> the eigth argument type
+     * @param <T7> the eighth argument type
      * @param <T8> the ninth argument type
-     * @param <T9> the thenth first argument type
+     * @param <T9> the tenth argument type
      * @param <R> the result type
      * @return a function that returns {@code null}
      */
