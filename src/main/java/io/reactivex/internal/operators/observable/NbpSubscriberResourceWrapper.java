@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class NbpSubscriberResourceWrapper<T, R> extends AtomicReference<Object> implements Observer<T>, Disposable {
     /** */
@@ -41,21 +41,8 @@ public final class NbpSubscriberResourceWrapper<T, R> extends AtomicReference<Ob
     
     @Override
     public void onSubscribe(Disposable s) {
-        for (;;) {
-            Disposable current = subscription.get();
-            if (current == TERMINATED) {
-                s.dispose();
-                return;
-            }
-            if (current != null) {
-                s.dispose();
-                SubscriptionHelper.reportDisposableSet();
-                return;
-            }
-            if (subscription.compareAndSet(null, s)) {
-                actual.onSubscribe(this);
-                return;
-            }
+        if (DisposableHelper.setOnce(subscription, s)) {
+            actual.onSubscribe(this);
         }
     }
     

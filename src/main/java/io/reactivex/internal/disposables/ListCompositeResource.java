@@ -22,7 +22,9 @@ import io.reactivex.functions.Consumer;
  * A linked-list-based composite resource with custom disposer callback.
  *
  * @param <T> the resource type
+ * @deprecated Use more type-specific and inlined resource management
  */
+@Deprecated
 public final class ListCompositeResource<T> implements CompositeResource<T>, Disposable {
     final Consumer<? super T> disposer;
     

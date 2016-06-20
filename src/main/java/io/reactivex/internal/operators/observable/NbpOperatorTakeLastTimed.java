@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class NbpOperatorTakeLastTimed<T> implements NbpOperator<T, T> {
     final long count;
@@ -75,11 +75,10 @@ public final class NbpOperatorTakeLastTimed<T> implements NbpOperator<T, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
             }
-            this.s = s;
-            actual.onSubscribe(this);
         }
         
         @Override

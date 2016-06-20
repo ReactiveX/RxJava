@@ -22,9 +22,8 @@ import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.observables.GroupedObservable;
 
 public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<GroupedObservable<K, V>, T>{
@@ -74,12 +73,10 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<GroupedObs
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
             }
-            
-            this.s = s;
-            actual.onSubscribe(this);
         }
         
         @Override

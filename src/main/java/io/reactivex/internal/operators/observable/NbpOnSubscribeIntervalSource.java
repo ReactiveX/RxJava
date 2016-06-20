@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOnSubscribeIntervalSource implements ObservableConsumable<Long> {
@@ -52,11 +53,6 @@ public final class NbpOnSubscribeIntervalSource implements ObservableConsumable<
         
         volatile boolean cancelled;
         
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
         
         public IntervalSubscriber(Observer<? super Long> actual) {
@@ -72,13 +68,7 @@ public final class NbpOnSubscribeIntervalSource implements ObservableConsumable<
         }
         
         void disposeResource() {
-            Disposable d = resource.get();
-            if (d != DISPOSED) {
-                d = resource.getAndSet(DISPOSED);
-                if (d != DISPOSED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(resource);
         }
         
         @Override
@@ -89,20 +79,7 @@ public final class NbpOnSubscribeIntervalSource implements ObservableConsumable<
         }
         
         public void setResource(Disposable d) {
-            for (;;) {
-                Disposable current = resource.get();
-                if (current == DISPOSED) {
-                    d.dispose();
-                    return;
-                }
-                if (current != null) {
-                    RxJavaPlugins.onError(new IllegalStateException("Resource already set!"));
-                    return;
-                }
-                if (resource.compareAndSet(null, d)) {
-                    return;
-                }
-            }
+            DisposableHelper.setOnce(resource, d);
         }
     }
 }

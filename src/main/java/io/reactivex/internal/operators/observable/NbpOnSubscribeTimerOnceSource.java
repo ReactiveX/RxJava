@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class NbpOnSubscribeTimerOnceSource implements ObservableConsumable<Long> {
     final Scheduler scheduler;
@@ -47,11 +47,6 @@ public final class NbpOnSubscribeTimerOnceSource implements ObservableConsumable
 
         final Observer<? super Long> actual;
         
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-
         /** This state tells the setResource not to call dispose since the run is finishing anyway. */
         static final Disposable DONE = new Disposable() {
             @Override
@@ -69,13 +64,7 @@ public final class NbpOnSubscribeTimerOnceSource implements ObservableConsumable
             if (!cancelled) {
                 cancelled = true;
                 
-                Disposable d = get();
-                if (d != DISPOSED && d != DONE) {
-                    d = getAndSet(DISPOSED);
-                    if (d != DISPOSED && d != null) {
-                        d.dispose();
-                    }
-                }
+                DisposableHelper.dispose(this);
             }
         }
         
@@ -89,23 +78,7 @@ public final class NbpOnSubscribeTimerOnceSource implements ObservableConsumable
         }
         
         public void setResource(Disposable d) {
-            for (;;) {
-                Disposable current = get();
-                if (current == DISPOSED) {
-                    d.dispose();
-                    return;
-                }
-                if (current == DONE) {
-                    return;
-                }
-                if (current != null) {
-                    RxJavaPlugins.onError(new IllegalStateException("Resource already set!"));
-                    return;
-                }
-                if (compareAndSet(null, d)) {
-                    return;
-                }
-            }
+            DisposableHelper.setOnce(this, d);
         }
     }
 }

@@ -18,8 +18,7 @@ import java.util.Iterator;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
-import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOnSubscribeZipIterable<T, U, V> implements ObservableConsumable<V> {
@@ -86,11 +85,10 @@ public final class NbpOnSubscribeZipIterable<T, U, V> implements ObservableConsu
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(s);
             }
-            this.s = s;
-            actual.onSubscribe(s);
         }
         
         @Override

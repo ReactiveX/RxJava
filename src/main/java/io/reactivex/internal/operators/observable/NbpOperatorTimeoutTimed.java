@@ -20,9 +20,8 @@ import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.NbpFullArbiter;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.subscribers.flowable.NbpFullArbiterSubscriber;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -90,16 +89,15 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
 
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                if (arbiter.setSubscription(s)) {
+                    actual.onSubscribe(arbiter);
+                    
+                    scheduleTimeout(0L);
+                }
             }
             
-            this.s = s;
-            if (arbiter.setSubscription(s)) {
-                actual.onSubscribe(arbiter);
-                
-                scheduleTimeout(0L);
-            }
         }
         
         @Override
@@ -223,13 +221,12 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
 
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(s);
+                scheduleTimeout(0L);
             }
             
-            this.s = s;
-            actual.onSubscribe(s);
-            scheduleTimeout(0L);
         }
         
         @Override

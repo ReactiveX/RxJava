@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, T> {
@@ -58,16 +58,13 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
+                if (other.get() == null) {
+                    sampler.subscribe(new SamplerSubscriber<T>(this));
+                }
             }
-            
-            this.s = s;
-            actual.onSubscribe(this);
-            if (other.get() == null) {
-                sampler.subscribe(new SamplerSubscriber<T>(this));
-            }
-            
         }
         
         @Override

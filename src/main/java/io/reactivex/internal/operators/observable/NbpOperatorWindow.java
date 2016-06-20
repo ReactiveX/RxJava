@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.subjects.UnicastSubject;
 
 public final class NbpOperatorWindow<T> implements NbpOperator<Observable<T>, T> {
@@ -66,13 +66,11 @@ public final class NbpOperatorWindow<T> implements NbpOperator<Observable<T>, T>
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                actual.onSubscribe(this);
             }
-            
-            this.s = s;
-            
-            actual.onSubscribe(this);
         }
         
         @Override
@@ -159,13 +157,11 @@ public final class NbpOperatorWindow<T> implements NbpOperator<Observable<T>, T>
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                actual.onSubscribe(this);
             }
-            
-            this.s = s;
-            
-            actual.onSubscribe(this);
         }
 
         @Override

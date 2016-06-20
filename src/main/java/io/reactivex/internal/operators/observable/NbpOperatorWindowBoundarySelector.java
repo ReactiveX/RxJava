@@ -22,10 +22,9 @@ import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.SetCompositeResource;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -84,25 +83,21 @@ public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOper
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            
-            this.s = s;
-            
-            actual.onSubscribe(this);
-            
-            if (cancelled) {
-                return;
-            }
-            
-            OperatorWindowBoundaryOpenSubscriber<T, B> os = new OperatorWindowBoundaryOpenSubscriber<T, B>(this);
-            
-            if (boundary.compareAndSet(null, os)) {
-                windows.getAndIncrement();
-                open.subscribe(os);
-            }
-            
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                actual.onSubscribe(this);
+                
+                if (cancelled) {
+                    return;
+                }
+                
+                OperatorWindowBoundaryOpenSubscriber<T, B> os = new OperatorWindowBoundaryOpenSubscriber<T, B>(this);
+                
+                if (boundary.compareAndSet(null, os)) {
+                    windows.getAndIncrement();
+                    open.subscribe(os);
+                }            }
         }
         
         @Override

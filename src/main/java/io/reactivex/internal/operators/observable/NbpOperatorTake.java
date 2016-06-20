@@ -14,9 +14,8 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class NbpOperatorTake<T> extends Observable<T> {
     final ObservableConsumable<? extends T> source;
@@ -45,11 +44,10 @@ public final class NbpOperatorTake<T> extends Observable<T> {
         }
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.subscription, s)) {
-                return;
+            if (DisposableHelper.validate(this.subscription, s)) {
+                subscription = s;
+                actual.onSubscribe(s);
             }
-            subscription = s;
-            actual.onSubscribe(s);
         }
         @Override
         public void onNext(T t) {

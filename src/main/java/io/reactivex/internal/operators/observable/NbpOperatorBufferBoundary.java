@@ -21,10 +21,9 @@ import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.SetCompositeResource;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -75,18 +74,17 @@ public final class NbpOperatorBufferBoundary<T, U extends Collection<? super T>,
         }
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            
-            BufferOpenSubscriber<T, U, Open, Close> bos = new BufferOpenSubscriber<T, U, Open, Close>(this);
-            resources.add(bos);
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                BufferOpenSubscriber<T, U, Open, Close> bos = new BufferOpenSubscriber<T, U, Open, Close>(this);
+                resources.add(bos);
 
-            actual.onSubscribe(this);
-            
-            windows.lazySet(1);
-            bufferOpen.subscribe(bos);
+                actual.onSubscribe(this);
+                
+                windows.lazySet(1);
+                bufferOpen.subscribe(bos);
+            }
         }
         
         @Override

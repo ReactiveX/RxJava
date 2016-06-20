@@ -23,7 +23,6 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.subscribers.flowable.NbpFullArbiterSubscriber;
 import io.reactivex.internal.subscribers.observable.NbpDisposableSubscriber;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -77,38 +76,37 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            
-            Observer<? super T> a = actual;
-            
-            ObservableConsumable<U> p;
-            
-            if (firstTimeoutSelector != null) {
-                try {
-                    p = firstTimeoutSelector.get();
-                } catch (Exception ex) {
-                    dispose();
-                    EmptyDisposable.error(ex, a);
-                    return;
-                }
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
                 
-                if (p == null) {
-                    dispose();
-                    EmptyDisposable.error(new NullPointerException("The first timeout NbpObservable is null"), a);
-                    return;
-                }
+                Observer<? super T> a = actual;
                 
-                TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
+                ObservableConsumable<U> p;
                 
-                if (timeout.compareAndSet(null, tis)) {
+                if (firstTimeoutSelector != null) {
+                    try {
+                        p = firstTimeoutSelector.get();
+                    } catch (Exception ex) {
+                        dispose();
+                        EmptyDisposable.error(ex, a);
+                        return;
+                    }
+                    
+                    if (p == null) {
+                        dispose();
+                        EmptyDisposable.error(new NullPointerException("The first timeout NbpObservable is null"), a);
+                        return;
+                    }
+                    
+                    TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
+                    
+                    if (timeout.compareAndSet(null, tis)) {
+                        a.onSubscribe(s);
+                        p.subscribe(tis);
+                    }
+                } else {
                     a.onSubscribe(s);
-                    p.subscribe(tis);
                 }
-            } else {
-                a.onSubscribe(s);
             }
         }
         
@@ -260,41 +258,40 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            
-            if (!arbiter.setSubscription(s)) {
-                return;
-            }
-            Observer<? super T> a = actual;
-            
-            if (firstTimeoutSelector != null) {
-                ObservableConsumable<U> p;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
                 
-                try {
-                    p = firstTimeoutSelector.get();
-                } catch (Exception ex) {
-                    dispose();
-                    EmptyDisposable.error(ex, a);
+                if (!arbiter.setSubscription(s)) {
                     return;
                 }
+                Observer<? super T> a = actual;
                 
-                if (p == null) {
-                    dispose();
-                    EmptyDisposable.error(new NullPointerException("The first timeout NbpObservable is null"), a);
-                    return;
-                }
-                
-                TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
-                
-                if (timeout.compareAndSet(null, tis)) {
+                if (firstTimeoutSelector != null) {
+                    ObservableConsumable<U> p;
+                    
+                    try {
+                        p = firstTimeoutSelector.get();
+                    } catch (Exception ex) {
+                        dispose();
+                        EmptyDisposable.error(ex, a);
+                        return;
+                    }
+                    
+                    if (p == null) {
+                        dispose();
+                        EmptyDisposable.error(new NullPointerException("The first timeout NbpObservable is null"), a);
+                        return;
+                    }
+                    
+                    TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
+                    
+                    if (timeout.compareAndSet(null, tis)) {
+                        a.onSubscribe(arbiter);
+                        p.subscribe(tis);
+                    }
+                } else {
                     a.onSubscribe(arbiter);
-                    p.subscribe(tis);
                 }
-            } else {
-                a.onSubscribe(arbiter);
             }
         }
         

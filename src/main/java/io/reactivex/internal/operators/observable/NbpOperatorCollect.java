@@ -16,9 +16,8 @@ import io.reactivex.Observable.NbpOperator;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.subscribers.observable.NbpCancelledSubscriber;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class NbpOperatorCollect<T, U> implements NbpOperator<U, T> {
     final Supplier<? extends U> initialSupplier;
@@ -63,11 +62,10 @@ public final class NbpOperatorCollect<T, U> implements NbpOperator<U, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(s);
             }
-            this.s = s;
-            actual.onSubscribe(s);
         }
         
         @Override

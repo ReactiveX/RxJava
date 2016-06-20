@@ -26,19 +26,19 @@ import io.reactivex.internal.disposables.SetCompositeResource;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class CompletableOnSubscribeMerge implements CompletableConsumable {
+public final class CompletableMerge extends Completable {
     final Publisher<? extends CompletableConsumable> source;
     final int maxConcurrency;
     final boolean delayErrors;
     
-    public CompletableOnSubscribeMerge(Publisher<? extends CompletableConsumable> source, int maxConcurrency, boolean delayErrors) {
+    public CompletableMerge(Publisher<? extends CompletableConsumable> source, int maxConcurrency, boolean delayErrors) {
         this.source = source;
         this.maxConcurrency = maxConcurrency;
         this.delayErrors = delayErrors;
     }
     
     @Override
-    public void subscribe(CompletableSubscriber s) {
+    public void subscribeActual(CompletableSubscriber s) {
         CompletableMergeSubscriber parent = new CompletableMergeSubscriber(s, maxConcurrency, delayErrors);
         source.subscribe(parent);
     }

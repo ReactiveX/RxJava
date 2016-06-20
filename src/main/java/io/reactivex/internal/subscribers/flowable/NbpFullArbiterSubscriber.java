@@ -15,8 +15,7 @@ package io.reactivex.internal.subscribers.flowable;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.NbpFullArbiter;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.*;
 
 /**
  * Subscriber that communicates with a FullArbiter.
@@ -34,11 +33,10 @@ public final class NbpFullArbiterSubscriber<T> implements Observer<T> {
 
     @Override
     public void onSubscribe(Disposable s) {
-        if (SubscriptionHelper.validateDisposable(this.s, s)) {
-            return;
+        if (DisposableHelper.validate(this.s, s)) {
+            this.s = s;
+            arbiter.setSubscription(s);
         }
-        this.s = s;
-        arbiter.setSubscription(s);
     }
 
     @Override

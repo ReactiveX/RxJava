@@ -22,9 +22,8 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpOnSubscribeCombineLatest<T, R> implements ObservableConsumable<R> {
@@ -333,13 +332,7 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements ObservableConsum
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (!this.s.compareAndSet(null, s)) {
-                s.dispose();
-                if (this.s.get() != CANCELLED) {
-                    SubscriptionHelper.reportDisposableSet();
-                }
-                return;
-            }
+            DisposableHelper.setOnce(this.s, s);
         }
         
         @Override

@@ -15,7 +15,7 @@ package io.reactivex.observers;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -52,12 +52,11 @@ public final class SerializedObserver<T> implements Observer<T> {
     }
     @Override
     public void onSubscribe(Disposable s) {
-        if (SubscriptionHelper.validateDisposable(this.subscription, s)) {
-            return;
+        if (DisposableHelper.validate(this.subscription, s)) {
+            this.subscription = s;
+            
+            actual.onSubscribe(s);
         }
-        this.subscription = s;
-        
-        actual.onSubscribe(s);
     }
     
     @Override

@@ -21,6 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable.Operator;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
@@ -55,11 +56,6 @@ public final class OperatorSampleTimed<T> implements Operator<T, T> {
         final AtomicLong requested = new AtomicLong();
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
-        
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
         
         Subscription s;
         
@@ -106,13 +102,7 @@ public final class OperatorSampleTimed<T> implements Operator<T, T> {
         }
         
         void cancelTimer() {
-            Disposable d = timer.get();
-            if (d != DISPOSED) {
-                d = timer.getAndSet(DISPOSED);
-                if (d != DISPOSED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(timer);
         }
         
         @Override

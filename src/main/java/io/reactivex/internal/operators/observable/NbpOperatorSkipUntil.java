@@ -19,7 +19,6 @@ import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class NbpOperatorSkipUntil<T, U> implements NbpOperator<T, T> {
@@ -41,11 +40,10 @@ public final class NbpOperatorSkipUntil<T, U> implements NbpOperator<T, T> {
             Disposable s;
             @Override
             public void onSubscribe(Disposable s) {
-                if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                    return;
+                if (DisposableHelper.validate(this.s, s)) {
+                    this.s = s;
+                    frc.setResource(1, s);
                 }
-                this.s = s;
-                frc.setResource(1, s);
             }
             
             @Override
@@ -92,13 +90,12 @@ public final class NbpOperatorSkipUntil<T, U> implements NbpOperator<T, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            if (frc.setResource(0, s)) {
-                if (compareAndSet(false, true)) {
-                    actual.onSubscribe(this);
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                if (frc.setResource(0, s)) {
+                    if (compareAndSet(false, true)) {
+                        actual.onSubscribe(this);
+                    }
                 }
             }
         }

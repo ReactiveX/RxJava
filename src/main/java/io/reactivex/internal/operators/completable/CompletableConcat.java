@@ -25,17 +25,17 @@ import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class CompletableOnSubscribeConcat implements CompletableConsumable {
+public final class CompletableConcat extends Completable {
     final Publisher<? extends CompletableConsumable> sources;
     final int prefetch;
     
-    public CompletableOnSubscribeConcat(Publisher<? extends CompletableConsumable> sources, int prefetch) {
+    public CompletableConcat(Publisher<? extends CompletableConsumable> sources, int prefetch) {
         this.sources = sources;
         this.prefetch = prefetch;
     }
     
     @Override
-    public void subscribe(CompletableSubscriber s) {
+    public void subscribeActual(CompletableSubscriber s) {
         CompletableConcatSubscriber parent = new CompletableConcatSubscriber(s, prefetch);
         sources.subscribe(parent);
     }

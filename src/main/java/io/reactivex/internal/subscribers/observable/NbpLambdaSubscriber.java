@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -46,13 +47,8 @@ public final class NbpLambdaSubscriber<T> extends AtomicReference<Disposable> im
     
     @Override
     public void onSubscribe(Disposable s) {
-        if (compareAndSet(null, s)) {
+        if (DisposableHelper.setOnce(this, s)) {
             onSubscribe.accept(this);
-        } else {
-            s.dispose();
-            if (get() != CANCELLED) {
-                SubscriptionHelper.reportDisposableSet();
-            }
         }
     }
     

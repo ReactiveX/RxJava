@@ -21,7 +21,9 @@ import io.reactivex.internal.util.*;
  * A set-based composite resource with custom disposer callback.
  *
  * @param <T> the resource type
+ * @deprecated Use more type-specific and inlined resource management
  */
+@Deprecated
 public final class SetCompositeResource<T> implements CompositeResource<T>, Disposable {
     final Consumer<? super T> disposer;
     

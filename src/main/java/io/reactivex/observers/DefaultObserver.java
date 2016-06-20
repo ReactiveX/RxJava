@@ -15,17 +15,16 @@ package io.reactivex.observers;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public abstract class DefaultObserver<T> implements Observer<T> {
     private Disposable s;
     @Override
     public final void onSubscribe(Disposable s) {
-        if (SubscriptionHelper.validateDisposable(this.s, s)) {
-            return;
+        if (DisposableHelper.validate(this.s, s)) {
+            this.s = s;
+            onStart();
         }
-        this.s = s;
-        onStart();
     }
     
     protected final void cancel() {

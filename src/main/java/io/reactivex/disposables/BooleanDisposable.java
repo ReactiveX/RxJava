@@ -22,12 +22,14 @@ public final class BooleanDisposable implements Disposable {
         @Override
         public void run() { }
     };
+    
+    static final Runnable EMPTY = new Runnable() {
+        @Override
+        public void run() { }
+    };
 
     public BooleanDisposable() {
-        this(new Runnable() {
-            @Override
-            public void run() { }
-        });
+        this(EMPTY);
     }
     
     public BooleanDisposable(Runnable run) {

@@ -16,8 +16,7 @@ package io.reactivex.internal.subscribers.observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class NbpSubscriptionLambdaSubscriber<T> implements Observer<T>, Disposable {
@@ -47,11 +46,10 @@ public final class NbpSubscriptionLambdaSubscriber<T> implements Observer<T>, Di
             EmptyDisposable.error(e, actual);
             return;
         }
-        if (SubscriptionHelper.validateDisposable(this.s, s)) {
-            return;
+        if (DisposableHelper.validate(this.s, s)) {
+            this.s = s;
+            actual.onSubscribe(this);
         }
-        this.s = s;
-        actual.onSubscribe(this);
     }
     
     @Override

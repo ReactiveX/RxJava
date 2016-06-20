@@ -87,13 +87,12 @@ public final class NbpOperatorTakeUntil<T, U> implements NbpOperator<T, T> {
 
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            if (frc.setResource(0, s)) {
-                if (compareAndSet(false, true)) {
-                    actual.onSubscribe(this);
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                if (frc.setResource(0, s)) {
+                    if (compareAndSet(false, true)) {
+                        actual.onSubscribe(this);
+                    }
                 }
             }
         }

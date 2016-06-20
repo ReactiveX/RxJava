@@ -20,15 +20,15 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 
-public final class CompletableOnSubscribeMergeDelayErrorIterable implements CompletableConsumable {
+public final class CompletableMergeDelayErrorIterable extends Completable {
     final Iterable<? extends CompletableConsumable> sources;
     
-    public CompletableOnSubscribeMergeDelayErrorIterable(Iterable<? extends CompletableConsumable> sources) {
+    public CompletableMergeDelayErrorIterable(Iterable<? extends CompletableConsumable> sources) {
         this.sources = sources;
     }
     
     @Override
-    public void subscribe(final CompletableSubscriber s) {
+    public void subscribeActual(final CompletableSubscriber s) {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicInteger wip = new AtomicInteger(1);
         
@@ -64,7 +64,7 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements Comp
                     if (queue.isEmpty()) {
                         s.onComplete();
                     } else {
-                        s.onError(CompletableOnSubscribeMerge.collectErrors(queue));
+                        s.onError(CompletableMerge.collectErrors(queue));
                     }
                 }
                 return;
@@ -88,7 +88,7 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements Comp
                     if (queue.isEmpty()) {
                         s.onComplete();
                     } else {
-                        s.onError(CompletableOnSubscribeMerge.collectErrors(queue));
+                        s.onError(CompletableMerge.collectErrors(queue));
                     }
                 }
                 return;
@@ -105,7 +105,7 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements Comp
                     if (queue.isEmpty()) {
                         s.onComplete();
                     } else {
-                        s.onError(CompletableOnSubscribeMerge.collectErrors(queue));
+                        s.onError(CompletableMerge.collectErrors(queue));
                     }
                 }
                 return;
@@ -135,7 +135,7 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements Comp
                         if (queue.isEmpty()) {
                             s.onComplete();
                         } else {
-                            s.onError(CompletableOnSubscribeMerge.collectErrors(queue));
+                            s.onError(CompletableMerge.collectErrors(queue));
                         }
                     }
                 }
@@ -146,7 +146,7 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements Comp
             if (queue.isEmpty()) {
                 s.onComplete();
             } else {
-                s.onError(CompletableOnSubscribeMerge.collectErrors(queue));
+                s.onError(CompletableMerge.collectErrors(queue));
             }
         }
     }

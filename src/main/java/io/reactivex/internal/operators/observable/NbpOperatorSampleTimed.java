@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class NbpOperatorSampleTimed<T> implements NbpOperator<T, T> {
@@ -51,11 +51,6 @@ public final class NbpOperatorSampleTimed<T> implements NbpOperator<T, T> {
         
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
         
-        static final Disposable DISPOSED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         Disposable s;
         
         public SampleTimedSubscriber(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
@@ -67,17 +62,15 @@ public final class NbpOperatorSampleTimed<T> implements NbpOperator<T, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
-            }
-            
-            this.s = s;
-            actual.onSubscribe(this);
-            if (timer.get() == null) {
-                Disposable d = scheduler.schedulePeriodicallyDirect(this, period, period, unit);
-                if (!timer.compareAndSet(null, d)) {
-                    d.dispose();
-                    return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
+                if (timer.get() == null) {
+                    Disposable d = scheduler.schedulePeriodicallyDirect(this, period, period, unit);
+                    if (!timer.compareAndSet(null, d)) {
+                        d.dispose();
+                        return;
+                    }
                 }
             }
         }
@@ -100,13 +93,7 @@ public final class NbpOperatorSampleTimed<T> implements NbpOperator<T, T> {
         }
         
         void cancelTimer() {
-            Disposable d = timer.get();
-            if (d != DISPOSED) {
-                d = timer.getAndSet(DISPOSED);
-                if (d != DISPOSED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(timer);
         }
         
         @Override

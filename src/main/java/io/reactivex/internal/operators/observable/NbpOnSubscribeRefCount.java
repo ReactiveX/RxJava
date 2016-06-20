@@ -19,8 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.disposables.SetCompositeResource;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.observables.ConnectableObservable;
 
 /**
@@ -48,11 +47,10 @@ public final class NbpOnSubscribeRefCount<T> implements ObservableConsumable<T> 
 
         @Override
         public void onSubscribe(Disposable s) {
-            if (SubscriptionHelper.validateDisposable(this.s, s)) {
-                return;
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                subscriber.onSubscribe(this);
             }
-            this.s = s;
-            subscriber.onSubscribe(this);
         }
 
         @Override
