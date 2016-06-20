@@ -1132,7 +1132,7 @@ public class Completable {
      *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param <T> the value type of the next Observable
+     * @param <T> the value type of the next Single
      * @param next the Single to subscribe after this Completable is completed, not null
      * @return Single that composes this Completable and next
      */
