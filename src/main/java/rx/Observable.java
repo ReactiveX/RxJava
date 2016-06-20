@@ -122,7 +122,12 @@ public class Observable<T> {
      *            on the class for convenience.  
      * @return an Observable that, when a {@link Subscriber} subscribes to it, will execute the specified
      *         function
-     * @see {@link SyncOnSubscribe} {@code static create*} methods
+     * @see SyncOnSubscribe#createSingleState(Func0, Action2)
+     * @see SyncOnSubscribe#createSingleState(Func0, Action2, Action1)
+     * @see SyncOnSubscribe#createStateful(Func0, Func2)
+     * @see SyncOnSubscribe#createStateful(Func0, Func2, Action1)
+     * @see SyncOnSubscribe#createStateless(Action1)
+     * @see SyncOnSubscribe#createStateless(Action1, Action0)
      * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
@@ -158,7 +163,12 @@ public class Observable<T> {
      *            on the class for convenience. 
      * @return an Observable that, when a {@link Subscriber} subscribes to it, will execute the specified
      *         function
-     * @see {@link AsyncOnSubscribe AsyncOnSubscribe} {@code static create*} methods
+     * @see AsyncOnSubscribe#createSingleState(Func0, Action3)
+     * @see AsyncOnSubscribe#createSingleState(Func0, Action3, Action1)
+     * @see AsyncOnSubscribe#createStateful(Func0, Func3)
+     * @see AsyncOnSubscribe#createStateful(Func0, Func3, Action1)
+     * @see AsyncOnSubscribe#createStateless(Action2)
+     * @see AsyncOnSubscribe#createStateless(Action2, Action0)
      * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
@@ -189,6 +199,7 @@ public class Observable<T> {
      * returned as a single value. Note that it is legal for a conversion function to return an Observable
      * (enabling chaining). 
      * 
+     * @param <R> the output type of the conversion function
      * @param conversion a function that converts from this {@code Observable<T>} to an {@code R}
      * @return an instance of R created by the provided conversion function
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
@@ -200,7 +211,7 @@ public class Observable<T> {
     
     /**
      * Transforms a OnSubscribe.call() into an Observable.subscribe() call.
-     * <p>Note: has to be in Observable because it calls the private subscribe() method 
+     * <p>Note: has to be in Observable because it calls the package-private subscribe() method 
      * @param <T> the value type
      */
     static final class OnSubscribeExtend<T> implements OnSubscribe<T> {
@@ -232,6 +243,7 @@ public class Observable<T> {
      *  <dd>{@code lift} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the output value type
      * @param operator the Operator that implements the Observable-operating function to be applied to the source
      *             Observable
      * @return an Observable that is the result of applying the lifted Operator to the source Observable
@@ -255,6 +267,7 @@ public class Observable<T> {
      *  <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the value type of the output Observable
      * @param transformer implements the function that transforms the source Observable
      * @return the source Observable, transformed by the transformer function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
@@ -265,8 +278,15 @@ public class Observable<T> {
     }
 
     /**
-     * Transformer function used by {@link #compose}.
-     * @warn more complete description needed
+     * Function that receives the current Observable and should return another
+     * Observable, possibly with given element type, in exchange that will be
+     * subscribed to by the downstream operators and subscribers.
+     * <p>
+     * This convenience interface has been introduced to work around the variance declaration
+     * problems of type arguments.
+     * 
+     * @param <T> the input Observable's value type
+     * @param <R> the output Observable's value type
      */
     public interface Transformer<T, R> extends Func1<Observable<T>, Observable<R>> {
         // cover for generics insanity
@@ -337,6 +357,7 @@ public class Observable<T> {
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element type
      * @param sources
      *            an Iterable of Observable sources competing to react first
      * @return an Observable that emits the same sequence as whichever of the source Observables first
@@ -357,6 +378,7 @@ public class Observable<T> {
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element type
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -379,6 +401,7 @@ public class Observable<T> {
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -403,6 +426,7 @@ public class Observable<T> {
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -429,6 +453,7 @@ public class Observable<T> {
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common element base type
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -457,6 +482,7 @@ public class Observable<T> {
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -487,6 +513,7 @@ public class Observable<T> {
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common element base type
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -519,6 +546,7 @@ public class Observable<T> {
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common element base type
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -553,6 +581,7 @@ public class Observable<T> {
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -590,6 +619,9 @@ public class Observable<T> {
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T1> the element type of the first source
+     * @param <T2> the element type of the second source
+     * @param <R> the combined output type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -616,6 +648,10 @@ public class Observable<T> {
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the element type of the first source
+     * @param <T2> the element type of the second source
+     * @param <T3> the element type of the third source
+     * @param <R> the combined output type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -644,6 +680,11 @@ public class Observable<T> {
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the element type of the first source
+     * @param <T2> the element type of the second source
+     * @param <T3> the element type of the third source
+     * @param <T4> the element type of the fourth source
+     * @param <R> the combined output type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -675,6 +716,12 @@ public class Observable<T> {
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the element type of the first source
+     * @param <T2> the element type of the second source
+     * @param <T3> the element type of the third source
+     * @param <T4> the element type of the fourth source
+     * @param <T5> the element type of the fifth source
+     * @param <R> the combined output type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -708,6 +755,13 @@ public class Observable<T> {
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the element type of the first source
+     * @param <T2> the element type of the second source
+     * @param <T3> the element type of the third source
+     * @param <T4> the element type of the fourth source
+     * @param <T5> the element type of the fifth source
+     * @param <T6> the element type of the sixth source
+     * @param <R> the combined output type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -743,6 +797,14 @@ public class Observable<T> {
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the element type of the first source
+     * @param <T2> the element type of the second source
+     * @param <T3> the element type of the third source
+     * @param <T4> the element type of the fourth source
+     * @param <T5> the element type of the fifth source
+     * @param <T6> the element type of the sixth source
+     * @param <T7> the element type of the seventh source
+     * @param <R> the combined output type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -780,6 +842,15 @@ public class Observable<T> {
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the element type of the first source
+     * @param <T2> the element type of the second source
+     * @param <T3> the element type of the third source
+     * @param <T4> the element type of the fourth source
+     * @param <T5> the element type of the fifth source
+     * @param <T6> the element type of the sixth source
+     * @param <T7> the element type of the seventh source
+     * @param <T8> the element type of the eighth source
+     * @param <R> the combined output type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -819,6 +890,16 @@ public class Observable<T> {
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the element type of the first source
+     * @param <T2> the element type of the second source
+     * @param <T3> the element type of the third source
+     * @param <T4> the element type of the fourth source
+     * @param <T5> the element type of the fifth source
+     * @param <T6> the element type of the sixth source
+     * @param <T7> the element type of the seventh source
+     * @param <T8> the element type of the eighth source
+     * @param <T9> the element type of the ninth source
+     * @param <R> the combined output type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -936,6 +1017,7 @@ public class Observable<T> {
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common element base type
      * @param observables
      *            an Observable that emits Observables
      * @return an Observable that emits items all of the items emitted by the Observables emitted by
@@ -957,6 +1039,7 @@ public class Observable<T> {
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -979,6 +1062,7 @@ public class Observable<T> {
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -1003,6 +1087,7 @@ public class Observable<T> {
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -1029,6 +1114,7 @@ public class Observable<T> {
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -1057,6 +1143,7 @@ public class Observable<T> {
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -1087,6 +1174,7 @@ public class Observable<T> {
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -1119,6 +1207,7 @@ public class Observable<T> {
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -1153,6 +1242,7 @@ public class Observable<T> {
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -1190,6 +1280,7 @@ public class Observable<T> {
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param sources the Observable sequence of Observables
      * @return the new Observable with the concatenating behavior
      */
@@ -1210,6 +1301,7 @@ public class Observable<T> {
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param sources the Iterable sequence of Observables
      * @return the new Observable with the concatenating behavior
      */
@@ -1883,6 +1975,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param sequences
      *            the Iterable of Observables
      * @return an Observable that emits items that are the result of flattening the items emitted by the
@@ -1906,6 +1999,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param sequences
      *            the Iterable of Observables
      * @param maxConcurrent
@@ -1933,6 +2027,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <T> the common element base type
      * @param source
      *            an Observable that emits Observables
      * @return an Observable that emits items that are the result of flattening the Observables emitted by the
@@ -1961,6 +2056,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param source
      *            an Observable that emits Observables
      * @param maxConcurrent
@@ -1992,6 +2088,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2016,6 +2113,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2042,6 +2140,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2070,6 +2169,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2100,6 +2200,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2132,6 +2233,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2166,6 +2268,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2202,6 +2305,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2240,6 +2344,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param sequences
      *            the Array of Observables
      * @return an Observable that emits all of the items emitted by the Observables in the Array
@@ -2262,6 +2367,7 @@ public class Observable<T> {
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param sequences
      *            the Array of Observables
      * @param maxConcurrent
@@ -2292,6 +2398,7 @@ public class Observable<T> {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param source
      *            an Observable that emits Observables
      * @return an Observable that emits all of the items emitted by the Observables emitted by the
@@ -2321,6 +2428,7 @@ public class Observable<T> {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param source
      *            an Observable that emits Observables
      * @param maxConcurrent
@@ -2353,6 +2461,7 @@ public class Observable<T> {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param sequences
      *            the Iterable of Observables
      * @return an Observable that emits items that are the result of flattening the items emitted by the
@@ -2381,6 +2490,7 @@ public class Observable<T> {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param sequences
      *            the Iterable of Observables
      * @param maxConcurrent
@@ -2412,6 +2522,7 @@ public class Observable<T> {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2442,6 +2553,7 @@ public class Observable<T> {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2474,6 +2586,7 @@ public class Observable<T> {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2508,6 +2621,7 @@ public class Observable<T> {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2544,6 +2658,7 @@ public class Observable<T> {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2583,6 +2698,7 @@ public class Observable<T> {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2623,6 +2739,7 @@ public class Observable<T> {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -2642,7 +2759,6 @@ public class Observable<T> {
      * @return an Observable that emits all of the items that are emitted by the source Observables
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
-    // suppress because the types are checked by the method signature before using a vararg
     public static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
         return mergeDelayError(just(t1, t2, t3, t4, t5, t6, t7, t8));
     }
@@ -2666,6 +2782,7 @@ public class Observable<T> {
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the common element base type
      * @param t1
      *            an Observable to be merged
      * @param t2
@@ -3013,10 +3130,15 @@ public class Observable<T> {
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and otherwise depends on the 
+     *  backpressure support of the Observable returned by the {@code resourceFactory}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T> the element type of the generated Observable
+     * @param <Resource> the type of the resource associated with the output sequence
      * @param resourceFactory
      *            the factory function to create a resource object that depends on the Observable
      * @param observableFactory
@@ -3042,11 +3164,15 @@ public class Observable<T> {
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and otherwise depends on the 
+     *  backpressure support of the Observable returned by the {@code resourceFactory}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @warn "Backpressure Support" section missing from javadoc
+     * @param <T> the element type of the generated Observable
+     * @param <Resource> the type of the resource associated with the output sequence
      * @param resourceFactory
      *            the factory function to create a resource object that depends on the Observable
      * @param observableFactory
@@ -3103,6 +3229,7 @@ public class Observable<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the zipped result type
      * @param ws
      *            an Iterable of source Observables
      * @param zipFunction
@@ -3201,6 +3328,7 @@ public class Observable<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the zipped result type
      * @param ws
      *            an Observable of source Observables
      * @param zipFunction
@@ -3248,6 +3376,9 @@ public class Observable<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the value type of the first source
+     * @param <T2> the value type of the second source
+     * @param <R> the zipped result type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3298,6 +3429,10 @@ public class Observable<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the value type of the first source
+     * @param <T2> the value type of the second source
+     * @param <T3> the value type of the third source
+     * @param <R> the zipped result type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3350,6 +3485,11 @@ public class Observable<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the value type of the first source
+     * @param <T2> the value type of the second source
+     * @param <T3> the value type of the third source
+     * @param <T4> the value type of the fourth source
+     * @param <R> the zipped result type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3404,6 +3544,12 @@ public class Observable<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the value type of the first source
+     * @param <T2> the value type of the second source
+     * @param <T3> the value type of the third source
+     * @param <T4> the value type of the fourth source
+     * @param <T5> the value type of the fifth source
+     * @param <R> the zipped result type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3459,6 +3605,13 @@ public class Observable<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the value type of the first source
+     * @param <T2> the value type of the second source
+     * @param <T3> the value type of the third source
+     * @param <T4> the value type of the fourth source
+     * @param <T5> the value type of the fifth source
+     * @param <T6> the value type of the sixth source
+     * @param <R> the zipped result type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3517,6 +3670,14 @@ public class Observable<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the value type of the first source
+     * @param <T2> the value type of the second source
+     * @param <T3> the value type of the third source
+     * @param <T4> the value type of the fourth source
+     * @param <T5> the value type of the fifth source
+     * @param <T6> the value type of the sixth source
+     * @param <T7> the value type of the seventh source
+     * @param <R> the zipped result type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3577,6 +3738,15 @@ public class Observable<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the value type of the first source
+     * @param <T2> the value type of the second source
+     * @param <T3> the value type of the third source
+     * @param <T4> the value type of the fourth source
+     * @param <T5> the value type of the fifth source
+     * @param <T6> the value type of the sixth source
+     * @param <T7> the value type of the seventh source
+     * @param <T8> the value type of the eighth source
+     * @param <R> the zipped result type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3639,6 +3809,16 @@ public class Observable<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T1> the value type of the first source
+     * @param <T2> the value type of the second source
+     * @param <T3> the value type of the third source
+     * @param <T4> the value type of the fourth source
+     * @param <T5> the value type of the fifth source
+     * @param <T6> the value type of the sixth source
+     * @param <T7> the value type of the seventh source
+     * @param <T8> the value type of the eighth source
+     * @param <T9> the value type of the ninth source
+     * @param <R> the zipped result type
      * @param o1
      *            the first source Observable
      * @param o2
@@ -3737,6 +3917,7 @@ public class Observable<T> {
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <TClosing> the value type of the boundary-providing Observable
      * @param bufferClosingSelector
      *            a {@link Func0} that produces an Observable that governs the boundary between buffers.
      *            Whenever this {@code Observable} emits an item, {@code buffer} emits the current buffer and
@@ -3999,6 +4180,8 @@ public class Observable<T> {
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <TOpening> the element type of the buffer-opening Observable
+     * @param <TClosing> the element type of the individual buffer-closing Observables
      * @param bufferOpenings
      *            the Observable that, when it emits an item, causes a new buffer to be created
      * @param bufferClosingSelector
@@ -4130,6 +4313,10 @@ public class Observable<T> {
     }
 
     /**
+     * Caches and shares everything from this Observable and uses the initialCapacity to
+     * reduce the number of times the internal buffer needs resizing.
+     * @param initialCapacity the capacity to start with
+     * @return the new Observable instance with the specific behavior.
      * @see #cacheWithInitialCapacity(int)
      * @deprecated Use {@link #cacheWithInitialCapacity(int)} instead.
      */
@@ -4207,6 +4394,7 @@ public class Observable<T> {
      *  <dd>{@code cast} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the output value type cast to
      * @param klass
      *            the target class type that {@code cast} will cast the items emitted by the source Observable
      *            into before emitting them from the resulting Observable
@@ -4233,6 +4421,7 @@ public class Observable<T> {
      *  <dd>{@code collect} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the accumulator and output type
      * @param stateFactory
      *           the mutable data structure that will collect the items
      * @param collector
@@ -4265,6 +4454,7 @@ public class Observable<T> {
      *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the type of the inner Observable sources and thus the ouput type
      * @param func
      *            a function that, when applied to an item emitted by the source Observable, returns an
      *            Observable
@@ -4717,6 +4907,7 @@ public class Observable<T> {
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <U> the element type of the delaying Observable
      * @param subscriptionDelay
      *            a function that returns an Observable that triggers the subscription to the source Observable
      *            once it emits any item
@@ -4764,7 +4955,8 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code dematerialize} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
+     * @param <T2> the output value type
      * @return an Observable that emits the items and notifications embedded in the {@link Notification} objects
      *         emitted by the source Observable
      * @throws OnErrorNotImplementedException
@@ -4803,6 +4995,7 @@ public class Observable<T> {
      *  <dd>{@code distinct} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <U> the key type
      * @param keySelector
      *            a function that projects an emitted item to a key value that is used to decide whether an item
      *            is distinct from another one or not
@@ -4841,6 +5034,7 @@ public class Observable<T> {
      *  <dd>{@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <U> the key type
      * @param keySelector
      *            a function that projects an emitted item to a key value that is used to decide whether an item
      *            is distinct from another one or not
@@ -5107,8 +5301,7 @@ public class Observable<T> {
      * @param <T> the value type 
      * @param o1 the first source
      * @param o2 the second source
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5134,8 +5327,7 @@ public class Observable<T> {
      * @param o1 the first source
      * @param o2 the second source
      * @param o3 the third source
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5165,8 +5357,7 @@ public class Observable<T> {
      * @param o2 the second source
      * @param o3 the third source
      * @param o4 the fourth source
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5197,8 +5388,7 @@ public class Observable<T> {
      * @param o3 the third source
      * @param o4 the fourth source
      * @param o5 the fifth source
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5231,8 +5421,7 @@ public class Observable<T> {
      * @param o4 the fourth source
      * @param o5 the fifth source
      * @param o6 the sixth source
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5266,8 +5455,7 @@ public class Observable<T> {
      * @param o5 the fifth source
      * @param o6 the sixth source
      * @param o7 the seventh source
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5303,8 +5491,7 @@ public class Observable<T> {
      * @param o6 the sixth source
      * @param o7 the seventh source
      * @param o8 the eighth source
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5341,8 +5528,7 @@ public class Observable<T> {
      * @param o7 the seventh source
      * @param o8 the eighth source
      * @param o9 the ninth source
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5372,8 +5558,7 @@ public class Observable<T> {
      * </dl>
      * @param <T> the value type
      * @param sources a sequence of Observables that need to be eagerly concatenated
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5398,8 +5583,7 @@ public class Observable<T> {
      * @param <T> the value type
      * @param sources a sequence of Observables that need to be eagerly concatenated
      * @param capacityHint hints about the number of expected source sequence values
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5423,8 +5607,7 @@ public class Observable<T> {
      * </dl>
      * @param <T> the value type
      * @param sources a sequence of Observables that need to be eagerly concatenated
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5449,8 +5632,7 @@ public class Observable<T> {
      * @param <T> the value type
      * @param sources a sequence of Observables that need to be eagerly concatenated
      * @param capacityHint hints about the number of expected source sequence values
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5476,8 +5658,7 @@ public class Observable<T> {
      * @param <R> the value type
      * @param mapper the function that maps a sequence of values into a sequence of Observables that will be
      *               eagerly concatenated
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5503,8 +5684,7 @@ public class Observable<T> {
      * @param mapper the function that maps a sequence of values into a sequence of Observables that will be
      *               eagerly concatenated
      * @param capacityHint hints about the number of expected source sequence values
-     * @return 
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5534,8 +5714,7 @@ public class Observable<T> {
      *               eagerly concatenated
      * @param capacityHint hints about the number of expected source sequence values
      * @param maxConcurrent the maximum number of concurrent subscribed observables
-     * @return
-     * @warn javadoc fails to describe the return value
+     * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
@@ -5777,6 +5956,7 @@ public class Observable<T> {
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the value type of the inner Observables and the output type
      * @param func
      *            a function that, when applied to an item emitted by the source Observable, returns an
      *            Observable
@@ -5804,6 +5984,7 @@ public class Observable<T> {
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the value type of the inner Observables and the output type
      * @param func
      *            a function that, when applied to an item emitted by the source Observable, returns an
      *            Observable
@@ -6219,6 +6400,10 @@ public class Observable<T> {
      *  <dd>{@code groupJoin} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <T2> the value type of the right Observable source
+     * @param <D1> the element type of the left duration Observables
+     * @param <D2> the element type of the right duration Observables
+     * @param <R> the result type
      * @param right
      *            the other Observable to correlate items from the source Observable with
      * @param leftDuration
@@ -6288,6 +6473,10 @@ public class Observable<T> {
      *  <dd>{@code join} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <TRight> the value type of the right Observable source
+     * @param <TLeftDuration> the element type of the left duration Observables
+     * @param <TRightDuration> the element type of the right duration Observables
+     * @param <R> the result type
      * @param right
      *            the second Observable to join items from
      * @param leftDurationSelector
@@ -6427,6 +6616,7 @@ public class Observable<T> {
      *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the output type
      * @param func
      *            a function to apply to each item emitted by the Observable
      * @return an Observable that emits the items from the source Observable, transformed by the specified
@@ -6482,7 +6672,7 @@ public class Observable<T> {
     
     /**
      * Modifies an Observable to perform its emissions and notifications on a specified {@link Scheduler},
-     * asynchronously with a bounded buffer of {@link RxRingBuffer.SIZE} slots.
+     * asynchronously with a bounded buffer of {@link rx.internal.util.RxRingBuffer#SIZE} slots.
      *
      * <p>Note that onError notifications will cut ahead of onNext notifications on the emission thread if Scheduler is truly
      * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, boolean)} overload.
@@ -6510,8 +6700,7 @@ public class Observable<T> {
 
     /**
      * Modifies an Observable to perform its emissions and notifications on a specified {@link Scheduler},
-     * asynchronously with a bounded buffer of configurable size other than the {@link RxRingBuffer.SIZE}
-     * default.
+     * asynchronously with a bounded buffer of configurable size.
      *
      * <p>Note that onError notifications will cut ahead of onNext notifications on the emission thread if Scheduler is truly
      * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, boolean)} overload.
@@ -6568,8 +6757,7 @@ public class Observable<T> {
 
     /**
      * Modifies an Observable to perform its emissions and notifications on a specified {@link Scheduler},
-     * asynchronously with a bounded buffer of configurable size other than the {@link RxRingBuffer.SIZE}
-     * default, and optionally delays onError notifications.
+     * asynchronously with a bounded buffer of configurable size and optionally delays onError notifications.
      * <p>
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
@@ -6609,6 +6797,7 @@ public class Observable<T> {
      *  <dd>{@code ofType} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the output type
      * @param klass
      *            the class type to filter the items emitted by the source Observable
      * @return an Observable that emits items from the source Observable of type {@code klass}
@@ -7056,6 +7245,7 @@ public class Observable<T> {
      *  <dd>{@code reduce} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the accumulator and output value type
      * @param initialValue
      *            the initial (seed) accumulator value
      * @param accumulator
@@ -7794,7 +7984,7 @@ public class Observable<T> {
      * 
      * This retries 3 times, each time incrementing the number of seconds it waits.
      * 
-     * <pre> {@code
+     * <pre><code>
      *  Observable.create((Subscriber<? super String> s) -> {
      *      System.out.println("subscribing");
      *      s.onError(new RuntimeException("always fails"));
@@ -7804,7 +7994,7 @@ public class Observable<T> {
      *          return Observable.timer(i, TimeUnit.SECONDS);
      *      });
      *  }).toBlocking().forEach(System.out::println);
-     * } </pre>
+     * </code></pre>
      * 
      * Output is:
      *
@@ -7927,6 +8117,7 @@ public class Observable<T> {
      *  <dd>This version of {@code sample} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <U> the element type of the sampler Observable
      * @param sampler
      *            the Observable to use for sampling the source Observable
      * @return an Observable that emits the results of sampling the items emitted by this Observable whenever
@@ -7980,6 +8171,7 @@ public class Observable<T> {
      *  <dd>{@code scan} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the initial, accumulator and result type
      * @param initialValue
      *            the initial (seed) accumulator item
      * @param accumulator
@@ -8292,6 +8484,7 @@ public class Observable<T> {
      *  <dd>{@code skipUntil} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <U> the element type of the other Observable
      * @param other
      *            the second Observable that has to emit an item before the source Observable's elements begin
      *            to be mirrored by the resulting Observable
@@ -8935,6 +9128,7 @@ public class Observable<T> {
      *  <dd>{@code switchMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the element type of the inner Observables and the output
      * @param func
      *            a function that, when applied to an item emitted by the source Observable, returns an
      *            Observable
@@ -8960,6 +9154,7 @@ public class Observable<T> {
      *  <dd>{@code switchMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <R> the element type of the inner Observables and the output
      * @param func
      *            a function that, when applied to an item emitted by the source Observable, returns an
      *            Observable
@@ -9365,7 +9560,14 @@ public class Observable<T> {
      * The difference between this operator and {@link #takeWhile(Func1)} is that here, the condition is
      * evaluated <em>after</em> the item is emitted.
      * 
-     * @warn "Scheduler" and "Backpressure Support" sections missing from javadocs
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure; the backpressure behavior is determined by the upstream
+     *  source and the downstream consumer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code takeWhile} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
      * @param stopPredicate 
      *            a function that evaluates an item emitted by the source Observable and returns a Boolean
      * @return an Observable that first emits items emitted by the source Observable, checks the specified
@@ -9933,6 +10135,7 @@ public class Observable<T> {
      *  <dd>{@code toMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <K> the key type of the Map
      * @param keySelector
      *            the function that extracts the key from a source item to be used in the HashMap
      * @return an Observable that emits a single item: a HashMap containing the mapped items from the source
@@ -9958,6 +10161,8 @@ public class Observable<T> {
      *  <dd>{@code toMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <K> the key type of the Map
+     * @param <V> the value type of the Map
      * @param keySelector
      *            the function that extracts the key from a source item to be used in the HashMap
      * @param valueSelector
@@ -9982,6 +10187,8 @@ public class Observable<T> {
      *  <dd>{@code toMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <K> the key type of the Map
+     * @param <V> the value type of the Map
      * @param keySelector
      *            the function that extracts the key from a source item to be used in the Map
      * @param valueSelector
@@ -10008,6 +10215,7 @@ public class Observable<T> {
      *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <K> the key type of the Map
      * @param keySelector
      *            the function that extracts the key from the source items to be used as key in the HashMap
      * @return an Observable that emits a single item: a HashMap that contains an ArrayList of items mapped from
@@ -10031,6 +10239,8 @@ public class Observable<T> {
      *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <K> the key type of the Map
+     * @param <V> the value type of the Map
      * @param keySelector
      *            the function that extracts a key from the source items to be used as key in the HashMap
      * @param valueSelector
@@ -10056,6 +10266,8 @@ public class Observable<T> {
      *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <K> the key type of the Map
+     * @param <V> the value type of the Map
      * @param keySelector
      *            the function that extracts a key from the source items to be used as the key in the Map
      * @param valueSelector
@@ -10083,6 +10295,8 @@ public class Observable<T> {
      *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <K> the key type of the Map
+     * @param <V> the value type of the Map
      * @param keySelector
      *            the function that extracts a key from the source items to be used as the key in the Map
      * @param valueSelector
@@ -10159,13 +10373,13 @@ public class Observable<T> {
      *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @throws ClassCastException
-     *             if any item emitted by the Observable does not implement {@link Comparable} with respect to
-     *             all other items emitted by the Observable
      * @param initialCapacity 
      *             the initial capacity of the ArrayList used to accumulate items before sorting
      * @return an Observable that emits a list that contains the items emitted by the source Observable in
      *         sorted order
+     * @throws ClassCastException
+     *             if any item emitted by the Observable does not implement {@link Comparable} with respect to
+     *             all other items emitted by the Observable
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
@@ -10224,9 +10438,18 @@ public class Observable<T> {
      * function only when the source Observable (this instance) emits an item.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.png" alt="">
-     *
-     * @warn "Backpressure Support" section missing from javadoc
-     * @warn "Scheduler" section missing from javadoc
+     * 
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure: the backpressure support
+     *  depends on the upstream and downstream's backpressure behavior. The other Observable
+     *  is consumed in an unbounded fashion.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This operator, by default, doesn't run any particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <U> the element type of the other Observable
+     * @param <R> the result type of the combination
      * @param other
      *            the other Observable
      * @param resultSelector
@@ -10264,7 +10487,8 @@ public class Observable<T> {
      * @param <T1> the first other source's value type
      * @param <T2> the second other source's value type
      * @param <R> the result value type
-     * @param others the array of other sources
+     * @param o1 the first other Observable
+     * @param o2 the second other Observable
      * @param combiner the function called with an array of values from each participating observable
      * @return the new Observable instance
      * @Experimental The behavior of this can change at any time.
@@ -10296,7 +10520,9 @@ public class Observable<T> {
      * @param <T2> the second other source's value type
      * @param <T3> the third other source's value type
      * @param <R> the result value type
-     * @param others the array of other sources
+     * @param o1 the first other Observable
+     * @param o2 the second other Observable
+     * @param o3 the third other Observable
      * @param combiner the function called with an array of values from each participating observable
      * @return the new Observable instance
      * @Experimental The behavior of this can change at any time.
@@ -10333,7 +10559,10 @@ public class Observable<T> {
      * @param <T3> the third other source's value type
      * @param <T4> the fourth other source's value type
      * @param <R> the result value type
-     * @param others the array of other sources
+     * @param o1 the first other Observable
+     * @param o2 the second other Observable
+     * @param o3 the third other Observable
+     * @param o4 the fourth other Observable
      * @param combiner the function called with an array of values from each participating observable
      * @return the new Observable instance
      * @Experimental The behavior of this can change at any time.
@@ -10370,7 +10599,11 @@ public class Observable<T> {
      * @param <T4> the fourth other source's value type
      * @param <T5> the fifth other source's value type
      * @param <R> the result value type
-     * @param others the array of other sources
+     * @param o1 the first other Observable
+     * @param o2 the second other Observable
+     * @param o3 the third other Observable
+     * @param o4 the fourth other Observable
+     * @param o5 the fifth other Observable
      * @param combiner the function called with an array of values from each participating observable
      * @return the new Observable instance
      * @Experimental The behavior of this can change at any time.
@@ -10410,7 +10643,12 @@ public class Observable<T> {
      * @param <T5> the fifth other source's value type
      * @param <T6> the sixth other source's value type
      * @param <R> the result value type
-     * @param others the array of other sources
+     * @param o1 the first other Observable
+     * @param o2 the second other Observable
+     * @param o3 the third other Observable
+     * @param o4 the fourth other Observable
+     * @param o5 the fifth other Observable
+     * @param o6 the sixth other Observable
      * @param combiner the function called with an array of values from each participating observable
      * @return the new Observable instance
      * @Experimental The behavior of this can change at any time.
@@ -10451,7 +10689,13 @@ public class Observable<T> {
      * @param <T6> the sixth other source's value type
      * @param <T7> the seventh other source's value type
      * @param <R> the result value type
-     * @param others the array of other sources
+     * @param o1 the first other Observable
+     * @param o2 the second other Observable
+     * @param o3 the third other Observable
+     * @param o4 the fourth other Observable
+     * @param o5 the fifth other Observable
+     * @param o6 the sixth other Observable
+     * @param o7 the seventh other Observable
      * @param combiner the function called with an array of values from each participating observable
      * @return the new Observable instance
      * @Experimental The behavior of this can change at any time.
@@ -10494,7 +10738,14 @@ public class Observable<T> {
      * @param <T7> the seventh other source's value type
      * @param <T8> the eigth other source's value type
      * @param <R> the result value type
-     * @param others the array of other sources
+     * @param o1 the first other Observable
+     * @param o2 the second other Observable
+     * @param o3 the third other Observable
+     * @param o4 the fourth other Observable
+     * @param o5 the fifth other Observable
+     * @param o6 the sixth other Observable
+     * @param o7 the seventh other Observable
+     * @param o8 the eighth other Observable
      * @param combiner the function called with an array of values from each participating observable
      * @return the new Observable instance
      * @Experimental The behavior of this can change at any time.
@@ -10583,6 +10834,7 @@ public class Observable<T> {
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <TClosing> the element type of the boundary Observable
      * @param closingSelector
      *            a {@link Func0} that returns an {@code Observable} that governs the boundary between windows.
      *            When this {@code Observable} emits an item, {@code window} emits the current window and begins
@@ -10876,11 +11128,16 @@ public class Observable<T> {
      * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses Observables to control data flow.</dd>
+     *  <dd>The outer Observable of this operator doesn't support backpressure because the emission of new
+     *  inner Observables are controlled by the {@code windowOpenings} Observable. 
+     *  The inner Observables honor backpressure and buffer everything until the associated closing
+     *  Observable signals or completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @param <TOpening> the element type of the window-opening Observable
+     * @param <TClosing> the element type of the window-closing Observables
      * @param windowOpenings
      *            an Observable that, when it emits an item, causes another window to be created
      * @param closingSelector
@@ -10902,8 +11159,8 @@ public class Observable<T> {
      * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses a {@code boundary} Observable to control data
-     *      flow.</dd>
+     *  <dd>The outer Observable of this operator does not support backpressure as it uses a {@code boundary} Observable to control data
+     *      flow. The inner Observables honor backpressure and buffer everything until the boundary signals the next element.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
