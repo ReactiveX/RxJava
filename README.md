@@ -18,6 +18,8 @@ Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki
 ## Master Build Status
 
 <a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=1.x'></a>
+[![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=1.x)](http://codecov.io/github/ReactiveX/RxJava?branch=1.x)
+
 
 ## Communication
 
