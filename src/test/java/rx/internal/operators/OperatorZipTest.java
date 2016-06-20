@@ -998,6 +998,68 @@ public class OperatorZipTest {
         ts.assertReceivedOnNext(Collections.emptyList());
     }
 
+    @Test
+    public void testZipEmptyArray() {
+        Observable<Integer>[] ws = new Observable[0];
+        Observable<Integer> o = Observable.zip(ws, new FuncN<Integer>() {
+            @Override
+            public Integer call(Object... args) {
+                assertEquals("No argument should have been passed", 0, args.length);
+                return 0;
+            }
+        });
+
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        o.subscribe(ts);
+        ts.awaitTerminalEvent(200, TimeUnit.MILLISECONDS);
+        ts.assertReceivedOnNext(Collections.emptyList());
+    }
+
+    @Test
+    public void testZipArraySingleItem() {
+        final Integer expected = 0;
+        Observable<Integer>[] ws = new Observable[]{ Observable.just(expected) };
+
+        Observable<Integer> o = Observable.zip(ws, new FuncN<Integer>() {
+            @Override
+            public Integer call(Object... args) {
+                assertEquals("One argument should have been passed", 1, args.length);
+                return expected;
+            }
+        });
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        o.subscribe(ts);
+        ts.awaitTerminalEvent(200, TimeUnit.MILLISECONDS);
+        ts.assertReceivedOnNext(Collections.singletonList(expected));
+    }
+
+    @Test
+    public void testZipBigArray() {
+        final int size = 20;
+        Integer expected = 0;
+        Observable<Integer>[] ws = new Observable[size];
+
+        for (int i = 0, wsLength = ws.length; i < wsLength; i++) {
+            ws[i] = Observable.just(i);
+            expected += i;
+        }
+
+        final Integer finalExpected = expected;
+        Observable<Integer> o = Observable.zip(ws, new FuncN<Integer>() {
+            @Override
+            public Integer call(Object... args) {
+                assertEquals(size + " arguments should have been passed", size, args.length);
+                return finalExpected;
+            }
+        });
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        o.subscribe(ts);
+        ts.awaitTerminalEvent(200, TimeUnit.MILLISECONDS);
+        ts.assertReceivedOnNext(Collections.singletonList(expected));
+    }
+
     /**
      * Expect NoSuchElementException instead of blocking forever as zip should emit onCompleted and no onNext
      * and last() expects at least a single response.

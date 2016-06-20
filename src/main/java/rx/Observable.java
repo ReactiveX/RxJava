@@ -3121,6 +3121,54 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits the results of a specified combiner function applied to combinations of
+     * items emitted, in sequence, by an array of other Observables.
+     * <p>
+     * {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
+     * will be the result of the function applied to the first item emitted by each of the source Observables;
+     * the second item emitted by the new Observable will be the result of the function applied to the second
+     * item emitted by each of those Observables; and so forth.
+     * <p>
+     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@code onNext} as many times as
+     * the number of {@code onNext} invocations of the source Observable that emits the fewest items.
+     * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if
+     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * is possible those other sources will never be able to run to completion (and thus not calling
+     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will unsubscribe B immediately. For example:
+     * <pre><code>zip(new Observable[]{range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2)}, (a) -&gt;
+     * a)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
+     * or unsubscription.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
+     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
+     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param ws
+     *            an array of source Observables
+     * @param zipFunction
+     *            a function that, when applied to an item emitted by each of the source Observables, results in
+     *            an item that will be emitted by the resulting Observable
+     * @return an Observable that emits the zipped results
+     * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
+     */
+    @Experimental
+    public static <R> Observable<R> zip(Observable<?>[] ws, FuncN<? extends R> zipFunction) {
+        return Observable.just(ws).lift(new OperatorZip<R>(zipFunction));
+    }
+
+    /**
+     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
      * <i>n</i> items emitted, in sequence, by the <i>n</i> Observables emitted by a specified Observable.
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
