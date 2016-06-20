@@ -21,9 +21,9 @@ import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableOnSubscribeMergeIterable implements CompletableConsumable {
-    final Iterable<? extends Completable> sources;
+    final Iterable<? extends CompletableConsumable> sources;
     
-    public CompletableOnSubscribeMergeIterable(Iterable<? extends Completable> sources) {
+    public CompletableOnSubscribeMergeIterable(Iterable<? extends CompletableConsumable> sources) {
         this.sources = sources;
     }
     
@@ -35,7 +35,7 @@ public final class CompletableOnSubscribeMergeIterable implements CompletableCon
         
         s.onSubscribe(set);
         
-        Iterator<? extends Completable> iterator;
+        Iterator<? extends CompletableConsumable> iterator;
         
         try {
             iterator = sources.iterator();
@@ -75,7 +75,7 @@ public final class CompletableOnSubscribeMergeIterable implements CompletableCon
                 return;
             }
             
-            Completable c;
+            CompletableConsumable c;
             
             try {
                 c = iterator.next();

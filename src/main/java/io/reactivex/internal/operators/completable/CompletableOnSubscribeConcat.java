@@ -26,10 +26,10 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableOnSubscribeConcat implements CompletableConsumable {
-    final Flowable<? extends Completable> sources;
+    final Publisher<? extends CompletableConsumable> sources;
     final int prefetch;
     
-    public CompletableOnSubscribeConcat(Flowable<? extends Completable> sources, int prefetch) {
+    public CompletableOnSubscribeConcat(Publisher<? extends CompletableConsumable> sources, int prefetch) {
         this.sources = sources;
         this.prefetch = prefetch;
     }
@@ -42,14 +42,14 @@ public final class CompletableOnSubscribeConcat implements CompletableConsumable
     
     static final class CompletableConcatSubscriber
     extends AtomicInteger
-    implements Subscriber<Completable>, Disposable {
+    implements Subscriber<CompletableConsumable>, Disposable {
         /** */
         private static final long serialVersionUID = 7412667182931235013L;
         final CompletableSubscriber actual;
         final int prefetch;
         final SerialResource<Disposable> sr;
         
-        final SpscArrayQueue<Completable> queue;
+        final SpscArrayQueue<CompletableConsumable> queue;
         
         Subscription s;
         
@@ -62,7 +62,7 @@ public final class CompletableOnSubscribeConcat implements CompletableConsumable
         public CompletableConcatSubscriber(CompletableSubscriber actual, int prefetch) {
             this.actual = actual;
             this.prefetch = prefetch;
-            this.queue = new SpscArrayQueue<Completable>(prefetch);
+            this.queue = new SpscArrayQueue<CompletableConsumable>(prefetch);
             this.sr = new SerialResource<Disposable>(Disposables.consumeAndDispose());
             this.inner = new ConcatInnerSubscriber();
         }
@@ -78,7 +78,7 @@ public final class CompletableOnSubscribeConcat implements CompletableConsumable
         }
         
         @Override
-        public void onNext(Completable t) {
+        public void onNext(CompletableConsumable t) {
             if (!queue.offer(t)) {
                 onError(new MissingBackpressureException());
                 return;
@@ -130,7 +130,7 @@ public final class CompletableOnSubscribeConcat implements CompletableConsumable
         
         void next() {
             boolean d = done;
-            Completable c = queue.poll();
+            CompletableConsumable c = queue.poll();
             if (c == null) {
                 if (d) {
                     if (once.compareAndSet(false, true)) {

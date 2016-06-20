@@ -21,9 +21,9 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 
 public final class CompletableOnSubscribeMergeDelayErrorArray implements CompletableConsumable {
-    final Completable[] sources;
+    final CompletableConsumable[] sources;
     
-    public CompletableOnSubscribeMergeDelayErrorArray(Completable[] sources) {
+    public CompletableOnSubscribeMergeDelayErrorArray(CompletableConsumable[] sources) {
         this.sources = sources;
     }
     
@@ -36,7 +36,7 @@ public final class CompletableOnSubscribeMergeDelayErrorArray implements Complet
         
         s.onSubscribe(set);
         
-        for (Completable c : sources) {
+        for (CompletableConsumable c : sources) {
             if (set.isDisposed()) {
                 return;
             }

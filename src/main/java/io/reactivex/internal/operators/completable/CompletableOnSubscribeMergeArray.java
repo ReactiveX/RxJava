@@ -20,9 +20,9 @@ import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableOnSubscribeMergeArray implements CompletableConsumable {
-    final Completable[] sources;
+    final CompletableConsumable[] sources;
     
-    public CompletableOnSubscribeMergeArray(Completable[] sources) {
+    public CompletableOnSubscribeMergeArray(CompletableConsumable[] sources) {
         this.sources = sources;
     }
     
@@ -34,7 +34,7 @@ public final class CompletableOnSubscribeMergeArray implements CompletableConsum
         
         s.onSubscribe(set);
         
-        for (Completable c : sources) {
+        for (CompletableConsumable c : sources) {
             if (set.isDisposed()) {
                 return;
             }

@@ -21,16 +21,16 @@ import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class CompletableOnSubscribeConcatIterable implements CompletableConsumable {
-    final Iterable<? extends Completable> sources;
+    final Iterable<? extends CompletableConsumable> sources;
     
-    public CompletableOnSubscribeConcatIterable(Iterable<? extends Completable> sources) {
+    public CompletableOnSubscribeConcatIterable(Iterable<? extends CompletableConsumable> sources) {
         this.sources = sources;
     }
     
     @Override
     public void subscribe(CompletableSubscriber s) {
         
-        Iterator<? extends Completable> it;
+        Iterator<? extends CompletableConsumable> it;
         
         try {
             it = sources.iterator();
@@ -56,13 +56,13 @@ public final class CompletableOnSubscribeConcatIterable implements CompletableCo
         private static final long serialVersionUID = -7965400327305809232L;
 
         final CompletableSubscriber actual;
-        final Iterator<? extends Completable> sources;
+        final Iterator<? extends CompletableConsumable> sources;
         
         int index;
         
         final SerialDisposable sd;
         
-        public ConcatInnerSubscriber(CompletableSubscriber actual, Iterator<? extends Completable> sources) {
+        public ConcatInnerSubscriber(CompletableSubscriber actual, Iterator<? extends CompletableConsumable> sources) {
             this.actual = actual;
             this.sources = sources;
             this.sd = new SerialDisposable();
@@ -92,7 +92,7 @@ public final class CompletableOnSubscribeConcatIterable implements CompletableCo
                 return;
             }
 
-            Iterator<? extends Completable> a = sources;
+            Iterator<? extends CompletableConsumable> a = sources;
             do {
                 if (sd.isDisposed()) {
                     return;
@@ -111,7 +111,7 @@ public final class CompletableOnSubscribeConcatIterable implements CompletableCo
                     return;
                 }
                 
-                Completable c;
+                CompletableConsumable c;
                 
                 try {
                     c = a.next();

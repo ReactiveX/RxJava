@@ -98,7 +98,7 @@ public class SingleNullTests {
         for (int argCount = 2; argCount < 10; argCount++) {
             for (int argNull = 1; argNull <= argCount; argNull++) {
                 Class<?>[] params = new Class[argCount];
-                Arrays.fill(params, Single.class);
+                Arrays.fill(params, SingleConsumable.class);
 
                 Object[] values = new Object[argCount];
                 Arrays.fill(values, just1);
@@ -260,7 +260,7 @@ public class SingleNullTests {
         for (int argCount = 2; argCount < 10; argCount++) {
             for (int argNull = 1; argNull <= argCount; argNull++) {
                 Class<?>[] params = new Class[argCount];
-                Arrays.fill(params, Single.class);
+                Arrays.fill(params, SingleConsumable.class);
 
                 Object[] values = new Object[argCount];
                 Arrays.fill(values, just1);
@@ -411,7 +411,7 @@ public class SingleNullTests {
         for (int argCount = 3; argCount < 10; argCount++) {
             for (int argNull = 1; argNull <= argCount; argNull++) {
                 Class<?>[] params = new Class[argCount + 1];
-                Arrays.fill(params, Single.class);
+                Arrays.fill(params, SingleConsumable.class);
                 Class<?> fniClass = Class.forName("io.reactivex.functions.Function" + argCount);
                 params[argCount] = fniClass;
 
@@ -454,7 +454,7 @@ public class SingleNullTests {
             }
             
             Class<?>[] params = new Class[argCount + 1];
-            Arrays.fill(params, Single.class);
+            Arrays.fill(params, SingleConsumable.class);
             Class<?> fniClass = Class.forName("io.reactivex.functions.Function" + argCount);
             params[argCount] = fniClass;
 

@@ -21,9 +21,9 @@ import io.reactivex.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 
 public final class CompletableOnSubscribeMergeDelayErrorIterable implements CompletableConsumable {
-    final Iterable<? extends Completable> sources;
+    final Iterable<? extends CompletableConsumable> sources;
     
-    public CompletableOnSubscribeMergeDelayErrorIterable(Iterable<? extends Completable> sources) {
+    public CompletableOnSubscribeMergeDelayErrorIterable(Iterable<? extends CompletableConsumable> sources) {
         this.sources = sources;
     }
     
@@ -36,7 +36,7 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements Comp
         
         s.onSubscribe(set);
         
-        Iterator<? extends Completable> iterator;
+        Iterator<? extends CompletableConsumable> iterator;
         
         try {
             iterator = sources.iterator();
@@ -78,7 +78,7 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements Comp
                 return;
             }
             
-            Completable c;
+            CompletableConsumable c;
             
             try {
                 c = iterator.next();
