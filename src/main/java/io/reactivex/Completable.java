@@ -75,7 +75,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable amb(final CompletableConsumable... sources) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
@@ -95,7 +95,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable amb(final Iterable<? extends CompletableConsumable> sources) {
         Objects.requireNonNull(sources, "sources is null");
         
@@ -106,7 +106,7 @@ public abstract class Completable implements CompletableConsumable {
      * Returns a Completable instance that completes immediately when subscribed to.
      * @return a Completable instance that completes immediately 
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable complete() {
         return COMPLETE;
     }
@@ -117,7 +117,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the Completable instance which completes only when all sources complete
      * @throws NullPointerException if sources is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable concat(CompletableConsumable... sources) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
@@ -135,7 +135,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the Completable instance which completes only when all sources complete
      * @throws NullPointerException if sources is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable concat(Iterable<? extends CompletableConsumable> sources) {
         Objects.requireNonNull(sources, "sources is null");
         
@@ -148,7 +148,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the Completable instance which completes only when all sources complete
      * @throws NullPointerException if sources is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable concat(Publisher<? extends CompletableConsumable> sources) {
         return concat(sources, 2);
     }
@@ -160,7 +160,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the Completable instance which completes only when all sources complete
      * @throws NullPointerException if sources is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable concat(Publisher<? extends CompletableConsumable> sources, int prefetch) {
         Objects.requireNonNull(sources, "sources is null");
         if (prefetch < 1) {
@@ -177,7 +177,7 @@ public abstract class Completable implements CompletableConsumable {
      * @throws NullPointerException if onSubscribe is null
      * @deprecated
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     @Deprecated // FIXME temporary
     public static Completable create(CompletableConsumable onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
@@ -201,7 +201,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param completableSupplier the supplier that returns the Completable that will be subscribed to.
      * @return the Completable instance
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable defer(final Supplier<? extends CompletableConsumable> completableSupplier) {
         Objects.requireNonNull(completableSupplier, "completableSupplier");
         return new CompletableDefer(completableSupplier);
@@ -217,7 +217,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if errorSupplier is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable error(final Supplier<? extends Throwable> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
         return new CompletableErrorSupplier(errorSupplier);
@@ -229,7 +229,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if error is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable error(final Throwable error) {
         Objects.requireNonNull(error, "error is null");
         return new CompletableError(error);
@@ -241,7 +241,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param callable the callable instance to execute for each subscriber
      * @return the new Completable instance
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable fromCallable(final Callable<?> callable) {
         Objects.requireNonNull(callable, "callable is null");
         return new CompletableFromCallable(callable);
@@ -256,7 +256,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if flowable is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Completable fromFlowable(final Publisher<T> flowable) {
         Objects.requireNonNull(flowable, "flowable is null");
         return new CompletableFromFlowable<T>(flowable);
@@ -270,7 +270,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if flowable is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Completable fromObservable(final ObservableConsumable<T> observable) {
         Objects.requireNonNull(observable, "observable is null");
         return new CompletableFromObservable<T>(observable);
@@ -284,7 +284,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if run is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable fromRunnable(final Runnable run) {
         Objects.requireNonNull(run, "run is null");
         return new CompletableFromRunnable(run);
@@ -298,7 +298,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if single is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Completable fromSingle(final SingleConsumable<T> single) {
         Objects.requireNonNull(single, "single is null");
         return new CompletableFromSingle<T>(single);
@@ -329,7 +329,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable merge(Iterable<? extends CompletableConsumable> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return new CompletableMergeIterable(sources);
@@ -446,7 +446,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param unit the delay unit
      * @return the new Completable instance
      */
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public static Completable timer(long delay, TimeUnit unit) {
         return timer(delay, unit, Schedulers.computation());
     }
@@ -459,7 +459,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param scheduler the scheduler where to emit the complete event
      * @return the new Completable instance
      */
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Completable timer(final long delay, final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -531,7 +531,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if other is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable ambWith(CompletableConsumable other) {
         Objects.requireNonNull(other, "other is null");
         return amb(this, other);
@@ -542,7 +542,7 @@ public abstract class Completable implements CompletableConsumable {
      * rethrows any exception emitted.
      * @throws RuntimeException wrapping an InterruptedException if the current thread is interrupted
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final void await() {
         CompletableAwait.await(this);
     }
@@ -556,7 +556,7 @@ public abstract class Completable implements CompletableConsumable {
      * false if the timeout ellapsed before this Completable terminated.
      * @throws RuntimeException wrapping an InterruptedException if the current thread is interrupted
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final boolean await(long timeout, TimeUnit unit) {
         return CompletableAwait.await(this, timeout, unit);
     }
@@ -568,7 +568,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the Completable returned by the function
      * @throws NullPointerException if transformer is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable compose(CompletableTransformer transformer) {
         return wrap(to(transformer));
     }
@@ -579,7 +579,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable which subscribes to this and then the other Completable
      * @throws NullPointerException if other is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable concatWith(CompletableConsumable other) {
         Objects.requireNonNull(other, "other is null");
         return concat(this, other);
@@ -592,7 +592,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if unit is null
      */
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Completable delay(long delay, TimeUnit unit) {
         return delay(delay, unit, Schedulers.computation(), false);
     }
@@ -606,7 +606,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if unit or scheduler is null
      */
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable delay(long delay, TimeUnit unit, Scheduler scheduler) {
         return delay(delay, unit, scheduler, false);
     }
@@ -621,7 +621,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if unit or scheduler is null
      */
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable delay(final long delay, final TimeUnit unit, final Scheduler scheduler, final boolean delayError) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -634,7 +634,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if onComplete is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnComplete(Runnable onComplete) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete, Functions.emptyRunnable(), Functions.emptyRunnable());
     }
@@ -646,7 +646,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if onDispose is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnDispose(Runnable onDispose) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable(), onDispose);
     }
@@ -657,7 +657,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if onError is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnError(Consumer<? super Throwable> onError) {
         return doOnLifecycle(Functions.emptyConsumer(), onError, Functions.emptyRunnable(), Functions.emptyRunnable(), Functions.emptyRunnable());
     }
@@ -672,7 +672,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param onDisposed the runnable called when the child cancels the subscription
      * @return the new Completable instance
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     protected final Completable doOnLifecycle(
             final Consumer<? super Disposable> onSubscribe, 
             final Consumer<? super Throwable> onError, 
@@ -694,7 +694,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if onSubscribe is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnSubscribe(Consumer<? super Disposable> onSubscribe) {
         return doOnLifecycle(onSubscribe, Functions.emptyConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable(), Functions.emptyRunnable());
     }
@@ -705,7 +705,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param onTerminate the callback to call just before this Completable terminates
      * @return the new Completable instance
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnTerminate(final Runnable onTerminate) {
         return doOnLifecycle(Functions.emptyConsumer(), new Consumer<Throwable>() {
             @Override
@@ -724,7 +724,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if other is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable endWith(CompletableConsumable other) {
         return concatWith(other);
     }
@@ -736,7 +736,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Observable instance
      * @throws NullPointerException if next is null
      */
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <T> Observable<T> endWith(ObservableConsumable<T> next) {
         return this.<T>toObservable().endWith(next);
     }
@@ -749,7 +749,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Observable instance
      * @throws NullPointerException if next is null
      */
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <T> Flowable<T> endWith(Publisher<T> next) {
         return this.<T>toFlowable().endWith(next);
     }
@@ -761,7 +761,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if onAfterComplete is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable finallyDo(Runnable onAfterComplete) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.emptyRunnable(), onAfterComplete, Functions.emptyRunnable());
     }
@@ -772,7 +772,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the throwable if this terminated with an error, null otherwise
      * @throws RuntimeException that wraps an InterruptedException if the wait is interrupted
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Throwable get() {
         return CompletableAwait.get(this);
     }
@@ -786,7 +786,7 @@ public abstract class Completable implements CompletableConsumable {
      * @throws RuntimeException that wraps an InterruptedException if the wait is interrupted or
      * TimeoutException if the specified timeout ellapsed before it
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Throwable get(long timeout, TimeUnit unit) {
         return CompletableAwait.get(this, timeout, unit);
     }
@@ -797,7 +797,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if onLift is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     @Deprecated // FIXME temporary
     public final Completable lift(final CompletableOperator onLift) {
         Objects.requireNonNull(onLift, "onLift is null");
@@ -811,7 +811,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if other is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable mergeWith(CompletableConsumable other) {
         Objects.requireNonNull(other, "other is null");
         return merge(this, other);
@@ -823,7 +823,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if scheduler is null
      */
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable observeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         return new CompletableObserveOn(this, scheduler);
@@ -834,7 +834,7 @@ public abstract class Completable implements CompletableConsumable {
      * and swallow the throwable.
      * @return the new Completable instance
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable onErrorComplete() {
         return onErrorComplete(Functions.alwaysTrue());
     }
@@ -846,7 +846,7 @@ public abstract class Completable implements CompletableConsumable {
      * if the Throwable should be swallowed and replaced with an onComplete.
      * @return the new Completable instance
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable onErrorComplete(final Predicate<? super Throwable> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         
@@ -861,7 +861,7 @@ public abstract class Completable implements CompletableConsumable {
      * continuation.
      * @return the new Completable instance
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable onErrorResumeNext(final Function<? super Throwable, ? extends CompletableConsumable> errorMapper) {
         Objects.requireNonNull(errorMapper, "errorMapper is null");
         return new CompletableResumeNext(this, errorMapper);
@@ -871,7 +871,7 @@ public abstract class Completable implements CompletableConsumable {
      * Returns a Completable that repeatedly subscribes to this Completable until cancelled.
      * @return the new Completable instance
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable repeat() {
         return fromFlowable(toFlowable().repeat());
     }
@@ -882,7 +882,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws IllegalArgumentException if times is less than zero
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable repeat(long times) {
         return fromFlowable(toFlowable().repeat(times));
     }
@@ -894,7 +894,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if stop is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable repeatUntil(BooleanSupplier stop) {
         return fromFlowable(toFlowable().repeatUntil(stop));
     }
@@ -908,7 +908,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if stop is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     /*
      * FIXME the Observable<Void> type doesn't make sense here because nulls are not allowed
      * FIXME add unit test once the type has been fixed
@@ -921,7 +921,7 @@ public abstract class Completable implements CompletableConsumable {
      * Returns a Completable that retries this Completable as long as it emits an onError event.
      * @return the new Completable instance
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable retry() {
         return fromFlowable(toFlowable().retry());
     }
@@ -933,7 +933,7 @@ public abstract class Completable implements CompletableConsumable {
      * and should return true to retry.
      * @return the new Completable instance
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
         return fromFlowable(toFlowable().retry(predicate));
     }
@@ -945,7 +945,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws IllegalArgumentException if times is negative
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable retry(long times) {
         return fromFlowable(toFlowable().retry(times));
     }
@@ -958,7 +958,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if predicate is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable retry(Predicate<? super Throwable> predicate) {
         return fromFlowable(toFlowable().retry(predicate));
     }
@@ -972,7 +972,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if handler is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable retryWhen(Function<? super Flowable<? extends Throwable>, ? extends Publisher<Object>> handler) {
         return fromFlowable(toFlowable().retryWhen(handler));
     }
@@ -984,7 +984,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if other is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable startWith(CompletableConsumable other) {
         Objects.requireNonNull(other, "other is null");
         return concat(other, this);
@@ -998,7 +998,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new NbpObservable instance
      * @throws NullPointerException if other is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Observable<T> startWith(Observable<T> other) {
         Objects.requireNonNull(other, "other is null");
         return other.endWith(this.<T>toObservable());
@@ -1011,7 +1011,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Observable instance
      * @throws NullPointerException if other is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Flowable<T> startWith(Publisher<T> other) {
         Objects.requireNonNull(other, "other is null");
         return this.<T>toFlowable().startWith(other);
@@ -1022,7 +1022,7 @@ public abstract class Completable implements CompletableConsumable {
      * the subscription.
      * @return the Disposable that allows cancelling the subscription
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
         EmptyCompletableSubscriber s = new EmptyCompletableSubscriber();
         subscribe(s);
@@ -1033,7 +1033,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param s the CompletableSubscriber, not null
      * @throws NullPointerException if s is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     @Override
     public final void subscribe(CompletableSubscriber s) {
         Objects.requireNonNull(s, "s is null");
@@ -1059,7 +1059,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the Disposable that can be used for cancelling the subscription asynchronously
      * @throws NullPointerException if either callback is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final Consumer<? super Throwable> onError, final Runnable onComplete) {
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
@@ -1076,7 +1076,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param s the NbpSubscriber instance, not null
      * @throws NullPointerException if s is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> void subscribe(final Observer<? super T> s) {
         Objects.requireNonNull(s, "s is null");
         
@@ -1092,7 +1092,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param onComplete the runnable called when this Completable completes normally
      * @return the Disposable that allows cancelling the subscription
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final Runnable onComplete) {
         Objects.requireNonNull(onComplete, "onComplete is null");
         
@@ -1108,7 +1108,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param s the reactive-streams Subscriber, not null
      * @throws NullPointerException if s is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> void subscribe(Subscriber<T> s) {
         Objects.requireNonNull(s, "s is null");
         SubscriberCompletableSubscriber<T> os = new SubscriberCompletableSubscriber<T>(s);
@@ -1122,7 +1122,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if scheduler is null
      */
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable subscribeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         
@@ -1137,7 +1137,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if unit is null
      */
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Completable timeout(long timeout, TimeUnit unit) {
         return timeout0(timeout, unit, Schedulers.computation(), null);
     }
@@ -1151,7 +1151,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if unit or other is null
      */
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Completable timeout(long timeout, TimeUnit unit, CompletableConsumable other) {
         Objects.requireNonNull(other, "other is null");
         return timeout0(timeout, unit, Schedulers.computation(), other);
@@ -1167,7 +1167,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if unit or scheduler is null
      */
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable timeout(long timeout, TimeUnit unit, Scheduler scheduler) {
         return timeout0(timeout, unit, scheduler, null);
     }
@@ -1183,7 +1183,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if unit, scheduler or other is null
      */
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable timeout(long timeout, TimeUnit unit, Scheduler scheduler, CompletableConsumable other) {
         Objects.requireNonNull(other, "other is null");
         return timeout0(timeout, unit, scheduler, other);
@@ -1201,7 +1201,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if unit or scheduler
      */
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable timeout0(long timeout, TimeUnit unit, Scheduler scheduler, CompletableConsumable other) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -1215,7 +1215,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the converted value
      * @throws NullPointerException if converter is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> U to(Function<? super Completable, U> converter) {
         return converter.apply(this);
     }
@@ -1226,7 +1226,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param <T> the value type
      * @return the new Observable created
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Flowable<T> toFlowable() {
         return new CompletableToFlowable<T>(this);
     }
@@ -1237,7 +1237,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param <T> the value type
      * @return the new NbpObservable created
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Observable<T> toObservable() {
         return new CompletableToObservable<T>(this);
     }
@@ -1250,7 +1250,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Single instance
      * @throws NullPointerException if completionValueSupplier is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Single<T> toSingle(final Supplier<? extends T> completionValueSupplier) {
         Objects.requireNonNull(completionValueSupplier, "completionValueSupplier is null");
         return new CompletableToSingle<T>(this, completionValueSupplier, null);
@@ -1264,7 +1264,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Single instance
      * @throws NullPointerException if completionValue is null
      */
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Single<T> toSingleDefault(final T completionValue) {
         Objects.requireNonNull(completionValue, "completionValue is null");
         return new CompletableToSingle<T>(this, null, completionValue);
@@ -1277,7 +1277,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      * @throws NullPointerException if scheduler is null
      */
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable unsubscribeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         return new CompletableUnsubscribeOn(this, scheduler);

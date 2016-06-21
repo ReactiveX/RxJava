@@ -13,18 +13,55 @@
 
 package io.reactivex.annotations;
 
+import io.reactivex.schedulers.Schedulers;
 import java.lang.annotation.*;
 
 /**
  * Indicates what kind of scheduler the class or method uses.
+ * <p>
+ * Constants are provided for instances from {@link Schedulers} as well as values for
+ * {@linkplain #NONE not using a scheduler} and {@linkplain #CUSTOM a manually-specified scheduler}.
+ * Libraries providing their own values should namespace them with their base package name followed
+ * by a colon ({@code :}) and then a human-readable name (e.g., {@code com.example:ui-thread}).
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface SchedulerSupport {
     /**
-     * The kind of scheduler the class or method uses.
-     * @return the kind of scheduler the class or method uses
+     * A special value indicating the operator/class doesn't use schedulers.
      */
-    SchedulerKind value();
+    String NONE = "none";
+    /**
+     * A special value indicating the operator/class requires a scheduler to be manually specified.
+     */
+    String CUSTOM = "custom";
+
+    // Built-in schedulers:
+    /**
+     * The operator/class runs on RxJava's {@linkplain Schedulers#computation() computation
+     * scheduler} or takes timing information from it.
+     */
+    String COMPUTATION = "io.reactivex:computation";
+    /**
+     * The operator/class runs on RxJava's {@linkplain Schedulers#io() I/O scheduler} or takes
+     * timing information from it.
+     */
+    String IO = "io.reactivex:io";
+    /**
+     * The operator/class runs on RxJava's {@linkplain Schedulers#newThread() new thread scheduler}
+     * or takes timing information from it.
+     */
+    String NEW_THREAD = "io.reactivex:new-thread";
+    /**
+     * The operator/class runs on RxJava's {@linkplain Schedulers#trampoline() trampoline scheduler}
+     * or takes timing information from it.
+     */
+    String TRAMPOLINE = "io.reactivex:trampoline";
+
+    /**
+     * The kind of scheduler the class or method uses.
+     * @return the name of the scheduler the class or method uses
+     */
+    String value();
 }

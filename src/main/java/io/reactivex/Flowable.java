@@ -73,7 +73,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> amb(Publisher<? extends T>... sources) {
         Objects.requireNonNull(sources, "sources is null");
         int len = sources.length;
@@ -91,25 +91,25 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> combineLatest(Function<? super Object[], ? extends R> combiner, boolean delayError, int bufferSize, Publisher<? extends T>... sources) {
         return combineLatest(sources, combiner, delayError, bufferSize);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> combineLatest(Iterable<? extends Publisher<? extends T>> sources, Function<? super Object[], ? extends R> combiner) {
         return combineLatest(sources, combiner, false, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> combineLatest(Iterable<? extends Publisher<? extends T>> sources, Function<? super Object[], ? extends R> combiner, boolean delayError) {
         return combineLatest(sources, combiner, delayError, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> combineLatest(Iterable<? extends Publisher<? extends T>> sources, Function<? super Object[], ? extends R> combiner, boolean delayError, int bufferSize) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(combiner, "combiner is null");
@@ -121,19 +121,19 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<? super Object[], ? extends R> combiner) {
         return combineLatest(sources, combiner, false, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<? super Object[], ? extends R> combiner, boolean delayError) {
         return combineLatest(sources, combiner, delayError, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<? super Object[], ? extends R> combiner, boolean delayError, int bufferSize) {
         validateBufferSize(bufferSize);
         Objects.requireNonNull(combiner, "combiner is null");
@@ -147,7 +147,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> combineLatest(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             BiFunction<? super T1, ? super T2, ? extends R> combiner) {
@@ -157,7 +157,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, R> Flowable<R> combineLatest(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             Publisher<? extends T3> p3, 
@@ -167,7 +167,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, R> Flowable<R> combineLatest(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             Publisher<? extends T3> p3, Publisher<? extends T4> p4,
@@ -177,7 +177,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, R> Flowable<R> combineLatest(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             Publisher<? extends T3> p3, Publisher<? extends T4> p4,
@@ -188,7 +188,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, R> Flowable<R> combineLatest(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             Publisher<? extends T3> p3, Publisher<? extends T4> p4,
@@ -199,7 +199,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, R> Flowable<R> combineLatest(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             Publisher<? extends T3> p3, Publisher<? extends T4> p4,
@@ -211,7 +211,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Flowable<R> combineLatest(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             Publisher<? extends T3> p3, Publisher<? extends T4> p4,
@@ -223,7 +223,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Flowable<R> combineLatest(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             Publisher<? extends T3> p3, Publisher<? extends T4> p4,
@@ -236,7 +236,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(int prefetch, Iterable<? extends Publisher<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return fromIterable(sources).concatMap((Function)Functions.identity(), prefetch);
@@ -244,35 +244,35 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(Iterable<? extends Publisher<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return fromIterable(sources).concatMap((Function)Functions.identity());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Flowable<T> concat(Publisher<? extends Publisher<? extends T>> sources) {
         return concat(sources, bufferSize());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Flowable<T> concat(Publisher<? extends Publisher<? extends T>> sources, int bufferSize) {
         return fromPublisher(sources).concatMap((Function)Functions.identity());
     }
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(Publisher<? extends T> p1, Publisher<? extends T> p2) {
         return concatArray(p1, p2);
     }
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(
             Publisher<? extends T> p1, Publisher<? extends T> p2,
             Publisher<? extends T> p3) {
@@ -281,7 +281,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(
             Publisher<? extends T> p1, Publisher<? extends T> p2,
             Publisher<? extends T> p3, Publisher<? extends T> p4) {
@@ -290,7 +290,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(
             Publisher<? extends T> p1, Publisher<? extends T> p2, 
             Publisher<? extends T> p3, Publisher<? extends T> p4,
@@ -301,7 +301,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(
             Publisher<? extends T> p1, Publisher<? extends T> p2, 
             Publisher<? extends T> p3, Publisher<? extends T> p4,
@@ -312,7 +312,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(
             Publisher<? extends T> p1, Publisher<? extends T> p2,
             Publisher<? extends T> p3, Publisher<? extends T> p4,
@@ -324,7 +324,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(
             Publisher<? extends T> p1, Publisher<? extends T> p2, 
             Publisher<? extends T> p3, Publisher<? extends T> p4,
@@ -336,7 +336,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(
             Publisher<? extends T> p1, Publisher<? extends T> p2, 
             Publisher<? extends T> p3, Publisher<? extends T> p4,
@@ -349,7 +349,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concatArray(int prefetch, Publisher<? extends T>... sources) {
         Objects.requireNonNull(sources, "sources is null");
         return fromArray(sources).concatMap((Function)Functions.identity(), prefetch);
@@ -366,7 +366,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concatArray(Publisher<? extends T>... sources) {
         if (sources.length == 0) {
             return empty();
@@ -378,7 +378,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.NONE)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> create(Publisher<T> onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         if (onSubscribe instanceof Flowable) {
@@ -389,27 +389,27 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> defer(Supplier<? extends Publisher<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return new FlowableDefer<T>(supplier);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> empty() {
         return FlowableEmpty.empty();
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> error(Supplier<? extends Throwable> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
         return new FlowableError<T>(errorSupplier);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> error(final Throwable e) {
         Objects.requireNonNull(e, "e is null");
         return error(new Supplier<Throwable>() {
@@ -421,7 +421,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromArray(T... values) {
         Objects.requireNonNull(values, "values is null");
         if (values.length == 0) {
@@ -434,7 +434,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromCallable(Callable<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return new FlowableFromCallable<T>(supplier);
@@ -446,7 +446,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * futureObservable.doOnCancel(() -> future.cancel(true));
      */
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future) {
         Objects.requireNonNull(future, "future is null");
         Flowable<T> o = new FlowableFromFuture<T>(future, 0L, null);
@@ -455,7 +455,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
         Objects.requireNonNull(future, "future is null");
         Objects.requireNonNull(unit, "unit is null");
@@ -464,7 +464,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         Flowable<T> o = fromFuture(future, timeout, unit); 
@@ -472,7 +472,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.IO)
+    @SchedulerSupport(SchedulerSupport.IO)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         Flowable<T> o = fromFuture(future);
@@ -480,14 +480,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromIterable(Iterable<? extends T> source) {
         Objects.requireNonNull(source, "source is null");
         return new FlowableFromIterable<T>(source);
     }
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> fromPublisher(final Publisher<? extends T> publisher) {
         if (publisher instanceof Flowable) {
@@ -499,7 +499,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> generate(final Consumer<Subscriber<T>> generator) {
         Objects.requireNonNull(generator, "generator is null");
         return generate(Functions.nullSupplier(), 
@@ -513,7 +513,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Flowable<T> generate(Supplier<S> initialState, final BiConsumer<S, Subscriber<T>> generator) {
         Objects.requireNonNull(generator, "generator is null");
         return generate(initialState, new BiFunction<S, Subscriber<T>, S>() {
@@ -526,7 +526,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Flowable<T> generate(Supplier<S> initialState, final BiConsumer<S, Subscriber<T>> generator, Consumer<? super S> disposeState) {
         Objects.requireNonNull(generator, "generator is null");
         return generate(initialState, new BiFunction<S, Subscriber<T>, S>() {
@@ -539,13 +539,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Flowable<T> generate(Supplier<S> initialState, BiFunction<S, Subscriber<T>, S> generator) {
         return generate(initialState, generator, Functions.emptyConsumer());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Flowable<T> generate(Supplier<S> initialState, BiFunction<S, Subscriber<T>, S> generator, Consumer<? super S> disposeState) {
         Objects.requireNonNull(initialState, "initialState is null");
         Objects.requireNonNull(generator, "generator is null");
@@ -554,13 +554,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public static Flowable<Long> interval(long initialDelay, long period, TimeUnit unit) {
         return interval(initialDelay, period, unit, Schedulers.computation());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Flowable<Long> interval(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
         if (initialDelay < 0) {
             initialDelay = 0L;
@@ -575,25 +575,25 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public static Flowable<Long> interval(long period, TimeUnit unit) {
         return interval(period, period, unit, Schedulers.computation());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Flowable<Long> interval(long period, TimeUnit unit, Scheduler scheduler) {
         return interval(period, period, unit, scheduler);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public static Flowable<Long> intervalRange(long start, long count, long initialDelay, long period, TimeUnit unit) {
         return intervalRange(start, count, initialDelay, period, unit, Schedulers.computation());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Flowable<Long> intervalRange(long start, long count, long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
 
         long end = start + (count - 1);
@@ -614,7 +614,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T value) {
         Objects.requireNonNull(value, "value is null");
         return new FlowableJust<T>(value);
@@ -622,7 +622,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Flowable<T> just(T v1, T v2) {
         Objects.requireNonNull(v1, "The first value is null");
         Objects.requireNonNull(v2, "The second value is null");
@@ -633,7 +633,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Flowable<T> just(T v1, T v2, T v3) {
         Objects.requireNonNull(v1, "The first value is null");
         Objects.requireNonNull(v2, "The second value is null");
@@ -644,7 +644,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4) {
         Objects.requireNonNull(v1, "The first value is null");
         Objects.requireNonNull(v2, "The second value is null");
@@ -656,7 +656,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4, T v5) {
         Objects.requireNonNull(v1, "The first value is null");
         Objects.requireNonNull(v2, "The second value is null");
@@ -669,7 +669,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4, T v5, T v6) {
         Objects.requireNonNull(v1, "The first value is null");
         Objects.requireNonNull(v2, "The second value is null");
@@ -683,7 +683,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7) {
         Objects.requireNonNull(v1, "The first value is null");
         Objects.requireNonNull(v2, "The second value is null");
@@ -698,7 +698,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8) {
         Objects.requireNonNull(v1, "The first value is null");
         Objects.requireNonNull(v2, "The second value is null");
@@ -714,7 +714,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9) {
         Objects.requireNonNull(v1, "The first value is null");
         Objects.requireNonNull(v2, "The second value is null");
@@ -731,62 +731,62 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(int maxConcurrency, int bufferSize, Iterable<? extends Publisher<? extends T>> sources) {
         return fromIterable(sources).flatMap((Function)Functions.identity(), false, maxConcurrency, bufferSize);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(int maxConcurrency, int bufferSize, Publisher<? extends T>... sources) {
         return fromArray(sources).flatMap((Function)Functions.identity(), false, maxConcurrency, bufferSize);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(int maxConcurrency, Publisher<? extends T>... sources) {
         return fromArray(sources).flatMap((Function)Functions.identity(), maxConcurrency);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(Iterable<? extends Publisher<? extends T>> sources) {
         return fromIterable(sources).flatMap((Function)Functions.identity());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(Iterable<? extends Publisher<? extends T>> sources, int maxConcurrency) {
         return fromIterable(sources).flatMap((Function)Functions.identity(), maxConcurrency);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(Publisher<? extends Publisher<? extends T>> sources) {
         return merge(sources, bufferSize());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(Publisher<? extends Publisher<? extends T>> sources, int maxConcurrency) {
         return fromPublisher(sources).flatMap((Function)Functions.identity(), maxConcurrency);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(Publisher<? extends T>... sources) {
         return fromArray(sources).flatMap((Function)Functions.identity(), sources.length);
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(Publisher<? extends T> p1, Publisher<? extends T> p2) {
         Objects.requireNonNull(p1, "p1 is null");
         Objects.requireNonNull(p2, "p2 is null");
@@ -795,7 +795,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(Publisher<? extends T> p1, Publisher<? extends T> p2, Publisher<? extends T> p3) {
         Objects.requireNonNull(p1, "p1 is null");
         Objects.requireNonNull(p2, "p2 is null");
@@ -805,7 +805,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(
             Publisher<? extends T> p1, Publisher<? extends T> p2, 
             Publisher<? extends T> p3, Publisher<? extends T> p4) {
@@ -818,62 +818,62 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(boolean delayErrors, Iterable<? extends Publisher<? extends T>> sources) {
         return fromIterable(sources).flatMap((Function)Functions.identity(), true);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(int maxConcurrency, int bufferSize, Iterable<? extends Publisher<? extends T>> sources) {
         return fromIterable(sources).flatMap((Function)Functions.identity(), true, maxConcurrency, bufferSize);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(int maxConcurrency, int bufferSize, Publisher<? extends T>... sources) {
         return fromArray(sources).flatMap((Function)Functions.identity(), true, maxConcurrency, bufferSize);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(int maxConcurrency, Iterable<? extends Publisher<? extends T>> sources) {
         return fromIterable(sources).flatMap((Function)Functions.identity(), true, maxConcurrency);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(int maxConcurrency, Publisher<? extends T>... sources) {
         return fromArray(sources).flatMap((Function)Functions.identity(), true, maxConcurrency);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(Publisher<? extends Publisher<? extends T>> sources) {
         return mergeDelayError(sources, bufferSize());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(Publisher<? extends Publisher<? extends T>> sources, int maxConcurrency) {
         return fromPublisher(sources).flatMap((Function)Functions.identity(), true, maxConcurrency);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(Publisher<? extends T>... sources) {
         return fromArray(sources).flatMap((Function)Functions.identity(), true, sources.length);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(Publisher<? extends T> p1, Publisher<? extends T> p2) {
         Objects.requireNonNull(p1, "p1 is null");
         Objects.requireNonNull(p2, "p2 is null");
@@ -882,7 +882,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(Publisher<? extends T> p1, Publisher<? extends T> p2, Publisher<? extends T> p3) {
         Objects.requireNonNull(p1, "p1 is null");
         Objects.requireNonNull(p2, "p2 is null");
@@ -892,7 +892,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(
             Publisher<? extends T> p1, Publisher<? extends T> p2, 
             Publisher<? extends T> p3, Publisher<? extends T> p4) {
@@ -905,14 +905,14 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> never() {
         return (Flowable<T>)NEVER;
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static Flowable<Integer> range(int start, int count) {
         if (count < 0) {
             throw new IllegalArgumentException("count >= required but it was " + count);
@@ -930,19 +930,19 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> p1, Publisher<? extends T> p2) {
         return sequenceEqual(p1, p2, Objects.equalsPredicate(), bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> p1, Publisher<? extends T> p2, BiPredicate<? super T, ? super T> isEqual) {
         return sequenceEqual(p1, p2, isEqual, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> p1, Publisher<? extends T> p2, BiPredicate<? super T, ? super T> isEqual, int bufferSize) {
         Objects.requireNonNull(p1, "p1 is null");
         Objects.requireNonNull(p2, "p2 is null");
@@ -952,33 +952,33 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> p1, Publisher<? extends T> p2, int bufferSize) {
         return sequenceEqual(p1, p2, Objects.equalsPredicate(), bufferSize);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> switchOnNext(int bufferSize, Publisher<? extends Publisher<? extends T>> sources) {
         return fromPublisher(sources).switchMap((Function)Functions.identity(), bufferSize);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> switchOnNext(Publisher<? extends Publisher<? extends T>> sources) {
         return fromPublisher(sources).switchMap((Function)Functions.identity());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public static Flowable<Long> timer(long delay, TimeUnit unit) {
         return timer(delay, unit, Schedulers.computation());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Flowable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler) {
         if (delay < 0) {
             delay = 0L;
@@ -990,13 +990,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, D> Flowable<T> using(Supplier<? extends D> resourceSupplier, Function<? super D, ? extends Publisher<? extends T>> sourceSupplier, Consumer<? super D> disposer) {
         return using(resourceSupplier, sourceSupplier, disposer, true);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, D> Flowable<T> using(Supplier<? extends D> resourceSupplier, Function<? super D, ? extends Publisher<? extends T>> sourceSupplier, Consumer<? super D> disposer, boolean eager) {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
         Objects.requireNonNull(sourceSupplier, "sourceSupplier is null");
@@ -1011,7 +1011,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> zip(Iterable<? extends Publisher<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
@@ -1019,7 +1019,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> zip(Publisher<? extends Publisher<? extends T>> sources, final Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(zipper, "zipper is null");
         return fromPublisher(sources).toList().flatMap(new Function<List<Publisher<? extends T>>, Publisher<? extends R>>() {
@@ -1032,7 +1032,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> zip(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             BiFunction<? super T1, ? super T2, ? extends R> zipper) {
@@ -1041,7 +1041,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> zip(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError) {
@@ -1051,7 +1051,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> zip(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError, int bufferSize) {
@@ -1060,7 +1060,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, R> Flowable<R> zip(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3, 
             Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper) {
@@ -1069,7 +1069,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, R> Flowable<R> zip(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
             Publisher<? extends T4> p4,
@@ -1079,7 +1079,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, R> Flowable<R> zip(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
             Publisher<? extends T4> p4, Publisher<? extends T5> p5,
@@ -1089,7 +1089,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, R> Flowable<R> zip(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
             Publisher<? extends T4> p4, Publisher<? extends T5> p5, Publisher<? extends T6> p6,
@@ -1099,7 +1099,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, R> Flowable<R> zip(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
             Publisher<? extends T4> p4, Publisher<? extends T5> p5, Publisher<? extends T6> p6,
@@ -1110,7 +1110,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Flowable<R> zip(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
             Publisher<? extends T4> p4, Publisher<? extends T5> p5, Publisher<? extends T6> p6,
@@ -1121,7 +1121,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Flowable<R> zip(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
             Publisher<? extends T4> p4, Publisher<? extends T5> p5, Publisher<? extends T6> p6,
@@ -1131,7 +1131,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> zipArray(Function<? super Object[], ? extends R> zipper, 
             boolean delayError, int bufferSize, Publisher<? extends T>... sources) {
         if (sources.length == 0) {
@@ -1143,7 +1143,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> zipIterable(Function<? super Object[], ? extends R> zipper,
             boolean delayError, int bufferSize, 
             Iterable<? extends Publisher<? extends T>> sources) {
@@ -1154,7 +1154,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Boolean> all(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return new FlowableAll<T>(this, predicate);
@@ -1162,21 +1162,21 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> ambWith(Publisher<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return amb(this, other);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Boolean> any(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return new FlowableAny<T>(this, predicate);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> asObservable() {
         return create(new Publisher<T>() {
             @Override
@@ -1187,13 +1187,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> buffer(int count) {
         return buffer(count, count);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> buffer(int count, int skip) {
         return buffer(count, skip, new Supplier<List<T>>() {
             @Override
@@ -1204,20 +1204,20 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U extends Collection<? super T>> Flowable<U> buffer(int count, int skip, Supplier<U> bufferSupplier) {
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
         return new FlowableBuffer<T, U>(this, count, skip, bufferSupplier);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U extends Collection<? super T>> Flowable<U> buffer(int count, Supplier<U> bufferSupplier) {
         return buffer(count, count, bufferSupplier);
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<List<T>> buffer(long timespan, long timeskip, TimeUnit unit) {
         return buffer(timespan, timeskip, unit, Schedulers.computation(), new Supplier<List<T>>() {
             @Override
@@ -1228,7 +1228,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<List<T>> buffer(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler) {
         return buffer(timespan, timeskip, unit, scheduler, new Supplier<List<T>>() {
             @Override
@@ -1239,7 +1239,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <U extends Collection<? super T>> Flowable<U> buffer(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Supplier<U> bufferSupplier) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -1248,19 +1248,19 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<List<T>> buffer(long timespan, TimeUnit unit) {
         return buffer(timespan, unit, Integer.MAX_VALUE, Schedulers.computation());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<List<T>> buffer(long timespan, TimeUnit unit, int count) {
         return buffer(timespan, unit, count, Schedulers.computation());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<List<T>> buffer(long timespan, TimeUnit unit, int count, Scheduler scheduler) {
         return buffer(timespan, unit, count, scheduler, new Supplier<List<T>>() {
             @Override
@@ -1271,7 +1271,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <U extends Collection<? super T>> Flowable<U> buffer(
             long timespan, TimeUnit unit, 
             int count, Scheduler scheduler, 
@@ -1287,7 +1287,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler) {
         return buffer(timespan, unit, Integer.MAX_VALUE, scheduler, new Supplier<List<T>>() {
             @Override
@@ -1298,7 +1298,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <TOpening, TClosing> Flowable<List<T>> buffer(
             Flowable<? extends TOpening> bufferOpenings, 
             Function<? super TOpening, ? extends Publisher<? extends TClosing>> bufferClosingSelector) {
@@ -1311,7 +1311,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <TOpening, TClosing, U extends Collection<? super T>> Flowable<U> buffer(
             Flowable<? extends TOpening> bufferOpenings, 
             Function<? super TOpening, ? extends Publisher<? extends TClosing>> bufferClosingSelector,
@@ -1323,7 +1323,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<List<T>> buffer(Publisher<B> boundary) {
         /*
          * XXX: javac complains if this is not manually cast, Eclipse is fine
@@ -1337,7 +1337,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<List<T>> buffer(Publisher<B> boundary, final int initialCapacity) {
         return buffer(boundary, new Supplier<List<T>>() {
             @Override
@@ -1348,7 +1348,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <B, U extends Collection<? super T>> Flowable<U> buffer(Publisher<B> boundary, Supplier<U> bufferSupplier) {
         Objects.requireNonNull(boundary, "boundary is null");
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
@@ -1356,7 +1356,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<List<T>> buffer(Supplier<? extends Publisher<B>> boundarySupplier) {
         return buffer(boundarySupplier, new Supplier<List<T>>() {
             @Override
@@ -1368,7 +1368,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <B, U extends Collection<? super T>> Flowable<U> buffer(Supplier<? extends Publisher<B>> boundarySupplier, Supplier<U> bufferSupplier) {
         Objects.requireNonNull(boundarySupplier, "boundarySupplier is null");
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
@@ -1376,13 +1376,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> cache() {
         return FlowableCache.from(this);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> cache(int capacityHint) {
         if (capacityHint <= 0) {
             throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
@@ -1391,7 +1391,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> cast(final Class<U> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
         return map(new Function<T, U>() {
@@ -1403,7 +1403,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> collect(Supplier<? extends U> initialValueSupplier, BiConsumer<? super U, ? super T> collector) {
         Objects.requireNonNull(initialValueSupplier, "initialValueSupplier is null");
         Objects.requireNonNull(collector, "collectior is null");
@@ -1411,7 +1411,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> collectInto(final U initialValue, BiConsumer<? super U, ? super T> collector) {
         Objects.requireNonNull(initialValue, "initialValue is null");
         return collect(new Supplier<U>() {
@@ -1423,20 +1423,20 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     // TODO generics
     public final <R> Flowable<R> compose(Transformer<T, R> composer) {
         return fromPublisher(to(composer));
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMap(Function<? super T, ? extends Publisher<? extends R>> mapper) {
         return concatMap(mapper, 2);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (prefetch <= 0) {
@@ -1446,13 +1446,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> concatMapIterable(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return concatMapIterable(mapper, 2);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> concatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
         return concatMap(new Function<T, Publisher<U>>() {
@@ -1464,14 +1464,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> concatWith(Publisher<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return concat(this, other);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Boolean> contains(final Object o) {
         Objects.requireNonNull(o, "o is null");
         return any(new Predicate<T>() {
@@ -1483,26 +1483,26 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Long> count() {
         return new FlowableCount<T>(this);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> debounce(Function<? super T, ? extends Publisher<U>> debounceSelector) {
         Objects.requireNonNull(debounceSelector, "debounceSelector is null");
         return new FlowableDebounce<T, U>(this, debounceSelector);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> debounce(long timeout, TimeUnit unit) {
         return debounce(timeout, unit, Schedulers.computation());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -1510,14 +1510,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> defaultIfEmpty(T value) {
         Objects.requireNonNull(value, "value is null");
         return switchIfEmpty(just(value));
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     // TODO a more efficient implementation if necessary
     public final <U> Flowable<T> delay(final Function<? super T, ? extends Publisher<U>> itemDelay) {
         Objects.requireNonNull(itemDelay, "itemDelay is null");
@@ -1535,25 +1535,25 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> delay(long delay, TimeUnit unit) {
         return delay(delay, unit, Schedulers.computation(), false);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> delay(long delay, TimeUnit unit, boolean delayError) {
         return delay(delay, unit, Schedulers.computation(), delayError);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
         return delay(delay, unit, scheduler, false);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> delay(long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -1562,7 +1562,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<T> delay(Supplier<? extends Publisher<U>> delaySupplier,
             Function<? super T, ? extends Publisher<V>> itemDelay) {
         return delaySubscription(delaySupplier).delay(itemDelay);
@@ -1593,13 +1593,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> delaySubscription(long delay, TimeUnit unit) {
         return delaySubscription(delay, unit, Schedulers.computation());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     // TODO a more efficient implementation if necessary
     public final Flowable<T> delaySubscription(long delay, TimeUnit unit, Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
@@ -1617,7 +1617,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> delaySubscription(final Supplier<? extends Publisher<U>> delaySupplier) {
         Objects.requireNonNull(delaySupplier, "delaySupplier is null");
         return fromCallable(new Callable<Object>() {
@@ -1639,7 +1639,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <T2> Flowable<T2> dematerialize() {
         @SuppressWarnings("unchecked")
         Flowable<Try<Optional<T2>>> m = (Flowable<Try<Optional<T2>>>)this;
@@ -1648,7 +1648,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> distinct() {
         return distinct((Function)Functions.identity(), new Supplier<Collection<T>>() {
             @Override
@@ -1659,7 +1659,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<T> distinct(Function<? super T, K> keySelector) {
         return distinct(keySelector, new Supplier<Collection<K>>() {
             @Override
@@ -1670,7 +1670,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<T> distinct(Function<? super T, K> keySelector, Supplier<? extends Collection<? super K>> collectionSupplier) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(collectionSupplier, "collectionSupplier is null");
@@ -1678,32 +1678,32 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> distinctUntilChanged() {
         return FlowableDistinct.<T>untilChanged(this);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<T> distinctUntilChanged(Function<? super T, K> keySelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         return FlowableDistinct.untilChanged(this, keySelector);
     }
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnCancel(Runnable onCancel) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyLongConsumer(), onCancel);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnComplete(Runnable onComplete) {
         return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete, Functions.emptyRunnable());
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     private Flowable<T> doOnEach(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Runnable onComplete, Runnable onAfterTerminate) {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(onError, "onError is null");
@@ -1713,7 +1713,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnEach(final Consumer<? super Try<Optional<T>>> consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
         return doOnEach(
@@ -1740,7 +1740,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnEach(final Subscriber<? super T> observer) {
         Objects.requireNonNull(observer, "observer is null");
         return doOnEach(new Consumer<T>() {
@@ -1762,13 +1762,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnError(Consumer<? super Throwable> onError) {
         return doOnEach(Functions.emptyConsumer(), onError, Functions.emptyRunnable(), Functions.emptyRunnable());
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnLifecycle(final Consumer<? super Subscription> onSubscribe, final LongConsumer onRequest, final Runnable onCancel) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         Objects.requireNonNull(onRequest, "onRequest is null");
@@ -1782,25 +1782,25 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnNext(Consumer<? super T> onNext) {
         return doOnEach(onNext, Functions.emptyConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnRequest(LongConsumer onRequest) {
         return doOnLifecycle(Functions.emptyConsumer(), onRequest, Functions.emptyRunnable());
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnSubscribe(Consumer<? super Subscription> onSubscribe) {
         return doOnLifecycle(onSubscribe, Functions.emptyLongConsumer(), Functions.emptyRunnable());
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnTerminate(final Runnable onTerminate) {
         return doOnEach(Functions.emptyConsumer(), new Consumer<Throwable>() {
             @Override
@@ -1811,7 +1811,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> elementAt(long index) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
@@ -1820,7 +1820,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> elementAt(long index, T defaultValue) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
@@ -1831,14 +1831,14 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> endWith(Iterable<? extends T> values) {
         return concatArray(this, fromIterable(values));
     }
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> endWith(Publisher<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return concatArray(this, other);
@@ -1847,7 +1847,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> endWith(T value) {
         Objects.requireNonNull(value, "value is null");
         return concatArray(this, just(value));
@@ -1855,7 +1855,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> endWithArray(T... values) {
         Flowable<T> fromArray = fromArray(values);
         if (fromArray == empty()) {
@@ -1865,50 +1865,50 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return new FlowableFilter<T>(this, predicate);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> finallyDo(Runnable onFinally) {
         return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.emptyRunnable(), onFinally);
     }
 
     @BackpressureSupport(BackpressureKind.SPECIAL) // take may trigger UNBOUNDED_IN
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> first() {
         return take(1).single();
     }
 
     @BackpressureSupport(BackpressureKind.SPECIAL) // take may trigger UNBOUNDED_IN
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> first(T defaultValue) {
         return take(1).single(defaultValue);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper) {
         return flatMap(mapper, false, bufferSize(), bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, boolean delayErrors) {
         return flatMap(mapper, delayErrors, bufferSize(), bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
         return flatMap(mapper, delayErrors, maxConcurrency, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, 
             boolean delayErrors, int maxConcurrency, int bufferSize) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -1924,7 +1924,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMap(
             Function<? super T, ? extends Publisher<? extends R>> onNextMapper, 
             Function<? super Throwable, ? extends Publisher<? extends R>> onErrorMapper, 
@@ -1937,7 +1937,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMap(
             Function<? super T, ? extends Publisher<? extends R>> onNextMapper, 
             Function<Throwable, ? extends Publisher<? extends R>> onErrorMapper, 
@@ -1951,31 +1951,31 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, int maxConcurrency) {
         return flatMap(mapper, false, maxConcurrency, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends R> resultSelector) {
         return flatMap(mapper, resultSelector, false, bufferSize(), bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayError) {
         return flatMap(mapper, combiner, delayError, bufferSize(), bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayError, int maxConcurrency) {
         return flatMap(mapper, combiner, delayError, maxConcurrency, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> flatMap(final Function<? super T, ? extends Publisher<? extends U>> mapper, final BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayError, int maxConcurrency, int bufferSize) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(combiner, "combiner is null");
@@ -1994,13 +1994,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends R> combiner, int maxConcurrency) {
         return flatMap(mapper, combiner, false, maxConcurrency, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return flatMap(new Function<T, Publisher<U>>() {
@@ -2012,7 +2012,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<V> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, final BiFunction<? super T, ? super U, ? extends V> resultSelector) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(resultSelector, "resultSelector is null");
@@ -2025,7 +2025,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int bufferSize) {
         return flatMap(new Function<T, Publisher<U>>() {
             @Override
@@ -2036,25 +2036,25 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.NONE)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEach(Consumer<? super T> onNext) {
         return subscribe(onNext);
     }
 
     @BackpressureSupport(BackpressureKind.NONE)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext) {
         return forEachWhile(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable());
     }
 
     @BackpressureSupport(BackpressureKind.NONE)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext, Consumer<? super Throwable> onError) {
         return forEachWhile(onNext, onError, Functions.emptyRunnable());
     }
 
     @BackpressureSupport(BackpressureKind.NONE)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(final Predicate<? super T> onNext, final Consumer<? super Throwable> onError,
             final Runnable onComplete) {
         Objects.requireNonNull(onNext, "onNext is null");
@@ -2080,33 +2080,33 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<GroupedFlowable<K, T>> groupBy(Function<? super T, ? extends K> keySelector) {
         return groupBy(keySelector, Functions.<T>identity(), false, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<GroupedFlowable<K, T>> groupBy(Function<? super T, ? extends K> keySelector, boolean delayError) {
         return groupBy(keySelector, Functions.<T>identity(), delayError, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector) {
         return groupBy(keySelector, valueSelector, false, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector, boolean delayError) {
         return groupBy(keySelector, valueSelector, false, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector, 
             boolean delayError, int bufferSize) {
@@ -2118,13 +2118,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> ignoreElements() {
         return new FlowableIgnoreElements<T>(this);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Boolean> isEmpty() {
         return all(new Predicate<T>() {
             @Override
@@ -2135,19 +2135,19 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> last() {
         return takeLast(1).single();
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> last(T defaultValue) {
         return takeLast(1).single(defaultValue);
     }
 
     @BackpressureSupport(BackpressureKind.SPECIAL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> lift(Operator<? extends R, ? super T> lifter) {
         Objects.requireNonNull(lifter, "lifter is null");
         // using onSubscribe so the fusing has access to the underlying raw Publisher
@@ -2155,46 +2155,46 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> map(Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return new FlowableMap<T, R>(this, mapper);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Try<Optional<T>>> materialize() {
         return new FlowableMaterialize<T>(this);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> mergeWith(Publisher<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return merge(this, other);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     @Deprecated
     public final Flowable<Flowable<T>> nest() {
         return just(this);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> observeOn(Scheduler scheduler) {
         return observeOn(scheduler, false, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> observeOn(Scheduler scheduler, boolean delayError) {
         return observeOn(scheduler, delayError, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> observeOn(Scheduler scheduler, boolean delayError, int bufferSize) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         validateBufferSize(bufferSize);
@@ -2202,7 +2202,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> ofType(final Class<U> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
         return filter(new Predicate<T>() {
@@ -2214,77 +2214,77 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer() {
         return onBackpressureBuffer(bufferSize(), false, true);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(boolean delayError) {
         return onBackpressureBuffer(bufferSize(), true, true);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(int bufferSize) {
         return onBackpressureBuffer(bufferSize, false, false);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(int bufferSize, boolean delayError) {
         return onBackpressureBuffer(bufferSize, true, false);
     }
 
     @BackpressureSupport(BackpressureKind.SPECIAL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(int bufferSize, boolean delayError, boolean unbounded) {
         validateBufferSize(bufferSize);
         return new FlowableOnBackpressureBuffer<T>(this, bufferSize, unbounded, delayError, Functions.emptyRunnable());
     }
 
     @BackpressureSupport(BackpressureKind.SPECIAL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(int bufferSize, boolean delayError, boolean unbounded, Runnable onOverflow) {
         Objects.requireNonNull(onOverflow, "onOverflow is null");
         return new FlowableOnBackpressureBuffer<T>(this, bufferSize, unbounded, delayError, onOverflow);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(int bufferSize, Runnable onOverflow) {
         return onBackpressureBuffer(bufferSize, false, false, onOverflow);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureDrop() {
         return new FlowableOnBackpressureDrop<T>(this);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureDrop(Consumer<? super T> onDrop) {
         Objects.requireNonNull(onDrop, "onDrop is null");
         return new FlowableOnBackpressureDrop<T>(this, onDrop);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureLatest() {
         return new FlowableOnBackpressureLatest<T>(this);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onErrorResumeNext(Function<? super Throwable, ? extends Publisher<? extends T>> resumeFunction) {
         Objects.requireNonNull(resumeFunction, "resumeFunction is null");
         return new FlowableOnErrorNext<T>(this, resumeFunction, false);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onErrorResumeNext(final Publisher<? extends T> next) {
         Objects.requireNonNull(next, "next is null");
         return onErrorResumeNext(new Function<Throwable, Publisher<? extends T>>() {
@@ -2296,7 +2296,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onErrorReturn(Function<? super Throwable, ? extends T> valueSupplier) {
         Objects.requireNonNull(valueSupplier, "valueSupplier is null");
         return new FlowableOnErrorReturn<T>(this, valueSupplier);
@@ -2304,7 +2304,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     // TODO would result in ambiguity with onErrorReturn(Function)
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onErrorReturnValue(final T value) {
         Objects.requireNonNull(value, "value is null");
         return onErrorReturn(new Function<Throwable, T>() {
@@ -2316,7 +2316,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onExceptionResumeNext(final Publisher<? extends T> next) {
         Objects.requireNonNull(next, "next is null");
         return new FlowableOnErrorNext<T>(this, new Function<Throwable, Publisher<? extends T>>() {
@@ -2328,19 +2328,19 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableFlowable<T> publish() {
         return publish(bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> publish(Function<? super Flowable<T>, ? extends Publisher<R>> selector) {
         return publish(selector, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> publish(Function<? super Flowable<T>, ? extends Publisher<R>> selector, int bufferSize) {
         validateBufferSize(bufferSize);
         Objects.requireNonNull(selector, "selector is null");
@@ -2348,39 +2348,39 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableFlowable<T> publish(int bufferSize) {
         validateBufferSize(bufferSize);
         return FlowablePublish.create(this, bufferSize);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> reduce(BiFunction<T, T, T> reducer) {
         return scan(reducer).last();
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
         return scan(seed, reducer).last();
     }
 
     // Naming note, a plain scan would cause ambiguity with the value-seeded version
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> reduceWith(Supplier<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
         return scanWith(seedSupplier, reducer).last();
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeat() {
         return repeat(Long.MAX_VALUE);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeat(long times) {
         if (times < 0) {
             throw new IllegalArgumentException("times >= 0 required but it was " + times);
@@ -2392,14 +2392,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeatUntil(BooleanSupplier stop) {
         Objects.requireNonNull(stop, "stop is null");
         return new FlowableRepeatUntil<T>(this, stop);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeatWhen(final Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
         Objects.requireNonNull(handler, "handler is null");
         
@@ -2420,13 +2420,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableFlowable<T> replay() {
         return FlowableReplay.createFrom(this);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector) {
         Objects.requireNonNull(selector, "selector is null");
         return FlowableReplay.multicastSelector(new Supplier<ConnectableFlowable<T>>() {
@@ -2438,7 +2438,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize) {
         Objects.requireNonNull(selector, "selector is null");
         return FlowableReplay.multicastSelector(new Supplier<ConnectableFlowable<T>>() {
@@ -2450,13 +2450,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, int bufferSize, long time, TimeUnit unit) {
         return replay(selector, bufferSize, time, unit, Schedulers.computation());
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
         if (bufferSize < 0) {
             throw new IllegalArgumentException("bufferSize < 0");
@@ -2471,7 +2471,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Flowable<R> replay(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize, final Scheduler scheduler) {
         return FlowableReplay.multicastSelector(new Supplier<ConnectableFlowable<T>>() {
             @Override
@@ -2488,13 +2488,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, long time, TimeUnit unit) {
         return replay(selector, time, unit, Schedulers.computation());
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final long time, final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(selector, "selector is null");
         Objects.requireNonNull(unit, "unit is null");
@@ -2508,7 +2508,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Flowable<R> replay(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final Scheduler scheduler) {
         Objects.requireNonNull(selector, "selector is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -2527,19 +2527,19 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableFlowable<T> replay(final int bufferSize) {
         return FlowableReplay.create(this, bufferSize);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final ConnectableFlowable<T> replay(int bufferSize, long time, TimeUnit unit) {
         return replay(bufferSize, time, unit, Schedulers.computation());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final ConnectableFlowable<T> replay(final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -2550,20 +2550,20 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final ConnectableFlowable<T> replay(final int bufferSize, final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         return FlowableReplay.observeOn(replay(bufferSize), scheduler);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final ConnectableFlowable<T> replay(long time, TimeUnit unit) {
         return replay(time, unit, Schedulers.computation());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final ConnectableFlowable<T> replay(final long time, final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -2571,20 +2571,20 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final ConnectableFlowable<T> replay(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         return FlowableReplay.observeOn(replay(), scheduler);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retry() {
         return retry(Long.MAX_VALUE, Functions.alwaysTrue());
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         
@@ -2592,14 +2592,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retry(long times) {
         return retry(times, Functions.alwaysTrue());
     }
     
     // Retries at most times or until the predicate returns false, whichever happens first
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retry(long times, Predicate<? super Throwable> predicate) {
         if (times < 0) {
             throw new IllegalArgumentException("times >= 0 required but it was " + times);
@@ -2610,13 +2610,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retry(Predicate<? super Throwable> predicate) {
         return retry(Long.MAX_VALUE, predicate);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retryUntil(final BooleanSupplier stop) {
         Objects.requireNonNull(stop, "stop is null");
         return retry(Long.MAX_VALUE, new Predicate<Throwable>() {
@@ -2628,7 +2628,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retryWhen(
             final Function<? super Flowable<? extends Throwable>, ? extends Publisher<?>> handler) {
         Objects.requireNonNull(handler, "handler is null");
@@ -2657,7 +2657,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     
     // TODO decide if safe subscription or unsafe should be the default
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final void safeSubscribe(Subscriber<? super T> s) {
         Objects.requireNonNull(s, "s is null");
         if (s instanceof SafeSubscriber) {
@@ -2668,13 +2668,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> sample(long period, TimeUnit unit) {
         return sample(period, unit, Schedulers.computation());
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> sample(long period, TimeUnit unit, Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -2682,21 +2682,21 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> sample(Publisher<U> sampler) {
         Objects.requireNonNull(sampler, "sampler is null");
         return new FlowableSamplePublisher<T>(this, sampler);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> scan(BiFunction<T, T, T> accumulator) {
         Objects.requireNonNull(accumulator, "accumulator is null");
         return new FlowableScan<T>(this, accumulator);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> scan(final R seed, BiFunction<R, ? super T, R> accumulator) {
         Objects.requireNonNull(seed, "seed is null");
         return scanWith(new Supplier<R>() {
@@ -2709,7 +2709,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     
     // Naming note, a plain scan would cause ambiguity with the value-seeded version
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> scanWith(Supplier<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
         Objects.requireNonNull(seedSupplier, "seedSupplier is null");
         Objects.requireNonNull(accumulator, "accumulator is null");
@@ -2717,7 +2717,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> serialize() {
         return lift(new Operator<T, T>() {
             @Override
@@ -2728,26 +2728,26 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> share() {
         return publish().refCount();
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> single() {
         return new FlowableSingle<T>(this, null);
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> single(T defaultValue) {
         Objects.requireNonNull(defaultValue, "defaultValue is null");
         return new FlowableSingle<T>(this, defaultValue);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> skip(long n) {
 //        if (n < 0) {
 //            throw new IllegalArgumentException("n >= 0 required but it was " + n);
@@ -2760,14 +2760,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> skip(long time, TimeUnit unit, Scheduler scheduler) {
         // TODO consider inlining this behavior
         return skipUntil(timer(time, unit, scheduler));
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> skipLast(int n) {
         if (n < 0) {
             throw new IndexOutOfBoundsException("n >= 0 required but it was " + n);
@@ -2779,31 +2779,31 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     public final Flowable<T> skipLast(long time, TimeUnit unit) {
         return skipLast(time, unit, Schedulers.trampoline(), false, bufferSize());
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     public final Flowable<T> skipLast(long time, TimeUnit unit, boolean delayError) {
         return skipLast(time, unit, Schedulers.trampoline(), delayError, bufferSize());
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler) {
         return skipLast(time, unit, scheduler, false, bufferSize());
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler, boolean delayError) {
         return skipLast(time, unit, scheduler, delayError, bufferSize());
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler, boolean delayError, int bufferSize) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -2814,14 +2814,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> skipUntil(Publisher<U> other) {
         Objects.requireNonNull(other, "other is null");
         return new FlowableSkipUntil<T, U>(this, other);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> skipWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return new FlowableSkipWhile<T>(this, predicate);
@@ -2829,14 +2829,14 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> startWith(Iterable<? extends T> values) {
         return concatArray(fromIterable(values), this);
     }
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> startWith(Publisher<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return concatArray(other, this);
@@ -2844,7 +2844,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> startWith(T value) {
         Objects.requireNonNull(value, "value is null");
         return concatArray(just(value), this);
@@ -2852,7 +2852,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> startWithArray(T... values) {
         Flowable<T> fromArray = fromArray(values);
         if (fromArray == empty()) {
@@ -2862,7 +2862,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
         return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), new Consumer<Subscription>() {
             @Override
@@ -2873,7 +2873,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
         return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), new Consumer<Subscription>() {
             @Override
@@ -2884,7 +2884,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
         return subscribe(onNext, onError, Functions.emptyRunnable(), new Consumer<Subscription>() {
             @Override
@@ -2895,7 +2895,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
             Runnable onComplete) {
         return subscribe(onNext, onError, onComplete, new Consumer<Subscription>() {
@@ -2907,7 +2907,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.SPECIAL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
             Runnable onComplete, Consumer<? super Subscription> onSubscribe) {
         Objects.requireNonNull(onNext, "onNext is null");
@@ -2924,7 +2924,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     // TODO decide if safe subscription or unsafe should be the default
     @BackpressureSupport(BackpressureKind.SPECIAL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     @Override
     public final void subscribe(Subscriber<? super T> s) {
         Objects.requireNonNull(s, "s is null");
@@ -2953,33 +2953,33 @@ public abstract class Flowable<T> implements Publisher<T> {
     protected abstract void subscribeActual(Subscriber<? super T> s);
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> subscribeOn(Scheduler scheduler) {
         return subscribeOn(scheduler, true);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> subscribeOn(Scheduler scheduler, boolean requestOn) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         return new FlowableSubscribeOn<T>(this, scheduler, requestOn);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> switchIfEmpty(Publisher<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return new FlowableSwitchIfEmpty<T>(this, other);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> switchMap(Function<? super T, ? extends Publisher<? extends R>> mapper) {
         return switchMap(mapper, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> switchMap(Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize) {
         Objects.requireNonNull(mapper, "mapper is null");
         validateBufferSize(bufferSize);
@@ -2987,7 +2987,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.SPECIAL) // may trigger UNBOUNDED_IN
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> take(long n) {
         if (n < 0) {
             throw new IllegalArgumentException("n >= required but it was " + n);
@@ -3001,20 +3001,20 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> take(long time, TimeUnit unit, Scheduler scheduler) {
         // TODO consider inlining this behavior
         return takeUntil(timer(time, unit, scheduler));
     }
     
     @BackpressureSupport(BackpressureKind.SPECIAL) // may trigger UNBOUNDED_IN
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> takeFirst(Predicate<? super T> predicate) {
         return filter(predicate).take(1);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> takeLast(int n) {
         if (n < 0) {
             throw new IndexOutOfBoundsException("n >= required but it was " + n);
@@ -3029,19 +3029,19 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     public final Flowable<T> takeLast(long count, long time, TimeUnit unit) {
         return takeLast(count, time, unit, Schedulers.trampoline(), false, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> takeLast(long count, long time, TimeUnit unit, Scheduler scheduler) {
         return takeLast(count, time, unit, scheduler, false, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> takeLast(long count, long time, TimeUnit unit, Scheduler scheduler, boolean delayError, int bufferSize) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -3053,94 +3053,94 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     public final Flowable<T> takeLast(long time, TimeUnit unit) {
         return takeLast(time, unit, Schedulers.trampoline(), false, bufferSize());
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     public final Flowable<T> takeLast(long time, TimeUnit unit, boolean delayError) {
         return takeLast(time, unit, Schedulers.trampoline(), delayError, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> takeLast(long time, TimeUnit unit, Scheduler scheduler) {
         return takeLast(time, unit, scheduler, false, bufferSize());
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> takeLast(long time, TimeUnit unit, Scheduler scheduler, boolean delayError) {
         return takeLast(time, unit, scheduler, delayError, bufferSize());
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> takeLast(long time, TimeUnit unit, Scheduler scheduler, boolean delayError, int bufferSize) {
         return takeLast(Long.MAX_VALUE, time, unit, scheduler, delayError, bufferSize);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> takeLastBuffer(int count) {
         return takeLast(count).toList();
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     public final Flowable<List<T>> takeLastBuffer(int count, long time, TimeUnit unit) {
         return takeLast(count, time, unit).toList();
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<List<T>> takeLastBuffer(int count, long time, TimeUnit unit, Scheduler scheduler) {
         return takeLast(count, time, unit, scheduler).toList();
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     public final Flowable<List<T>> takeLastBuffer(long time, TimeUnit unit) {
         return takeLast(time, unit).toList();
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<List<T>> takeLastBuffer(long time, TimeUnit unit, Scheduler scheduler) {
         return takeLast(time, unit, scheduler).toList();
     }
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return new FlowableTakeUntilPredicate<T>(this, predicate);
     }
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> takeUntil(Publisher<U> other) {
         Objects.requireNonNull(other, "other is null");
         return new FlowableTakeUntil<T, U>(this, other);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return new FlowableTakeWhile<T>(this, predicate);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> throttleFirst(long windowDuration, TimeUnit unit) {
         return throttleFirst(windowDuration, unit, Schedulers.computation());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> throttleFirst(long skipDuration, TimeUnit unit, Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -3148,49 +3148,49 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> throttleLast(long intervalDuration, TimeUnit unit) {
         return sample(intervalDuration, unit);
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> throttleLast(long intervalDuration, TimeUnit unit, Scheduler scheduler) {
         return sample(intervalDuration, unit, scheduler);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> throttleWithTimeout(long timeout, TimeUnit unit) {
         return debounce(timeout, unit);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> throttleWithTimeout(long timeout, TimeUnit unit, Scheduler scheduler) {
         return debounce(timeout, unit, scheduler);
     }
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     public final Flowable<Timed<T>> timeInterval() {
         return timeInterval(TimeUnit.MILLISECONDS, Schedulers.trampoline());
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Timed<T>> timeInterval(Scheduler scheduler) {
         return timeInterval(TimeUnit.MILLISECONDS, scheduler);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     public final Flowable<Timed<T>> timeInterval(TimeUnit unit) {
         return timeInterval(unit, Schedulers.trampoline());
     }
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Timed<T>> timeInterval(TimeUnit unit, Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -3198,40 +3198,40 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <V> Flowable<T> timeout(Function<? super T, ? extends Publisher<V>> timeoutSelector) {
         return timeout0(null, timeoutSelector, null);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <V> Flowable<T> timeout(Function<? super T, ? extends Publisher<V>> timeoutSelector, Flowable<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return timeout0(null, timeoutSelector, other);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> timeout(long timeout, TimeUnit timeUnit) {
         return timeout0(timeout, timeUnit, null, Schedulers.computation());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> timeout(long timeout, TimeUnit timeUnit, Flowable<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return timeout0(timeout, timeUnit, other, Schedulers.computation());
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> timeout(long timeout, TimeUnit timeUnit, Flowable<? extends T> other, Scheduler scheduler) {
         Objects.requireNonNull(other, "other is null");
         return timeout0(timeout, timeUnit, other, scheduler);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> timeout(long timeout, TimeUnit timeUnit, Scheduler scheduler) {
         return timeout0(timeout, timeUnit, null, scheduler);
     }
@@ -3243,7 +3243,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<T> timeout(
             Supplier<? extends Publisher<U>> firstTimeoutSelector, 
             Function<? super T, ? extends Publisher<V>> timeoutSelector, 
@@ -3269,25 +3269,25 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     public final Flowable<Timed<T>> timestamp() {
         return timestamp(TimeUnit.MILLISECONDS, Schedulers.trampoline());
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Timed<T>> timestamp(Scheduler scheduler) {
         return timestamp(TimeUnit.MILLISECONDS, scheduler);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
     public final Flowable<Timed<T>> timestamp(TimeUnit unit) {
         return timestamp(unit, Schedulers.trampoline());
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Timed<T>> timestamp(final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -3301,25 +3301,25 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     // TODO generics
     @BackpressureSupport(BackpressureKind.SPECIAL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R to(Function<? super Flowable<T>, R> converter) {
         return converter.apply(this);
     }
 
     @BackpressureSupport(BackpressureKind.SPECIAL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final BlockingFlowable<T> toBlocking() {
         return BlockingFlowable.from(this);
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> toList() {
         return new FlowableToList<T, List<T>>(this);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> toList(final int capacityHint) {
         if (capacityHint <= 0) {
             throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
@@ -3333,14 +3333,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U extends Collection<? super T>> Flowable<U> toList(Supplier<U> collectionSupplier) {
         Objects.requireNonNull(collectionSupplier, "collectionSupplier is null");
         return new FlowableToList<T, U>(this, collectionSupplier);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         return collect(new Supplier<Map<K, T>>() {
@@ -3358,7 +3358,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<Map<K, V>> toMap(final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(valueSelector, "valueSelector is null");
@@ -3378,7 +3378,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<Map<K, V>> toMap(final Function<? super T, ? extends K> keySelector, 
             final Function<? super T, ? extends V> valueSelector,
             final Supplier<? extends Map<K, V>> mapSupplier) {
@@ -3395,7 +3395,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
         Function<? super T, ? extends T> valueSelector = Functions.identity();
         Supplier<Map<K, Collection<T>>> mapSupplier = new Supplier<Map<K, Collection<T>>>() {
@@ -3414,7 +3414,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
         Supplier<Map<K, Collection<V>>> mapSupplier = new Supplier<Map<K, Collection<V>>>() {
             @Override
@@ -3432,7 +3432,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public final <K, V> Flowable<Map<K, Collection<V>>> toMultimap(
             final Function<? super T, ? extends K> keySelector, 
@@ -3462,7 +3462,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<Map<K, Collection<V>>> toMultimap(
             Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector,
@@ -3477,19 +3477,19 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.NONE)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> toNbpObservable() {
         return Observable.fromPublisher(this);
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> toSingle() {
         return Single.fromPublisher(this);
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes"})
     public final Flowable<List<T>> toSortedList() {
         return toSortedList(new Comparator<T>() {
@@ -3501,7 +3501,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> toSortedList(final Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return toList().map(new Function<List<T>, List<T>>() {
@@ -3514,7 +3514,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> toSortedList(final Comparator<? super T> comparator, int capacityHint) {
         Objects.requireNonNull(comparator, "comparator is null");
         return toList(capacityHint).map(new Function<List<T>, List<T>>() {
@@ -3527,7 +3527,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes"})
     public final Flowable<List<T>> toSortedList(int capacityHint) {
         return toSortedList(new Comparator<T>() {
@@ -3539,7 +3539,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.SPECIAL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     // TODO decide if safe subscription or unsafe should be the default
     public final void unsafeSubscribe(Subscriber<? super T> s) {
         Objects.requireNonNull(s, "s is null");
@@ -3547,26 +3547,26 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> unsubscribeOn(Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         return new FlowableUnsubscribeOn<T>(this, scheduler);
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Flowable<T>> window(long count) {
         return window(count, count, bufferSize());
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Flowable<T>> window(long count, long skip) {
         return window(count, skip, bufferSize());
     }
     
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Flowable<T>> window(long count, long skip, int bufferSize) {
         if (skip <= 0) {
             throw new IllegalArgumentException("skip > 0 required but it was " + skip);
@@ -3579,19 +3579,19 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<Flowable<T>> window(long timespan, long timeskip, TimeUnit unit) {
         return window(timespan, timeskip, unit, Schedulers.computation(), bufferSize());
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Flowable<T>> window(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler) {
         return window(timespan, timeskip, unit, scheduler, bufferSize());
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Flowable<T>> window(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, int bufferSize) {
         validateBufferSize(bufferSize);
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -3600,48 +3600,48 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<Flowable<T>> window(long timespan, TimeUnit unit) {
         return window(timespan, unit, Schedulers.computation(), Long.MAX_VALUE, false);
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<Flowable<T>> window(long timespan, TimeUnit unit, 
             long count) {
         return window(timespan, unit, Schedulers.computation(), count, false);
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.COMPUTATION)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<Flowable<T>> window(long timespan, TimeUnit unit, 
             long count, boolean restart) {
         return window(timespan, unit, Schedulers.computation(), count, restart);
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Flowable<T>> window(long timespan, TimeUnit unit, 
             Scheduler scheduler) {
         return window(timespan, unit, scheduler, Long.MAX_VALUE, false);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Flowable<T>> window(long timespan, TimeUnit unit, 
             Scheduler scheduler, long count) {
         return window(timespan, unit, scheduler, count, false);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Flowable<T>> window(long timespan, TimeUnit unit, 
             Scheduler scheduler, long count, boolean restart) {
         return window(timespan, unit, scheduler, count, restart, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Flowable<T>> window(
             long timespan, TimeUnit unit, Scheduler scheduler, 
             long count, boolean restart, int bufferSize) {
@@ -3655,20 +3655,20 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<Flowable<T>> window(Publisher<B> boundary) {
         return window(boundary, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<Flowable<T>> window(Publisher<B> boundary, int bufferSize) {
         Objects.requireNonNull(boundary, "boundary is null");
         return new FlowableWindowBoundary<T, B>(this, boundary, bufferSize);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<Flowable<T>> window(
             Publisher<U> windowOpen, 
             Function<? super U, ? extends Publisher<V>> windowClose) {
@@ -3676,7 +3676,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<Flowable<T>> window(
             Publisher<U> windowOpen, 
             Function<? super U, ? extends Publisher<V>> windowClose, int bufferSize) {
@@ -3686,20 +3686,20 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<Flowable<T>> window(Supplier<? extends Publisher<B>> boundary) {
         return window(boundary, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<Flowable<T>> window(Supplier<? extends Publisher<B>> boundary, int bufferSize) {
         Objects.requireNonNull(boundary, "boundary is null");
         return new FlowableWindowBoundarySupplier<T, B>(this, boundary, bufferSize);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> withLatestFrom(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> combiner) {
         Objects.requireNonNull(other, "other is null");
         Objects.requireNonNull(combiner, "combiner is null");
@@ -3708,7 +3708,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> zipWith(Iterable<U> other,  BiFunction<? super T, ? super U, ? extends R> zipper) {
         Objects.requireNonNull(other, "other is null");
         Objects.requireNonNull(zipper, "zipper is null");
@@ -3716,20 +3716,20 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> zipWith(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
         Objects.requireNonNull(other, "other is null");
         return zip(this, other, zipper);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> zipWith(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError) {
         return zip(this, other, zipper, delayError);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerKind.NONE)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> zipWith(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError, int bufferSize) {
         return zip(this, other, zipper, delayError, bufferSize);
     }
