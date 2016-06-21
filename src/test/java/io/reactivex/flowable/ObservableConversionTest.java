@@ -68,11 +68,11 @@ public class ObservableConversionTest {
         }
         
         public final CylonDetectorObservable<T> beep(Predicate<? super T> predicate) {
-            return lift(new OperatorFilter<T>(predicate));
+            return new CylonDetectorObservable<T>(new FlowableFilter<T>(onSubscribe, predicate));
         }
         
         public final <R> CylonDetectorObservable<R> boop(Function<? super T, ? extends R> func) {
-            return lift(new OperatorMap<T, R>(func));
+            return new CylonDetectorObservable<R>(new FlowableMap<T, R>(onSubscribe, func));
         }
 
         public CylonDetectorObservable<String> DESTROY() {
@@ -133,7 +133,7 @@ public class ObservableConversionTest {
     public static class ConvertToObservable<T> implements Function<Publisher<T>, Flowable<T>> {
         @Override
         public Flowable<T> apply(final Publisher<T> onSubscribe) {
-            return Flowable.create(onSubscribe);
+            return Flowable.fromPublisher(onSubscribe);
         }
     }
     

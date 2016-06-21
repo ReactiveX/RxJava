@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static io.reactivex.internal.operators.flowable.BlockingOperatorNext.next;
+import static io.reactivex.internal.operators.flowable.BlockingFlowableNext.next;
 import static org.junit.Assert.*;
 
 import java.util.*;
@@ -300,7 +300,7 @@ public class BlockingOperatorNextTest {
         Iterable<Long> iter = source.next();
 
         for (int j = 0; j < 3; j++) {
-            BlockingOperatorNext.NextIterator<Long> it = (BlockingOperatorNext.NextIterator<Long>)iter.iterator();
+            BlockingFlowableNext.NextIterator<Long> it = (BlockingFlowableNext.NextIterator<Long>)iter.iterator();
 
             for (long i = 0; i < 10; i++) {
                 Assert.assertEquals(true, it.hasNext());

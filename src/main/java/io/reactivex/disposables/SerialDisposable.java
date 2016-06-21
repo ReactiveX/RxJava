@@ -13,40 +13,36 @@
 
 package io.reactivex.disposables;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.internal.disposables.*;
 
 public final class SerialDisposable implements Disposable {
-    final SerialResource<Disposable> resource;
+    final AtomicReference<Disposable> resource;
     
     public SerialDisposable() {
-        this.resource = new SerialResource<Disposable>(Disposables.consumeAndDispose());
+        this.resource = new AtomicReference<Disposable>();
     }
     
     public SerialDisposable(Disposable initialDisposable) {
-        this.resource = new SerialResource<Disposable>(Disposables.consumeAndDispose(), initialDisposable);
+        this.resource = new AtomicReference<Disposable>(initialDisposable);
     }
 
     
     public void set(Disposable d) {
-        this.resource.setResource(d);
+        DisposableHelper.set(resource, d);
     }
     
     public Disposable get() {
-        Object o = resource.getResource();
-        if (o == null) {
-            if (resource.isDisposed()) {
-                return EmptyDisposable.INSTANCE;
-            }
-        }
-        return (Disposable)o;
+        return resource.get();
     }
     
     @Override
     public void dispose() {
-        resource.dispose();
+        DisposableHelper.dispose(resource);
     }
     
     public boolean isDisposed() {
-        return resource.isDisposed();
+        return DisposableHelper.isDisposed(get());
     }
 }

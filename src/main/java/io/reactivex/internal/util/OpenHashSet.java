@@ -225,4 +225,8 @@ public final class OpenHashSet<T> {
     public boolean isEmpty() {
         return size == 0;
     }
+    
+    public Object[] keys() {
+        return keys;
+    }
 }

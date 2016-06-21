@@ -75,7 +75,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>
      */
     public Flowable<T> refCount() {
-        return create(new PublisherRefCount<T>(this));
+        return new FlowableRefCount<T>(this);
     }
 
     /**
@@ -121,6 +121,6 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
             this.connect(connection);
             return this;
         }
-        return create(new PublisherAutoConnect<T>(this, numberOfSubscribers, connection));
+        return new FlowableAutoConnect<T>(this, numberOfSubscribers, connection);
     }
 }

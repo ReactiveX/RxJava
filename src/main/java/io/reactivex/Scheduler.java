@@ -16,7 +16,6 @@ package io.reactivex;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.disposables.*;
-import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -87,26 +86,15 @@ public abstract class Scheduler {
     }
     
     public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
-        final ArrayCompositeResource<Disposable> acr = new ArrayCompositeResource<Disposable>(2, Disposables.consumeAndDispose());
         final Worker w = createWorker();
-        acr.lazySet(0, w);
         
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+
+        PeriodicDirectTask periodicTask = new PeriodicDirectTask(decoratedRun, w);
         
-        acr.setResource(1, w.schedulePeriodically(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    decoratedRun.run();
-                } catch (Throwable e) {
-                    // make sure the worker is released if the run crashes
-                    acr.dispose();
-                    throw Exceptions.propagate(e);
-                }
-            }
-        }, initialDelay, period, unit));
+        w.schedulePeriodically(periodicTask, initialDelay, period, unit);
         
-        return acr;
+        return periodicTask;
     }
 
     public static abstract class Worker implements Disposable {
@@ -118,13 +106,13 @@ public abstract class Scheduler {
         }
         
         public Disposable schedulePeriodically(Runnable run, final long initialDelay, final long period, final TimeUnit unit) {
-            final MultipleAssignmentResource<Disposable> first = new MultipleAssignmentResource<Disposable>(Disposables.consumeAndDispose());
+            final MultipleAssignmentDisposable first = new MultipleAssignmentDisposable();
 
-            final MultipleAssignmentResource<Disposable> mar = new MultipleAssignmentResource<Disposable>(Disposables.consumeAndDispose(), first);
+            final MultipleAssignmentDisposable mar = new MultipleAssignmentDisposable(first);
             
             final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             
-            first.setResource(schedule(new Runnable() {
+            first.set(schedule(new Runnable() {
                 long lastNow = now(unit);
                 long startTime = lastNow + initialDelay;
                 long count;
@@ -157,7 +145,7 @@ public abstract class Scheduler {
                     
                     lastNow = t;
                     
-                    mar.setResource(schedule(this, delay, unit));
+                    mar.set(schedule(this, delay, unit));
                 }
             }, initialDelay, unit));
             
@@ -171,6 +159,39 @@ public abstract class Scheduler {
          */
         public long now(TimeUnit unit) {
             return unit.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        }
+        
+    }
+    
+    static class PeriodicDirectTask 
+    implements Runnable, Disposable {
+        final Runnable run;
+
+        final Worker worker;
+        
+        volatile boolean disposed;
+
+        public PeriodicDirectTask(Runnable run, Worker worker) {
+            this.run = run;
+            this.worker = worker;
+        }
+        
+        @Override
+        public void run() {
+            if (!disposed) {
+                try {
+                    run.run();
+                } catch (Throwable ex) {
+                    worker.dispose();
+                    throw Exceptions.propagate(ex);
+                }
+            }
+        }
+        
+        @Override
+        public void dispose() {
+            disposed = true;
+            worker.dispose();
         }
         
     }
