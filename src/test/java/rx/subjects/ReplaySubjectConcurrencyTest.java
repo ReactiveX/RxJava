@@ -155,8 +155,21 @@ public class ReplaySubjectConcurrencyTest {
     }
 
     @Test
+    public void testReplaySubjectConcurrentSubscriptionsLoop() throws Exception {
+        for (int i = 0; i < 50; i++) {
+            System.out.println(i + " --------------------------------------------------------------- ");
+            testReplaySubjectConcurrentSubscriptions();
+        }
+    }
+    
+    @Test
     public void testReplaySubjectConcurrentSubscriptions() throws InterruptedException {
         final ReplaySubject<Long> replay = ReplaySubject.create();
+        
+        concurrencyTest(replay);
+    }
+    
+    public static void concurrencyTest(final ReplaySubject<Long> replay) throws InterruptedException {
         Thread source = new Thread(new Runnable() {
 
             @Override
@@ -210,12 +223,23 @@ public class ReplaySubjectConcurrencyTest {
             t.join();
         }
 
+        StringBuilder sb = new StringBuilder();
+
         // assert all threads got the same results
         List<Long> sums = new ArrayList<Long>();
         for (List<Long> values : listOfListsOfValues) {
             long v = 0;
-            for (long l : values) {
+            if (values.size() != 10000) {
+                sb.append("A list is longer than expected: " + values.size() + "\n");
+            }
+            int i = 0;
+            for (Long l : values) {
+                if (l == null) {
+                    sb.append("Element at  " + i + " is null\n");
+                    break;
+                }
                 v += l;
+                i++;
             }
             sums.add(v);
         }
@@ -225,16 +249,15 @@ public class ReplaySubjectConcurrencyTest {
         for (long l : sums) {
             if (l != expected) {
                 success = false;
-                System.out.println("FAILURE => Expected " + expected + " but got: " + l);
+                sb.append("FAILURE => Expected " + expected + " but got: " + l + "\n");
             }
         }
 
         if (success) {
             System.out.println("Success! " + sums.size() + " each had the same sum of " + expected);
         } else {
-            throw new RuntimeException("Concurrency Bug");
+            Assert.fail(sb.toString());
         }
-
     }
 
     /**
