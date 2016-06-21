@@ -3106,7 +3106,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         });
     }
     
-    public final Flowable<T> toObservable(BackpressureStrategy strategy) {
+    public final Flowable<T> toFlowable(BackpressureStrategy strategy) {
         Flowable<T> o = Flowable.create(new Publisher<T>() {
             @Override
             public void subscribe(final Subscriber<? super T> s) {
