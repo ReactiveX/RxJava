@@ -169,7 +169,7 @@ public final class Notification<T> {
             observer.onCompleted();
             break;
         default:
-            break;
+            throw new AssertionError("Uncovered case: " + kind);
         }
     }
 
