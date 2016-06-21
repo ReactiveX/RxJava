@@ -18,11 +18,15 @@ package rx.observers;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.lang.reflect.*;
+import java.util.Queue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 
+import rx.Observer;
 import rx.exceptions.*;
 import rx.functions.*;
 
@@ -185,5 +189,121 @@ public class ObserversTest {
         
         Action1<Throwable> throwAction = Actions.empty();
         Observers.create(Actions.empty(), throwAction).onCompleted();
+    }
+    
+    @Test
+    public void onCompleteQueues() {
+        @SuppressWarnings("unchecked")
+        final Observer<Integer>[] observer = new Observer[] { null };
+        final boolean[] completeCalled = { false };
+        SerializedObserver<Integer> so = new SerializedObserver<Integer>(new Observer<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                observer[0].onNext(1);
+                observer[0].onCompleted();
+            }
+            
+            @Override
+            public void onError(Throwable e) {
+                
+            }
+            
+            @Override
+            public void onCompleted() {
+                completeCalled[0] = true;
+            }
+        });
+        observer[0] = so;
+        
+        so.onNext(1);
+        
+        Assert.assertTrue(completeCalled[0]);
+    }
+    
+    @Test
+    public void concurrentOnError() throws Exception {
+        final Queue<Throwable> queue = new ConcurrentLinkedQueue<Throwable>();
+        
+        final SerializedObserver<Integer> so = new SerializedObserver<Integer>(new Observer<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+            }
+            
+            @Override
+            public void onError(Throwable e) {
+                queue.offer(e);
+            }
+            
+            @Override
+            public void onCompleted() {
+            }
+        });
+
+        final CountDownLatch cdl = new CountDownLatch(1);
+        
+        synchronized (so) {
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    so.onError(new IOException());
+                    cdl.countDown();
+                }
+            });
+            t.start();
+
+            Thread.sleep(200);
+            
+            so.onError(new TestException());
+        }
+        
+        if (!cdl.await(5, TimeUnit.SECONDS)) {
+            fail("The wait timed out");
+        }
+        
+        Assert.assertEquals(1, queue.size());
+        Throwable ex = queue.poll();
+        Assert.assertTrue("" + ex, ex instanceof TestException);
+    }
+    
+    @Test
+    public void concurrentOnComplete() throws Exception {
+        final int[] completed = { 0 };
+        final SerializedObserver<Integer> so = new SerializedObserver<Integer>(new Observer<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+            }
+            
+            @Override
+            public void onError(Throwable e) {
+            }
+            
+            @Override
+            public void onCompleted() {
+                completed[0]++;
+            }
+        });
+
+        final CountDownLatch cdl = new CountDownLatch(1);
+        
+        synchronized (so) {
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    so.onCompleted();
+                    cdl.countDown();
+                }
+            });
+            t.start();
+
+            Thread.sleep(200);
+            
+            so.onCompleted();
+        }
+        
+        if (!cdl.await(5, TimeUnit.SECONDS)) {
+            fail("The wait timed out");
+        }
+        
+        Assert.assertEquals(1, completed[0]);
     }
 }

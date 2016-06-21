@@ -36,7 +36,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -1000,6 +1000,7 @@ public class OperatorZipTest {
 
     @Test
     public void testZipEmptyArray() {
+        @SuppressWarnings("unchecked")
         Observable<Integer>[] ws = new Observable[0];
         Observable<Integer> o = Observable.zip(ws, new FuncN<Integer>() {
             @Override
@@ -1018,6 +1019,7 @@ public class OperatorZipTest {
     @Test
     public void testZipArraySingleItem() {
         final Integer expected = 0;
+        @SuppressWarnings("unchecked")
         Observable<Integer>[] ws = new Observable[]{ Observable.just(expected) };
 
         Observable<Integer> o = Observable.zip(ws, new FuncN<Integer>() {
@@ -1038,6 +1040,7 @@ public class OperatorZipTest {
     public void testZipBigArray() {
         final int size = 20;
         Integer expected = 0;
+        @SuppressWarnings("unchecked")
         Observable<Integer>[] ws = new Observable[size];
 
         for (int i = 0, wsLength = ws.length; i < wsLength; i++) {

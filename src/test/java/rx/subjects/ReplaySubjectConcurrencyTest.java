@@ -24,8 +24,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.*;
 
 import rx.*;
-import rx.Observable.OnSubscribe;
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
@@ -209,11 +209,15 @@ public class ReplaySubjectConcurrencyTest {
         for (Thread t : threads) {
             t.join();
         }
+        StringBuilder sb = new StringBuilder();
 
         // assert all threads got the same results
         List<Long> sums = new ArrayList<Long>();
         for (List<Long> values : listOfListsOfValues) {
             long v = 0;
+            if (values.size() != 10000) {
+                sb.append("A list is longer than expected: " + values.size());
+            }
             for (long l : values) {
                 v += l;
             }
@@ -225,14 +229,14 @@ public class ReplaySubjectConcurrencyTest {
         for (long l : sums) {
             if (l != expected) {
                 success = false;
-                System.out.println("FAILURE => Expected " + expected + " but got: " + l);
+                sb.append("FAILURE => Expected " + expected + " but got: " + l + "\n");
             }
         }
 
         if (success) {
             System.out.println("Success! " + sums.size() + " each had the same sum of " + expected);
         } else {
-            throw new RuntimeException("Concurrency Bug");
+            Assert.fail(sb.toString());
         }
 
     }
