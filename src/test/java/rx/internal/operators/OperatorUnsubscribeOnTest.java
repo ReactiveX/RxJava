@@ -15,9 +15,7 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.concurrent.*;
@@ -25,14 +23,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Action0;
 import rx.internal.util.RxThreadFactory;
-import rx.observers.TestObserver;
+import rx.observers.*;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
@@ -56,7 +51,7 @@ public class OperatorUnsubscribeOnTest {
                 }
             });
 
-            TestObserver<Integer> observer = new TestObserver<Integer>();
+            TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
             w
             .subscribeOn(UI_EVENT_LOOP)
             .observeOn(Schedulers.computation())
@@ -101,7 +96,7 @@ public class OperatorUnsubscribeOnTest {
                 }
             });
 
-            TestObserver<Integer> observer = new TestObserver<Integer>();
+            TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
             w
             .subscribeOn(Schedulers.newThread())
             .observeOn(Schedulers.computation())

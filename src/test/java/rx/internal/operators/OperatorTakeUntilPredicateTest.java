@@ -132,7 +132,7 @@ public class OperatorTakeUntilPredicateTest {
         
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
-        Assert.assertEquals(0, ts.getOnCompletedEvents().size());
+        Assert.assertEquals(0, ts.getCompletions());
     }
     
     @Test

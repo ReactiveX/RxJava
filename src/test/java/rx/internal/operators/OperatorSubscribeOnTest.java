@@ -35,7 +35,6 @@ import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -48,7 +47,7 @@ public class OperatorSubscribeOnTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch doneLatch = new CountDownLatch(1);
 
-        TestObserver<Integer> observer = new TestObserver<Integer>();
+        TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
 
         final Subscription subscription = Observable
                 .create(new Observable.OnSubscribe<Integer>() {
@@ -80,7 +79,7 @@ public class OperatorSubscribeOnTest {
         latch.countDown();
         doneLatch.await();
         assertEquals(0, observer.getOnErrorEvents().size());
-        assertEquals(1, observer.getOnCompletedEvents().size());
+        assertEquals(1, observer.getCompletions());
     }
 
     @Test

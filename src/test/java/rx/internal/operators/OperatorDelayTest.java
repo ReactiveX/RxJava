@@ -43,7 +43,6 @@ import rx.Subscription;
 import rx.exceptions.TestException;
 import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
-import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
@@ -657,7 +656,7 @@ public class OperatorDelayTest {
             }
 
         });
-        TestObserver<Integer> observer = new TestObserver<Integer>();
+        TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
         delayed.subscribe(observer);
         // all will be delivered after 500ms since range does not delay between them
         scheduler.advanceTimeBy(500L, TimeUnit.MILLISECONDS);

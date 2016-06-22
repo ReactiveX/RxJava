@@ -62,7 +62,7 @@ public class OperatorOnBackpressureLatestTest {
         
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2));
-        Assert.assertTrue(ts.getOnCompletedEvents().isEmpty());
+        Assert.assertEquals(0, ts.getCompletions());
     }
     @Test
     public void testSynchronousDrop() {
