@@ -32,14 +32,14 @@ public final class SingleResumeNext<T> extends Single<T> {
     @Override
     protected void subscribeActual(final SingleSubscriber<? super T> s) {
 
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-        s.onSubscribe(mad);
+        final SerialDisposable sd = new SerialDisposable();
+        s.onSubscribe(sd);
         
         source.subscribe(new SingleSubscriber<T>() {
 
             @Override
             public void onSubscribe(Disposable d) {
-                mad.set(d);
+                sd.replace(d);
             }
 
             @Override
@@ -69,7 +69,7 @@ public final class SingleResumeNext<T> extends Single<T> {
 
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mad.set(d);
+                        sd.replace(d);
                     }
 
                     @Override

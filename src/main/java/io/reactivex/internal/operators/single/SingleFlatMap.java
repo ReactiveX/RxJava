@@ -36,18 +36,18 @@ public final class SingleFlatMap<T, R> extends Single<R> {
         final SingleSubscriber<? super R> actual;
         final Function<? super T, ? extends SingleConsumable<? extends R>> mapper;
         
-        final MultipleAssignmentDisposable mad;
+        final SerialDisposable sd;
 
         public SingleFlatMapCallback(SingleSubscriber<? super R> actual,
                 Function<? super T, ? extends SingleConsumable<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
-            this.mad = new MultipleAssignmentDisposable();
+            this.sd = new SerialDisposable();
         }
         
         @Override
         public void onSubscribe(Disposable d) {
-            mad.set(d);
+            sd.replace(d);
         }
         
         @Override
@@ -66,14 +66,14 @@ public final class SingleFlatMap<T, R> extends Single<R> {
                 return;
             }
             
-            if (mad.isDisposed()) {
+            if (sd.isDisposed()) {
                 return;
             }
             
             o.subscribe(new SingleSubscriber<R>() {
                 @Override
                 public void onSubscribe(Disposable d) {
-                    mad.set(d);
+                    sd.replace(d);
                 }
                 
                 @Override

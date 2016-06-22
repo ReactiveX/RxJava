@@ -165,14 +165,14 @@ public final class BlockingObservable<T> implements Iterable<T> {
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         final CountDownLatch cdl = new CountDownLatch(1);
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
+        final SerialDisposable sd = new SerialDisposable();
         
         o.subscribe(new Observer<T>() {
             Disposable s;
             @Override
             public void onSubscribe(Disposable s) {
                 this.s = s;
-                mad.set(s);
+                sd.replace(s);
             }
             
             @Override
@@ -197,7 +197,7 @@ public final class BlockingObservable<T> implements Iterable<T> {
         try {
             cdl.await();
         } catch (InterruptedException ex) {
-            mad.dispose();
+            sd.dispose();
             Exceptions.propagate(ex);
         }
         
@@ -233,12 +233,12 @@ public final class BlockingObservable<T> implements Iterable<T> {
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         final CountDownLatch cdl = new CountDownLatch(1);
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
+        final SerialDisposable sd = new SerialDisposable();
         
         o.subscribe(new Observer<T>() {
             @Override
             public void onSubscribe(Disposable s) {
-                mad.set(s);
+                sd.replace(s);
             }
             
             @Override
@@ -261,7 +261,7 @@ public final class BlockingObservable<T> implements Iterable<T> {
         try {
             cdl.await();
         } catch (InterruptedException ex) {
-            mad.dispose();
+            sd.dispose();
             Exceptions.propagate(ex);
         }
         
@@ -322,13 +322,13 @@ public final class BlockingObservable<T> implements Iterable<T> {
         final CountDownLatch cdl = new CountDownLatch(1);
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
+        final SerialDisposable sd = new SerialDisposable();
         
         o.subscribe(new Observer<T>() {
 
             @Override
             public void onSubscribe(Disposable d) {
-                mad.set(d);
+                sd.replace(d);
             }
 
             @Override
@@ -354,7 +354,7 @@ public final class BlockingObservable<T> implements Iterable<T> {
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
                 if (cdl.getCount() != 0) {
-                    mad.dispose();
+                    sd.dispose();
                     return true;
                 }
                 return false;
@@ -362,12 +362,12 @@ public final class BlockingObservable<T> implements Iterable<T> {
 
             @Override
             public boolean isCancelled() {
-                return mad.isDisposed();
+                return sd.isDisposed();
             }
 
             @Override
             public boolean isDone() {
-                return cdl.getCount() == 0 && !mad.isDisposed();
+                return cdl.getCount() == 0 && !sd.isDisposed();
             }
 
             @Override

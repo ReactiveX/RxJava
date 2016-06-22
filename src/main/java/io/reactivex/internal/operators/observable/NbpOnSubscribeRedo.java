@@ -60,7 +60,7 @@ public final class NbpOnSubscribeRedo<T> implements ObservableConsumable<T> {
         final Observer<? super T> actual;
         final BehaviorSubject<Try<Optional<Object>>> subject;
         final ObservableConsumable<? extends T> source;
-        final MultipleAssignmentDisposable arbiter;
+        final SerialDisposable arbiter;
         
         final AtomicInteger wip = new AtomicInteger();
         
@@ -68,13 +68,13 @@ public final class NbpOnSubscribeRedo<T> implements ObservableConsumable<T> {
             this.actual = actual;
             this.subject = subject;
             this.source = source;
-            this.arbiter = new MultipleAssignmentDisposable();
+            this.arbiter = new SerialDisposable();
             this.lazySet(true);
         }
         
         @Override
         public void onSubscribe(Disposable s) {
-            arbiter.set(s);
+            arbiter.replace(s);
         }
         
         @Override
