@@ -142,7 +142,7 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
 
         EventLoopWorker(PoolWorker poolWorker) {
             this.poolWorker = poolWorker;
-            
+            poolWorker.resetContext();
         }
 
         @Override

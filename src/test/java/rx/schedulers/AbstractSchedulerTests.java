@@ -43,6 +43,8 @@ import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.plugins.RxJavaErrorHandler;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Base tests for all schedulers including Immediate/Current.
@@ -502,4 +504,54 @@ public abstract class AbstractSchedulerTests {
 
     }
 
+    @Test
+    public final void testStackTraceAcrossThreads() throws Throwable {
+        final AtomicReference<Throwable> exceptionRef = new AtomicReference<Throwable>();
+        final CountDownLatch done = new CountDownLatch(1);
+        System.setProperty("rxjava.captureSchedulerContext", "true");
+
+        try {
+
+            RxJavaPlugins.getInstance().reset();
+            RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
+                @Override
+                public void handleError(Throwable e) {
+                    exceptionRef.set(e);
+                    done.countDown();
+                }
+            });
+
+            try {
+                getScheduler().createWorker().schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        throw new RuntimeException();
+                    }
+                });
+            } catch (Exception e) {
+                exceptionRef.set(e);
+                done.countDown();
+            }
+
+            done.await();
+
+            Throwable exception = exceptionRef.get();
+            Throwable e = exception;
+            while (e.getCause() != null) {
+                e = e.getCause();
+            }
+
+            StackTraceElement[] st = e.getStackTrace();
+            for (StackTraceElement stackTraceElement : st) {
+                if (stackTraceElement.getMethodName().equals("testStackTraceAcrossThreads")) {
+                    // pass we found this class in the stack trace.
+                    return;
+                }
+            }
+
+            throw exception;
+        } finally {
+            System.setProperty("rxjava.captureSchedulerContext", "false");
+        }
+    }
 }

@@ -19,6 +19,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.*;
 
 import rx.Subscription;
+import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.internal.util.SubscriptionList;
@@ -34,18 +35,22 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
     private static final long serialVersionUID = -3962399486978279857L;
     final SubscriptionList cancel;
     final Action0 action;
+    final Throwable creationContext;
 
-    public ScheduledAction(Action0 action) {
+    public ScheduledAction(Action0 action, Throwable creationContext) {
         this.action = action;
         this.cancel = new SubscriptionList();
+        this.creationContext = creationContext;
     }
-    public ScheduledAction(Action0 action, CompositeSubscription parent) {
+    public ScheduledAction(Action0 action, CompositeSubscription parent, Throwable creationContext) {
         this.action = action;
         this.cancel = new SubscriptionList(new Remover(this, parent));
+        this.creationContext = creationContext;
     }
-    public ScheduledAction(Action0 action, SubscriptionList parent) {
+    public ScheduledAction(Action0 action, SubscriptionList parent, Throwable creationContext) {
         this.action = action;
         this.cancel = new SubscriptionList(new Remover2(this, parent));
+        this.creationContext = creationContext;
     }
 
     @Override
@@ -61,6 +66,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
             } else {
                 ie = new IllegalStateException("Fatal Exception thrown on Scheduler.Worker thread.", e);
             }
+            Exceptions.addCause(ie, creationContext);
             RxJavaPlugins.getInstance().getErrorHandler().handleError(ie);
             Thread thread = Thread.currentThread();
             thread.getUncaughtExceptionHandler().uncaughtException(thread, ie);

@@ -42,6 +42,7 @@ public final class ExecutorScheduler extends Scheduler {
 
     /** Worker that schedules tasks on the executor indirectly through a trampoline mechanism. */
     static final class ExecutorSchedulerWorker extends Scheduler.Worker implements Runnable {
+        private final Throwable creationContext = SchedulerContextException.create();
         final Executor executor;
         // TODO: use a better performing structure for task tracking
         final CompositeSubscription tasks;
@@ -64,7 +65,7 @@ public final class ExecutorScheduler extends Scheduler {
             if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
-            ScheduledAction ea = new ScheduledAction(action, tasks);
+            ScheduledAction ea = new ScheduledAction(action, tasks, creationContext);
             tasks.add(ea);
             queue.offer(ea);
             if (wip.getAndIncrement() == 0) {
@@ -146,7 +147,7 @@ public final class ExecutorScheduler extends Scheduler {
                         ((ScheduledAction)s2).add(removeMas);
                     }
                 }
-            });
+            }, this.creationContext);
             // This will make sure if ea.call() gets executed before this line
             // we don't override the current task in mas.
             first.set(ea);
