@@ -23,8 +23,10 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
+import rx.Subscriber;
 import rx.exceptions.*;
 import rx.functions.*;
+import rx.subscriptions.Subscriptions;
 
 public class SubscribersTest {
     @Test
@@ -184,5 +186,27 @@ public class SubscribersTest {
         
         Action1<Throwable> throwAction = Actions.empty();
         Subscribers.create(Actions.empty(), throwAction).onCompleted();
+    }
+    
+    @Test
+    public void shareSubscriptionButNullSubscriber() {
+        Subscriber<Integer> s = new Subscriber<Integer>(null, true) {
+            @Override
+            public void onNext(Integer t) {
+                
+            }
+            
+            @Override
+            public void onError(Throwable e) {
+                
+            }
+            
+            @Override
+            public void onCompleted() {
+                
+            }
+        };
+        
+        s.add(Subscriptions.empty());
     }
 }

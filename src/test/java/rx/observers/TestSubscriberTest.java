@@ -335,9 +335,9 @@ public class TestSubscriberTest {
     @Test
     public void testDifferentError() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.onError(new TestException());
+        ts.onError(new TestException("First error"));
         try {
-            ts.assertError(new TestException());
+            ts.assertError(new TestException("Other error"));
         } catch (AssertionError ex) {
             // expected
             return;

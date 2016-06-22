@@ -868,10 +868,10 @@ public class OperatorSwitchTest {
                             });
                 }
             })
-            .timeout(20, TimeUnit.SECONDS)
+            .timeout(30, TimeUnit.SECONDS)
             .subscribe(ts);
             
-            ts.awaitTerminalEvent(45, TimeUnit.SECONDS);
+            ts.awaitTerminalEvent(60, TimeUnit.SECONDS);
             if (!q.isEmpty()) {
                 throw new AssertionError("Dropped exceptions", new CompositeException(q));
             }
