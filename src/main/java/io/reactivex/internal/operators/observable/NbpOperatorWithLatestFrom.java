@@ -71,9 +71,7 @@ public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, 
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
         
         final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
-        
-        static final Disposable CANCELLED = DisposableHelper.DISPOSED;
-        
+
         public WithLatestFromSubscriber(Observer<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
             this.actual = actual;
             this.combiner = combiner;
@@ -122,7 +120,7 @@ public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, 
         public boolean setOther(Disposable o) {
             for (;;) {
                 Disposable current = other.get();
-                if (current == CANCELLED) {
+                if (current == DisposableHelper.DISPOSED) {
                     o.dispose();
                     return false;
                 }
@@ -138,10 +136,10 @@ public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, 
         }
         
         public void otherError(Throwable e) {
-            if (this.s.compareAndSet(null, CANCELLED)) {
+            if (this.s.compareAndSet(null, DisposableHelper.DISPOSED)) {
                 EmptyDisposable.error(e, actual);
             } else {
-                if (this.s.get() != CANCELLED) {
+                if (this.s.get() != DisposableHelper.DISPOSED) {
                     dispose();
                     actual.onError(e);
                 } else {

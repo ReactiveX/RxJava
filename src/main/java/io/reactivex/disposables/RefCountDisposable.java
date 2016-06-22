@@ -22,8 +22,6 @@ public final class RefCountDisposable implements Disposable {
 
     final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
 
-    static final Disposable DISPOSED = DisposableHelper.DISPOSED;
-    
     final AtomicInteger count = new AtomicInteger();
 
     final AtomicBoolean once = new AtomicBoolean();
@@ -55,7 +53,7 @@ public final class RefCountDisposable implements Disposable {
     }
     
     public boolean isDisposed() {
-        return resource == DISPOSED;
+        return resource.get() == DisposableHelper.DISPOSED;
     }
     
     static final class InnerDisposable extends AtomicBoolean implements Disposable {
