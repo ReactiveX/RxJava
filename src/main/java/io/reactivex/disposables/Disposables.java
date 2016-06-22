@@ -33,15 +33,18 @@ public final class Disposables {
     }
     
     public static Disposable from(Runnable run) {
-        Objects.requireNonNull(run, "run is null");
-        return new RunnableDisposable(run);
+        return new BooleanDisposable(run);
     }
-    
-    
+
     public static Disposable from(Future<?> future) {
         return from(future, true);
     }
-    
+
+    public static Disposable from(Future<?> future, boolean allowInterrupt) {
+        Objects.requireNonNull(future, "future is null");
+        return new FutureDisposable(future, allowInterrupt);
+    }
+
     public static Disposable from(final Subscription subscription) {
         Objects.requireNonNull(subscription, "subscription is null");
         return new Disposable() {
@@ -51,12 +54,7 @@ public final class Disposables {
             }
         };
     }
-    
-    public static Disposable from(Future<?> future, boolean allowInterrupt) {
-        Objects.requireNonNull(future, "future is null");
-        return new FutureDisposable(future, allowInterrupt);
-    }
-    
+
     static final Disposable EMPTY = new Disposable() {
         @Override
         public void dispose() { }
@@ -68,39 +66,6 @@ public final class Disposables {
 
     public static Disposable disposed() {
         return DisposableHelper.DISPOSED;
-    }
-    
-    public static CompositeDisposable from(Disposable... resources) {
-        return new CompositeDisposable(resources);
-    }
-
-    /** Wraps a Runnable instance. */
-    static final class RunnableDisposable 
-    extends AtomicReference<Runnable>
-    implements Disposable {
-        
-        /** */
-        private static final long serialVersionUID = 4892876354773733738L;
-        
-        static final Runnable DISPOSED = new Runnable() {
-            @Override
-            public void run() { }
-        };
-        
-        public RunnableDisposable(Runnable run) {
-            super(run);
-        }
-        
-        @Override
-        public void dispose() {
-            Runnable r = get();
-            if (r != DISPOSED) {
-                r = getAndSet(DISPOSED);
-                if (r != DISPOSED) {
-                    r.run();
-                }
-            }
-        }
     }
     
     /** Wraps a Future instance. */

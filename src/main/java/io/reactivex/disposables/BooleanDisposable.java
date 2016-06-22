@@ -13,41 +13,38 @@
 
 package io.reactivex.disposables;
 
+import io.reactivex.internal.functions.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class BooleanDisposable implements Disposable {
-    final AtomicReference<Runnable> run = new AtomicReference<Runnable>();
+    private static final Runnable EMPTY = new Runnable() {
+        @Override
+        public void run() { }
+    };
 
-    static final Runnable DISPOSED = new Runnable() {
-        @Override
-        public void run() { }
-    };
-    
-    static final Runnable EMPTY = new Runnable() {
-        @Override
-        public void run() { }
-    };
+    private final AtomicReference<Runnable> run;
 
     public BooleanDisposable() {
         this(EMPTY);
     }
     
     public BooleanDisposable(Runnable run) {
-        this.run.lazySet(run);
+        Objects.requireNonNull(run, "run is null");
+        this.run = new AtomicReference<Runnable>(run);
     }
     
     @Override
     public void dispose() {
         Runnable r = run.get();
-        if (r != DISPOSED) {
-            r = run.getAndSet(DISPOSED);
-            if (r != DISPOSED) {
+        if (r != null) {
+            r = run.getAndSet(null);
+            if (r != null) {
                 r.run();
             }
         }
     }
     
     public boolean isDisposed() {
-        return run.get() == DISPOSED;
+        return run.get() == null;
     }
 }
