@@ -72,3 +72,6 @@ bin/
 
 # PMD local rules
 .pmd
+
+# IntelliJ / Android Studio related files
+local.properties
