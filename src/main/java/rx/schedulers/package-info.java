@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Utility class to return standard RxJava schedulers or wrap any Executor-based
- * (thread pool) instances.
+ * Scheduler implementations, value+time record classes and the standard factory class to 
+ * return standard RxJava schedulers or wrap any Executor-based (thread pool) instances.
  */
 package rx.schedulers;

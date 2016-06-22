@@ -15,6 +15,6 @@
  */
 
 /**
- * Method annotations for indicating experimental and beta operators.
+ * Annotations for indicating experimental and beta operators, classes, methods, types or fields.
  */
 package rx.annotations;
