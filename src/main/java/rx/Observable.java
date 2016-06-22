@@ -7201,8 +7201,8 @@ public class Observable<T> {
      * that does a similar operation on lists.
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
-     *      them to a single {@code onNext}.</dd>
+     *  <dd>The operator honors backpressure of its downstream consumer and consumes the
+     *  upstream source in unbounded mode.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code reduce} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -7238,10 +7238,24 @@ public class Observable<T> {
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
+     * <p>
+     * Note that the {@code initialValue} is shared among all subscribers to the resulting Observable
+     * and may cause problems if it is mutable. To make sure each subscriber gets its own value, defer
+     * the application of this operator via {@link #defer(Func0)}:
+     * <pre><code>
+     * Observable&lt;T> source = ...
+     * Observable.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
+     * 
+     * // alternatively, by using compose to stay fluent
+     * 
+     * source.compose(o ->
+     *     Observable.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)))
+     * );
+     * </code></pre>
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
-     *      them to a single {@code onNext}.</dd>
+     *  <dd>The operator honors backpressure of its downstream consumer and consumes the
+     *  upstream source in unbounded mode.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code reduce} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8167,7 +8181,23 @@ public class Observable<T> {
      * <p>
      * Note that the Observable that results from this method will emit {@code initialValue} as its first
      * emitted item.
+     * <p>
+     * Note that the {@code initialValue} is shared among all subscribers to the resulting Observable
+     * and may cause problems if it is mutable. To make sure each subscriber gets its own value, defer
+     * the application of this operator via {@link #defer(Func0)}:
+     * <pre><code>
+     * Observable&lt;T> source = ...
+     * Observable.defer(() -> source.scan(new ArrayList&lt;>(), (list, item) -> list.add(item)));
+     * 
+     * // alternatively, by using compose to stay fluent
+     * 
+     * source.compose(o ->
+     *     Observable.defer(() -> o.scan(new ArrayList&lt;>(), (list, item) -> list.add(item)))
+     * );
+     * </code></pre>
      * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code scan} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
