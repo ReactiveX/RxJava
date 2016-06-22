@@ -12,6 +12,7 @@
  */
 package io.reactivex.observers;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -55,12 +56,6 @@ public class TestObserver<T> implements Observer<T>, Disposable {
 
     /** Holds the current subscription if any. */
     private final AtomicReference<Disposable> subscription = new AtomicReference<Disposable>();
-    
-    /** Indicates a cancelled subscription. */
-    private static final Disposable CANCELLED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
 
     private boolean checkSubscriptionOnce;
 
@@ -92,7 +87,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         }
         if (!subscription.compareAndSet(null, s)) {
             s.dispose();
-            if (subscription.get() != CANCELLED) {
+            if (subscription.get() != DisposableHelper.DISPOSED) {
                 errors.add(new NullPointerException("onSubscribe received multiple subscriptions: " + s));
             }
             return;
@@ -182,13 +177,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     public final void dispose() {
         if (!cancelled) {
             cancelled = true;
-            Disposable s = subscription.get();
-            if (s != CANCELLED) {
-                s = subscription.getAndSet(CANCELLED);
-                if (s != CANCELLED && s != null) {
-                    s.dispose();
-                }
-            }
+            DisposableHelper.dispose(subscription);
         }
     }
     

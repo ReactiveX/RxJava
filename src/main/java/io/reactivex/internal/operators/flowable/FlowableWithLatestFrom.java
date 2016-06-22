@@ -75,18 +75,8 @@ public final class FlowableWithLatestFrom<T, U, R> extends Flowable<R> {
         final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
         
         final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
-        
-        static final Subscription CANCELLED = new Subscription() {
-            @Override
-            public void request(long n) {
-                SubscriptionHelper.validateRequest(n);
-            }
-            
-            @Override
-            public void cancel() {
-                
-            }
-        };
+
+        static final Subscription CANCELLED = SubscriptionHelper.CANCELLED;
         
         public WithLatestFromSubscriber(Subscriber<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
             this.actual = actual;
@@ -122,13 +112,13 @@ public final class FlowableWithLatestFrom<T, U, R> extends Flowable<R> {
         
         @Override
         public void onError(Throwable t) {
-            cancelOther();
+            SubscriptionHelper.dispose(other);
             actual.onError(t);
         }
         
         @Override
         public void onComplete() {
-            cancelOther();
+            SubscriptionHelper.dispose(other);
             actual.onComplete();
         }
         
@@ -140,19 +130,9 @@ public final class FlowableWithLatestFrom<T, U, R> extends Flowable<R> {
         @Override
         public void cancel() {
             s.get().cancel();
-            cancelOther();
+            SubscriptionHelper.dispose(other);
         }
-        
-        void cancelOther() {
-            Subscription o = other.get();
-            if (o != CANCELLED) {
-                o = other.getAndSet(CANCELLED);
-                if (o != CANCELLED && o != null) {
-                    o.cancel();
-                }
-            }
-        }
-        
+
         public boolean setOther(Subscription o) {
             for (;;) {
                 Subscription current = other.get();

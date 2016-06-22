@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
@@ -56,11 +57,6 @@ public final class FlowableWindowBoundary<T, B> extends Flowable<Flowable<T>> {
         Subscription s;
         
         final AtomicReference<Disposable> boundary = new AtomicReference<Disposable>();
-        
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
         
         UnicastProcessor<T> window;
         
@@ -146,7 +142,7 @@ public final class FlowableWindowBoundary<T, B> extends Flowable<Flowable<T>> {
             }
             
             if (windows.decrementAndGet() == 0) {
-                dispose();
+                DisposableHelper.dispose(boundary);
             }
             
             actual.onError(t);
@@ -163,7 +159,7 @@ public final class FlowableWindowBoundary<T, B> extends Flowable<Flowable<T>> {
             }
             
             if (windows.decrementAndGet() == 0) {
-                dispose();
+                DisposableHelper.dispose(boundary);
             }
 
             actual.onComplete();
@@ -181,17 +177,7 @@ public final class FlowableWindowBoundary<T, B> extends Flowable<Flowable<T>> {
                 cancelled = true;
             }
         }
-        
-        void dispose() {
-            Disposable d = boundary.get();
-            if (d != CANCELLED) {
-                d = boundary.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
-        }
-        
+
         void drainLoop() {
             final Queue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
@@ -207,7 +193,7 @@ public final class FlowableWindowBoundary<T, B> extends Flowable<Flowable<T>> {
                     boolean empty = o == null;
                     
                     if (d && empty) {
-                        dispose();
+                        DisposableHelper.dispose(boundary);
                         Throwable e = error;
                         if (e != null) {
                             w.onError(e);
@@ -225,7 +211,7 @@ public final class FlowableWindowBoundary<T, B> extends Flowable<Flowable<T>> {
                         w.onComplete();
 
                         if (windows.decrementAndGet() == 0) {
-                            dispose();
+                            DisposableHelper.dispose(boundary);
                             return;
                         }
 

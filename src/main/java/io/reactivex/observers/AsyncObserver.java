@@ -19,7 +19,6 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 /**
  * An abstract Subscriber implementation that allows asynchronous cancellation of its
@@ -38,12 +37,6 @@ public abstract class AsyncObserver<T> implements Observer<T>, Disposable {
 
     /** The resource composite, can be null. */
     private final ListCompositeResource<Disposable> resources;
-    
-    /** The cancelled subscription indicator. */
-    private static final Disposable CANCELLED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
     
     /**
      * Constructs an AsyncObserver with resource support.
@@ -116,15 +109,8 @@ public abstract class AsyncObserver<T> implements Observer<T>, Disposable {
      * case the main Disposable will be immediately disposed.
      */
     protected final void cancel() {
-        Disposable a = s.get();
-        if (a != CANCELLED) {
-            a = s.getAndSet(CANCELLED);
-            if (a != CANCELLED && a != null) {
-                a.dispose();
-                if (resources != null) {
-                    resources.dispose();
-                }
-            }
+        if (DisposableHelper.dispose(s) && resources != null) {
+            resources.dispose();
         }
     }
     
@@ -138,6 +124,6 @@ public abstract class AsyncObserver<T> implements Observer<T>, Disposable {
      * @return true if this AsyncObserver has been disposed/cancelled
      */
     public final boolean isDisposed() {
-        return s == CANCELLED;
+        return DisposableHelper.isDisposed(s.get());
     }
 }

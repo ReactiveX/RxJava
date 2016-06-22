@@ -63,11 +63,6 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-
         static final Disposable NEW_TIMER = new Disposable() {
             @Override
             public void dispose() { }
@@ -126,7 +121,7 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
                         if (idx == index) {
                             done = true;
                             s.dispose();
-                            disposeTimer();
+                            DisposableHelper.dispose(timer);
                             worker.dispose();
                             
                             if (other == null) {
@@ -156,7 +151,7 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
             }
             done = true;
             worker.dispose();
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             arbiter.onError(t, s);
         }
         
@@ -167,24 +162,14 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
             }
             done = true;
             worker.dispose();
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             arbiter.onComplete(s);
         }
         
         @Override
         public void dispose() {
             worker.dispose();
-            disposeTimer();
-        }
-        
-        public void disposeTimer() {
-            Disposable d = timer.get();
-            if (d != CANCELLED) {
-                d = timer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(timer);
         }
     }
     
@@ -197,11 +182,6 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
         Disposable s; 
         
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
-
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
 
         static final Disposable NEW_TIMER = new Disposable() {
             @Override
@@ -294,17 +274,7 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
         @Override
         public void dispose() {
             worker.dispose();
-            disposeTimer();
-        }
-        
-        public void disposeTimer() {
-            Disposable d = timer.get();
-            if (d != CANCELLED) {
-                d = timer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(timer);
         }
     }
 }

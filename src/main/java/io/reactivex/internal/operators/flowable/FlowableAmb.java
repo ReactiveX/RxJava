@@ -150,19 +150,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
         boolean won;
         
         final AtomicLong missedRequested = new AtomicLong();
-        
-        static final Subscription CANCELLED = new Subscription() {
-            @Override
-            public void request(long n) {
-                
-            }
-            
-            @Override
-            public void cancel() {
-                
-            }
-        };
-        
+
         public AmbInnerSubscriber(AmbCoordinator<T> parent, int index, Subscriber<? super T> actual) {
             this.parent = parent;
             this.index = index;
@@ -173,7 +161,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
         public void onSubscribe(Subscription s) {
             if (!compareAndSet(null, s)) {
                 s.cancel();
-                if (get() != CANCELLED) {
+                if (get() != SubscriptionHelper.CANCELLED) {
                     SubscriptionHelper.reportSubscriptionSet();
                 }
                 return;
@@ -196,7 +184,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
                 }
                 BackpressureHelper.add(missedRequested, n);
                 s = get();
-                if (s != null && s != CANCELLED) {
+                if (s != null && s != SubscriptionHelper.CANCELLED) {
                     long r = missedRequested.getAndSet(0L);
                     if (r != 0L) {
                         s.request(r);
@@ -250,13 +238,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
         
         @Override
         public void cancel() {
-            Subscription s = get();
-            if (s != CANCELLED) {
-                s = getAndSet(CANCELLED);
-                if (s != CANCELLED && s != null) {
-                    s.cancel();
-                }
-            }
+            SubscriptionHelper.dispose(this);
         }
         
     }

@@ -571,19 +571,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         volatile boolean done;
         volatile Queue<U> queue;
         int outstanding;
-        
-        static final Subscription CANCELLED = new Subscription() {
-            @Override
-            public void request(long n) {
-                
-            }
-            
-            @Override
-            public void cancel() {
-                
-            }
-        };
-        
+
         public InnerSubscriber(MergeSubscriber<T, U> parent, long id) {
             this.id = id;
             this.parent = parent;
@@ -594,7 +582,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         public void onSubscribe(Subscription s) {
             if (!compareAndSet(null, s)) {
                 s.cancel();
-                if (get() != CANCELLED) {
+                if (get() != SubscriptionHelper.CANCELLED) {
                     SubscriptionHelper.reportSubscriptionSet();
                 }
                 return;
@@ -633,13 +621,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         
         @Override
         public void dispose() {
-            Subscription s = get();
-            if (s != CANCELLED) {
-                s = getAndSet(CANCELLED);
-                if (s != CANCELLED && s != null) {
-                    s.cancel();
-                }
-            }
+            SubscriptionHelper.dispose(this);
         }
     }
     

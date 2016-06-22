@@ -229,19 +229,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
         boolean missed;
         
         final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
-        
-        static final Subscription CANCELLED = new Subscription() {
-            @Override
-            public void request(long n) {
-                
-            }
-            
-            @Override
-            public void cancel() {
-                
-            }
-        };
-        
+
         public PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
             this.queue = new SpscArrayQueue<Object>(bufferSize);
             
@@ -257,14 +245,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
                 InnerProducer[] ps = producers.getAndSet(TERMINATED);
                 if (ps != TERMINATED) {
                     current.compareAndSet(PublishSubscriber.this, null);
-                    
-                    Subscription a = s.get();
-                    if (a != CANCELLED) {
-                        a = s.getAndSet(CANCELLED);
-                        if (a != CANCELLED && a != null) {
-                            a.cancel();
-                        }
-                    }
+                    SubscriptionHelper.dispose(s);
                 }
             }
         }
@@ -277,7 +258,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
         public void onSubscribe(Subscription s) {
             if (!this.s.compareAndSet(null, s)) {
                 s.cancel();
-                if (this.s.get() != CANCELLED) {
+                if (this.s.get() != SubscriptionHelper.CANCELLED) {
                     SubscriptionHelper.reportSubscriptionSet();
                 }
                 return;

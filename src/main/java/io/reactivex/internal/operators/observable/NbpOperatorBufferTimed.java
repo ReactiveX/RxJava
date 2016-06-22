@@ -88,11 +88,6 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
         
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-
         public BufferExactUnboundedSubscriber(
                 Observer<? super U> actual, Supplier<U> bufferSupplier,
                 long timespan, TimeUnit unit, Scheduler scheduler) {
@@ -150,7 +145,7 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
         
         @Override
         public void onError(Throwable t) {
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             synchronized (this) {
                 buffer = null;
             }
@@ -159,7 +154,7 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
         
         @Override
         public void onComplete() {
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             U b;
             synchronized (this) {
                 b = buffer;
@@ -177,20 +172,10 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
         
         @Override
         public void dispose() {
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             s.dispose();
         }
-        
-        void disposeTimer() {
-            Disposable d = timer.get();
-            if (d != CANCELLED) {
-                d = timer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
-        }
-        
+
         @Override
         public void run() {
             /*
@@ -232,7 +217,7 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
             
             if (current == null) {
                 selfCancel = true;
-                disposeTimer();
+                DisposableHelper.dispose(timer);
                 return;
             }
 

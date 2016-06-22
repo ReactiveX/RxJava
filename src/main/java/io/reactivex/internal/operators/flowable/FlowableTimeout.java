@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -68,12 +69,7 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
         
         final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-
-        public TimeoutSubscriber(Subscriber<? super T> actual, 
+        public TimeoutSubscriber(Subscriber<? super T> actual,
                 Supplier<? extends Publisher<U>> firstTimeoutSelector,
                 Function<? super T, ? extends Publisher<V>> timeoutSelector) {
             this.actual = actual;
@@ -178,14 +174,7 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
         public void cancel() {
             cancelled = true;
             s.cancel();
-            
-            Disposable d = timeout.get();
-            if (d != CANCELLED) {
-                d = timeout.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(timeout);
         }
         
         @Override
@@ -256,11 +245,6 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
         
         final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-
         public TimeoutOtherSubscriber(Subscriber<? super T> actual,
                 Supplier<? extends Publisher<U>> firstTimeoutSelector,
                 Function<? super T, ? extends Publisher<V>> timeoutSelector, Publisher<? extends T> other) {
@@ -374,14 +358,7 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
         public void dispose() {
             cancelled = true;
             s.cancel();
-            
-            Disposable d = timeout.get();
-            if (d != CANCELLED) {
-                d = timeout.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(timeout);
         }
         
         @Override

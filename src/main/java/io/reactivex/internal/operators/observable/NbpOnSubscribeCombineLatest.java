@@ -320,11 +320,6 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements ObservableConsum
         
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         public CombinerSubscriber(LatestCoordinator<T, R> parent, int index) {
             this.parent = parent;
             this.index = index;
@@ -365,13 +360,7 @@ public final class NbpOnSubscribeCombineLatest<T, R> implements ObservableConsum
         
         @Override
         public void dispose() {
-            Disposable a = s.get();
-            if (a != CANCELLED) {
-                a = s.getAndSet(CANCELLED);
-                if (a != CANCELLED && a != null) {
-                    a.dispose();
-                }
-            }
+            DisposableHelper.dispose(s);
         }
     }
 }

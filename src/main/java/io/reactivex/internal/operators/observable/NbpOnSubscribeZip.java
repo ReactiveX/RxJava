@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
@@ -241,12 +242,7 @@ public final class NbpOnSubscribeZip<T, R> implements ObservableConsumable<R> {
         Throwable error;
         
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
-        
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
+
         public ZipSubscriber(ZipCoordinator<T, R> parent, int bufferSize) {
             this.parent = parent;
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
@@ -256,7 +252,7 @@ public final class NbpOnSubscribeZip<T, R> implements ObservableConsumable<R> {
             
             for (;;) {
                 Disposable current = this.s.get();
-                if (current == CANCELLED) {
+                if (current == DisposableHelper.DISPOSED) {
                     s.dispose();
                     return;
                 }
@@ -304,13 +300,7 @@ public final class NbpOnSubscribeZip<T, R> implements ObservableConsumable<R> {
         
         @Override
         public void dispose() {
-            Disposable s = this.s.get();
-            if (s != CANCELLED) {
-                s = this.s.getAndSet(CANCELLED);
-                if (s != CANCELLED && s != null) {
-                    s.dispose();
-                }
-            }
+            DisposableHelper.dispose(s);
         }
     }
 }

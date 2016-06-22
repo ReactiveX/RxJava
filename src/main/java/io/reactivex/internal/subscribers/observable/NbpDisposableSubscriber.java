@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.subscribers.observable;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observer;
@@ -26,17 +27,12 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  */
 public abstract class NbpDisposableSubscriber<T> implements Observer<T>, Disposable {
     final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
-    
-    static final Disposable CANCELLED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
-    
+
     @Override
     public final void onSubscribe(Disposable s) {
         if (!this.s.compareAndSet(null, s)) {
             s.dispose();
-            if (this.s.get() != CANCELLED) {
+            if (this.s.get() != DisposableHelper.DISPOSED) {
                 SubscriptionHelper.reportSubscriptionSet();
             }
             return;
@@ -48,17 +44,11 @@ public abstract class NbpDisposableSubscriber<T> implements Observer<T>, Disposa
     }
     
     public final boolean isDisposed() {
-        return s == CANCELLED;
+        return s == DisposableHelper.DISPOSED;
     }
     
     @Override
     public final void dispose() {
-        Disposable a = s.get();
-        if (a != CANCELLED) {
-            a = s.getAndSet(CANCELLED);
-            if (a != CANCELLED && a != null) {
-                a.dispose();
-            }
-        }
+        DisposableHelper.dispose(s);
     }
 }

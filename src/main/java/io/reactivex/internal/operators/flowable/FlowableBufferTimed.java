@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -93,11 +94,6 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-
         public BufferExactUnboundedSubscriber(
                 Subscriber<? super U> actual, Supplier<U> bufferSupplier,
                 long timespan, TimeUnit unit, Scheduler scheduler) {
@@ -158,7 +154,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         
         @Override
         public void onError(Throwable t) {
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             synchronized (this) {
                 buffer = null;
             }
@@ -167,7 +163,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         
         @Override
         public void onComplete() {
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             U b;
             synchronized (this) {
                 b = buffer;
@@ -190,21 +186,11 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         
         @Override
         public void cancel() {
-            disposeTimer();
-            
+            DisposableHelper.dispose(timer);
+
             s.cancel();
         }
-        
-        void disposeTimer() {
-            Disposable d = timer.get();
-            if (d != CANCELLED) {
-                d = timer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
-        }
-        
+
         @Override
         public void run() {
             /*
@@ -246,7 +232,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             
             if (current == null) {
                 selfCancel = true;
-                disposeTimer();
+                DisposableHelper.dispose(timer);
                 return;
             }
 

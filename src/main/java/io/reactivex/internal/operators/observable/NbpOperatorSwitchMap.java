@@ -289,12 +289,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
         
         volatile boolean done;
         Throwable error;
-        
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
+
         public SwitchMapInnerSubscriber(SwitchMapSubscriber<T, R> parent, long index, int bufferSize) {
             this.parent = parent;
             this.index = index;
@@ -313,7 +308,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
             if (index == parent.unique) {
                 if (!compareAndSet(null, s)) {
                     s.dispose();
-                    if (get() != CANCELLED) {
+                    if (get() != DisposableHelper.DISPOSED) {
                         SubscriptionHelper.reportSubscriptionSet();
                     }
                     return;
@@ -354,13 +349,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
         }
         
         public void cancel() {
-            Disposable s = get();
-            if (s != CANCELLED) {
-                s = getAndSet(CANCELLED);
-                if (s != CANCELLED && s != null) {
-                    s.dispose();
-                }
-            }
+            DisposableHelper.dispose(this);
         }
     }
 }

@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -67,11 +68,6 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
         final FullArbiter<T> arbiter;
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
-
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
 
         static final Disposable NEW_TIMER = new Disposable() {
             @Override
@@ -132,7 +128,7 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
                         if (idx == index) {
                             done = true;
                             s.cancel();
-                            disposeTimer();
+                            DisposableHelper.dispose(timer);
                             worker.dispose();
                             
                             if (other == null) {
@@ -162,7 +158,7 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
             }
             done = true;
             worker.dispose();
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             arbiter.onError(t, s);
         }
         
@@ -173,24 +169,14 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
             }
             done = true;
             worker.dispose();
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             arbiter.onComplete(s);
         }
         
         @Override
         public void dispose() {
             worker.dispose();
-            disposeTimer();
-        }
-        
-        public void disposeTimer() {
-            Disposable d = timer.get();
-            if (d != CANCELLED) {
-                d = timer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(timer);
         }
     }
     
@@ -203,11 +189,6 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
         Subscription s; 
         
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
-
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
 
         static final Disposable NEW_TIMER = new Disposable() {
             @Override
@@ -301,19 +282,9 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
         @Override
         public void dispose() {
             worker.dispose();
-            disposeTimer();
+            DisposableHelper.dispose(timer);
         }
-        
-        public void disposeTimer() {
-            Disposable d = timer.get();
-            if (d != CANCELLED) {
-                d = timer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
-        }
-        
+
         @Override
         public void request(long n) {
             s.request(n);

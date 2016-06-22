@@ -27,24 +27,12 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  */
 public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposable {
     final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
-    
-    static final Subscription CANCELLED = new Subscription() {
-        @Override
-        public void request(long n) {
-            
-        }
-        
-        @Override
-        public void cancel() {
-            
-        }
-    };
-    
+
     @Override
     public final void onSubscribe(Subscription s) {
         if (!this.s.compareAndSet(null, s)) {
             s.cancel();
-            if (this.s.get() != CANCELLED) {
+            if (this.s.get() != SubscriptionHelper.CANCELLED) {
                 SubscriptionHelper.reportSubscriptionSet();
             }
             return;
@@ -69,17 +57,11 @@ public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposab
     }
     
     public final boolean isDisposed() {
-        return s.get() == CANCELLED;
+        return s.get() == SubscriptionHelper.CANCELLED;
     }
     
     @Override
     public final void dispose() {
-        Subscription a = s.get();
-        if (a != CANCELLED) {
-            a = s.getAndSet(CANCELLED);
-            if (a != CANCELLED && a != null) {
-                a.cancel();
-            }
-        }
+        SubscriptionHelper.dispose(s);
     }
 }

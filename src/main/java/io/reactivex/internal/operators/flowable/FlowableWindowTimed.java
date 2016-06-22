@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.nio.channels.CancelledKeyException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -90,11 +91,6 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         static final Object NEXT = new Object();
         
         volatile boolean terminated;
@@ -199,13 +195,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         @Override
         public void dispose() {
             selfCancel = true;
-            Disposable d = timer.get();
-            if (d != CANCELLED) {
-                d = timer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(timer);
         }
         
         @Override
@@ -327,11 +317,6 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         volatile boolean terminated;
         
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
-        
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
         
         public WindowExactBoundedSubscriber(
                 Subscriber<? super Flowable<T>> actual, 
@@ -493,13 +478,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         @Override
         public void dispose() {
             selfCancel = true;
-            Disposable d = timer.get();
-            if (d != CANCELLED) {
-                d = timer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(timer);
         }
         
         @Override

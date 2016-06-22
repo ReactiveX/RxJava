@@ -320,19 +320,7 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
         
         volatile boolean done;
         Throwable error;
-        
-        static final Subscription CANCELLED = new Subscription() {
-            @Override
-            public void request(long n) {
-                
-            }
-            
-            @Override
-            public void cancel() {
-                
-            }
-        };
-        
+
         public SwitchMapInnerSubscriber(SwitchMapSubscriber<T, R> parent, long index, int bufferSize) {
             this.parent = parent;
             this.index = index;
@@ -351,7 +339,7 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
             if (index == parent.unique) {
                 if (!compareAndSet(null, s)) {
                     s.cancel();
-                    if (get() != CANCELLED) {
+                    if (get() != SubscriptionHelper.CANCELLED) {
                         SubscriptionHelper.reportSubscriptionSet();
                     }
                     return;
@@ -393,13 +381,7 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
         }
         
         public void cancel() {
-            Subscription s = get();
-            if (s != CANCELLED) {
-                s = getAndSet(CANCELLED);
-                if (s != CANCELLED && s != null) {
-                    s.cancel();
-                }
-            }
+            SubscriptionHelper.dispose(this);
         }
     }
 }
