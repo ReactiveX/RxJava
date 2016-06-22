@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.disposables.EmptyDisposable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -47,12 +48,6 @@ public final class NbpOnSubscribeTimerOnceSource implements ObservableConsumable
 
         final Observer<? super Long> actual;
         
-        /** This state tells the setResource not to call dispose since the run is finishing anyway. */
-        static final Disposable DONE = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         volatile boolean cancelled;
         
         public IntervalOnceSubscriber(Observer<? super Long> actual) {
@@ -74,7 +69,7 @@ public final class NbpOnSubscribeTimerOnceSource implements ObservableConsumable
                 actual.onNext(0L);
                 actual.onComplete();
             }
-            lazySet(DONE);
+            lazySet(EmptyDisposable.INSTANCE);
         }
         
         public void setResource(Disposable d) {
