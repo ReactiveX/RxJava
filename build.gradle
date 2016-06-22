@@ -68,19 +68,17 @@ pmd {
     sourceSets = [sourceSets.main]
     ruleSets = []
     ruleSetFiles = files('pmd.xml')
+
 }
 
-task('pmd', type: Pmd, dependsOn: 'assemble') {
-    description = 'Run pmd'
-    group = 'verification'
-
+pmdMain {
     reports {
         html.enabled = true
         xml.enabled = true
     }
 }
 
-build.dependsOn 'pmd'
+build.dependsOn pmdMain
 
 task pmdPrint(dependsOn: 'pmdMain') << {
     File file = new File('build/reports/pmd/main.xml')
@@ -99,4 +97,4 @@ task pmdPrint(dependsOn: 'pmdMain') << {
     }
 }
 
-build.dependsOn 'pmdPrint'
+build.dependsOn pmdPrint
