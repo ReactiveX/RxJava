@@ -69,3 +69,6 @@ bin/
 # Scala build
 *.cache
 /.nb-gradle/private/
+
+# PMD local rules
+.pmd
