@@ -35,7 +35,7 @@ public class NbpBlockingOperatorMostRecentTest {
 
     @Test
     public void testMostRecent() {
-        Subject<String, String> s = PublishSubject.create();
+        Subject<String> s = PublishSubject.create();
 
         Iterator<String> it = mostRecent(s, "default").iterator();
 
@@ -60,7 +60,7 @@ public class NbpBlockingOperatorMostRecentTest {
 
     @Test(expected = TestException.class)
     public void testMostRecentWithException() {
-        Subject<String, String> s = PublishSubject.create();
+        Subject<String> s = PublishSubject.create();
 
         Iterator<String> it = mostRecent(s, "default").iterator();
 

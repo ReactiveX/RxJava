@@ -23,10 +23,9 @@ import io.reactivex.Flowable;
  * <p>All methods except the onSubscribe, onNext, onError and onComplete are thread-safe.
  * Use {@link #toSerialized()} to make these methods thread-safe as well.
  *
- * @param <T> the source value type
- * @param <R> the emission value type
+ * @param <T> the item value type
  */
-public abstract class FlowProcessor<T, R> extends Flowable<R> implements Processor<T, R> {
+public abstract class FlowProcessor<T> extends Flowable<T> implements Processor<T, T> {
     
     /**
      * Returns true if the subject has subscribers.
@@ -81,7 +80,7 @@ public abstract class FlowProcessor<T, R> extends Flowable<R> implements Process
      * <p>The method is thread-safe.
      * @return a single value the Subject currently has or null if no such value exists
      */
-    public R getValue() {
+    public T getValue() {
         throw new UnsupportedOperationException();
     }
     
@@ -91,11 +90,11 @@ public abstract class FlowProcessor<T, R> extends Flowable<R> implements Process
      * <p>The method is thread-safe.
      * @return the wrapped and serialized subject
      */
-    public final FlowProcessor<T, R> toSerialized() {
+    public final FlowProcessor<T> toSerialized() {
         if (this instanceof SerializedProcessor) {
             return this;
         }
-        return new SerializedProcessor<T, R>(this);
+        return new SerializedProcessor<T>(this);
     }
     
     /** An empty array to avoid allocation in getValues(). */
@@ -108,8 +107,8 @@ public abstract class FlowProcessor<T, R> extends Flowable<R> implements Process
      */
     public Object[] getValues() {
         @SuppressWarnings("unchecked")
-        R[] a = (R[])EMPTY;
-        R[] b = getValues(a);
+        T[] a = (T[])EMPTY;
+        T[] b = getValues(a);
         if (b == EMPTY) {
             return new Object[0];
         }
@@ -125,7 +124,7 @@ public abstract class FlowProcessor<T, R> extends Flowable<R> implements Process
      * @param array the target array to copy values into if it fits
      * @return the given array if the values fit into it or a new array containing all values
      */
-    public R[] getValues(R[] array) {
+    public T[] getValues(T[] array) {
         throw new UnsupportedOperationException();
     }
 }

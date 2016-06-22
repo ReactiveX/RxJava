@@ -685,7 +685,7 @@ public class NbpOperatorConcatTest {
                 Observable<Integer> o = Observable.just(t)
                         .subscribeOn(sch)
                 ;
-                Subject<Integer, Integer> subject = UnicastSubject.create();
+                Subject<Integer> subject = UnicastSubject.create();
                 o.subscribe(subject);
                 return subject;
             }

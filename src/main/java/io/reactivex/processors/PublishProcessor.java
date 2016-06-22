@@ -38,7 +38,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type multicast to Subscribers.
  */
-public final class PublishProcessor<T> extends FlowProcessor<T, T> {
+public final class PublishProcessor<T> extends FlowProcessor<T> {
     
     /**
      * Constructs a PublishSubject.

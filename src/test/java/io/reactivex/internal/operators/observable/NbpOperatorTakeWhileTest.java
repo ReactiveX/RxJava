@@ -51,7 +51,7 @@ public class NbpOperatorTakeWhileTest {
 
     @Test
     public void testTakeWhileOnSubject1() {
-        Subject<Integer, Integer> s = PublishSubject.create();
+        Subject<Integer> s = PublishSubject.create();
         Observable<Integer> take = s.takeWhile(new Predicate<Integer>() {
             @Override
             public boolean test(Integer input) {

@@ -34,7 +34,7 @@ import io.reactivex.subjects.*;
 
 public class NbpBlockingOperatorNextTest {
 
-    private void fireOnNextInNewThread(final Subject<String, String> o, final String value) {
+    private void fireOnNextInNewThread(final Subject<String> o, final String value) {
         new Thread() {
             @Override
             public void run() {
@@ -48,7 +48,7 @@ public class NbpBlockingOperatorNextTest {
         }.start();
     }
 
-    private void fireOnErrorInNewThread(final Subject<String, String> o) {
+    private void fireOnErrorInNewThread(final Subject<String> o) {
         new Thread() {
             @Override
             public void run() {
@@ -64,7 +64,7 @@ public class NbpBlockingOperatorNextTest {
 
     @Test
     public void testNext() {
-        Subject<String, String> obs = PublishSubject.create();
+        Subject<String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
@@ -100,7 +100,7 @@ public class NbpBlockingOperatorNextTest {
 
     @Test
     public void testNextWithError() {
-        Subject<String, String> obs = PublishSubject.create();
+        Subject<String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
@@ -139,7 +139,7 @@ public class NbpBlockingOperatorNextTest {
 
     @Test
     public void testOnError() throws Throwable {
-        Subject<String, String> obs = PublishSubject.create();
+        Subject<String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
 
         obs.onError(new TestException());
@@ -155,7 +155,7 @@ public class NbpBlockingOperatorNextTest {
 
     @Test
     public void testOnErrorInNewThread() {
-        Subject<String, String> obs = PublishSubject.create();
+        Subject<String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
 
         fireOnErrorInNewThread(obs);
@@ -186,7 +186,7 @@ public class NbpBlockingOperatorNextTest {
 
     @Test
     public void testNextWithOnlyUsingNextMethod() {
-        Subject<String, String> obs = PublishSubject.create();
+        Subject<String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
         assertEquals("one", it.next());
@@ -204,7 +204,7 @@ public class NbpBlockingOperatorNextTest {
 
     @Test
     public void testNextWithCallingHasNextMultipleTimes() {
-        Subject<String, String> obs = PublishSubject.create();
+        Subject<String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());

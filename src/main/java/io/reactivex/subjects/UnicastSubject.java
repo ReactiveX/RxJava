@@ -35,7 +35,7 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
  * 
  * @param <T> the value type unicasted
  */
-public final class UnicastSubject<T> extends Subject<T, T> {
+public final class UnicastSubject<T> extends Subject<T> {
     
     /**
      * Creates an UnicastSubject with an internal buffer capacity hint 16.

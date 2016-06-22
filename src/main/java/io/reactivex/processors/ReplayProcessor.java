@@ -34,7 +34,7 @@ import io.reactivex.schedulers.Schedulers;
  * 
  * @param <T> the value type
  */
-public final class ReplayProcessor<T> extends FlowProcessor<T, T> {
+public final class ReplayProcessor<T> extends FlowProcessor<T> {
 
     public static <T> ReplayProcessor<T> create() {
         return create(16);

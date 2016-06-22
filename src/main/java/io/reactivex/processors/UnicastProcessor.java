@@ -36,7 +36,7 @@ import io.reactivex.internal.util.BackpressureHelper;
  * 
  * @param <T> the value type unicasted
  */
-public final class UnicastProcessor<T> extends FlowProcessor<T, T> {
+public final class UnicastProcessor<T> extends FlowProcessor<T> {
     
     /**
      * Creates an UnicastSubject with an internal buffer capacity hint 16.

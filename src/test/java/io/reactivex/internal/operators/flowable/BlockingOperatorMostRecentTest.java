@@ -35,7 +35,7 @@ public class BlockingOperatorMostRecentTest {
 
     @Test
     public void testMostRecent() {
-        FlowProcessor<String, String> s = PublishProcessor.create();
+        FlowProcessor<String> s = PublishProcessor.create();
 
         Iterator<String> it = mostRecent(s, "default").iterator();
 
@@ -60,7 +60,7 @@ public class BlockingOperatorMostRecentTest {
 
     @Test(expected = TestException.class)
     public void testMostRecentWithException() {
-        FlowProcessor<String, String> s = PublishProcessor.create();
+        FlowProcessor<String> s = PublishProcessor.create();
 
         Iterator<String> it = mostRecent(s, "default").iterator();
 

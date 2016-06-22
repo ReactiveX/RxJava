@@ -33,7 +33,7 @@ import io.reactivex.schedulers.Schedulers;
  * 
  * @param <T> the value type
  */
-public final class ReplaySubject<T> extends Subject<T, T> {
+public final class ReplaySubject<T> extends Subject<T> {
 
     public static <T> ReplaySubject<T> create() {
         return create(16);
