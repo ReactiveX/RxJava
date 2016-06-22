@@ -1170,13 +1170,13 @@ public class CompletableTest {
     public void timerCancel() throws InterruptedException {
         Completable c = Completable.timer(250, TimeUnit.MILLISECONDS);
         
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
+        final SerialDisposable sd = new SerialDisposable();
         final AtomicInteger calls = new AtomicInteger();
         
         c.subscribe(new CompletableSubscriber() {
             @Override
             public void onSubscribe(Disposable d) {
-                mad.set(d);
+                sd.replace(d);
             }
             
             @Override
@@ -1192,7 +1192,7 @@ public class CompletableTest {
         
         Thread.sleep(100);
         
-        mad.dispose();
+        sd.dispose();
         
         Thread.sleep(200);
         

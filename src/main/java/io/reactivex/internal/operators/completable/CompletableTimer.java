@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.completable;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.*;
-import io.reactivex.disposables.MultipleAssignmentDisposable;
+import io.reactivex.disposables.SerialDisposable;
 
 public final class CompletableTimer extends Completable {
 
@@ -34,10 +34,10 @@ public final class CompletableTimer extends Completable {
 
     @Override
     protected void subscribeActual(final CompletableSubscriber s) {
-        MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-        s.onSubscribe(mad);
-        if (!mad.isDisposed()) {
-            mad.set(scheduler.scheduleDirect(new Runnable() {
+        SerialDisposable sd = new SerialDisposable();
+        s.onSubscribe(sd);
+        if (!sd.isDisposed()) {
+            sd.replace(scheduler.scheduleDirect(new Runnable() {
                 @Override
                 public void run() {
                     s.onComplete();

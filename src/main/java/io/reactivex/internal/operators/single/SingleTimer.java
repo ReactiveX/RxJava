@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.single;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.*;
-import io.reactivex.disposables.MultipleAssignmentDisposable;
+import io.reactivex.disposables.SerialDisposable;
 
 public final class SingleTimer extends Single<Long> {
 
@@ -32,11 +32,11 @@ public final class SingleTimer extends Single<Long> {
 
     @Override
     protected void subscribeActual(final SingleSubscriber<? super Long> s) {
-        MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
+        SerialDisposable sd = new SerialDisposable();
         
-        s.onSubscribe(mad);
+        s.onSubscribe(sd);
         
-        mad.set(scheduler.scheduleDirect(new Runnable() {
+        sd.replace(scheduler.scheduleDirect(new Runnable() {
             @Override
             public void run() {
                 s.onSuccess(0L);

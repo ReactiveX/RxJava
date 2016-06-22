@@ -36,17 +36,17 @@ public final class SingleDelay<T> extends Single<T> {
     @Override
     protected void subscribeActual(final SingleSubscriber<? super T> s) {
 
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-        s.onSubscribe(mad);
+        final SerialDisposable sd = new SerialDisposable();
+        s.onSubscribe(sd);
         subscribe(new SingleSubscriber<T>() {
             @Override
             public void onSubscribe(Disposable d) {
-                mad.set(d);
+                sd.replace(d);
             }
 
             @Override
             public void onSuccess(final T value) {
-                mad.set(scheduler.scheduleDirect(new Runnable() {
+                sd.replace(scheduler.scheduleDirect(new Runnable() {
                     @Override
                     public void run() {
                         s.onSuccess(value);

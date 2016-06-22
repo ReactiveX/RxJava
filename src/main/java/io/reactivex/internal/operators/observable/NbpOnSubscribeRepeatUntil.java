@@ -29,10 +29,10 @@ public final class NbpOnSubscribeRepeatUntil<T> implements ObservableConsumable<
     
     @Override
     public void subscribe(Observer<? super T> s) {
-        MultipleAssignmentDisposable sa = new MultipleAssignmentDisposable();
-        s.onSubscribe(sa);
+        SerialDisposable sd = new SerialDisposable();
+        s.onSubscribe(sd);
         
-        RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, until, sa, source);
+        RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, until, sd, source);
         rs.subscribeNext();
     }
     
@@ -41,19 +41,19 @@ public final class NbpOnSubscribeRepeatUntil<T> implements ObservableConsumable<
         private static final long serialVersionUID = -7098360935104053232L;
         
         final Observer<? super T> actual;
-        final MultipleAssignmentDisposable sa;
+        final SerialDisposable sd;
         final Observable<? extends T> source;
         final BooleanSupplier stop;
-        public RepeatSubscriber(Observer<? super T> actual, BooleanSupplier until, MultipleAssignmentDisposable sa, Observable<? extends T> source) {
+        public RepeatSubscriber(Observer<? super T> actual, BooleanSupplier until, SerialDisposable sd, Observable<? extends T> source) {
             this.actual = actual;
-            this.sa = sa;
+            this.sd = sd;
             this.source = source;
             this.stop = until;
         }
         
         @Override
         public void onSubscribe(Disposable s) {
-            sa.set(s);
+            sd.replace(s);
         }
         
         @Override

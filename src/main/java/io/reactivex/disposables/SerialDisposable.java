@@ -28,9 +28,12 @@ public final class SerialDisposable implements Disposable {
         this.resource = new AtomicReference<Disposable>(initialDisposable);
     }
 
-    
     public void set(Disposable d) {
         DisposableHelper.set(resource, d);
+    }
+
+    public void replace(Disposable d) {
+        DisposableHelper.replace(resource, d);
     }
     
     public Disposable get() {

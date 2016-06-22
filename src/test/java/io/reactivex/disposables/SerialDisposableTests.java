@@ -49,6 +49,17 @@ public class SerialDisposableTests {
     }
 
     @Test
+    public void notDisposedWhenReplaced() {
+        final Disposable underlying = mock(Disposable.class);
+        serialDisposable.set(underlying);
+
+        serialDisposable.replace(Disposables.empty());
+        serialDisposable.dispose();
+
+        verify(underlying, never()).dispose();
+    }
+
+    @Test
     public void unsubscribingTwiceDoesUnsubscribeOnce() {
         Disposable underlying = mock(Disposable.class);
         serialDisposable.set(underlying);

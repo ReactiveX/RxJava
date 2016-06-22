@@ -40,7 +40,7 @@ public final class NbpOperatorOnErrorNext<T> implements NbpOperator<T, T> {
         final Observer<? super T> actual;
         final Function<? super Throwable, ? extends ObservableConsumable<? extends T>> nextSupplier;
         final boolean allowFatal;
-        final MultipleAssignmentDisposable arbiter;
+        final SerialDisposable arbiter;
         
         boolean once;
         
@@ -50,12 +50,12 @@ public final class NbpOperatorOnErrorNext<T> implements NbpOperator<T, T> {
             this.actual = actual;
             this.nextSupplier = nextSupplier;
             this.allowFatal = allowFatal;
-            this.arbiter = new MultipleAssignmentDisposable();
+            this.arbiter = new SerialDisposable();
         }
         
         @Override
         public void onSubscribe(Disposable s) {
-            arbiter.set(s);
+            arbiter.replace(s);
         }
         
         @Override

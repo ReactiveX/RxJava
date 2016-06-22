@@ -174,14 +174,14 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         final CountDownLatch cdl = new CountDownLatch(1);
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
+        final SerialDisposable sd = new SerialDisposable();
         
         o.subscribe(new Subscriber<T>() {
             Subscription s;
             @Override
             public void onSubscribe(Subscription s) {
                 this.s = s;
-                mad.set(Disposables.from(s));
+                sd.replace(Disposables.from(s));
                 s.request(Long.MAX_VALUE);
             }
             
@@ -207,7 +207,7 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
         try {
             cdl.await();
         } catch (InterruptedException ex) {
-            mad.dispose();
+            sd.dispose();
             Exceptions.propagate(ex);
         }
         
@@ -243,12 +243,12 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         final CountDownLatch cdl = new CountDownLatch(1);
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
+        final SerialDisposable sd = new SerialDisposable();
         
         o.subscribe(new Subscriber<T>() {
             @Override
             public void onSubscribe(Subscription s) {
-                mad.set(Disposables.from(s));
+                sd.replace(Disposables.from(s));
                 s.request(Long.MAX_VALUE);
             }
             
@@ -272,7 +272,7 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
         try {
             cdl.await();
         } catch (InterruptedException ex) {
-            mad.dispose();
+            sd.dispose();
             Exceptions.propagate(ex);
         }
         
@@ -332,13 +332,13 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
         final CountDownLatch cdl = new CountDownLatch(1);
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        final MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
+        final SerialDisposable sd = new SerialDisposable();
         
         o.subscribe(new Subscriber<T>() {
 
             @Override
             public void onSubscribe(Subscription d) {
-                mad.set(Disposables.from(d));
+                sd.replace(Disposables.from(d));
                 d.request(Long.MAX_VALUE);
             }
 
@@ -365,7 +365,7 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
                 if (cdl.getCount() != 0) {
-                    mad.dispose();
+                    sd.dispose();
                     return true;
                 }
                 return false;
@@ -373,12 +373,12 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
 
             @Override
             public boolean isCancelled() {
-                return mad.isDisposed();
+                return sd.isDisposed();
             }
 
             @Override
             public boolean isDone() {
-                return cdl.getCount() == 0 && !mad.isDisposed();
+                return cdl.getCount() == 0 && !sd.isDisposed();
             }
 
             @Override

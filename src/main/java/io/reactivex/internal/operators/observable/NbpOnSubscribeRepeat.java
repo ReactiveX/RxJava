@@ -28,10 +28,10 @@ public final class NbpOnSubscribeRepeat<T> implements ObservableConsumable<T> {
     
     @Override
     public void subscribe(Observer<? super T> s) {
-        MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-        s.onSubscribe(mad);
+        SerialDisposable sd = new SerialDisposable();
+        s.onSubscribe(sd);
         
-        RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, mad, source);
+        RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sd, source);
         rs.subscribeNext();
     }
     
@@ -40,19 +40,19 @@ public final class NbpOnSubscribeRepeat<T> implements ObservableConsumable<T> {
         private static final long serialVersionUID = -7098360935104053232L;
         
         final Observer<? super T> actual;
-        final MultipleAssignmentDisposable mad;
+        final SerialDisposable sd;
         final Observable<? extends T> source;
         long remaining;
-        public RepeatSubscriber(Observer<? super T> actual, long count, MultipleAssignmentDisposable sa, Observable<? extends T> source) {
+        public RepeatSubscriber(Observer<? super T> actual, long count, SerialDisposable sd, Observable<? extends T> source) {
             this.actual = actual;
-            this.mad = sa;
+            this.sd = sd;
             this.source = source;
             this.remaining = count;
         }
         
         @Override
         public void onSubscribe(Disposable s) {
-            mad.set(s);
+            sd.replace(s);
         }
         
         @Override
@@ -84,7 +84,7 @@ public final class NbpOnSubscribeRepeat<T> implements ObservableConsumable<T> {
             if (getAndIncrement() == 0) {
                 int missed = 1;
                 for (;;) {
-                    if (mad.isDisposed()) {
+                    if (sd.isDisposed()) {
                         return;
                     }
                     source.subscribe(this);

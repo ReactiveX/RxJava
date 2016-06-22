@@ -247,8 +247,8 @@ public class SingleTest {
         Single<String> s1 = Single.<String>create(new SingleConsumable<String>() {
             @Override
             public void subscribe(final SingleSubscriber<? super String> s) {
-                MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-                s.onSubscribe(mad);
+                SerialDisposable sd = new SerialDisposable();
+                s.onSubscribe(sd);
                 final Thread t = new Thread(new Runnable() {
 
                     @Override
@@ -263,7 +263,7 @@ public class SingleTest {
                     }
 
                 });
-                mad.set(new Disposable() {
+                sd.replace(new Disposable() {
                     @Override
                     public void dispose() {
                         unsubscribed.set(true);
@@ -295,12 +295,12 @@ public class SingleTest {
      */
     @Test
     public void testUnsubscribe2() throws InterruptedException {
-        final MultipleAssignmentDisposable md = new MultipleAssignmentDisposable();
+        final SerialDisposable sd = new SerialDisposable();
         SingleSubscriber<String> ts = new SingleSubscriber<String>() {
 
             @Override
             public void onSubscribe(Disposable d) {
-                md.set(d);
+                sd.replace(d);
             }
             
             @Override
@@ -321,8 +321,8 @@ public class SingleTest {
         Single<String> s1 = Single.create(new SingleConsumable<String>() {
             @Override
             public void subscribe(final SingleSubscriber<? super String> s) {
-                MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-                s.onSubscribe(mad);
+                SerialDisposable sd = new SerialDisposable();
+                s.onSubscribe(sd);
                 final Thread t = new Thread(new Runnable() {
 
                     @Override
@@ -337,7 +337,7 @@ public class SingleTest {
                     }
 
                 });
-                mad.set(new Disposable() {
+                sd.replace(new Disposable() {
                     @Override
                     public void dispose() {
                         unsubscribed.set(true);
@@ -354,7 +354,7 @@ public class SingleTest {
 
         Thread.sleep(100);
 
-        md.dispose();
+        sd.dispose();
 
         if (latch.await(1000, TimeUnit.MILLISECONDS)) {
             assertTrue(unsubscribed.get());
@@ -377,8 +377,8 @@ public class SingleTest {
         Single<String> s1 = Single.create(new SingleConsumable<String>() {
             @Override
             public void subscribe(final SingleSubscriber<? super String> s) {
-                MultipleAssignmentDisposable mad = new MultipleAssignmentDisposable();
-                s.onSubscribe(mad);
+                SerialDisposable sd = new SerialDisposable();
+                s.onSubscribe(sd);
                 final Thread t = new Thread(new Runnable() {
 
                     @Override
@@ -393,7 +393,7 @@ public class SingleTest {
                     }
 
                 });
-                mad.set(new Disposable() {
+                sd.replace(new Disposable() {
                     @Override
                     public void dispose() {
                         unsubscribed.set(true);
