@@ -6,6 +6,7 @@ buildscript {
 description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
 
 apply plugin: 'java'
+apply plugin: 'pmd'
 apply plugin: 'jacoco'
 apply plugin: 'nebula.rxjava-project'
 
@@ -60,3 +61,27 @@ jacocoTestReport {
 }
 
 build.dependsOn jacocoTestReport
+
+pmd {
+    toolVersion = '5.4.1'
+    ignoreFailures = false
+    ruleSetFiles = files('./code_quality_tools/pmd.xml')
+}
+
+task('pmd', type: Pmd, dependsOn: 'assemble') {
+    description = 'Run pmd'
+    group = 'verification'
+
+    ruleSets = []
+
+    source = fileTree('src/main/java')
+    include '**/*.java'
+    exclude '**/gen/**'
+
+    reports {
+        html.enabled = true
+        xml.enabled = true
+    }
+}
+
+build.dependsOn 'pmd'
