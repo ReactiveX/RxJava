@@ -337,14 +337,9 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
         @Override
         public void onSubscribe(Subscription s) {
             if (index == parent.unique) {
-                if (!compareAndSet(null, s)) {
-                    s.cancel();
-                    if (get() != SubscriptionHelper.CANCELLED) {
-                        SubscriptionHelper.reportSubscriptionSet();
-                    }
-                    return;
+                if (SubscriptionHelper.setOnce(this, s)) {
+                    s.request(bufferSize);
                 }
-                s.request(bufferSize);
             } else {
                 s.cancel();
             }

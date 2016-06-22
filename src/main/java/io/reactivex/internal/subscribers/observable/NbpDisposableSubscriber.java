@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 /**
  * An abstract subscription that allows asynchronous cancellation.
@@ -30,14 +29,9 @@ public abstract class NbpDisposableSubscriber<T> implements Observer<T>, Disposa
 
     @Override
     public final void onSubscribe(Disposable s) {
-        if (!this.s.compareAndSet(null, s)) {
-            s.dispose();
-            if (this.s.get() != DisposableHelper.DISPOSED) {
-                SubscriptionHelper.reportSubscriptionSet();
-            }
-            return;
+        if (DisposableHelper.setOnce(this.s, s)) {
+            onStart();
         }
-        onStart();
     }
     
     protected void onStart() {

@@ -580,15 +580,10 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         }
         @Override
         public void onSubscribe(Subscription s) {
-            if (!compareAndSet(null, s)) {
-                s.cancel();
-                if (get() != SubscriptionHelper.CANCELLED) {
-                    SubscriptionHelper.reportSubscriptionSet();
-                }
-                return;
+            if (SubscriptionHelper.setOnce(this, s)) {
+                outstanding = bufferSize;
+                s.request(outstanding);
             }
-            outstanding = bufferSize;
-            s.request(outstanding);
         }
         @Override
         public void onNext(U t) {

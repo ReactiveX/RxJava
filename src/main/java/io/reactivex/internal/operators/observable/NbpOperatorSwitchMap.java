@@ -24,7 +24,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.*;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.Pow2;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -306,13 +305,7 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
         @Override
         public void onSubscribe(Disposable s) {
             if (index == parent.unique) {
-                if (!compareAndSet(null, s)) {
-                    s.dispose();
-                    if (get() != DisposableHelper.DISPOSED) {
-                        SubscriptionHelper.reportSubscriptionSet();
-                    }
-                    return;
-                }
+                DisposableHelper.setOnce(this, s);
             } else {
                 s.dispose();
             }
