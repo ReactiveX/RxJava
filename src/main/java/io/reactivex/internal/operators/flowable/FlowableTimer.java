@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.disposables.EmptyDisposable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -50,12 +51,6 @@ public final class FlowableTimer extends Flowable<Long> {
 
         final Subscriber<? super Long> actual;
         
-        /** This state tells the setResource not to call dispose since the run is finishing anyway. */
-        static final Disposable DONE = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         volatile boolean requested;
         
         volatile boolean cancelled;
@@ -92,7 +87,7 @@ public final class FlowableTimer extends Flowable<Long> {
                     actual.onError(new IllegalStateException("Can't deliver value due to lack of requests"));
                 }
             }
-            lazySet(DONE);
+            lazySet(EmptyDisposable.INSTANCE);
         }
         
         public void setResource(Disposable d) {
