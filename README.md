@@ -34,7 +34,7 @@ Version 1.x is now a stable API and will be supported for several years.
 
 Minor 1.x increments (such as 1.1, 1.2, etc) will occur when non-trivial new functionality is added or significant enhancements or bug fixes occur that may have behavioral changes that may affect some edge cases (such as dependence on behavior resulting from a bug). An example of an enhancement that would classify as this is adding reactive pull backpressure support to an operator that previously did not support it. This should be backwards compatible but does behave differently.
 
-Patch 1.x.y increments (such as 1.0.0 -> 1.0.1, 1.3.1 -> 1.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an [`@Beta`][beta source link] or [`@Experimental`][experimental source link] annotation can also be added in patch releases to allow rapid exploration and iteration of unstable new functionality. 
+Patch 1.x.y increments (such as 1.0.0 -> 1.0.1, 1.3.1 -> 1.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an [`@Beta`][beta source link] or [`@Experimental`][experimental source link] annotation can also be added in patch releases to allow rapid exploration and iteration of unstable new functionality.
 
 #### @Beta
 
@@ -42,7 +42,7 @@ APIs marked with the [`@Beta`][beta source link] annotation at the class or meth
 
 #### @Experimental
 
-APIs marked with the [`@Experimental`][experimental source link] annotation at the class or method level will almost certainly change. They can be modified in any way, or even removed in any major, minor or, patch release. You should not use or rely on them in any production code. They are purely to allow broad testing and feedback. 
+APIs marked with the [`@Experimental`][experimental source link] annotation at the class or method level will almost certainly change. They can be modified in any way, or even removed in any major, minor or, patch release. You should not use or rely on them in any production code. They are purely to allow broad testing and feedback.
 
 #### @Deprecated
 
@@ -50,7 +50,7 @@ APIs marked with the `@Deprecated` annotation at the class or method level will 
 
 #### rx.internal.*
 
-All code inside the `rx.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time. 
+All code inside the `rx.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time.
 
 ## Full Documentation
 
@@ -110,7 +110,7 @@ Futher details on building can be found on the [Getting Started](https://github.
 
 For bugs, questions and discussions please use the [Github Issues](https://github.com/ReactiveX/RxJava/issues).
 
- 
+
 ## LICENSE
 
 Copyright 2013 Netflix, Inc.
@@ -127,5 +127,5 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-[beta source link]: https://github.com/ReactiveX/RxJava/blob/master/src/main/java/rx/annotations/Beta.java
-[experimental source link]: https://github.com/ReactiveX/RxJava/blob/master/src/main/java/rx/annotations/Experimental.java
+[beta source link]: https://github.com/ReactiveX/RxJava/blob/1.x/src/main/java/rx/annotations/Beta.java
+[experimental source link]: https://github.com/ReactiveX/RxJava/blob/1.x/src/main/java/rx/annotations/Experimental.java
