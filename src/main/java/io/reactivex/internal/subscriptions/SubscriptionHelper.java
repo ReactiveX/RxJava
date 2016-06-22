@@ -85,12 +85,29 @@ public enum SubscriptionHelper {
         return CONSUME_AND_CANCEL;
     }
     
+    /**
+     * Represents a cancelled Subscription.
+     */
     public static final Subscription CANCELLED = Cancelled.INSTANCE;
     
+    /**
+     * Check if the given subscription is the common cancelled subscription.
+     * @param d the subscription to check
+     * @return true if the subscription is the common cancelled subscription
+     */
     public static boolean isCancelled(Subscription d) {
         return d == CANCELLED;
     }
     
+    /**
+     * Atomically sets the subscription on the field and cancels the
+     * previous subscription if any.
+     * @param field the target field to set the new subscription on
+     * @param d the new subscription
+     * @return true if the operation succeeded, false if the target field
+     * holds the {@link #CANCELLED} instance.
+     * @see #replace(AtomicReference, Subscription)
+     */
     public static boolean set(AtomicReference<Subscription> field, Subscription d) {
         for (;;) {
             Subscription current = field.get();
@@ -109,6 +126,14 @@ public enum SubscriptionHelper {
         }
     }
     
+    /**
+     * Atomically sets the subscription on the field if it is still null.
+     * <p>If the field is not null and doesn't contain the {@link #CANCELLED}
+     * instance, the {@link #reportSubscriptionSet()} is called.
+     * @param field the target field
+     * @param d the new subscription to set
+     * @return true if the operation succeeded, false if the target field was not null.
+     */
     public static boolean setOnce(AtomicReference<Subscription> field, Subscription d) {
         Objects.requireNonNull(d, "d is null");
         if (!field.compareAndSet(null, d)) {
@@ -120,7 +145,16 @@ public enum SubscriptionHelper {
         }
         return true;
     }
-    
+
+    /**
+     * Atomically sets the subscription on the field but does not
+     * cancel the previouls subscription.
+     * @param field the target field to set the new subscription on
+     * @param d the new subscription
+     * @return true if the operation succeeded, false if the target field
+     * holds the {@link #CANCELLED} instance.
+     * @see #set(AtomicReference, Subscription)
+     */
     public static boolean replace(AtomicReference<Subscription> field, Subscription d) {
         for (;;) {
             Subscription current = field.get();
@@ -136,11 +170,19 @@ public enum SubscriptionHelper {
         }
     }
     
+    /**
+     * Atomically swaps in the common cancelled subscription instance
+     * and disposes the previous subscription if any.
+     * @param field the target field to dispose the contents of
+     * @return true if the swap from the non-cancelled instance to the
+     * common cancelled instance happened in the caller's thread (allows
+     * further one-time actions).
+     */
     public static boolean dispose(AtomicReference<Subscription> field) {
         Subscription current = field.get();
         if (current != CANCELLED) {
             current = field.getAndSet(CANCELLED);
-            if (current != null && current != CANCELLED) {
+            if (current != null && current != CANCELLED) { // FIXME return true if current was null?
                 current.cancel();
                 return true;
             }
@@ -148,6 +190,9 @@ public enum SubscriptionHelper {
         return false;
     }
     
+    /**
+     * The common cancelled instance implemented as a singleton enum.
+     */
     enum Cancelled implements Subscription {
         INSTANCE
         ;
@@ -159,7 +204,7 @@ public enum SubscriptionHelper {
 
         @Override
         public void cancel() {
-         // deliberately ignored
+            // deliberately ignored
         }
         
     }

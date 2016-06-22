@@ -76,8 +76,6 @@ public final class FlowableWithLatestFrom<T, U, R> extends Flowable<R> {
         
         final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
 
-        static final Subscription CANCELLED = SubscriptionHelper.CANCELLED;
-        
         public WithLatestFromSubscriber(Subscriber<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
             this.actual = actual;
             this.combiner = combiner;
@@ -88,7 +86,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends Flowable<R> {
                 actual.onSubscribe(this);
             } else {
                 s.cancel();
-                if (this.s.get() != CANCELLED) {
+                if (this.s.get() != SubscriptionHelper.CANCELLED) {
                     SubscriptionHelper.reportSubscriptionSet();
                 }
             }
@@ -136,7 +134,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends Flowable<R> {
         public boolean setOther(Subscription o) {
             for (;;) {
                 Subscription current = other.get();
-                if (current == CANCELLED) {
+                if (current == SubscriptionHelper.CANCELLED) {
                     o.cancel();
                     return false;
                 }
@@ -152,10 +150,10 @@ public final class FlowableWithLatestFrom<T, U, R> extends Flowable<R> {
         }
         
         public void otherError(Throwable e) {
-            if (s.compareAndSet(null, CANCELLED)) {
+            if (s.compareAndSet(null, SubscriptionHelper.CANCELLED)) {
                 EmptySubscription.error(e, actual);
             } else {
-                if (s != CANCELLED) {
+                if (s.get() != SubscriptionHelper.CANCELLED) {
                     cancel();
                     actual.onError(e);
                 } else {

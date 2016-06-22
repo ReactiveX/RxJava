@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.*;
-import io.reactivex.internal.disposables.ListCompositeResource;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -39,7 +38,7 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
     private final AtomicReference<Subscription> s;
 
     /** The resource composite, can be null. */
-    private final ListCompositeResource<Disposable> resources;
+    private final CompositeDisposable resources;
     
     /** Remembers the request(n) counts until a subscription arrives. */
     private final AtomicLong missedRequested;
@@ -56,7 +55,7 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
      * @param withResources true if resource support should be on.
      */
     public AsyncSubscriber(boolean withResources) {
-        this.resources = withResources ? new ListCompositeResource<Disposable>(Disposables.consumeAndDispose()) : null;
+        this.resources = withResources ? new CompositeDisposable() : null;
         this.missedRequested = new AtomicLong();
         this.s = new AtomicReference<Subscription>();
     }
@@ -95,19 +94,13 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
     
     @Override
     public final void onSubscribe(Subscription s) {
-        if (!this.s.compareAndSet(null, s)) {
-            s.cancel();
-            if (s != SubscriptionHelper.CANCELLED) {
-                SubscriptionHelper.reportSubscriptionSet();
+        if (SubscriptionHelper.setOnce(this.s, s)) {
+            long mr = missedRequested.getAndSet(0L);
+            if (mr != 0L) {
+                s.request(mr);
             }
-            return;
+            onStart();
         }
-        
-        long mr = missedRequested.getAndSet(0L);
-        if (mr != 0L) {
-            s.request(mr);
-        }
-        onStart();
     }
     
     /**
