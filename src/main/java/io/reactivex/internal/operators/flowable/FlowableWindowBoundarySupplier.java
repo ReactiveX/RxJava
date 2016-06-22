@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
@@ -57,11 +58,6 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
         Subscription s;
         
         final AtomicReference<Disposable> boundary = new AtomicReference<Disposable>();
-        
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
         
         UnicastProcessor<T> window;
         
@@ -165,7 +161,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
             }
             
             if (windows.decrementAndGet() == 0) {
-                dispose();
+                DisposableHelper.dispose(boundary);
             }
             
             actual.onError(t);
@@ -182,7 +178,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
             }
             
             if (windows.decrementAndGet() == 0) {
-                dispose();
+                DisposableHelper.dispose(boundary);
             }
 
             actual.onComplete();
@@ -200,17 +196,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
                 cancelled = true;
             }
         }
-        
-        void dispose() {
-            Disposable d = boundary.get();
-            if (d != CANCELLED) {
-                d = boundary.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
-        }
-        
+
         void drainLoop() {
             final Queue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
@@ -225,7 +211,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
                     boolean empty = o == null;
                     
                     if (d && empty) {
-                        dispose();
+                        DisposableHelper.dispose(boundary);
                         Throwable e = error;
                         if (e != null) {
                             w.onError(e);
@@ -243,7 +229,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
                         w.onComplete();
 
                         if (windows.decrementAndGet() == 0) {
-                            dispose();
+                            DisposableHelper.dispose(boundary);
                             return;
                         }
 
@@ -256,13 +242,13 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
                         try {
                             p = other.get();
                         } catch (Throwable e) {
-                            dispose();
+                            DisposableHelper.dispose(boundary);
                             a.onError(e);
                             return;
                         }
                         
                         if (p == null) {
-                            dispose();
+                            DisposableHelper.dispose(boundary);
                             a.onError(new NullPointerException("The publisher supplied is null"));
                             return;
                         }

@@ -44,11 +44,6 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
         
         final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         Disposable s;
         
         public SamplePublisherSubscriber(Observer<? super T> actual, ObservableConsumable<?> other) {
@@ -74,26 +69,16 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
         
         @Override
         public void onError(Throwable t) {
-            cancelOther();
+            DisposableHelper.dispose(other);
             actual.onError(t);
         }
         
         @Override
         public void onComplete() {
-            cancelOther();
+            DisposableHelper.dispose(other);
             actual.onComplete();
         }
-        
-        void cancelOther() {
-            Disposable o = other.get();
-            if (o != CANCELLED) {
-                o = other.getAndSet(CANCELLED);
-                if (o != CANCELLED && o != null) {
-                    o.dispose();
-                }
-            }
-        }
-        
+
         boolean setOther(Disposable o) {
             if (other.get() == null) {
                 if (other.compareAndSet(null, o)) {
@@ -106,7 +91,7 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
         
         @Override
         public void dispose() {
-            cancelOther();
+            DisposableHelper.dispose(other);
             s.dispose();
         }
         

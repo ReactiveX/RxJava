@@ -43,20 +43,7 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
     
     /** Remembers the request(n) counts until a subscription arrives. */
     private final AtomicLong missedRequested;
-    
-    /** The cancelled subscription indicator. */
-    private static final Subscription CANCELLED = new Subscription() {
-        @Override
-        public void request(long n) {
-            // deliberately no op
-        }
-        
-        @Override
-        public void cancel() {
-            // deliberately no op
-        }
-    };
-    
+
     /**
      * Constructs an AsyncObserver with resource support.
      */
@@ -110,7 +97,7 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
     public final void onSubscribe(Subscription s) {
         if (!this.s.compareAndSet(null, s)) {
             s.cancel();
-            if (s != CANCELLED) {
+            if (s != SubscriptionHelper.CANCELLED) {
                 SubscriptionHelper.reportSubscriptionSet();
             }
             return;
@@ -168,15 +155,8 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
      * case the Subscription will be immediately cancelled.
      */
     protected final void cancel() {
-        Subscription a = s.get();
-        if (a != CANCELLED) {
-            a = s.getAndSet(CANCELLED);
-            if (a != CANCELLED && a != null) {
-                a.cancel();
-                if (resources != null) {
-                    resources.dispose();
-                }
-            }
+        if (SubscriptionHelper.dispose(s) && resources != null) {
+            resources.dispose();
         }
     }
     
@@ -190,6 +170,6 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
      * @return true if this AsyncObserver has been disposed/cancelled
      */
     public final boolean isDisposed() {
-        return s == CANCELLED;
+        return SubscriptionHelper.isCancelled(s.get());
     }
 }

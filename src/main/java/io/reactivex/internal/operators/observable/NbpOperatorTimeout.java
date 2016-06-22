@@ -60,12 +60,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
         
         final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-
-        public TimeoutSubscriber(Observer<? super T> actual, 
+        public TimeoutSubscriber(Observer<? super T> actual,
                 Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector,
                 Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector) {
             this.actual = actual;
@@ -161,14 +156,8 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
             if (!cancelled) {
                 cancelled = true;
                 s.dispose();
-                
-                Disposable d = timeout.get();
-                if (d != CANCELLED) {
-                    d = timeout.getAndSet(CANCELLED);
-                    if (d != CANCELLED && d != null) {
-                        d.dispose();
-                    }
-                }
+
+                DisposableHelper.dispose(timeout);
             }
         }
         
@@ -240,11 +229,6 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
         
         final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-
         public TimeoutOtherSubscriber(Observer<? super T> actual,
                 Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector,
                 Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector, ObservableConsumable<? extends T> other) {
@@ -358,14 +342,8 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
             if (!cancelled) {
                 cancelled = true;
                 s.dispose();
-                
-                Disposable d = timeout.get();
-                if (d != CANCELLED) {
-                    d = timeout.getAndSet(CANCELLED);
-                    if (d != CANCELLED && d != null) {
-                        d.dispose();
-                    }
-                }
+
+                DisposableHelper.dispose(timeout);
             }
         }
         

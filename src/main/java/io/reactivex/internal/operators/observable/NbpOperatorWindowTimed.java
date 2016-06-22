@@ -86,11 +86,6 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         static final Object NEXT = new Object();
         
         volatile boolean terminated;
@@ -176,13 +171,7 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
         
         void disposeTimer() {
             selfCancel = true;
-            Disposable d = timer.get();
-            if (d != CANCELLED) {
-                d = timer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(timer);
         }
         
         @Override
@@ -290,11 +279,6 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
         volatile boolean terminated;
         
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
-        
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
         
         public WindowExactBoundedSubscriber(
                 Observer<? super Observable<T>> actual, 
@@ -422,13 +406,7 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
         
         void disposeTimer() {
             selfCancel = true;
-            Disposable d = timer.get();
-            if (d != CANCELLED) {
-                d = timer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(timer);
         }
         
         @Override

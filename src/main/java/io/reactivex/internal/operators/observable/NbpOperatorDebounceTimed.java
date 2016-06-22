@@ -53,16 +53,6 @@ public final class NbpOperatorDebounceTimed<T> implements NbpOperator<T, T> {
         
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-
-        static final Disposable NEW_TIMER = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         volatile long index;
         
         boolean done;
@@ -73,17 +63,7 @@ public final class NbpOperatorDebounceTimed<T> implements NbpOperator<T, T> {
             this.unit = unit;
             this.worker = worker;
         }
-        
-        public void disposeTimer() {
-            Disposable d = timer.get();
-            if (d != CANCELLED) {
-                d = timer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
-        }
-        
+
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
@@ -122,7 +102,7 @@ public final class NbpOperatorDebounceTimed<T> implements NbpOperator<T, T> {
                 return;
             }
             done = true;
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             actual.onError(t);
         }
         
@@ -134,11 +114,11 @@ public final class NbpOperatorDebounceTimed<T> implements NbpOperator<T, T> {
             done = true;
             
             Disposable d = timer.get();
-            if (d != CANCELLED) {
+            if (d != DisposableHelper.DISPOSED) {
                 @SuppressWarnings("unchecked")
                 DebounceEmitter<T> de = (DebounceEmitter<T>)d;
                 de.emit();
-                disposeTimer();
+                DisposableHelper.dispose(timer);
                 worker.dispose();
                 actual.onComplete();
             }
@@ -146,7 +126,7 @@ public final class NbpOperatorDebounceTimed<T> implements NbpOperator<T, T> {
         
         @Override
         public void dispose() {
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             worker.dispose();
             s.dispose();
         }

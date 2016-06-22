@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.subscriptions;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscription;
@@ -33,35 +34,7 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
     final AtomicReference<Subscription> actual;
 
     final AtomicReference<Disposable> resource;
-    
-    static final Subscription CANCELLED = new Subscription() {
-        @Override
-        public void request(long n) {
-            
-        }
-        @Override
-        public void cancel() {
-            
-        }
-        
-        @Override
-        public String toString() {
-            return "AsyncSubscription.CANCELLED";
-        }
-    };
-    
-    static final Disposable DISPOSED = new Disposable() {
-        @Override
-        public void dispose() { 
-            
-        }
-        
-        @Override
-        public String toString() {
-            return "AsyncSubscription.DISPOSED";
-        };
-    };
-    
+
     public AsyncSubscription() {
         resource = new AtomicReference<Disposable>();
         actual = new AtomicReference<Subscription>();
@@ -94,21 +67,8 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
     
     @Override
     public void cancel() {
-        Subscription s = actual.get();
-        if (s != CANCELLED) {
-            s = actual.getAndSet(CANCELLED);
-            if (s != CANCELLED && s != null) {
-                s.cancel();
-            }
-        }
-        
-        Disposable d = resource.get();
-        if (d != DISPOSED) {
-            d = resource.getAndSet(DISPOSED);
-            if (d != CANCELLED && d != null) {
-                d.dispose();
-            }
-        }
+        SubscriptionHelper.dispose(actual);
+        DisposableHelper.dispose(resource);
     }
     
     @Override
@@ -123,21 +83,7 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
      * @see #replaceResource(Disposable)
      */
     public boolean setResource(Disposable r) {
-        for (;;) {
-            Disposable d = resource.get();
-            if (d == DISPOSED) {
-                if (r != null) {
-                    r.dispose();
-                }
-                return false;
-            }
-            if (resource.compareAndSet(d, r)) {
-                if (d != null) {
-                    d.dispose();
-                }
-                return true;
-            }
-        }
+        return DisposableHelper.set(resource, r);
     }
     
     /**
@@ -146,18 +92,7 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
      * @return false if this AsyncSubscription has been cancelled/disposed
      */
     public boolean replaceResource(Disposable r) {
-        for (;;) {
-            Disposable d = resource.get();
-            if (d == DISPOSED) {
-                if (r != null) {
-                    r.dispose();
-                }
-                return false;
-            }
-            if (resource.compareAndSet(d, r)) {
-                return true;
-            }
-        }
+        return DisposableHelper.replace(resource, r);
     }
     
     /**
@@ -168,7 +103,7 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
     public boolean setSubscription(Subscription s) {
         for (;;) {
             Subscription a = actual.get();
-            if (a == CANCELLED) {
+            if (a == SubscriptionHelper.CANCELLED) {
                 s.cancel();
                 return false;
             }

@@ -52,11 +52,6 @@ public final class NbpOperatorWindowBoundary<T, B> implements NbpOperator<Observ
         
         final AtomicReference<Disposable> boundary = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         UnicastSubject<T> window;
         
         static final Object NEXT = new Object();
@@ -130,7 +125,7 @@ public final class NbpOperatorWindowBoundary<T, B> implements NbpOperator<Observ
             }
             
             if (windows.decrementAndGet() == 0) {
-                disposeBoundary();
+                DisposableHelper.dispose(boundary);
             }
             
             actual.onError(t);
@@ -147,7 +142,7 @@ public final class NbpOperatorWindowBoundary<T, B> implements NbpOperator<Observ
             }
             
             if (windows.decrementAndGet() == 0) {
-                disposeBoundary();
+                DisposableHelper.dispose(boundary);
             }
 
             actual.onComplete();
@@ -160,17 +155,7 @@ public final class NbpOperatorWindowBoundary<T, B> implements NbpOperator<Observ
                 cancelled = true;
             }
         }
-        
-        void disposeBoundary() {
-            Disposable d = boundary.get();
-            if (d != CANCELLED) {
-                d = boundary.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
-        }
-        
+
         void drainLoop() {
             final Queue<Object> q = queue;
             final Observer<? super Observable<T>> a = actual;
@@ -186,7 +171,7 @@ public final class NbpOperatorWindowBoundary<T, B> implements NbpOperator<Observ
                     boolean empty = o == null;
                     
                     if (d && empty) {
-                        disposeBoundary();
+                        DisposableHelper.dispose(boundary);
                         Throwable e = error;
                         if (e != null) {
                             w.onError(e);
@@ -204,7 +189,7 @@ public final class NbpOperatorWindowBoundary<T, B> implements NbpOperator<Observ
                         w.onComplete();
 
                         if (windows.decrementAndGet() == 0) {
-                            disposeBoundary();
+                            DisposableHelper.dispose(boundary);
                             return;
                         }
 

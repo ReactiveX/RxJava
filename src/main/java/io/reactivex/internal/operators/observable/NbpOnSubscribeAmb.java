@@ -130,11 +130,6 @@ public final class NbpOnSubscribeAmb<T> implements ObservableConsumable<T> {
         
         boolean won;
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         public AmbInnerSubscriber(AmbCoordinator<T> parent, int index, Observer<? super T> actual) {
             this.parent = parent;
             this.index = index;
@@ -191,13 +186,7 @@ public final class NbpOnSubscribeAmb<T> implements ObservableConsumable<T> {
         
         @Override
         public void dispose() {
-            Disposable s = get();
-            if (s != CANCELLED) {
-                s = getAndSet(CANCELLED);
-                if (s != CANCELLED && s != null) {
-                    s.dispose();
-                }
-            }
+            DisposableHelper.dispose(this);
         }
         
     }

@@ -46,11 +46,6 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
         Disposable s;
         
         final AtomicReference<Disposable> debouncer = new AtomicReference<Disposable>();
-        
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
 
         volatile long index;
         
@@ -109,7 +104,7 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
         
         @Override
         public void onError(Throwable t) {
-            disposeDebouncer();
+            DisposableHelper.dispose(debouncer);
             actual.onError(t);
         }
         
@@ -120,11 +115,11 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
             }
             done = true;
             Disposable d = debouncer.get();
-            if (d != CANCELLED) {
+            if (d != DisposableHelper.DISPOSED) {
                 @SuppressWarnings("unchecked")
                 DebounceInnerSubscriber<T, U> dis = (DebounceInnerSubscriber<T, U>)d;
                 dis.emit();
-                disposeDebouncer();
+                DisposableHelper.dispose(debouncer);
                 actual.onComplete();
             }
         }
@@ -132,19 +127,9 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
         @Override
         public void dispose() {
             s.dispose();
-            disposeDebouncer();
+            DisposableHelper.dispose(debouncer);
         }
-        
-        public void disposeDebouncer() {
-            Disposable d = debouncer.get();
-            if (d != CANCELLED) {
-                d = debouncer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
-        }
-        
+
         void emit(long idx, T value) {
             if (idx == index) {
                 actual.onNext(value);

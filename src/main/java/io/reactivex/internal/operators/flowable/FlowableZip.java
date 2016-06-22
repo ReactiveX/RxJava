@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
@@ -276,19 +277,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
         
         Subscription cachedS;
-        
-        static final Subscription CANCELLED = new Subscription() {
-            @Override
-            public void request(long n) {
-                
-            }
-            
-            @Override
-            public void cancel() {
-                
-            }
-        };
-        
+
         public ZipSubscriber(ZipCoordinator<T, R> parent, int bufferSize) {
             this.parent = parent;
             this.bufferSize = bufferSize;
@@ -305,7 +294,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
             
             for (;;) {
                 Subscription current = this.s.get();
-                if (current == CANCELLED) {
+                if (current == SubscriptionHelper.CANCELLED) {
                     s.cancel();
                     return;
                 }
@@ -365,13 +354,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         
         @Override
         public void cancel() {
-            Subscription s = this.s.get();
-            if (s != CANCELLED) {
-                s = this.s.getAndSet(CANCELLED);
-                if (s != CANCELLED && s != null) {
-                    s.cancel();
-                }
-            }
+            SubscriptionHelper.dispose(s);
         }
         
         public void produced(long n) {

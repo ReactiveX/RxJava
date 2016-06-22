@@ -346,19 +346,7 @@ public final class FlowableCombineLatest<T, R> extends Flowable<R> {
         boolean done;
         
         final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
-        
-        static final Subscription CANCELLED = new Subscription() {
-            @Override
-            public void request(long n) {
-                
-            }
-            
-            @Override
-            public void cancel() {
-                
-            }
-        };
-        
+
         public CombinerSubscriber(LatestCoordinator<T, R> parent, int index) {
             this.parent = parent;
             this.index = index;
@@ -368,7 +356,7 @@ public final class FlowableCombineLatest<T, R> extends Flowable<R> {
         public void onSubscribe(Subscription s) {
             if (!this.s.compareAndSet(null, s)) {
                 s.cancel();
-                if (this.s.get() != CANCELLED) {
+                if (this.s.get() != SubscriptionHelper.CANCELLED) {
                     SubscriptionHelper.reportSubscriptionSet();
                 }
                 return;
@@ -411,13 +399,7 @@ public final class FlowableCombineLatest<T, R> extends Flowable<R> {
         
         @Override
         public void cancel() {
-            Subscription a = s.get();
-            if (a != CANCELLED) {
-                a = s.getAndSet(CANCELLED);
-                if (a != CANCELLED && a != null) {
-                    a.cancel();
-                }
-            }
+            SubscriptionHelper.dispose(s);
         }
     }
 }

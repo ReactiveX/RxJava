@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -64,11 +65,6 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends Flowable<Flow
         Subscription s;
         
         final AtomicReference<Disposable> boundary = new AtomicReference<Disposable>();
-        
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
         
         final List<UnicastProcessor<T>> ws;
         
@@ -199,13 +195,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends Flowable<Flow
         
         void dispose() {
             resources.dispose();
-            Disposable d = boundary.get();
-            if (d != CANCELLED) {
-                d = boundary.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(boundary);
         }
         
         void drainLoop() {

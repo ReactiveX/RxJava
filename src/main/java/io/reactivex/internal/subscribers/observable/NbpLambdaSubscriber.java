@@ -29,12 +29,7 @@ public final class NbpLambdaSubscriber<T> extends AtomicReference<Disposable> im
     final Runnable onComplete;
     final Consumer<? super Disposable> onSubscribe;
     
-    static final Disposable CANCELLED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
-    
-    public NbpLambdaSubscriber(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
+    public NbpLambdaSubscriber(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
             Runnable onComplete,
             Consumer<? super Disposable> onSubscribe) {
         super();
@@ -83,12 +78,6 @@ public final class NbpLambdaSubscriber<T> extends AtomicReference<Disposable> im
     
     @Override
     public void dispose() {
-        Disposable o = get();
-        if (o != CANCELLED) {
-            o = getAndSet(CANCELLED);
-            if (o != CANCELLED && o != null) {
-                o.dispose();
-            }
-        }
+        DisposableHelper.dispose(this);
     }
 }

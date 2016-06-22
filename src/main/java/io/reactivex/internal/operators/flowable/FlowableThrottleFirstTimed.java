@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -60,11 +61,6 @@ public final class FlowableThrottleFirstTimed<T> extends Flowable<T> {
         
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-
         static final Disposable NEW_TIMER = new Disposable() {
             @Override
             public void dispose() { }
@@ -80,16 +76,7 @@ public final class FlowableThrottleFirstTimed<T> extends Flowable<T> {
             this.unit = unit;
             this.worker = worker;
         }
-        
-        public void disposeTimer() {
-            Disposable d = timer.get();
-            if (d != CANCELLED) {
-                d = timer.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
-        }
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
@@ -151,7 +138,7 @@ public final class FlowableThrottleFirstTimed<T> extends Flowable<T> {
                 return;
             }
             done = true;
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             actual.onError(t);
         }
         
@@ -161,7 +148,7 @@ public final class FlowableThrottleFirstTimed<T> extends Flowable<T> {
                 return;
             }
             done = true;
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             worker.dispose();
             actual.onComplete();
         }
@@ -176,7 +163,7 @@ public final class FlowableThrottleFirstTimed<T> extends Flowable<T> {
         
         @Override
         public void cancel() {
-            disposeTimer();
+            DisposableHelper.dispose(timer);
             worker.dispose();
             s.cancel();
         }

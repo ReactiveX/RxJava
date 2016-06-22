@@ -61,11 +61,6 @@ public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOper
         
         final AtomicReference<Disposable> boundary = new AtomicReference<Disposable>();
         
-        static final Disposable CANCELLED = new Disposable() {
-            @Override
-            public void dispose() { }
-        };
-        
         final List<UnicastSubject<T>> ws;
         
         final AtomicLong windows = new AtomicLong();
@@ -185,13 +180,7 @@ public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOper
         
         void disposeBoundary() {
             resources.dispose();
-            Disposable d = boundary.get();
-            if (d != CANCELLED) {
-                d = boundary.getAndSet(CANCELLED);
-                if (d != CANCELLED && d != null) {
-                    d.dispose();
-                }
-            }
+            DisposableHelper.dispose(boundary);
         }
         
         void drainLoop() {

@@ -48,18 +48,6 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
         final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
         
-        static final Subscription CANCELLED = new Subscription() {
-            @Override
-            public void request(long n) {
-                
-            }
-            
-            @Override
-            public void cancel() {
-                
-            }
-        };
-        
         Subscription s;
         
         public SamplePublisherSubscriber(Subscriber<? super T> actual, Publisher<?> other) {
@@ -89,26 +77,16 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         
         @Override
         public void onError(Throwable t) {
-            cancelOther();
+            SubscriptionHelper.dispose(other);
             actual.onError(t);
         }
         
         @Override
         public void onComplete() {
-            cancelOther();
+            SubscriptionHelper.dispose(other);
             actual.onComplete();
         }
-        
-        void cancelOther() {
-            Subscription o = other.get();
-            if (o != CANCELLED) {
-                o = other.getAndSet(CANCELLED);
-                if (o != CANCELLED && o != null) {
-                    o.cancel();
-                }
-            }
-        }
-        
+
         boolean setOther(Subscription o) {
             if (other.get() == null) {
                 if (other.compareAndSet(null, o)) {
@@ -130,7 +108,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         
         @Override
         public void cancel() {
-            cancelOther();
+            SubscriptionHelper.dispose(other);
             s.cancel();
         }
         

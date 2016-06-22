@@ -65,19 +65,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     private final AtomicLong missedRequested = new AtomicLong();
     
     private boolean checkSubscriptionOnce;
-    
-    /** Indicates a cancelled subscription. */
-    private static final Subscription CANCELLED = new Subscription() {
-        @Override
-        public void request(long n) {
-            
-        }
-        
-        @Override
-        public void cancel() {
-            
-        }
-    };
+
     /**
      * Constructs a non-forwarding TestSubscriber with an initial request value of Long.MAX_VALUE.
      */
@@ -128,7 +116,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         }
         if (!subscription.compareAndSet(null, s)) {
             s.cancel();
-            if (subscription.get() != CANCELLED) {
+            if (subscription.get() != SubscriptionHelper.CANCELLED) {
                 errors.add(new IllegalStateException("onSubscribe received multiple subscriptions: " + s));
             }
             return;
@@ -236,13 +224,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public void cancel() {
         if (!cancelled) {
             cancelled = true;
-            Subscription s = subscription.get();
-            if (s != CANCELLED) {
-                s = subscription.getAndSet(CANCELLED);
-                if (s != CANCELLED && s != null) {
-                    s.cancel();
-                }
-            }
+            SubscriptionHelper.dispose(subscription);
         }
     }
     

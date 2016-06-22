@@ -13,6 +13,7 @@
 
 package io.reactivex.disposables;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.internal.functions.Objects;
@@ -21,10 +22,7 @@ public final class RefCountDisposable implements Disposable {
 
     final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
 
-    static final Disposable DISPOSED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
+    static final Disposable DISPOSED = DisposableHelper.DISPOSED;
     
     final AtomicInteger count = new AtomicInteger();
 
@@ -40,21 +38,11 @@ public final class RefCountDisposable implements Disposable {
     public void dispose() {
         if (once.compareAndSet(false, true)) {
             if (count.decrementAndGet() == 0) {
-                disposeActual();
+                DisposableHelper.dispose(resource);
             }
         }
     }
-    
-    void disposeActual() {
-        Disposable d = resource.get();
-        if (d != DISPOSED) {
-            d = resource.getAndSet(DISPOSED);
-            if (d != DISPOSED && d != null) {
-                d.dispose();
-            }
-        }
-    }
-    
+
     public Disposable get() {
         count.getAndIncrement();
         return new InnerDisposable(this);
@@ -62,7 +50,7 @@ public final class RefCountDisposable implements Disposable {
     
     void release() {
         if (count.decrementAndGet() == 0) {
-            disposeActual();
+            DisposableHelper.dispose(resource);
         }
     }
     

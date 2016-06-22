@@ -18,17 +18,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.util.NotificationLite;
 
 public final class NbpBlockingSubscriber<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
     /** */
     private static final long serialVersionUID = -4875965440900746268L;
 
-    static final Disposable CANCELLED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
-    
     public static final Object TERMINATED = new Object();
 
     final Queue<Object> queue;
@@ -41,7 +37,7 @@ public final class NbpBlockingSubscriber<T> extends AtomicReference<Disposable> 
     public void onSubscribe(Disposable s) {
         if (!compareAndSet(null, s)) {
             s.dispose();
-            if (get() != CANCELLED) {
+            if (get() != DisposableHelper.DISPOSED) {
                 onError(new IllegalStateException("Subscription already set"));
             }
             return;
@@ -65,17 +61,12 @@ public final class NbpBlockingSubscriber<T> extends AtomicReference<Disposable> 
     
     @Override
     public void dispose() {
-        Disposable s = get();
-        if (s != CANCELLED) {
-            s = getAndSet(CANCELLED);
-            if (s != CANCELLED && s != null) {
-                s.dispose();
-                queue.offer(TERMINATED);
-            }
+        if (DisposableHelper.dispose(this)) {
+            queue.offer(TERMINATED);
         }
     }
     
     public boolean isCancelled() {
-        return get() == CANCELLED;
+        return get() == DisposableHelper.DISPOSED;
     }
 }

@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.subscribers.flowable;
 
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -24,18 +25,6 @@ public final class BlockingSubscriber<T> extends AtomicReference<Subscription> i
     /** */
     private static final long serialVersionUID = -4875965440900746268L;
 
-    static final Subscription CANCELLED = new Subscription() {
-        @Override
-        public void request(long n) {
-            
-        }
-        
-        @Override
-        public void cancel() {
-            
-        }
-    };
-    
     public static final Object TERMINATED = new Object();
     
     final Queue<Object> queue;
@@ -48,7 +37,7 @@ public final class BlockingSubscriber<T> extends AtomicReference<Subscription> i
     public void onSubscribe(Subscription s) {
         if (!compareAndSet(null, s)) {
             s.cancel();
-            if (get() != CANCELLED) {
+            if (get() != SubscriptionHelper.CANCELLED) {
                 onError(new IllegalStateException("Subscription already set"));
             }
             return;
@@ -78,17 +67,12 @@ public final class BlockingSubscriber<T> extends AtomicReference<Subscription> i
     
     @Override
     public void cancel() {
-        Subscription s = get();
-        if (s != CANCELLED) {
-            s = getAndSet(CANCELLED);
-            if (s != CANCELLED && s != null) {
-                s.cancel();
-                queue.offer(TERMINATED);
-            }
+        if (SubscriptionHelper.dispose(this)) {
+            queue.offer(TERMINATED);
         }
     }
     
     public boolean isCancelled() {
-        return get() == CANCELLED;
+        return get() == SubscriptionHelper.CANCELLED;
     }
 }
