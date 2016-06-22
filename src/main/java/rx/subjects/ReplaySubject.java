@@ -26,6 +26,7 @@ import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 import rx.internal.operators.BackpressureUtils;
 import rx.internal.util.RxJavaPluginUtils;
+import rx.schedulers.Schedulers;
 
 /**
  * Subject that buffers all items it observes and replays them to any {@link Observer} that subscribes.
@@ -107,6 +108,24 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      */
     /* public */ static <T> ReplaySubject<T> createUnbounded() {
         ReplayBuffer<T> buffer = new ReplaySizeBoundBuffer<T>(Integer.MAX_VALUE);
+        ReplayState<T> state = new ReplayState<T>(buffer);
+        return new ReplaySubject<T>(state);
+    }
+    /**
+     * Creates an unbounded replay subject with the time-bounded-implementation for testing purposes.
+     * <p>
+     * This variant behaves like the regular unbounded {@code ReplaySubject} created via {@link #create()} but
+     * uses the structures of the bounded-implementation. This is by no means intended for the replacement of
+     * the original, array-backed and unbounded {@code ReplaySubject} due to the additional overhead of the
+     * linked-list based internal buffer. The sole purpose is to allow testing and reasoning about the behavior
+     * of the bounded implementations without the interference of the eviction policies.
+     *
+     * @param <T>
+     *          the type of items observed and emitted by the Subject
+     * @return the created subject
+     */
+    /* public */ static <T> ReplaySubject<T> createUnboundedTime() {
+        ReplayBuffer<T> buffer = new ReplaySizeAndTimeBoundBuffer<T>(Integer.MAX_VALUE, Long.MAX_VALUE, Schedulers.immediate());
         ReplayState<T> state = new ReplayState<T>(buffer);
         return new ReplaySubject<T>(state);
     }
@@ -431,14 +450,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             
             b.next(t);
             for (ReplayProducer<T> rp : get()) {
-                if (rp.caughtUp) {
-                    rp.actual.onNext(t);
-                } else {
-                    if (b.drain(rp)) {
-                        rp.caughtUp = true;
-                        rp.node = null;
-                    }
-                }
+                b.drain(rp);
             }
         }
 
@@ -451,14 +463,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             List<Throwable> errors = null;
             for (ReplayProducer<T> rp : getAndSet(TERMINATED)) {
                 try {
-                    if (rp.caughtUp) {
-                        rp.actual.onError(e);
-                    } else {
-                        if (b.drain(rp)) {
-                            rp.caughtUp = true;
-                            rp.node = null;
-                        }
-                    }
+                    b.drain(rp);
                 } catch (Throwable ex) {
                     if (errors == null) {
                         errors = new ArrayList<Throwable>();
@@ -477,14 +482,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             
             b.complete();
             for (ReplayProducer<T> rp : getAndSet(TERMINATED)) {
-                if (rp.caughtUp) {
-                    rp.actual.onCompleted();
-                } else {
-                    if (b.drain(rp)) {
-                        rp.caughtUp = true;
-                        rp.node = null;
-                    }
-                }
+                b.drain(rp);
             }
         }
         
@@ -508,7 +506,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         void complete();
         
-        boolean drain(ReplayProducer<T> rp);
+        void drain(ReplayProducer<T> rp);
         
         boolean isComplete();
         
@@ -585,9 +583,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
 
         @Override
-        public boolean drain(ReplayProducer<T> rp) {
+        public void drain(ReplayProducer<T> rp) {
             if (rp.getAndIncrement() != 0) {
-                return false;
+                return;
             }
             
             int missed = 1;
@@ -610,7 +608,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 while (e != r) {
                     if (a.isUnsubscribed()) {
                         rp.node = null;
-                        return false;
+                        return;
                     }
                     
                     boolean d = done;
@@ -624,7 +622,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                         } else {
                             a.onCompleted();
                         }
-                        return false;
+                        return;
                     }
                     
                     if (empty) {
@@ -649,7 +647,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 if (e == r) {
                     if (a.isUnsubscribed()) {
                         rp.node = null;
-                        return false;
+                        return;
                     }
                     
                     boolean d = done;
@@ -663,7 +661,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                         } else {
                             a.onCompleted();
                         }
-                        return false;
+                        return;
                     }
                 }
                 
@@ -679,7 +677,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 
                 missed = rp.addAndGet(-missed);
                 if (missed == 0) {
-                    return r == Long.MAX_VALUE;
+                    return;
                 }
             }
         }
@@ -799,9 +797,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
 
         @Override
-        public boolean drain(ReplayProducer<T> rp) {
+        public void drain(ReplayProducer<T> rp) {
             if (rp.getAndIncrement() != 0) {
-                return false;
+                return;
             }
             
             final Subscriber<? super T> a = rp.actual;
@@ -822,7 +820,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 while (e != r) {
                     if (a.isUnsubscribed()) {
                         rp.node = null;
-                        return false;
+                        return;
                     }
                     
                     boolean d = done;
@@ -837,7 +835,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                         } else {
                             a.onCompleted();
                         }
-                        return false;
+                        return;
                     }
                     
                     if (empty) {
@@ -853,7 +851,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 if (e == r) {
                     if (a.isUnsubscribed()) {
                         rp.node = null;
-                        return false;
+                        return;
                     }
                     
                     boolean d = done;
@@ -867,7 +865,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                         } else {
                             a.onCompleted();
                         }
-                        return false;
+                        return;
                     }
                 }
                 
@@ -881,7 +879,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 
                 missed = rp.addAndGet(-missed);
                 if (missed == 0) {
-                    return r == Long.MAX_VALUE;
+                    return;
                 }
             }
         }
@@ -1051,9 +1049,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public boolean drain(ReplayProducer<T> rp) {
+        public void drain(ReplayProducer<T> rp) {
             if (rp.getAndIncrement() != 0) {
-                return false;
+                return;
             }
             
             final Subscriber<? super T> a = rp.actual;
@@ -1074,7 +1072,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 while (e != r) {
                     if (a.isUnsubscribed()) {
                         rp.node = null;
-                        return false;
+                        return;
                     }
                     
                     boolean d = done;
@@ -1089,7 +1087,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                         } else {
                             a.onCompleted();
                         }
-                        return false;
+                        return;
                     }
                     
                     if (empty) {
@@ -1105,7 +1103,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 if (e == r) {
                     if (a.isUnsubscribed()) {
                         rp.node = null;
-                        return false;
+                        return;
                     }
                     
                     boolean d = done;
@@ -1119,7 +1117,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                         } else {
                             a.onCompleted();
                         }
-                        return false;
+                        return;
                     }
                 }
                 
@@ -1133,7 +1131,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 
                 missed = rp.addAndGet(-missed);
                 if (missed == 0) {
-                    return r == Long.MAX_VALUE;
+                    return;
                 }
             }
         }
@@ -1227,14 +1225,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         final ReplayState<T> state;
 
         /** 
-         * Indicates this Subscriber runs unbounded and the <b>source</b>-triggered
-         * buffer.drain() has emitted all available values.
-         * <p>
-         * This field has to be read and written from the source emitter's thread only.
-         */
-        boolean caughtUp;
-        
-        /** 
          * Unbounded buffer.drain() uses this field to remember the absolute index of
          * values replayed to this Subscriber.
          */
@@ -1276,6 +1266,5 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 throw new IllegalArgumentException("n >= required but it was " + n);
             }
         }
-        
     }
 }
