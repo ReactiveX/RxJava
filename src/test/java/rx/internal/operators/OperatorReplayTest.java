@@ -193,7 +193,8 @@ public class OperatorReplayTest {
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
-            inOrder.verify(observer1, times(1)).onNext(3);
+            // since onComplete is also delayed, value 3 becomes too old for replay.
+            inOrder.verify(observer1, never()).onNext(3);
 
             inOrder.verify(observer1, times(1)).onCompleted();
             inOrder.verifyNoMoreInteractions();
@@ -479,7 +480,8 @@ public class OperatorReplayTest {
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
-            inOrder.verify(observer1, times(1)).onNext(3);
+            // since onError is also delayed, value 3 becomes too old for replay.
+            inOrder.verify(observer1, never()).onNext(3);
 
             inOrder.verify(observer1, times(1)).onError(any(RuntimeException.class));
             inOrder.verifyNoMoreInteractions();
@@ -788,9 +790,15 @@ public class OperatorReplayTest {
         buf.next(1);
         test.advanceTimeBy(1, TimeUnit.SECONDS);
         buf.next(2);
-        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        // exact 1 second makes value 1 too old
+        test.advanceTimeBy(900, TimeUnit.MILLISECONDS);
         buf.collect(values);
         Assert.assertEquals(Arrays.asList(1, 2), values);
+
+        values.clear();
+        test.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+        buf.collect(values);
+        Assert.assertEquals(Arrays.asList(2), values);
 
         buf.next(3);
         buf.next(4);
@@ -1256,5 +1264,37 @@ public class OperatorReplayTest {
         System.out.println(ts3.getOnNextEvents());
         ts3.assertValues(2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts3.assertCompleted();
+    }
+    
+    @Test
+    public void dontReplayOldValues() {
+        
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        TestScheduler scheduler = new TestScheduler();
+        
+        ConnectableObservable<Integer> co = ps.replay(1, TimeUnit.SECONDS, scheduler);
+        
+        co.subscribe(); // make sure replay runs in unbounded mode
+        
+        co.connect();
+        
+        ps.onNext(1);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ps.onNext(2);
+
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+        
+        ps.onNext(3);
+
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        co.subscribe(ts);
+        
+        ts.assertValue(3);
     }
 }

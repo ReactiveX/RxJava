@@ -1005,6 +1005,16 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             set(n);
         }
         
+        /**
+         * Returns the current head for initializing the replay location
+         * for a new subscriber.
+         * Override it to consider linked but outdated elements.
+         * @return the current head
+         */
+        Node getInitialHead() {
+            return get();
+        }
+        
         @Override
         public final void next(T value) {
             Object o = enterTransform(nl.next(value));
@@ -1049,7 +1059,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 
                 Node node = output.index();
                 if (node == null) {
-                    node = get();
+                    node = getInitialHead();
                     output.index = node;
                     
                     /*
@@ -1143,7 +1153,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             
         }
         /* test */ final  void collect(Collection<? super T> output) {
-            Node n = get();
+            Node n = getInitialHead();
             for (;;) {
                 Node next = n.get();
                 if (next != null) {
@@ -1217,6 +1227,20 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         @Override
         Object leaveTransform(Object value) {
             return ((Timestamped<?>)value).getValue();
+        }
+        
+        @Override
+        Node getInitialHead() {
+            long timeLimit = scheduler.now() - maxAgeInMillis;
+            Node prev = get();
+            
+            Node next = prev.get();
+            while (next != null && ((Timestamped<?>)next.value).getTimestampMillis() <= timeLimit) {
+                prev = next;
+                next = next.get();
+            }
+            
+            return prev;
         }
         
         @Override
