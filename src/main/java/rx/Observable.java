@@ -3280,7 +3280,8 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * 
+     * @param <R> the result type
      * @param ws
      *            an array of source Observables
      * @param zipFunction

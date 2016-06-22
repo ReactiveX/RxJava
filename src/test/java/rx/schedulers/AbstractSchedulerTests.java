@@ -15,34 +15,23 @@
  */
 package rx.schedulers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import rx.Scheduler.Worker;
+import rx.functions.*;
 
 /**
  * Base tests for all schedulers including Immediate/Current.
@@ -500,6 +489,44 @@ public abstract class AbstractSchedulerTests {
             }
         }
 
+    }
+    
+    @Test
+    public void periodicTaskCancelsItself() throws Exception {
+        Scheduler scheduler = getScheduler();
+        if (scheduler instanceof rx.internal.schedulers.ImmediateScheduler 
+                || scheduler instanceof rx.internal.schedulers.TrampolineScheduler) {
+            return;
+        }
+        Worker w = scheduler.createWorker();
+        
+        try {
+            final CountDownLatch cdl = new CountDownLatch(1);
+            final int[] executions = { 0 };
+            final AtomicReference<Subscription> cancel = new AtomicReference<Subscription>();
+            Subscription s = w.schedulePeriodically(new Action0() {
+                @Override
+                public void call() {
+                    executions[0]++;
+                    while (cancel.get() == null);
+                    
+                    cancel.get().unsubscribe();
+                    cdl.countDown();
+                }
+            }, 100, 100, TimeUnit.MILLISECONDS);
+            
+            cancel.set(s);
+            
+            if (!cdl.await(5, TimeUnit.SECONDS)) {
+                s.unsubscribe();
+                Assert.fail("The await timed out");
+            }
+            
+            Assert.assertEquals(1, executions[0]);
+            
+        } finally {
+            w.unsubscribe();
+        }
     }
 
 }
