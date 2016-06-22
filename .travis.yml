@@ -6,7 +6,6 @@ sudo: false
 
 # script for build and release via Travis to Bintray
 script: gradle/buildViaTravis.sh
-script: cat build/reports/pmd/main.xml | limit 200
 
 # Code coverage
 after_success:

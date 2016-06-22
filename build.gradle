@@ -70,10 +70,33 @@ pmd {
     ruleSetFiles = files('pmd.xml')
 }
 
-pmdMain {
+task('pmd', type: Pmd, dependsOn: 'assemble') {
+    description = 'Run pmd'
+    group = 'verification'
+
     reports {
         html.enabled = true
         xml.enabled = true
     }
 }
 
+build.dependsOn 'pmd'
+
+task pmdPrint(dependsOn: 'pmdMain') << {
+    File file = new File('build/reports/pmd/main.xml')
+    if (file.exists()) {
+    
+        println("Listing first 100 PMD violations")
+        
+        file.eachLine { line, count ->
+            if (count <= 100) {
+               println(line)
+            }
+        }
+    
+    } else {
+        println("PMD file not found.")
+    }
+}
+
+build.dependsOn 'pmdPrint'
