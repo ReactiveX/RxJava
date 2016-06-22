@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import rx.Subscriber;
 import rx.exceptions.*;
 import rx.functions.Action0;

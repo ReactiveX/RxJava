@@ -24,8 +24,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.*;
 
 import rx.*;
-import rx.Observable.OnSubscribe;
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
@@ -222,7 +222,6 @@ public class ReplaySubjectConcurrencyTest {
         for (Thread t : threads) {
             t.join();
         }
-
         StringBuilder sb = new StringBuilder();
 
         // assert all threads got the same results

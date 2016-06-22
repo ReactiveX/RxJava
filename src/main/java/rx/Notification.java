@@ -158,15 +158,24 @@ public final class Notification<T> {
      * @param observer the target observer to call onXXX methods on based on the kind of this Notification instance
      */
     public void accept(Observer<? super T> observer) {
-        if (isOnNext()) {
+        switch (kind) {
+        case OnNext:
             observer.onNext(getValue());
-        } else if (isOnCompleted()) {
-            observer.onCompleted();
-        } else if (isOnError()) {
+            break;
+        case OnError:
             observer.onError(getThrowable());
+            break;
+        case OnCompleted:
+            observer.onCompleted();
+            break;
+        default:
+            throw new AssertionError("Uncovered case: " + kind);
         }
     }
 
+    /**
+     * Specifies the kind of the notification: an element, an error or a completion notification.
+     */
     public enum Kind {
         OnNext, OnError, OnCompleted
     }
@@ -211,19 +220,11 @@ public final class Notification<T> {
             return false;
         }
 
-        if (hasValue() && !getValue().equals(notification.getValue())) {
+        if (!(value == notification.value || (value != null && value.equals(notification.value)))) {
             return false;
         }
 
-        if (hasThrowable() && !getThrowable().equals(notification.getThrowable())) {
-            return false;
-        }
-
-        if (!hasValue() && !hasThrowable() && notification.hasValue()) {
-            return false;
-        }
-
-        if (!hasValue() && !hasThrowable() && notification.hasThrowable()) {
+        if (!(throwable == notification.throwable || (throwable != null && throwable.equals(notification.throwable)))) {
             return false;
         }
 
