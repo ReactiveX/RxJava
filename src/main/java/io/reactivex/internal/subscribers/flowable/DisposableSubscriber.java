@@ -30,14 +30,9 @@ public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposab
 
     @Override
     public final void onSubscribe(Subscription s) {
-        if (!this.s.compareAndSet(null, s)) {
-            s.cancel();
-            if (this.s.get() != SubscriptionHelper.CANCELLED) {
-                SubscriptionHelper.reportSubscriptionSet();
-            }
-            return;
+        if (SubscriptionHelper.setOnce(this.s, s)) {
+            onStart();
         }
-        onStart();
     }
     
     protected final Subscription subscription() {

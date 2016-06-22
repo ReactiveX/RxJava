@@ -159,17 +159,11 @@ public final class FlowableAmb<T> extends Flowable<T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (!compareAndSet(null, s)) {
-                s.cancel();
-                if (get() != SubscriptionHelper.CANCELLED) {
-                    SubscriptionHelper.reportSubscriptionSet();
+            if (SubscriptionHelper.setOnce(this, s)) {
+                long r = missedRequested.getAndSet(0L);
+                if (r != 0L) {
+                    s.request(r);
                 }
-                return;
-            }
-            
-            long r = missedRequested.getAndSet(0L);
-            if (r != 0L) {
-                s.request(r);
             }
         }
         

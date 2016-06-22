@@ -82,13 +82,8 @@ public final class FlowableWithLatestFrom<T, U, R> extends Flowable<R> {
         }
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s.compareAndSet(null, s)) {
+            if (SubscriptionHelper.setOnce(this.s, s)) {
                 actual.onSubscribe(this);
-            } else {
-                s.cancel();
-                if (this.s.get() != SubscriptionHelper.CANCELLED) {
-                    SubscriptionHelper.reportSubscriptionSet();
-                }
             }
         }
         

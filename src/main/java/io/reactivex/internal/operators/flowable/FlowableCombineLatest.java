@@ -354,14 +354,9 @@ public final class FlowableCombineLatest<T, R> extends Flowable<R> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (!this.s.compareAndSet(null, s)) {
-                s.cancel();
-                if (this.s.get() != SubscriptionHelper.CANCELLED) {
-                    SubscriptionHelper.reportSubscriptionSet();
-                }
-                return;
+            if (SubscriptionHelper.setOnce(this.s, s)) {
+                s.request(parent.bufferSize);
             }
-            s.request(parent.bufferSize);
         }
         
         @Override
