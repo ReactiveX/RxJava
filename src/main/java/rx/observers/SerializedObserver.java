@@ -43,9 +43,6 @@ public class SerializedObserver<T> implements Observer<T> {
     private FastList queue;
     private final NotificationLite<T> nl = NotificationLite.instance();
 
-    /** Number of iterations without additional safepoint poll in the drain loop. */
-    private static final int MAX_DRAIN_ITERATION = 1024;
-
     static final class FastList {
         Object[] array;
         int size;
@@ -99,31 +96,29 @@ public class SerializedObserver<T> implements Observer<T> {
             return;
         }
         for (;;) {
-            for (int i = 0; i < MAX_DRAIN_ITERATION; i++) {
-                FastList list;
-                synchronized (this) {
-                    list = queue;
-                    if (list == null) {
-                        emitting = false;
-                        return;
-                    }
-                    queue = null;
+            FastList list;
+            synchronized (this) {
+                list = queue;
+                if (list == null) {
+                    emitting = false;
+                    return;
                 }
-                for (Object o : list.array) {
-                    if (o == null) {
-                        break;
-                    }
-                    try {
-                        if (nl.accept(actual, o)) {
-                            terminated = true;
-                            return;
-                        }
-                    } catch (Throwable e) {
+                queue = null;
+            }
+            for (Object o : list.array) {
+                if (o == null) {
+                    break;
+                }
+                try {
+                    if (nl.accept(actual, o)) {
                         terminated = true;
-                        Exceptions.throwIfFatal(e);
-                        actual.onError(OnErrorThrowable.addValueAsLastCause(e, t));
                         return;
                     }
+                } catch (Throwable e) {
+                    terminated = true;
+                    Exceptions.throwIfFatal(e);
+                    actual.onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                    return;
                 }
             }
         }

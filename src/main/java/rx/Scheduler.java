@@ -130,8 +130,9 @@ public abstract class Scheduler {
                 long startInNanos = firstStartInNanos;
                 @Override
                 public void call() {
+                    action.call();
+
                     if (!mas.isUnsubscribed()) {
-                        action.call();
                         
                         long nextTick;
                         
