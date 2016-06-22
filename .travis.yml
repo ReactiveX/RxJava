@@ -10,7 +10,6 @@ script: gradle/buildViaTravis.sh
 # Code coverage
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  
 
 # cache between builds
 cache:
