@@ -15,6 +15,8 @@
  */
 package rx.plugins;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+
 import rx.*;
 import rx.Completable.CompletableOnSubscribe;
 import rx.Observable.*;
@@ -25,6 +27,9 @@ import rx.internal.operators.*;
 /**
  * Utility class that holds hooks for various Observable, Single and Completable lifecycle-related
  * points as well as Scheduler hooks.
+ * <p>
+ * The class features a lockdown state, see {@link #lockdown()} and {@link #isLockdown()}, to
+ * prevent further changes to the hooks. 
  */
 @Experimental
 public final class RxJavaHooks {
@@ -56,7 +61,6 @@ public final class RxJavaHooks {
 
     static volatile Func2<Completable, Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> onCompletableStart;
 
-    
     static volatile Func1<Scheduler, Scheduler> onComputationScheduler;
 
     static volatile Func1<Scheduler, Scheduler> onIOScheduler;
@@ -225,6 +229,12 @@ public final class RxJavaHooks {
         current.getUncaughtExceptionHandler().uncaughtException(current, ex);
     }
     
+    /**
+     * Hook to call when an Observable is created.
+     * @param <T> the value type
+     * @param onSubscribe the original OnSubscribe logic
+     * @return the original or replacement OnSubscribe instance
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Observable.OnSubscribe<T> onCreate(Observable.OnSubscribe<T> onSubscribe) {
         Func1<OnSubscribe, OnSubscribe> f = onObservableCreate;
@@ -234,6 +244,12 @@ public final class RxJavaHooks {
         return onSubscribe;
     }
 
+    /**
+     * Hook to call when a Single is created.
+     * @param <T> the value type
+     * @param onSubscribe the original OnSubscribe logic
+     * @return the original or replacement OnSubscribe instance
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Single.OnSubscribe<T> onCreate(Single.OnSubscribe<T> onSubscribe) {
         Func1<Single.OnSubscribe, Single.OnSubscribe> f = onSingleCreate;
@@ -243,7 +259,12 @@ public final class RxJavaHooks {
         return onSubscribe;
     }
 
-    public static <T> Completable.CompletableOnSubscribe onCreate(Completable.CompletableOnSubscribe onSubscribe) {
+    /**
+     * Hook to call when a Completable is created.
+     * @param onSubscribe the original OnSubscribe logic
+     * @return the original or replacement OnSubscribe instance
+     */
+    public static Completable.CompletableOnSubscribe onCreate(Completable.CompletableOnSubscribe onSubscribe) {
         Func1<Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> f = onCompletableCreate;
         if (f != null) {
             return f.call(onSubscribe);
@@ -251,6 +272,11 @@ public final class RxJavaHooks {
         return onSubscribe;
     }
     
+    /**
+     * Hook to call when the Schedulers.computation() is called.
+     * @param scheduler the default computation scheduler
+     * @return the default of alternative scheduler 
+     */
     public static Scheduler onComputationScheduler(Scheduler scheduler) {
         Func1<Scheduler, Scheduler> f = onComputationScheduler;
         if (f != null) {
@@ -259,6 +285,11 @@ public final class RxJavaHooks {
         return scheduler;
     }
 
+    /**
+     * Hook to call when the Schedulers.io() is called.
+     * @param scheduler the default io scheduler
+     * @return the default of alternative scheduler 
+     */
     public static Scheduler onIOScheduler(Scheduler scheduler) {
         Func1<Scheduler, Scheduler> f = onIOScheduler;
         if (f != null) {
@@ -267,6 +298,11 @@ public final class RxJavaHooks {
         return scheduler;
     }
 
+    /**
+     * Hook to call when the Schedulers.newThread() is called.
+     * @param scheduler the default new thread scheduler
+     * @return the default of alternative scheduler 
+     */
     public static Scheduler onNewThreadScheduler(Scheduler scheduler) {
         Func1<Scheduler, Scheduler> f = onNewThreadScheduler;
         if (f != null) {
@@ -275,6 +311,12 @@ public final class RxJavaHooks {
         return scheduler;
     }
 
+    /**
+     * Hook to call before the action is scheduled, allows
+     * decorating the original action.
+     * @param action the original action
+     * @return the original or alternative action
+     */
     public static Action0 onScheduledAction(Action0 action) {
         Func1<Action0, Action0> f = onScheduleAction;
         if (f != null) {
@@ -282,154 +324,14 @@ public final class RxJavaHooks {
         }
         return action;
     }
-    
-    public static void setOnCompletableCreate(
-            Func1<Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> onCompletableCreate) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onCompletableCreate = onCompletableCreate;
-    }
-    
-    public static void setOnComputationScheduler(Func1<Scheduler, Scheduler> onComputationScheduler) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onComputationScheduler = onComputationScheduler;
-    }
-    
-    public static void setOnError(Action1<Throwable> onError) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onError = onError;
-    }
-    
-    public static void setOnIOScheduler(Func1<Scheduler, Scheduler> onIOScheduler) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onIOScheduler = onIOScheduler;
-    }
-    
-    public static void setOnNewThreadScheduler(Func1<Scheduler, Scheduler> onNewThreadScheduler) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onNewThreadScheduler = onNewThreadScheduler;
-    }
-    
-    @SuppressWarnings("rawtypes")
-    public static void setOnObservableCreate(
-            Func1<Observable.OnSubscribe, Observable.OnSubscribe> onObservableCreate) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onObservableCreate = onObservableCreate;
-    }
-    
-    public static void setOnScheduleAction(Func1<Action0, Action0> onScheduleAction) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onScheduleAction = onScheduleAction;
-    }
-    
-    @SuppressWarnings("rawtypes")
-    public static void setOnSingleCreate(Func1<Single.OnSubscribe, Single.OnSubscribe> onSingleCreate) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onSingleCreate = onSingleCreate;
-    }
-    
-    public static void setOnCompletableStart(
-            Func2<Completable, Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> onCompletableStart) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onCompletableStart = onCompletableStart;
-    }
-    
-    @SuppressWarnings("rawtypes")
-    public static void setOnObservableStart(
-            Func2<Observable, Observable.OnSubscribe, Observable.OnSubscribe> onObservableStart) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onObservableStart = onObservableStart;
-    }
-    
-    @SuppressWarnings("rawtypes")
-    public static void setOnSingleStart(Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> onSingleStart) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onSingleStart = onSingleStart;
-    }
-    
-    public static void setOnObservableReturn(Func1<Subscription, Subscription> onObservableReturn) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onObservableReturn = onObservableReturn;
-    }
-    
-    public static void setOnSingleReturn(Func1<Subscription, Subscription> onSingleReturn) {
-        if (lockdown) {
-            return;
-        }
-        RxJavaHooks.onSingleReturn = onSingleReturn;
-    }
-    
-    public static Func1<Scheduler, Scheduler> getOnComputationScheduler() {
-        return onComputationScheduler;
-    }
-    
-    public static Action1<Throwable> getOnError() {
-        return onError;
-    }
-    
-    public static Func1<Scheduler, Scheduler> getOnIOScheduler() {
-        return onIOScheduler;
-    }
-    
-    public static Func1<Scheduler, Scheduler> getOnNewThreadScheduler() {
-        return onNewThreadScheduler;
-    }
-    
-    @SuppressWarnings("rawtypes")
-    public static Func1<Observable.OnSubscribe, Observable.OnSubscribe> getOnObservableCreate() {
-        return onObservableCreate;
-    }
-    
-    public static Func1<Action0, Action0> getOnScheduleAction() {
-        return onScheduleAction;
-    }
-    
-    @SuppressWarnings("rawtypes")
-    public static Func1<Single.OnSubscribe, Single.OnSubscribe> getOnSingleCreate() {
-        return onSingleCreate;
-    }
-    
-    public static Func1<Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> getOnCompletableCreate() {
-        return onCompletableCreate;
-    }
-    
-    public static Func2<Completable, Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> getOnCompletableStart() {
-        return onCompletableStart;
-    }
-    
-    @SuppressWarnings("rawtypes")
-    public static Func2<Observable, Observable.OnSubscribe, Observable.OnSubscribe> getOnObservableStart() {
-        return onObservableStart;
-    }
-    
-    @SuppressWarnings("rawtypes")
-    public static Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> getOnSingleStart() {
-        return onSingleStart;
-    }
-    
+
+    /**
+     * Hook to call before the child subscriber is subscribed to the OnSubscribe action.
+     * @param <T> the value type
+     * @param instance the parent Observable instance
+     * @param onSubscribe the original OnSubscribe action
+     * @return the original or alternative action that will be subscribed to
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> OnSubscribe<T> onObservableStart(Observable<T> instance, OnSubscribe<T> onSubscribe) {
         Func2<Observable, OnSubscribe, OnSubscribe> f = onObservableStart;
@@ -439,14 +341,11 @@ public final class RxJavaHooks {
         return onSubscribe;
     }
     
-    public static Func1<Subscription, Subscription> getOnObservableReturn() {
-        return onObservableReturn;
-    }
-    
-    public static Func1<Subscription, Subscription> getOnSingleReturn() {
-        return onSingleReturn;
-    }
-    
+    /**
+     * Hook to call before the Observable.subscribe() method is about to return a Subscription.
+     * @param subscription the original subscription
+     * @return the original or alternative subscription that will be returned
+     */
     public static Subscription onObservableReturn(Subscription subscription) {
         Func1<Subscription, Subscription> f = onObservableReturn;
         if (f != null) {
@@ -455,16 +354,35 @@ public final class RxJavaHooks {
         return subscription;
     }
 
+    /**
+     * Hook to call if the Observable.subscribe() crashes for some reason.
+     * @param error the error
+     * @return the original error or alternative Throwable to be thrown
+     */
     public static Throwable onObservableError(Throwable error) {
         // TODO add hook
         return error;
     }
 
+    /**
+     * Hook to call before the child subscriber would subscribe to an Operator.
+     * @param <T> the input value type
+     * @param <R> the output value type
+     * @param operator the original operator
+     * @return the original or alternative operator that will be subscribed to
+     */
     public static <T, R> Operator<R, T> onObservableLift(Operator<R, T> operator) {
         // TODO add hook
         return operator;
     }
 
+    /**
+     * Hook to call before the child subscriber is subscribed to the OnSubscribe action.
+     * @param <T> the value type
+     * @param instance the parent Single instance
+     * @param onSubscribe the original OnSubscribe action
+     * @return the original or alternative action that will be subscribed to
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Observable.OnSubscribe<T> onSingleStart(Single<T> instance, Observable.OnSubscribe<T> onSubscribe) {
         Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> f = onSingleStart;
@@ -474,6 +392,11 @@ public final class RxJavaHooks {
         return onSubscribe;
     }
 
+    /**
+     * Hook to call before the Single.subscribe() method is about to return a Subscription.
+     * @param subscription the original subscription
+     * @return the original or alternative subscription that will be returned
+     */
     public static Subscription onSingleReturn(Subscription subscription) {
         Func1<Subscription, Subscription> f = onSingleReturn;
         if (f != null) {
@@ -482,16 +405,35 @@ public final class RxJavaHooks {
         return subscription;
     }
 
+    /**
+     * Hook to call if the Single.subscribe() crashes for some reason.
+     * @param error the error
+     * @return the original error or alternative Throwable to be thrown
+     */
     public static Throwable onSingleError(Throwable error) {
         // TODO add hook
         return error;
     }
 
+    /**
+     * Hook to call before the child subscriber would subscribe to an Operator.
+     * @param <T> the input value type
+     * @param <R> the output value type
+     * @param operator the original operator
+     * @return the original or alternative operator that will be subscribed to
+     */
     public static <T, R> Operator<R, T> onSingleLift(Operator<R, T> operator) {
         // TODO add hook
         return operator;
     }
 
+    /**
+     * Hook to call before the child subscriber is subscribed to the OnSubscribe action.
+     * @param <T> the value type
+     * @param instance the parent Completable instance
+     * @param onSubscribe the original OnSubscribe action
+     * @return the original or alternative action that will be subscribed to
+     */
     public static <T> Completable.CompletableOnSubscribe onCompletableStart(Completable instance, Completable.CompletableOnSubscribe onSubscribe) {
         Func2<Completable, CompletableOnSubscribe, CompletableOnSubscribe> f = onCompletableStart;
         if (f != null) {
@@ -500,16 +442,419 @@ public final class RxJavaHooks {
         return onSubscribe;
     }
 
+    /**
+     * Hook to call if the Completable.subscribe() crashes for some reason.
+     * @param error the error
+     * @return the original error or alternative Throwable to be thrown
+     */
     public static Throwable onCompletableError(Throwable error) {
         // TODO add hook
         return error;
     }
 
+    /**
+     * Hook to call before the child subscriber would subscribe to an Operator.
+     * @param <T> the input value type
+     * @param <R> the output value type
+     * @param operator the original operator
+     * @return the original or alternative operator that will be subscribed to
+     */
     public static <T, R> Completable.CompletableOperator onCompletableLift(Completable.CompletableOperator operator) {
         // TODO add hook
         return operator;
     }
+
     
+    /**
+     * Sets the global error consumer action unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * errors are routed to the current thread's {@link UncaughtExceptionHandler}.
+     * @param onError the action that will receive undeliverable Throwables
+     */
+    public static void setOnError(Action1<Throwable> onError) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onError = onError;
+    }
+    
+    /**
+     * Sets the Completable's onCreate hook function unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onCompletableCreate the function that takes the original CompletableOnSubscribe
+     * and should return a CompletableOnSubscribe.
+     */
+    public static void setOnCompletableCreate(
+            Func1<Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> onCompletableCreate) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onCompletableCreate = onCompletableCreate;
+    }
+    
+    /**
+     * Sets the Observable onCreate hook function unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onObservableCreate the function that takes the original OnSubscribe
+     * and should return a OnSubscribe.
+     */
+    @SuppressWarnings("rawtypes")
+    public static void setOnObservableCreate(
+            Func1<Observable.OnSubscribe, Observable.OnSubscribe> onObservableCreate) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onObservableCreate = onObservableCreate;
+    }
+    
+    /**
+     * Sets the Single onCreate hook function unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onSingleCreate the function that takes the original OnSubscribe
+     * and should return a OnSubscribe.
+     */
+    @SuppressWarnings("rawtypes")
+    public static void setOnSingleCreate(Func1<Single.OnSubscribe, Single.OnSubscribe> onSingleCreate) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onSingleCreate = onSingleCreate;
+    }
+    
+    /**
+     * Sets the hook function for returning a scheduler when the Schedulers.computation() is called
+     * unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onComputationScheduler the function that receives the original computation scheduler
+     * and should return a scheduler.
+     */
+    public static void setOnComputationScheduler(Func1<Scheduler, Scheduler> onComputationScheduler) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onComputationScheduler = onComputationScheduler;
+    }
+    
+    /**
+     * Sets the hook function for returning a scheduler when the Schedulers.io() is called
+     * unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onIOScheduler the function that receives the original io scheduler
+     * and should return a scheduler.
+     */
+    public static void setOnIOScheduler(Func1<Scheduler, Scheduler> onIOScheduler) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onIOScheduler = onIOScheduler;
+    }
+    
+    /**
+     * Sets the hook function for returning a scheduler when the Schedulers.newThread() is called
+     * unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onNewThreadScheduler the function that receives the original new thread scheduler
+     * and should return a scheduler.
+     */
+    public static void setOnNewThreadScheduler(Func1<Scheduler, Scheduler> onNewThreadScheduler) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onNewThreadScheduler = onNewThreadScheduler;
+    }
+    
+    /**
+     * Sets the hook function that is called before an action is scheduled, allowing
+     * decorating that function, unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onScheduleAction the function that receives the original action and should
+     * return an Action0.
+     */
+    public static void setOnScheduleAction(Func1<Action0, Action0> onScheduleAction) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onScheduleAction = onScheduleAction;
+    }
+    
+    /**
+     * Sets the hook function that is called when a subscriber subscribes to a Completable
+     * unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same CompletableOnSubscribe object.
+     * @param onCompletableStart the function that is called with the current Completable instance,
+     * its CompletableOnSubscribe function and should return a CompletableOnSubscribe function
+     * that gets actually subscribed to.
+     */
+    public static void setOnCompletableStart(
+            Func2<Completable, Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> onCompletableStart) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onCompletableStart = onCompletableStart;
+    }
+    
+    /**
+     * Sets the hook function that is called when a subscriber subscribes to a Observable
+     * unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same OnSubscribe object.
+     * @param onObservableStart the function that is called with the current Observable instance,
+     * its OnSubscribe function and should return a OnSubscribe function
+     * that gets actually subscribed to.
+     */
+    @SuppressWarnings("rawtypes")
+    public static void setOnObservableStart(
+            Func2<Observable, Observable.OnSubscribe, Observable.OnSubscribe> onObservableStart) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onObservableStart = onObservableStart;
+    }
+    
+    /**
+     * Sets the hook function that is called when a subscriber subscribes to a Single
+     * unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same OnSubscribe object.
+     * @param onSingleStart the function that is called with the current Single instance,
+     * its OnSubscribe function and should return a OnSubscribe function
+     * that gets actually subscribed to.
+     */
+    @SuppressWarnings("rawtypes")
+    public static void setOnSingleStart(Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> onSingleStart) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onSingleStart = onSingleStart;
+    }
+    
+    /**
+     * Sets a hook function that is called when the Observable.subscribe() call 
+     * is about to return a Subscription unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onObservableReturn the function that is called with the Subscriber that has been
+     * subscribed to the OnSubscribe function and returns a Subscription that will be returned by
+     * subscribe().
+     */
+    public static void setOnObservableReturn(Func1<Subscription, Subscription> onObservableReturn) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onObservableReturn = onObservableReturn;
+    }
+    
+    /**
+     * Sets a hook function that is called when the Single.subscribe() call 
+     * is about to return a Subscription unless a lockdown is in effect.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onSingleReturn the function that is called with the SingleSubscriber that has been
+     * subscribed to the OnSubscribe function and returns a Subscription that will be returned by
+     * subscribe().
+     */
+    public static void setOnSingleReturn(Func1<Subscription, Subscription> onSingleReturn) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onSingleReturn = onSingleReturn;
+    }
+    
+    /**
+     * Returns the current computation scheduler hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    public static Func1<Scheduler, Scheduler> getOnComputationScheduler() {
+        return onComputationScheduler;
+    }
+    
+    /**
+     * Returns the current global error handler hook action or null if it is
+     * set to the default one that signals errors to the current threads
+     * UncaughtExceptionHandler.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook action
+     */
+    public static Action1<Throwable> getOnError() {
+        return onError;
+    }
+    
+    /**
+     * Returns the current io scheduler hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    public static Func1<Scheduler, Scheduler> getOnIOScheduler() {
+        return onIOScheduler;
+    }
+    
+    /**
+     * Returns the current new thread scheduler hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    public static Func1<Scheduler, Scheduler> getOnNewThreadScheduler() {
+        return onNewThreadScheduler;
+    }
+    
+    /**
+     * Returns the current Observable onCreate hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    @SuppressWarnings("rawtypes")
+    public static Func1<Observable.OnSubscribe, Observable.OnSubscribe> getOnObservableCreate() {
+        return onObservableCreate;
+    }
+    
+    /**
+     * Returns the current schedule action hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    public static Func1<Action0, Action0> getOnScheduleAction() {
+        return onScheduleAction;
+    }
+    
+    /**
+     * Returns the current Single onCreate hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    @SuppressWarnings("rawtypes")
+    public static Func1<Single.OnSubscribe, Single.OnSubscribe> getOnSingleCreate() {
+        return onSingleCreate;
+    }
+    
+    /**
+     * Returns the current Completable onCreate hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    public static Func1<Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> getOnCompletableCreate() {
+        return onCompletableCreate;
+    }
+    
+    /**
+     * Returns the current Completable onStart hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    public static Func2<Completable, Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> getOnCompletableStart() {
+        return onCompletableStart;
+    }
+    
+    /**
+     * Returns the current Observable onStart hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    @SuppressWarnings("rawtypes")
+    public static Func2<Observable, Observable.OnSubscribe, Observable.OnSubscribe> getOnObservableStart() {
+        return onObservableStart;
+    }
+    
+    /**
+     * Returns the current Single onStart hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    @SuppressWarnings("rawtypes")
+    public static Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> getOnSingleStart() {
+        return onSingleStart;
+    }
+    
+    /**
+     * Returns the current Observable onReturn hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    public static Func1<Subscription, Subscription> getOnObservableReturn() {
+        return onObservableReturn;
+    }
+    
+    /**
+     * Returns the current Single onReturn hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    public static Func1<Subscription, Subscription> getOnSingleReturn() {
+        return onSingleReturn;
+    }
+
     /**
      * Resets the assembly tracking hooks to their default delegates to
      * RxJavaPlugins.
