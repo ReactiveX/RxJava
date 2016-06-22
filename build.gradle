@@ -64,7 +64,7 @@ build.dependsOn jacocoTestReport
 
 pmd {
     toolVersion = '5.4.1'
-    ignoreFailures = false
+    ignoreFailures = true
     ruleSetFiles = files('./code_quality_tools/pmd.xml')
 }
 

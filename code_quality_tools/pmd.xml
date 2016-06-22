@@ -11,7 +11,6 @@
     <rule ref="rulesets/java/coupling.xml"/>
     <rule ref="rulesets/java/design.xml"/>
     <rule ref="rulesets/java/empty.xml"/>
-    <rule ref="rulesets/java/naming.xml"/>
     <rule ref="rulesets/java/junit.xml"/>
     <rule ref="rulesets/java/migrating.xml"/>
     <rule ref="rulesets/java/strictexception.xml"/>
