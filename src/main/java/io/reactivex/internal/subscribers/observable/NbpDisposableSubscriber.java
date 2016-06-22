@@ -44,7 +44,7 @@ public abstract class NbpDisposableSubscriber<T> implements Observer<T>, Disposa
     }
     
     public final boolean isDisposed() {
-        return s == DisposableHelper.DISPOSED;
+        return s.get() == DisposableHelper.DISPOSED;
     }
     
     @Override
