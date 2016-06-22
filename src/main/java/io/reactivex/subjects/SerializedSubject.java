@@ -23,12 +23,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Serializes calls to the Subscriber methods.
  * <p>All other Publisher and Subject methods are thread-safe by design.
  *
- * @param <T> the source value type
- * @param <R> the subject's result value type
+ * @param <T> the item value type
  */
-/* public */ final class SerializedSubject<T, R> extends Subject<T, R> {
+/* public */ final class SerializedSubject<T> extends Subject<T> {
     /** The actual subscriber to serialize Subscriber calls to. */
-    final Subject<T, R> actual;
+    final Subject<T> actual;
     /** Indicates an emission is going on, guarted by this. */
     boolean emitting;
     /** If not null, it holds the missed NotificationLite events. */
@@ -40,12 +39,12 @@ import io.reactivex.plugins.RxJavaPlugins;
      * Constructor that wraps an actual subject.
      * @param actual the subject wrapped
      */
-    public SerializedSubject(final Subject<T, R> actual) {
+    public SerializedSubject(final Subject<T> actual) {
         this.actual = actual;
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> observer) {
+    protected void subscribeActual(Observer<? super T> observer) {
         actual.subscribe(observer);
     }
 
@@ -185,7 +184,7 @@ import io.reactivex.plugins.RxJavaPlugins;
     }
     
     @Override
-    public R getValue() {
+    public T getValue() {
         return actual.getValue();
     }
     
@@ -195,7 +194,7 @@ import io.reactivex.plugins.RxJavaPlugins;
     }
     
     @Override
-    public R[] getValues(R[] array) {
+    public T[] getValues(T[] array) {
         return actual.getValues(array);
     }
     

@@ -1018,7 +1018,7 @@ public class NbpObservableTests {
     
     @Test
     public void testErrorThrownIssue1685() {
-        Subject<Object, Object> subject = ReplaySubject.create();
+        Subject<Object> subject = ReplaySubject.create();
 
         Observable.error(new RuntimeException("oops"))
             .materialize()

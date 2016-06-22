@@ -51,7 +51,7 @@ public class FlowableTakeWhileTest {
 
     @Test
     public void testTakeWhileOnSubject1() {
-        FlowProcessor<Integer, Integer> s = PublishProcessor.create();
+        FlowProcessor<Integer> s = PublishProcessor.create();
         Flowable<Integer> take = s.takeWhile(new Predicate<Integer>() {
             @Override
             public boolean test(Integer input) {

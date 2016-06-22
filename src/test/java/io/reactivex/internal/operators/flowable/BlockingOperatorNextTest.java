@@ -32,7 +32,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class BlockingOperatorNextTest {
 
-    private void fireOnNextInNewThread(final FlowProcessor<String, String> o, final String value) {
+    private void fireOnNextInNewThread(final FlowProcessor<String> o, final String value) {
         new Thread() {
             @Override
             public void run() {
@@ -46,7 +46,7 @@ public class BlockingOperatorNextTest {
         }.start();
     }
 
-    private void fireOnErrorInNewThread(final FlowProcessor<String, String> o) {
+    private void fireOnErrorInNewThread(final FlowProcessor<String> o) {
         new Thread() {
             @Override
             public void run() {
@@ -62,7 +62,7 @@ public class BlockingOperatorNextTest {
 
     @Test
     public void testNext() {
-        FlowProcessor<String, String> obs = PublishProcessor.create();
+        FlowProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
@@ -98,7 +98,7 @@ public class BlockingOperatorNextTest {
 
     @Test
     public void testNextWithError() {
-        FlowProcessor<String, String> obs = PublishProcessor.create();
+        FlowProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
@@ -137,7 +137,7 @@ public class BlockingOperatorNextTest {
 
     @Test
     public void testOnError() throws Throwable {
-        FlowProcessor<String, String> obs = PublishProcessor.create();
+        FlowProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = next(obs).iterator();
 
         obs.onError(new TestException());
@@ -153,7 +153,7 @@ public class BlockingOperatorNextTest {
 
     @Test
     public void testOnErrorInNewThread() {
-        FlowProcessor<String, String> obs = PublishProcessor.create();
+        FlowProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = next(obs).iterator();
 
         fireOnErrorInNewThread(obs);
@@ -184,7 +184,7 @@ public class BlockingOperatorNextTest {
 
     @Test
     public void testNextWithOnlyUsingNextMethod() {
-        FlowProcessor<String, String> obs = PublishProcessor.create();
+        FlowProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
         assertEquals("one", it.next());
@@ -202,7 +202,7 @@ public class BlockingOperatorNextTest {
 
     @Test
     public void testNextWithCallingHasNextMultipleTimes() {
-        FlowProcessor<String, String> obs = PublishProcessor.create();
+        FlowProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());

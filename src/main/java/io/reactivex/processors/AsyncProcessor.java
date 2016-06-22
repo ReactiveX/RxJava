@@ -32,7 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class AsyncProcessor<T> extends FlowProcessor<T, T> {
+public final class AsyncProcessor<T> extends FlowProcessor<T> {
     
     /**
      * Constructs an empty AsyncSubject.

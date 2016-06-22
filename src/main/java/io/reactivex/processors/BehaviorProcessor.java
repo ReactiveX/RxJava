@@ -25,7 +25,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class BehaviorProcessor<T> extends FlowProcessor<T, T> {
+public final class BehaviorProcessor<T> extends FlowProcessor<T> {
 
     public static <T> BehaviorProcessor<T> create() {
         return new BehaviorProcessor<T>(new State<T>());

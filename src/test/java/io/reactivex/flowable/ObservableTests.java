@@ -1019,7 +1019,7 @@ public class ObservableTests {
     
     @Test
     public void testErrorThrownIssue1685() {
-        FlowProcessor<Object, Object> subject = ReplayProcessor.create();
+        FlowProcessor<Object> subject = ReplayProcessor.create();
 
         Flowable.error(new RuntimeException("oops"))
             .materialize()

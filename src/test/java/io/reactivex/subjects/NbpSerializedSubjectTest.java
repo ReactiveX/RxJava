@@ -24,7 +24,7 @@ public class NbpSerializedSubjectTest {
 
     @Test
     public void testBasic() {
-        SerializedSubject<String, String> subject = new SerializedSubject<String, String>(PublishSubject.<String> create());
+        SerializedSubject<String> subject = new SerializedSubject<String>(PublishSubject.<String> create());
         TestObserver<String> ts = new TestObserver<String>();
         subject.subscribe(ts);
         subject.onNext("hello");
@@ -38,7 +38,7 @@ public class NbpSerializedSubjectTest {
         AsyncSubject<Integer> async = AsyncSubject.create();
         async.onNext(1);
         async.onComplete();
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
@@ -55,7 +55,7 @@ public class NbpSerializedSubjectTest {
     public void testAsyncSubjectValueEmpty() {
         AsyncSubject<Integer> async = AsyncSubject.create();
         async.onComplete();
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
@@ -73,7 +73,7 @@ public class NbpSerializedSubjectTest {
         AsyncSubject<Integer> async = AsyncSubject.create();
         TestException te = new TestException();
         async.onError(te);
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
@@ -91,7 +91,7 @@ public class NbpSerializedSubjectTest {
         PublishSubject<Integer> async = PublishSubject.create();
         async.onNext(1);
         async.onComplete();
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
@@ -110,7 +110,7 @@ public class NbpSerializedSubjectTest {
     public void testPublishSubjectValueEmpty() {
         PublishSubject<Integer> async = PublishSubject.create();
         async.onComplete();
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
@@ -128,7 +128,7 @@ public class NbpSerializedSubjectTest {
         PublishSubject<Integer> async = PublishSubject.create();
         TestException te = new TestException();
         async.onError(te);
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
@@ -147,7 +147,7 @@ public class NbpSerializedSubjectTest {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         async.onNext(1);
         async.onComplete();
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
@@ -164,7 +164,7 @@ public class NbpSerializedSubjectTest {
     public void testBehaviorSubjectValueRelayIncomplete() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         async.onNext(1);
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
@@ -180,7 +180,7 @@ public class NbpSerializedSubjectTest {
     @Test
     public void testBehaviorSubjectIncompleteEmpty() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
@@ -197,7 +197,7 @@ public class NbpSerializedSubjectTest {
     public void testBehaviorSubjectEmpty() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         async.onComplete();
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
@@ -215,7 +215,7 @@ public class NbpSerializedSubjectTest {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         TestException te = new TestException();
         async.onError(te);
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
@@ -234,7 +234,7 @@ public class NbpSerializedSubjectTest {
         ReplaySubject<Integer> async = ReplaySubject.create();
         async.onNext(1);
         async.onComplete();
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
@@ -251,7 +251,7 @@ public class NbpSerializedSubjectTest {
     public void testReplaySubjectValueRelayIncomplete() {
         ReplaySubject<Integer> async = ReplaySubject.create();
         async.onNext(1);
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
@@ -270,7 +270,7 @@ public class NbpSerializedSubjectTest {
         async.onNext(0);
         async.onNext(1);
         async.onComplete();
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
@@ -288,7 +288,7 @@ public class NbpSerializedSubjectTest {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
         async.onNext(0);
         async.onNext(1);
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
@@ -304,7 +304,7 @@ public class NbpSerializedSubjectTest {
     @Test
     public void testReplaySubjectValueRelayBoundedEmptyIncomplete() {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
@@ -320,7 +320,7 @@ public class NbpSerializedSubjectTest {
     @Test
     public void testReplaySubjectValueRelayEmptyIncomplete() {
         ReplaySubject<Integer> async = ReplaySubject.create();
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
@@ -338,7 +338,7 @@ public class NbpSerializedSubjectTest {
     public void testReplaySubjectEmpty() {
         ReplaySubject<Integer> async = ReplaySubject.create();
         async.onComplete();
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
@@ -356,7 +356,7 @@ public class NbpSerializedSubjectTest {
         ReplaySubject<Integer> async = ReplaySubject.create();
         TestException te = new TestException();
         async.onError(te);
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
@@ -374,7 +374,7 @@ public class NbpSerializedSubjectTest {
     public void testReplaySubjectBoundedEmpty() {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
         async.onComplete();
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
@@ -392,7 +392,7 @@ public class NbpSerializedSubjectTest {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
         TestException te = new TestException();
         async.onError(te);
-        Subject<Integer, Integer> serial = async.toSerialized();
+        Subject<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
@@ -409,8 +409,8 @@ public class NbpSerializedSubjectTest {
     @Test
     public void testDontWrapNbpSerializedSubjectAgain() {
         PublishSubject<Object> s = PublishSubject.create();
-        Subject<Object, Object> s1 = s.toSerialized();
-        Subject<Object, Object> s2 = s1.toSerialized();
+        Subject<Object> s1 = s.toSerialized();
+        Subject<Object> s2 = s1.toSerialized();
         assertSame(s1, s2);
     }
 }

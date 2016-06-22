@@ -2807,70 +2807,70 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void asyncSubjectOnNextNull() {
-        FlowProcessor<Integer, Integer> subject = AsyncProcessor.create();
+        FlowProcessor<Integer> subject = AsyncProcessor.create();
         subject.onNext(null);
         subject.toBlocking().run();
     }
     
     @Test(expected = NullPointerException.class)
     public void asyncSubjectOnErrorNull() {
-        FlowProcessor<Integer, Integer> subject = AsyncProcessor.create();
+        FlowProcessor<Integer> subject = AsyncProcessor.create();
         subject.onError(null);
         subject.toBlocking().run();
     }
 
     @Test(expected = NullPointerException.class)
     public void behaviorSubjectOnNextNull() {
-        FlowProcessor<Integer, Integer> subject = BehaviorProcessor.create();
+        FlowProcessor<Integer> subject = BehaviorProcessor.create();
         subject.onNext(null);
         subject.toBlocking().run();
     }
     
     @Test(expected = NullPointerException.class)
     public void behaviorSubjectOnErrorNull() {
-        FlowProcessor<Integer, Integer> subject = BehaviorProcessor.create();
+        FlowProcessor<Integer> subject = BehaviorProcessor.create();
         subject.onError(null);
         subject.toBlocking().run();
     }
     
     @Test(expected = NullPointerException.class)
     public void publishSubjectOnNextNull() {
-        FlowProcessor<Integer, Integer> subject = PublishProcessor.create();
+        FlowProcessor<Integer> subject = PublishProcessor.create();
         subject.onNext(null);
         subject.toBlocking().run();
     }
     
     @Test(expected = NullPointerException.class)
     public void publishSubjectOnErrorNull() {
-        FlowProcessor<Integer, Integer> subject = PublishProcessor.create();
+        FlowProcessor<Integer> subject = PublishProcessor.create();
         subject.onError(null);
         subject.toBlocking().run();
     }
 
     @Test(expected = NullPointerException.class)
     public void replaycSubjectOnNextNull() {
-        FlowProcessor<Integer, Integer> subject = ReplayProcessor.create();
+        FlowProcessor<Integer> subject = ReplayProcessor.create();
         subject.onNext(null);
         subject.toBlocking().run();
     }
     
     @Test(expected = NullPointerException.class)
     public void replaySubjectOnErrorNull() {
-        FlowProcessor<Integer, Integer> subject = ReplayProcessor.create();
+        FlowProcessor<Integer> subject = ReplayProcessor.create();
         subject.onError(null);
         subject.toBlocking().run();
     }
 
     @Test(expected = NullPointerException.class)
     public void serializedcSubjectOnNextNull() {
-        FlowProcessor<Integer, Integer> subject = PublishProcessor.<Integer>create().toSerialized();
+        FlowProcessor<Integer> subject = PublishProcessor.<Integer>create().toSerialized();
         subject.onNext(null);
         subject.toBlocking().run();
     }
     
     @Test(expected = NullPointerException.class)
     public void serializedSubjectOnErrorNull() {
-        FlowProcessor<Integer, Integer> subject = PublishProcessor.<Integer>create().toSerialized();
+        FlowProcessor<Integer> subject = PublishProcessor.<Integer>create().toSerialized();
         subject.onError(null);
         subject.toBlocking().run();
     }

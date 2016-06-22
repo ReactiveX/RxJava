@@ -21,7 +21,7 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class PublishSubject<T> extends Subject<T, T> {
+public final class PublishSubject<T> extends Subject<T> {
     public static <T> PublishSubject<T> create() {
         return new PublishSubject<T>();
     }

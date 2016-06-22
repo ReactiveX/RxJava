@@ -33,7 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the value type
  */
 
-public final class AsyncSubject<T> extends Subject<T, T> {
+public final class AsyncSubject<T> extends Subject<T> {
     public static <T> AsyncSubject<T> create() {
         return new AsyncSubject<T>();
     }
