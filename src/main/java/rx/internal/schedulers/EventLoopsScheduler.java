@@ -136,7 +136,7 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
        return pw.scheduleActual(action, -1, TimeUnit.NANOSECONDS);
     }
 
-    private static class EventLoopWorker extends Scheduler.Worker {
+    static final class EventLoopWorker extends Scheduler.Worker {
         private final SubscriptionList serial = new SubscriptionList();
         private final CompositeSubscription timed = new CompositeSubscription();
         private final SubscriptionList both = new SubscriptionList(serial, timed);

@@ -35,7 +35,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
     private final Action0 onOverflow;
     private final Strategy overflowStrategy;
 
-    private static class Holder {
+    static final class Holder {
         static final OperatorOnBackpressureBuffer<?> INSTANCE = new OperatorOnBackpressureBuffer<Object>();
     }
 
@@ -106,7 +106,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         return parent;
     }
 
-    private static final class BufferSubscriber<T> extends Subscriber<T> implements BackpressureDrainManager.BackpressureQueueCallback {
+    static final class BufferSubscriber<T> extends Subscriber<T> implements BackpressureDrainManager.BackpressureQueueCallback {
         // TODO get a different queue implementation
         private final ConcurrentLinkedQueue<Object> queue = new ConcurrentLinkedQueue<Object>();
         private final AtomicLong capacity;

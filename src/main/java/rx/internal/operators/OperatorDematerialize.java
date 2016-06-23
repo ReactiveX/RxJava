@@ -31,7 +31,7 @@ import rx.Subscriber;
  */
 public final class OperatorDematerialize<T> implements Operator<T, Notification<T>> {
     /** Lazy initialization via inner-class holder. */
-    private static final class Holder {
+    static final class Holder {
         /** A singleton instance. */
         static final OperatorDematerialize<Object> INSTANCE = new OperatorDematerialize<Object>();
     }

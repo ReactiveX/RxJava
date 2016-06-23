@@ -104,7 +104,7 @@ public final class OperatorToObservableSortedList<T> implements Operator<List<T>
         return result;
     }
 
-    private static class DefaultComparableFunction implements Comparator<Object> {
+    static final class DefaultComparableFunction implements Comparator<Object> {
 
         // unchecked because we want to support Object for this default
         @SuppressWarnings("unchecked")

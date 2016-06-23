@@ -90,7 +90,7 @@ public final class Subscriptions {
     }
 
         /** Naming classes helps with debugging. */
-    private static final class FutureSubscription implements Subscription {
+    static final class FutureSubscription implements Subscription {
         final Future<?> f;
 
         public FutureSubscription(Future<?> f) {

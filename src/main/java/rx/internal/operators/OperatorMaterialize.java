@@ -33,7 +33,7 @@ import rx.plugins.RxJavaHooks;
 public final class OperatorMaterialize<T> implements Operator<Notification<T>, T> {
 
     /** Lazy initialization via inner-class holder. */
-    private static final class Holder {
+    static final class Holder {
         /** A singleton instance. */
         static final OperatorMaterialize<Object> INSTANCE = new OperatorMaterialize<Object>();
     }
@@ -66,7 +66,7 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
         return parent;
     }
 
-    private static class ParentSubscriber<T> extends Subscriber<T> {
+    static class ParentSubscriber<T> extends Subscriber<T> {
 
         private final Subscriber<? super Notification<T>> child;
 

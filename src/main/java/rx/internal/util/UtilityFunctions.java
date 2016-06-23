@@ -110,7 +110,7 @@ public final class UtilityFunctions {
         return NULL_FUNCTION;
     }
 
-    private static final class NullFunction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> implements
+    static final class NullFunction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> implements
             Func0<R>,
             Func1<T0, R>,
             Func2<T0, T1, R>,

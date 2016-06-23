@@ -26,7 +26,7 @@ import rx.Subscriber;
  */
 public final class OperatorAsObservable<T> implements Operator<T, T> {
     /** Lazy initialization via inner-class holder. */
-    private static final class Holder {
+    static final class Holder {
         /** A singleton instance. */
         static final OperatorAsObservable<Object> INSTANCE = new OperatorAsObservable<Object>();
     }

@@ -39,7 +39,7 @@ import rx.internal.producers.SingleDelayedProducer;
  */
 public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
     /** Lazy initialization via inner-class holder. */
-    private static final class Holder {
+    static final class Holder {
         /** A singleton instance. */
         static final OperatorToObservableList<Object> INSTANCE = new OperatorToObservableList<Object>();
     }

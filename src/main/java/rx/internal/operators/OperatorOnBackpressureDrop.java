@@ -28,7 +28,7 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
     final Action1<? super T> onDrop;
 
     /** Lazy initialization via inner-class holder. */
-    private static final class Holder {
+    static final class Holder {
         /** A singleton instance. */
         static final OperatorOnBackpressureDrop<Object> INSTANCE = new OperatorOnBackpressureDrop<Object>();
     }

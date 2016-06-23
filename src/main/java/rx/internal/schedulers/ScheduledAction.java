@@ -127,7 +127,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
      * prevent unnecessary self-interrupting if the unsubscription
      * happens from the same thread.
      */
-    private final class FutureCompleter implements Subscription {
+    final class FutureCompleter implements Subscription {
         private final Future<?> f;
 
         FutureCompleter(Future<?> f) {
@@ -149,7 +149,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
     }
 
     /** Remove a child subscription from a composite when unsubscribing. */
-    private static final class Remover extends AtomicBoolean implements Subscription {
+    static final class Remover extends AtomicBoolean implements Subscription {
         /** */
         private static final long serialVersionUID = 247232374289553518L;
         final ScheduledAction s;
@@ -174,7 +174,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
 
     }
     /** Remove a child subscription from a composite when unsubscribing. */
-    private static final class Remover2 extends AtomicBoolean implements Subscription {
+    static final class Remover2 extends AtomicBoolean implements Subscription {
         /** */
         private static final long serialVersionUID = 247232374289553518L;
         final ScheduledAction s;

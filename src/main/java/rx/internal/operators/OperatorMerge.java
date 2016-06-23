@@ -57,12 +57,12 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
     final int maxConcurrent;
 
     /** Lazy initialization via inner-class holder. */
-    private static final class HolderNoDelay {
+    static final class HolderNoDelay {
         /** A singleton instance. */
         static final OperatorMerge<Object> INSTANCE = new OperatorMerge<Object>(false, Integer.MAX_VALUE);
     }
     /** Lazy initialization via inner-class holder. */
-    private static final class HolderDelayErrors {
+    static final class HolderDelayErrors {
         /** A singleton instance. */
         static final OperatorMerge<Object> INSTANCE = new OperatorMerge<Object>(true, Integer.MAX_VALUE);
     }

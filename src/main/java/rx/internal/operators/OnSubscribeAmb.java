@@ -278,7 +278,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         return new OnSubscribeAmb<T>(sources);
     }
 
-    private static final class AmbSubscriber<T> extends Subscriber<T> {
+    static final class AmbSubscriber<T> extends Subscriber<T> {
 
         private final Subscriber<? super T> subscriber;
         private final Selection<T> selection;
@@ -341,7 +341,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         }
     }
 
-    private static class Selection<T> {
+    static final class Selection<T> {
         final AtomicReference<AmbSubscriber<T>> choice = new AtomicReference<AmbSubscriber<T>>();
         final Collection<AmbSubscriber<T>> ambSubscribers = new ConcurrentLinkedQueue<AmbSubscriber<T>>();
 

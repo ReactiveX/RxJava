@@ -269,7 +269,7 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @param <T>
      *            the type of compatible Subscribers
      */
-    private static final class AsyncOnSubscribeImpl<S, T> extends AsyncOnSubscribe<S, T> {
+    static final class AsyncOnSubscribeImpl<S, T> extends AsyncOnSubscribe<S, T> {
         private final Func0<? extends S> generator;
         private final Func3<? super S, Long, ? super Observer<Observable<? extends T>>, ? extends S> next;
         private final Action1<? super S> onUnsubscribe;

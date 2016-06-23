@@ -38,7 +38,7 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         childSubscriber.setProducer(new RangeProducer(childSubscriber, startIndex, endIndex));
     }
 
-    private static final class RangeProducer extends AtomicLong implements Producer {
+    static final class RangeProducer extends AtomicLong implements Producer {
         /** */
         private static final long serialVersionUID = 4114392207069098388L;
         

@@ -121,7 +121,7 @@ public final class OnErrorThrowable extends RuntimeException {
         private final Object value;
         
         // Lazy loaded singleton 
-        private static final class Primitives {
+        static final class Primitives {
             
             static final Set<Class<?>> INSTANCE = create();
 

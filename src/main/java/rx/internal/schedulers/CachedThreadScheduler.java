@@ -43,7 +43,7 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         NONE.shutdown();
     }
     
-    private static final class CachedWorkerPool {
+    static final class CachedWorkerPool {
         private final ThreadFactory threadFactory;
         private final long keepAliveTime;
         private final ConcurrentLinkedQueue<ThreadWorker> expiringWorkerQueue;
@@ -174,7 +174,7 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         return new EventLoopWorker(pool.get());
     }
 
-    private static final class EventLoopWorker extends Scheduler.Worker {
+    static final class EventLoopWorker extends Scheduler.Worker {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final CachedWorkerPool pool;
         private final ThreadWorker threadWorker;
@@ -227,7 +227,7 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         }
     }
 
-    private static final class ThreadWorker extends NewThreadWorker {
+    static final class ThreadWorker extends NewThreadWorker {
         private long expirationTime;
 
         ThreadWorker(ThreadFactory threadFactory) {

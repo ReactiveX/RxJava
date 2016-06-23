@@ -20,7 +20,7 @@ import rx.Subscriber;
 
 public class OperatorIgnoreElements<T> implements Operator<T, T> {
 
-    private static class Holder {
+    static final class Holder {
         static final OperatorIgnoreElements<?> INSTANCE = new OperatorIgnoreElements<Object>();
     }
     

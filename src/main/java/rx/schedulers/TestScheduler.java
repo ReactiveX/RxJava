@@ -38,7 +38,7 @@ public class TestScheduler extends Scheduler {
     // Storing time in nanoseconds internally.
     long time;
 
-    private static final class TimedAction {
+    static final class TimedAction {
 
         final long time;
         final Action0 action;
@@ -57,7 +57,7 @@ public class TestScheduler extends Scheduler {
         }
     }
 
-    private static class CompareActionsByTime implements Comparator<TimedAction> {
+    static final class CompareActionsByTime implements Comparator<TimedAction> {
 
         @Override
         public int compare(TimedAction action1, TimedAction action2) {
@@ -130,7 +130,7 @@ public class TestScheduler extends Scheduler {
         return new InnerTestScheduler();
     }
 
-    private final class InnerTestScheduler extends Worker {
+    final class InnerTestScheduler extends Worker {
 
         private final BooleanSubscription s = new BooleanSubscription();
 

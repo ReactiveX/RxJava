@@ -120,7 +120,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     }
 
     @SuppressWarnings("rawtypes")
-    private final class ZipSubscriber extends Subscriber<Observable[]> {
+    final class ZipSubscriber extends Subscriber<Observable[]> {
 
         final Subscriber<? super R> child;
         final Zip<R> zipper;
@@ -159,7 +159,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
     }
 
-    private static final class ZipProducer<R> extends AtomicLong implements Producer {
+    static final class ZipProducer<R> extends AtomicLong implements Producer {
         /** */
         private static final long serialVersionUID = -1216676403723546796L;
         

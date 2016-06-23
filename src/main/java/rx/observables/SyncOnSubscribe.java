@@ -279,7 +279,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @param <T>
      *            the type of compatible Subscribers
      */
-    private static final class SyncOnSubscribeImpl<S, T> extends SyncOnSubscribe<S, T> {
+    static final class SyncOnSubscribeImpl<S, T> extends SyncOnSubscribe<S, T> {
         private final Func0<? extends S> generator;
         private final Func2<? super S, ? super Observer<? super T>, ? extends S> next;
         private final Action1<? super S> onUnsubscribe;
@@ -326,7 +326,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @param <T>
      *            the type of compatible Subscribers
      */
-    private static class SubscriptionProducer<S, T> 
+    static final class SubscriptionProducer<S, T> 
     extends AtomicLong implements Producer, Subscription, Observer<T> {
         /** */
         private static final long serialVersionUID = -3736864024352728072L;

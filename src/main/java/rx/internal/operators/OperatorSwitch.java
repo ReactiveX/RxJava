@@ -39,12 +39,12 @@ import rx.subscriptions.*;
 public final class OperatorSwitch<T> implements Operator<T, Observable<? extends T>> {
     final boolean delayError;
     /** Lazy initialization via inner-class holder. */
-    private static final class Holder {
+    static final class Holder {
         /** A singleton instance. */
         static final OperatorSwitch<Object> INSTANCE = new OperatorSwitch<Object>(false);
     }
     /** Lazy initialization via inner-class holder. */
-    private static final class HolderDelayError {
+    static final class HolderDelayError {
         /** A singleton instance. */
         static final OperatorSwitch<Object> INSTANCE = new OperatorSwitch<Object>(true);
     }
@@ -74,7 +74,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         return sws;
     }
 
-    private static final class SwitchSubscriber<T> extends Subscriber<Observable<? extends T>> {
+    static final class SwitchSubscriber<T> extends Subscriber<Observable<? extends T>> {
         final Subscriber<? super T> child;
         final SerialSubscription ssub;
         final boolean delayError;

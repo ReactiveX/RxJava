@@ -32,7 +32,7 @@ import rx.internal.util.UtilityFunctions;
 public final class OperatorDistinct<T, U> implements Operator<T, T> {
     final Func1<? super T, ? extends U> keySelector;
     
-    private static class Holder {
+    static final class Holder {
         static final OperatorDistinct<?,?> INSTANCE = new OperatorDistinct<Object,Object>(UtilityFunctions.<Object>identity());
     }
     

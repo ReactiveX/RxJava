@@ -241,7 +241,7 @@ public enum InternalObservableUtils {
         return new ReplaySupplierNoParams<T>(source);
     }
 
-    private static final class ReplaySupplierNoParams<T> implements Func0<ConnectableObservable<T>> {
+    static final class ReplaySupplierNoParams<T> implements Func0<ConnectableObservable<T>> {
         private final Observable<T> source;
 
         private ReplaySupplierNoParams(Observable<T> source) {

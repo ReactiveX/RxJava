@@ -219,7 +219,7 @@ public final class CompositeException extends RuntimeException {
         }
     }
 
-    private abstract static class PrintStreamOrWriter {
+    abstract static class PrintStreamOrWriter {
         /** Returns the object to be locked when using this StreamOrWriter */
         abstract Object lock();
 
@@ -230,7 +230,7 @@ public final class CompositeException extends RuntimeException {
     /**
      * Same abstraction and implementation as in JDK to allow PrintStream and PrintWriter to share implementation
      */
-    private static class WrappedPrintStream extends PrintStreamOrWriter {
+    static final class WrappedPrintStream extends PrintStreamOrWriter {
         private final PrintStream printStream;
 
         WrappedPrintStream(PrintStream printStream) {
@@ -248,7 +248,7 @@ public final class CompositeException extends RuntimeException {
         }
     }
 
-    private static class WrappedPrintWriter extends PrintStreamOrWriter {
+    static final class WrappedPrintWriter extends PrintStreamOrWriter {
         private final PrintWriter printWriter;
 
         WrappedPrintWriter(PrintWriter printWriter) {

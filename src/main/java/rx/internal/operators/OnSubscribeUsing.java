@@ -118,7 +118,7 @@ public final class OnSubscribeUsing<T, Resource> implements OnSubscribe<T> {
         }
     }
 
-    private static final class DisposeAction<Resource> extends AtomicBoolean implements Action0,
+    static final class DisposeAction<Resource> extends AtomicBoolean implements Action0,
             Subscription {
         private static final long serialVersionUID = 4262875056400218316L;
 

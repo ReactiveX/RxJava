@@ -21,7 +21,7 @@ import rx.observers.SerializedSubscriber;
 
 public final class OperatorSerialize<T> implements Operator<T, T> {
     /** Lazy initialization via inner-class holder. */
-    private static final class Holder {
+    static final class Holder {
         /** A singleton instance. */
         static final OperatorSerialize<Object> INSTANCE = new OperatorSerialize<Object>();
     }

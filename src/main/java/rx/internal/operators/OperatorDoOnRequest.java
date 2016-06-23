@@ -53,7 +53,7 @@ public class OperatorDoOnRequest<T> implements Operator<T, T> {
         return parent;
     }
 
-    private static final class ParentSubscriber<T> extends Subscriber<T> {
+    static final class ParentSubscriber<T> extends Subscriber<T> {
         private final Subscriber<? super T> child;
 
         ParentSubscriber(Subscriber<? super T> child) {

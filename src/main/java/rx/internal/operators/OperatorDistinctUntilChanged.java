@@ -31,7 +31,7 @@ public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T>,
     
     final Func2<? super U, ? super U, Boolean> comparator;
     
-    private static class Holder {
+    static final class Holder {
         static final OperatorDistinctUntilChanged<?,?> INSTANCE = new OperatorDistinctUntilChanged<Object,Object>(UtilityFunctions.identity());
     }
     

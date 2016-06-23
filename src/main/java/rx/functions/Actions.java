@@ -31,7 +31,7 @@ public final class Actions {
         return EMPTY_ACTION;
     }
 
-    private static final class EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8> implements
+    static final class EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8> implements
             Action0,
             Action1<T0>,
             Action2<T0, T1>,

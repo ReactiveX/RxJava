@@ -33,7 +33,7 @@ public final class OperatorSingle<T> implements Operator<T, T> {
     private final boolean hasDefaultValue;
     private final T defaultValue;
 
-    private static class Holder {
+    static final class Holder {
         final static OperatorSingle<?> INSTANCE = new OperatorSingle<Object>();
     }
     
@@ -71,7 +71,7 @@ public final class OperatorSingle<T> implements Operator<T, T> {
         return parent;
     }
 
-    private static final class ParentSubscriber<T> extends Subscriber<T> {
+    static final class ParentSubscriber<T> extends Subscriber<T> {
         private final Subscriber<? super T> child;
         private final boolean hasDefaultValue;
         private final T defaultValue;

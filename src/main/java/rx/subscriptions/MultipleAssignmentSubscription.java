@@ -28,7 +28,7 @@ public final class MultipleAssignmentSubscription implements Subscription {
 
     final AtomicReference<State> state = new AtomicReference<State>(new State(false, Subscriptions.empty()));
     
-    private static final class State {
+    static final class State {
         final boolean isUnsubscribed;
         final Subscription subscription;
 

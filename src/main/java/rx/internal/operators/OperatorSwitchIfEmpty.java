@@ -44,7 +44,7 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
         return parent;
     }
 
-    private static final class ParentSubscriber<T> extends Subscriber<T> {
+    static final class ParentSubscriber<T> extends Subscriber<T> {
 
         private boolean empty = true;
         private final Subscriber<? super T> child;
@@ -92,7 +92,7 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
         }
     }
     
-    private static final class AlternateSubscriber<T> extends Subscriber<T> {
+    static final class AlternateSubscriber<T> extends Subscriber<T> {
         
         private final ProducerArbiter arbiter;
         private final Subscriber<? super T> child;
