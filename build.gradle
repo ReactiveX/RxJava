@@ -8,6 +8,7 @@ group = 'io.reactivex.rxjava2'
 description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
 
 apply plugin: 'java'
+apply plugin: 'pmd'
 apply plugin: 'jacoco'
 apply plugin: 'nebula.rxjava-project'
 
@@ -54,3 +55,40 @@ jacocoTestReport {
 }
 
 build.dependsOn jacocoTestReport
+
+pmd {
+    toolVersion = '5.4.2'
+    ignoreFailures = true
+    sourceSets = [sourceSets.main]
+    ruleSets = []
+    ruleSetFiles = files('pmd.xml')
+
+}
+
+pmdMain {
+    reports {
+        html.enabled = true
+        xml.enabled = true
+    }
+}
+
+build.dependsOn pmdMain
+
+task pmdPrint(dependsOn: 'pmdMain') << {
+    File file = new File('build/reports/pmd/main.xml')
+    if (file.exists()) {
+
+        println("Listing first 100 PMD violations")
+
+        file.eachLine { line, count ->
+            if (count <= 100) {
+               println(line)
+            }
+        }
+
+    } else {
+        println("PMD file not found.")
+    }
+}
+
+build.dependsOn pmdPrint
