@@ -37,7 +37,7 @@ public final class Subscribers {
 
     @SuppressWarnings("unchecked")
     public static <T> Subscriber<T> cancelled() {
-        return (Subscriber<T>)CancelledSubscriber.INSTANCE;
+        return (Subscriber<T>)EmptySubscriber.CANCELLED;
     }
 
     public static <T> DisposableSubscriber<T> emptyDisposable() {
