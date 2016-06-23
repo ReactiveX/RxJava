@@ -307,15 +307,15 @@ public final class BlockingObservable<T> implements Iterable<T> {
     }
     
     public Iterable<T> mostRecent(T initialValue) {
-        return NbpBlockingOperatorMostRecent.mostRecent(o, initialValue);
+        return BlockingObservableMostRecent.mostRecent(o, initialValue);
     }
     
     public Iterable<T> next() {
-        return NbpBlockingOperatorNext.next(o);
+        return BlockingObservableNext.next(o);
     }
     
     public Iterable<T> latest() {
-        return NbpBlockingOperatorLatest.latest(o);
+        return BlockingObservableLatest.latest(o);
     }
     
     public Future<T> toFuture() {

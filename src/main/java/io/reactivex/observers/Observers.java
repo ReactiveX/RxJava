@@ -228,8 +228,8 @@ public final class Observers {
         };
     }
 
-    public static <T> NbpDisposableSubscriber<T> emptyDisposable() {
-        return new NbpDisposableSubscriber<T>() {
+    public static <T> DisposableObserver<T> emptyDisposable() {
+        return new DisposableObserver<T>() {
             @Override
             public void onNext(T t) {
                 
@@ -247,20 +247,20 @@ public final class Observers {
         };
     }
 
-    public static <T> NbpDisposableSubscriber<T> createDisposable(
+    public static <T> DisposableObserver<T> createDisposable(
             Consumer<? super T> onNext
     ) {
         return createDisposable(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
     }
 
-    public static <T> NbpDisposableSubscriber<T> createDisposable(
+    public static <T> DisposableObserver<T> createDisposable(
             Consumer<? super T> onNext,
             Consumer<? super Throwable> onError
     ) {
         return createDisposable(onNext, onError, Functions.emptyRunnable(), Functions.emptyRunnable());
     }
 
-    public static <T> NbpDisposableSubscriber<T> createDisposable(
+    public static <T> DisposableObserver<T> createDisposable(
             Consumer<? super T> onNext,
             Consumer<? super Throwable> onError,
             Runnable onComplete
@@ -268,7 +268,7 @@ public final class Observers {
         return createDisposable(onNext, onError, onComplete, Functions.emptyRunnable());
     }
     
-    public static <T> NbpDisposableSubscriber<T> createDisposable(
+    public static <T> DisposableObserver<T> createDisposable(
             final Consumer<? super T> onNext,
             final Consumer<? super Throwable> onError,
             final Runnable onComplete,
@@ -278,7 +278,7 @@ public final class Observers {
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
         Objects.requireNonNull(onStart, "onStart is null");
-        return new NbpDisposableSubscriber<T>() {
+        return new DisposableObserver<T>() {
             boolean done;
             @Override
             protected void onStart() {

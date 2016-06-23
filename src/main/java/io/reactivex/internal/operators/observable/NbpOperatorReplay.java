@@ -68,7 +68,7 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
                     return;
                 }
                 
-                final NbpSubscriberResourceWrapper<R, Disposable> srw = new NbpSubscriberResourceWrapper<R, Disposable>(child, Disposables.consumeAndDispose());
+                final ObserverResourceWrapper<R, Disposable> srw = new ObserverResourceWrapper<R, Disposable>(child, Disposables.consumeAndDispose());
                 
                 observable.subscribe(srw);
                 

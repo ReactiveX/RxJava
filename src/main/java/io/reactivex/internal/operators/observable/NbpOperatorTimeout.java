@@ -176,7 +176,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
         void onError(Throwable e);
     }
     
-    static final class TimeoutInnerSubscriber<T, U, V> extends NbpDisposableSubscriber<Object> {
+    static final class TimeoutInnerSubscriber<T, U, V> extends DisposableObserver<Object> {
         final OnTimeout parent;
         final long index;
         

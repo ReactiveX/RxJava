@@ -68,7 +68,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     
     public static <T> Observable<T> amb(Iterable<? extends ObservableConsumable<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
-        return create(new NbpOnSubscribeAmb<T>(null, sources));
+        return (new ObservableAmb<T>(null, sources));
     }
     
     @SuppressWarnings("unchecked")
@@ -82,7 +82,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         if (len == 1) {
             return (Observable<T>)sources[0]; // FIXME wrap()
         }
-        return create(new NbpOnSubscribeAmb<T>(sources, null));
+        return (new ObservableAmb<T>(sources, null));
     }
     
     /**
@@ -116,7 +116,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
-        return create(new NbpOnSubscribeCombineLatest<T, R>(null, sources, combiner, s, delayError));
+        return (new ObservableCombineLatest<T, R>(null, sources, combiner, s, delayError));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -138,7 +138,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         }
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
-        return create(new NbpOnSubscribeCombineLatest<T, R>(sources, null, combiner, s, delayError));
+        return (new ObservableCombineLatest<T, R>(sources, null, combiner, s, delayError));
     }
     
     @SuppressWarnings("unchecked")
@@ -244,7 +244,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Observable<T> concat(ObservableConsumable<? extends ObservableConsumable<? extends T>> sources, int bufferSize) {
         Objects.requireNonNull(sources, "sources is null");
-        return new NbpOnSubscribeLift<T, ObservableConsumable<? extends T>>(sources, new NbpOperatorConcatMap(Functions.identity(), bufferSize));
+        return new ObservableLift<T, ObservableConsumable<? extends T>>(sources, new NbpOperatorConcatMap(Functions.identity(), bufferSize));
     }
 
     @SuppressWarnings("unchecked")
@@ -368,7 +368,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> defer(Supplier<? extends ObservableConsumable<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return create(new NbpOnSubscribeDefer<T>(supplier));
+        return (new ObservableDefer<T>(supplier));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -380,7 +380,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> error(Supplier<? extends Throwable> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
-        return create(new NbpOnSubscribeErrorSource<T>(errorSupplier));
+        return (new ObservableError<T>(errorSupplier));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -403,13 +403,13 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         if (values.length == 1) {
             return just(values[0]);
         }
-        return create(new NbpOnSubscribeArraySource<T>(values));
+        return (new ObservableFromArray<T>(values));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromCallable(Callable<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return create(new NbpOnSubscribeScalarAsyncSource<T>(supplier));
+        return (new ObservableFromCallable<T>(supplier));
     }
 
     /*
@@ -420,14 +420,14 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromFuture(Future<? extends T> future) {
         Objects.requireNonNull(future, "future is null");
-        return create(new NbpOnSubscribeFutureSource<T>(future, 0L, null));
+        return (new ObservableFromFuture<T>(future, 0L, null));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
         Objects.requireNonNull(future, "future is null");
         Objects.requireNonNull(unit, "unit is null");
-        Observable<T> o = create(new NbpOnSubscribeFutureSource<T>(future, timeout, unit));
+        Observable<T> o = create(new ObservableFromFuture<T>(future, timeout, unit));
         return o;
     }
 
@@ -447,7 +447,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     public static <T> Observable<T> fromIterable(Iterable<? extends T> source) {
         Objects.requireNonNull(source, "source is null");
-        return create(new NbpOnSubscribeIterableSource<T>(source));
+        return (new ObservableFromIterable<T>(source));
     }
 
     public static <T> Observable<T> fromPublisher(final Publisher<? extends T> publisher) {
@@ -533,7 +533,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(initialState, "initialState is null");
         Objects.requireNonNull(generator, "generator  is null");
         Objects.requireNonNull(disposeState, "diposeState is null");
-        return create(new NbpOnSubscribeGenerate<T, S>(initialState, generator, disposeState));
+        return (new ObservableGenerate<T, S>(initialState, generator, disposeState));
     }
 
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -552,7 +552,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
 
-        return create(new NbpOnSubscribeIntervalSource(initialDelay, period, unit, scheduler));
+        return (new ObservableInterval(initialDelay, period, unit, scheduler));
     }
 
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -587,12 +587,12 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
 
-        return create(new NbpOnSubscribeIntervalRangeSource(start, end, initialDelay, period, unit, scheduler));
+        return (new ObservableIntervalRange(start, end, initialDelay, period, unit, scheduler));
     }
 
     public static <T> Observable<T> just(T value) {
         Objects.requireNonNull(value, "The value is null");
-        return new NbpObservableScalarSource<T>(value);
+        return new ObservableJust<T>(value);
     }
 
     @SuppressWarnings("unchecked")
@@ -727,14 +727,14 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> merge(ObservableConsumable<? extends ObservableConsumable<? extends T>> sources) {
-        return new NbpOnSubscribeLift(sources, new NbpOperatorFlatMap(Functions.identity(), false, Integer.MAX_VALUE, bufferSize()));
+        return new ObservableLift(sources, new NbpOperatorFlatMap(Functions.identity(), false, Integer.MAX_VALUE, bufferSize()));
     }
 
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> merge(ObservableConsumable<? extends ObservableConsumable<? extends T>> sources, int maxConcurrency) {
-        return new NbpOnSubscribeLift(sources, new NbpOperatorFlatMap(Functions.identity(), false, maxConcurrency, bufferSize()));
+        return new ObservableLift(sources, new NbpOperatorFlatMap(Functions.identity(), false, maxConcurrency, bufferSize()));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -807,13 +807,13 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> mergeDelayError(ObservableConsumable<? extends ObservableConsumable<? extends T>> sources) {
-        return new NbpOnSubscribeLift(sources, new NbpOperatorFlatMap(Functions.identity(), true, Integer.MAX_VALUE, bufferSize()));
+        return new ObservableLift(sources, new NbpOperatorFlatMap(Functions.identity(), true, Integer.MAX_VALUE, bufferSize()));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> mergeDelayError(ObservableConsumable<? extends ObservableConsumable<? extends T>> sources, int maxConcurrency) {
-        return new NbpOnSubscribeLift(sources, new NbpOperatorFlatMap(Functions.identity(), true, maxConcurrency, bufferSize()));
+        return new ObservableLift(sources, new NbpOperatorFlatMap(Functions.identity(), true, maxConcurrency, bufferSize()));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -907,7 +907,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(p2, "p2 is null");
         Objects.requireNonNull(isEqual, "isEqual is null");
         validateBufferSize(bufferSize);
-        return create(new NbpOnSubscribeSequenceEqual<T>(p1, p2, isEqual, bufferSize));
+        return (new ObservableSequenceEqual<T>(p1, p2, isEqual, bufferSize));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -920,7 +920,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> switchOnNext(int bufferSize, ObservableConsumable<? extends ObservableConsumable<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
-        return new NbpOnSubscribeLift(sources, new NbpOperatorSwitchMap(Functions.identity(), bufferSize));
+        return new ObservableLift(sources, new NbpOperatorSwitchMap(Functions.identity(), bufferSize));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -941,7 +941,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
 
-        return create(new NbpOnSubscribeTimerOnceSource(delay, unit, scheduler));
+        return (new ObservableTimer(delay, unit, scheduler));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -954,7 +954,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
         Objects.requireNonNull(sourceSupplier, "sourceSupplier is null");
         Objects.requireNonNull(disposer, "disposer is null");
-        return create(new NbpOnSubscribeUsing<T, D>(resourceSupplier, sourceSupplier, disposer, eager));
+        return (new ObservableUsing<T, D>(resourceSupplier, sourceSupplier, disposer, eager));
     }
 
     private static void validateBufferSize(int bufferSize) {
@@ -967,7 +967,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public static <T, R> Observable<R> zip(Iterable<? extends ObservableConsumable<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
-        return create(new NbpOnSubscribeZip<T, R>(null, sources, zipper, bufferSize(), false));
+        return (new ObservableZip<T, R>(null, sources, zipper, bufferSize(), false));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -976,7 +976,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
         // FIXME don't want to fiddle with manual type inference, this will be inlined later anyway
-        return new NbpOnSubscribeLift(sources, NbpOperatorToList.<T>defaultInstance())
+        return new ObservableLift(sources, NbpOperatorToList.<T>defaultInstance())
                 .flatMap(new Function<List<? extends ObservableConsumable<? extends T>>, Observable<R>>() {
             @Override
             public Observable<R> apply(List<? extends ObservableConsumable<? extends T>> list) {
@@ -1082,7 +1082,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         }
         Objects.requireNonNull(zipper, "zipper is null");
         validateBufferSize(bufferSize);
-        return create(new NbpOnSubscribeZip<T, R>(sources, null, zipper, bufferSize, delayError));
+        return (new ObservableZip<T, R>(sources, null, zipper, bufferSize, delayError));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1092,7 +1092,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
         validateBufferSize(bufferSize);
-        return create(new NbpOnSubscribeZip<T, R>(null, sources, zipper, bufferSize, delayError));
+        return (new ObservableZip<T, R>(null, sources, zipper, bufferSize, delayError));
     }
 
 
@@ -1303,12 +1303,12 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> cache() {
-        return NbpCachedObservable.from(this);
+        return ObservableCache.from(this);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> cache(int capacityHint) {
-        return NbpCachedObservable.from(this, capacityHint);
+        return ObservableCache.from(this, capacityHint);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1341,7 +1341,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     public final <R> Observable<R> compose(Function<? super Observable<T>, ? extends ObservableConsumable<R>> convert) {
-        return create(to(convert));
+        return wrap(to(convert));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1493,7 +1493,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @Experimental
     public final <U> Observable<T> delaySubscription(ObservableConsumable<U> other) {
         Objects.requireNonNull(other, "other is null");
-        return create(new NbpOnSubscribeDelaySubscriptionOther<T, U>(this, other));
+        return (new ObservableDelaySubscriptionOther<T, U>(this, other));
     }
 
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -1776,9 +1776,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
             throw new IllegalArgumentException("maxConcurrency > 0 required but it was " + maxConcurrency);
         }
         validateBufferSize(bufferSize);
-        if (this instanceof NbpObservableScalarSource) {
-            NbpObservableScalarSource<T> scalar = (NbpObservableScalarSource<T>) this;
-            return create(scalar.scalarFlatMap(mapper));
+        if (this instanceof ObservableJust) {
+            ObservableJust<T> scalar = (ObservableJust<T>) this;
+            return (scalar.scalarFlatMap(mapper));
         }
         return lift(new NbpOperatorFlatMap<T, R>(mapper, delayErrors, maxConcurrency, bufferSize));
     }
@@ -2024,7 +2024,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     public final <R> Observable<R> lift(NbpOperator<? extends R, ? super T> onLift) {
         Objects.requireNonNull(onLift, "onLift is null");
-        return create(new NbpOnSubscribeLift<R, T>(this, onLift));
+        return (new ObservableLift<R, T>(this, onLift));
     }
 
     public final <R> Observable<R> map(Function<? super T, ? extends R> mapper) {
@@ -2175,13 +2175,13 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         if (times == 0) {
             return empty();
         }
-        return create(new NbpOnSubscribeRepeat<T>(this, times));
+        return (new ObservableRepeat<T>(this, times));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> repeatUntil(BooleanSupplier stop) {
         Objects.requireNonNull(stop, "stop is null");
-        return create(new NbpOnSubscribeRepeatUntil<T>(this, stop));
+        return (new ObservableRepeatUntil<T>(this, stop));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2201,7 +2201,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         }
         ;
         
-        return create(new NbpOnSubscribeRedo<T>(this, f));
+        return (new ObservableRedo<T>(this, f));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2354,7 +2354,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final Observable<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         
-        return create(new NbpOnSubscribeRetryBiPredicate<T>(this, predicate));
+        return (new ObservableRetryBiPredicate<T>(this, predicate));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2370,7 +2370,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         }
         Objects.requireNonNull(predicate, "predicate is null");
 
-        return create(new NbpOnSubscribeRetryPredicate<T>(this, times, predicate));
+        return (new ObservableRetryPredicate<T>(this, times, predicate));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2415,7 +2415,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         }
         ;
         
-        return create(new NbpOnSubscribeRedo<T>(this, f));
+        return (new ObservableRedo<T>(this, f));
     }
     
     // TODO decide if safe subscription or unsafe should be the default
@@ -2649,7 +2649,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<T> subscribeOn(Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return create(new NbpOnSubscribeSubscribeOn<T>(this, scheduler));
+        return (new ObservableSubscribeOn<T>(this, scheduler));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3381,7 +3381,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <U, R> Observable<R> zipWith(Iterable<U> other,  BiFunction<? super T, ? super U, ? extends R> zipper) {
         Objects.requireNonNull(other, "other is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return create(new NbpOnSubscribeZipIterable<T, U, R>(this, other, zipper));
+        return (new ObservableZipIterable<T, U, R>(this, other, zipper));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)

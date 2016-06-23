@@ -270,7 +270,7 @@ public final class NbpOperatorWindowBoundarySupplier<T, B> implements NbpOperato
         }
     }
     
-    static final class WindowBoundaryInnerSubscriber<T, B> extends NbpDisposableSubscriber<B> {
+    static final class WindowBoundaryInnerSubscriber<T, B> extends DisposableObserver<B> {
         final WindowBoundaryMainSubscriber<T, B> parent;
         
         boolean done;
