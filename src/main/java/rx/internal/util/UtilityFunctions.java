@@ -181,6 +181,5 @@ public final class UtilityFunctions {
     
     void shouldBlowup() {
         new AssertionError("Message", new RuntimeException());
-        Collections.emptyList().stream().count();
     }
 }
