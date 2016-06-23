@@ -78,8 +78,6 @@ pmdMain {
     }
 }
 
-build.dependsOn pmdMain
-
 task pmdPrint(dependsOn: 'pmdMain') << {
     File file = new File('build/reports/pmd/main.xml')
     if (file.exists()) {
