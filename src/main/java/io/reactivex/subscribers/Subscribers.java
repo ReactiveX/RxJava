@@ -30,16 +30,6 @@ public final class Subscribers {
         throw new IllegalStateException("No instances!");
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Subscriber<T> empty() {
-        return (Subscriber<T>)EmptySubscriber.INSTANCE;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> Subscriber<T> cancelled() {
-        return (Subscriber<T>)EmptySubscriber.CANCELLED;
-    }
-
     public static <T> DisposableSubscriber<T> emptyDisposable() {
         return new DisposableSubscriber<T>() {
             @Override

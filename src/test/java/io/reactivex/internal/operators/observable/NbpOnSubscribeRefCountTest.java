@@ -431,7 +431,7 @@ public class NbpOnSubscribeRefCountTest {
 
     @Test
     public void testAlreadyUnsubscribedClient() {
-        Observer<Integer> done = Observers.cancelled();
+        Observer<Integer> done = DisposingObserver.INSTANCE;
 
         Observer<Integer> o = TestHelper.mockNbpSubscriber();
 
@@ -450,7 +450,7 @@ public class NbpOnSubscribeRefCountTest {
     public void testAlreadyUnsubscribedInterleavesWithClient() {
         ReplaySubject<Integer> source = ReplaySubject.create();
 
-        Observer<Integer> done = Observers.cancelled();
+        Observer<Integer> done = DisposingObserver.INSTANCE;
 
         Observer<Integer> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);
@@ -565,5 +565,26 @@ public class NbpOnSubscribeRefCountTest {
         
         System.out.println(intervalSubscribed.get());
         assertEquals(6, intervalSubscribed.get());
+    }
+
+    private enum DisposingObserver implements Observer<Integer> {
+        INSTANCE;
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            d.dispose();
+        }
+
+        @Override
+        public void onNext(Integer t) {
+        }
+
+        @Override
+        public void onError(Throwable t) {
+        }
+
+        @Override
+        public void onComplete() {
+        }
     }
 }

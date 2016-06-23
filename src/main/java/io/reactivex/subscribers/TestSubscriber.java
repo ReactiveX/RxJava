@@ -22,7 +22,6 @@ import io.reactivex.Notification;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.subscribers.flowable.EmptySubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
@@ -70,7 +69,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * Constructs a non-forwarding TestSubscriber with an initial request value of Long.MAX_VALUE.
      */
     public TestSubscriber() {
-        this(EmptySubscriber.INSTANCE_NOERROR, Long.MAX_VALUE);
+        this(EmptySubscriber.INSTANCE, Long.MAX_VALUE);
     }
 
     /**
@@ -80,7 +79,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @param initialRequest the initial request value if not null
      */
     public TestSubscriber(Long initialRequest) {
-        this(EmptySubscriber.INSTANCE_NOERROR, initialRequest);
+        this(EmptySubscriber.INSTANCE, initialRequest);
     }
 
     /**
@@ -742,5 +741,28 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         result.add(completeList);
         
         return result;
+    }
+
+    /**
+     * A subscriber that ignores all events and does not report errors.
+     */
+    private enum EmptySubscriber implements Subscriber<Object> {
+        INSTANCE;
+
+        @Override
+        public void onSubscribe(Subscription s) {
+        }
+
+        @Override
+        public void onNext(Object t) {
+        }
+
+        @Override
+        public void onError(Throwable t) {
+        }
+
+        @Override
+        public void onComplete() {
+        }
     }
 }
