@@ -26,7 +26,7 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
-    testCompile 'com.google.guava:guava:19.0'
+    testCompile 'com.google.guava:guava:24.0-jre'
     testCompile 'com.pushtorefresh.java-private-constructor-checker:checker:1.2.0'
 
     perfCompile 'org.openjdk.jmh:jmh-core:1.11.3'
