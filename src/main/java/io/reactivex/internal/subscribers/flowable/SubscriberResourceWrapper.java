@@ -30,21 +30,9 @@ public final class SubscriberResourceWrapper<T, R> extends AtomicReference<Objec
     final Consumer<? super R> disposer;
     
     final AtomicReference<Subscription> subscription = new AtomicReference<Subscription>();
-    
-    static final Subscription TERMINATED = new Subscription() {
-        @Override
-        public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
-            }
-        }
-        
-        @Override
-        public void cancel() {
-            
-        }
-    };
-    
+
+    static final Object TERMINATED = new Object();
+
     public SubscriberResourceWrapper(Subscriber<? super T> actual, Consumer<? super R> disposer) {
         this.actual = actual;
         this.disposer = disposer;
@@ -54,7 +42,7 @@ public final class SubscriberResourceWrapper<T, R> extends AtomicReference<Objec
     public void onSubscribe(Subscription s) {
         for (;;) {
             Subscription current = subscription.get();
-            if (current == TERMINATED) {
+            if (current == SubscriptionHelper.CANCELLED) {
                 s.cancel();
                 return;
             }
@@ -98,14 +86,8 @@ public final class SubscriberResourceWrapper<T, R> extends AtomicReference<Objec
     @Override
     @SuppressWarnings("unchecked")
     public void dispose() {
-        Subscription s = subscription.get();
-        if (s != TERMINATED) {
-            s = subscription.getAndSet(TERMINATED);
-            if (s != TERMINATED && s != null) {
-                s.cancel();
-            }
-        }
-        
+        SubscriptionHelper.dispose(subscription);
+
         Object o = get();
         if (o != TERMINATED) {
             o = getAndSet(TERMINATED);
