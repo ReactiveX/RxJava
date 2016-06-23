@@ -61,7 +61,7 @@ public final class Disposables {
     }
 
     public static Disposable disposed() {
-        return DisposableHelper.DISPOSED;
+        return EmptyDisposable.INSTANCE;
     }
     
     /** Wraps a Future instance. */
