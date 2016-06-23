@@ -31,8 +31,8 @@ import rx.Observable.Operator;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import rx.internal.operators.OperatorFilter;
-import rx.internal.operators.OperatorMap;
+import rx.internal.operators.OnSubscribeFilter;
+import rx.internal.operators.OnSubscribeMap;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -76,11 +76,11 @@ public class ObservableConversionTest {
         }
         
         public final CylonDetectorObservable<T> beep(Func1<? super T, Boolean> predicate) {
-            return lift(new OperatorFilter<T>(predicate));
+            return create(new OnSubscribeFilter<T>(Observable.create(onSubscribe), predicate));
         }
         
         public final <R> CylonDetectorObservable<R> boop(Func1<? super T, ? extends R> func) {
-            return lift(new OperatorMap<T, R>(func));
+            return create(new OnSubscribeMap<T, R>(Observable.create(onSubscribe), func));
         }
 
         public CylonDetectorObservable<String> DESTROY() {
