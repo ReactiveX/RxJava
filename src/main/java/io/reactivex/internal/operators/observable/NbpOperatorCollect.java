@@ -17,7 +17,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.subscribers.observable.NbpCancelledSubscriber;
+import io.reactivex.internal.subscribers.observable.NbpEmptySubscriber;
 
 public final class NbpOperatorCollect<T, U> implements NbpOperator<U, T> {
     final Supplier<? extends U> initialSupplier;
@@ -36,12 +36,12 @@ public final class NbpOperatorCollect<T, U> implements NbpOperator<U, T> {
             u = initialSupplier.get();
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
-            return NbpCancelledSubscriber.INSTANCE;
+            return NbpEmptySubscriber.DISPOSED;
         }
         
         if (u == null) {
             EmptyDisposable.error(new NullPointerException("The inital supplier returned a null value"), t);
-            return NbpCancelledSubscriber.INSTANCE;
+            return NbpEmptySubscriber.DISPOSED;
         }
         
         return new CollectSubscriber<T, U>(t, u, collector);

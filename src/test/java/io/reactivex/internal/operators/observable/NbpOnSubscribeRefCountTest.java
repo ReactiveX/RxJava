@@ -30,7 +30,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscribers.observable.NbpCancelledSubscriber;
+import io.reactivex.observers.Observers;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.ReplaySubject;
@@ -431,7 +431,7 @@ public class NbpOnSubscribeRefCountTest {
 
     @Test
     public void testAlreadyUnsubscribedClient() {
-        Observer<Integer> done = NbpCancelledSubscriber.instance();
+        Observer<Integer> done = Observers.cancelled();
 
         Observer<Integer> o = TestHelper.mockNbpSubscriber();
 
@@ -450,7 +450,7 @@ public class NbpOnSubscribeRefCountTest {
     public void testAlreadyUnsubscribedInterleavesWithClient() {
         ReplaySubject<Integer> source = ReplaySubject.create();
 
-        Observer<Integer> done = NbpCancelledSubscriber.instance();
+        Observer<Integer> done = Observers.cancelled();
 
         Observer<Integer> o = TestHelper.mockNbpSubscriber();
         InOrder inOrder = inOrder(o);

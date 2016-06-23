@@ -22,7 +22,7 @@ import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.*;
-import io.reactivex.internal.subscribers.observable.NbpCancelledSubscriber;
+import io.reactivex.internal.subscribers.observable.NbpEmptySubscriber;
 
 public final class NbpOperatorDistinct<T, K> implements NbpOperator<T, T> {
     final Function<? super T, K> keySelector;
@@ -115,12 +115,12 @@ public final class NbpOperatorDistinct<T, K> implements NbpOperator<T, T> {
             coll = predicateSupplier.get();
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
-            return NbpCancelledSubscriber.INSTANCE;
+            return NbpEmptySubscriber.DISPOSED;
         }
         
         if (coll == null) {
             EmptyDisposable.error(new NullPointerException("predicateSupplier returned null"), t);
-            return NbpCancelledSubscriber.INSTANCE;
+            return NbpEmptySubscriber.DISPOSED;
         }
         
         return new DistinctSubscriber<T, K>(t, keySelector, coll);
