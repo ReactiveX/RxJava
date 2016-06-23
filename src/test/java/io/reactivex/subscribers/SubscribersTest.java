@@ -46,18 +46,6 @@ public class SubscribersTest {
     
     @Test
     @Ignore("Subscribers can't throw OnErrorNotImplementedException")
-    public void testEmptyOnErrorNotImplemented() {
-        try {
-            Subscribers.empty().onError(new TestException());
-            fail("OnErrorNotImplementedException not thrown!");
-        } catch (OnErrorNotImplementedException ex) {
-            if (!(ex.getCause() instanceof TestException)) {
-                fail("TestException not wrapped, instead: " + ex.getCause());
-            }
-        }
-    }
-    @Test
-    @Ignore("Subscribers can't throw OnErrorNotImplementedException")
     public void testCreate1OnErrorNotImplemented() {
         try {
             Subscribers.create(new Consumer<Object>() {

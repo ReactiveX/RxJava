@@ -22,17 +22,13 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public enum NbpEmptySubscriber implements Observer<Object> {
     /** Empty instance that reports error to the plugins. */
-    INSTANCE(true, false),
-    /** Empty instance that doesn't report to the plugins to avoid flooding the test output. */
-    INSTANCE_NOERROR(false, false),
+    INSTANCE(false),
     /** Empty instance that disposes disposables. */
-    DISPOSED(true, true);
+    DISPOSED(true);
     
-    private final boolean reportError;
     private final boolean disposeDisposable;
     
-    NbpEmptySubscriber(boolean reportError, boolean disposeDisposable) {
-        this.reportError = reportError;
+    NbpEmptySubscriber(boolean disposeDisposable) {
         this.disposeDisposable = disposeDisposable;
     }
     
@@ -50,9 +46,7 @@ public enum NbpEmptySubscriber implements Observer<Object> {
     
     @Override
     public void onError(Throwable t) {
-        if (reportError) {
-            RxJavaPlugins.onError(t);
-        }
+        RxJavaPlugins.onError(t);
     }
     
     @Override

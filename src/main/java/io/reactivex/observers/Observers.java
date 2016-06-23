@@ -228,16 +228,6 @@ public final class Observers {
         };
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Observer<T> empty() {
-        return (Observer<T>)NbpEmptySubscriber.INSTANCE;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> Observer<T> cancelled() {
-        return (Observer<T>)NbpEmptySubscriber.DISPOSED;
-    }
-
     public static <T> NbpDisposableSubscriber<T> emptyDisposable() {
         return new NbpDisposableSubscriber<T>() {
             @Override

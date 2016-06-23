@@ -12,7 +12,6 @@
  */
 package io.reactivex.observers;
 
-import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -21,8 +20,8 @@ import io.reactivex.Notification;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.subscribers.observable.NbpEmptySubscriber;
 
 /**
  * A subscriber that records events and allows making assertions about them.
@@ -63,7 +62,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * Constructs a non-forwarding TestSubscriber with an initial request value of Long.MAX_VALUE.
      */
     public TestObserver() {
-        this(NbpEmptySubscriber.INSTANCE_NOERROR);
+        this(EmptyObserver.INSTANCE);
     }
 
     /**
@@ -682,5 +681,28 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         result.add(completeList);
         
         return result;
+    }
+
+    /**
+     * An observer that ignores all events and does not report errors.
+     */
+    private enum EmptyObserver implements Observer<Object> {
+        INSTANCE;
+
+        @Override
+        public void onSubscribe(Disposable d) {
+        }
+
+        @Override
+        public void onNext(Object t) {
+        }
+
+        @Override
+        public void onError(Throwable t) {
+        }
+
+        @Override
+        public void onComplete() {
+        }
     }
 }

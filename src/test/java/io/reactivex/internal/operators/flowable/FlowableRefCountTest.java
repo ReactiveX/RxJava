@@ -440,7 +440,7 @@ public class FlowableRefCountTest {
 
     @Test
     public void testAlreadyUnsubscribedClient() {
-        Subscriber<Integer> done = Subscribers.cancelled();
+        Subscriber<Integer> done = CancelledSubscriber.INSTANCE;
 
         Subscriber<Integer> o = TestHelper.mockSubscriber();
 
@@ -459,7 +459,7 @@ public class FlowableRefCountTest {
     public void testAlreadyUnsubscribedInterleavesWithClient() {
         ReplayProcessor<Integer> source = ReplayProcessor.create();
 
-        Subscriber<Integer> done = Subscribers.cancelled();
+        Subscriber<Integer> done = CancelledSubscriber.INSTANCE;
 
         Subscriber<Integer> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
@@ -574,5 +574,22 @@ public class FlowableRefCountTest {
         
         System.out.println(intervalSubscribed.get());
         assertEquals(6, intervalSubscribed.get());
+    }
+
+    private enum CancelledSubscriber implements Subscriber<Integer> {
+        INSTANCE;
+
+        @Override public void onSubscribe(Subscription s) {
+            s.cancel();
+        }
+
+        @Override public void onNext(Integer o) {
+        }
+
+        @Override public void onError(Throwable t) {
+        }
+
+        @Override public void onComplete() {
+        }
     }
 }
