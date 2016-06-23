@@ -232,7 +232,7 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
     }
     
     static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, B> 
-    extends NbpDisposableSubscriber<B> {
+    extends DisposableObserver<B> {
         final BufferBondarySupplierSubscriber<T, U, B> parent;
         
         boolean once;

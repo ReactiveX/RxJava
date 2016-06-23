@@ -178,7 +178,7 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
     }
     
     static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, B> 
-    extends NbpDisposableSubscriber<B> {
+    extends DisposableObserver<B> {
         final BufferExactBondarySubscriber<T, U, B> parent;
         
         public BufferBoundarySubscriber(BufferExactBondarySubscriber<T, U, B> parent) {

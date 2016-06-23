@@ -312,7 +312,7 @@ public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOper
         }
     }
     
-    static final class OperatorWindowBoundaryOpenSubscriber<T, B> extends NbpDisposableSubscriber<B> {
+    static final class OperatorWindowBoundaryOpenSubscriber<T, B> extends DisposableObserver<B> {
         final WindowBoundaryMainSubscriber<T, B, ?> parent;
         
         boolean done;
@@ -349,7 +349,7 @@ public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOper
         }
     }
     
-    static final class OperatorWindowBoundaryCloseSubscriber<T, V> extends NbpDisposableSubscriber<V> {
+    static final class OperatorWindowBoundaryCloseSubscriber<T, V> extends DisposableObserver<V> {
         final WindowBoundaryMainSubscriber<T, ?, V> parent;
         final UnicastSubject<T> w;
         

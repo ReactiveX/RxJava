@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static io.reactivex.internal.operators.observable.NbpBlockingOperatorMostRecent.mostRecent;
+import static io.reactivex.internal.operators.observable.BlockingObservableMostRecent.mostRecent;
 import static org.junit.Assert.*;
 
 import java.util.Iterator;

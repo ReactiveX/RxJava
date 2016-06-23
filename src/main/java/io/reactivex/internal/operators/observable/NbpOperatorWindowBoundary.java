@@ -231,7 +231,7 @@ public final class NbpOperatorWindowBoundary<T, B> implements NbpOperator<Observ
         }
     }
     
-    static final class WindowBoundaryInnerSubscriber<T, B> extends NbpDisposableSubscriber<B> {
+    static final class WindowBoundaryInnerSubscriber<T, B> extends DisposableObserver<B> {
         final WindowBoundaryMainSubscriber<T, B> parent;
         
         boolean done;

@@ -116,8 +116,8 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
                 onError(e);
                 return;
             }
-            if (p instanceof NbpObservableScalarSource) {
-                tryEmitScalar(((NbpObservableScalarSource<? extends U>)p).value());
+            if (p instanceof ObservableJust) {
+                tryEmitScalar(((ObservableJust<? extends U>)p).value());
             } else {
                 if (maxConcurrency == Integer.MAX_VALUE) {
                     subscribeInner(p);

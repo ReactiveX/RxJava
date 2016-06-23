@@ -20,7 +20,7 @@ import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.subscribers.observable.NbpDisposableSubscriber;
+import io.reactivex.internal.subscribers.observable.DisposableObserver;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -136,7 +136,7 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
             }
         }
         
-        static final class DebounceInnerSubscriber<T, U> extends NbpDisposableSubscriber<U> {
+        static final class DebounceInnerSubscriber<T, U> extends DisposableObserver<U> {
             final DebounceSubscriber<T, U> parent;
             final long index;
             final T value;

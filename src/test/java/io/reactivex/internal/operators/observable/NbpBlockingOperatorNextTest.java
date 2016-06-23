@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static io.reactivex.internal.operators.observable.NbpBlockingOperatorNext.next;
+import static io.reactivex.internal.operators.observable.BlockingObservableNext.next;
 import static org.junit.Assert.*;
 
 import java.util.*;
@@ -302,7 +302,7 @@ public class NbpBlockingOperatorNextTest {
         Iterable<Long> iter = source.next();
 
         for (int j = 0; j < 3; j++) {
-            NbpBlockingOperatorNext.NextIterator<Long> it = (NbpBlockingOperatorNext.NextIterator<Long>)iter.iterator();
+            BlockingObservableNext.NextIterator<Long> it = (BlockingObservableNext.NextIterator<Long>)iter.iterator();
 
             for (long i = 0; i < 10; i++) {
                 Assert.assertEquals(true, it.hasNext());

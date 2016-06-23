@@ -223,7 +223,7 @@ public final class NbpOperatorBufferBoundary<T, U extends Collection<? super T>,
     }
     
     static final class BufferOpenSubscriber<T, U extends Collection<? super T>, Open, Close>
-    extends NbpDisposableSubscriber<Open> {
+    extends DisposableObserver<Open> {
         final BufferBoundarySubscriber<T, U, Open, Close> parent;
         
         boolean done;
@@ -260,7 +260,7 @@ public final class NbpOperatorBufferBoundary<T, U extends Collection<? super T>,
     }
     
     static final class BufferCloseSubscriber<T, U extends Collection<? super T>, Open, Close>
-    extends NbpDisposableSubscriber<Close> {
+    extends DisposableObserver<Close> {
         final BufferBoundarySubscriber<T, U, Open, Close> parent;
         final U value;
         boolean done;
