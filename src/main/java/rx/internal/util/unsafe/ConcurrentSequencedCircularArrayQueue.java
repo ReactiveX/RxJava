@@ -18,6 +18,9 @@ package rx.internal.util.unsafe;
 
 import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
+import rx.internal.util.SuppressAnimalSniffer;
+
+@SuppressAnimalSniffer
 public abstract class ConcurrentSequencedCircularArrayQueue<E> extends ConcurrentCircularArrayQueue<E> {
     private static final long ARRAY_BASE;
     private static final int ELEMENT_SHIFT;

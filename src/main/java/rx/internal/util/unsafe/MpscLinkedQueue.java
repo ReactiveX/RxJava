@@ -17,6 +17,8 @@
 package rx.internal.util.unsafe;
 
 import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
+
+import rx.internal.util.SuppressAnimalSniffer;
 import rx.internal.util.atomic.LinkedQueueNode;
 /**
  * This is a direct Java port of the MPSC algorithm as presented <a
@@ -34,6 +36,7 @@ import rx.internal.util.atomic.LinkedQueueNode;
  * 
  * @param <E>
  */
+@SuppressAnimalSniffer
 public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
     
     public MpscLinkedQueue() {

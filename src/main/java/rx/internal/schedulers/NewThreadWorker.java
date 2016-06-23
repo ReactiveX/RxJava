@@ -98,6 +98,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     }
 
     /** Purges each registered executor and eagerly evicts shutdown executors. */
+    @SuppressAnimalSniffer // CHM.keySet returns KeySetView in Java 8+; false positive here
     static void purgeExecutors() {
         try {
             Iterator<ScheduledThreadPoolExecutor> it = EXECUTORS.keySet().iterator();

@@ -20,6 +20,7 @@ import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
 import java.util.*;
 
+import rx.internal.util.SuppressAnimalSniffer;
 import rx.internal.util.atomic.LinkedQueueNode;
 
 abstract class BaseLinkedQueuePad0<E> extends AbstractQueue<E> {
@@ -27,6 +28,7 @@ abstract class BaseLinkedQueuePad0<E> extends AbstractQueue<E> {
     long p30, p31, p32, p33, p34, p35, p36, p37;
 }
 
+@SuppressAnimalSniffer
 abstract class BaseLinkedQueueProducerNodeRef<E> extends BaseLinkedQueuePad0<E> {
     protected final static long P_NODE_OFFSET = UnsafeAccess.addressOf(BaseLinkedQueueProducerNodeRef.class, "producerNode");
 
@@ -50,6 +52,7 @@ abstract class BaseLinkedQueuePad1<E> extends BaseLinkedQueueProducerNodeRef<E> 
     long p30, p31, p32, p33, p34, p35, p36, p37;
 }
 
+@SuppressAnimalSniffer
 abstract class BaseLinkedQueueConsumerNodeRef<E> extends BaseLinkedQueuePad1<E> {
     protected final static long C_NODE_OFFSET = UnsafeAccess.addressOf(BaseLinkedQueueConsumerNodeRef.class, "consumerNode");
     protected LinkedQueueNode<E> consumerNode;
@@ -72,8 +75,9 @@ abstract class BaseLinkedQueueConsumerNodeRef<E> extends BaseLinkedQueuePad1<E> 
  * 
  * @author nitsanw
  * 
- * @param <E>
+ * @param <E> the element type
  */
+@SuppressAnimalSniffer
 abstract class BaseLinkedQueue<E> extends BaseLinkedQueueConsumerNodeRef<E> {
     long p00, p01, p02, p03, p04, p05, p06, p07;
     long p30, p31, p32, p33, p34, p35, p36, p37;

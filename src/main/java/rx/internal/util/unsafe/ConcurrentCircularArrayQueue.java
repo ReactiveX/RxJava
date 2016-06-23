@@ -18,8 +18,9 @@ package rx.internal.util.unsafe;
 
 import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
-import java.util.AbstractQueue;
-import java.util.Iterator;
+import java.util.*;
+
+import rx.internal.util.SuppressAnimalSniffer;
 
 abstract class ConcurrentCircularArrayQueueL0Pad<E> extends AbstractQueue<E> implements MessagePassingQueue<E> {
     long p00, p01, p02, p03, p04, p05, p06, p07;
@@ -40,8 +41,9 @@ abstract class ConcurrentCircularArrayQueueL0Pad<E> extends AbstractQueue<E> imp
  * 
  * @author nitsanw
  * 
- * @param <E>
+ * @param <E> the element type
  */
+@SuppressAnimalSniffer
 public abstract class ConcurrentCircularArrayQueue<E> extends ConcurrentCircularArrayQueueL0Pad<E> {
     protected static final int SPARSE_SHIFT = Integer.getInteger("sparse.shift", 0);
     protected static final int BUFFER_PAD = 32;
