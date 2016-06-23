@@ -32,11 +32,35 @@ import rx.observables.ConnectableObservable;
  */
 public enum InternalObservableUtils {
     ;
+    /**
+     * A BiFunction that expects a long as its first parameter and returns +1.
+     */
+    public static final PlusOneLongFunc2 LONG_COUNTER = new PlusOneLongFunc2();
+
+    /**
+     * A bifunction comparing two objects via null-safe equals.
+     */
+    public static final ObjectEqualsFunc2 OBJECT_EQUALS = new ObjectEqualsFunc2();
+    /**
+     * A function that converts a List of Observables into an array of Observables.
+     */
+    public static final ToArrayFunc1 TO_ARRAY = new ToArrayFunc1();
     
+    static final ReturnsVoidFunc1 RETURNS_VOID = new ReturnsVoidFunc1();
+
     /**
      * A BiFunction that expects an integer as its first parameter and returns +1.
      */
     public static final PlusOneFunc2 COUNTER = new PlusOneFunc2();
+
+    static final NotificationErrorExtractor ERROR_EXTRACTOR = new NotificationErrorExtractor();
+
+    /**
+     * Throws an OnErrorNotImplementedException when called.
+     */
+    public static final Action1<Throwable> ERROR_NOT_IMPLEMENTED = new ErrorNotImplementedAction();
+
+    public static final Operator<Boolean, Object> IS_EMPTY = new OperatorAny<Object>(UtilityFunctions.alwaysTrue(), true);
 
     static final class PlusOneFunc2 implements Func2<Integer, Object, Integer> {
         @Override
@@ -45,22 +69,12 @@ public enum InternalObservableUtils {
         }
     }
     
-    /**
-     * A BiFunction that expects a long as its first parameter and returns +1.
-     */
-    public static final PlusOneLongFunc2 LONG_COUNTER = new PlusOneLongFunc2();
-    
     static final class PlusOneLongFunc2 implements Func2<Long, Object, Long> {
         @Override
         public Long call(Long count, Object o) {
             return count + 1;
         }
     }
-
-    /**
-     * A bifunction comparing two objects via null-safe equals.
-     */
-    public static final ObjectEqualsFunc2 OBJECT_EQUALS = new ObjectEqualsFunc2();
 
     static final class ObjectEqualsFunc2 implements Func2<Object, Object, Boolean> {
         @Override
@@ -69,11 +83,6 @@ public enum InternalObservableUtils {
         }
     }
 
-    /**
-     * A function that converts a List of Observables into an array of Observables.
-     */
-    public static final ToArrayFunc1 TO_ARRAY = new ToArrayFunc1();
-    
     static final class ToArrayFunc1 implements Func1<List<? extends Observable<?>>, Observable<?>[]> {
         @Override
         public Observable<?>[] call(List<? extends Observable<?>> o) {
@@ -151,8 +160,6 @@ public enum InternalObservableUtils {
         }
     };
     
-    static final ReturnsVoidFunc1 RETURNS_VOID = new ReturnsVoidFunc1();
-    
     static final class ReturnsVoidFunc1 implements Func1<Object, Void> {
         @Override
         public Void call(Object t) {
@@ -216,8 +223,6 @@ public enum InternalObservableUtils {
             return notificationHandler.call(notifications.map(ERROR_EXTRACTOR));
         }
     }
-    
-    static final NotificationErrorExtractor ERROR_EXTRACTOR = new NotificationErrorExtractor();
     
     static final class NotificationErrorExtractor implements Func1<Notification<?>, Throwable> {
         @Override
@@ -375,11 +380,6 @@ public enum InternalObservableUtils {
         }
     }
 
-    /**
-     * Throws an OnErrorNotImplementedException when called.
-     */
-    public static final Action1<Throwable> ERROR_NOT_IMPLEMENTED = new ErrorNotImplementedAction();
-    
     static final class ErrorNotImplementedAction implements Action1<Throwable> {
         @Override
         public void call(Throwable t) {
@@ -387,5 +387,4 @@ public enum InternalObservableUtils {
         }
     }
     
-    public static final Operator<Boolean, Object> IS_EMPTY = new OperatorAny<Object>(UtilityFunctions.alwaysTrue(), true);
 }

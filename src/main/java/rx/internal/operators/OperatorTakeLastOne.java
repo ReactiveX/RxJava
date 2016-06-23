@@ -35,7 +35,7 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
     }
 
     OperatorTakeLastOne() {
-
+        // singleton
     }
 
     @Override
@@ -109,9 +109,10 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
                             emit();
                             return;
                         }
-                    } else
+                    } else {
                         // already requested so we exit
                         return;
+                    }
                 }
             }
         }
@@ -141,9 +142,10 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
                         emit();
                         return;
                     }
-                } else
+                } else {
                     // already completed so we exit
                     return;
+                }
             }
         }
 
@@ -171,8 +173,9 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
                     return;
                 }
             }
-            if (!isUnsubscribed())
+            if (!isUnsubscribed()) {
                 child.onCompleted();
+            }
         }
 
         @Override

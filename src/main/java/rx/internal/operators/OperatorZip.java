@@ -126,13 +126,13 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         final Zip<R> zipper;
         final ZipProducer<R> producer;
 
+        boolean started;
+
         public ZipSubscriber(Subscriber<? super R> child, Zip<R> zipper, ZipProducer<R> producer) {
             this.child = child;
             this.zipper = zipper;
             this.producer = producer;
         }
-
-        boolean started = false;
 
         @Override
         public void onCompleted() {
@@ -162,7 +162,8 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     private static final class ZipProducer<R> extends AtomicLong implements Producer {
         /** */
         private static final long serialVersionUID = -1216676403723546796L;
-        private Zip<R> zipper;
+        
+        final Zip<R> zipper;
 
         public ZipProducer(Zip<R> zipper) {
             this.zipper = zipper;
@@ -186,7 +187,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         private final CompositeSubscription childSubscription = new CompositeSubscription();
 
         static final int THRESHOLD = (int) (RxRingBuffer.SIZE * 0.7);
-        int emitted = 0; // not volatile/synchronized as accessed inside COUNTER_UPDATER block
+        int emitted; // not volatile/synchronized as accessed inside COUNTER_UPDATER block
 
         /* initialized when started in `start` */
         private volatile Object[] subscribers;

@@ -48,6 +48,7 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
     }
 
     OperatorMaterialize() {
+        // singleton instances
     }
 
     @Override
@@ -72,9 +73,9 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
         private volatile Notification<T> terminalNotification;
         
         // guarded by this
-        private boolean busy = false;
+        private boolean busy;
         // guarded by this
-        private boolean missed = false;
+        private boolean missed;
 
         private final AtomicLong requested = new AtomicLong();
 

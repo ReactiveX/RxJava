@@ -38,6 +38,8 @@ import rx.internal.util.unsafe.*;
 @Experimental
 public final class UnicastSubject<T> extends Subject<T, T> {
 
+    final State<T> state;
+
     /**
      * Constructs an empty UnicastSubject instance with the default capacity hint of 16 elements.
      * 
@@ -79,8 +81,6 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         State<T> state = new State<T>(capacityHint, onTerminated);
         return new UnicastSubject<T>(state);
     }
-
-    final State<T> state;
 
     private UnicastSubject(State<T> state) {
         super(state);

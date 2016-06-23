@@ -58,6 +58,9 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  *          the type of item expected to be observed by the Subject
  */
 public final class AsyncSubject<T> extends Subject<T, T> {
+    final SubjectSubscriptionManager<T> state;
+    volatile Object lastValue;
+    private final NotificationLite<T> nl = NotificationLite.instance();
 
     /**
      * Creates and returns a new {@code AsyncSubject}.
@@ -83,10 +86,6 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         };
         return new AsyncSubject<T>(state, state);
     }
-
-    final SubjectSubscriptionManager<T> state;
-    volatile Object lastValue;
-    private final NotificationLite<T> nl = NotificationLite.instance();
 
     protected AsyncSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state) {
         super(onSubscribe);

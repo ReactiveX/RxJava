@@ -26,7 +26,10 @@ import rx.Observable.OnSubscribe;
 public enum NeverObservableHolder implements OnSubscribe<Object> {
     INSTANCE
     ;
-    
+
+    /** The singleton instance. */
+    static final Observable<Object> NEVER = Observable.create(INSTANCE);
+
     /**
      * Returns a type-corrected singleton instance of the never Observable.
      * @param <T> the value type
@@ -37,10 +40,8 @@ public enum NeverObservableHolder implements OnSubscribe<Object> {
         return (Observable<T>)NEVER;
     }
     
-    /** The singleton instance. */
-    static final Observable<Object> NEVER = Observable.create(INSTANCE);
-    
     @Override
     public void call(Subscriber<? super Object> child) {
+        // deliberately no op
     }
 }

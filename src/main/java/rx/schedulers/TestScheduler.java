@@ -32,7 +32,11 @@ import rx.subscriptions.Subscriptions;
  */
 public class TestScheduler extends Scheduler {
     final Queue<TimedAction> queue = new PriorityQueue<TimedAction>(11, new CompareActionsByTime());
-    static long counter = 0;
+    
+    static long counter;
+    
+    // Storing time in nanoseconds internally.
+    long time;
 
     private static final class TimedAction {
 
@@ -54,8 +58,6 @@ public class TestScheduler extends Scheduler {
     }
 
     private static class CompareActionsByTime implements Comparator<TimedAction> {
-        CompareActionsByTime() {
-        }
 
         @Override
         public int compare(TimedAction action1, TimedAction action2) {
@@ -66,9 +68,6 @@ public class TestScheduler extends Scheduler {
             }
         }
     }
-
-    // Storing time in nanoseconds internally.
-    long time;
 
     @Override
     public long now() {
@@ -134,9 +133,6 @@ public class TestScheduler extends Scheduler {
     private final class InnerTestScheduler extends Worker {
 
         private final BooleanSubscription s = new BooleanSubscription();
-
-        InnerTestScheduler() {
-        }
 
         @Override
         public void unsubscribe() {

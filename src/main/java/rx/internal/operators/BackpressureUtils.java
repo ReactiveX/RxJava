@@ -27,6 +27,15 @@ import rx.internal.util.UtilityFunctions;
  *
  */
 public final class BackpressureUtils {
+    /**
+     * Masks the most significant bit, i.e., 0x8000_0000_0000_0000L.
+     */
+    static final long COMPLETED_MASK = Long.MIN_VALUE;
+    /**
+     * Masks the request amount bits, i.e., 0x7FFF_FFFF_FFFF_FFFF.
+     */
+    static final long REQUESTED_MASK = Long.MAX_VALUE;
+
     /** Utility class, no instances. */
     private BackpressureUtils() {
         throw new IllegalStateException("No instances!");
@@ -110,15 +119,6 @@ public final class BackpressureUtils {
         }
         return u;
     }
-    
-    /**
-     * Masks the most significant bit, i.e., 0x8000_0000_0000_0000L.
-     */
-    static final long COMPLETED_MASK = Long.MIN_VALUE;
-    /**
-     * Masks the request amount bits, i.e., 0x7FFF_FFFF_FFFF_FFFF.
-     */
-    static final long REQUESTED_MASK = Long.MAX_VALUE;
     
     /**
      * Signals the completion of the main sequence and switches to post-completion replay mode.

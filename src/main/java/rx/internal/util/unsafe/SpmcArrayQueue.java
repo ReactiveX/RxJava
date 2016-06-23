@@ -129,7 +129,7 @@ public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> {
             }
             else {
                 // spin wait for slot to clear, buggers wait freedom
-                while(null != lvElement(lb, offset));
+                while(null != lvElement(lb, offset)); // NOPMD by akarnokd on 2016.06.23. 10:26
             }
         }
         spElement(lb, offset, e);

@@ -44,7 +44,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
     @Override
     public void call(final Subscriber<? super T> o) {
-        final Iterator<? extends T> it;
+        Iterator<? extends T> it;
         boolean b;
         
         try {

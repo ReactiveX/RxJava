@@ -42,7 +42,10 @@ public final class OperatorDematerialize<T> implements Operator<T, Notification<
     public static OperatorDematerialize instance() {
         return Holder.INSTANCE; // using raw types because the type inference is not good enough
     }
-    OperatorDematerialize() { }
+    OperatorDematerialize() { 
+        // singleton
+    }
+    
     @Override
     public Subscriber<? super Notification<T>> call(final Subscriber<? super T> child) {
         return new Subscriber<Notification<T>>(child) {
@@ -61,6 +64,9 @@ public final class OperatorDematerialize<T> implements Operator<T, Notification<
                     break;
                 case OnCompleted:
                     onCompleted();
+                    break;
+                default:
+                    onError(new IllegalArgumentException("Unsupported notification type: " + t));
                     break;
                 }
             }

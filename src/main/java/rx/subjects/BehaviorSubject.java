@@ -70,6 +70,11 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  *          the type of item expected to be observed by the Subject
  */
 public final class BehaviorSubject<T> extends Subject<T, T> {
+    /** An empty array to trigger getValues() to return a new array. */
+    private static final Object[] EMPTY_ARRAY = new Object[0];
+    private final SubjectSubscriptionManager<T> state;
+    private final NotificationLite<T> nl = NotificationLite.instance();
+
     /**
      * Creates a {@link BehaviorSubject} without a default item.
      *
@@ -110,9 +115,6 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         state.onTerminated = state.onAdded;
         return new BehaviorSubject<T>(state, state); 
     }
-
-    private final SubjectSubscriptionManager<T> state;
-    private final NotificationLite<T> nl = NotificationLite.instance();
 
     protected BehaviorSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state) {
         super(onSubscribe);
@@ -254,9 +256,6 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         }
         return a;
     }
-    
-    /** An empty array to trigger getValues() to return a new array. */
-    private static final Object[] EMPTY_ARRAY = new Object[0];
     
     /**
      * Returns a snapshot of the currently buffered non-terminal events.

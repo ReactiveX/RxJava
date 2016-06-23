@@ -38,7 +38,7 @@ public final class OperatorThrottleFirst<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
         return new Subscriber<T>(subscriber) {
 
-            private long lastOnNext = 0;
+            private long lastOnNext;
 
             @Override
             public void onStart() {

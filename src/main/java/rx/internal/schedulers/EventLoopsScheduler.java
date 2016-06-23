@@ -48,7 +48,14 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
         SHUTDOWN_WORKER = new PoolWorker(RxThreadFactory.NONE);
         SHUTDOWN_WORKER.unsubscribe();
     }
+
+    /** This will indicate no pool is active. */
+    static final FixedSchedulerPool NONE = new FixedSchedulerPool(null, 0);
+
+    final ThreadFactory threadFactory;
     
+    final AtomicReference<FixedSchedulerPool> pool;
+
     static final class FixedSchedulerPool {
         final int cores;
 
@@ -79,11 +86,6 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
             }
         }
     }
-    /** This will indicate no pool is active. */
-    static final FixedSchedulerPool NONE = new FixedSchedulerPool(null, 0);
-
-    final ThreadFactory threadFactory;
-    final AtomicReference<FixedSchedulerPool> pool;
     
     /**
      * Create a scheduler with pool size equal to the available processor

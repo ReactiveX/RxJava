@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.BackpressureOverflow;
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
@@ -34,7 +33,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
 
     private final Long capacity;
     private final Action0 onOverflow;
-    private final BackpressureOverflow.Strategy overflowStrategy;
+    private final Strategy overflowStrategy;
 
     private static class Holder {
         static final OperatorOnBackpressureBuffer<?> INSTANCE = new OperatorOnBackpressureBuffer<Object>();
@@ -80,7 +79,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
      * @param overflowStrategy the {@code BackpressureOverflow.Strategy} to handle overflows, it must not be null.
      */
     public OperatorOnBackpressureBuffer(long capacity, Action0 onOverflow,
-                                        BackpressureOverflow.Strategy overflowStrategy) {
+                                        Strategy overflowStrategy) {
         if (capacity <= 0) {
             throw new IllegalArgumentException("Buffer capacity must be > 0");
         }
@@ -116,10 +115,10 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         private final BackpressureDrainManager manager;
         private final NotificationLite<T> on = NotificationLite.instance();
         private final Action0 onOverflow;
-        private final BackpressureOverflow.Strategy overflowStrategy;
+        private final Strategy overflowStrategy;
         
         public BufferSubscriber(final Subscriber<? super T> child, Long capacity, Action0 onOverflow,
-                                BackpressureOverflow.Strategy overflowStrategy) {
+                                Strategy overflowStrategy) {
             this.child = child;
             this.capacity = capacity != null ? new AtomicLong(capacity) : null;
             this.onOverflow = onOverflow;

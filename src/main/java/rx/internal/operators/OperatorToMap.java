@@ -37,6 +37,12 @@ import rx.observers.Subscribers;
  */
 public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
 
+    final Func1<? super T, ? extends K> keySelector;
+
+    final Func1<? super T, ? extends V> valueSelector;
+
+    private final Func0<? extends Map<K, V>> mapFactory;
+
     /**
      * The default map factory.
      * @param <K> the key type
@@ -48,14 +54,6 @@ public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
             return new HashMap<K, V>();
         }
     }
-
-
-    final Func1<? super T, ? extends K> keySelector;
-
-    final Func1<? super T, ? extends V> valueSelector;
-
-    private final Func0<? extends Map<K, V>> mapFactory;
-
 
     /**
      * ToMap with key selector, value selector and default HashMap factory.

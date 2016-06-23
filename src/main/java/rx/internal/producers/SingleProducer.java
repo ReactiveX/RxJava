@@ -55,11 +55,11 @@ public final class SingleProducer<T> extends AtomicBoolean implements Producer {
         if (compareAndSet(false, true)) {
             // avoid re-reading the instance fields
             final Subscriber<? super T> c = child;
-            T v = value;
             // eagerly check for unsubscription
             if (c.isUnsubscribed()) {
                 return;
             }
+            T v = value;
             // emit the value
             try {
                 c.onNext(v);

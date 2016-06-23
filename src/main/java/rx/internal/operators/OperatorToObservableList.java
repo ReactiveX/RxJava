@@ -51,13 +51,16 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
     public static <T> OperatorToObservableList<T> instance() {
         return (OperatorToObservableList<T>)Holder.INSTANCE;
     }
-    OperatorToObservableList() { }
+    OperatorToObservableList() { 
+        // singleton
+    }
+    
     @Override
     public Subscriber<? super T> call(final Subscriber<? super List<T>> o) {
         final SingleDelayedProducer<List<T>> producer = new SingleDelayedProducer<List<T>>(o);
         Subscriber<T> result =  new Subscriber<T>() {
 
-            boolean completed = false;
+            boolean completed;
             List<T> list = new LinkedList<T>();
 
             @Override

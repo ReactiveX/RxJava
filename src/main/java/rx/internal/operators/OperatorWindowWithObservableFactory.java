@@ -36,6 +36,11 @@ import rx.subscriptions.SerialSubscription;
 public final class OperatorWindowWithObservableFactory<T, U> implements Operator<Observable<T>, T> {
     final Func0<? extends Observable<? extends U>> otherFactory;
 
+    /** Indicate the current subject should complete and a new subject be emitted. */
+    static final Object NEXT_SUBJECT = new Object();
+    /** For error and completion indication. */
+    static final NotificationLite<Object> NL = NotificationLite.instance();
+
     public OperatorWindowWithObservableFactory(Func0<? extends Observable<? extends U>> otherFactory) {
         this.otherFactory = otherFactory;
     }
@@ -51,10 +56,6 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
         
         return sub;
     }
-    /** Indicate the current subject should complete and a new subject be emitted. */
-    static final Object NEXT_SUBJECT = new Object();
-    /** For error and completion indication. */
-    static final NotificationLite<Object> nl = NotificationLite.instance();
     /** Observes the source. */
     static final class SourceSubscriber<T, U> extends Subscriber<T> {
         final Subscriber<? super Observable<T>> child;
@@ -138,11 +139,11 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
                 if (o == NEXT_SUBJECT) {
                     replaceSubject();
                 } else
-                if (nl.isError(o)) {
-                    error(nl.getError(o));
+                if (NL.isError(o)) {
+                    error(NL.getError(o));
                     break;
                 } else
-                if (nl.isCompleted(o)) {
+                if (NL.isCompleted(o)) {
                     complete();
                     break;
                 } else {
@@ -173,7 +174,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
                 return;
             }
             
-            BoundarySubscriber<T, U> bs = new BoundarySubscriber<T, U>(child, this);
+            BoundarySubscriber<T, U> bs = new BoundarySubscriber<T, U>(this);
             ssub.set(bs);
             other.unsafeSubscribe(bs);
         }
@@ -188,7 +189,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
         public void onError(Throwable e) {
             synchronized (guard) {
                 if (emitting) {
-                    queue = Collections.singletonList(nl.error(e));
+                    queue = Collections.singletonList(NL.error(e));
                     return;
                 }
                 queue = null;
@@ -205,7 +206,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
                     if (queue == null) {
                         queue = new ArrayList<Object>();
                     }
-                    queue.add(nl.completed());
+                    queue.add(NL.completed());
                     return;
                 }
                 localQueue = queue;
@@ -288,7 +289,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
     static final class BoundarySubscriber<T, U> extends Subscriber<U> {
         final SourceSubscriber<T, U> sub;
         boolean done;
-        public BoundarySubscriber(Subscriber<?> child, SourceSubscriber<T, U> sub) {
+        public BoundarySubscriber(SourceSubscriber<T, U> sub) {
             this.sub = sub;
         }
         

@@ -34,9 +34,7 @@ public final class CompletableOnSubscribeMergeIterable implements CompletableOnS
     @Override
     public void call(final CompletableSubscriber s) {
         final CompositeSubscription set = new CompositeSubscription();
-        final AtomicInteger wip = new AtomicInteger(1);
-        final AtomicBoolean once = new AtomicBoolean();
-        
+
         s.onSubscribe(set);
         
         Iterator<? extends Completable> iterator;
@@ -53,6 +51,9 @@ public final class CompletableOnSubscribeMergeIterable implements CompletableOnS
             return;
         }
         
+        final AtomicInteger wip = new AtomicInteger(1);
+        final AtomicBoolean once = new AtomicBoolean();
+
         for (;;) {
             if (set.isUnsubscribed()) {
                 return;

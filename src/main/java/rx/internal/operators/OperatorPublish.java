@@ -109,7 +109,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                     // setting the producer will trigger the first request to be considered by 
                     // the subscriber-to-source.
                     child.setProducer(inner);
-                    break;
+                    break; // NOPMD by akarnokd on 2016.06.23. 11:26
                 }
             }
         };
@@ -194,7 +194,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
             // if connect() was called concurrently, only one of them should actually 
             // connect to the source
             doConnect = !ps.shouldConnect.get() && ps.shouldConnect.compareAndSet(false, true);
-            break;
+            break; // NOPMD by akarnokd on 2016.06.23. 11:26
         }
         /* 
          * Notify the callback that we have a (new) connection which it can unsubscribe

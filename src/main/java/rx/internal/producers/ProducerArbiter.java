@@ -33,7 +33,7 @@ public final class ProducerArbiter implements Producer {
     static final Producer NULL_PRODUCER = new Producer() {
         @Override
         public void request(long n) {
-            
+            // deliberately ignored
         }
     };
      

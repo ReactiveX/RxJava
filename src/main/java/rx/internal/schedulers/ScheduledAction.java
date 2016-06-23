@@ -53,20 +53,19 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
         try {
             lazySet(Thread.currentThread());
             action.call();
+        } catch (OnErrorNotImplementedException e) {
+            signalError(new IllegalStateException("Exception thrown on Scheduler.Worker thread. Add `onError` handling.", e));
         } catch (Throwable e) {
-            // nothing to do but print a System error as this is fatal and there is nowhere else to throw this
-            IllegalStateException ie = null;
-            if (e instanceof OnErrorNotImplementedException) {
-                ie = new IllegalStateException("Exception thrown on Scheduler.Worker thread. Add `onError` handling.", e);
-            } else {
-                ie = new IllegalStateException("Fatal Exception thrown on Scheduler.Worker thread.", e);
-            }
-            RxJavaHooks.onError(ie);
-            Thread thread = Thread.currentThread();
-            thread.getUncaughtExceptionHandler().uncaughtException(thread, ie);
+            signalError(new IllegalStateException("Fatal Exception thrown on Scheduler.Worker thread.", e));
         } finally {
             unsubscribe();
         }
+    }
+    
+    void signalError(Throwable ie) {
+        RxJavaHooks.onError(ie);
+        Thread thread = Thread.currentThread();
+        thread.getUncaughtExceptionHandler().uncaughtException(thread, ie);
     }
 
     @Override

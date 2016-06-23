@@ -28,12 +28,14 @@ import rx.internal.util.UtilityFunctions;
  * {@code Observable}s emit sequences of items that are equivalent to each other.
  */
 public final class OperatorSequenceEqual {
+
+    /** NotificationLite doesn't work as zip uses it. */
+    static final Object LOCAL_ONCOMPLETED = new Object();
+
     private OperatorSequenceEqual() {
         throw new IllegalStateException("No instances!");
     }
 
-    /** NotificationLite doesn't work as zip uses it. */
-    static final Object LOCAL_ONCOMPLETED = new Object();
     static <T> Observable<Object> materializeLite(Observable<T> source) {
         return concat(
                 source.map(new Func1<T, Object>() {

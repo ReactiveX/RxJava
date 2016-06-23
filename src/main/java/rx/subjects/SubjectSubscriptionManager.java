@@ -214,7 +214,7 @@ import rx.subscriptions.Subscriptions;
         List<Object> queue;
         /* volatile */boolean fastPath;
         /** Indicate that the observer has caught up. */
-        protected volatile boolean caughtUp;
+        volatile boolean caughtUp;
         /** Indicate where the observer is at replaying. */
         private volatile Object index;
         public SubjectObserver(Subscriber<? super T> actual) {
@@ -238,7 +238,7 @@ import rx.subscriptions.Subscriptions;
          * @param n the NotificationLite value
          * @param nl the type-appropriate notification lite object
          */
-        protected void emitNext(Object n, final NotificationLite<T> nl) {
+        void emitNext(Object n, final NotificationLite<T> nl) {
             if (!fastPath) {
                 synchronized (this) {
                     first = false;
@@ -260,7 +260,7 @@ import rx.subscriptions.Subscriptions;
          * @param n the NotificationLite value
          * @param nl the type-appropriate notification lite object
          */
-        protected void emitFirst(Object n, final NotificationLite<T> nl) {
+        void emitFirst(Object n, final NotificationLite<T> nl) {
             synchronized (this) {
                 if (!first || emitting) {
                     return;
@@ -278,7 +278,7 @@ import rx.subscriptions.Subscriptions;
          * @param current the current content to emit
          * @param nl the type-appropriate notification lite object
          */
-        protected void emitLoop(List<Object> localQueue, Object current, final NotificationLite<T> nl) {
+        void emitLoop(List<Object> localQueue, Object current, final NotificationLite<T> nl) {
             boolean once = true;
             boolean skipFinal = false;
             try {
@@ -315,14 +315,14 @@ import rx.subscriptions.Subscriptions;
          * @param n the value to dispatch
          * @param nl the type-appropriate notification lite object
          */
-        protected void accept(Object n, final NotificationLite<T> nl) {
+        void accept(Object n, final NotificationLite<T> nl) {
             if (n != null) {
                 nl.accept(actual, n);
             }
         }
         
         /** @return the actual Observer. */
-        protected Observer<? super T> getActual() {
+        Observer<? super T> getActual() {
             return actual;
         }
         /**

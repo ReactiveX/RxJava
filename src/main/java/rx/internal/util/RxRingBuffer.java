@@ -32,22 +32,6 @@ import rx.internal.util.unsafe.UnsafeAccess;
  */
 public class RxRingBuffer implements Subscription {
 
-    public static RxRingBuffer getSpscInstance() {
-        if (UnsafeAccess.isUnsafeAvailable()) {
-            return new RxRingBuffer(SPSC_POOL, SIZE);
-        } else {
-            return new RxRingBuffer();
-        }
-    }
-
-    public static RxRingBuffer getSpmcInstance() {
-        if (UnsafeAccess.isUnsafeAvailable()) {
-            return new RxRingBuffer(SPMC_POOL, SIZE);
-        } else {
-            return new RxRingBuffer();
-        }
-    }
-
     /**
      * Queue implementation testing that led to current choices of data structures:
      * 
@@ -141,7 +125,7 @@ public class RxRingBuffer implements Subscription {
      * } </pre>
      */
 
-    private static final NotificationLite<Object> on = NotificationLite.instance();
+    private static final NotificationLite<Object> ON = NotificationLite.instance();
 
     private Queue<Object> queue;
 
@@ -257,27 +241,27 @@ public class RxRingBuffer implements Subscription {
      * r.o.OperatorObserveOnPerf.observeOnNewThread     1000000  thrpt         5        1.173        0.100    ops/s
      * } </pre>
      */
-    static int _size = 128;
+    static int defaultSize = 128;
     static {
         // lower default for Android (https://github.com/ReactiveX/RxJava/issues/1820)
         if (PlatformDependent.isAndroid()) {
-            _size = 16;
+            defaultSize = 16;
         }
 
         // possible system property for overriding
         String sizeFromProperty = System.getProperty("rx.ring-buffer.size"); // also see IndexedRingBuffer
         if (sizeFromProperty != null) {
             try {
-                _size = Integer.parseInt(sizeFromProperty);
-            } catch (Exception e) {
-                System.err.println("Failed to set 'rx.buffer.size' with value " + sizeFromProperty + " => " + e.getMessage());
+                defaultSize = Integer.parseInt(sizeFromProperty);
+            } catch (NumberFormatException e) {
+                System.err.println("Failed to set 'rx.buffer.size' with value " + sizeFromProperty + " => " + e.getMessage()); // NOPMD by akarnokd on 2016.06.23. 11:14
             }
         }
     }
-    public static final int SIZE = _size;
+    public static final int SIZE = defaultSize;
 
     /* Public so Schedulers can manage the lifecycle of the inner worker. */
-    public static ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
+    public static final ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
 
         @Override
         protected SpscArrayQueue<Object> createObject() {
@@ -287,7 +271,7 @@ public class RxRingBuffer implements Subscription {
     };
 
     /* Public so Schedulers can manage the lifecycle of the inner worker. */
-    public static ObjectPool<Queue<Object>> SPMC_POOL = new ObjectPool<Queue<Object>>() {
+    public static final ObjectPool<Queue<Object>> SPMC_POOL = new ObjectPool<Queue<Object>>() {
 
         @Override
         protected SpmcArrayQueue<Object> createObject() {
@@ -295,7 +279,23 @@ public class RxRingBuffer implements Subscription {
         }
 
     };
-    
+
+    public static RxRingBuffer getSpscInstance() {
+        if (UnsafeAccess.isUnsafeAvailable()) {
+            return new RxRingBuffer(SPSC_POOL, SIZE);
+        } else {
+            return new RxRingBuffer();
+        }
+    }
+
+    public static RxRingBuffer getSpmcInstance() {
+        if (UnsafeAccess.isUnsafeAvailable()) {
+            return new RxRingBuffer(SPMC_POOL, SIZE);
+        } else {
+            return new RxRingBuffer();
+        }
+    }
+
     private RxRingBuffer(Queue<Object> queue, int size) {
         this.queue = queue;
         this.pool = null;
@@ -308,7 +308,7 @@ public class RxRingBuffer implements Subscription {
         this.size = size;
     }
 
-    public synchronized void release() {
+    public synchronized void release() { // NOPMD by akarnokd on 2016.06.23. 11:14
         Queue<Object> q = queue;
         ObjectPool<Queue<Object>> p = pool;
         if (p != null && q != null) {
@@ -339,7 +339,7 @@ public class RxRingBuffer implements Subscription {
         synchronized (this) {
             Queue<Object> q = queue;
             if (q != null) {
-                mbe = !q.offer(on.next(o));
+                mbe = !q.offer(ON.next(o));
             } else {
                 iae = true;
             }
@@ -356,14 +356,14 @@ public class RxRingBuffer implements Subscription {
     public void onCompleted() {
         // we ignore terminal events if we already have one
         if (terminalState == null) {
-            terminalState = on.completed();
+            terminalState = ON.completed();
         }
     }
 
     public void onError(Throwable t) {
         // we ignore terminal events if we already have one
         if (terminalState == null) {
-            terminalState = on.error(t);
+            terminalState = ON.error(t);
         }
     }
 
@@ -429,24 +429,24 @@ public class RxRingBuffer implements Subscription {
     }
 
     public boolean isCompleted(Object o) {
-        return on.isCompleted(o);
+        return ON.isCompleted(o);
     }
 
     public boolean isError(Object o) {
-        return on.isError(o);
+        return ON.isError(o);
     }
 
     public Object getValue(Object o) {
-        return on.getValue(o);
+        return ON.getValue(o);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public boolean accept(Object o, Observer child) {
-        return on.accept(child, o);
+        return ON.accept(child, o);
     }
 
     public Throwable asError(Object o) {
-        return on.getError(o);
+        return ON.getError(o);
     }
 
     @Override

@@ -33,7 +33,7 @@ public abstract class ObjectPool<T> implements SchedulerLifecycle {
     private final AtomicReference<Future<?>> periodicTask;
 
     public ObjectPool() {
-        this(0, 0, 67);
+        this(0, 0, 67); // NOPMD by akarnokd on 2016.06.23. 11:00
     }
 
     /**

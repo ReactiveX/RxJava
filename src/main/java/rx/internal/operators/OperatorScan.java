@@ -303,14 +303,13 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
             
             long r = requested.get();
             for (;;) {
-                boolean max = r == Long.MAX_VALUE;
                 boolean d = done;
                 boolean empty = queue.isEmpty();
                 if (checkTerminated(d, empty, child)) {
                     return;
                 }
                 long e = 0L;
-                while (r != 0L) {
+                while (e != r) {
                     d = done;
                     Object o = queue.poll();
                     empty = o == null;
@@ -327,12 +326,11 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
                         Exceptions.throwOrReport(ex, child, v);
                         return;
                     }
-                    r--;
-                    e--;
+                    e++;
                 }
                 
-                if (e != 0 && !max) {
-                    r = requested.addAndGet(e);
+                if (e != 0 && r != Long.MAX_VALUE) {
+                    r = BackpressureUtils.produced(requested, e);
                 }
                 
                 synchronized (this) {

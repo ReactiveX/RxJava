@@ -82,7 +82,7 @@ public final class SpscExactAtomicArrayQueue<T> extends AtomicReferenceArray<T> 
     }
     @Override
     public void clear() {
-        while (poll() != null || !isEmpty());
+        while (poll() != null || !isEmpty()); // NOPMD by akarnokd on 2016.06.23. 10:56
     }
     @Override
     public boolean isEmpty() {

@@ -25,9 +25,9 @@ import java.util.Queue;
  *
  * @param <T>
  */
-public class SynchronizedQueue<T> implements Queue<T> {
+public class SynchronizedQueue<T> implements Queue<T>, Cloneable {
 
-    private final LinkedList<T> list = new LinkedList<T>();
+    private final Queue<T> list = new LinkedList<T>();
     private final int size;
 
     public SynchronizedQueue() {
@@ -39,62 +39,62 @@ public class SynchronizedQueue<T> implements Queue<T> {
     }
 
     @Override
-    public synchronized boolean isEmpty() {
+    public synchronized boolean isEmpty() { // NOPMD by akarnokd on 2016.06.23. 11:14
         return list.isEmpty();
     }
 
     @Override
-    public synchronized boolean contains(Object o) {
+    public synchronized boolean contains(Object o) { // NOPMD by akarnokd on 2016.06.23. 11:15
         return list.contains(o);
     }
 
     @Override
-    public synchronized Iterator<T> iterator() {
+    public synchronized Iterator<T> iterator() { // NOPMD by akarnokd on 2016.06.23. 11:15
         return list.iterator();
     }
 
     @Override
-    public synchronized int size() {
+    public synchronized int size() { // NOPMD by akarnokd on 2016.06.23. 11:15
         return list.size();
     }
 
     @Override
-    public synchronized boolean add(T e) {
+    public synchronized boolean add(T e) { // NOPMD by akarnokd on 2016.06.23. 11:15
         return list.add(e);
     }
 
     @Override
-    public synchronized boolean remove(Object o) {
+    public synchronized boolean remove(Object o) { // NOPMD by akarnokd on 2016.06.23. 11:15
         return list.remove(o);
     }
 
     @Override
-    public synchronized boolean containsAll(Collection<?> c) {
+    public synchronized boolean containsAll(Collection<?> c) { // NOPMD by akarnokd on 2016.06.23. 11:15
         return list.containsAll(c);
     }
 
     @Override
-    public synchronized boolean addAll(Collection<? extends T> c) {
+    public synchronized boolean addAll(Collection<? extends T> c) { // NOPMD by akarnokd on 2016.06.23. 11:15
         return list.addAll(c);
     }
 
     @Override
-    public synchronized boolean removeAll(Collection<?> c) {
+    public synchronized boolean removeAll(Collection<?> c) { // NOPMD by akarnokd on 2016.06.23. 11:15
         return list.removeAll(c);
     }
 
     @Override
-    public synchronized boolean retainAll(Collection<?> c) {
+    public synchronized boolean retainAll(Collection<?> c) { // NOPMD by akarnokd on 2016.06.23. 11:15
         return list.retainAll(c);
     }
 
     @Override
-    public synchronized void clear() {
+    public synchronized void clear() { // NOPMD by akarnokd on 2016.06.23. 11:15
         list.clear();
     }
 
     @Override
-    public synchronized String toString() {
+    public synchronized String toString() { // NOPMD by akarnokd on 2016.06.23. 11:15
         return list.toString();
     }
 
@@ -105,43 +105,48 @@ public class SynchronizedQueue<T> implements Queue<T> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         SynchronizedQueue<?> other = (SynchronizedQueue<?>) obj;
         if (list == null) {
-            if (other.list != null)
+            if (other.list != null) {
                 return false;
-        } else if (!list.equals(other.list))
+            }
+        } else if (!list.equals(other.list)) {
             return false;
+        }
         return true;
     }
 
     @Override
-    public synchronized T peek() {
+    public synchronized T peek() { // NOPMD by akarnokd on 2016.06.23. 11:16
         return list.peek();
     }
 
     @Override
-    public synchronized T element() {
+    public synchronized T element() { // NOPMD by akarnokd on 2016.06.23. 11:16
         return list.element();
     }
 
     @Override
-    public synchronized T poll() {
+    public synchronized T poll() { // NOPMD by akarnokd on 2016.06.23. 11:16
         return list.poll();
     }
 
     @Override
-    public synchronized T remove() {
+    public synchronized T remove() { // NOPMD by akarnokd on 2016.06.23. 11:16
         return list.remove();
     }
 
     @Override
-    public synchronized boolean offer(T e) {
+    public synchronized boolean offer(T e) { // NOPMD by akarnokd on 2016.06.23. 11:16
         if (size > -1 && list.size() + 1 > size) {
             return false;
         }
@@ -149,19 +154,19 @@ public class SynchronizedQueue<T> implements Queue<T> {
     }
 
     @Override
-    public synchronized Object clone() {
+    public synchronized Object clone() { // NOPMD by akarnokd on 2016.06.23. 11:16
         SynchronizedQueue<T> q = new SynchronizedQueue<T>(size);
         q.addAll(list);
         return q;
     }
 
     @Override
-    public synchronized Object[] toArray() {
+    public synchronized Object[] toArray() { // NOPMD by akarnokd on 2016.06.23. 11:16
         return list.toArray();
     }
 
     @Override
-    public synchronized <R> R[] toArray(R[] a) {
+    public synchronized <R> R[] toArray(R[] a) { // NOPMD by akarnokd on 2016.06.23. 11:16
         return list.toArray(a);
     }
 

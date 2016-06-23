@@ -95,7 +95,7 @@ public final class BlockingOperatorMostRecent {
                 /**
                  * buffer to make sure that the state of the iterator doesn't change between calling hasNext() and next().
                  */
-                private Object buf = null;
+                private Object buf;
 
                 @Override
                 public boolean hasNext() {
@@ -107,10 +107,12 @@ public final class BlockingOperatorMostRecent {
                 public T next() {
                     try {
                         // if hasNext wasn't called before calling next.
-                        if (buf == null)
+                        if (buf == null) {
                             buf = value;
-                        if (nl.isCompleted(buf))
+                        }
+                        if (nl.isCompleted(buf)) {
                             throw new NoSuchElementException();
+                        }
                         if (nl.isError(buf)) {
                             throw Exceptions.propagate(nl.getError(buf));
                         }

@@ -53,6 +53,10 @@ import rx.schedulers.Schedulers;
  *          the type of items observed and emitted by the Subject
  */
 public final class ReplaySubject<T> extends Subject<T, T> {
+    /** The state storing the history and the references. */
+    final ReplayState<T> state;
+    /** An empty array to trigger getValues() to return a new array. */
+    private static final Object[] EMPTY_ARRAY = new Object[0];
     /**
      * Creates an unbounded replay subject.
      * <p>
@@ -229,9 +233,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         return new ReplaySubject<T>(state);
     }
 
-    /** The state storing the history and the references. */
-    final ReplayState<T> state;
-
     ReplaySubject(ReplayState<T> state) {
         super(state);
         this.state = state;
@@ -320,9 +321,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     public T[] getValues(T[] a) {
         return state.buffer.toArray(a);
     }
-    
-    /** An empty array to trigger getValues() to return a new array. */
-    private static final Object[] EMPTY_ARRAY = new Object[0];
     
     /**
      * Returns a snapshot of the currently buffered non-terminal events.

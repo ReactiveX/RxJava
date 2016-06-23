@@ -48,6 +48,9 @@ import rx.subscriptions.Subscriptions;
  *            the type of the items to be buffered
  */
 public final class BufferUntilSubscriber<T> extends Subject<T, T> {
+    final State<T> state;
+
+    private boolean forward;
 
     /**
      * Creates a default, unbounded buffering Subject instance.
@@ -63,16 +66,17 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
     static final class State<T> extends AtomicReference<Observer<? super T>> {
         /** */
         private static final long serialVersionUID = 8026705089538090368L;
-        boolean casObserverRef(Observer<? super T>  expected, Observer<? super T>  next) {
-            return compareAndSet(expected, next);
-        }
 
         final Object guard = new Object();
         /* protected by guard */
-        boolean emitting = false;
+        boolean emitting;
 
         final ConcurrentLinkedQueue<Object> buffer = new ConcurrentLinkedQueue<Object>();
         final NotificationLite<T> nl = NotificationLite.instance();
+
+        boolean casObserverRef(Observer<? super T>  expected, Observer<? super T>  next) {
+            return compareAndSet(expected, next);
+        }
     }
     
     static final class OnSubscribeAction<T> implements OnSubscribe<T> {
@@ -123,9 +127,6 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
         }
         
     }
-    final State<T> state;
-
-    private boolean forward = false;
 
     private BufferUntilSubscriber(State<T> state) {
         super(new OnSubscribeAction<T>(state));
@@ -194,17 +195,17 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
 
         @Override
         public void onCompleted() {
-            
+            // deliberately no op
         }
 
         @Override
         public void onError(Throwable e) {
-            
+            // deliberately no op
         }
 
         @Override
         public void onNext(Object t) {
-            
+            // deliberately no op
         }
         
     };

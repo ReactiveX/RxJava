@@ -25,8 +25,13 @@ import rx.functions.FuncN;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
-public class SingleOperatorZip {
+public final class SingleOperatorZip {
 
+    /** Utility class. */
+    private SingleOperatorZip() {
+        throw new IllegalStateException("No instances!");
+    }
+    
     public static <T, R> Single<R> zip(final Single<? extends T>[] singles, final FuncN<? extends R> zipper) {
         return Single.create(new Single.OnSubscribe<R>() {
             @Override

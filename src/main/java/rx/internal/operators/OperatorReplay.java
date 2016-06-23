@@ -210,7 +210,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     // if there isn't one
                     if (r == null) {
                         // create a new subscriber to source
-                        ReplaySubscriber<T> u = new ReplaySubscriber<T>(curr, bufferFactory.call());
+                        ReplaySubscriber<T> u = new ReplaySubscriber<T>(bufferFactory.call());
                         // perform extra initialization to avoid 'this' to escape during construction
                         u.init();
                         // let's try setting it as the current subscriber-to-source
@@ -239,7 +239,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     // setting the producer will trigger the first request to be considered by 
                     // the subscriber-to-source.
                     child.setProducer(inner);
-                    break;
+                    break; // NOPMD by akarnokd on 2016.06.23. 12:54
                 }
             }
         };
@@ -265,7 +265,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             // if there is none yet or the current has unsubscribed
             if (ps == null || ps.isUnsubscribed()) {
                 // create a new subscriber-to-source
-                ReplaySubscriber<T> u = new ReplaySubscriber<T>(current, bufferFactory.call());
+                ReplaySubscriber<T> u = new ReplaySubscriber<T>(bufferFactory.call());
                 // initialize out the constructor to avoid 'this' to escape
                 u.init();
                 // try setting it as the current subscriber-to-source
@@ -279,7 +279,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             // if connect() was called concurrently, only one of them should actually 
             // connect to the source
             doConnect = !ps.shouldConnect.get() && ps.shouldConnect.compareAndSet(false, true);
-            break;
+            break; // NOPMD by akarnokd on 2016.06.23. 12:54
         }
         /* 
          * Notify the callback that we have a (new) connection which it can unsubscribe
@@ -349,8 +349,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         boolean coordinateAll;
         
         @SuppressWarnings("unchecked")
-        public ReplaySubscriber(AtomicReference<ReplaySubscriber<T>> current,
-                ReplayBuffer<T> buffer) {
+        public ReplaySubscriber(ReplayBuffer<T> buffer) {
             this.buffer = buffer;
             
             this.nl = NotificationLite.instance();
@@ -880,10 +879,9 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 int destIndex = destIndexObject != null ? destIndexObject : 0;
                 
                 long r = output.get();
-                long r0 = r;
                 long e = 0L;
                 
-                while (r != 0L && destIndex < sourceIndex) {
+                while (e != r && destIndex < sourceIndex) {
                     Object o = get(destIndex);
                     try {
                         if (nl.accept(output.child, o)) {
@@ -901,12 +899,11 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                         return;
                     }
                     destIndex++;
-                    r--;
                     e++;
                 }
                 if (e != 0L) {
                     output.index = destIndex;
-                    if (r0 != Long.MAX_VALUE) {
+                    if (r != Long.MAX_VALUE) {
                         output.produced(e);
                     }
                 }
@@ -1053,10 +1050,6 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     return;
                 }
 
-                long r = output.get();
-                boolean unbounded = r == Long.MAX_VALUE;
-                long e = 0L;
-                
                 Node node = output.index();
                 if (node == null) {
                     node = getInitialHead();
@@ -1073,7 +1066,10 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     return;
                 }
 
-                while (r != 0) {
+                long r = output.get();
+                long e = 0L;
+
+                while (e != r) {
                     Node v = node.get();
                     if (v != null) {
                         Object o = leaveTransform(v.value);
@@ -1092,7 +1088,6 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                             return;
                         }
                         e++;
-                        r--;
                         node = v;
                     } else {
                         break;
@@ -1104,7 +1099,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
 
                 if (e != 0L) {
                     output.index = node;
-                    if (!unbounded) {
+                    if (r != Long.MAX_VALUE) {
                         output.produced(e);
                     }
                 }
@@ -1143,14 +1138,14 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
          * based on its current properties.
          */
         void truncate() {
-            
+            // no op by default
         }
         /**
          * Override this method to truncate a terminated buffer
          * based on its properties (i.e., truncate but the very last node).
          */
         void truncateFinal() {
-            
+            // no op by default
         }
         /* test */ final  void collect(Collection<? super T> output) {
             Node n = getInitialHead();

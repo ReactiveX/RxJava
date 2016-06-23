@@ -134,9 +134,6 @@
    <rule ref="rulesets/java/javabeans.xml/MissingSerialVersionUID"/>
    <rule ref="rulesets/java/design.xml/MissingStaticMethodInNonInstantiatableClass"/>
    <rule ref="rulesets/java/logging-java.xml/MoreThanOneLogger"/>
-   <rule ref="rulesets/java/codesize.xml/NcssConstructorCount"/>
-   <rule ref="rulesets/java/codesize.xml/NcssMethodCount"/>
-   <rule ref="rulesets/java/codesize.xml/NcssTypeCount"/>
    <rule ref="rulesets/java/naming.xml/NoPackage"/>
    <rule ref="rulesets/java/design.xml/NonCaseLabelInSwitchStatement"/>
    <rule ref="rulesets/java/design.xml/NonStaticInitializer"/>
@@ -160,7 +157,6 @@
    <rule ref="rulesets/java/design.xml/ReturnEmptyArrayRatherThanNull"/>
    <rule ref="rulesets/java/basic.xml/ReturnFromFinallyBlock"/>
    <rule ref="rulesets/java/migrating.xml/ShortInstantiation"/>
-   <rule ref="rulesets/java/naming.xml/ShortMethodName"/>
    <rule ref="rulesets/java/strictexception.xml/SignatureDeclareThrowsException"/>
    <rule ref="rulesets/java/design.xml/SimpleDateFormatNeedsLocale"/>
    <rule ref="rulesets/java/junit.xml/SimplifyBooleanAssertion"/>

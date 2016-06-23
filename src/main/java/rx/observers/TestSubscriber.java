@@ -383,7 +383,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
             assertionError("Received both an onError and onCompleted. Should be one or the other.");
         }
 
-        if (completions == 0 && errors.size() == 0) {
+        if (completions == 0 && errors.isEmpty()) {
             assertionError("No terminal events received.");
         }
     }
@@ -408,7 +408,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      */
     public void assertNoErrors() {
         List<Throwable> onErrorEvents = getOnErrorEvents();
-        if (onErrorEvents.size() > 0) {
+        if (!onErrorEvents.isEmpty()) {
             assertionError("Unexpected onError events");
         }
     }
@@ -425,7 +425,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         try {
             latch.await();
         } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted", e);
+            throw new IllegalStateException("Interrupted", e);
         }
     }
 
@@ -444,7 +444,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         try {
             latch.await(timeout, unit);
         } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted", e);
+            throw new IllegalStateException("Interrupted", e);
         }
     }
 
@@ -524,7 +524,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      */
     public void assertError(Class<? extends Throwable> clazz) {
         List<Throwable> err = errors;
-        if (err.size() == 0) {
+        if (err.isEmpty()) {
             assertionError("No errors");
         } else
         if (err.size() > 1) {
@@ -549,7 +549,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      */
     public void assertError(Throwable throwable) {
         List<Throwable> err = errors;
-        if (err.size() == 0) {
+        if (err.isEmpty()) {
             assertionError("No errors");
         } else
         if (err.size() > 1) {
@@ -569,7 +569,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public void assertNoTerminalEvent() {
         List<Throwable> err = errors;
         int s = completions;
-        if (err.size() > 0 || s > 0) {
+        if (!err.isEmpty() || s > 0) {
             if (err.isEmpty()) {
                 assertionError("Found " + err.size() + " errors and " + s + " completion events instead of none");
             } else
@@ -638,17 +638,16 @@ public class TestSubscriber<T> extends Subscriber<T> {
     final void assertionError(String message) {
         StringBuilder b = new StringBuilder(message.length() + 32);
         
-        b.append(message);
+        b.append(message)
+        .append(" (");
         
-        
-        b.append(" (");
         int c = completions;
-        b.append(c);
-        b.append(" completion");
+        b.append(c)
+        .append(" completion");
         if (c != 1) {
-            b.append("s");
+            b.append('s');
         }
-        b.append(")");
+        b.append(')');
         
         if (!errors.isEmpty()) {
             int size = errors.size();
@@ -656,9 +655,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
             .append(size)
             .append(" error");
             if (size != 1) {
-                b.append("s");
+                b.append('s');
             }
-            b.append(")");
+            b.append(')');
         }
         
         AssertionError ae = new AssertionError(b.toString());

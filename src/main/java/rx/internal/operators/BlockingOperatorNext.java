@@ -64,8 +64,8 @@ public final class BlockingOperatorNext {
         private T next;
         private boolean hasNext = true;
         private boolean isNextConsumed = true;
-        private Throwable error = null;
-        private boolean started = false;
+        private Throwable error;
+        private boolean started;
 
         NextIterator(Observable<? extends T> items, NextObserver<T> observer) {
             this.items = items;
@@ -122,7 +122,7 @@ public final class BlockingOperatorNext {
                 observer.unsubscribe();
                 Thread.currentThread().interrupt();
                 error = e;
-                throw Exceptions.propagate(error);
+                throw Exceptions.propagate(e);
             }
         }
 
@@ -150,9 +150,6 @@ public final class BlockingOperatorNext {
     private static class NextObserver<T> extends Subscriber<Notification<? extends T>> {
         private final BlockingQueue<Notification<? extends T>> buf = new ArrayBlockingQueue<Notification<? extends T>>(1);
         final AtomicInteger waiting = new AtomicInteger();
-
-        NextObserver() {
-        }
 
         @Override
         public void onCompleted() {

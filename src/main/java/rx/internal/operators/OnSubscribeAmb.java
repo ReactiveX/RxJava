@@ -33,6 +33,9 @@ import rx.subscriptions.Subscriptions;
  * @param <T> the value type
  */
 public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
+    //give default access instead of private as a micro-optimization 
+    //for access from anonymous classes below
+    final Iterable<? extends Observable<? extends T>> sources;
 
     /**
      * Given two {@link Observable}s, propagates the one that first emits an item.
@@ -360,10 +363,6 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
     }
     
-    //give default access instead of private as a micro-optimization 
-    //for access from anonymous classes below
-    final Iterable<? extends Observable<? extends T>> sources;
-    
     private OnSubscribeAmb(Iterable<? extends Observable<? extends T>> sources) {
         this.sources = sources;
     }
@@ -419,7 +418,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
             @Override
             public void request(long n) {
-                final AmbSubscriber<T> c;
+                AmbSubscriber<T> c;
                 if ((c = choice.get()) != null) {
                     // propagate the request to that single Subscriber that won
                     c.requestMore(n);

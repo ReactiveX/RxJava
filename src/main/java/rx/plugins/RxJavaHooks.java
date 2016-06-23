@@ -33,11 +33,6 @@ import rx.internal.operators.*;
  */
 @Experimental
 public final class RxJavaHooks {
-    /** Utility class. */
-    private RxJavaHooks() {
-        throw new IllegalStateException("No instances!");
-    }
-    
     /**
      * Prevents changing the hook callbacks when set to true.
      */
@@ -77,7 +72,13 @@ public final class RxJavaHooks {
     static {
         init();
     }
+
+    /** Utility class. */
+    private RxJavaHooks() {
+        throw new IllegalStateException("No instances!");
+    }
     
+
     /**
      * Initialize the hooks via delegating to RxJavaPlugins.
      */

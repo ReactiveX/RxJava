@@ -196,7 +196,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
 
                 @Override
                 public void onError(Throwable e) {
-                    
+                    SourceSubscriber.this.onError(e);
                 }
 
                 @Override

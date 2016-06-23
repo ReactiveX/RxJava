@@ -69,13 +69,13 @@ public class SpscUnboundedArrayQueue<E> extends SpscUnboundedArrayQueueConsumerF
             Field iField = SpscUnboundedArrayQueueProducerFields.class.getDeclaredField("producerIndex");
             P_INDEX_OFFSET = UNSAFE.objectFieldOffset(iField);
         } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
+            throw new InternalError(e);
         }
         try {
             Field iField = SpscUnboundedArrayQueueConsumerField.class.getDeclaredField("consumerIndex");
             C_INDEX_OFFSET = UNSAFE.objectFieldOffset(iField);
         } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
+            throw new InternalError(e);
         }
     }
 

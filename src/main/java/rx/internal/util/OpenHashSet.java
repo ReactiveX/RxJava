@@ -40,6 +40,7 @@ public final class OpenHashSet<T> {
     int size;
     int maxSize;
     T[] keys;
+    private static final int INT_PHI = 0x9E3779B9;
     
     public OpenHashSet() {
         this(16, 0.75f);
@@ -172,7 +173,7 @@ public final class OpenHashSet<T> {
         
         
         for (int j = size; j-- != 0; ) {
-            while (a[--i] == null);
+            while (a[--i] == null); // NOPMD by akarnokd on 2016.06.23. 11:06
             int pos = mix(a[i].hashCode()) & m;
             if (b[pos] != null) {
                 for (;;) {
@@ -190,8 +191,6 @@ public final class OpenHashSet<T> {
         this.keys = b;
     }
     
-    private static final int INT_PHI = 0x9E3779B9;
-    
     static int mix(int x) {
         final int h = x * INT_PHI;
         return h ^ (h >>> 16);
@@ -206,6 +205,6 @@ public final class OpenHashSet<T> {
      * @return the raw array of values of this set
      */
     public T[] values() {
-        return keys;
+        return keys; // NOPMD by akarnokd on 2016.06.23. 11:06
     }
 }

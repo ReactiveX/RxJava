@@ -30,7 +30,7 @@ public class OperatorIgnoreElements<T> implements Operator<T, T> {
     }
 
     OperatorIgnoreElements() {
-
+        // singleton
     }
 
     @Override

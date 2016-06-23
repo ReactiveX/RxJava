@@ -47,9 +47,6 @@ public final class TrampolineScheduler extends Scheduler {
         private final BooleanSubscription innerSubscription = new BooleanSubscription();
         private final AtomicInteger wip = new AtomicInteger();
 
-        InnerCurrentThreadScheduler() {
-        }
-
         @Override
         public Subscription schedule(Action0 action) {
             return enqueue(action, now());

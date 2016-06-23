@@ -77,7 +77,7 @@ public final class BlockingOperatorToFuture {
 
         return new Future<T>() {
 
-            private volatile boolean cancelled = false;
+            private volatile boolean cancelled;
 
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {

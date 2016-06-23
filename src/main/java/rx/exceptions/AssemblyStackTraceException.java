@@ -46,7 +46,7 @@ public final class AssemblyStackTraceException extends RuntimeException {
     }
 
     @Override
-    public synchronized Throwable fillInStackTrace() {
+    public synchronized Throwable fillInStackTrace() { // NOPMD by akarnokd on 2016.06.23. 10:29
         return this;
     }
 }

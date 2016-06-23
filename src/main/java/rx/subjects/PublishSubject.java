@@ -50,6 +50,8 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  *          the type of items observed and emitted by the Subject
  */
 public final class PublishSubject<T> extends Subject<T, T> {
+    final SubjectSubscriptionManager<T> state;
+    private final NotificationLite<T> nl = NotificationLite.instance();
 
     /**
      * Creates and returns a new {@code PublishSubject}.
@@ -70,9 +72,6 @@ public final class PublishSubject<T> extends Subject<T, T> {
         return new PublishSubject<T>(state, state);
     }
 
-    final SubjectSubscriptionManager<T> state;
-    private final NotificationLite<T> nl = NotificationLite.instance();
-    
     protected PublishSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state) {
         super(onSubscribe);
         this.state = state;

@@ -21,7 +21,7 @@ import rx.SingleSubscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 
-public class SingleOperatorOnErrorResumeNext<T> implements Single.OnSubscribe<T> {
+public final class SingleOperatorOnErrorResumeNext<T> implements Single.OnSubscribe<T> {
 
     private final Single<? extends T> originalSingle;
     private final Func1<Throwable, ? extends Single<? extends T>> resumeFunctionInCaseOfError;

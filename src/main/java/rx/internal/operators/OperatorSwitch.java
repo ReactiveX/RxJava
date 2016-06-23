@@ -37,6 +37,7 @@ import rx.subscriptions.*;
  * @param <T> the value type
  */
 public final class OperatorSwitch<T> implements Operator<T, Observable<? extends T>> {
+    final boolean delayError;
     /** Lazy initialization via inner-class holder. */
     private static final class Holder {
         /** A singleton instance. */
@@ -61,8 +62,6 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         return (OperatorSwitch<T>)Holder.INSTANCE;
     }
 
-    final boolean delayError;
-    
     OperatorSwitch(boolean delayError) { 
         this.delayError = delayError;
     }
@@ -267,7 +266,6 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         }
         
         void drain() {
-            boolean localMainDone = mainDone;
             boolean localInnerActive;
             long localRequested;
             Throwable localError;
@@ -288,6 +286,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
             final SpscLinkedArrayQueue<Object> localQueue = queue;
             final AtomicLong localIndex = index;
             final Subscriber<? super T> localChild = child;
+            boolean localMainDone = mainDone;
 
             for (;;) {
 

@@ -28,7 +28,14 @@ import rx.functions.FuncN;
  * Utility functions for internal use that we don't want part of the public API. 
  */
 public final class UtilityFunctions {
+    @SuppressWarnings("rawtypes")
+    private static final NullFunction NULL_FUNCTION = new NullFunction();
 
+    /** Utility class. */
+    private UtilityFunctions() {
+        throw new IllegalStateException("No instances!");
+    }
+    
     /**
      * Returns a function that always returns {@code true}.
      *
@@ -103,9 +110,6 @@ public final class UtilityFunctions {
         return NULL_FUNCTION;
     }
 
-    @SuppressWarnings("rawtypes")
-    private static final NullFunction NULL_FUNCTION = new NullFunction();
-
     private static final class NullFunction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> implements
             Func0<R>,
             Func1<T0, R>,
@@ -118,8 +122,6 @@ public final class UtilityFunctions {
             Func8<T0, T1, T2, T3, T4, T5, T6, T7, R>,
             Func9<T0, T1, T2, T3, T4, T5, T6, T7, T8, R>,
             FuncN<R> {
-        NullFunction() {
-        }
 
         @Override
         public R call() {

@@ -9015,7 +9015,7 @@ public class Observable<T> {
                 // TODO could the hook be the cause of the error in the on error handling.
                 RxJavaHooks.onObservableError(r);
                 // TODO why aren't we throwing the hook's return value.
-                throw r;
+                throw r; // NOPMD by akarnokd on 2016.06.23. 10:51
             }
             return Subscriptions.unsubscribed();
         }
@@ -9112,7 +9112,7 @@ public class Observable<T> {
                     // TODO could the hook be the cause of the error in the on error handling.
                     RxJavaHooks.onObservableError(r);
                     // TODO why aren't we throwing the hook's return value.
-                    throw r;
+                    throw r; // NOPMD by akarnokd on 2016.06.23. 10:51
                 }
             }
             return Subscriptions.unsubscribed();
@@ -9306,12 +9306,13 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
     public final Observable<T> takeLast(final int count) {
-        if (count == 0)
+        if (count == 0) {
             return ignoreElements();
-        else if (count == 1 )
+        } else if (count == 1) {
             return lift(OperatorTakeLastOne.<T>instance());
-        else 
+        } else {
             return lift(new OperatorTakeLast<T>(count));
+        }
     }
 
     /**

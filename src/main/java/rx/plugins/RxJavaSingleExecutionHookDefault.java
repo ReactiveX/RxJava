@@ -18,10 +18,16 @@ package rx.plugins;
 /**
  * Default no-op implementation of {@link RxJavaSingleExecutionHook}
  */
-class RxJavaSingleExecutionHookDefault extends RxJavaSingleExecutionHook {
+final class RxJavaSingleExecutionHookDefault extends RxJavaSingleExecutionHook {
 
     private static final RxJavaSingleExecutionHookDefault INSTANCE = new RxJavaSingleExecutionHookDefault();
 
+    /**
+     * Utility class.
+     */
+    private RxJavaSingleExecutionHookDefault() {
+    }
+    
     public static RxJavaSingleExecutionHook getInstance() {
         return INSTANCE;
     }

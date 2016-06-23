@@ -19,6 +19,9 @@ package rx.functions;
  * Utility class for the Action interfaces.
  */
 public final class Actions {
+    @SuppressWarnings("rawtypes")
+    private static final EmptyAction EMPTY_ACTION = new EmptyAction();
+
     private Actions() {
         throw new IllegalStateException("No instances!");
     }
@@ -27,9 +30,6 @@ public final class Actions {
     public static <T0, T1, T2, T3, T4, T5, T6, T7, T8> EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8> empty() {
         return EMPTY_ACTION;
     }
-
-    @SuppressWarnings("rawtypes")
-    private static final EmptyAction EMPTY_ACTION = new EmptyAction();
 
     private static final class EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8> implements
             Action0,
@@ -43,51 +43,60 @@ public final class Actions {
             Action8<T0, T1, T2, T3, T4, T5, T6, T7>,
             Action9<T0, T1, T2, T3, T4, T5, T6, T7, T8>,
             ActionN {
-        EmptyAction() {
-        }
 
         @Override
         public void call() {
+            // deliberately no op
         }
 
         @Override
         public void call(T0 t1) {
+            // deliberately no op
         }
 
         @Override
         public void call(T0 t1, T1 t2) {
+            // deliberately no op
         }
 
         @Override
         public void call(T0 t1, T1 t2, T2 t3) {
+            // deliberately no op
         }
 
         @Override
         public void call(T0 t1, T1 t2, T2 t3, T3 t4) {
+            // deliberately no op
         }
 
         @Override
         public void call(T0 t1, T1 t2, T2 t3, T3 t4, T4 t5) {
+            // deliberately no op
         }
 
         @Override
         public void call(T0 t1, T1 t2, T2 t3, T3 t4, T4 t5, T5 t6) {
+            // deliberately no op
         }
 
         @Override
         public void call(T0 t1, T1 t2, T2 t3, T3 t4, T4 t5, T5 t6, T6 t7) {
+            // deliberately no op
         }
 
         @Override
         public void call(T0 t1, T1 t2, T2 t3, T3 t4, T4 t5, T5 t6, T6 t7, T7 t8) {
+            // deliberately no op
         }
 
         @Override
         public void call(T0 t1, T1 t2, T2 t3, T3 t4, T4 t5, T5 t6, T6 t7, T7 t8, T8 t9) {
+            // deliberately no op
         }
 
         @Override
         public void call(Object... args) {
+            // deliberately no op
         }
     }
     

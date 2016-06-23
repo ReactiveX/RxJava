@@ -26,11 +26,11 @@ import rx.internal.schedulers.EventLoopsScheduler;
 
 public final class ScalarSynchronousSingle<T> extends Single<T> {
 
-    public static final <T> ScalarSynchronousSingle<T> create(T t) {
+    final T value;
+
+    public static <T> ScalarSynchronousSingle<T> create(T t) {
         return new ScalarSynchronousSingle<T>(t);
     }
-
-    final T value;
 
     protected ScalarSynchronousSingle(final T t) {
         super(new OnSubscribe<T>() {
@@ -136,6 +136,7 @@ public final class ScalarSynchronousSingle<T> extends Single<T> {
                     Subscriber<R> subscriber = new Subscriber<R>() {
                         @Override
                         public void onCompleted() {
+                            // deliberately ignored
                         }
 
                         @Override

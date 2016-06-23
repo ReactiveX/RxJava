@@ -104,9 +104,9 @@ public final class OperatorTake<T> implements Operator<T, T> {
                             while (true) {
                                 long r = requested.get();
                                 long c = Math.min(n, limit - r);
-                                if (c == 0)
+                                if (c == 0) {
                                     break;
-                                else if (requested.compareAndSet(r, r + c)) {
+                                } else if (requested.compareAndSet(r, r + c)) {
                                     producer.request(c);
                                     break;
                                 }

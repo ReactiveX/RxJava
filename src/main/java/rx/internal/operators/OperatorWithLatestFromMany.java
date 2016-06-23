@@ -68,7 +68,6 @@ public final class OperatorWithLatestFromMany<T, R> implements OnSubscribe<R> {
 
             
         for (int i = 0; i < n; i++) {
-            Observable<?> o = sources[i];
             if (serial.isUnsubscribed()) {
                 return;
             }
@@ -76,6 +75,7 @@ public final class OperatorWithLatestFromMany<T, R> implements OnSubscribe<R> {
             WithLatestOtherSubscriber inner = new WithLatestOtherSubscriber(parent, i + 1);
             parent.add(inner);
             
+            Observable<?> o = sources[i];
             o.unsafeSubscribe(inner);
         }
         

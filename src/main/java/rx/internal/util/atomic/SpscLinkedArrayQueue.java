@@ -35,14 +35,15 @@ import rx.internal.util.unsafe.Pow2;
  */
 public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     static final int MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
-    protected final AtomicLong producerIndex;
-    protected int producerLookAheadStep;
-    protected long producerLookAhead;
-    protected int producerMask;
-    protected AtomicReferenceArray<Object> producerBuffer;
-    protected int consumerMask;
-    protected AtomicReferenceArray<Object> consumerBuffer;
-    protected final AtomicLong consumerIndex;
+    final AtomicLong producerIndex;
+    int producerLookAheadStep;
+    long producerLookAhead;
+    int producerMask;
+    AtomicReferenceArray<Object> producerBuffer;
+    int consumerMask;
+    AtomicReferenceArray<Object> consumerBuffer;
+    final AtomicLong consumerIndex;
+    
     private static final Object HAS_NEXT = new Object();
 
     public SpscLinkedArrayQueue(final int bufferSize) {
@@ -65,7 +66,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
      * This implementation is correct for single producer thread use only.
      */
     @Override
-    public final boolean offer(final T e) {
+    public boolean offer(final T e) {
         // local load of field to avoid repeated loads after volatile reads
         final AtomicReferenceArray<Object> buffer = producerBuffer;
         final long index = lpProducerIndex();
@@ -122,7 +123,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public final T poll() {
+    public T poll() {
         // local load of field to avoid repeated loads after volatile reads
         final AtomicReferenceArray<Object> buffer = consumerBuffer;
         final long index = lpConsumerIndex();
@@ -162,7 +163,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public final T peek() {
+    public T peek() {
         final AtomicReferenceArray<Object> buffer = consumerBuffer;
         final long index = lpConsumerIndex();
         final int mask = consumerMask;
@@ -177,7 +178,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     
     @Override
     public void clear() {
-        while (poll() != null || !isEmpty());
+        while (poll() != null || !isEmpty()); // NOPMD by akarnokd on 2016.06.23. 10:58
     }
 
     @SuppressWarnings("unchecked")
@@ -188,7 +189,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     }
 
     @Override
-    public final int size() {
+    public int size() {
         /*
          * It is possible for a thread to be interrupted or reschedule between the read of the producer and
          * consumer indices, therefore protection is required to ensure size is within valid range. In the
@@ -254,7 +255,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     }
 
     @Override
-    public final Iterator<T> iterator() {
+    public Iterator<T> iterator() {
         throw new UnsupportedOperationException();
     }
 

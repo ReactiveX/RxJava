@@ -619,7 +619,7 @@ public class Single<T> {
         return create(new OnSubscribe<T>() {
             @Override
             public void call(SingleSubscriber<? super T> singleSubscriber) {
-                final T value;
+                T value;
 
                 try {
                     value = func.call();
@@ -1719,7 +1719,7 @@ public class Single<T> {
                 // TODO could the hook be the cause of the error in the on error handling.
                 RxJavaHooks.onSingleError(r);
                 // TODO why aren't we throwing the hook's return value.
-                throw r;
+                throw r; // NOPMD by akarnokd on 2016.06.23. 10:54
             }
             return Subscriptions.unsubscribed();
         }
@@ -1829,7 +1829,7 @@ public class Single<T> {
                 // TODO could the hook be the cause of the error in the on error handling.
                 RxJavaHooks.onSingleError(r);
                 // TODO why aren't we throwing the hook's return value.
-                throw r;
+                throw r; // NOPMD by akarnokd on 2016.06.23. 10:53
             }
             return Subscriptions.empty();
         }
@@ -1875,7 +1875,7 @@ public class Single<T> {
 
             @Override
             public void onCompleted() {
-
+                // deliberately ignored
             }
 
             @Override
@@ -2376,6 +2376,7 @@ public class Single<T> {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {
+                // deliberately ignored
             }
 
             @Override
@@ -2385,6 +2386,7 @@ public class Single<T> {
 
             @Override
             public void onNext(T t) {
+                // deliberately ignored
             }
         };
 
@@ -2410,10 +2412,12 @@ public class Single<T> {
         Observer<T> observer = new Observer<T>() {
             @Override
             public void onCompleted() {
+                // deliberately ignored
             }
 
             @Override
             public void onError(Throwable e) {
+                // deliberately ignored
             }
 
             @Override
@@ -2589,7 +2593,7 @@ public class Single<T> {
      */
     @SuppressWarnings("unchecked")
     static <T> Single<? extends T>[] iterableToArray(final Iterable<? extends Single<? extends T>> singlesIterable) {
-        final Single<? extends T>[] singlesArray;
+        Single<? extends T>[] singlesArray;
         int count;
 
         if (singlesIterable instanceof Collection) {

@@ -22,7 +22,7 @@ import rx.Scheduler;
  */
 @Deprecated
 // Class was part of public API.
-public final class TrampolineScheduler extends Scheduler {
+public final class TrampolineScheduler extends Scheduler { // NOPMD by akarnokd on 2016.06.23. 10:11
     private TrampolineScheduler() {
         throw new AssertionError();
     }

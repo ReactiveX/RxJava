@@ -38,9 +38,9 @@ public class OnSubscribeSingle<T> implements Single.OnSubscribe<T> {
     @Override
     public void call(final SingleSubscriber<? super T> child) {
         Subscriber<T> parent = new Subscriber<T>() {
-            private boolean emittedTooMany = false;
-            private boolean itemEmitted = false;
-            private T emission = null;
+            private boolean emittedTooMany;
+            private boolean itemEmitted;
+            private T emission;
 
             @Override
             public void onStart() {

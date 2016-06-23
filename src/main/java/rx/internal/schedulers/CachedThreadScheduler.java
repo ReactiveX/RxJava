@@ -28,9 +28,19 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
     private static final TimeUnit KEEP_ALIVE_UNIT = TimeUnit.SECONDS;
     
     static final ThreadWorker SHUTDOWN_THREADWORKER;
+
+    static final CachedWorkerPool NONE;
+
+    final ThreadFactory threadFactory;
+
+    final AtomicReference<CachedWorkerPool> pool;
+    
     static {
         SHUTDOWN_THREADWORKER = new ThreadWorker(RxThreadFactory.NONE);
         SHUTDOWN_THREADWORKER.unsubscribe();
+
+        NONE = new CachedWorkerPool(null, 0, null);
+        NONE.shutdown();
     }
     
     private static final class CachedWorkerPool {
@@ -131,15 +141,6 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         }
     }
 
-    final ThreadFactory threadFactory;
-    final AtomicReference<CachedWorkerPool> pool;
-    
-    static final CachedWorkerPool NONE;
-    static {
-        NONE = new CachedWorkerPool(null, 0, null);
-        NONE.shutdown();
-    }
-    
     public CachedThreadScheduler(ThreadFactory threadFactory) {
         this.threadFactory = threadFactory;
         this.pool = new AtomicReference<CachedWorkerPool>(NONE);

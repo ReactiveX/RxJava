@@ -41,15 +41,17 @@ public final class CompositeException extends RuntimeException {
     private final List<Throwable> exceptions;
     private final String message;
 
+    private Throwable cause;
+
     /** 
      * Constructs a CompositeException with the given prefix and error collection.
      * @param messagePrefix the prefix to use (actually unused)
      * @param errors the collection of errors
      * @deprecated please use {@link #CompositeException(Collection)} */
     @Deprecated
-    public CompositeException(String messagePrefix, Collection<? extends Throwable> errors) {
+    public CompositeException(String messagePrefix, Collection<? extends Throwable> errors) { // NOPMD by akarnokd on 2016.06.23. 10:31
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
-        List<Throwable> _exceptions = new ArrayList<Throwable>();
+        List<Throwable> localExceptions = new ArrayList<Throwable>();
         if (errors != null) {
             for (Throwable ex : errors) {
                 if (ex instanceof CompositeException) {
@@ -65,8 +67,8 @@ public final class CompositeException extends RuntimeException {
             deDupedExceptions.add(new NullPointerException());
         }
 
-        _exceptions.addAll(deDupedExceptions);
-        this.exceptions = Collections.unmodifiableList(_exceptions);
+        localExceptions.addAll(deDupedExceptions);
+        this.exceptions = Collections.unmodifiableList(localExceptions);
         this.message = exceptions.size() + " exceptions occurred. ";
     }
 
@@ -81,7 +83,7 @@ public final class CompositeException extends RuntimeException {
     @Experimental
     public CompositeException(Throwable... errors) {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
-        List<Throwable> _exceptions = new ArrayList<Throwable>();
+        List<Throwable> localExceptions = new ArrayList<Throwable>();
         if (errors != null) {
             for (Throwable ex : errors) {
                 if (ex instanceof CompositeException) {
@@ -97,8 +99,8 @@ public final class CompositeException extends RuntimeException {
             deDupedExceptions.add(new NullPointerException());
         }
 
-        _exceptions.addAll(deDupedExceptions);
-        this.exceptions = Collections.unmodifiableList(_exceptions);
+        localExceptions.addAll(deDupedExceptions);
+        this.exceptions = Collections.unmodifiableList(localExceptions);
         this.message = exceptions.size() + " exceptions occurred. ";
     }
 
@@ -116,16 +118,14 @@ public final class CompositeException extends RuntimeException {
         return message;
     }
 
-    private Throwable cause = null;
-
     @Override
-    public synchronized Throwable getCause() {
+    public synchronized Throwable getCause() { // NOPMD by akarnokd on 2016.06.23. 10:31
         if (cause == null) {
             // we lazily generate this causal chain if this is called
-            CompositeExceptionCausalChain _cause = new CompositeExceptionCausalChain();
+            CompositeExceptionCausalChain localCause = new CompositeExceptionCausalChain();
             Set<Throwable> seenCauses = new HashSet<Throwable>();
 
-            Throwable chain = _cause;
+            Throwable chain = localCause;
             for (Throwable e : exceptions) {
                 if (seenCauses.contains(e)) {
                     // already seen this outer Throwable so skip
@@ -147,14 +147,14 @@ public final class CompositeException extends RuntimeException {
                 // we now have 'e' as the last in the chain
                 try {
                     chain.initCause(e);
-                } catch (Throwable t) {
+                } catch (Throwable t) { // NOPMD by akarnokd on 2016.06.23. 10:32
                     // ignore
                     // the javadocs say that some Throwables (depending on how they're made) will never
                     // let me call initCause without blowing up even if it returns null
                 }
                 chain = getRootCause(chain);
             }
-            cause = _cause;
+            cause = localCause;
         }
         return cause;
     }
@@ -192,14 +192,14 @@ public final class CompositeException extends RuntimeException {
      *            stream to print to
      */
     private void printStackTrace(PrintStreamOrWriter s) {
-        StringBuilder bldr = new StringBuilder();
-        bldr.append(this).append("\n");
+        StringBuilder bldr = new StringBuilder(128);
+        bldr.append(this).append('\n');
         for (StackTraceElement myStackElement : getStackTrace()) {
-            bldr.append("\tat ").append(myStackElement).append("\n");
+            bldr.append("\tat ").append(myStackElement).append('\n');
         }
         int i = 1;
         for (Throwable ex : exceptions) {
-            bldr.append("  ComposedException ").append(i).append(" :").append("\n");
+            bldr.append("  ComposedException ").append(i).append(" :\n");
             appendStackTrace(bldr, ex, "\t");
             i++;
         }
@@ -209,9 +209,9 @@ public final class CompositeException extends RuntimeException {
     }
 
     private void appendStackTrace(StringBuilder bldr, Throwable ex, String prefix) {
-        bldr.append(prefix).append(ex).append("\n");
+        bldr.append(prefix).append(ex).append('\n');
         for (StackTraceElement stackElement : ex.getStackTrace()) {
-            bldr.append("\t\tat ").append(stackElement).append("\n");
+            bldr.append("\t\tat ").append(stackElement).append('\n');
         }
         if (ex.getCause() != null) {
             bldr.append("\tCaused by: ");
@@ -268,7 +268,7 @@ public final class CompositeException extends RuntimeException {
 
     /* package-private */final static class CompositeExceptionCausalChain extends RuntimeException {
         private static final long serialVersionUID = 3875212506787802066L;
-        /* package-private */static String MESSAGE = "Chain of Causes for CompositeException In Order Received =>";
+        /* package-private */static final String MESSAGE = "Chain of Causes for CompositeException In Order Received =>";
 
         @Override
         public String getMessage() {

@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.*;
 public final class SpscAtomicArrayQueue<E> extends AtomicReferenceArrayQueue<E> {
     private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
     final AtomicLong producerIndex;
-    protected long producerLookAhead;
+    long producerLookAhead;
     final AtomicLong consumerIndex;
     final int lookAheadStep;
     public SpscAtomicArrayQueue(int capacity) {

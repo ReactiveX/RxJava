@@ -42,7 +42,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
     }
     
     @SuppressWarnings("unchecked")
-    protected final LinkedQueueNode<E> xchgProducerNode(LinkedQueueNode<E> newVal) {
+    protected LinkedQueueNode<E> xchgProducerNode(LinkedQueueNode<E> newVal) {
         Object oldVal;
         do {
             oldVal = producerNode;
@@ -67,7 +67,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
      * @see java.util.Queue#offer(java.lang.Object)
      */
     @Override
-    public final boolean offer(final E nextValue) {
+    public boolean offer(final E nextValue) {
         if (nextValue == null) {
             throw new NullPointerException("null elements not allowed");
         }
@@ -96,7 +96,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
      * @see java.util.Queue#poll()
      */
     @Override
-    public final E poll() {
+    public E poll() {
         LinkedQueueNode<E> currConsumerNode = lpConsumerNode(); // don't load twice, it's alright
         LinkedQueueNode<E> nextNode = currConsumerNode.lvNext();
         if (nextNode != null) {
@@ -107,7 +107,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null);
+            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD by akarnokd on 2016.06.23. 10:28
             // got the next node...
             
             // we have to null out the value because we are going to hang on to the node
@@ -119,7 +119,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
     }
 
     @Override
-    public final E peek() {
+    public E peek() {
         LinkedQueueNode<E> currConsumerNode = consumerNode; // don't load twice, it's alright
         LinkedQueueNode<E> nextNode = currConsumerNode.lvNext();
         if (nextNode != null) {
@@ -127,7 +127,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null);
+            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD by akarnokd on 2016.06.23. 10:28
             // got the next node...
             return nextNode.lpValue();
         }

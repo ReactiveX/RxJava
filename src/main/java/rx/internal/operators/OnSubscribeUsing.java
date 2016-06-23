@@ -58,7 +58,7 @@ public final class OnSubscribeUsing<T, Resource> implements OnSubscribe<T> {
             // dispose on unsubscription
             subscriber.add(disposeOnceOnly);
             // create the observable
-            final Observable<? extends T> source;
+            Observable<? extends T> source;
 
             try {
                 source = observableFactory
@@ -77,7 +77,7 @@ public final class OnSubscribeUsing<T, Resource> implements OnSubscribe<T> {
                 return;
             }
 
-            final Observable<? extends T> observable;
+            Observable<? extends T> observable;
             // supplement with on termination disposal if requested
             if (disposeEagerly) {
                 observable = source
@@ -96,11 +96,12 @@ public final class OnSubscribeUsing<T, Resource> implements OnSubscribe<T> {
                 Throwable disposeError = dispose(disposeOnceOnly);
                 Exceptions.throwIfFatal(e);
                 Exceptions.throwIfFatal(disposeError);
-                if (disposeError != null)
+                if (disposeError != null) {
                     subscriber.onError(new CompositeException(e, disposeError));
-                else
+                } else {
                     // propagate error
                     subscriber.onError(e);
+                }
             }
         } catch (Throwable e) {
             // then propagate error

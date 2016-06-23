@@ -104,8 +104,9 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                                 subscription = null;
                                 guardedSubscription = null;
                                 connectedSubject.set(null);
-                            } else 
+                            } else {
                                 return;
+                            }
                         }
                         if (s != null) {
                             s.unsubscribe();
@@ -149,7 +150,8 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
         synchronized (guard) {
             sub = subscription;
         }
-        if (sub != null)
+        if (sub != null) {
             ((Observable<T>)source).subscribe(sub);
+        }
     }
 }
