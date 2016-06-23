@@ -1,10 +1,10 @@
 buildscript {
-    repositories { 
-        jcenter() 
+    repositories {
+        jcenter()
     }
-    dependencies { 
+    dependencies {
         classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:4.0.0'
-        classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.1.0' 
+        classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.1.0'
     }
 }
 
@@ -12,6 +12,7 @@ description = 'RxJava: Reactive Extensions for the JVM – a library for composi
 
 apply plugin: 'java'
 apply plugin: 'pmd'
+apply plugin: 'findbugs'
 apply plugin: 'jacoco'
 apply plugin: 'ru.vyarus.animalsniffer'
 apply plugin: 'nebula.rxjava-project'
@@ -98,15 +99,15 @@ pmdMain {
 task pmdPrint(dependsOn: 'pmdMain') << {
     File file = new File('build/reports/pmd/main.xml')
     if (file.exists()) {
-    
+
         println("Listing first 100 PMD violations")
-        
+
         file.eachLine { line, count ->
             if (count <= 100) {
                println(line)
             }
         }
-    
+
     } else {
         println("PMD file not found.")
     }
@@ -116,4 +117,18 @@ build.dependsOn pmdPrint
 
 animalsniffer {
     annotation = 'rx.internal.util.SuppressAnimalSniffer'
+}
+
+findbugs {
+    ignoreFailures true
+    toolVersion = '3.0.1'
+    effort = 'max'
+    reportLevel = 'low'
+}
+
+findbugsMain {
+    reports {
+        html.enabled = false // Findbugs can only have on report enabled
+        xml.enabled = true
+    }
 }
