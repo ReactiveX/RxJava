@@ -18,23 +18,29 @@ import org.reactivestreams.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * A subscriber that ignores all events (onError is forwarded to RxJavaPlugins though).
+ * A subscriber that ignores all events.
  */
 public enum EmptySubscriber implements Subscriber<Object> {
     /** Empty instance that reports error to the plugins. */
-    INSTANCE(true),
+    INSTANCE(true, false),
     /** Empty instance that doesn't report to the plugins to avoid flooding the test output. */
-    INSTANCE_NOERROR(false);
+    INSTANCE_NOERROR(false, false),
+    /** Empty instance that cancels subscriptions. */
+    CANCELLED(true, true);
     
-    final boolean reportError;
+    private final boolean reportError;
+    private final boolean cancelSubscription;
     
-    EmptySubscriber(boolean reportError) {
+    EmptySubscriber(boolean reportError, boolean cancelSubscription) {
         this.reportError = reportError;
+        this.cancelSubscription = cancelSubscription;
     }
     
     @Override
     public void onSubscribe(Subscription s) {
-        
+        if (cancelSubscription) {
+            s.cancel();
+        }
     }
     
     @Override

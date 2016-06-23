@@ -29,10 +29,9 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscribers.flowable.CancelledSubscriber;
 import io.reactivex.processors.ReplayProcessor;
 import io.reactivex.schedulers.*;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableRefCountTest {
 
@@ -441,7 +440,7 @@ public class FlowableRefCountTest {
 
     @Test
     public void testAlreadyUnsubscribedClient() {
-        Subscriber<Integer> done = CancelledSubscriber.instance();
+        Subscriber<Integer> done = Subscribers.cancelled();
 
         Subscriber<Integer> o = TestHelper.mockSubscriber();
 
@@ -460,7 +459,7 @@ public class FlowableRefCountTest {
     public void testAlreadyUnsubscribedInterleavesWithClient() {
         ReplayProcessor<Integer> source = ReplayProcessor.create();
 
-        Subscriber<Integer> done = CancelledSubscriber.instance();
+        Subscriber<Integer> done = Subscribers.cancelled();
 
         Subscriber<Integer> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
