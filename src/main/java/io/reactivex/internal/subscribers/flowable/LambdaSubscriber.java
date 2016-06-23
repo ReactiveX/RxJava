@@ -19,17 +19,16 @@ import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class LambdaSubscriber<T> extends AtomicReference<Object> implements Subscriber<T>, Subscription, Disposable {
+public final class LambdaSubscriber<T> extends AtomicReference<Subscription> implements Subscriber<T>, Subscription, Disposable {
     /** */
     private static final long serialVersionUID = -7251123623727029452L;
     final Consumer<? super T> onNext;
     final Consumer<? super Throwable> onError;
     final Runnable onComplete;
     final Consumer<? super Subscription> onSubscribe;
-    
-    static final Object CANCELLED = new Object();
     
     public LambdaSubscriber(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
             Runnable onComplete,
@@ -43,13 +42,8 @@ public final class LambdaSubscriber<T> extends AtomicReference<Object> implement
     
     @Override
     public void onSubscribe(Subscription s) {
-        if (compareAndSet(null, s)) {
+        if (SubscriptionHelper.setOnce(this, s)) {
             onSubscribe.accept(this);
-        } else {
-            s.cancel();
-            if (get() != CANCELLED) {
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
-            }
         }
     }
     
@@ -90,20 +84,11 @@ public final class LambdaSubscriber<T> extends AtomicReference<Object> implement
     
     @Override
     public void request(long n) {
-        Object o = get();
-        if (o != CANCELLED) {
-            ((Subscription)o).request(n);
-        }
+        get().request(n);
     }
     
     @Override
     public void cancel() {
-        Object o = get();
-        if (o != CANCELLED) {
-            o = getAndSet(CANCELLED);
-            if (o != CANCELLED && o != null) {
-                ((Subscription)o).cancel();
-            }
-        }
+        SubscriptionHelper.dispose(this);
     }
 }
