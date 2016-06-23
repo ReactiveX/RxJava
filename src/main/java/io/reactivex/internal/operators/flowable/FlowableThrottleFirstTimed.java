@@ -156,9 +156,8 @@ public final class FlowableThrottleFirstTimed<T> extends Flowable<T> {
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validateRequest(n)) {
-                return;
+                BackpressureHelper.add(this, n);
             }
-            BackpressureHelper.add(this, n);
         }
         
         @Override

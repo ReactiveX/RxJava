@@ -364,10 +364,9 @@ public final class ReplayProcessor<T> extends FlowProcessor<T> {
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validateRequest(n)) {
-                return;
+                BackpressureHelper.add(requested, n);
+                state.buffer.replay(this);
             }
-            BackpressureHelper.add(requested, n);
-            state.buffer.replay(this);
         }
         
         @Override

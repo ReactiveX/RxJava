@@ -279,7 +279,7 @@ public final class FlowableCache<T> extends Flowable<T> {
         }
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             for (;;) {

@@ -145,7 +145,7 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             BackpressureHelper.add(requested, n);

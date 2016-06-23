@@ -26,9 +26,7 @@ public final class BooleanSubscription extends AtomicBoolean implements Subscrip
 
     @Override
     public void request(long n) {
-        if (SubscriptionHelper.validateRequest(n)) {
-            return;
-        }
+        SubscriptionHelper.validateRequest(n);
     }
     
     @Override

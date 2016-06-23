@@ -105,7 +105,7 @@ public final class FlowableSubscribeOn<T> extends Flowable<T> {
         
         @Override
         public void request(final long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             if (Thread.currentThread() == get()) {

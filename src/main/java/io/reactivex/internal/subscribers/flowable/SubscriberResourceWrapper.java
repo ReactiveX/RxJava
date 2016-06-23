@@ -78,9 +78,8 @@ public final class SubscriberResourceWrapper<T, R> extends AtomicReference<Objec
     @Override
     public void request(long n) {
         if (SubscriptionHelper.validateRequest(n)) {
-            return;
+            subscription.get().request(n);
         }
-        subscription.get().request(n);
     }
     
     @Override

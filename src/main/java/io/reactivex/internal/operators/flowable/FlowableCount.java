@@ -72,7 +72,7 @@ public final class FlowableCount<T> extends Flowable<Long> {
         
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validateRequest(n)) {
                 s.request(Long.MAX_VALUE);
             }
         }

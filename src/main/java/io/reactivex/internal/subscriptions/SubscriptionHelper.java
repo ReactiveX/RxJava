@@ -62,9 +62,9 @@ public enum SubscriptionHelper {
     public static boolean validateRequest(long n) {
         if (n <= 0) {
             RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
     
     /** Singleton instance of a function which calls cancel on the supplied Subscription. */

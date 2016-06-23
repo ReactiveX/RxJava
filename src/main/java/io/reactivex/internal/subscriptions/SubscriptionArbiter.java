@@ -62,7 +62,7 @@ public final class SubscriptionArbiter extends AtomicInteger implements Subscrip
     
     @Override
     public void request(final long n) {
-        if (SubscriptionHelper.validateRequest(n)) {
+        if (!SubscriptionHelper.validateRequest(n)) {
             return;
         }
         if (cancelled) {

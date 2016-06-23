@@ -183,7 +183,7 @@ public final class FlowableMapNotification<T, R> extends Flowable<Publisher<? ex
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             

@@ -124,10 +124,9 @@ public final class FlowableOnBackpressureBuffer<T> extends Flowable<T> {
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validateRequest(n)) {
-                return;
+                BackpressureHelper.add(requested, n);
+                drain();
             }
-            BackpressureHelper.add(requested, n);
-            drain();
         }
         
         @Override

@@ -118,9 +118,8 @@ public final class FlowableOnBackpressureDrop<T> extends Flowable<T> implements 
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validateRequest(n)) {
-                return;
+                BackpressureHelper.add(this, n);
             }
-            BackpressureHelper.add(this, n);
         }
         
         @Override
