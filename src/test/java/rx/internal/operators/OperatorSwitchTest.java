@@ -854,7 +854,7 @@ public class OperatorSwitchTest {
                 }
             };
             
-            Observable.range(1, 25000)
+            Observable.range(1, 10000)
             .observeOn(Schedulers.computation(), i)
             .switchMap(new Func1<Integer, Observable<Integer>>() {
                 @Override
