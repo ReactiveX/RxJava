@@ -178,8 +178,4 @@ public final class UtilityFunctions {
             return null;
         }
     }
-    
-    void shouldBlowup() {
-        new AssertionError("Message", new RuntimeException());
-    }
 }
