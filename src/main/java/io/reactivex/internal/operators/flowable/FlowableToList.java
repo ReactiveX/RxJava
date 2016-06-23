@@ -20,6 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Supplier;
 import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableToList<T, U extends Collection<? super T>> extends Flowable<U>
@@ -100,11 +101,9 @@ implements Supplier<U> {
         
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
-                return;
+            if (!SubscriptionHelper.validateRequest(n)) {
+                s.request(Long.MAX_VALUE);
             }
-            s.request(Long.MAX_VALUE);
         }
         
         @Override

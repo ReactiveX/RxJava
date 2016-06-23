@@ -38,8 +38,7 @@ public final class ScalarSubscription<T> extends AtomicBoolean implements Subscr
     
     @Override
     public void request(long n) {
-        if (n <= 0) {
-            RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
+        if (SubscriptionHelper.validateRequest(n)) {
             return;
         }
         if (compareAndSet(false, true)) {
