@@ -56,7 +56,7 @@ public final class OnSubscribeDelaySubscriptionOther<T, U> implements OnSubscrib
             @Override
             public void onError(Throwable e) {
                 if (done) {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                    RxJavaHooks.onError(e);
                     return;
                 }
                 done = true;

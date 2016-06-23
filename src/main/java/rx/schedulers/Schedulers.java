@@ -21,8 +21,7 @@ import rx.internal.schedulers.ExecutorScheduler;
 import rx.internal.schedulers.GenericScheduledExecutorService;
 import rx.internal.schedulers.SchedulerLifecycle;
 import rx.internal.util.RxRingBuffer;
-import rx.plugins.RxJavaPlugins;
-import rx.plugins.RxJavaSchedulersHook;
+import rx.plugins.*;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
@@ -54,6 +53,7 @@ public final class Schedulers {
     }
 
     private Schedulers() {
+        @SuppressWarnings("deprecation")
         RxJavaSchedulersHook hook = RxJavaPlugins.getInstance().getSchedulersHook();
 
         Scheduler c = hook.getComputationScheduler();
@@ -105,7 +105,7 @@ public final class Schedulers {
      * @return a {@link Scheduler} that creates new threads
      */
     public static Scheduler newThread() {
-        return getInstance().newThreadScheduler;
+        return RxJavaHooks.onNewThreadScheduler(getInstance().newThreadScheduler);
     }
 
     /**
@@ -120,7 +120,7 @@ public final class Schedulers {
      * @return a {@link Scheduler} meant for computation-bound work
      */
     public static Scheduler computation() {
-        return getInstance().computationScheduler;
+        return RxJavaHooks.onComputationScheduler(getInstance().computationScheduler);
     }
 
     /**
@@ -137,7 +137,7 @@ public final class Schedulers {
      * @return a {@link Scheduler} meant for IO-bound work
      */
     public static Scheduler io() {
-        return getInstance().ioScheduler;
+        return RxJavaHooks.onComputationScheduler(getInstance().ioScheduler);
     }
 
     /**

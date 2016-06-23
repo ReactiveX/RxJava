@@ -43,6 +43,7 @@ public abstract class RxJavaErrorHandler {
      * @param e
      *            the {@code Exception}
      */
+    @Deprecated
     public void handleError(Throwable e) {
         // do nothing by default
     }
@@ -57,7 +58,7 @@ public abstract class RxJavaErrorHandler {
      * Note that primitive types are always rendered as their {@code toString()} value.
      * <p>
      * If a {@code Throwable} is caught when rendering, this will fallback to the item's classname suffixed by
-     * {@value #ERROR_IN_RENDERING_SUFFIX}.
+     * {@code ERROR_IN_RENDERING_SUFFIX}.
      *
      * @param item the last emitted item, that caused the exception wrapped in
      *             {@code OnErrorThrowable.OnNextValue}

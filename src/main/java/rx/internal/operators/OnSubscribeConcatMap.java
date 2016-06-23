@@ -28,7 +28,7 @@ import rx.internal.util.*;
 import rx.internal.util.atomic.SpscAtomicArrayQueue;
 import rx.internal.util.unsafe.*;
 import rx.observers.SerializedSubscriber;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.SerialSubscription;
 
 /**
@@ -210,7 +210,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
         }
         
         void pluginError(Throwable e) {
-            RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+            RxJavaHooks.onError(e);
         }
         
         void drain() {

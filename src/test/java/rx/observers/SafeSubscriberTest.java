@@ -18,7 +18,6 @@ package rx.observers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
@@ -36,20 +35,13 @@ import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.Subscriptions;
 
+@SuppressWarnings("deprecation")
 public class SafeSubscriberTest {
     
     @Before
     @After
     public void resetBefore() {
-        RxJavaPlugins ps = RxJavaPlugins.getInstance();
-        
-        try {
-            Method m = ps.getClass().getDeclaredMethod("reset");
-            m.setAccessible(true);
-            m.invoke(ps);
-        } catch (Throwable ex) {
-            ex.printStackTrace();
-        }
+        RxJavaPlugins.getInstance().reset();
     }
 
     @Test

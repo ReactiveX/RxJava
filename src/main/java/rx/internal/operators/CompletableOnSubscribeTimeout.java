@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.*;
 import rx.Completable.*;
 import rx.functions.Action0;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
 public final class CompletableOnSubscribeTimeout implements CompletableOnSubscribe {
@@ -98,7 +98,7 @@ public final class CompletableOnSubscribeTimeout implements CompletableOnSubscri
                     set.unsubscribe();
                     s.onError(e);
                 } else {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                    RxJavaHooks.onError(e);
                 }
             }
 

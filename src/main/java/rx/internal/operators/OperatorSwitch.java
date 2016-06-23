@@ -25,7 +25,7 @@ import rx.exceptions.CompositeException;
 import rx.functions.Action0;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.atomic.SpscLinkedArrayQueue;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.*;
 
 /**
@@ -238,7 +238,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         }
 
         void pluginError(Throwable e) {
-            RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+            RxJavaHooks.onError(e);
         }
         
         void innerProducer(Producer p, long id) {

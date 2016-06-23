@@ -20,7 +20,7 @@ import rx.Observable.Operator;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.internal.producers.ProducerArbiter;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.SerialSubscription;
 
 /**
@@ -105,7 +105,7 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
             public void onError(Throwable e) {
                 if (done) {
                     Exceptions.throwIfFatal(e);
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                    RxJavaHooks.onError(e);
                     return;
                 }
                 done = true;

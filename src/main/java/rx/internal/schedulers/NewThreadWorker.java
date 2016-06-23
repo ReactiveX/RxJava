@@ -34,7 +34,6 @@ import static rx.internal.util.PlatformDependent.ANDROID_API_VERSION_IS_NOT_ANDR
  */
 public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     private final ScheduledExecutorService executor;
-    private final RxJavaSchedulersHook schedulersHook;
     volatile boolean isUnsubscribed;
     /** The purge frequency in milliseconds. */
     private static final String FREQUENCY_KEY = "rx.scheduler.jdk6.purge-frequency-millis";
@@ -112,7 +111,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
             }
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
-            RxJavaPlugins.getInstance().getErrorHandler().handleError(t);
+            RxJavaHooks.onError(t);
         }
     }
 
@@ -168,7 +167,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
                     methodToCall.invoke(executor, true);
                     return true;
                 } catch (Exception e) {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                    RxJavaHooks.onError(e);
                 }
             }
         }
@@ -207,7 +206,6 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
         if (!cancelSupported && exec instanceof ScheduledThreadPoolExecutor) {
             registerExecutor((ScheduledThreadPoolExecutor)exec);
         }
-        schedulersHook = RxJavaPlugins.getInstance().getSchedulersHook();
         executor = exec;
     }
 
@@ -233,7 +231,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
      * @return the wrapper ScheduledAction
      */
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
-        Action0 decoratedAction = schedulersHook.onSchedule(action);
+        Action0 decoratedAction = RxJavaHooks.onScheduledAction(action);
         ScheduledAction run = new ScheduledAction(decoratedAction);
         Future<?> f;
         if (delayTime <= 0) {
@@ -246,7 +244,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
         return run;
     }
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit, CompositeSubscription parent) {
-        Action0 decoratedAction = schedulersHook.onSchedule(action);
+        Action0 decoratedAction = RxJavaHooks.onScheduledAction(action);
         ScheduledAction run = new ScheduledAction(decoratedAction, parent);
         parent.add(run);
 
@@ -262,7 +260,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     }
     
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit, SubscriptionList parent) {
-        Action0 decoratedAction = schedulersHook.onSchedule(action);
+        Action0 decoratedAction = RxJavaHooks.onScheduledAction(action);
         ScheduledAction run = new ScheduledAction(decoratedAction, parent);
         parent.add(run);
         

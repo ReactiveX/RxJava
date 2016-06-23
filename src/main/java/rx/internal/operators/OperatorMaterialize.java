@@ -17,11 +17,9 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.Notification;
+import rx.*;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Subscriber;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Turns all of the notifications from an Observable into {@code onNext} emissions, and marks
@@ -104,7 +102,7 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
         @Override
         public void onError(Throwable e) {
             terminalNotification = Notification.createOnError(e);
-            RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+            RxJavaHooks.onError(e);
             drain();
         }
 

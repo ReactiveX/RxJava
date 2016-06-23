@@ -31,7 +31,7 @@ import rx.Observable.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
-import rx.plugins.*;
+import rx.plugins.RxJavaHooks;
 import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.*;
@@ -1216,7 +1216,7 @@ public class CompletableTest {
             
             @Override
             public void onError(Throwable e) {
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                RxJavaHooks.onError(e);
             }
         });
 
@@ -4036,13 +4036,34 @@ public class CompletableTest {
         }
     }
 
-    private static RxJavaCompletableExecutionHook hookSpy;
+    private Func1<CompletableOnSubscribe, CompletableOnSubscribe> onCreate;
+    
+    private Func2<Completable, CompletableOnSubscribe, CompletableOnSubscribe> onStart;
 
     @Before
     public void setUp() throws Exception {
-        hookSpy = spy(
-                new RxJavaPluginsTest.RxJavaCompletableExecutionHookTestImpl());
-        Completable.HOOK = hookSpy;
+        onCreate = spy(new Func1<CompletableOnSubscribe, CompletableOnSubscribe>() {
+            @Override
+            public CompletableOnSubscribe call(CompletableOnSubscribe t) {
+                return t;
+            }
+        });
+        
+        RxJavaHooks.setOnCompletableCreate(onCreate);
+        
+        onStart = spy(new Func2<Completable, CompletableOnSubscribe, CompletableOnSubscribe>() {
+            @Override
+            public CompletableOnSubscribe call(Completable t1, CompletableOnSubscribe t2) {
+                return t2;
+            }
+        });
+        
+        RxJavaHooks.setOnCompletableStart(onStart);
+    }
+    
+    @After
+    public void after() {
+        RxJavaHooks.reset();
     }
 
     @Test
@@ -4050,7 +4071,7 @@ public class CompletableTest {
         CompletableOnSubscribe subscriber = mock(CompletableOnSubscribe.class);
         Completable.create(subscriber);
 
-        verify(hookSpy, times(1)).onCreate(subscriber);
+        verify(onCreate, times(1)).call(subscriber);
     }
 
     @Test
@@ -4064,7 +4085,7 @@ public class CompletableTest {
         });
         completable.subscribe(ts);
 
-        verify(hookSpy, times(1)).onSubscribeStart(eq(completable), any(Completable.CompletableOnSubscribe.class));
+        verify(onStart, times(1)).call(eq(completable), any(Completable.CompletableOnSubscribe.class));
     }
 
     @Test
@@ -4077,7 +4098,7 @@ public class CompletableTest {
         });
         completable.unsafeSubscribe(ts);
 
-        verify(hookSpy, times(1)).onSubscribeStart(eq(completable), any(Completable.CompletableOnSubscribe.class));
+        verify(onStart, times(1)).call(eq(completable), any(Completable.CompletableOnSubscribe.class));
     }
 
     @Test

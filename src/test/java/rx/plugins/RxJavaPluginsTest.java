@@ -28,6 +28,7 @@ import rx.Observable;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 
+@SuppressWarnings("deprecation")
 public class RxJavaPluginsTest {
 
     @Before

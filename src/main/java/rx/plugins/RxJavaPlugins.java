@@ -45,6 +45,9 @@ import rx.annotations.Experimental;
  * </code></pre>
  * 
  * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Plugins">RxJava Wiki: Plugins</a>
+ * 
+ * Use the {@link RxJavaHooks} features instead which let's you change individual
+ * handlers at runtime.
  */
 public class RxJavaPlugins {
     private final static RxJavaPlugins INSTANCE = new RxJavaPlugins();
@@ -59,7 +62,10 @@ public class RxJavaPlugins {
      * Retrieves the single {@code RxJavaPlugins} instance.
      *
      * @return the single {@code RxJavaPlugins} instance
+     * 
+     * @deprecated use the static methods of {@link RxJavaHooks}.
      */
+    @Deprecated
     public static RxJavaPlugins getInstance() {
         return INSTANCE;
     }

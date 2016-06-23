@@ -22,7 +22,7 @@ import rx.Subscription;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.internal.util.SubscriptionList;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -61,7 +61,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
             } else {
                 ie = new IllegalStateException("Fatal Exception thrown on Scheduler.Worker thread.", e);
             }
-            RxJavaPlugins.getInstance().getErrorHandler().handleError(ie);
+            RxJavaHooks.onError(ie);
             Thread thread = Thread.currentThread();
             thread.getUncaughtExceptionHandler().uncaughtException(thread, ie);
         } finally {

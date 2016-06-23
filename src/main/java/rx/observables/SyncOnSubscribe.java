@@ -18,20 +18,13 @@ package rx.observables;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Producer;
-import rx.Subscriber;
-import rx.Subscription;
 import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Action2;
-import rx.functions.Func0;
-import rx.functions.Func2;
+import rx.functions.*;
 import rx.internal.operators.BackpressureUtils;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 
 /**
  * A utility class to create {@code OnSubscribe<T>} functions that respond correctly to back
@@ -387,7 +380,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
                 parent.onUnsubscribe(state);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                RxJavaHooks.onError(e);
             }
         }
 
@@ -422,7 +415,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
 
         private void handleThrownError(Subscriber<? super T> a, Throwable ex) {
             if (hasTerminated) {
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(ex);
+                RxJavaHooks.onError(ex);
             } else {
                 hasTerminated = true;
                 a.onError(ex);

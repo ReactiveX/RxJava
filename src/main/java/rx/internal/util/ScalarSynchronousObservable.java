@@ -34,14 +34,6 @@ import rx.plugins.*;
  * @param <T> the value type
  */
 public final class ScalarSynchronousObservable<T> extends Observable<T> {
-    /** 
-     * The execution hook instance. 
-     * <p>
-     * Can't be final to allow tests overriding it in place; if the class
-     * has been initialized, the plugin reset has no effect because
-     * how RxJavaPlugins was designed.
-     */
-    static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
     /**
      * Indicates that the Producer used by this Observable should be fully
      * threadsafe. It is possible, but unlikely that multiple concurrent
@@ -81,7 +73,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
     final T t;
 
     protected ScalarSynchronousObservable(final T t) {
-        super(hook.onCreate(new JustOnSubscribe<T>(t)));
+        super(RxJavaHooks.onCreate(new JustOnSubscribe<T>(t)));
         this.t = t;
     }
 
