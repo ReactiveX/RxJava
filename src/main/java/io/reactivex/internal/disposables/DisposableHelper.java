@@ -25,6 +25,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 public enum DisposableHelper {
     ;
     
+    /**
+     * Marker instance compared by identity for indicating a previously referenced
+     * {@link Disposable} was disposed. DO NOT USE this instance as an arbitrary, empty disposable!
+     */
     public static final Disposable DISPOSED = Disposed.INSTANCE;
     
     public static boolean isDisposed(Disposable d) {
