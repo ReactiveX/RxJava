@@ -69,3 +69,10 @@ bin/
 # Scala build
 *.cache
 /.nb-gradle/private/
+
+#PMD files
+.pmd
+.ruleset
+
+#Android Studio
+local.properties
