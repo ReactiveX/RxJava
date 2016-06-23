@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableCount<T> extends Flowable<Long> {
@@ -71,11 +72,9 @@ public final class FlowableCount<T> extends Flowable<Long> {
         
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > required but it was " + n));
-                return;
+            if (!SubscriptionHelper.validateRequest(n)) {
+                s.request(Long.MAX_VALUE);
             }
-            s.request(Long.MAX_VALUE);
         }
         
         @Override

@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -88,12 +89,10 @@ public final class FlowableOnBackpressureLatest<T> extends Flowable<T> {
         
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > required but it was " + n));
-                return;
+            if (!SubscriptionHelper.validateRequest(n)) {
+                BackpressureHelper.add(requested, n);
+                drain();
             }
-            BackpressureHelper.add(requested, n);
-            drain();
         }
         
         @Override

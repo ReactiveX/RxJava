@@ -117,12 +117,10 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         
         @Override
         public void request(long n) {
-            if (n <= 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n > required but it was " + n));
-                return;
+            if (!SubscriptionHelper.validateRequest(n)) {
+                BackpressureHelper.add(requested, n);
+                drain();
             }
-            BackpressureHelper.add(requested, n);
-            drain();
         }
         
         @Override
