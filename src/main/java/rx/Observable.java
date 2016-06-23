@@ -6376,6 +6376,65 @@ public class Observable<T> {
      * 
      * @param keySelector
      *            a function that extracts the key for each item
+     * @param elementSelector
+     *            a function that extracts the return element for each item
+     * @param evictingMapFactory
+     *            a function that given an eviction action returns a {@link Map} instance that will be used to assign 
+     *            items to the appropriate {@code GroupedObservable}s. The {@code Map} instance must be thread-safe 
+     *            and any eviction must trigger a call to the supplied action (synchronously or asynchronously). 
+     *            This can be used to limit the size of the map by evicting keys by maximum size or access time for 
+     *            instance. Here's an example using Guava's {@code CacheBuilder} from v19.0:
+     *            <pre>
+     *            {@code
+     *            Func1<Action1<K>, Map<K, Object>> mapFactory 
+     *              = action -> CacheBuilder.newBuilder()
+     *                  .maximumSize(1000)
+     *                  .expireAfterAccess(12, TimeUnit.HOURS)
+     *                  .removalListener(notification -> action.call(notification.getKey()))
+     *                  .<K, Object> build().asMap();
+     *            }
+     *            </pre>
+     *            
+     * @param <K>
+     *            the key type
+     * @param <R>
+     *            the element type
+     * @return an {@code Observable} that emits {@link GroupedObservable}s, each of which corresponds to a
+     *         unique key value and each of which emits those items from the source Observable that share that
+     *         key value
+     * @throws NullPointerException
+     *             if {@code evictingMapFactory} is null
+     * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
+     */
+    @Experimental
+    public final <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, 
+            final Func1<? super T, ? extends R> elementSelector, final Func1<Action1<K>, Map<K, Object>> evictingMapFactory) {
+        if (evictingMapFactory == null) {
+            throw new NullPointerException("evictingMapFactory cannot be null");
+        }
+        return lift(new OperatorGroupBy<T, K, R>(keySelector, elementSelector, evictingMapFactory));
+    }
+    
+    /**
+     * Groups the items emitted by an {@code Observable} according to a specified criterion, and emits these
+     * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservable} allows only a single 
+     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the 
+     * source terminates, the next emission by the source having the same key will trigger a new 
+     * {@code GroupedObservable} emission.
+     * <p>
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <p>
+     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
+     * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
+     * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
+     * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param keySelector
+     *            a function that extracts the key for each item
      * @param <K>
      *            the key type
      * @return an {@code Observable} that emits {@link GroupedObservable}s, each of which corresponds to a

@@ -21,11 +21,13 @@ import java.util.concurrent.atomic.*;
 
 import rx.*;
 import rx.Observable.*;
+import rx.exceptions.Exceptions;
 import rx.functions.*;
 import rx.internal.producers.ProducerArbiter;
 import rx.internal.util.*;
 import rx.observables.GroupedObservable;
 import rx.plugins.RxJavaHooks;
+import rx.observers.Subscribers;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -46,35 +48,50 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
     final Func1<? super T, ? extends V> valueSelector;
     final int bufferSize;
     final boolean delayError;
+    final Func1<Action1<K>, Map<K, Object>> mapFactory; //nullable
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public OperatorGroupBy(Func1<? super T, ? extends K> keySelector) {
-        this(keySelector, (Func1)UtilityFunctions.<T>identity(), RxRingBuffer.SIZE, false);
+        this(keySelector, (Func1)UtilityFunctions.<T>identity(), RxRingBuffer.SIZE, false, null);
     }
 
     public OperatorGroupBy(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector) {
-        this(keySelector, valueSelector, RxRingBuffer.SIZE, false);
+        this(keySelector, valueSelector, RxRingBuffer.SIZE, false, null);
+    }
+    
+    public OperatorGroupBy(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func1<Action1<K>, Map<K, Object>> mapFactory) {
+        this(keySelector, valueSelector, RxRingBuffer.SIZE, false, mapFactory);
     }
 
-    public OperatorGroupBy(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
+    public OperatorGroupBy(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError, Func1<Action1<K>, Map<K, Object>> mapFactory) {
         this.keySelector = keySelector;
         this.valueSelector = valueSelector;
         this.bufferSize = bufferSize;
         this.delayError = delayError;
+        this.mapFactory = mapFactory;
     }
     
     @Override
-    public Subscriber<? super T> call(Subscriber<? super GroupedObservable<K, V>> t) {
-        final GroupBySubscriber<T, K, V> parent = new GroupBySubscriber<T, K, V>(t, keySelector, valueSelector, bufferSize, delayError);
+    public Subscriber<? super T> call(Subscriber<? super GroupedObservable<K, V>> child) {
+        final GroupBySubscriber<T, K, V> parent;
+        try {
+            parent = new GroupBySubscriber<T, K, V>(child, keySelector, valueSelector, bufferSize, delayError, mapFactory);
+        } catch (Throwable ex) {
+            //Can reach here because mapFactory.call() may throw in constructor of GroupBySubscriber
+            Exceptions.throwOrReport(ex, child);
+            Subscriber<? super T> parent2 = Subscribers.empty();
+            parent2.unsubscribe();
+            return parent2;
+        }
 
-        t.add(Subscriptions.create(new Action0() {
+        child.add(Subscriptions.create(new Action0() {
             @Override
             public void call() {
                 parent.cancel();
             }
         }));
 
-        t.setProducer(parent.producer);
+        child.setProducer(parent.producer);
         
         return parent;
     }
@@ -101,6 +118,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         final Map<Object, GroupedUnicast<K, V>> groups;
         final Queue<GroupedObservable<K, V>> queue;
         final GroupByProducer producer;
+        final Queue<K> evictedKeys;
         
         static final Object NULL_KEY = new Object();
         
@@ -117,13 +135,14 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
 
         final AtomicInteger wip;
         
-        public GroupBySubscriber(Subscriber<? super GroupedObservable<K, V>> actual, Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
+        public GroupBySubscriber(Subscriber<? super GroupedObservable<K, V>> actual, Func1<? super T, ? extends K> keySelector, 
+                Func1<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError, 
+                Func1<Action1<K>, Map<K, Object>> mapFactory) {
             this.actual = actual;
             this.keySelector = keySelector;
             this.valueSelector = valueSelector;
             this.bufferSize = bufferSize;
             this.delayError = delayError;
-            this.groups = new ConcurrentHashMap<Object, GroupedUnicast<K, V>>();
             this.queue = new ConcurrentLinkedQueue<GroupedObservable<K, V>>();
             this.s = new ProducerArbiter();
             this.s.request(bufferSize);
@@ -132,6 +151,32 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             this.requested = new AtomicLong();
             this.groupCount = new AtomicInteger(1);
             this.wip = new AtomicInteger();
+            if (mapFactory == null) {
+                this.groups = new ConcurrentHashMap<Object, GroupedUnicast<K, V>>();
+                this.evictedKeys = null;
+            } else {
+                this.evictedKeys = new ConcurrentLinkedQueue<K>();
+                this.groups = createMap(mapFactory, new EvictionAction<K>(evictedKeys));
+            }
+        }
+        
+        static class EvictionAction<K> implements Action1<K> {
+
+            final Queue<K> evictedKeys;
+
+            EvictionAction(Queue<K> evictedKeys) {
+                this.evictedKeys = evictedKeys;
+            }
+            
+            @Override
+            public void call(K key) {
+                evictedKeys.offer(key);
+            }
+        }
+        
+        @SuppressWarnings("unchecked")
+        private Map<Object, GroupedUnicast<K, V>> createMap(Func1<Action1<K>, Map<K, Object>> mapFactory, Action1<K> evictionAction) {
+            return (Map<Object, GroupedUnicast<K,V>>)(Map<Object, ?>) mapFactory.call(evictionAction);
         }
         
         @Override
@@ -187,6 +232,16 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             }
 
             group.onNext(v);
+            
+            if (evictedKeys != null) {
+                K evictedKey;
+                while ((evictedKey = evictedKeys.poll()) != null) {
+                    GroupedUnicast<K, V> g = groups.get(evictedKey);
+                    if (g != null) {
+                        g.onComplete();
+                    }
+                }
+            }
 
             if (notNew) {
                 s.request(1);
@@ -215,6 +270,9 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                 e.onComplete();
             }
             groups.clear();
+            if (evictedKeys != null) {
+                evictedKeys.clear();
+            }
 
             done = true;
             groupCount.decrementAndGet();
@@ -308,6 +366,9 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             q.clear();
             List<GroupedUnicast<K, V>> list = new ArrayList<GroupedUnicast<K, V>>(groups.values());
             groups.clear();
+            if (evictedKeys != null) { 
+                evictedKeys.clear();
+            }
             
             for (GroupedUnicast<K, V> e : list) {
                 e.onError(ex);
