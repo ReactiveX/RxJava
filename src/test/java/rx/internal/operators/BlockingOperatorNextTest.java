@@ -268,36 +268,40 @@ public class BlockingOperatorNextTest {
 
         });
 
-        Iterator<Integer> it = next(obs).iterator();
-
-        assertTrue(it.hasNext());
-        int a = it.next();
-        assertTrue(it.hasNext());
-        int b = it.next();
-        // we should have a different value
-        assertTrue("a and b should be different", a != b);
-
-        // wait for some time (if times out we are blocked somewhere so fail ... set very high for very slow, constrained machines)
-        timeHasPassed.await(8000, TimeUnit.MILLISECONDS);
-
-        assertTrue(it.hasNext());
-        int c = it.next();
-
-        assertTrue("c should not just be the next in sequence", c != (b + 1));
-        assertTrue("expected that c [" + c + "] is higher than or equal to " + COUNT, c >= COUNT);
-
-        assertTrue(it.hasNext());
-        int d = it.next();
-        assertTrue(d > c);
-
-        // shut down the thread
-        running.set(false);
-
-        finished.await();
-
-        assertFalse(it.hasNext());
-
-        System.out.println("a: " + a + " b: " + b + " c: " + c);
+        try {
+            Iterator<Integer> it = next(obs).iterator();
+    
+            assertTrue(it.hasNext());
+            int a = it.next();
+            assertTrue(it.hasNext());
+            int b = it.next();
+            // we should have a different value
+            assertTrue("a and b should be different", a != b);
+    
+            // wait for some time (if times out we are blocked somewhere so fail ... set very high for very slow, constrained machines)
+            timeHasPassed.await(8000, TimeUnit.MILLISECONDS);
+    
+            assertTrue(it.hasNext());
+            int c = it.next();
+    
+            assertTrue("c should not just be the next in sequence", c != (b + 1));
+            assertTrue("expected that c [" + c + "] is higher than or equal to " + COUNT, c >= COUNT);
+    
+            assertTrue(it.hasNext());
+            int d = it.next();
+            assertTrue(d > c);
+    
+            // shut down the thread
+            running.set(false);
+    
+            finished.await();
+    
+            assertFalse(it.hasNext());
+    
+            System.out.println("a: " + a + " b: " + b + " c: " + c);
+        } finally {
+            running.set(false); // don't let the thread spin indefinitely
+        }
     }
 
     @Test /* (timeout = 8000) */

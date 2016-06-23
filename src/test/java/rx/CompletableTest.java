@@ -148,7 +148,7 @@ public class CompletableTest {
     /** An error Completable object. */
     final ErrorCompletable error = new ErrorCompletable();
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void complete() {
         Completable c = Completable.complete();
         
@@ -160,14 +160,14 @@ public class CompletableTest {
         Completable.concat((Completable[])null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void concatEmpty() {
         Completable c = Completable.concat();
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void concatSingleSource() {
         Completable c = Completable.concat(normal.completable);
         
@@ -176,14 +176,14 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void concatSingleSourceThrows() {
         Completable c = Completable.concat(error.completable);
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void concatMultipleSources() {
         Completable c = Completable.concat(normal.completable, normal.completable, normal.completable);
         
@@ -192,21 +192,21 @@ public class CompletableTest {
         normal.assertSubscriptions(3);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void concatMultipleOneThrows() {
         Completable c = Completable.concat(normal.completable, error.completable, normal.completable);
         
         c.await();
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void concatMultipleOneIsNull() {
         Completable c = Completable.concat(normal.completable, null);
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void concatIterableEmpty() {
         Completable c = Completable.concat(Collections.<Completable>emptyList());
         
@@ -218,7 +218,7 @@ public class CompletableTest {
         Completable.concat((Iterable<Completable>)null);
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void concatIterableIteratorNull() {
         Completable c = Completable.concat(new Iterable<Completable>() {
             @Override
@@ -230,14 +230,14 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void concatIterableWithNull() {
         Completable c = Completable.concat(Arrays.asList(normal.completable, (Completable)null));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void concatIterableSingle() {
         Completable c = Completable.concat(Collections.singleton(normal.completable));
         
@@ -246,7 +246,7 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void concatIterableMany() {
         Completable c = Completable.concat(Arrays.asList(normal.completable, normal.completable, normal.completable));
         
@@ -255,14 +255,14 @@ public class CompletableTest {
         normal.assertSubscriptions(3);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void concatIterableOneThrows() {
         Completable c = Completable.concat(Collections.singleton(error.completable));
         
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void concatIterableManyOneThrows() {
         Completable c = Completable.concat(Arrays.asList(normal.completable, error.completable));
         
@@ -295,21 +295,21 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void concatObservableEmpty() {
         Completable c = Completable.concat(Observable.<Completable>empty());
         
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void concatObservableError() {
         Completable c = Completable.concat(Observable.<Completable>error(new TestException()));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void concatObservableSingle() {
         Completable c = Completable.concat(Observable.just(normal.completable));
         
@@ -318,14 +318,14 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void concatObservableSingleThrows() {
         Completable c = Completable.concat(Observable.just(error.completable));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void concatObservableMany() {
         Completable c = Completable.concat(Observable.just(normal.completable).repeat(3));
         
@@ -334,14 +334,14 @@ public class CompletableTest {
         normal.assertSubscriptions(3);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void concatObservableManyOneThrows() {
         Completable c = Completable.concat(Observable.just(normal.completable, error.completable));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void concatObservablePrefetch() {
         final List<Long> requested = new ArrayList<Long>();
         Observable<Completable> cs = Observable
@@ -480,7 +480,7 @@ public class CompletableTest {
         Completable.create(null);
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void createOnSubscribeThrowsNPE() {
         Completable c = Completable.create(new CompletableOnSubscribe() {
             @Override
@@ -490,7 +490,7 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void createOnSubscribeThrowsRuntimeException() {
         try {
             Completable c = Completable.create(new CompletableOnSubscribe() {
@@ -511,7 +511,7 @@ public class CompletableTest {
         }
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void defer() {
         Completable c = Completable.defer(new Func0<Completable>() {
             @Override
@@ -532,7 +532,7 @@ public class CompletableTest {
         Completable.defer(null);
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void deferReturnsNull() {
         Completable c = Completable.defer(new Func0<Completable>() {
             @Override
@@ -544,7 +544,7 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void deferFunctionThrows() {
         Completable c = Completable.defer(new Func0<Completable>() {
             @Override
@@ -554,7 +554,7 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void deferErrorSource() {
         Completable c = Completable.defer(new Func0<Completable>() {
             @Override
@@ -571,7 +571,7 @@ public class CompletableTest {
         Completable.error((Throwable)null);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void errorNormal() {
         Completable c = Completable.error(new TestException());
         
@@ -583,7 +583,7 @@ public class CompletableTest {
         Completable.fromCallable(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void fromCallableNormal() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -599,7 +599,7 @@ public class CompletableTest {
         Assert.assertEquals(1, calls.get());
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void fromCallableThrows() {
         Completable c = Completable.fromCallable(new Callable<Object>() {
             @Override
@@ -614,7 +614,7 @@ public class CompletableTest {
         Completable.fromObservable(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void fromObservableEmpty() {
         Completable c = Completable.fromObservable(Observable.empty());
         
@@ -630,7 +630,7 @@ public class CompletableTest {
         }
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void fromObservableError() {
         Completable c = Completable.fromObservable(Observable.error(new TestException()));
         
@@ -642,7 +642,7 @@ public class CompletableTest {
         Completable.fromFuture(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void fromFutureNormal() {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         
@@ -660,7 +660,7 @@ public class CompletableTest {
         }
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void fromFutureThrows() {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         
@@ -689,7 +689,7 @@ public class CompletableTest {
         Completable.fromAction(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void fromActionNormal() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -705,7 +705,7 @@ public class CompletableTest {
         Assert.assertEquals(1, calls.get());
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void fromActionThrows() {
         Completable c = Completable.fromAction(new Action0() {
             @Override
@@ -720,14 +720,14 @@ public class CompletableTest {
         Completable.fromSingle(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void fromSingleNormal() {
         Completable c = Completable.fromSingle(Single.just(1));
         
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void fromSingleThrows() {
         Completable c = Completable.fromSingle(Single.error(new TestException()));
         
@@ -739,14 +739,14 @@ public class CompletableTest {
         Completable.merge((Completable[])null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeEmpty() {
         Completable c = Completable.merge();
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeSingleSource() {
         Completable c = Completable.merge(normal.completable);
         
@@ -755,14 +755,14 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void mergeSingleSourceThrows() {
         Completable c = Completable.merge(error.completable);
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeMultipleSources() {
         Completable c = Completable.merge(normal.completable, normal.completable, normal.completable);
         
@@ -771,21 +771,21 @@ public class CompletableTest {
         normal.assertSubscriptions(3);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void mergeMultipleOneThrows() {
         Completable c = Completable.merge(normal.completable, error.completable, normal.completable);
         
         c.await();
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void mergeMultipleOneIsNull() {
         Completable c = Completable.merge(normal.completable, null);
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeIterableEmpty() {
         Completable c = Completable.merge(Collections.<Completable>emptyList());
         
@@ -797,7 +797,7 @@ public class CompletableTest {
         Completable.merge((Iterable<Completable>)null);
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void mergeIterableIteratorNull() {
         Completable c = Completable.merge(new Iterable<Completable>() {
             @Override
@@ -809,14 +809,14 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void mergeIterableWithNull() {
         Completable c = Completable.merge(Arrays.asList(normal.completable, (Completable)null));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeIterableSingle() {
         Completable c = Completable.merge(Collections.singleton(normal.completable));
         
@@ -825,7 +825,7 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeIterableMany() {
         Completable c = Completable.merge(Arrays.asList(normal.completable, normal.completable, normal.completable));
         
@@ -834,14 +834,14 @@ public class CompletableTest {
         normal.assertSubscriptions(3);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void mergeIterableOneThrows() {
         Completable c = Completable.merge(Collections.singleton(error.completable));
         
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void mergeIterableManyOneThrows() {
         Completable c = Completable.merge(Arrays.asList(normal.completable, error.completable));
         
@@ -874,21 +874,21 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeObservableEmpty() {
         Completable c = Completable.merge(Observable.<Completable>empty());
         
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void mergeObservableError() {
         Completable c = Completable.merge(Observable.<Completable>error(new TestException()));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeObservableSingle() {
         Completable c = Completable.merge(Observable.just(normal.completable));
         
@@ -897,14 +897,14 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void mergeObservableSingleThrows() {
         Completable c = Completable.merge(Observable.just(error.completable));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeObservableMany() {
         Completable c = Completable.merge(Observable.just(normal.completable).repeat(3));
         
@@ -913,14 +913,14 @@ public class CompletableTest {
         normal.assertSubscriptions(3);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void mergeObservableManyOneThrows() {
         Completable c = Completable.merge(Observable.just(normal.completable, error.completable));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeObservableMaxConcurrent() {
         final List<Long> requested = new ArrayList<Long>();
         Observable<Completable> cs = Observable
@@ -946,14 +946,14 @@ public class CompletableTest {
         Completable.mergeDelayError((Completable[])null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeDelayErrorEmpty() {
         Completable c = Completable.mergeDelayError();
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeDelayErrorSingleSource() {
         Completable c = Completable.mergeDelayError(normal.completable);
         
@@ -962,14 +962,14 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void mergeDelayErrorSingleSourceThrows() {
         Completable c = Completable.mergeDelayError(error.completable);
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeDelayErrorMultipleSources() {
         Completable c = Completable.mergeDelayError(normal.completable, normal.completable, normal.completable);
         
@@ -978,7 +978,7 @@ public class CompletableTest {
         normal.assertSubscriptions(3);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeDelayErrorMultipleOneThrows() {
         Completable c = Completable.mergeDelayError(normal.completable, error.completable, normal.completable);
         
@@ -989,14 +989,14 @@ public class CompletableTest {
         }
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void mergeDelayErrorMultipleOneIsNull() {
         Completable c = Completable.mergeDelayError(normal.completable, null);
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeDelayErrorIterableEmpty() {
         Completable c = Completable.mergeDelayError(Collections.<Completable>emptyList());
         
@@ -1008,7 +1008,7 @@ public class CompletableTest {
         Completable.mergeDelayError((Iterable<Completable>)null);
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void mergeDelayErrorIterableIteratorNull() {
         Completable c = Completable.mergeDelayError(new Iterable<Completable>() {
             @Override
@@ -1020,14 +1020,14 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void mergeDelayErrorIterableWithNull() {
         Completable c = Completable.mergeDelayError(Arrays.asList(normal.completable, (Completable)null));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeDelayErrorIterableSingle() {
         Completable c = Completable.mergeDelayError(Collections.singleton(normal.completable));
         
@@ -1036,7 +1036,7 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeDelayErrorIterableMany() {
         Completable c = Completable.mergeDelayError(Arrays.asList(normal.completable, normal.completable, normal.completable));
         
@@ -1045,14 +1045,14 @@ public class CompletableTest {
         normal.assertSubscriptions(3);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void mergeDelayErrorIterableOneThrows() {
         Completable c = Completable.mergeDelayError(Collections.singleton(error.completable));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeDelayErrorIterableManyOneThrows() {
         Completable c = Completable.mergeDelayError(Arrays.asList(normal.completable, error.completable, normal.completable));
         
@@ -1089,21 +1089,21 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeDelayErrorObservableEmpty() {
         Completable c = Completable.mergeDelayError(Observable.<Completable>empty());
         
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void mergeDelayErrorObservableError() {
         Completable c = Completable.mergeDelayError(Observable.<Completable>error(new TestException()));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeDelayErrorObservableSingle() {
         Completable c = Completable.mergeDelayError(Observable.just(normal.completable));
         
@@ -1112,14 +1112,14 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void mergeDelayErrorObservableSingleThrows() {
         Completable c = Completable.mergeDelayError(Observable.just(error.completable));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeDelayErrorObservableMany() {
         Completable c = Completable.mergeDelayError(Observable.just(normal.completable).repeat(3));
         
@@ -1128,14 +1128,14 @@ public class CompletableTest {
         normal.assertSubscriptions(3);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void mergeDelayErrorObservableManyOneThrows() {
         Completable c = Completable.mergeDelayError(Observable.just(normal.completable, error.completable));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeDelayErrorObservableMaxConcurrent() {
         final List<Long> requested = new ArrayList<Long>();
         Observable<Completable> cs = Observable
@@ -1156,7 +1156,7 @@ public class CompletableTest {
         Assert.assertEquals(Arrays.asList(5L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L), requested);
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void never() {
         final AtomicBoolean onSubscribeCalled = new AtomicBoolean();
         final AtomicInteger calls = new AtomicInteger();
@@ -1195,7 +1195,7 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void timerTestScheduler() {
         TestScheduler scheduler = Schedulers.test();
         
@@ -1272,7 +1272,7 @@ public class CompletableTest {
         Completable.timer(1, TimeUnit.SECONDS, null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void usingNormalEager() {
         final AtomicInteger unsubscribe = new AtomicInteger();
         
@@ -1318,7 +1318,7 @@ public class CompletableTest {
         Assert.assertNull(error.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void usingNormalLazy() {
         final AtomicInteger unsubscribe = new AtomicInteger();
         
@@ -1364,7 +1364,7 @@ public class CompletableTest {
         Assert.assertNull(error.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void usingErrorEager() {
         final AtomicInteger unsubscribe = new AtomicInteger();
         
@@ -1410,7 +1410,7 @@ public class CompletableTest {
         Assert.assertFalse(complete.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void usingErrorLazy() {
         final AtomicInteger unsubscribe = new AtomicInteger();
         
@@ -1576,7 +1576,7 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void composeNormal() {
         Completable c = error.completable.compose(new CompletableTransformer() {
             @Override
@@ -1593,7 +1593,7 @@ public class CompletableTest {
         error.completable.compose(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void concatWithNormal() {
         Completable c = normal.completable.concatWith(normal.completable);
         
@@ -1602,7 +1602,7 @@ public class CompletableTest {
         normal.assertSubscriptions(2);
     }
 
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void concatWithError() {
         Completable c = normal.completable.concatWith(error.completable);
         
@@ -1624,7 +1624,7 @@ public class CompletableTest {
         normal.completable.delay(1, TimeUnit.SECONDS, null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void delayNormal() throws InterruptedException {
         Completable c = normal.completable.delay(250, TimeUnit.MILLISECONDS);
         
@@ -1659,7 +1659,7 @@ public class CompletableTest {
         Assert.assertNull(error.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void delayErrorImmediately() throws InterruptedException {
         Completable c = error.completable.delay(250, TimeUnit.MILLISECONDS);
         
@@ -1693,7 +1693,7 @@ public class CompletableTest {
         Thread.sleep(200);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void delayErrorToo() throws InterruptedException {
         Completable c = error.completable.delay(250, TimeUnit.MILLISECONDS, Schedulers.computation(), true);
         
@@ -1728,7 +1728,7 @@ public class CompletableTest {
         Assert.assertTrue(error.get() instanceof TestException);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doOnCompletedNormal() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -1744,7 +1744,7 @@ public class CompletableTest {
         Assert.assertEquals(1, calls.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doOnCompletedError() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -1770,7 +1770,7 @@ public class CompletableTest {
         normal.completable.doOnCompleted(null);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void doOnCompletedThrows() {
         Completable c = normal.completable.doOnCompleted(new Action0() {
             @Override
@@ -1780,7 +1780,7 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doOnDisposeNormalDoesntCall() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -1796,7 +1796,7 @@ public class CompletableTest {
         Assert.assertEquals(0, calls.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doOnDisposeErrorDoesntCall() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -1816,7 +1816,7 @@ public class CompletableTest {
         Assert.assertEquals(0, calls.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doOnDisposeChildCancels() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -1852,7 +1852,7 @@ public class CompletableTest {
         normal.completable.doOnUnsubscribe(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doOnDisposeThrows() {
         Completable c = normal.completable.doOnUnsubscribe(new Action0() {
             @Override
@@ -1877,7 +1877,7 @@ public class CompletableTest {
         });
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doOnErrorNoError() {
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
@@ -1893,7 +1893,7 @@ public class CompletableTest {
         Assert.assertNull(error.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doOnErrorHasError() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
         
@@ -1919,7 +1919,7 @@ public class CompletableTest {
         normal.completable.doOnError(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doOnErrorThrows() {
         Completable c = error.completable.doOnError(new Action1<Throwable>() {
             @Override
@@ -1936,7 +1936,7 @@ public class CompletableTest {
         }
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doOnSubscribeNormal() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -1969,7 +1969,7 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doOnTerminateNormal() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -1985,7 +1985,7 @@ public class CompletableTest {
         Assert.assertEquals(1, calls.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doOnTerminateError() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -2006,7 +2006,7 @@ public class CompletableTest {
         Assert.assertEquals(1, calls.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doAfterTerminateNormal() {
         final AtomicBoolean doneAfter = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
@@ -2041,7 +2041,7 @@ public class CompletableTest {
         Assert.assertTrue("Closure called before onComplete", doneAfter.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void doAfterTerminateWithError() {
         final AtomicBoolean doneAfter = new AtomicBoolean();
         
@@ -2067,17 +2067,17 @@ public class CompletableTest {
         normal.completable.doAfterTerminate(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void getNormal() {
         Assert.assertNull(normal.completable.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void getError() {
         Assert.assertTrue(error.completable.get() instanceof TestException);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void getTimeout() {
         try {
             Completable.never().get(100, TimeUnit.MILLISECONDS);
@@ -2098,7 +2098,7 @@ public class CompletableTest {
         normal.completable.lift(null);
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void liftReturnsNull() {
         Completable c = normal.completable.lift(new CompletableOperator() {
             @Override
@@ -2133,14 +2133,14 @@ public class CompletableTest {
             };
         }
     }
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void liftOnCompleteError() {
         Completable c = normal.completable.lift(new CompletableOperatorSwap());
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void liftOnErrorComplete() {
         Completable c = error.completable.lift(new CompletableOperatorSwap());
         
@@ -2152,7 +2152,7 @@ public class CompletableTest {
         normal.completable.mergeWith(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void mergeWithNormal() {
         Completable c = normal.completable.mergeWith(normal.completable);
         
@@ -2166,7 +2166,7 @@ public class CompletableTest {
         normal.completable.observeOn(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void observeOnNormal() throws InterruptedException {
         final AtomicReference<String> name = new AtomicReference<String>();
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
@@ -2199,7 +2199,7 @@ public class CompletableTest {
         Assert.assertTrue(name.get().startsWith("RxComputation"));
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void observeOnError() throws InterruptedException {
         final AtomicReference<String> name = new AtomicReference<String>();
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
@@ -2233,14 +2233,14 @@ public class CompletableTest {
         Assert.assertTrue(name.get().startsWith("RxComputation"));
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void onErrorComplete() {
         Completable c = error.completable.onErrorComplete();
         
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void onErrorCompleteFalse() {
         Completable c = error.completable.onErrorComplete(new Func1<Throwable, Boolean>() {
             @Override
@@ -2262,7 +2262,7 @@ public class CompletableTest {
         error.completable.onErrorResumeNext(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void onErrorResumeNextFunctionReturnsNull() {
         Completable c = error.completable.onErrorResumeNext(new Func1<Throwable, Completable>() {
             @Override
@@ -2282,7 +2282,7 @@ public class CompletableTest {
         }
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void onErrorResumeNextFunctionThrows() {
         Completable c = error.completable.onErrorResumeNext(new Func1<Throwable, Completable>() {
             @Override
@@ -2300,7 +2300,7 @@ public class CompletableTest {
         }
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void onErrorResumeNextNormal() {
         Completable c = error.completable.onErrorResumeNext(new Func1<Throwable, Completable>() {
             @Override
@@ -2312,7 +2312,7 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void onErrorResumeNextError() {
         Completable c = error.completable.onErrorResumeNext(new Func1<Throwable, Completable>() {
             @Override
@@ -2369,14 +2369,14 @@ public class CompletableTest {
         Assert.assertNull(err.get());
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void repeatError() {
         Completable c = error.completable.repeat();
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void repeat5Times() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -2393,7 +2393,7 @@ public class CompletableTest {
         Assert.assertEquals(5, calls.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void repeat1Time() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -2410,7 +2410,7 @@ public class CompletableTest {
         Assert.assertEquals(1, calls.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void repeat0Time() {
         final AtomicInteger calls = new AtomicInteger();
         
@@ -2432,7 +2432,7 @@ public class CompletableTest {
         normal.completable.repeatWhen(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void retryNormal() {
         Completable c = normal.completable.retry();
         
@@ -2441,7 +2441,7 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void retry5Times() {
         final AtomicInteger calls = new AtomicInteger(5);
         
@@ -2457,7 +2457,7 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void retryBiPredicate5Times() {
         Completable c = error.completable.retry(new Func2<Integer, Throwable, Boolean>() {
             @Override
@@ -2469,14 +2469,14 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void retryTimes5Error() {
         Completable c = error.completable.retry(5);
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void retryTimes5Normal() {
         final AtomicInteger calls = new AtomicInteger(5);
 
@@ -2497,7 +2497,7 @@ public class CompletableTest {
         normal.completable.retry(-1);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void retryWhen5Times() {
         final AtomicInteger calls = new AtomicInteger(5);
 
@@ -2519,7 +2519,7 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void subscribe() throws InterruptedException {
         final AtomicBoolean complete = new AtomicBoolean();
         
@@ -2539,7 +2539,7 @@ public class CompletableTest {
         Assert.assertTrue("Not completed", complete.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void subscribeDispose() throws InterruptedException {
         final AtomicBoolean complete = new AtomicBoolean();
         
@@ -2563,7 +2563,7 @@ public class CompletableTest {
         Assert.assertFalse("Completed", complete.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void subscribeTwoCallbacksNormal() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
         final AtomicBoolean complete = new AtomicBoolean();
@@ -2583,7 +2583,7 @@ public class CompletableTest {
         Assert.assertTrue("Not completed", complete.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void subscribeTwoCallbacksError() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
         final AtomicBoolean complete = new AtomicBoolean();
@@ -2619,7 +2619,7 @@ public class CompletableTest {
         });
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void subscribeTwoCallbacksCompleteThrows() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
         normal.completable.subscribe(new Action1<Throwable>() {
@@ -2635,7 +2635,7 @@ public class CompletableTest {
         Assert.assertTrue(String.valueOf(err.get()), err.get() instanceof TestException);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void subscribeTwoCallbacksOnErrorThrows() {
         error.completable.subscribe(new Action1<Throwable>() {
             @Override
@@ -2646,7 +2646,7 @@ public class CompletableTest {
         });
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void subscribeActionNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         
@@ -2660,7 +2660,7 @@ public class CompletableTest {
         Assert.assertTrue("Not completed", run.get());
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void subscribeActionError() {
         final AtomicBoolean run = new AtomicBoolean();
         
@@ -2689,7 +2689,7 @@ public class CompletableTest {
         normal.completable.unsafeSubscribe((CompletableSubscriber)null);
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void subscribeSubscriberNormal() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         
@@ -2700,7 +2700,7 @@ public class CompletableTest {
         ts.assertNoErrors();
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void subscribeSubscriberError() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         
@@ -2716,7 +2716,7 @@ public class CompletableTest {
         normal.completable.subscribeOn(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void subscribeOnNormal() {
         final AtomicReference<String> name = new  AtomicReference<String>();
         
@@ -2734,7 +2734,7 @@ public class CompletableTest {
         Assert.assertTrue(name.get().startsWith("RxComputation"));
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void subscribeOnError() {
         final AtomicReference<String> name = new  AtomicReference<String>();
         
@@ -2838,14 +2838,14 @@ public class CompletableTest {
         });
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void timeoutEmitError() {
         Throwable e = Completable.never().timeout(100, TimeUnit.MILLISECONDS).get();
         
         Assert.assertTrue(e instanceof TimeoutException);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void timeoutSwitchNormal() {
         Completable c = Completable.never().timeout(100, TimeUnit.MILLISECONDS, normal.completable);
         
@@ -2854,7 +2854,7 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void timeoutTimerCancelled() throws InterruptedException {
         Completable c = Completable.fromCallable(new Callable<Object>() {
             @Override
@@ -2886,7 +2886,7 @@ public class CompletableTest {
         normal.completable.timeout(1, TimeUnit.SECONDS, (Completable)null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void toNormal() {
         Observable<?> flow = normal.completable.to(new Func1<Completable, Observable<Object>>() {
             @Override
@@ -2906,7 +2906,7 @@ public class CompletableTest {
         normal.completable.to(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void toObservableNormal() {
         normal.completable.toObservable().toBlocking().forEach(new Action1<Object>() {
             @Override
@@ -2914,7 +2914,7 @@ public class CompletableTest {
         });
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void toObservableError() {
         error.completable.toObservable().toBlocking().forEach(new Action1<Object>() {
             @Override
@@ -2955,7 +2955,7 @@ public class CompletableTest {
         return v.get();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void toSingleSupplierNormal() {
         int v = get(normal.completable.toSingle(new Func0<Integer>() {
             @Override
@@ -2967,7 +2967,7 @@ public class CompletableTest {
         Assert.assertEquals(1, v);
     }
 
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void toSingleSupplierError() {
         get(error.completable.toSingle(new Func0<Object>() {
             @Override
@@ -3000,12 +3000,12 @@ public class CompletableTest {
         }));
     }
 
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void toSingleDefaultError() {
         get(error.completable.toSingleDefault(1));
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void toSingleDefaultNormal() {
         Assert.assertEquals((Integer)1, get(normal.completable.toSingleDefault(1)));
     }
@@ -3015,7 +3015,7 @@ public class CompletableTest {
         normal.completable.toSingleDefault(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void unsubscribeOnNormal() throws InterruptedException {
         final AtomicReference<String> name = new AtomicReference<String>();
         final CountDownLatch cdl = new CountDownLatch(1);
@@ -3067,28 +3067,28 @@ public class CompletableTest {
         Completable.amb((Completable[])null);
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambArrayEmpty() {
         Completable c = Completable.amb();
                 
         c.await();
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambArraySingleNormal() {
         Completable c = Completable.amb(normal.completable);
                 
         c.await();
     }
 
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void ambArraySingleError() {
         Completable c = Completable.amb(error.completable);
                 
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambArrayOneFires() {
         PublishSubject<Object> ps1 = PublishSubject.create();
         PublishSubject<Object> ps2 = PublishSubject.create();
@@ -3119,7 +3119,7 @@ public class CompletableTest {
         Assert.assertTrue("Not completed", complete.get());
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambArrayOneFiresError() {
         PublishSubject<Object> ps1 = PublishSubject.create();
         PublishSubject<Object> ps2 = PublishSubject.create();
@@ -3153,7 +3153,7 @@ public class CompletableTest {
         Assert.assertTrue("Not completed", complete.get() instanceof TestException);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambArraySecondFires() {
         PublishSubject<Object> ps1 = PublishSubject.create();
         PublishSubject<Object> ps2 = PublishSubject.create();
@@ -3184,7 +3184,7 @@ public class CompletableTest {
         Assert.assertTrue("Not completed", complete.get());
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambArraySecondFiresError() {
         PublishSubject<Object> ps1 = PublishSubject.create();
         PublishSubject<Object> ps2 = PublishSubject.create();
@@ -3218,14 +3218,14 @@ public class CompletableTest {
         Assert.assertTrue("Not completed", complete.get() instanceof TestException);
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void ambMultipleOneIsNull() {
         Completable c = Completable.amb(null, normal.completable);
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambIterableEmpty() {
         Completable c = Completable.amb(Collections.<Completable>emptyList());
         
@@ -3237,7 +3237,7 @@ public class CompletableTest {
         Completable.amb((Iterable<Completable>)null);
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void ambIterableIteratorNull() {
         Completable c = Completable.amb(new Iterable<Completable>() {
             @Override
@@ -3249,14 +3249,14 @@ public class CompletableTest {
         c.await();
     }
     
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 5000, expected = NullPointerException.class)
     public void ambIterableWithNull() {
         Completable c = Completable.amb(Arrays.asList(null, normal.completable));
         
         c.await();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambIterableSingle() {
         Completable c = Completable.amb(Collections.singleton(normal.completable));
         
@@ -3265,7 +3265,7 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambIterableMany() {
         Completable c = Completable.amb(Arrays.asList(normal.completable, normal.completable, normal.completable));
         
@@ -3274,14 +3274,14 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void ambIterableOneThrows() {
         Completable c = Completable.amb(Collections.singleton(error.completable));
         
         c.await();
     }
     
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 5000, expected = TestException.class)
     public void ambIterableManyOneThrows() {
         Completable c = Completable.amb(Arrays.asList(error.completable, normal.completable));
         
@@ -3319,7 +3319,7 @@ public class CompletableTest {
         normal.completable.ambWith(null);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambWithArrayOneFires() {
         PublishSubject<Object> ps1 = PublishSubject.create();
         PublishSubject<Object> ps2 = PublishSubject.create();
@@ -3350,7 +3350,7 @@ public class CompletableTest {
         Assert.assertTrue("Not completed", complete.get());
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambWithArrayOneFiresError() {
         PublishSubject<Object> ps1 = PublishSubject.create();
         PublishSubject<Object> ps2 = PublishSubject.create();
@@ -3384,7 +3384,7 @@ public class CompletableTest {
         Assert.assertTrue("Not completed", complete.get() instanceof TestException);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambWithArraySecondFires() {
         PublishSubject<Object> ps1 = PublishSubject.create();
         PublishSubject<Object> ps2 = PublishSubject.create();
@@ -3415,7 +3415,7 @@ public class CompletableTest {
         Assert.assertTrue("Not completed", complete.get());
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void ambWithArraySecondFiresError() {
         PublishSubject<Object> ps1 = PublishSubject.create();
         PublishSubject<Object> ps2 = PublishSubject.create();
@@ -3449,7 +3449,7 @@ public class CompletableTest {
         Assert.assertTrue("Not completed", complete.get() instanceof TestException);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void startWithCompletableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Completable c = normal.completable
@@ -3467,7 +3467,7 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void startWithCompletableError() {
         Completable c = normal.completable.startWith(error.completable);
         
@@ -3480,7 +3480,7 @@ public class CompletableTest {
         }
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void startWithFlowableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Observable<Object> c = normal.completable
@@ -3504,7 +3504,7 @@ public class CompletableTest {
         ts.assertNoErrors();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void startWithFlowableError() {
         Observable<Object> c = normal.completable
                 .startWith(Observable.error(new TestException()));
@@ -3540,7 +3540,7 @@ public class CompletableTest {
         normal.completable.andThen((Observable<Object>)null);
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void andThenCompletableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Completable c = normal.completable
@@ -3558,7 +3558,7 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void andThenCompletableError() {
         Completable c = normal.completable.andThen(error.completable);
         
@@ -3571,7 +3571,7 @@ public class CompletableTest {
         }
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void andThenFlowableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Observable<Object> c = normal.completable
@@ -3595,7 +3595,7 @@ public class CompletableTest {
         ts.assertNoErrors();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void andThenFlowableError() {
         Observable<Object> c = normal.completable
                 .andThen(Observable.error(new TestException()));
