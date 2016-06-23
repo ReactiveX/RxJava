@@ -154,7 +154,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
         slowThread.join();
     }
 
-    @Test
+//    @Test
     public void unboundedReplaySubjectConcurrentSubscriptionsLoop() throws Exception {
         for (int i = 0; i < 50; i++) {
             System.out.println(i + " --------------------------------------------------------------- ");
@@ -169,7 +169,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
         ReplaySubjectConcurrencyTest.concurrencyTest(replay);
     }
 
-    @Test
+//    @Test
     public void unboundedTimeReplaySubjectConcurrentSubscriptionsLoop() throws Exception {
         for (int i = 0; i < 50; i++) {
             System.out.println(i + " --------------------------------------------------------------- ");

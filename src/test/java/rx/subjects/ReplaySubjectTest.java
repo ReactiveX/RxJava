@@ -368,7 +368,7 @@ public class ReplaySubjectTest {
         
         assertEquals(0, replaySubject.subscriberCount());
     }
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void testUnsubscriptionCase() {
         ReplaySubject<String> src = ReplaySubject.create();
         

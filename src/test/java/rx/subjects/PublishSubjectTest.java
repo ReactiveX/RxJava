@@ -332,7 +332,7 @@ public class PublishSubjectTest {
 
     private final Throwable testException = new Throwable();
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void testUnsubscriptionCase() {
         PublishSubject<String> src = PublishSubject.create();
 
