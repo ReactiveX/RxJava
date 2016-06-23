@@ -20,7 +20,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.subscribers.observable.NbpCancelledSubscriber;
+import io.reactivex.internal.subscribers.observable.NbpEmptySubscriber;
 
 public final class NbpOperatorToList<T, U extends Collection<? super T>> implements NbpOperator<U, T> {
     
@@ -50,7 +50,7 @@ public final class NbpOperatorToList<T, U extends Collection<? super T>> impleme
             coll = collectionSupplier.get();
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
-            return NbpCancelledSubscriber.INSTANCE;
+            return NbpEmptySubscriber.DISPOSED;
         }
         return new ToListSubscriber<T, U>(t, coll);
     }

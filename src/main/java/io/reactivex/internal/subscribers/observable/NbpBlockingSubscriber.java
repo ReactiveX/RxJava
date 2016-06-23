@@ -35,13 +35,7 @@ public final class NbpBlockingSubscriber<T> extends AtomicReference<Disposable> 
     
     @Override
     public void onSubscribe(Disposable s) {
-        if (!compareAndSet(null, s)) {
-            s.dispose();
-            if (get() != DisposableHelper.DISPOSED) {
-                onError(new IllegalStateException("Subscription already set"));
-            }
-            return;
-        }
+        DisposableHelper.setOnce(this, s);
     }
     
     @Override
@@ -66,7 +60,7 @@ public final class NbpBlockingSubscriber<T> extends AtomicReference<Disposable> 
         }
     }
     
-    public boolean isCancelled() {
+    public boolean isDisposed() {
         return get() == DisposableHelper.DISPOSED;
     }
 }

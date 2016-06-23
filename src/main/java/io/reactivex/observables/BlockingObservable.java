@@ -468,17 +468,17 @@ public final class BlockingObservable<T> implements Iterable<T> {
         
         try {
             for (;;) {
-                if (bs.isCancelled()) {
+                if (bs.isDisposed()) {
                     break;
                 }
                 Object o = queue.poll();
                 if (o == null) {
-                    if (bs.isCancelled()) {
+                    if (bs.isDisposed()) {
                         break;
                     }
                     o = queue.take();
                 }
-                if (bs.isCancelled()) {
+                if (bs.isDisposed()) {
                     break;
                 }
                 if (o == BlockingSubscriber.TERMINATED) {
