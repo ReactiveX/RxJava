@@ -122,7 +122,7 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
      * @param n the request amount, must be positive
      */
     protected final void request(long n) {
-        if (SubscriptionHelper.validateRequest(n)) {
+        if (!SubscriptionHelper.validateRequest(n)) {
             return;
         }
         Subscription a = s.get();

@@ -47,7 +47,7 @@ public class BackpressureTests {
 
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             if (compareAndSet(false, true)) {
@@ -688,7 +688,7 @@ public class BackpressureTests {
 
                     @Override
                     public void request(long n) {
-                        if (SubscriptionHelper.validateRequest(n)) {
+                        if (!SubscriptionHelper.validateRequest(n)) {
                             return;
                         }
                         if (threadsSeen != null) {

@@ -62,7 +62,7 @@ public final class FlowableTimer extends Flowable<Long> {
         
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validateRequest(n)) {
                 requested = true;
             }
         }

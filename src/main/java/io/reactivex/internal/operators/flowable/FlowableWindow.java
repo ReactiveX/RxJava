@@ -123,11 +123,9 @@ public final class FlowableWindow<T> extends Flowable<Flowable<T>> {
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validateRequest(n)) {
-                return;
+                long m = BackpressureHelper.multiplyCap(n, count);
+                s.request(m);
             }
-            
-            long m = BackpressureHelper.multiplyCap(n, count);
-            s.request(m);
         }
         
         @Override
@@ -238,7 +236,7 @@ public final class FlowableWindow<T> extends Flowable<Flowable<T>> {
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validateRequest(n)) {
                 return;
             }
          // requesting the first set of buffers must happen only once

@@ -42,7 +42,7 @@ public final class ScalarAsyncSubscription<T> extends AtomicInteger implements S
     
     @Override
     public void request(long n) {
-        if (SubscriptionHelper.validateRequest(n)) {
+        if (!SubscriptionHelper.validateRequest(n)) {
             return;
         }
         for (;;) {

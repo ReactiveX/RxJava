@@ -207,9 +207,8 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
     
     public final void requested(long n) {
         if (SubscriptionHelper.validateRequest(n)) {
-            return;
+            BackpressureHelper.add(requested, n);
         }
-        BackpressureHelper.add(requested, n);
     }
     
     public void drain(boolean delayError) {

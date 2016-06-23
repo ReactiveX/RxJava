@@ -187,10 +187,9 @@ public final class UnicastProcessor<T> extends FlowProcessor<T> {
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validateRequest(n)) {
-                return;
+                BackpressureHelper.add(requested, n);
+                drain();
             }
-            BackpressureHelper.add(requested, n);
-            drain();
         }
         
         @Override

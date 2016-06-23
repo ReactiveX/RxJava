@@ -93,9 +93,8 @@ public final class FlowableCollect<T, U> extends Flowable<U> {
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validateRequest(n)) {
-                return;
+                s.request(Long.MAX_VALUE);
             }
-            s.request(Long.MAX_VALUE);
         }
         
         @Override

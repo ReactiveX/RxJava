@@ -89,7 +89,7 @@ public final class FlowableOnBackpressureLatest<T> extends Flowable<T> {
         
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validateRequest(n)) {
                 BackpressureHelper.add(requested, n);
                 drain();
             }

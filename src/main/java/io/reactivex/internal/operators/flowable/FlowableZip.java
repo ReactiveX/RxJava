@@ -117,7 +117,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validateRequest(n)) {
                 BackpressureHelper.add(requested, n);
                 drain();
             }

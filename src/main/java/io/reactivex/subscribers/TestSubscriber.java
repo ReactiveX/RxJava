@@ -201,7 +201,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     @Override
     public void request(long n) {
-        if (SubscriptionHelper.validateRequest(n)) {
+        if (!SubscriptionHelper.validateRequest(n)) {
             return;
         }
         Subscription s = subscription.get();

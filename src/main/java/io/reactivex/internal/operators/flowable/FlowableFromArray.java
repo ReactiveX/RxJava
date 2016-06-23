@@ -57,7 +57,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             if (BackpressureHelper.add(this, n) == 0L) {
@@ -137,7 +137,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             if (BackpressureHelper.add(this, n) == 0L) {

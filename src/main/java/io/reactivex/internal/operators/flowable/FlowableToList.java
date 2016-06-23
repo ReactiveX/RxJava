@@ -101,7 +101,7 @@ implements Supplier<U> {
         
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validateRequest(n)) {
                 s.request(Long.MAX_VALUE);
             }
         }

@@ -180,11 +180,9 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validateRequest(n)) {
-                return;
+                BackpressureHelper.add(requested, n);
+                drain();
             }
-            
-            BackpressureHelper.add(requested, n);
-            drain();
         }
         
         @Override
@@ -358,7 +356,7 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validateRequest(n)) {
                 return;
             }
             BackpressureHelper.add(requested, n);
