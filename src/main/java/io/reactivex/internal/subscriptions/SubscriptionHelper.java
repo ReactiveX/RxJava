@@ -182,8 +182,10 @@ public enum SubscriptionHelper {
         Subscription current = field.get();
         if (current != CANCELLED) {
             current = field.getAndSet(CANCELLED);
-            if (current != null && current != CANCELLED) { // FIXME return true if current was null?
-                current.cancel();
+            if (current != CANCELLED) {
+                if (current != null) {
+                    current.cancel();
+                }
                 return true;
             }
         }
