@@ -84,8 +84,10 @@ public enum DisposableHelper {
         Disposable current = field.get();
         if (current != DISPOSED) {
             current = field.getAndSet(DISPOSED);
-            if (current != null && current != DISPOSED) {
-                current.dispose();
+            if (current != DISPOSED) {
+                if (current != null) {
+                    current.dispose();
+                }
                 return true;
             }
         }
