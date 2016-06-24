@@ -48,33 +48,27 @@ public final class ObservableTimer extends Observable<Long> {
 
         final Observer<? super Long> actual;
         
-        volatile boolean cancelled;
-        
         public IntervalOnceSubscriber(Observer<? super Long> actual) {
             this.actual = actual;
         }
         
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-                
-                DisposableHelper.dispose(this);
-            }
+            DisposableHelper.dispose(this);
         }
 
         @Override
         public boolean isDisposed() {
-            return cancelled;
+            return get() == DisposableHelper.DISPOSED;
         }
 
         @Override
         public void run() {
-            if (!cancelled) {
+            if (!isDisposed()) {
                 actual.onNext(0L);
                 actual.onComplete();
+                lazySet(EmptyDisposable.INSTANCE);
             }
-            lazySet(EmptyDisposable.INSTANCE);
         }
         
         public void setResource(Disposable d) {

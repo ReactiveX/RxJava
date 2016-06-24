@@ -62,8 +62,6 @@ public final class FlowableIntervalRange extends Flowable<Long> {
         
         long count;
         
-        volatile boolean cancelled;
-        
         final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
         
         public IntervalRangeSubscriber(Subscriber<? super Long> actual, long start, long end) {
@@ -81,19 +79,12 @@ public final class FlowableIntervalRange extends Flowable<Long> {
         
         @Override
         public void cancel() {
-            if (!cancelled) {
-                cancelled = true;
-                disposeResource();
-            }
-        }
-        
-        void disposeResource() {
             DisposableHelper.dispose(resource);
         }
         
         @Override
         public void run() {
-            if (!cancelled) {
+            if (resource.get() != DisposableHelper.DISPOSED) {
                 long r = get();
                 
                 if (r != 0L) {
@@ -101,11 +92,10 @@ public final class FlowableIntervalRange extends Flowable<Long> {
                     actual.onNext(c);
                     
                     if (c == end) {
-                        cancelled = true;
                         try {
                             actual.onComplete();
                         } finally {
-                            disposeResource();
+                            DisposableHelper.dispose(resource);
                         }
                         return;
                     }
@@ -116,11 +106,10 @@ public final class FlowableIntervalRange extends Flowable<Long> {
                         decrementAndGet();
                     }
                 } else {
-                    cancelled = true;
                     try {
                         actual.onError(new IllegalStateException("Can't deliver value " + count + " due to lack of requests"));
                     } finally {
-                        disposeResource();
+                        DisposableHelper.dispose(resource);
                     }
                 }
             }

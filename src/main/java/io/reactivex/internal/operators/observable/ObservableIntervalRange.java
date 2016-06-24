@@ -49,16 +49,13 @@ public final class ObservableIntervalRange extends Observable<Long> {
     }
     
     static final class IntervalRangeSubscriber
+    extends AtomicReference<Disposable>
     implements Disposable, Runnable {
 
         final Observer<? super Long> actual;
         final long end;
         
         long count;
-        
-        volatile boolean cancelled;
-        
-        final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
         
         public IntervalRangeSubscriber(Observer<? super Long> actual, long start, long end) {
             this.actual = actual;
@@ -68,34 +65,23 @@ public final class ObservableIntervalRange extends Observable<Long> {
         
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-                disposeResource();
-            }
+            DisposableHelper.dispose(this);
         }
 
         @Override
         public boolean isDisposed() {
-            return cancelled;
+            return get() == DisposableHelper.DISPOSED;
         }
 
-        void disposeResource() {
-            DisposableHelper.dispose(resource);
-        }
-        
         @Override
         public void run() {
-            if (!cancelled) {
+            if (!isDisposed()) {
                 long c = count;
                 actual.onNext(c);
                 
                 if (c == end) {
-                    cancelled = true;
-                    try {
-                        actual.onComplete();
-                    } finally {
-                        disposeResource();
-                    }
+                    DisposableHelper.dispose(this);
+                    actual.onComplete();
                     return;
                 }
                 
@@ -105,7 +91,7 @@ public final class ObservableIntervalRange extends Observable<Long> {
         }
         
         public void setResource(Disposable d) {
-            DisposableHelper.setOnce(resource, d);
+            DisposableHelper.setOnce(this, d);
         }
     }
 }
