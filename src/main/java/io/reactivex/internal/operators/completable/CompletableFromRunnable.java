@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.BooleanDisposable;
+import io.reactivex.disposables.*;
 
 public final class CompletableFromRunnable extends Completable {
 
@@ -26,17 +26,17 @@ public final class CompletableFromRunnable extends Completable {
 
     @Override
     protected void subscribeActual(CompletableSubscriber s) {
-        BooleanDisposable bs = new BooleanDisposable();
-        s.onSubscribe(bs);
+        Disposable d = Disposables.empty();
+        s.onSubscribe(d);
         try {
             run.run();
         } catch (Throwable e) {
-            if (!bs.isDisposed()) {
+            if (!d.isDisposed()) {
                 s.onError(e);
             }
             return;
         }
-        if (!bs.isDisposed()) {
+        if (!d.isDisposed()) {
             s.onComplete();
         }
     }

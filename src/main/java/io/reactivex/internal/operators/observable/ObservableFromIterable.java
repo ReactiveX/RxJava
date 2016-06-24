@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.Iterator;
 
 import io.reactivex.*;
-import io.reactivex.disposables.BooleanDisposable;
+import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class ObservableFromIterable<T> extends Observable<T> {
@@ -45,11 +45,11 @@ public final class ObservableFromIterable<T> extends Observable<T> {
             EmptyDisposable.complete(s);
             return;
         }
-        BooleanDisposable bd = new BooleanDisposable();
-        s.onSubscribe(bd);
+        Disposable d = Disposables.empty();
+        s.onSubscribe(d);
         
         do {
-            if (bd.isDisposed()) {
+            if (d.isDisposed()) {
                 return;
             }
             T v;
@@ -68,7 +68,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
             
             s.onNext(v);
             
-            if (bd.isDisposed()) {
+            if (d.isDisposed()) {
                 return;
             }
             try {
@@ -79,7 +79,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
             }
         } while (hasNext);
         
-        if (!bd.isDisposed()) {
+        if (!d.isDisposed()) {
             s.onComplete();
         }
     }

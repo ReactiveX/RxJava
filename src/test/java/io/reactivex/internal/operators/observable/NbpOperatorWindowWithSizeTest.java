@@ -24,7 +24,7 @@ import org.junit.Test;
 import io.reactivex.Observable;
 import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.BooleanDisposable;
+import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -201,9 +201,9 @@ public class NbpOperatorWindowWithSizeTest {
         return Observable.create(new ObservableConsumable<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> s) {
-                BooleanDisposable bs = new BooleanDisposable();
-                s.onSubscribe(bs);
-                while (!bs.isDisposed()) {
+                Disposable d = Disposables.empty();
+                s.onSubscribe(d);
+                while (!d.isDisposed()) {
                     // burst some number of items
                     for (int i = 0; i < Math.random() * 20; i++) {
                         s.onNext(i);

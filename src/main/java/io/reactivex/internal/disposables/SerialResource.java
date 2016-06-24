@@ -95,6 +95,7 @@ public final class SerialResource<T> extends AtomicReference<Object> implements 
      * Returns true if this resource has been disposed.
      * @return true if this resource has been disposed
      */
+    @Override
     public boolean isDisposed() {
         return get() == DISPOSED;
     }

@@ -81,7 +81,12 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
     public void dispose() {
         cancel();
     }
-    
+
+    @Override
+    public boolean isDisposed() {
+        return get() == SubscriptionHelper.CANCELLED;
+    }
+
     @Override
     public void request(long n) {
         get().request(n);

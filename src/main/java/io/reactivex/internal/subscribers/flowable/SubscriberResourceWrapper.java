@@ -95,7 +95,12 @@ public final class SubscriberResourceWrapper<T, R> extends AtomicReference<Objec
             }
         }
     }
-    
+
+    @Override
+    public boolean isDisposed() {
+        return subscription.get() == SubscriptionHelper.CANCELLED;
+    }
+
     @Override
     public void cancel() {
         dispose();

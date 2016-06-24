@@ -360,7 +360,12 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
             s.cancel();
             DisposableHelper.dispose(timeout);
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         @Override
         public void timeout(long idx) {
             if (idx == index) {

@@ -130,7 +130,12 @@ public final class NbpOperatorDebounceTimed<T> implements NbpOperator<T, T> {
             worker.dispose();
             s.dispose();
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return timer.get() == DisposableHelper.DISPOSED;
+        }
+
         void emit(long idx, T t, DebounceEmitter<T> emitter) {
             if (idx == index) {
                 actual.onNext(t);
@@ -171,7 +176,12 @@ public final class NbpOperatorDebounceTimed<T> implements NbpOperator<T, T> {
         public void dispose() {
             DisposableHelper.dispose(this);
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return get() == DisposableHelper.DISPOSED;
+        }
+
         public void setResource(Disposable d) {
             DisposableHelper.replace(this, d);
         }

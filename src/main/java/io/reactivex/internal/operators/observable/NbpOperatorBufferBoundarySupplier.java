@@ -161,7 +161,12 @@ public final class NbpOperatorBufferBoundarySupplier<T, U extends Collection<? s
                 }
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void disposeOther() {
             DisposableHelper.dispose(other);
         }

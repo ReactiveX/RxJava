@@ -46,6 +46,11 @@ public final class SingleHide<T> extends Single<T> {
         }
 
         @Override
+        public boolean isDisposed() {
+            return d.isDisposed();
+        }
+
+        @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.d, d)) {
                 this.d = d;

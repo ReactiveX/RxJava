@@ -37,6 +37,7 @@ public abstract class DisposableObserver<T> implements Observer<T>, Disposable {
     protected void onStart() {
     }
     
+    @Override
     public final boolean isDisposed() {
         return s.get() == DisposableHelper.DISPOSED;
     }

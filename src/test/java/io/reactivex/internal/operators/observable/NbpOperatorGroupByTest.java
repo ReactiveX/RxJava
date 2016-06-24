@@ -965,11 +965,11 @@ public class NbpOperatorGroupByTest {
 
             @Override
             public void subscribe(final Observer<? super Event> op) {
-                BooleanDisposable bs = new BooleanDisposable();
-                op.onSubscribe(bs);
+                Disposable d = Disposables.empty();
+                op.onSubscribe(d);
                 subscribeCounter.incrementAndGet();
                 int i = 0;
-                while (!bs.isDisposed()) {
+                while (!d.isDisposed()) {
                     i++;
                     Event e = new Event();
                     e.source = i % numGroups;

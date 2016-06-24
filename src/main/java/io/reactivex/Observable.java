@@ -877,7 +877,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         return create(new ObservableConsumable<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> s) {
-                BooleanDisposable d = new BooleanDisposable();
+                Disposable d = Disposables.empty();
                 s.onSubscribe(d);
                 
                 long end = start - 1L + count;

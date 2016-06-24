@@ -92,7 +92,12 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                 }
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void cancel(Queue<T> q1, Queue<T> q2) {
             cancelled = true;
             q1.clear();

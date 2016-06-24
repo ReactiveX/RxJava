@@ -250,6 +250,11 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             selfCancel = true;
             cancel();
         }
+
+        @Override
+        public boolean isDisposed() {
+            return timer.get() == DisposableHelper.DISPOSED;
+        }
     }
     
     static final class BufferSkipBoundedSubscriber<T, U extends Collection<? super T>>
@@ -595,8 +600,12 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             }
             s.cancel();
         }
-        
-        
+
+        @Override
+        public boolean isDisposed() {
+            return w.isDisposed();
+        }
+
         @Override
         public void run() {
             U next;

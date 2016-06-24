@@ -159,7 +159,12 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<GroupedObs
                 }
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled.get();
+        }
+
         public void cancel(K key) {
             Object mapKey = key != null ? key : NULL_KEY;
             groups.remove(mapKey);
@@ -232,7 +237,12 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<GroupedObs
                 }
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled.get();
+        }
+
         @Override
         public void subscribe(Observer<? super T> s) {
             if (actual.compareAndSet(null, s)) {

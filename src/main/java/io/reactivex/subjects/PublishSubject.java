@@ -198,15 +198,15 @@ public final class PublishSubject<T> extends Subject<T> {
                 emit(t, v);
                 return;
             }
-            BooleanDisposable bd = new BooleanDisposable(new Runnable() {
+            Disposable d = Disposables.from(new Runnable() {
                 @Override
                 public void run() {
                     remove(t);
                 }
             });
-            t.onSubscribe(bd);
+            t.onSubscribe(d);
             if (add(t)) {
-                if (bd.isDisposed()) {
+                if (d.isDisposed()) {
                     remove(t);
                 }
                 return;

@@ -139,7 +139,12 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
                 }
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void next() {
             
             U next;

@@ -102,6 +102,7 @@ public final class ArrayCompositeResource<T> extends AtomicReferenceArray<Object
         }
     }
     
+    @Override
     public boolean isDisposed() {
         return get(0) == DISPOSED;
     }

@@ -64,6 +64,10 @@ public final class FlowableThrottleFirstTimed<T> extends Flowable<T> {
         static final Disposable NEW_TIMER = new Disposable() {
             @Override
             public void dispose() { }
+
+            @Override public boolean isDisposed() {
+                return true;
+            }
         };
 
         volatile boolean gate;

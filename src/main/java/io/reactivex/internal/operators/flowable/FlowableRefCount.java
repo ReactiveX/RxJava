@@ -182,9 +182,9 @@ public final class FlowableRefCount<T> extends Flowable<T> {
     }
 
     private Disposable disconnect(final SetCompositeResource<Disposable> current) {
-        return new Disposable() {
+        return Disposables.from(new Runnable() {
             @Override
-            public void dispose() {
+            public void run() {
                 lock.lock();
                 try {
                     if (baseSubscription == current) {
@@ -199,6 +199,6 @@ public final class FlowableRefCount<T> extends Flowable<T> {
                     lock.unlock();
                 }
             }
-        };
+        });
     }
 }

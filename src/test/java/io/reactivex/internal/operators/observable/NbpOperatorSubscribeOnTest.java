@@ -136,11 +136,10 @@ public class NbpOperatorSubscribeOnTest {
                 actualInner.dispose();
             }
 
-            // FIXME not available
-//            @Override
-//            public boolean isDisposed() {
-//                return actualInner.isDisposed();
-//            }
+            @Override
+            public boolean isDisposed() {
+                return actualInner.isDisposed();
+            }
 
             @Override
             public Disposable schedule(final Runnable action) {
@@ -166,9 +165,9 @@ public class NbpOperatorSubscribeOnTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                BooleanDisposable bs = new BooleanDisposable();
-                sub.onSubscribe(bs);
-                for (int i = 1; !bs.isDisposed(); i++) {
+                Disposable d = Disposables.empty();
+                sub.onSubscribe(d);
+                for (int i = 1; !d.isDisposed(); i++) {
                     count.incrementAndGet();
                     sub.onNext(i);
                 }

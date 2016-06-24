@@ -162,6 +162,7 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
      * Returns true if this AsyncObserver has been disposed/cancelled.
      * @return true if this AsyncObserver has been disposed/cancelled
      */
+    @Override
     public final boolean isDisposed() {
         return SubscriptionHelper.isCancelled(s.get());
     }

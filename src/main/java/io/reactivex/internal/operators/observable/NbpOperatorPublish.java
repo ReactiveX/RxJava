@@ -247,6 +247,7 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
             }
         }
         
+        @Override
         public boolean isDisposed() {
             return producers.get() == TERMINATED; 
         }
@@ -626,6 +627,7 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
             this.child = child;
         }
         
+        @Override
         public boolean isDisposed() {
             return cancelled;
         }

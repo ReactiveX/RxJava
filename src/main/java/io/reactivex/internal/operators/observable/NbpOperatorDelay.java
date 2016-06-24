@@ -125,6 +125,10 @@ public final class NbpOperatorDelay<T> implements NbpOperator<T, T> {
             w.dispose();
             s.dispose();
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return w.isDisposed();
+        }
     }
 }

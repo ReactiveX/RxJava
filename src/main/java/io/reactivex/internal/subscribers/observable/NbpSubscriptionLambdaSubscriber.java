@@ -77,4 +77,9 @@ public final class NbpSubscriptionLambdaSubscriber<T> implements Observer<T>, Di
         }
         s.dispose();
     }
+
+    @Override
+    public boolean isDisposed() {
+        return s.isDisposed();
+    }
 }

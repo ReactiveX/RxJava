@@ -341,8 +341,9 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
             this.producers = new AtomicReference<InnerSubscription[]>(EMPTY);
             this.shouldConnect = new AtomicBoolean();
         }
-        
-        boolean isDisposed() {
+
+        @Override
+        public boolean isDisposed() {
             return cancelled;
         }
         
@@ -680,6 +681,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
             }
         }
         
+        @Override
         public boolean isDisposed() {
             return get() == UNSUBSCRIBED;
         }

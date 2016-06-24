@@ -101,7 +101,11 @@ public final class NbpOperatorSampleTimed<T> implements NbpOperator<T, T> {
             cancelTimer();
             s.dispose();
         }
-        
+
+        @Override public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         @Override
         public void run() {
             T value = getAndSet(null);

@@ -323,8 +323,9 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
             this.producers = new AtomicReference<InnerSubscription[]>(EMPTY);
             this.shouldConnect = new AtomicBoolean();
         }
-        
-        boolean isDisposed() {
+
+        @Override
+        public boolean isDisposed() {
             return cancelled;
         }
         
@@ -507,6 +508,7 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
             this.child = child;
         }
         
+        @Override
         public boolean isDisposed() {
             return cancelled;
         }

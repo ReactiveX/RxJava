@@ -155,6 +155,11 @@ public final class BlockingObservable<T> implements Iterable<T> {
         public void dispose() {
             resource.dispose();
         }
+
+        @Override
+        public boolean isDisposed() {
+            return resource.isDisposed();
+        }
     }
 
     public Optional<T> firstOption() {

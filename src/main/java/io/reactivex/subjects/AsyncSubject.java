@@ -237,15 +237,15 @@ public final class AsyncSubject<T> extends Subject<T> {
         
         @Override
         public void subscribe(final Observer<? super T> t) {
-            BooleanDisposable bd = new BooleanDisposable(new Runnable() {
+            Disposable d = Disposables.from(new Runnable() {
                 @Override
                 public void run() {
                     remove(t);
                 }
             });
-            t.onSubscribe(bd);
+            t.onSubscribe(d);
             if (add(t)) {
-                if (bd.isDisposed()) {
+                if (d.isDisposed()) {
                     remove(t);
                 }
                 return;

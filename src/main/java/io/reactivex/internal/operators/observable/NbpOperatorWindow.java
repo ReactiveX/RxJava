@@ -117,7 +117,12 @@ public final class NbpOperatorWindow<T> implements NbpOperator<Observable<T>, T>
         public void dispose() {
             cancelled = true;
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         @Override
         public void run() {
             if (cancelled) {
@@ -221,7 +226,12 @@ public final class NbpOperatorWindow<T> implements NbpOperator<Observable<T>, T>
         public void dispose() {
             cancelled = true;
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         @Override
         public void run() {
             if (wip.decrementAndGet() == 0) {

@@ -223,7 +223,12 @@ public final class ExecutorScheduler extends Scheduler {
                 }
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
+
         @Override
         public void run() {
             int missed = 1;
@@ -279,6 +284,11 @@ public final class ExecutorScheduler extends Scheduler {
             @Override
             public void dispose() {
                 lazySet(true);
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return get();
             }
         }
     }

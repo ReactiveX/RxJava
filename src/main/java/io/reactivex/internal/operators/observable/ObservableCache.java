@@ -272,6 +272,7 @@ public final class ObservableCache<T> extends Observable<T> {
             this.state = state;
         }
 
+        @Override
         public boolean isDisposed() {
             return cancelled;
         }

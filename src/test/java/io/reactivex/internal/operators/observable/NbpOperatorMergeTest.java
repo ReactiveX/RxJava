@@ -134,13 +134,13 @@ public class NbpOperatorMergeTest {
             @Override
             public void subscribe(final Observer<? super Observable<Long>> NbpObserver) {
                 // verbose on purpose so I can track the inside of it
-                final Disposable s = new Disposable() {
+                final Disposable s = Disposables.from(new Runnable() {
                     @Override
-                    public void dispose() {
+                    public void run() {
                         System.out.println("*** unsubscribed");
                         unsubscribed.set(true);
                     }
-                };
+                });
                 NbpObserver.onSubscribe(s);
 
                 new Thread(new Runnable() {
@@ -500,13 +500,13 @@ public class NbpOperatorMergeTest {
                 .subscribe(new Observer<Long>() {
                     @Override
                     public void onSubscribe(final Disposable s) {
-                        child.onSubscribe(new Disposable() {
+                        child.onSubscribe(Disposables.from(new Runnable() {
                             @Override
-                            public void dispose() {
+                            public void run() {
                                 unsubscribed.set(true);
                                 s.dispose();
                             }
-                        });
+                        }));
                     }
                     
                     @Override

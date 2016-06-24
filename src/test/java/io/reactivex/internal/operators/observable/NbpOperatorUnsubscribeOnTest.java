@@ -16,12 +16,12 @@ package io.reactivex.internal.operators.observable;
 import static org.junit.Assert.*;
 
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -116,16 +116,21 @@ public class NbpOperatorUnsubscribeOnTest {
         }
     }
 
-    private static class ThreadSubscription implements Disposable {
+    private static class ThreadSubscription extends AtomicBoolean implements Disposable {
         private volatile Thread thread;
 
         private final CountDownLatch latch = new CountDownLatch(1);
 
         @Override
         public void dispose() {
+            set(true);
             System.out.println("unsubscribe invoked: " + Thread.currentThread());
             thread = Thread.currentThread();
             latch.countDown();
+        }
+
+        @Override public boolean isDisposed() {
+            return get();
         }
 
         public Thread getThread() throws InterruptedException {

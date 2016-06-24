@@ -79,5 +79,10 @@ public final class NbpOperatorUnsubscribeOn<T> implements NbpOperator<T, T> {
                 });
             }
         }
+
+        @Override
+        public boolean isDisposed() {
+            return get();
+        }
     }
 }

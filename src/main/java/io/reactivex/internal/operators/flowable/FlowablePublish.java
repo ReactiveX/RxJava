@@ -250,6 +250,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
             }
         }
         
+        @Override
         public boolean isDisposed() {
             return producers.get() == TERMINATED; 
         }
@@ -736,6 +737,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
             }
         }
         
+        @Override
         public boolean isDisposed() {
             return get() == UNSUBSCRIBED;
         }

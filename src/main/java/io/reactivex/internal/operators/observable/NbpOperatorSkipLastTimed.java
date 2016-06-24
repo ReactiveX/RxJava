@@ -111,7 +111,12 @@ public final class NbpOperatorSkipLastTimed<T> implements NbpOperator<T, T> {
                 }
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void drain() {
             if (getAndIncrement() != 0) {
                 return;

@@ -93,5 +93,10 @@ public final class ObservableSubscribeOn<T> extends Observable<T> {
             s.dispose();
             worker.dispose();
         }
+
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
     }
 }

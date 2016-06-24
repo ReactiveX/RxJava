@@ -64,15 +64,20 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
     
     @Override
     public void cancel() {
-        SubscriptionHelper.dispose(actual);
-        DisposableHelper.dispose(resource);
+        dispose();
     }
     
     @Override
     public void dispose() {
-        cancel();
+        SubscriptionHelper.dispose(actual);
+        DisposableHelper.dispose(resource);
     }
-    
+
+    @Override
+    public boolean isDisposed() {
+        return actual.get() == SubscriptionHelper.CANCELLED;
+    }
+
     /**
      * Sets a new resource and disposes the currently held resource.
      * @param r the new resource to set

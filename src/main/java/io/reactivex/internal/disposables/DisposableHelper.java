@@ -119,12 +119,17 @@ public enum DisposableHelper {
         RxJavaPlugins.onError(new IllegalStateException("Disposable already set!"));
     }
 
-    static enum Disposed implements Disposable {
+    enum Disposed implements Disposable {
         INSTANCE;
         
         @Override
         public void dispose() {
             // deliberately no-op
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return true;
         }
     }
 

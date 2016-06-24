@@ -51,4 +51,9 @@ implements SingleSubscriber<T>, Disposable {
     public void dispose() {
         DisposableHelper.dispose(this);
     }
+
+    @Override
+    public boolean isDisposed() {
+        return get() == DisposableHelper.DISPOSED;
+    }
 }

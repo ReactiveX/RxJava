@@ -146,7 +146,12 @@ extends Flowable<U> {
         public void dispose() {
             resources.dispose();
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return resources.isDisposed();
+        }
+
         @Override
         public void cancel() {
             if (!cancelled) {

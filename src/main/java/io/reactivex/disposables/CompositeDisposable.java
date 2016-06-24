@@ -65,6 +65,7 @@ public final class CompositeDisposable implements Disposable {
         dispose(set);
     }
     
+    @Override
     public boolean isDisposed() {
         return disposed;
     }

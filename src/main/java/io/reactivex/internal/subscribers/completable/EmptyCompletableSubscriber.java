@@ -33,6 +33,11 @@ implements CompletableSubscriber, Disposable {
     }
 
     @Override
+    public boolean isDisposed() {
+        return get() == DisposableHelper.DISPOSED;
+    }
+
+    @Override
     public void onComplete() {
         // no-op
     }

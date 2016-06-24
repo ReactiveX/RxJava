@@ -123,6 +123,7 @@ public abstract class AsyncObserver<T> implements Observer<T>, Disposable {
      * Returns true if this AsyncObserver has been disposed/cancelled.
      * @return true if this AsyncObserver has been disposed/cancelled
      */
+    @Override
     public final boolean isDisposed() {
         return DisposableHelper.isDisposed(s.get());
     }

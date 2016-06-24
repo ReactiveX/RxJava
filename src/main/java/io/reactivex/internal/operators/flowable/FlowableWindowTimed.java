@@ -197,7 +197,11 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
             selfCancel = true;
             DisposableHelper.dispose(timer);
         }
-        
+
+        @Override public boolean isDisposed() {
+            return timer.get() == DisposableHelper.DISPOSED;
+        }
+
         @Override
         public void run() {
 
@@ -480,7 +484,12 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
             selfCancel = true;
             DisposableHelper.dispose(timer);
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return timer.get() == DisposableHelper.DISPOSED;
+        }
+
         @Override
         public boolean accept(Subscriber<? super Flowable<T>> a, Object v) {
             // not needed in this operator
@@ -753,7 +762,12 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         public void dispose() {
             worker.dispose();
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return worker.isDisposed();
+        }
+
         @Override
         public boolean accept(Subscriber<? super Flowable<T>> a, Object v) {
             // not used by this operator

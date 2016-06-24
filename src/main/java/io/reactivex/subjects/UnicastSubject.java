@@ -163,7 +163,12 @@ public final class UnicastSubject<T> extends Subject<T> {
                 }
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void notifyOnCancelled() {
             Runnable r = onCancelled;
             onCancelled = null;

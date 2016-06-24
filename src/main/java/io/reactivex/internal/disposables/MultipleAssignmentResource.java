@@ -94,6 +94,7 @@ public final class MultipleAssignmentResource<T> extends AtomicReference<Object>
      * Returns true if this resource has been disposed.
      * @return true if this resource has been disposed
      */
+    @Override
     public boolean isDisposed() {
         return get() == DISPOSED;
     }

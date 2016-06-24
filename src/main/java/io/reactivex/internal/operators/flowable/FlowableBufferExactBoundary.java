@@ -186,7 +186,12 @@ extends Flowable<U> {
         public void dispose() {
             cancel();
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         @Override
         public boolean accept(Subscriber<? super U> a, U v) {
             actual.onNext(v);

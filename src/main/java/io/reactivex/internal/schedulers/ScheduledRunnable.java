@@ -125,4 +125,9 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
             }
         }
     }
+
+    @Override
+    public boolean isDisposed() {
+        return get(FUTURE_INDEX) == DISPOSED;
+    }
 }

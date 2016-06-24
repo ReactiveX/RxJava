@@ -78,4 +78,8 @@ extends AtomicReference<Disposable> implements CompletableSubscriber, Disposable
         DisposableHelper.dispose(this);
     }
 
+    @Override
+    public boolean isDisposed() {
+        return get() == DisposableHelper.DISPOSED;
+    }
 }

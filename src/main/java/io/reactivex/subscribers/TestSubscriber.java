@@ -239,7 +239,12 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public final void dispose() {
         cancel();
     }
-    
+
+    @Override
+    public boolean isDisposed() {
+        return cancelled;
+    }
+
     // state retrieval methods
     
     /**

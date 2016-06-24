@@ -27,7 +27,7 @@ import org.mockito.InOrder;
 import io.reactivex.Observable;
 import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.observers.Observers;
@@ -296,12 +296,12 @@ public class NbpOnSubscribeRefCountTest {
             @Override
             public void subscribe(Observer<? super Long> NbpSubscriber) {
                 final AtomicBoolean cancel = new AtomicBoolean();
-                NbpSubscriber.onSubscribe(new Disposable() {
+                NbpSubscriber.onSubscribe(Disposables.from(new Runnable() {
                     @Override
-                    public void dispose() {
+                    public void run() {
                         cancel.set(true);
                     }
-                });
+                }));
                 for (;;) {
                     if (cancel.get()) {
                         break;
@@ -324,12 +324,12 @@ public class NbpOnSubscribeRefCountTest {
             @Override
             public void subscribe(Observer<? super Integer> NbpObserver) {
                 subscriptionCount.incrementAndGet();
-                NbpObserver.onSubscribe(new Disposable() {
+                NbpObserver.onSubscribe(Disposables.from(new Runnable() {
                     @Override
-                    public void dispose() {
+                    public void run() {
                             unsubscriptionCount.incrementAndGet();
                     }
-                });
+                }));
             }
         });
         Observable<Integer> refCounted = o.publish().refCount();

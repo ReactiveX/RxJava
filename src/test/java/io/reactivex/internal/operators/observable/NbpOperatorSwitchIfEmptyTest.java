@@ -55,12 +55,12 @@ public class NbpOperatorSwitchIfEmptyTest {
     @Test
     public void testSwitchTriggerUnsubscribe() throws Exception {
 
-        final BooleanDisposable bs = new BooleanDisposable();
+        final Disposable d = Disposables.empty();
         
         Observable<Long> withProducer = Observable.create(new ObservableConsumable<Long>() {
             @Override
             public void subscribe(final Observer<? super Long> NbpSubscriber) {
-                NbpSubscriber.onSubscribe(bs);
+                NbpSubscriber.onSubscribe(d);
                 NbpSubscriber.onNext(42L);
             }
         });
@@ -91,22 +91,22 @@ public class NbpOperatorSwitchIfEmptyTest {
         }).subscribe();
 
 
-        assertTrue(bs.isDisposed());
+        assertTrue(d.isDisposed());
         // FIXME no longer assertable
 //        assertTrue(sub.isUnsubscribed());
     }
 
     @Test
     public void testSwitchShouldTriggerUnsubscribe() {
-        final BooleanDisposable bs = new BooleanDisposable();
+        final Disposable d = Disposables.empty();
         
         Observable.create(new ObservableConsumable<Long>() {
             @Override
             public void subscribe(final Observer<? super Long> NbpSubscriber) {
-                NbpSubscriber.onSubscribe(bs);
+                NbpSubscriber.onSubscribe(d);
                 NbpSubscriber.onComplete();
             }
         }).switchIfEmpty(Observable.<Long>never()).subscribe();
-        assertTrue(bs.isDisposed());
+        assertTrue(d.isDisposed());
     }
 }

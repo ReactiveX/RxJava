@@ -13,6 +13,7 @@
 
 package io.reactivex.disposables;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
@@ -32,17 +33,14 @@ public class DisposablesTest {
     @Test
     public void testEmpty() {
         Disposable empty = Disposables.empty();
-        // FIXME not assertable
-//        assertFalse(empty.isUnsubscribed());
+        assertFalse(empty.isDisposed());
         empty.dispose();
-        // FIXME not assertable
-//        assertTrue(empty.isUnsubscribed());
+        assertTrue(empty.isDisposed());
     }
 
     @Test
     public void testUnsubscribed() {
-        // FIXME not assertable
-        /*Disposable disposed = */Disposables.disposed();
-//        assertTrue(disposed.isUnsubscribed());
+        Disposable disposed = Disposables.disposed();
+        assertTrue(disposed.isDisposed());
     }
 }

@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 
 public final class CompletableUnsubscribeOn extends Completable {
 
@@ -43,9 +44,9 @@ public final class CompletableUnsubscribeOn extends Completable {
 
             @Override
             public void onSubscribe(final Disposable d) {
-                s.onSubscribe(new Disposable() {
+                s.onSubscribe(Disposables.from(new Runnable() {
                     @Override
-                    public void dispose() {
+                    public void run() {
                         scheduler.scheduleDirect(new Runnable() {
                             @Override
                             public void run() {
@@ -53,7 +54,7 @@ public final class CompletableUnsubscribeOn extends Completable {
                             }
                         });
                     }
-                });
+                }));
             }
             
         });

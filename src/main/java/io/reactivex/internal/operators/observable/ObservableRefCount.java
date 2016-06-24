@@ -76,6 +76,11 @@ public final class ObservableRefCount<T> extends Observable<T> {
             resource.dispose();
         }
 
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         void cleanup() {
             // on error or completion we need to unsubscribe the base subscription
             // and set the subscriptionCount to 0 
@@ -175,9 +180,9 @@ public final class ObservableRefCount<T> extends Observable<T> {
     }
 
     private Disposable disconnect(final SetCompositeResource<Disposable> current) {
-        return new Disposable() {
+        return Disposables.from(new Runnable() {
             @Override
-            public void dispose() {
+            public void run() {
                 lock.lock();
                 try {
                     if (baseSubscription == current) {
@@ -192,6 +197,6 @@ public final class ObservableRefCount<T> extends Observable<T> {
                     lock.unlock();
                 }
             }
-        };
+        });
     }
 }

@@ -130,6 +130,11 @@ public final class NbpOperatorDebounce<T, U> implements NbpOperator<T, T> {
             DisposableHelper.dispose(debouncer);
         }
 
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         void emit(long idx, T value) {
             if (idx == index) {
                 actual.onNext(value);

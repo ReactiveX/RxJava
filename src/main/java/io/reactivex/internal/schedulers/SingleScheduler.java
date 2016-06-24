@@ -154,5 +154,10 @@ public final class SingleScheduler extends Scheduler {
                 tasks.dispose();
             }
         }
+
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
     }
 }

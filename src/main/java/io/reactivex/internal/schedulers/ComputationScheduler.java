@@ -165,6 +165,11 @@ public final class ComputationScheduler extends Scheduler {
         }
 
         @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
+
+        @Override
         public Disposable schedule(Runnable action) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
