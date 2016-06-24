@@ -68,10 +68,9 @@ public final class FlowableScanSeed<T, R> extends Flowable<R> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
+                this.s = s;
+                actual.onSubscribe(this);
             }
-            this.s = s;
-            actual.onSubscribe(this);
         }
         
         @Override

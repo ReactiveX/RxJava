@@ -97,10 +97,9 @@ public final class FlowableBuffer<T, U extends Collection<? super T>> extends Fl
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
+                this.s = s;
+                actual.onSubscribe(this);
             }
-            this.s = s;
-            actual.onSubscribe(this);
         }
         
         @Override
@@ -175,10 +174,9 @@ public final class FlowableBuffer<T, U extends Collection<? super T>> extends Fl
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
+                this.s = s;
+                actual.onSubscribe(this);
             }
-            this.s = s;
-            actual.onSubscribe(this);
         }
 
         @Override

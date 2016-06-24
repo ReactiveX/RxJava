@@ -99,15 +99,14 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            actual.onSubscribe(this);
-            if (!cancelled) {
-                if (maxConcurrency == Integer.MAX_VALUE) {
-                    s.request(Long.MAX_VALUE);
-                } else {
-                    s.request(maxConcurrency);
+                this.s = s;
+                actual.onSubscribe(this);
+                if (!cancelled) {
+                    if (maxConcurrency == Integer.MAX_VALUE) {
+                        s.request(Long.MAX_VALUE);
+                    } else {
+                        s.request(maxConcurrency);
+                    }
                 }
             }
         }

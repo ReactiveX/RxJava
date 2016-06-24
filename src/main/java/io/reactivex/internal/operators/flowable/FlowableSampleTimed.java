@@ -69,18 +69,16 @@ public final class FlowableSampleTimed<T> extends Flowable<T> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
-            }
-            
-            this.s = s;
-            actual.onSubscribe(this);
-            if (timer.get() == null) {
-                Disposable d = scheduler.schedulePeriodicallyDirect(this, period, period, unit);
-                if (!timer.compareAndSet(null, d)) {
-                    d.dispose();
-                    return;
+                this.s = s;
+                actual.onSubscribe(this);
+                if (timer.get() == null) {
+                    Disposable d = scheduler.schedulePeriodicallyDirect(this, period, period, unit);
+                    if (!timer.compareAndSet(null, d)) {
+                        d.dispose();
+                        return;
+                    }
+                    s.request(Long.MAX_VALUE);
                 }
-                s.request(Long.MAX_VALUE);
             }
         }
         

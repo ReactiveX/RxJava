@@ -22,10 +22,9 @@ public abstract class DefaultObserver<T> implements Subscriber<T> {
     @Override
     public final void onSubscribe(Subscription s) {
         if (SubscriptionHelper.validateSubscription(this.s, s)) {
-            return;
+            this.s = s;
+            onStart();
         }
-        this.s = s;
-        onStart();
     }
     
     protected final Subscription subscription() {

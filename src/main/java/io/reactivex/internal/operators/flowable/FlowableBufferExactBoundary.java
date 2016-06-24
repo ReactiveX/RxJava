@@ -64,7 +64,7 @@ extends Flowable<U> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (!SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             this.s = s;

@@ -47,10 +47,9 @@ public final class FlowableFilter<T> extends Flowable<T> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.subscription, s)) {
-                return;
+                subscription = s;
+                actual.onSubscribe(s);
             }
-            subscription = s;
-            actual.onSubscribe(s);
         }
         
         @Override
