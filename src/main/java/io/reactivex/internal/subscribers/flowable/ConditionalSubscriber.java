@@ -24,7 +24,9 @@ import org.reactivestreams.Subscriber;
  * to avoid requesting 1 on behalf of a dropped value.
  * 
  * @param <T> the value type
+ * @deprecated the interface will be moved to internal.fuseable and its method renamed.
  */
+@Deprecated
 public interface ConditionalSubscriber<T> extends Subscriber<T> {
     /**
      * Conditionally takes the value.
