@@ -35,9 +35,7 @@ public final class RefCountDisposable implements Disposable {
     @Override
     public void dispose() {
         if (once.compareAndSet(false, true)) {
-            if (count.decrementAndGet() == 0) {
-                DisposableHelper.dispose(resource);
-            }
+            release();
         }
     }
 
@@ -57,26 +55,14 @@ public final class RefCountDisposable implements Disposable {
         return resource.get() == DisposableHelper.DISPOSED;
     }
     
-    static final class InnerDisposable extends AtomicBoolean implements Disposable {
-        /** */
-        private static final long serialVersionUID = -7435605952646106082L;
-
-        final RefCountDisposable parent;
-        
-        public InnerDisposable(RefCountDisposable parent) {
-            this.parent = parent;
-        }
-        
-        @Override
-        public void dispose() {
-            if (!get() && compareAndSet(false, true)) {
-                parent.release();
-            }
+    static final class InnerDisposable extends ReferenceDisposable<RefCountDisposable> {
+        InnerDisposable(RefCountDisposable parent) {
+            super(parent);
         }
 
         @Override
-        public boolean isDisposed() {
-            return get();
+        protected void onDisposed(RefCountDisposable parent) {
+            parent.release();
         }
     }
 }
