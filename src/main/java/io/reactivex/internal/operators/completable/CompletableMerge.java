@@ -84,15 +84,14 @@ public final class CompletableMerge extends Completable {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            set.add(Disposables.from(s));
-            actual.onSubscribe(this);
-            if (maxConcurrency == Integer.MAX_VALUE) {
-                s.request(Long.MAX_VALUE);
-            } else {
-                s.request(maxConcurrency);
+                this.s = s;
+                set.add(Disposables.from(s));
+                actual.onSubscribe(this);
+                if (maxConcurrency == Integer.MAX_VALUE) {
+                    s.request(Long.MAX_VALUE);
+                } else {
+                    s.request(maxConcurrency);
+                }
             }
         }
         

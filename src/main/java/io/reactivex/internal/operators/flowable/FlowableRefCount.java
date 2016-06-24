@@ -51,10 +51,9 @@ public final class FlowableRefCount<T> extends Flowable<T> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
+                this.s = s;
+                subscriber.onSubscribe(this);
             }
-            this.s = s;
-            subscriber.onSubscribe(this);
         }
 
         @Override

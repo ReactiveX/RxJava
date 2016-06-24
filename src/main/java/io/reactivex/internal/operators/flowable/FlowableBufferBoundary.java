@@ -79,19 +79,18 @@ extends Flowable<U> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
-            }
-            this.s = s;
-            
-            BufferOpenSubscriber<T, U, Open, Close> bos = new BufferOpenSubscriber<T, U, Open, Close>(this);
-            resources.add(bos);
+                this.s = s;
 
-            actual.onSubscribe(this);
-            
-            windows.lazySet(1);
-            bufferOpen.subscribe(bos);
-            
-            s.request(Long.MAX_VALUE);
+                BufferOpenSubscriber<T, U, Open, Close> bos = new BufferOpenSubscriber<T, U, Open, Close>(this);
+                resources.add(bos);
+
+                actual.onSubscribe(this);
+
+                windows.lazySet(1);
+                bufferOpen.subscribe(bos);
+
+                s.request(Long.MAX_VALUE);
+            }
         }
         
         @Override

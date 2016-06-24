@@ -49,10 +49,9 @@ public final class FlowableMap<T, U> extends Flowable<U> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.subscription, s)) {
-                return;
+                subscription = s;
+                actual.onSubscribe(s);
             }
-            subscription = s;
-            actual.onSubscribe(s);
         }
         @Override
         public void onNext(T t) {

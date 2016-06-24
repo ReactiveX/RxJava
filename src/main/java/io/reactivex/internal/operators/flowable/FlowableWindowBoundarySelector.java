@@ -83,7 +83,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends Flowable<Flow
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (!SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             

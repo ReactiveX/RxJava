@@ -87,10 +87,9 @@ public final class FlowableZipIterable<T, U, V> extends Flowable<V> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
+                this.s = s;
+                actual.onSubscribe(s);
             }
-            this.s = s;
-            actual.onSubscribe(s);
         }
         
         @Override

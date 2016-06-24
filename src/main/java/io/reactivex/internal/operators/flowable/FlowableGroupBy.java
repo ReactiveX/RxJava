@@ -87,12 +87,10 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
+                this.s = s;
+                actual.onSubscribe(this);
+                s.request(bufferSize);
             }
-            
-            this.s = s;
-            actual.onSubscribe(this);
-            s.request(bufferSize);
         }
         
         @Override

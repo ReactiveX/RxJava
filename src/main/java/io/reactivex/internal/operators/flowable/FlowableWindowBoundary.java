@@ -74,7 +74,7 @@ public final class FlowableWindowBoundary<T, B> extends Flowable<Flowable<T>> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (!SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;
             }
             this.s = s;

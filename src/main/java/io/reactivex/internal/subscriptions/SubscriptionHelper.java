@@ -29,22 +29,22 @@ public enum SubscriptionHelper {
     
     /**
      * Verifies that current is null, next is not null, otherwise signals errors
-     * to the RxJavaPlugins and returns true
+     * to the RxJavaPlugins and returns false
      * @param current the current Subscription, expected to be null
      * @param next the next Subscription, expected to be non-null
-     * @return true if the validation failed
+     * @return true if the validation succeeded
      */
     public static boolean validateSubscription(Subscription current, Subscription next) {
         if (next == null) {
             RxJavaPlugins.onError(new NullPointerException("next is null"));
-            return true;
+            return false;
         }
         if (current != null) {
             next.cancel();
             reportSubscriptionSet();
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
     
     /**

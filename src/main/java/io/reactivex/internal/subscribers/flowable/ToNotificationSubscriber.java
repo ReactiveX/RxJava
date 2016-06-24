@@ -31,10 +31,9 @@ public final class ToNotificationSubscriber<T> implements Subscriber<T> {
     @Override
     public void onSubscribe(Subscription s) {
         if (SubscriptionHelper.validateSubscription(this.s, s)) {
-            return;
+            this.s = s;
+            s.request(Long.MAX_VALUE);
         }
-        this.s = s;
-        s.request(Long.MAX_VALUE);
     }
     
     @Override

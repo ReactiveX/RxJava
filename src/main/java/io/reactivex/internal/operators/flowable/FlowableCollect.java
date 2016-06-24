@@ -63,10 +63,9 @@ public final class FlowableCollect<T, U> extends Flowable<U> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
+                this.s = s;
+                actual.onSubscribe(this);
             }
-            this.s = s;
-            actual.onSubscribe(this);
         }
         
         @Override

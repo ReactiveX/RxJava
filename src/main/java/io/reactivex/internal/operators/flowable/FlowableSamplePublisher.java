@@ -58,14 +58,12 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
-            }
-            
-            this.s = s;
-            actual.onSubscribe(this);
-            if (other.get() == null) {
-                sampler.subscribe(new SamplerSubscriber<T>(this));
-                s.request(Long.MAX_VALUE);
+                this.s = s;
+                actual.onSubscribe(this);
+                if (other.get() == null) {
+                    sampler.subscribe(new SamplerSubscriber<T>(this));
+                    s.request(Long.MAX_VALUE);
+                }
             }
             
         }

@@ -49,10 +49,9 @@ public final class SubscriptionLambdaSubscriber<T> implements Subscriber<T>, Sub
             return;
         }
         if (SubscriptionHelper.validateSubscription(this.s, s)) {
-            return;
+            this.s = s;
+            actual.onSubscribe(this);
         }
-        this.s = s;
-        actual.onSubscribe(this);
     }
     
     @Override

@@ -96,14 +96,12 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
-            }
-            
-            this.s = s;
-            if (arbiter.setSubscription(s)) {
-                actual.onSubscribe(arbiter);
-                
-                scheduleTimeout(0L);
+                this.s = s;
+                if (arbiter.setSubscription(s)) {
+                    actual.onSubscribe(arbiter);
+
+                    scheduleTimeout(0L);
+                }
             }
         }
         
@@ -224,12 +222,10 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
-                return;
+                this.s = s;
+                actual.onSubscribe(s);
+                scheduleTimeout(0L);
             }
-            
-            this.s = s;
-            actual.onSubscribe(s);
-            scheduleTimeout(0L);
         }
         
         @Override
