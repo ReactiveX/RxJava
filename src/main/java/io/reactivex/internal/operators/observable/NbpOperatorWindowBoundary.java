@@ -151,9 +151,7 @@ public final class NbpOperatorWindowBoundary<T, B> implements NbpOperator<Observ
         
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-            }
+            cancelled = true;
         }
 
         @Override

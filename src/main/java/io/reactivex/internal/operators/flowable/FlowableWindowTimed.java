@@ -474,9 +474,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         
         @Override
         public void cancel() {
-            if (!cancelled) {
-                cancelled = true;
-            }
+            cancelled = true;
         }
         
         @Override
@@ -753,9 +751,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         
         @Override
         public void cancel() {
-            if (!cancelled) {
-                cancelled = true;
-            }
+            cancelled = true;
         }
         
         @Override

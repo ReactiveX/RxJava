@@ -113,9 +113,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-            }
+            cancelled = true;
         }
 
         @Override
