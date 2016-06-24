@@ -67,7 +67,7 @@ public final class SingleDelayedProducer<T> extends AtomicInteger implements Pro
                     emit(child, value);
                 }
             }
-            return; // NOPMD by akarnokd on 2016.06.23. 9:58
+            return; // NOPMD 
         }
     }
      
@@ -85,7 +85,7 @@ public final class SingleDelayedProducer<T> extends AtomicInteger implements Pro
                     emit(child, value);
                 }
             }
-            return; // NOPMD by akarnokd on 2016.06.23. 9:58
+            return; // NOPMD 
         }
     }
     /**

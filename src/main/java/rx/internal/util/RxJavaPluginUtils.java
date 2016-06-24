@@ -38,8 +38,8 @@ public final class RxJavaPluginUtils {
          * Since the plugin should never throw this is a safety net
          * and will complain loudly to System.err so it gets fixed.
          */
-        System.err.println("RxJavaErrorHandler threw an Exception. It shouldn't. => " + pluginException.getMessage()); // NOPMD by akarnokd on 2016.06.23. 11:05
-        pluginException.printStackTrace(); // NOPMD by akarnokd on 2016.06.23. 11:05
+        System.err.println("RxJavaErrorHandler threw an Exception. It shouldn't. => " + pluginException.getMessage()); // NOPMD 
+        pluginException.printStackTrace(); // NOPMD 
     }
     
 }

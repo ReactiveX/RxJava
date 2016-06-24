@@ -379,7 +379,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
         final AtomicBoolean once;
 
         
-        public State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) { // NOPMD by akarnokd on 2016.06.23. 12:47
+        public State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) { // NOPMD 
             this.queue = new ConcurrentLinkedQueue<Object>();
             this.parent = parent;
             this.key = key;

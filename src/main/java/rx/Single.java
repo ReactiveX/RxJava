@@ -1719,7 +1719,7 @@ public class Single<T> {
                 // TODO could the hook be the cause of the error in the on error handling.
                 RxJavaHooks.onSingleError(r);
                 // TODO why aren't we throwing the hook's return value.
-                throw r; // NOPMD by akarnokd on 2016.06.23. 10:54
+                throw r; // NOPMD 
             }
             return Subscriptions.unsubscribed();
         }
@@ -1829,7 +1829,7 @@ public class Single<T> {
                 // TODO could the hook be the cause of the error in the on error handling.
                 RxJavaHooks.onSingleError(r);
                 // TODO why aren't we throwing the hook's return value.
-                throw r; // NOPMD by akarnokd on 2016.06.23. 10:53
+                throw r; // NOPMD 
             }
             return Subscriptions.empty();
         }

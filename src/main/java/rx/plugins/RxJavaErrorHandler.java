@@ -31,7 +31,7 @@ import rx.exceptions.Exceptions;
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins: <a
  * href="https://github.com/ReactiveX/RxJava/wiki/Plugins">https://github.com/ReactiveX/RxJava/wiki/Plugins</a>.
  */
-public abstract class RxJavaErrorHandler { // NOPMD by akarnokd on 2016.06.23. 10:45
+public abstract class RxJavaErrorHandler { // NOPMD 
 
     protected static final String ERROR_IN_RENDERING_SUFFIX = ".errorRendering";
 

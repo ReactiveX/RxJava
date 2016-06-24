@@ -254,7 +254,7 @@ public class RxRingBuffer implements Subscription {
             try {
                 defaultSize = Integer.parseInt(sizeFromProperty);
             } catch (NumberFormatException e) {
-                System.err.println("Failed to set 'rx.buffer.size' with value " + sizeFromProperty + " => " + e.getMessage()); // NOPMD by akarnokd on 2016.06.23. 11:14
+                System.err.println("Failed to set 'rx.buffer.size' with value " + sizeFromProperty + " => " + e.getMessage()); // NOPMD 
             }
         }
     }
@@ -308,7 +308,7 @@ public class RxRingBuffer implements Subscription {
         this.size = size;
     }
 
-    public synchronized void release() { // NOPMD by akarnokd on 2016.06.23. 11:14
+    public synchronized void release() { // NOPMD 
         Queue<Object> q = queue;
         ObjectPool<Queue<Object>> p = pool;
         if (p != null && q != null) {

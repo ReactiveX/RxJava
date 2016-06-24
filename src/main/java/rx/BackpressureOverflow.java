@@ -25,14 +25,14 @@ import rx.exceptions.MissingBackpressureException;
 public final class BackpressureOverflow {
 
     /**
-     * By default, signal a MissingBackressureException due to lack of requests.
-     */
-    public static final BackpressureOverflow.Strategy ON_OVERFLOW_DEFAULT = Error.INSTANCE;
-
-    /**
      * Signal a MissingBackressureException due to lack of requests.
      */
     public static final BackpressureOverflow.Strategy ON_OVERFLOW_ERROR = Error.INSTANCE;
+
+    /**
+     * By default, signal a MissingBackressureException due to lack of requests.
+     */
+    public static final BackpressureOverflow.Strategy ON_OVERFLOW_DEFAULT = ON_OVERFLOW_ERROR;
 
     /**
      * Drop the oldest value in the buffer.

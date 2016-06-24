@@ -178,7 +178,7 @@ public final class SpscUnboundedAtomicArrayQueue<T> implements Queue<T> {
     
     @Override
     public void clear() {
-        while (poll() != null || !isEmpty()); // NOPMD by akarnokd on 2016.06.23. 10:58
+        while (poll() != null || !isEmpty()); // NOPMD 
     }
 
     @SuppressWarnings("unchecked")

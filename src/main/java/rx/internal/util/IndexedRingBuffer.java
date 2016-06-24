@@ -248,7 +248,7 @@ public final class IndexedRingBuffer<E> implements Subscription {
             try {
                 defaultSize = Integer.parseInt(sizeFromProperty);
             } catch (NumberFormatException e) {
-                System.err.println("Failed to set 'rx.indexed-ring-buffer.size' with value " + sizeFromProperty + " => " + e.getMessage()); // NOPMD by akarnokd on 2016.06.23. 11:09
+                System.err.println("Failed to set 'rx.indexed-ring-buffer.size' with value " + sizeFromProperty + " => " + e.getMessage()); // NOPMD 
             }
         }
         
@@ -358,7 +358,7 @@ public final class IndexedRingBuffer<E> implements Subscription {
         return a;
     }
 
-    private synchronized int getIndexForAdd() { // NOPMD by akarnokd on 2016.06.23. 11:11
+    private synchronized int getIndexForAdd() { // NOPMD 
         /*
          * Synchronized as I haven't yet figured out a way to do this in an atomic way that doesn't involve object allocation
          */
@@ -387,7 +387,7 @@ public final class IndexedRingBuffer<E> implements Subscription {
      * 
      * @return
      */
-    private synchronized int getIndexFromPreviouslyRemoved() { // NOPMD by akarnokd on 2016.06.23. 11:11
+    private synchronized int getIndexFromPreviouslyRemoved() { // NOPMD 
         /*
          * Synchronized as I haven't yet figured out a way to do this in an atomic way that doesn't involve object allocation
          */
@@ -407,7 +407,7 @@ public final class IndexedRingBuffer<E> implements Subscription {
         }
     }
 
-    private synchronized void pushRemovedIndex(int elementIndex) { // NOPMD by akarnokd on 2016.06.23. 11:11
+    private synchronized void pushRemovedIndex(int elementIndex) { // NOPMD 
         /*
          * Synchronized as I haven't yet figured out a way to do this in an atomic way that doesn't involve object allocation
          */

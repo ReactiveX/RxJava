@@ -80,14 +80,14 @@ public class LinkedArrayList {
      * @return the head object array
      */
     public Object[] head() {
-        return head; // NOPMD by akarnokd on 2016.06.23. 11:04
+        return head; // NOPMD 
     }
     /**
      * Returns the tail buffer segment or null if the list is empty.
      * @return the tail object array
      */
     public Object[] tail() {
-        return tail; // NOPMD by akarnokd on 2016.06.23. 11:04
+        return tail; // NOPMD 
     }
     /**
      * Returns the total size of the list.

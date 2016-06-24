@@ -75,9 +75,9 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
         /** Guarded by guard. */
         int rightIds;
         /** Guarded by guard. */
-        final Map<Integer, Observer<T2>> leftMap = new HashMap<Integer, Observer<T2>>(); // NOPMD by akarnokd on 2016.06.23. 12:54
+        final Map<Integer, Observer<T2>> leftMap = new HashMap<Integer, Observer<T2>>(); // NOPMD 
         /** Guarded by guard. */
-        final Map<Integer, T2> rightMap = new HashMap<Integer, T2>(); // NOPMD by akarnokd on 2016.06.23. 12:54
+        final Map<Integer, T2> rightMap = new HashMap<Integer, T2>(); // NOPMD 
         /** Guarded by guard. */
         boolean leftDone;
         /** Guarded by guard. */

@@ -71,7 +71,6 @@
    <rule ref="rulesets/java/basic.xml/DontUseFloatTypeForLoopIndices"/>
    <rule ref="rulesets/java/basic.xml/DoubleCheckedLocking"/>
    <rule ref="rulesets/java/imports.xml/DuplicateImports"/>
-   <rule ref="rulesets/java/empty.xml/EmptyCatchBlock"/>
    <rule ref="rulesets/java/finalizers.xml/EmptyFinalizer"/>
    <rule ref="rulesets/java/empty.xml/EmptyFinallyBlock"/>
    <rule ref="rulesets/java/empty.xml/EmptyInitializer"/>
@@ -179,8 +178,6 @@
    <rule ref="rulesets/java/junit.xml/TestClassWithoutTestCases"/>
    <rule ref="rulesets/java/design.xml/TooFewBranchesForASwitchStatement"/>
    <rule ref="rulesets/java/imports.xml/TooManyStaticImports"/>
-   <rule ref="rulesets/java/design.xml/UncommentedEmptyConstructor"/>
-   <rule ref="rulesets/java/design.xml/UncommentedEmptyMethodBody"/>
    <rule ref="rulesets/java/basic.xml/UnconditionalIfStatement"/>
    <rule ref="rulesets/java/junit.xml/UnnecessaryBooleanAssertion"/>
    <rule ref="rulesets/java/strings.xml/UnnecessaryCaseChange"/>

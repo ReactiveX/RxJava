@@ -146,7 +146,7 @@ public final class Schedulers {
      *
      * @return a {@code TestScheduler} meant for debugging
      */
-    public static TestScheduler test() { // NOPMD by akarnokd on 2016.06.23. 10:13
+    public static TestScheduler test() { // NOPMD 
         return new TestScheduler();
     }
 
@@ -211,7 +211,7 @@ public final class Schedulers {
     /**
      * Start the instance-specific schedulers.
      */
-    synchronized void startInstance() { // NOPMD by akarnokd on 2016.06.23. 10:22
+    synchronized void startInstance() { // NOPMD 
         if (computationScheduler instanceof SchedulerLifecycle) {
             ((SchedulerLifecycle) computationScheduler).start();
         }
@@ -226,7 +226,7 @@ public final class Schedulers {
     /**
      * Start the instance-specific schedulers.
      */
-    synchronized void shutdownInstance() { // NOPMD by akarnokd on 2016.06.23. 10:13
+    synchronized void shutdownInstance() { // NOPMD 
         if (computationScheduler instanceof SchedulerLifecycle) {
             ((SchedulerLifecycle) computationScheduler).shutdown();
         }

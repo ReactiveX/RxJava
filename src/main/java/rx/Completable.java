@@ -379,7 +379,7 @@ public class Completable {
         requireNonNull(onSubscribe);
         try {
             return new Completable(onSubscribe);
-        } catch (NullPointerException ex) { // NOPMD by akarnokd on 2016.06.23. 10:54
+        } catch (NullPointerException ex) { // NOPMD 
             throw ex;
         } catch (Throwable ex) {
             RxJavaHooks.onError(ex);
@@ -851,7 +851,7 @@ public class Completable {
         return create(new CompletableOnSubscribe() {
             @Override
             public void call(final CompletableSubscriber s) {
-                final R resource; // NOPMD by akarnokd on 2016.06.23. 10:55
+                final R resource; // NOPMD 
                 
                 try {
                     resource = resourceFunc0.call();
@@ -1549,7 +1549,7 @@ public class Completable {
                     CompletableSubscriber sw = onLiftDecorated.call(s);
                     
                     unsafeSubscribe(sw);
-                } catch (NullPointerException ex) { // NOPMD by akarnokd on 2016.06.23. 10:54
+                } catch (NullPointerException ex) { // NOPMD 
                     throw ex;
                 } catch (Throwable ex) {
                     throw toNpe(ex);
@@ -2007,7 +2007,7 @@ public class Completable {
             CompletableOnSubscribe onSubscribeDecorated = RxJavaHooks.onCompletableStart(this, this.onSubscribe);
             
             onSubscribeDecorated.call(s);
-        } catch (NullPointerException ex) { // NOPMD by akarnokd on 2016.06.23. 10:54
+        } catch (NullPointerException ex) { // NOPMD 
             throw ex;
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
@@ -2071,7 +2071,7 @@ public class Completable {
                 }
             });
             RxJavaHooks.onObservableReturn(s);
-        } catch (NullPointerException ex) { // NOPMD by akarnokd on 2016.06.23. 10:54
+        } catch (NullPointerException ex) { // NOPMD 
             throw ex;
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);

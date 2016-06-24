@@ -48,7 +48,7 @@ public final class UnsafeAccess {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
             u = (Unsafe) field.get(null);
-        } catch (Throwable e) { // NOPMD by akarnokd on 2016.06.23. 10:27
+        } catch (Throwable e) { // NOPMD 
             // do nothing, hasUnsafe() will return false
         }
         UNSAFE = u;

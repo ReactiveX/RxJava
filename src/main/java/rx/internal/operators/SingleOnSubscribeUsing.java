@@ -46,7 +46,7 @@ public final class SingleOnSubscribeUsing<T, Resource> implements Single.OnSubsc
     
     @Override
     public void call(final SingleSubscriber<? super T> child) {
-        final Resource resource; // NOPMD by akarnokd on 2016.06.23. 11:18
+        final Resource resource; // NOPMD 
         
         try {
             resource = resourceFactory.call();

@@ -102,7 +102,7 @@ abstract class BaseLinkedQueue<E> extends BaseLinkedQueueConsumerNodeRef<E> {
         // must chase the nodes all the way to the producer node, but there's no need to chase a moving target.
         while (chaserNode != producerNode && size < Integer.MAX_VALUE) {
             LinkedQueueNode<E> next;
-            while((next = chaserNode.lvNext()) == null); // NOPMD by akarnokd on 2016.06.23. 10:26
+            while((next = chaserNode.lvNext()) == null); // NOPMD 
             chaserNode = next;
             size++;
         }

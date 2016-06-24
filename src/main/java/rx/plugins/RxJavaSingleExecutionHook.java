@@ -38,7 +38,7 @@ import rx.functions.Func1;
  * worker threads.
  *
  */
-public abstract class RxJavaSingleExecutionHook { // NOPMD by akarnokd on 2016.06.23. 10:43
+public abstract class RxJavaSingleExecutionHook { // NOPMD 
     /**
      * Invoked during the construction by {@link Single#create(Single.OnSubscribe)}
      * <p>

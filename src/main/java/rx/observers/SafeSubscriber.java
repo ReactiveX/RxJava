@@ -88,7 +88,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                 Exceptions.throwIfFatal(e);
                 RxJavaPluginUtils.handleException(e);
                 throw new OnCompletedFailedException(e.getMessage(), e);
-            } finally { // NOPMD by akarnokd on 2016.06.23. 10:39
+            } finally { // NOPMD 
                 try {
                     // Similarly to onError if failure occurs in unsubscribe then Rx contract is broken
                     // and we throw an UnsubscribeFailureException.
@@ -151,11 +151,11 @@ public class SafeSubscriber<T> extends Subscriber<T> {
      * 
      * @see <a href="https://github.com/ReactiveX/RxJava/issues/630">the report of this bug</a>
      */
-    protected void _onError(Throwable e) { // NOPMD by akarnokd on 2016.06.23. 10:39
+    protected void _onError(Throwable e) { // NOPMD 
         RxJavaPluginUtils.handleException(e);
         try {
             actual.onError(e);
-        } catch (OnErrorNotImplementedException e2) { // NOPMD by akarnokd on 2016.06.23. 10:39
+        } catch (OnErrorNotImplementedException e2) { // NOPMD 
             /*
              * onError isn't implemented so throw
              * 
@@ -171,7 +171,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                 unsubscribe();
             } catch (Throwable unsubscribeException) {
                 RxJavaPluginUtils.handleException(unsubscribeException);
-                throw new OnErrorNotImplementedException("Observer.onError not implemented and error while unsubscribing.", new CompositeException(Arrays.asList(e, unsubscribeException))); // NOPMD by akarnokd on 2016.06.23. 10:39
+                throw new OnErrorNotImplementedException("Observer.onError not implemented and error while unsubscribing.", new CompositeException(Arrays.asList(e, unsubscribeException))); // NOPMD 
             }
             throw e2;
         } catch (Throwable e2) {

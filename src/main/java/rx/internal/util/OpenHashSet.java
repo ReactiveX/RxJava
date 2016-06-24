@@ -173,7 +173,7 @@ public final class OpenHashSet<T> {
         
         
         for (int j = size; j-- != 0; ) {
-            while (a[--i] == null); // NOPMD by akarnokd on 2016.06.23. 11:06
+            while (a[--i] == null); // NOPMD 
             int pos = mix(a[i].hashCode()) & m;
             if (b[pos] != null) {
                 for (;;) {
@@ -205,6 +205,6 @@ public final class OpenHashSet<T> {
      * @return the raw array of values of this set
      */
     public T[] values() {
-        return keys; // NOPMD by akarnokd on 2016.06.23. 11:06
+        return keys; // NOPMD 
     }
 }

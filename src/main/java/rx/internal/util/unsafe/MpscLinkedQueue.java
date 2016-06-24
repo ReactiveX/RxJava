@@ -107,7 +107,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD by akarnokd on 2016.06.23. 10:28
+            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD 
             // got the next node...
             
             // we have to null out the value because we are going to hang on to the node
@@ -127,7 +127,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD by akarnokd on 2016.06.23. 10:28
+            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD 
             // got the next node...
             return nextNode.lpValue();
         }

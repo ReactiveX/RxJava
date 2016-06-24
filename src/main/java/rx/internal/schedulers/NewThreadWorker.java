@@ -135,7 +135,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
      * @return true if the policy was successfully enabled 
      */
     public static boolean tryEnableCancelPolicy(ScheduledExecutorService executor) {
-        if (SHOULD_TRY_ENABLE_CANCEL_POLICY) { // NOPMD by akarnokd on 2016.06.23. 10:08
+        if (SHOULD_TRY_ENABLE_CANCEL_POLICY) { // NOPMD 
             final boolean isInstanceOfScheduledThreadPoolExecutor = executor instanceof ScheduledThreadPoolExecutor;
 
             Method methodToCall;

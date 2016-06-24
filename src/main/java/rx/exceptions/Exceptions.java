@@ -55,7 +55,7 @@ public final class Exceptions {
         } else if (t instanceof Error) {
             throw (Error) t;
         } else {
-            throw new RuntimeException(t); // NOPMD by akarnokd on 2016.06.23. 10:29
+            throw new RuntimeException(t); // NOPMD 
         }
     }
     /**
@@ -127,7 +127,7 @@ public final class Exceptions {
         // we now have 'e' as the last in the chain
         try {
             e.initCause(cause);
-        } catch (Throwable t) { // NOPMD by akarnokd on 2016.06.23. 10:30
+        } catch (Throwable t) { // NOPMD 
             // ignore
             // the javadocs say that some Throwables (depending on how they're made) will never
             // let me call initCause without blowing up even if it returns null
@@ -172,7 +172,7 @@ public final class Exceptions {
                 } else if (t instanceof Error) {
                     throw (Error) t;
                 } else {
-                    throw new RuntimeException(t); // NOPMD by akarnokd on 2016.06.23. 10:29
+                    throw new RuntimeException(t); // NOPMD 
                 }
             }
             throw new CompositeException(exceptions);

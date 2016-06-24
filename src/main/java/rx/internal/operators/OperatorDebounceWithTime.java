@@ -110,7 +110,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
         /** Guarded by this. */
         boolean emitting;
         
-        public synchronized int next(T value) { // NOPMD by akarnokd on 2016.06.23. 11:30
+        public synchronized int next(T value) { // NOPMD 
             this.value = value;
             this.hasValue = true;
             return ++index;
@@ -173,7 +173,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
             }
             onNextAndComplete.onCompleted();
         }
-        public synchronized void clear() { // NOPMD by akarnokd on 2016.06.23. 11:30
+        public synchronized void clear() { // NOPMD 
             ++index;
             value = null;
             hasValue = false;

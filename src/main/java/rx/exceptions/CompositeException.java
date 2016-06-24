@@ -49,7 +49,7 @@ public final class CompositeException extends RuntimeException {
      * @param errors the collection of errors
      * @deprecated please use {@link #CompositeException(Collection)} */
     @Deprecated
-    public CompositeException(String messagePrefix, Collection<? extends Throwable> errors) { // NOPMD by akarnokd on 2016.06.23. 10:31
+    public CompositeException(String messagePrefix, Collection<? extends Throwable> errors) { // NOPMD 
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
         List<Throwable> localExceptions = new ArrayList<Throwable>();
         if (errors != null) {
@@ -119,7 +119,7 @@ public final class CompositeException extends RuntimeException {
     }
 
     @Override
-    public synchronized Throwable getCause() { // NOPMD by akarnokd on 2016.06.23. 10:31
+    public synchronized Throwable getCause() { // NOPMD 
         if (cause == null) {
             // we lazily generate this causal chain if this is called
             CompositeExceptionCausalChain localCause = new CompositeExceptionCausalChain();
@@ -147,7 +147,7 @@ public final class CompositeException extends RuntimeException {
                 // we now have 'e' as the last in the chain
                 try {
                     chain.initCause(e);
-                } catch (Throwable t) { // NOPMD by akarnokd on 2016.06.23. 10:32
+                } catch (Throwable t) { // NOPMD 
                     // ignore
                     // the javadocs say that some Throwables (depending on how they're made) will never
                     // let me call initCause without blowing up even if it returns null
