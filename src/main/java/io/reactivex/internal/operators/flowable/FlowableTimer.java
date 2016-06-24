@@ -54,8 +54,6 @@ public final class FlowableTimer extends Flowable<Long> {
         
         volatile boolean requested;
         
-        volatile boolean cancelled;
-        
         public IntervalOnceSubscriber(Subscriber<? super Long> actual) {
             this.actual = actual;
         }
@@ -69,24 +67,20 @@ public final class FlowableTimer extends Flowable<Long> {
         
         @Override
         public void cancel() {
-            if (!cancelled) {
-                cancelled = true;
-                
-                DisposableHelper.dispose(this);
-            }
+            DisposableHelper.dispose(this);
         }
         
         @Override
         public void run() {
-            if (!cancelled) {
+            if (get() != DisposableHelper.DISPOSED) {
                 if (requested) {
                     actual.onNext(0L);
                     actual.onComplete();
                 } else {
                     actual.onError(new IllegalStateException("Can't deliver value due to lack of requests"));
                 }
+                lazySet(EmptyDisposable.INSTANCE);
             }
-            lazySet(EmptyDisposable.INSTANCE);
         }
         
         public void setResource(Disposable d) {
