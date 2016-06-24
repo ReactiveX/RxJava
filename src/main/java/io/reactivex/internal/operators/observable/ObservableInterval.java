@@ -45,15 +45,12 @@ public final class ObservableInterval extends Observable<Long> {
     }
     
     static final class IntervalSubscriber
+    extends AtomicReference<Disposable>
     implements Disposable, Runnable {
 
         final Observer<? super Long> actual;
         
         long count;
-        
-        volatile boolean cancelled;
-        
-        final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
         
         public IntervalSubscriber(Observer<? super Long> actual) {
             this.actual = actual;
@@ -61,30 +58,23 @@ public final class ObservableInterval extends Observable<Long> {
         
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-                disposeResource();
-            }
+            DisposableHelper.dispose(this);
         }
 
         @Override
         public boolean isDisposed() {
-            return cancelled;
+            return get() == DisposableHelper.DISPOSED;
         }
 
-        void disposeResource() {
-            DisposableHelper.dispose(resource);
-        }
-        
         @Override
         public void run() {
-            if (!cancelled) {
+            if (get() != DisposableHelper.DISPOSED) {
                 actual.onNext(count++);
             }
         }
         
         public void setResource(Disposable d) {
-            DisposableHelper.setOnce(resource, d);
+            DisposableHelper.setOnce(this, d);
         }
     }
 }

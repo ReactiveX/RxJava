@@ -245,6 +245,7 @@ public final class FlowableCache<T> extends Flowable<T> {
     static final class ReplaySubscription<T> extends AtomicLong implements Subscription, Disposable {
         /** */
         private static final long serialVersionUID = -2557562030197141021L;
+        private static final long CANCELLED = -1;
         /** The actual child subscriber. */
         final Subscriber<? super T> child;
         /** The cache state object. */
@@ -270,9 +271,6 @@ public final class FlowableCache<T> extends Flowable<T> {
         /** Indicates there were some state changes/replay attempts; guarded by this. */
         boolean missed;
         
-        /** Set if the Subscription has been cancelled/disposed. */
-        volatile boolean cancelled;
-        
         public ReplaySubscription(Subscriber<? super T> child, CacheState<T> state) {
             this.child = child;
             this.state = state;
@@ -284,7 +282,7 @@ public final class FlowableCache<T> extends Flowable<T> {
             }
             for (;;) {
                 long r = get();
-                if (r < 0) {
+                if (r == CANCELLED) {
                     return;
                 }
                 long u = BackpressureHelper.addCap(r, n);
@@ -305,18 +303,15 @@ public final class FlowableCache<T> extends Flowable<T> {
         
         @Override
         public boolean isDisposed() {
-            return cancelled;
+            return get() == CANCELLED;
         }
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-                long r = get();
-                if (r >= 0) {
-                    r = getAndSet(-1L); // unsubscribed state is negative
-                    if (r >= 0) {
-                        state.removeProducer(this);
-                    }
+            long r = get();
+            if (r != CANCELLED) {
+                r = getAndSet(CANCELLED);
+                if (r != CANCELLED) {
+                    state.removeProducer(this);
                 }
             }
         }
@@ -385,7 +380,7 @@ public final class FlowableCache<T> extends Flowable<T> {
                             int valuesProduced = 0;
                             
                             while (j < s && r > 0) {
-                                if (cancelled) {
+                                if (get() == CANCELLED) {
                                     skipFinal = true;
                                     return;
                                 }
@@ -416,7 +411,7 @@ public final class FlowableCache<T> extends Flowable<T> {
                                 valuesProduced++;
                             }
                             
-                            if (cancelled) {
+                            if (get() == CANCELLED) {
                                 skipFinal = true;
                                 return;
                             }

@@ -57,8 +57,6 @@ public final class FlowableInterval extends Flowable<Long> {
         
         long count;
         
-        volatile boolean cancelled;
-        
         final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
         
         public IntervalSubscriber(Subscriber<? super Long> actual) {
@@ -74,19 +72,12 @@ public final class FlowableInterval extends Flowable<Long> {
         
         @Override
         public void cancel() {
-            if (!cancelled) {
-                cancelled = true;
-                disposeResource();
-            }
-        }
-        
-        void disposeResource() {
             DisposableHelper.dispose(resource);
         }
-        
+
         @Override
         public void run() {
-            if (!cancelled) {
+            if (resource.get() != DisposableHelper.DISPOSED) {
                 long r = get();
                 
                 if (r != 0L) {
@@ -95,11 +86,10 @@ public final class FlowableInterval extends Flowable<Long> {
                         decrementAndGet();
                     }
                 } else {
-                    cancelled = true;
                     try {
                         actual.onError(new MissingBackpressureException("Can't deliver value " + count + " due to lack of requests"));
                     } finally {
-                        disposeResource();
+                        DisposableHelper.dispose(resource);
                     }
                 }
             }

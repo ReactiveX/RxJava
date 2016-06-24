@@ -331,9 +331,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
         long maxUpstreamRequested;
         /** The upstream producer. */
         volatile Subscription subscription;
-        
-        volatile boolean cancelled;
-        
+
         public ReplaySubscriber(AtomicReference<ReplaySubscriber<T>> current,
                 ReplayBuffer<T> buffer) {
             this.buffer = buffer;
@@ -344,12 +342,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
 
         @Override
         public boolean isDisposed() {
-            return cancelled;
+            return producers.get() == TERMINATED;
         }
         
         @Override
         public void dispose() {
-            producers.getAndSet(TERMINATED);
+            producers.set(TERMINATED);
             // unlike OperatorPublish, we can't null out the terminated so
             // late subscribers can still get replay
             // current.compareAndSet(ReplaySubscriber.this, null);
