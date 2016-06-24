@@ -20,7 +20,6 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.MissingBackpressureException;
-import io.reactivex.internal.disposables.SerialResource;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -47,7 +46,7 @@ public final class CompletableConcat extends Completable {
         private static final long serialVersionUID = 7412667182931235013L;
         final CompletableSubscriber actual;
         final int prefetch;
-        final SerialResource<Disposable> sr;
+        final SerialDisposable sd;
         
         final SpscArrayQueue<CompletableConsumable> queue;
         
@@ -63,7 +62,7 @@ public final class CompletableConcat extends Completable {
             this.actual = actual;
             this.prefetch = prefetch;
             this.queue = new SpscArrayQueue<CompletableConsumable>(prefetch);
-            this.sr = new SerialResource<Disposable>(Disposables.consumeAndDispose());
+            this.sd = new SerialDisposable();
             this.inner = new ConcatInnerSubscriber();
         }
         
@@ -125,7 +124,7 @@ public final class CompletableConcat extends Completable {
         @Override
         public void dispose() {
             s.cancel();
-            sr.dispose();
+            sd.dispose();
         }
         
         void next() {
@@ -148,7 +147,7 @@ public final class CompletableConcat extends Completable {
         final class ConcatInnerSubscriber implements CompletableSubscriber {
             @Override
             public void onSubscribe(Disposable d) {
-                sr.set(d);
+                sd.set(d);
             }
             
             @Override
