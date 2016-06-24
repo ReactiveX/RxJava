@@ -211,6 +211,11 @@ public final class IOScheduler extends Scheduler implements SchedulerLifecycle {
         }
 
         @Override
+        public boolean isDisposed() {
+            return once.get();
+        }
+
+        @Override
         public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
             if (tasks.isDisposed()) {
                 // don't schedule, we are unsubscribed

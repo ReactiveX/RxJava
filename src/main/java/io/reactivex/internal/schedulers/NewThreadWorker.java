@@ -137,4 +137,9 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
             executor.shutdownNow();
         }
     }
+
+    @Override
+    public boolean isDisposed() {
+        return disposed;
+    }
 }

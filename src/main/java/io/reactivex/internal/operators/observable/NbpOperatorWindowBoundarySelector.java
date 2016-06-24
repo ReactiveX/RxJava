@@ -177,7 +177,12 @@ public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOper
                 cancelled = true;
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void disposeBoundary() {
             resources.dispose();
             DisposableHelper.dispose(boundary);

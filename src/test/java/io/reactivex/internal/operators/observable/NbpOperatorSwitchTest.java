@@ -24,7 +24,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.disposables.BooleanDisposable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
@@ -428,7 +428,7 @@ public class NbpOperatorSwitchTest {
                 Observable.create(new ObservableConsumable<Observable<Integer>>() {
                     @Override
                     public void subscribe(final Observer<? super Observable<Integer>> NbpSubscriber) {
-                        BooleanDisposable bs = new BooleanDisposable();
+                        Disposable bs = Disposables.empty();
                         NbpSubscriber.onSubscribe(bs);
                         NbpSubscriber.onNext(Observable.just(1));
                         isUnsubscribed.set(bs.isDisposed());

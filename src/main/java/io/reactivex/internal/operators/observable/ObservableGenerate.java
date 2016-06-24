@@ -117,7 +117,12 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
                 cancelled = true;
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         @Override
         public void onSubscribe(Disposable s) {
             throw new IllegalStateException("Should not call onSubscribe in the generator!");

@@ -135,7 +135,7 @@ public class NbpOperatorTakeTest {
     @Ignore("take(0) is now empty() and doesn't even subscribe to the original source")
     public void testTakeZeroDoesntLeakError() {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
-        final BooleanDisposable bs = new BooleanDisposable();
+        final Disposable bs = Disposables.empty();
         Observable<String> source = Observable.create(new ObservableConsumable<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
@@ -208,7 +208,7 @@ public class NbpOperatorTakeTest {
 
             @Override
             public void subscribe(Observer<? super Integer> s) {
-                BooleanDisposable bs = new BooleanDisposable();
+                Disposable bs = Disposables.empty();
                 s.onSubscribe(bs);
                 for (int i = 0; !bs.isDisposed(); i++) {
                     System.out.println("Emit: " + i);
@@ -270,10 +270,10 @@ public class NbpOperatorTakeTest {
 
         @Override
         public void subscribe(Observer<? super Long> op) {
-            BooleanDisposable bs = new BooleanDisposable();
-            op.onSubscribe(bs);
+            Disposable d = Disposables.empty();
+            op.onSubscribe(d);
             long l = 1;
-            while (!bs.isDisposed()) {
+            while (!d.isDisposed()) {
                 op.onNext(l++);
             }
             op.onComplete();

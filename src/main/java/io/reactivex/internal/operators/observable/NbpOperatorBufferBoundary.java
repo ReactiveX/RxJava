@@ -137,7 +137,11 @@ public final class NbpOperatorBufferBoundary<T, U extends Collection<? super T>,
                 resources.dispose();
             }
         }
-        
+
+        @Override public boolean isDisposed() {
+            return cancelled;
+        }
+
         @Override
         public void accept(Observer<? super U> a, U v) {
             a.onNext(v);

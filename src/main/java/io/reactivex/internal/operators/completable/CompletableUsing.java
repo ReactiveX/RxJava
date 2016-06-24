@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -125,12 +126,12 @@ public final class CompletableUsing<R> extends Completable {
             @Override
             public void onSubscribe(Disposable d) {
                 this.d = d;
-                s.onSubscribe(new Disposable() {
+                s.onSubscribe(Disposables.from(new Runnable() {
                     @Override
-                    public void dispose() {
+                    public void run() {
                         disposeThis();
                     }
-                });
+                }));
             }
         });
     }

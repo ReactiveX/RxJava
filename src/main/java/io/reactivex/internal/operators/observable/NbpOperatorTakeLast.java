@@ -98,5 +98,10 @@ public final class NbpOperatorTakeLast<T> implements NbpOperator<T, T> {
                 s.dispose();
             }
         }
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
     }
 }

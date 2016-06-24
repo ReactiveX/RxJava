@@ -51,6 +51,7 @@ public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposab
         dispose();
     }
     
+    @Override
     public final boolean isDisposed() {
         return s.get() == SubscriptionHelper.CANCELLED;
     }

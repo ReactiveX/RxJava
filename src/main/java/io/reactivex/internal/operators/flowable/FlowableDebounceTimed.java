@@ -198,7 +198,12 @@ public final class FlowableDebounceTimed<T> extends Flowable<T> {
         public void dispose() {
             DisposableHelper.dispose(this);
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return get() == DisposableHelper.DISPOSED;
+        }
+
         public void setResource(Disposable d) {
             DisposableHelper.replace(this, d);
         }

@@ -132,7 +132,12 @@ public final class NbpOperatorObserveOn<T> extends Observable<T> {
                 worker.dispose();
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void schedule() {
             if (getAndIncrement() == 0) {
                 worker.schedule(this);

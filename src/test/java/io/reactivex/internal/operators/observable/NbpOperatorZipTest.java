@@ -28,7 +28,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Optional;
-import io.reactivex.disposables.BooleanDisposable;
+import io.reactivex.disposables.*;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -1056,10 +1056,10 @@ public class NbpOperatorZipTest {
 
             @Override
             public void subscribe(final Observer<? super Integer> o) {
-                BooleanDisposable bs = new BooleanDisposable();
-                o.onSubscribe(bs);
+                Disposable d = Disposables.empty();
+                o.onSubscribe(d);
                 for (int i = 1; i <= 5; i++) {
-                    if (bs.isDisposed()) {
+                    if (d.isDisposed()) {
                         break;
                     }
                     numEmitted.incrementAndGet();
@@ -1077,8 +1077,8 @@ public class NbpOperatorZipTest {
 
             @Override
             public void subscribe(final Observer<? super Integer> o) {
-                final BooleanDisposable bs = new BooleanDisposable();
-                o.onSubscribe(bs);
+                final Disposable d = Disposables.empty();
+                o.onSubscribe(d);
                 Thread t = new Thread(new Runnable() {
 
                     @Override
@@ -1086,7 +1086,7 @@ public class NbpOperatorZipTest {
                         System.out.println("-------> subscribe to infinite sequence");
                         System.out.println("Starting thread: " + Thread.currentThread());
                         int i = 1;
-                        while (!bs.isDisposed()) {
+                        while (!d.isDisposed()) {
                             o.onNext(i++);
                             Thread.yield();
                         }

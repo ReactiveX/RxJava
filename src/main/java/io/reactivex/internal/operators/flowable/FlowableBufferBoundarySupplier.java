@@ -242,7 +242,12 @@ extends Flowable<U> {
             s.cancel();
             disposeOther();
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return other.get() == DisposableHelper.DISPOSED;
+        }
+
         @Override
         public boolean accept(Subscriber<? super U> a, U v) {
             actual.onNext(v);

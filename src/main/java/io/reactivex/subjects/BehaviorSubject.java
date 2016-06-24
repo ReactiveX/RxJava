@@ -345,6 +345,11 @@ public final class BehaviorSubject<T> extends Subject<T> {
             }
         }
 
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void emitFirst() {
             if (cancelled) {
                 return;

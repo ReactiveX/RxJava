@@ -62,7 +62,12 @@ public final class ObservableTimer extends Observable<Long> {
                 DisposableHelper.dispose(this);
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         @Override
         public void run() {
             if (!cancelled) {

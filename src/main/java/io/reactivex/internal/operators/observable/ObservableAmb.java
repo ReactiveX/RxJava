@@ -119,6 +119,11 @@ public final class ObservableAmb<T> extends Observable<T> {
                 }
             }
         }
+
+        @Override
+        public boolean isDisposed() {
+            return winner.get() == -1;
+        }
     }
     
     static final class AmbInnerSubscriber<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
@@ -188,6 +193,10 @@ public final class ObservableAmb<T> extends Observable<T> {
         public void dispose() {
             DisposableHelper.dispose(this);
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return get() == DisposableHelper.DISPOSED;
+        }
     }
 }

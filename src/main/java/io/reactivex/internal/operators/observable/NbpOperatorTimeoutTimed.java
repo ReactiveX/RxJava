@@ -66,6 +66,11 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
         static final Disposable NEW_TIMER = new Disposable() {
             @Override
             public void dispose() { }
+
+            @Override
+            public boolean isDisposed() {
+                return true;
+            }
         };
 
         volatile long index;
@@ -171,6 +176,11 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
             worker.dispose();
             DisposableHelper.dispose(timer);
         }
+
+        @Override
+        public boolean isDisposed() {
+            return worker.isDisposed();
+        }
     }
     
     static final class TimeoutTimedSubscriber<T> implements Observer<T>, Disposable {
@@ -186,6 +196,11 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
         static final Disposable NEW_TIMER = new Disposable() {
             @Override
             public void dispose() { }
+
+            @Override
+            public boolean isDisposed() {
+                return true;
+            }
         };
 
         volatile long index;
@@ -275,6 +290,11 @@ public final class NbpOperatorTimeoutTimed<T> implements NbpOperator<T, T> {
         public void dispose() {
             worker.dispose();
             DisposableHelper.dispose(timer);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return worker.isDisposed();
         }
     }
 }

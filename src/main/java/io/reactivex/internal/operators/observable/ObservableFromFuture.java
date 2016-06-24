@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.BooleanDisposable;
+import io.reactivex.disposables.*;
 
 public final class ObservableFromFuture<T> extends Observable<T> {
     final Future<? extends T> future;
@@ -31,21 +31,21 @@ public final class ObservableFromFuture<T> extends Observable<T> {
     
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        BooleanDisposable bd = new BooleanDisposable();
-        s.onSubscribe(bd);
-        if (!bd.isDisposed()) {
+        Disposable d = Disposables.empty();
+        s.onSubscribe(d);
+        if (!d.isDisposed()) {
             T v;
             try {
                 v = unit != null ? future.get(timeout, unit) : future.get();
             } catch (Throwable ex) {
-                if (!bd.isDisposed()) {
+                if (!d.isDisposed()) {
                     s.onError(ex);
                 }
                 return;
             } finally {
                 future.cancel(true); // TODO ?? not sure about this
             }
-            if (!bd.isDisposed()) {
+            if (!d.isDisposed()) {
                 if (v != null) {
                     s.onNext(v);
                     s.onComplete();

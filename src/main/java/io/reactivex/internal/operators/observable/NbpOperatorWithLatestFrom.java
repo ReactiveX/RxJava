@@ -117,6 +117,10 @@ public final class NbpOperatorWithLatestFrom<T, U, R> implements NbpOperator<R, 
             DisposableHelper.dispose(other);
         }
 
+        @Override public boolean isDisposed() {
+            return s.get().isDisposed();
+        }
+
         public boolean setOther(Disposable o) {
             for (;;) {
                 Disposable current = other.get();

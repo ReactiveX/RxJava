@@ -263,14 +263,14 @@ public class SingleTest {
                     }
 
                 });
-                sd.replace(new Disposable() {
+                sd.replace(Disposables.from(new Runnable() {
                     @Override
-                    public void dispose() {
+                    public void run() {
                         unsubscribed.set(true);
                         t.interrupt();
                         latch.countDown();
                     }
-                });
+                }));
                 t.start();
             }
         });
@@ -337,14 +337,14 @@ public class SingleTest {
                     }
 
                 });
-                sd.replace(new Disposable() {
+                sd.replace(Disposables.from(new Runnable() {
                     @Override
-                    public void dispose() {
+                    public void run() {
                         unsubscribed.set(true);
                         t.interrupt();
                         latch.countDown();
                     }
-                });
+                }));
                 t.start();
 
             }
@@ -393,14 +393,14 @@ public class SingleTest {
                     }
 
                 });
-                sd.replace(new Disposable() {
+                sd.replace(Disposables.from(new Runnable() {
                     @Override
-                    public void dispose() {
+                    public void run() {
                         unsubscribed.set(true);
                         t.interrupt();
                         latch.countDown();
                     }
-                });
+                }));
                 t.start();
 
             }

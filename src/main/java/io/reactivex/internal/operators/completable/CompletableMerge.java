@@ -77,6 +77,11 @@ public final class CompletableMerge extends Completable {
         }
 
         @Override
+        public boolean isDisposed() {
+            return set.isDisposed();
+        }
+
+        @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 return;

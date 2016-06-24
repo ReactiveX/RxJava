@@ -287,7 +287,12 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
                 }
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void drain() {
             if (getAndIncrement() == 0) {
                 drainLoop();
@@ -538,6 +543,11 @@ public final class NbpOperatorFlatMap<T, U> implements NbpOperator<U, T> {
         @Override
         public void dispose() {
             DisposableHelper.dispose(this);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return get() == DisposableHelper.DISPOSED;
         }
     }
     

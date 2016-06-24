@@ -134,7 +134,12 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                 }
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void cancel(Queue<?> q) {
             clear(q);
             for (CombinerSubscriber<T, R> s : subscribers) {
@@ -361,6 +366,11 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         @Override
         public void dispose() {
             DisposableHelper.dispose(s);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return s.get() == DisposableHelper.DISPOSED;
         }
     }
 }

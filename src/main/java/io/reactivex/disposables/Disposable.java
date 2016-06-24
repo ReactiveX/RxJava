@@ -20,7 +20,9 @@ public interface Disposable {
      * Dispose the resource, the operation should be idempotent.
      */
     void dispose();
-    
-    // TODO let's see if we really need this
-    // boolean isDisposed();
+
+    /**
+     * Returns true if this resource has been disposed.
+     */
+    boolean isDisposed();
 }

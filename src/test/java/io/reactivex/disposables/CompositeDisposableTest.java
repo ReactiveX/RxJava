@@ -29,22 +29,22 @@ public class CompositeDisposableTest {
     public void testSuccess() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable s = new CompositeDisposable();
-        s.add(new Disposable() {
+        s.add(Disposables.from(new Runnable() {
 
             @Override
-            public void dispose() {
+            public void run() {
                 counter.incrementAndGet();
             }
 
-        });
+        }));
 
-        s.add(new Disposable() {
+        s.add(Disposables.from(new Runnable() {
 
             @Override
-            public void dispose() {
+            public void run() {
                 counter.incrementAndGet();
             }
-        });
+        }));
 
         s.dispose();
 
@@ -59,13 +59,13 @@ public class CompositeDisposableTest {
         final int count = 10;
         final CountDownLatch start = new CountDownLatch(1);
         for (int i = 0; i < count; i++) {
-            s.add(new Disposable() {
+            s.add(Disposables.from(new Runnable() {
 
                 @Override
-                public void dispose() {
+                public void run() {
                     counter.incrementAndGet();
                 }
-            });
+            }));
         }
 
         final List<Thread> threads = new ArrayList<Thread>();
@@ -97,23 +97,23 @@ public class CompositeDisposableTest {
     public void testException() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable s = new CompositeDisposable();
-        s.add(new Disposable() {
+        s.add(Disposables.from(new Runnable() {
 
             @Override
-            public void dispose() {
+            public void run() {
                 throw new RuntimeException("failed on first one");
             }
 
-        });
+        }));
 
-        s.add(new Disposable() {
+        s.add(Disposables.from(new Runnable() {
 
             @Override
-            public void dispose() {
+            public void run() {
                 counter.incrementAndGet();
             }
 
-        });
+        }));
 
         try {
             s.dispose();
@@ -131,31 +131,31 @@ public class CompositeDisposableTest {
     public void testCompositeException() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable s = new CompositeDisposable();
-        s.add(new Disposable() {
+        s.add(Disposables.from(new Runnable() {
 
             @Override
-            public void dispose() {
+            public void run() {
                 throw new RuntimeException("failed on first one");
             }
 
-        });
+        }));
 
-        s.add(new Disposable() {
+        s.add(Disposables.from(new Runnable() {
 
             @Override
-            public void dispose() {
+            public void run() {
                 throw new RuntimeException("failed on second one too");
             }
-        });
+        }));
 
-        s.add(new Disposable() {
+        s.add(Disposables.from(new Runnable() {
 
             @Override
-            public void dispose() {
+            public void run() {
                 counter.incrementAndGet();
             }
 
-        });
+        }));
 
         try {
             s.dispose();
@@ -171,8 +171,8 @@ public class CompositeDisposableTest {
 
     @Test
     public void testRemoveUnsubscribes() {
-        BooleanDisposable s1 = new BooleanDisposable();
-        BooleanDisposable s2 = new BooleanDisposable();
+        Disposable s1 = Disposables.empty();
+        Disposable s2 = Disposables.empty();
 
         CompositeDisposable s = new CompositeDisposable();
         s.add(s1);
@@ -186,8 +186,8 @@ public class CompositeDisposableTest {
 
     @Test
     public void testClear() {
-        BooleanDisposable s1 = new BooleanDisposable();
-        BooleanDisposable s2 = new BooleanDisposable();
+        Disposable s1 = Disposables.empty();
+        Disposable s2 = Disposables.empty();
 
         CompositeDisposable s = new CompositeDisposable();
         s.add(s1);
@@ -202,7 +202,7 @@ public class CompositeDisposableTest {
         assertTrue(s2.isDisposed());
         assertFalse(s.isDisposed());
 
-        BooleanDisposable s3 = new BooleanDisposable();
+        Disposable s3 = Disposables.empty();
 
         s.add(s3);
         s.dispose();
@@ -215,14 +215,14 @@ public class CompositeDisposableTest {
     public void testUnsubscribeIdempotence() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable s = new CompositeDisposable();
-        s.add(new Disposable() {
+        s.add(Disposables.from(new Runnable() {
 
             @Override
-            public void dispose() {
+            public void run() {
                 counter.incrementAndGet();
             }
 
-        });
+        }));
 
         s.dispose();
         s.dispose();
@@ -240,14 +240,14 @@ public class CompositeDisposableTest {
 
         final int count = 10;
         final CountDownLatch start = new CountDownLatch(1);
-        s.add(new Disposable() {
+        s.add(Disposables.from(new Runnable() {
 
             @Override
-            public void dispose() {
+            public void run() {
                 counter.incrementAndGet();
             }
 
-        });
+        }));
 
         final List<Thread> threads = new ArrayList<Thread>();
         for (int i = 0; i < count; i++) {

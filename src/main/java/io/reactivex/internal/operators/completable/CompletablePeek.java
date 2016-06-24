@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -87,9 +88,9 @@ public final class CompletablePeek extends Completable {
                     return;
                 }
                 
-                s.onSubscribe(new Disposable() {
+                s.onSubscribe(Disposables.from(new Runnable() {
                     @Override
-                    public void dispose() {
+                    public void run() {
                         try {
                             onDisposed.run();
                         } catch (Throwable e) {
@@ -97,7 +98,7 @@ public final class CompletablePeek extends Completable {
                         }
                         d.dispose();
                     }
-                });
+                }));
             }
             
         });

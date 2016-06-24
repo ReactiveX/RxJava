@@ -27,7 +27,7 @@ import org.mockito.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -431,12 +431,12 @@ public class NbpOperatorRetryTest {
             @Override
             public void subscribe(Observer<? super String> s) {
                 subsCount.incrementAndGet();
-                s.onSubscribe(new Disposable() {
+                s.onSubscribe(Disposables.from(new Runnable() {
                     @Override
-                    public void dispose() {
+                    public void run() {
                             subsCount.decrementAndGet();
                     }
-                });
+                }));
                 
             }
         };
@@ -535,13 +535,13 @@ public class NbpOperatorRetryTest {
         @Override
         public void subscribe(final Observer<? super Long> NbpSubscriber) {
             final AtomicBoolean terminate = new AtomicBoolean(false);
-            NbpSubscriber.onSubscribe(new Disposable() {
+            NbpSubscriber.onSubscribe(Disposables.from(new Runnable() {
                 @Override
-                public void dispose() {
+                public void run() {
                         terminate.set(true);
                         active.decrementAndGet();
                 }
-            });
+            }));
             efforts.getAndIncrement();
             active.getAndIncrement();
             maxActive.set(Math.max(active.get(), maxActive.get()));

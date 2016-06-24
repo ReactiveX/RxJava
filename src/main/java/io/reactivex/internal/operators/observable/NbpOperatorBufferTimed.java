@@ -177,6 +177,11 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
         }
 
         @Override
+        public boolean isDisposed() {
+            return timer.get() == DisposableHelper.DISPOSED;
+        }
+
+        @Override
         public void run() {
             /*
              * If running on a synchronous scheduler, the timer might never
@@ -339,7 +344,12 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
                 s.dispose();
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void clear() {
             synchronized (this) {
                 buffers.clear();
@@ -553,8 +563,12 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
                 s.dispose();
             }
         }
-        
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         @Override
         public void run() {
             U next;

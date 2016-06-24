@@ -26,7 +26,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.BooleanDisposable;
+import io.reactivex.disposables.*;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.EmptySubscription;
@@ -161,7 +161,7 @@ public class FlowableConcatTest {
 
             @Override
             public void subscribe(final Subscriber<? super Flowable<String>> observer) {
-                final BooleanDisposable s = new BooleanDisposable();
+                final Disposable d = Disposables.empty();
                 observer.onSubscribe(new Subscription() {
                     @Override
                     public void request(long n) {
@@ -169,7 +169,7 @@ public class FlowableConcatTest {
                     }
                     @Override
                     public void cancel() {
-                        s.dispose();
+                        d.dispose();
                     }
                 });
                 parent.set(new Thread(new Runnable() {
@@ -178,12 +178,12 @@ public class FlowableConcatTest {
                     public void run() {
                         try {
                             // emit first
-                            if (!s.isDisposed()) {
+                            if (!d.isDisposed()) {
                                 System.out.println("Emit o1");
                                 observer.onNext(Flowable.create(o1));
                             }
                             // emit second
-                            if (!s.isDisposed()) {
+                            if (!d.isDisposed()) {
                                 System.out.println("Emit o2");
                                 observer.onNext(Flowable.create(o2));
                             }
@@ -194,7 +194,7 @@ public class FlowableConcatTest {
                             } catch (InterruptedException e) {
                                 observer.onError(e);
                             }
-                            if (!s.isDisposed()) {
+                            if (!d.isDisposed()) {
                                 System.out.println("Emit o3");
                                 observer.onNext(Flowable.create(o3));
                             }

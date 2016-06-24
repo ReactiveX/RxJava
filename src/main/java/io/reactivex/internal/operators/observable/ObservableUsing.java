@@ -145,7 +145,12 @@ public final class ObservableUsing<T, D> extends Observable<T> {
             disposeAfter();
             s.dispose();
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return get();
+        }
+
         void disposeAfter() {
             if (compareAndSet(false, true)) {
                 try {

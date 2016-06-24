@@ -174,6 +174,11 @@ public final class NbpOperatorWindowBoundarySupplier<T, B> implements NbpOperato
             }
         }
 
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void drainLoop() {
             final Queue<Object> q = queue;
             final Observer<? super Observable<T>> a = actual;

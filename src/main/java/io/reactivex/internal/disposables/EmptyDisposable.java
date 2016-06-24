@@ -24,7 +24,12 @@ public enum EmptyDisposable implements Disposable {
     public void dispose() {
         // no-op
     }
-    
+
+    @Override
+    public boolean isDisposed() {
+        return true; // TODO is this okay?
+    }
+
     public static void complete(Observer<?> s) {
         s.onSubscribe(INSTANCE);
         s.onComplete();

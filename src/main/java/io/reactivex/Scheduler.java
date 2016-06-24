@@ -193,6 +193,10 @@ public abstract class Scheduler {
             disposed = true;
             worker.dispose();
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
     }
 }

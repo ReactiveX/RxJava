@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.BooleanDisposable;
+import io.reactivex.disposables.*;
 
 public final class ObservableFromArray<T> extends Observable<T> {
     final T[] array;
@@ -26,14 +26,14 @@ public final class ObservableFromArray<T> extends Observable<T> {
     }
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        BooleanDisposable bd = new BooleanDisposable();
+        Disposable d = Disposables.empty();
         
-        s.onSubscribe(bd);
+        s.onSubscribe(d);
         
         T[] a = array;
         int n = a.length;
         
-        for (int i = 0; i < n && !bd.isDisposed(); i++) {
+        for (int i = 0; i < n && !d.isDisposed(); i++) {
             T value = a[i];
             if (value == null) {
                 s.onError(new NullPointerException("The " + i + "th element is null"));
@@ -41,7 +41,7 @@ public final class ObservableFromArray<T> extends Observable<T> {
             }
             s.onNext(value);
         }
-        if (!bd.isDisposed()) {
+        if (!d.isDisposed()) {
             s.onComplete();
         }
     }

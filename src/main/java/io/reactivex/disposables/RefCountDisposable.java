@@ -52,6 +52,7 @@ public final class RefCountDisposable implements Disposable {
         }
     }
     
+    @Override
     public boolean isDisposed() {
         return resource.get() == DisposableHelper.DISPOSED;
     }
@@ -71,6 +72,11 @@ public final class RefCountDisposable implements Disposable {
             if (!get() && compareAndSet(false, true)) {
                 parent.release();
             }
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return get();
         }
     }
 }

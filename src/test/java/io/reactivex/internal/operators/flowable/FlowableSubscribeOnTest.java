@@ -138,11 +138,10 @@ public class FlowableSubscribeOnTest {
                 actualInner.dispose();
             }
 
-            // FIXME not available
-//            @Override
-//            public boolean isDisposed() {
-//                return actualInner.isDisposed();
-//            }
+            @Override
+            public boolean isDisposed() {
+                return actualInner.isDisposed();
+            }
 
             @Override
             public Disposable schedule(final Runnable action) {

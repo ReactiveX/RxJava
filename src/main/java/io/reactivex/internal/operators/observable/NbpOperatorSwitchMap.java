@@ -147,7 +147,12 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
                 disposeInner();
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         @SuppressWarnings("unchecked")
         void disposeInner() {
             SwitchMapInnerSubscriber<T, R> a = active.get();

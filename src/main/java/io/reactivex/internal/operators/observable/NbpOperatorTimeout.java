@@ -160,7 +160,12 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                 DisposableHelper.dispose(timeout);
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         @Override
         public void timeout(long idx) {
             if (idx == index) {
@@ -346,7 +351,12 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                 DisposableHelper.dispose(timeout);
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         @Override
         public void timeout(long idx) {
             if (idx == index) {

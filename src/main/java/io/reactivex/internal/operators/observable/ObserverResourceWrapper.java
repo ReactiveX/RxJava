@@ -29,10 +29,7 @@ public final class ObserverResourceWrapper<T, R> extends AtomicReference<Object>
     
     final AtomicReference<Disposable> subscription = new AtomicReference<Disposable>();
     
-    static final Disposable TERMINATED = new Disposable() {
-        @Override
-        public void dispose() { }
-    };
+    private static final Object TERMINATED = new Object();
     
     public ObserverResourceWrapper(Observer<? super T> actual, Consumer<? super R> disposer) {
         this.actual = actual;
@@ -66,14 +63,8 @@ public final class ObserverResourceWrapper<T, R> extends AtomicReference<Object>
     @Override
     @SuppressWarnings("unchecked")
     public void dispose() {
-        Disposable s = subscription.get();
-        if (s != TERMINATED) {
-            s = subscription.getAndSet(TERMINATED);
-            if (s != TERMINATED && s != null) {
-                s.dispose();
-            }
-        }
-        
+        DisposableHelper.dispose(subscription);
+
         Object o = get();
         if (o != TERMINATED) {
             o = getAndSet(TERMINATED);
@@ -82,7 +73,12 @@ public final class ObserverResourceWrapper<T, R> extends AtomicReference<Object>
             }
         }
     }
-    
+
+    @Override
+    public boolean isDisposed() {
+        return subscription.get() == DisposableHelper.DISPOSED;
+    }
+
     @SuppressWarnings("unchecked")
     public void setResource(R resource) {
         for (;;) {

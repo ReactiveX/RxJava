@@ -139,6 +139,7 @@ public final class ListCompositeResource<T> implements CompositeResource<T>, Dis
         }
     }
     
+    @Override
     public boolean isDisposed() {
         return disposed;
     }

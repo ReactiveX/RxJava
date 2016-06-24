@@ -153,6 +153,7 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
         }
     }
     
+    @Override
     public boolean isDisposed() {
         return disposed;
     }

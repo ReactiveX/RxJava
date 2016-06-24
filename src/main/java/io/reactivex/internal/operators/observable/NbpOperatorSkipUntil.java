@@ -127,5 +127,10 @@ public final class NbpOperatorSkipUntil<T, U> implements NbpOperator<T, T> {
         public void dispose() {
             frc.dispose();
         }
+
+        @Override
+        public boolean isDisposed() {
+            return frc.isDisposed();
+        }
     }
 }

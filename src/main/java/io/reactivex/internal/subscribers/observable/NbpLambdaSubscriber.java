@@ -80,4 +80,9 @@ public final class NbpLambdaSubscriber<T> extends AtomicReference<Disposable> im
     public void dispose() {
         DisposableHelper.dispose(this);
     }
+
+    @Override
+    public boolean isDisposed() {
+        return get() == DisposableHelper.DISPOSED;
+    }
 }

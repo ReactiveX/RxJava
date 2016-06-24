@@ -48,16 +48,17 @@ public final class Disposables {
 
     public static Disposable from(final Subscription subscription) {
         Objects.requireNonNull(subscription, "subscription is null");
-        return new Disposable() {
+        // TODO optimize this case.
+        return from(new Runnable() {
             @Override
-            public void dispose() {
+            public void run() {
                 subscription.cancel();
             }
-        };
+        });
     }
 
     public static Disposable empty() {
-        return EmptyDisposable.INSTANCE;
+        return new BooleanDisposable();
     }
 
     public static Disposable disposed() {
@@ -87,6 +88,10 @@ public final class Disposables {
                     r.cancel(allowInterrupt);
                 }
             }
+        }
+
+        @Override public boolean isDisposed() {
+            return get() == DisposedFuture.INSTANCE;
         }
     }
 

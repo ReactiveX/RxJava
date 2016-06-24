@@ -74,16 +74,16 @@ public final class SingleUsing<T, U> extends Single<T> {
                 if (eager) {
                     CompositeDisposable set = new CompositeDisposable();
                     set.add(d);
-                    set.add(new Disposable() {
+                    set.add(Disposables.from(new Runnable() {
                         @Override
-                        public void dispose() {
+                        public void run() {
                             try {
                                 disposer.accept(resource);
                             } catch (Throwable e) {
                                 RxJavaPlugins.onError(e);
                             }
                         }
-                    });
+                    }));
                 } else {
                     s.onSubscribe(d);
                 }

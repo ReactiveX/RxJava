@@ -56,6 +56,11 @@ public final class NbpOperatorThrottleFirstTimed<T> implements NbpOperator<T, T>
         static final Disposable NEW_TIMER = new Disposable() {
             @Override
             public void dispose() { }
+
+            @Override
+            public boolean isDisposed() {
+                return true;
+            }
         };
 
         volatile boolean gate;
@@ -137,6 +142,11 @@ public final class NbpOperatorThrottleFirstTimed<T> implements NbpOperator<T, T>
             DisposableHelper.dispose(timer);
             worker.dispose();
             s.dispose();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return timer.get() == DisposableHelper.DISPOSED;
         }
     }
 }

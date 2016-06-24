@@ -179,7 +179,12 @@ public class TestObserver<T> implements Observer<T>, Disposable {
             DisposableHelper.dispose(subscription);
         }
     }
-    
+
+    @Override
+    public boolean isDisposed() {
+        return cancelled;
+    }
+
     // state retrieval methods
     
     /**

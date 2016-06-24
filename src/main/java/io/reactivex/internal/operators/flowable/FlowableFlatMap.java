@@ -617,6 +617,10 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         public void dispose() {
             SubscriptionHelper.dispose(this);
         }
+
+        @Override public boolean isDisposed() {
+            return get() == SubscriptionHelper.CANCELLED;
+        }
     }
     
     static final class RejectingQueue<T> extends AbstractQueue<T> {

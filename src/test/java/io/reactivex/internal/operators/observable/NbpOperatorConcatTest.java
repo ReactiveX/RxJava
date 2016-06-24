@@ -161,20 +161,20 @@ public class NbpOperatorConcatTest {
 
             @Override
             public void subscribe(final Observer<? super Observable<String>> NbpObserver) {
-                final BooleanDisposable s = new BooleanDisposable();
-                NbpObserver.onSubscribe(s);
+                final Disposable d = Disposables.empty();
+                NbpObserver.onSubscribe(d);
                 parent.set(new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         try {
                             // emit first
-                            if (!s.isDisposed()) {
+                            if (!d.isDisposed()) {
                                 System.out.println("Emit o1");
                                 NbpObserver.onNext(Observable.create(o1));
                             }
                             // emit second
-                            if (!s.isDisposed()) {
+                            if (!d.isDisposed()) {
                                 System.out.println("Emit o2");
                                 NbpObserver.onNext(Observable.create(o2));
                             }
@@ -185,7 +185,7 @@ public class NbpOperatorConcatTest {
                             } catch (InterruptedException e) {
                                 NbpObserver.onError(e);
                             }
-                            if (!s.isDisposed()) {
+                            if (!d.isDisposed()) {
                                 System.out.println("Emit o3");
                                 NbpObserver.onNext(Observable.create(o3));
                             }
@@ -476,6 +476,11 @@ public class NbpOperatorConcatTest {
             @Override
             public void dispose() {
                     subscribed = false;
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return subscribed;
             }
         };
         private final List<T> values;

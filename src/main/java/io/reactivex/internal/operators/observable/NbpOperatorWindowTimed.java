@@ -168,7 +168,12 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
         public void dispose() {
             cancelled = true;
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void disposeTimer() {
             selfCancel = true;
             DisposableHelper.dispose(timer);
@@ -403,7 +408,12 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
                 cancelled = true;
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void disposeTimer() {
             selfCancel = true;
             DisposableHelper.dispose(timer);
@@ -630,7 +640,12 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
                 cancelled = true;
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void disposeWorker() {
             worker.dispose();
         }

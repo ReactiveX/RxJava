@@ -126,7 +126,12 @@ public final class CompletableConcat extends Completable {
             s.cancel();
             sd.dispose();
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return sd.isDisposed();
+        }
+
         void next() {
             boolean d = done;
             CompletableConsumable c = queue.poll();

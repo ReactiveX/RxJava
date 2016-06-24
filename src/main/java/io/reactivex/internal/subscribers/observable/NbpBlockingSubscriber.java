@@ -60,6 +60,7 @@ public final class NbpBlockingSubscriber<T> extends AtomicReference<Disposable> 
         }
     }
     
+    @Override
     public boolean isDisposed() {
         return get() == DisposableHelper.DISPOSED;
     }

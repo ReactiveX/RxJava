@@ -682,7 +682,7 @@ public class NbpOperatorReplayTest {
 
     private static class InprocessWorker extends Worker {
         private final Disposable mockDisposable;
-//        public boolean unsubscribed;
+        public boolean unsubscribed;
 
         public InprocessWorker(Disposable mockDisposable) {
             this.mockDisposable = mockDisposable;
@@ -702,14 +702,13 @@ public class NbpOperatorReplayTest {
 
         @Override
         public void dispose() {
-//            unsubscribed = true;
+            unsubscribed = true;
         }
 
-        // FIXME no longer supported
-//        @Override
-//        public boolean isUnsubscribed() {
-//            return unsubscribed;
-//        }
+        @Override
+        public boolean isDisposed() {
+            return unsubscribed;
+        }
     }
 
     @Test

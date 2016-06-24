@@ -94,7 +94,12 @@ public final class NbpOperatorSampleWithObservable<T> implements NbpOperator<T, 
             DisposableHelper.dispose(other);
             s.dispose();
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return other.get() == DisposableHelper.DISPOSED;
+        }
+
         public void error(Throwable e) {
             dispose();
             actual.onError(e);

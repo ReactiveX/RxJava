@@ -51,7 +51,12 @@ public final class NbpFullArbiter<T> extends FullArbiterPad1 implements Disposab
             disposeResource();
         }
     }
-    
+
+    @Override
+    public boolean isDisposed() {
+        return cancelled;
+    }
+
     void disposeResource() {
         Disposable d = resource;
         resource = null;

@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.BooleanDisposable;
+import io.reactivex.disposables.*;
 
 public final class ObservableFromCallable<T> extends Observable<T> {
     final Callable<? extends T> callable;
@@ -25,21 +25,21 @@ public final class ObservableFromCallable<T> extends Observable<T> {
     }
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        BooleanDisposable bd = new BooleanDisposable();
-        s.onSubscribe(bd);
-        if (bd.isDisposed()) {
+        Disposable d = Disposables.empty();
+        s.onSubscribe(d);
+        if (d.isDisposed()) {
             return;
         }
         T value;
         try {
             value = callable.call();
         } catch (Throwable e) {
-            if (!bd.isDisposed()) {
+            if (!d.isDisposed()) {
                 s.onError(e);
             }
             return;
         }
-        if (bd.isDisposed()) {
+        if (d.isDisposed()) {
             return;
         }
         if (value != null) {

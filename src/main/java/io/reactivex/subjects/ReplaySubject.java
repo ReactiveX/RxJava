@@ -364,6 +364,11 @@ public final class ReplaySubject<T> extends Subject<T> {
                 state.remove(this);
             }
         }
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
     }
     
     static final class UnboundedReplayBuffer<T> implements ReplayBuffer<T> {

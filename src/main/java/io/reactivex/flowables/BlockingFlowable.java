@@ -164,6 +164,11 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
         public void dispose() {
             resource.dispose();
         }
+
+        @Override
+        public boolean isDisposed() {
+            return resource.isDisposed();
+        }
     }
 
     public Optional<T> firstOption() {

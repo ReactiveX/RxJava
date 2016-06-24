@@ -73,7 +73,12 @@ public final class ObservableIntervalRange extends Observable<Long> {
                 disposeResource();
             }
         }
-        
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
         void disposeResource() {
             DisposableHelper.dispose(resource);
         }

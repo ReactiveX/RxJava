@@ -80,5 +80,10 @@ public enum NbpOperatorTakeLastOne implements NbpOperator<Object, Object> {
             value = null;
             s.dispose();
         }
+
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
     }
 }

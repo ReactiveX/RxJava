@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -110,19 +111,24 @@ public final class TrampolineScheduler extends Scheduler {
                 return EmptyDisposable.INSTANCE;
             } else {
                 // queue wasn't empty, a parent is already processing so we just add to the end of the queue
-                return new Disposable() {
+                return Disposables.from(new Runnable() {
                     @Override
-                    public void dispose() {
+                    public void run() {
                         timedRunnable.disposed = true;
                         queue.remove(timedRunnable);
                     }
-                };
+                });
             }
         }
 
         @Override
         public void dispose() {
             disposed = true;
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return disposed;
         }
     }
 

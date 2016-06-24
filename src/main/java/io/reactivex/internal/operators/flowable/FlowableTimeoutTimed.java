@@ -72,6 +72,11 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
         static final Disposable NEW_TIMER = new Disposable() {
             @Override
             public void dispose() { }
+
+            @Override
+            public boolean isDisposed() {
+                return true;
+            }
         };
 
         volatile long index;
@@ -178,6 +183,11 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
             worker.dispose();
             DisposableHelper.dispose(timer);
         }
+
+        @Override
+        public boolean isDisposed() {
+            return worker.isDisposed();
+        }
     }
     
     static final class TimeoutTimedSubscriber<T> implements Subscriber<T>, Disposable, Subscription {
@@ -193,6 +203,11 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
         static final Disposable NEW_TIMER = new Disposable() {
             @Override
             public void dispose() { }
+
+            @Override
+            public boolean isDisposed() {
+                return true;
+            }
         };
 
         volatile long index;
@@ -283,6 +298,11 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
         public void dispose() {
             worker.dispose();
             DisposableHelper.dispose(timer);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return worker.isDisposed();
         }
 
         @Override
