@@ -192,9 +192,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
         
         @Override
         public void cancel() {
-            if (!cancelled) {
-                cancelled = true;
-            }
+            cancelled = true;
         }
 
         void drainLoop() {

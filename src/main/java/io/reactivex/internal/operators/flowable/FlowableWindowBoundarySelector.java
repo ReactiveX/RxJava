@@ -188,9 +188,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends Flowable<Flow
         
         @Override
         public void cancel() {
-            if (!cancelled) {
-                cancelled = true;
-            }
+            cancelled = true;
         }
         
         void dispose() {

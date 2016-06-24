@@ -173,9 +173,7 @@ public final class FlowableWindowBoundary<T, B> extends Flowable<Flowable<T>> {
         
         @Override
         public void cancel() {
-            if (!cancelled) {
-                cancelled = true;
-            }
+            cancelled = true;
         }
 
         void drainLoop() {

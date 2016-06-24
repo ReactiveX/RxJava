@@ -404,9 +404,7 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
         
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-            }
+            cancelled = true;
         }
 
         @Override
@@ -636,9 +634,7 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
         
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-            }
+            cancelled = true;
         }
 
         @Override

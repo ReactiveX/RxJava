@@ -169,9 +169,7 @@ public final class NbpOperatorWindowBoundarySupplier<T, B> implements NbpOperato
         
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-            }
+            cancelled = true;
         }
 
         @Override
