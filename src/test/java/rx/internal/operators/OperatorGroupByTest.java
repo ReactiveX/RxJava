@@ -26,10 +26,15 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.mockito.*;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
+
 import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.exceptions.TestException;
 import rx.functions.*;
 import rx.internal.util.*;
@@ -1243,7 +1248,7 @@ public class OperatorGroupByTest {
     }
 
     @Test
-    public void testgroupByBackpressure() throws InterruptedException {
+    public void testGroupByBackpressure2() throws InterruptedException {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Observable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Func1<GroupedObservable<Boolean, Integer>, Observable<String>>() {
@@ -1803,5 +1808,213 @@ public class OperatorGroupByTest {
         outer.assertCompleted();
         outer.assertValueCount(2);
 
+    }
+    
+    @Test
+    public void mapFactoryEvictionWorks() {
+        Func1<Integer, Integer> keySelector = new Func1<Integer, Integer> (){
+            @Override
+            public Integer call(Integer t) {
+                return t /10;
+            }};
+        Func1<Integer, Integer> elementSelector = UtilityFunctions.identity();
+        final List<Integer> evictedKeys = new ArrayList<Integer>();
+        //normally would use Guava CacheBuilder or similar but for a bit more 
+        //control make something custom
+        Func1<Action1<Integer>, Map<Integer, Object>> mapFactory = new Func1<Action1<Integer>, Map<Integer, Object>>() {
+            @Override
+            public Map<Integer, Object> call(final Action1<Integer> evicted) {
+                // is a bit risky to override the put method because 
+                // of possible side-effects (e.g. remove could call put and we did not know it)
+                // to fix just need to use composition but needs a verbose implementation of Map
+                // interface
+                return new ConcurrentHashMap<Integer,Object>() {
+                    private static final long serialVersionUID = -7519109652858021153L;
+                    
+                    Integer lastKey = null;
+                    
+                    @Override
+                    public Object put(Integer key, Object value) {
+                        if (this.size() >= 5) {
+                            super.remove(lastKey);
+                            evicted.call(lastKey);
+                            evictedKeys.add(lastKey);
+                        }
+                        Object result = super.put(key, value);
+                        lastKey = key;
+                        return result;
+                    }};
+            }};
+        TestSubscriber<String> ts = TestSubscriber.create();
+        Observable
+            .range(1, 100)
+            .groupBy(keySelector,elementSelector, mapFactory)
+            .flatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<String>>() {
+                @Override
+                public Observable<String> call(final GroupedObservable<Integer, Integer> g) {
+                    return g.map(new Func1<Integer, String>() {
+                        @Override
+                        public String call(Integer x) {
+                            return g.getKey() + ":" + x;
+                        }
+                    });
+                }
+            })
+            .subscribe(ts);
+        assertEquals(Arrays.asList(4, 5, 6, 7, 8, 9), evictedKeys);
+        List<String> expected = Observable
+                .range(1, 100)
+                .map(new Func1<Integer, String>() {
+                        @Override
+                        public String call(Integer x) {
+                            return (x /10) + ":" + x;
+                        }
+                    })
+                .toList().toBlocking().single();
+        assertEquals(expected, ts.getOnNextEvents());
+    }
+    
+    private static final Func1<Integer, Integer> EVICTING_MAP_ELEMENT_SELECTOR = UtilityFunctions.identity();
+    
+    private static final Func1<Integer, Integer> EVICTING_MAP_KEY_SELECTOR = new Func1<Integer, Integer> (){
+        @Override
+        public Integer call(Integer t) {
+            return t /10;
+        }};
+    
+    @Test
+    public void testEvictingMapFactoryIfMapPutThrowsRuntimeExceptionThenErrorEmittedByStream() {
+        final RuntimeException exception = new RuntimeException("boo");
+        Func1<Action1<Integer>, Map<Integer, Object>> mapFactory = createMapFactoryThatThrowsOnPut(exception);
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        Observable
+            .range(1, 100)
+            .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, mapFactory)
+            .flatMap(UtilityFunctions.<Observable<Integer>>identity())
+            .subscribe(ts);
+        ts.assertError(exception);
+    }
+    
+    @Test(expected = OnErrorNotImplementedException.class)
+    public void testEvictingMapFactoryIfMapPutThrowsFatalErrorThenErrorThrownBySubscribe() {
+        final RuntimeException exception = new OnErrorNotImplementedException("boo", new RuntimeException());
+        Func1<Action1<Integer>, Map<Integer, Object>> mapFactory = createMapFactoryThatThrowsOnPut(exception);
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        Observable
+            .range(1, 100)
+            .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, mapFactory)
+            .flatMap(UtilityFunctions.<Observable<Integer>>identity())
+            .subscribe(ts);
+    }
+
+    private static Func1<Action1<Integer>, Map<Integer, Object>> createMapFactoryThatThrowsOnPut(
+            final RuntimeException exception) {
+        return new Func1<Action1<Integer>, Map<Integer, Object>>() {
+            @SuppressWarnings("serial")
+            @Override
+            public Map<Integer, Object> call(final Action1<Integer> evicted) {
+                // is a bit risky to override the put method because 
+                // of possible side-effects (e.g. remove could call put and we did not know it)
+                // to fix just need to use composition but needs a verbose implementation of Map
+                // interface
+                return new ConcurrentHashMap<Integer,Object>() {
+                    
+                    @Override
+                    public Object put(Integer key, Object value) {
+                        throw exception;
+                    }};
+            }};
+    }
+    
+    @Test
+    public void mapFactoryEvictionWorksWithGuavaCache() {
+        final List<Integer> evictedKeys = new ArrayList<Integer>();
+        Func1<Action1<Integer>, Map<Integer, Object>> mapFactory =
+            new Func1<Action1<Integer>, Map<Integer, Object>>() {
+                @Override
+                public Map<Integer, Object> call(final Action1<Integer> action) {
+                    return CacheBuilder.newBuilder()
+                        .maximumSize(5)
+                        .removalListener(new RemovalListener<Integer, Object>() {
+                            @Override
+                            public void onRemoval(RemovalNotification<Integer, Object> notification) {
+                                action.call(notification.getKey());
+                                evictedKeys.add(notification.getKey());                            
+                            }
+                        })
+                        .build().asMap();
+                }
+            };
+        TestSubscriber<String> ts = TestSubscriber.create();
+        Observable
+            .range(1, 100)
+            .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, mapFactory)
+            .flatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<String>>() {
+                @Override
+                public Observable<String> call(final GroupedObservable<Integer, Integer> g) {
+                    return g.map(new Func1<Integer, String>() {
+                        @Override
+                        public String call(Integer x) {
+                            return g.getKey() + ":" + x;
+                        }
+                    });
+                }
+            })
+            .subscribe(ts);
+        assertEquals(
+            new HashSet<Integer>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)),
+            new HashSet<Integer>(evictedKeys));
+        List<String> expected = Observable
+                .range(1, 100)
+                .map(new Func1<Integer, String>() {
+                        @Override
+                        public String call(Integer x) {
+                            return (x /10) + ":" + x;
+                        }
+                    })
+                .toList().toBlocking().single();
+        assertEquals(expected, ts.getOnNextEvents());
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void testGroupByThrowsNpeIfEvictingMapFactoryNull() {
+        Observable
+        .range(1, 100)
+        .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, null);
+    }
+    
+    @Test
+    public void testEvictingMapFactoryIfMapCreateThrowsRuntimeExceptionThenErrorEmittedByStream() {
+        final RuntimeException exception = new RuntimeException("boo");
+        Func1<Action1<Integer>, Map<Integer, Object>> mapFactory = createMapFactoryThatThrowsOnCreate(exception);
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        Observable
+            .range(1, 100)
+            .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, mapFactory)
+            .flatMap(UtilityFunctions.<Observable<Integer>>identity())
+            .subscribe(ts);
+        ts.assertError(exception);
+    }
+    
+    @Test(expected=OnErrorNotImplementedException.class)
+    public void testEvictingMapFactoryIfMapCreateThrowsFatalErrorThenSubscribeThrows() {
+        final OnErrorNotImplementedException exception = new OnErrorNotImplementedException("boo", new RuntimeException());
+        Func1<Action1<Integer>, Map<Integer, Object>> mapFactory = createMapFactoryThatThrowsOnCreate(exception);
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        Observable
+            .range(1, 100)
+            .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, mapFactory)
+            .flatMap(UtilityFunctions.<Observable<Integer>>identity())
+            .subscribe(ts);
+    }
+
+    private static Func1<Action1<Integer>, Map<Integer, Object>> createMapFactoryThatThrowsOnCreate(
+            final RuntimeException exception) {
+        return new Func1<Action1<Integer>, Map<Integer, Object>>() {
+
+            @Override
+            public Map<Integer, Object> call(Action1<Integer> t) {
+                throw exception;
+            }};
     }
 }
