@@ -16,54 +16,55 @@
 package rx.internal.operators;
 
 import rx.*;
-import rx.Observable.Operator;
+import rx.Observable.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.Func1;
 import rx.internal.util.RxJavaPluginUtils;
 
 /**
- * Applies a function of your choosing to every item emitted by an {@code Observable}, and emits the results of
- * this transformation as a new {@code Observable}.
+ * Filters an Observable by discarding any items it emits that do not meet some test.
  * <p>
- * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/map.png" alt="">
- * 
- * @param <T> the input value type
- * @param <R> the return value type
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/filter.png" alt="">
+ * @param <T> the value type
  */
-public final class OperatorMap<T, R> implements Operator<R, T> {
+public final class OnSubscribeFilter<T> implements OnSubscribe<T> {
 
-    final Func1<? super T, ? extends R> transformer;
+    final Observable<T> source;
+    
+    final Func1<? super T, Boolean> predicate;
 
-    public OperatorMap(Func1<? super T, ? extends R> transformer) {
-        this.transformer = transformer;
+    public OnSubscribeFilter(Observable<T> source, Func1<? super T, Boolean> predicate) {
+        this.source = source;
+        this.predicate = predicate;
     }
 
     @Override
-    public Subscriber<? super T> call(final Subscriber<? super R> o) {
-        MapSubscriber<T, R> parent = new MapSubscriber<T, R>(o, transformer);
-        o.add(parent);
-        return parent;
+    public void call(final Subscriber<? super T> child) {
+        FilterSubscriber<T> parent = new FilterSubscriber<T>(child, predicate);
+        child.add(parent);
+        source.unsafeSubscribe(parent);
     }
-    
-    static final class MapSubscriber<T, R> extends Subscriber<T> {
+
+    static final class FilterSubscriber<T> extends Subscriber<T> {
         
-        final Subscriber<? super R> actual;
+        final Subscriber<? super T> actual;
         
-        final Func1<? super T, ? extends R> mapper;
+        final Func1<? super T, Boolean> predicate;
 
         boolean done;
         
-        public MapSubscriber(Subscriber<? super R> actual, Func1<? super T, ? extends R> mapper) {
+        public FilterSubscriber(Subscriber<? super T> actual, Func1<? super T, Boolean> predicate) {
             this.actual = actual;
-            this.mapper = mapper;
+            this.predicate = predicate;
+            request(0);
         }
         
         @Override
         public void onNext(T t) {
-            R result;
+            boolean result;
             
             try {
-                result = mapper.call(t);
+                result = predicate.call(t);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 unsubscribe();
@@ -71,7 +72,11 @@ public final class OperatorMap<T, R> implements Operator<R, T> {
                 return;
             }
             
-            actual.onNext(result);
+            if (result) {
+                actual.onNext(t);
+            } else {
+                request(1);
+            }
         }
         
         @Override
@@ -93,12 +98,10 @@ public final class OperatorMap<T, R> implements Operator<R, T> {
             }
             actual.onCompleted();
         }
-        
         @Override
         public void setProducer(Producer p) {
+            super.setProducer(p);
             actual.setProducer(p);
         }
     }
-
 }
-

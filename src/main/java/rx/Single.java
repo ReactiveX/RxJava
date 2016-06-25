@@ -1413,7 +1413,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
      */
     public final <R> Single<R> map(Func1<? super T, ? extends R> func) {
-        return lift(new OperatorMap<T, R>(func));
+        return create(new SingleOnSubscribeMap<T, R>(this, func));
     }
 
     /**

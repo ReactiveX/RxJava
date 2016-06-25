@@ -5816,7 +5816,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
      */
     public final Observable<T> filter(Func1<? super T, Boolean> predicate) {
-        return lift(new OperatorFilter<T>(predicate));
+        return create(new OnSubscribeFilter<T>(this, predicate));
     }
 
     /**
@@ -6623,7 +6623,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
      */
     public final <R> Observable<R> map(Func1<? super T, ? extends R> func) {
-        return lift(new OperatorMap<T, R>(func));
+        return create(new OnSubscribeMap<T, R>(this, func));
     }
     
     private <R> Observable<R> mapNotification(Func1<? super T, ? extends R> onNext, Func1<? super Throwable, ? extends R> onError, Func0<? extends R> onCompleted) {
