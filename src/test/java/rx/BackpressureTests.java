@@ -192,7 +192,7 @@ public class BackpressureTests {
     }
 
     @Test
-    @Ignore // the test is non-deterministic and can't be made deterministic
+    @Ignore("The test is non-deterministic and can't be made deterministic")
     public void testFlatMapAsync() {
         int NUM = (int) (RxRingBuffer.SIZE * 2.1);
         AtomicInteger c = new AtomicInteger();

@@ -336,7 +336,7 @@ public class SerializedObserverTest {
      * 
      * @throws InterruptedException
      */
-    @Ignore
+    @Ignore("Demonstrates thread starvation problem. Read JavaDoc")
     @Test
     public void testThreadStarvation() throws InterruptedException {
 
