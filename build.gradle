@@ -40,8 +40,12 @@ if (project.hasProperty('release.useLastTag')) {
     tasks.prepare.enabled = false
 }
 
-test{
-     maxHeapSize = "2g"
+test {
+    maxHeapSize = "2g"
+
+    if (System.getenv('CI') == null) {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    }
 }
 
 jacoco {
