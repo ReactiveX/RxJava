@@ -46,7 +46,7 @@ public final class Schedulers {
         
         COMPUTATION = RxJavaPlugins.initComputationScheduler(new ComputationScheduler());
         
-        IO = RxJavaPlugins.initIOScheduler(new IOScheduler());
+        IO = RxJavaPlugins.initIoScheduler(new IoScheduler());
         
         TRAMPOLINE = TrampolineScheduler.instance();
         
@@ -58,7 +58,7 @@ public final class Schedulers {
     }
     
     public static Scheduler io() {
-        return RxJavaPlugins.onIOScheduler(IO);
+        return RxJavaPlugins.onIoScheduler(IO);
     }
     
     public static TestScheduler test() {

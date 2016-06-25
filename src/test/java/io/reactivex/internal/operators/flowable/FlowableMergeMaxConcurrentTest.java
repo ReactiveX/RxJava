@@ -24,7 +24,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.flowable.TestHelper;
-import io.reactivex.internal.schedulers.IOScheduler;
+import io.reactivex.internal.schedulers.IoScheduler;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -191,7 +191,7 @@ public class FlowableMergeMaxConcurrentTest {
     }
     @Test//(timeout = 20000)
     public void testSimpleAsyncLoop() {
-        IOScheduler ios = (IOScheduler)Schedulers.io();
+        IoScheduler ios = (IoScheduler)Schedulers.io();
         int c = ios.size();
         for (int i = 0; i < 200; i++) {
             testSimpleAsync();

@@ -36,7 +36,7 @@ public final class RxJavaPlugins {
     
     static volatile Function<Scheduler, Scheduler> onInitSingleHandler;
     
-    static volatile Function<Scheduler, Scheduler> onInitIOHandler;
+    static volatile Function<Scheduler, Scheduler> onInitIoHandler;
 
     static volatile Function<Scheduler, Scheduler> onInitNewThreadHandler;
     
@@ -44,7 +44,7 @@ public final class RxJavaPlugins {
     
     static volatile Function<Scheduler, Scheduler> onSingleHandler;
     
-    static volatile Function<Scheduler, Scheduler> onIOHandler;
+    static volatile Function<Scheduler, Scheduler> onIoHandler;
 
     static volatile Function<Scheduler, Scheduler> onNewThreadHandler;
 
@@ -85,8 +85,8 @@ public final class RxJavaPlugins {
         return onInitComputationHandler;
     }
 
-    public static Function<Scheduler, Scheduler> getInitIOSchedulerHandler() {
-        return onInitIOHandler;
+    public static Function<Scheduler, Scheduler> getInitIoSchedulerHandler() {
+        return onInitIoHandler;
     }
 
     public static Function<Scheduler, Scheduler> getInitNewThreadSchedulerHandler() {
@@ -97,8 +97,8 @@ public final class RxJavaPlugins {
         return onInitSingleHandler;
     }
 
-    public static Function<Scheduler, Scheduler> getIOSchedulerHandler() {
-        return onIOHandler;
+    public static Function<Scheduler, Scheduler> getIoSchedulerHandler() {
+        return onIoHandler;
     }
 
     public static Function<Scheduler, Scheduler> getNewThreadSchedulerHandler() {
@@ -129,8 +129,8 @@ public final class RxJavaPlugins {
         return f.apply(defaultScheduler); // JIT will skip this
     }
 
-    public static Scheduler initIOScheduler(Scheduler defaultScheduler) {
-        Function<Scheduler, Scheduler> f = onInitIOHandler;
+    public static Scheduler initIoScheduler(Scheduler defaultScheduler) {
+        Function<Scheduler, Scheduler> f = onInitIoHandler;
         if (f == null) {
             return defaultScheduler;
         }
@@ -198,8 +198,8 @@ public final class RxJavaPlugins {
         error.printStackTrace();
     }
     
-    public static Scheduler onIOScheduler(Scheduler defaultScheduler) {
-        Function<Scheduler, Scheduler> f = onIOHandler;
+    public static Scheduler onIoScheduler(Scheduler defaultScheduler) {
+        Function<Scheduler, Scheduler> f = onIoHandler;
         if (f == null) {
             return defaultScheduler;
         }
@@ -292,8 +292,8 @@ public final class RxJavaPlugins {
         setComputationSchedulerHandler(null);
         setInitComputationSchedulerHandler(null);
         
-        setIOSchedulerHandler(null);
-        setInitIOSchedulerHandler(null);
+        setIoSchedulerHandler(null);
+        setInitIoSchedulerHandler(null);
 
         setSingleSchedulerHandler(null);
         setInitSingleSchedulerHandler(null);
@@ -331,11 +331,11 @@ public final class RxJavaPlugins {
         onInitComputationHandler = handler;
     }
 
-    public static void setInitIOSchedulerHandler(Function<Scheduler, Scheduler> handler) {
+    public static void setInitIoSchedulerHandler(Function<Scheduler, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
-        onInitIOHandler = handler;
+        onInitIoHandler = handler;
     }
 
     public static void setInitNewThreadSchedulerHandler(Function<Scheduler, Scheduler> handler) {
@@ -353,11 +353,11 @@ public final class RxJavaPlugins {
         onInitSingleHandler = handler;
     }
 
-    public static void setIOSchedulerHandler(Function<Scheduler, Scheduler> handler) {
+    public static void setIoSchedulerHandler(Function<Scheduler, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
-        onIOHandler = handler;
+        onIoHandler = handler;
     }
 
     public static void setNewThreadSchedulerHandler(Function<Scheduler, Scheduler> handler) {
