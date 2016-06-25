@@ -69,6 +69,7 @@ public final class ProducerObserverArbiter<T> implements Producer, Observer<T> {
                 q.add(t);
                 return;
             }
+            emitting = true;
         }
         boolean skipFinal = false;
         try {
