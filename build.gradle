@@ -61,6 +61,10 @@ test{
      maxHeapSize = "2g"
 }
 
+license {
+    excludes(["**/*.md", "**/*.txt", "**/unsafe/*.java", "**/atomic/*.java", "**/Beta.java", "**/Experimental.java"])
+}
+
 jacoco {
     toolVersion = '0.7.7.201606060606' // See http://www.eclemma.org/jacoco/.
 }
