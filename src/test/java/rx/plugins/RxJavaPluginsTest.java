@@ -232,7 +232,7 @@ public class RxJavaPluginsTest {
                                                  throw new IllegalStateException("Trigger OnNextValue");
                                              }
                                          })
-                                         .timeout(500, TimeUnit.MILLISECONDS)
+                                         .timeout(5000, TimeUnit.MILLISECONDS)
                                          .toBlocking().first();
             fail("Did not expect onNext/onCompleted, got " + notExpected);
         } catch (IllegalStateException e) {

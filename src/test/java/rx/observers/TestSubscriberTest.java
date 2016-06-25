@@ -590,7 +590,7 @@ public class TestSubscriberTest {
         ts.awaitTerminalEvent();
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void testOnErrorCrashCountsDownLatch() {
         Observer<Integer> to = new Observer<Integer>() {
             @Override

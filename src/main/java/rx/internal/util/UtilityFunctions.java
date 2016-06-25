@@ -12,6 +12,8 @@
  */
 package rx.internal.util;
 
+import java.util.Collections;
+
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -178,5 +180,4 @@ public final class UtilityFunctions {
             return null;
         }
     }
-    
 }

@@ -1,6 +1,11 @@
 buildscript {
-  repositories { jcenter() }
-  dependencies { classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:4.0.0' }
+    repositories { 
+        jcenter() 
+    }
+    dependencies { 
+        classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:4.0.0'
+        classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.1.0' 
+    }
 }
 
 description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
@@ -8,9 +13,16 @@ description = 'RxJava: Reactive Extensions for the JVM – a library for composi
 apply plugin: 'java'
 apply plugin: 'pmd'
 apply plugin: 'jacoco'
+apply plugin: 'ru.vyarus.animalsniffer'
 apply plugin: 'nebula.rxjava-project'
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
+    signature 'org.codehaus.mojo.signature:java16:1.1@signature'
+
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
 
@@ -96,3 +108,7 @@ task pmdPrint(dependsOn: 'pmdMain') << {
 }
 
 build.dependsOn pmdPrint
+
+animalsniffer {
+    annotation = 'rx.internal.util.SuppressAnimalSniffer'
+}

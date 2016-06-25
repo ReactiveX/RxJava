@@ -22,6 +22,8 @@ import java.lang.reflect.Field;
 import java.util.AbstractQueue;
 import java.util.Iterator;
 
+import rx.internal.util.SuppressAnimalSniffer;
+
 abstract class SpscUnboundedArrayQueueProducerFields<E> extends AbstractQueue<E> {
     protected long producerIndex;
 }
@@ -46,6 +48,7 @@ abstract class SpscUnboundedArrayQueueConsumerField<E> extends SpscUnboundedArra
     protected long consumerIndex;
 }
 
+@SuppressAnimalSniffer
 public class SpscUnboundedArrayQueue<E> extends SpscUnboundedArrayQueueConsumerField<E>
     implements QueueProgressIndicators{
     static final int MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);

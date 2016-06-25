@@ -17,6 +17,7 @@ package rx.internal.util.unsafe;
 
 import java.lang.reflect.Field;
 
+import rx.internal.util.SuppressAnimalSniffer;
 import sun.misc.Unsafe;
 
 /**
@@ -26,6 +27,7 @@ import sun.misc.Unsafe;
  * Note that you can force RxJava to not use Unsafe API by setting any value to System Property
  * {@code rx.unsafe-disable}.
  */
+@SuppressAnimalSniffer
 public final class UnsafeAccess {
 
     public static final Unsafe UNSAFE;

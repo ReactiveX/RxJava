@@ -240,7 +240,7 @@ public class BehaviorSubjectTest {
         verify(o2, times(1)).onCompleted();
         verifyNoMoreInteractions(o2);
     }
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void testUnsubscriptionCase() {
         BehaviorSubject<String> src = BehaviorSubject.create((String)null);
         

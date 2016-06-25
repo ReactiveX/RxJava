@@ -18,6 +18,8 @@ package rx.internal.util.unsafe;
 
 import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
+import rx.internal.util.SuppressAnimalSniffer;
+
 abstract class SpscArrayQueueColdField<E> extends ConcurrentCircularArrayQueue<E> {
     private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
     protected final int lookAheadStep;
@@ -35,6 +37,7 @@ abstract class SpscArrayQueueL1Pad<E> extends SpscArrayQueueColdField<E> {
     }
 }
 
+@SuppressAnimalSniffer
 abstract class SpscArrayQueueProducerFields<E> extends SpscArrayQueueL1Pad<E> {
     protected final static long P_INDEX_OFFSET = UnsafeAccess.addressOf(SpscArrayQueueProducerFields.class, "producerIndex");
     protected long producerIndex;
@@ -54,6 +57,7 @@ abstract class SpscArrayQueueL2Pad<E> extends SpscArrayQueueProducerFields<E> {
     }
 }
 
+@SuppressAnimalSniffer
 abstract class SpscArrayQueueConsumerField<E> extends SpscArrayQueueL2Pad<E> {
     protected long consumerIndex;
     protected final static long C_INDEX_OFFSET = UnsafeAccess.addressOf(SpscArrayQueueConsumerField.class, "consumerIndex");
@@ -87,6 +91,7 @@ abstract class SpscArrayQueueL3Pad<E> extends SpscArrayQueueConsumerField<E> {
  * 
  * @param <E>
  */
+@SuppressAnimalSniffer
 public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
 
     public SpscArrayQueue(final int capacity) {

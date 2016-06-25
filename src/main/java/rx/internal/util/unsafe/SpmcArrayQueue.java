@@ -18,6 +18,8 @@ package rx.internal.util.unsafe;
 
 import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
+import rx.internal.util.SuppressAnimalSniffer;
+
 abstract class SpmcArrayQueueL1Pad<E> extends ConcurrentCircularArrayQueue<E> {
     long p10, p11, p12, p13, p14, p15, p16;
     long p30, p31, p32, p33, p34, p35, p36, p37;
@@ -27,6 +29,7 @@ abstract class SpmcArrayQueueL1Pad<E> extends ConcurrentCircularArrayQueue<E> {
     }
 }
 
+@SuppressAnimalSniffer
 abstract class SpmcArrayQueueProducerField<E> extends SpmcArrayQueueL1Pad<E> {
     protected final static long P_INDEX_OFFSET = UnsafeAccess.addressOf(SpmcArrayQueueProducerField.class, "producerIndex");
     private volatile long producerIndex;
@@ -53,6 +56,7 @@ abstract class SpmcArrayQueueL2Pad<E> extends SpmcArrayQueueProducerField<E> {
     }
 }
 
+@SuppressAnimalSniffer
 abstract class SpmcArrayQueueConsumerField<E> extends SpmcArrayQueueL2Pad<E> {
     protected final static long C_INDEX_OFFSET = UnsafeAccess.addressOf(SpmcArrayQueueConsumerField.class, "consumerIndex");
     private volatile long consumerIndex;
@@ -79,6 +83,7 @@ abstract class SpmcArrayQueueMidPad<E> extends SpmcArrayQueueConsumerField<E> {
     }
 }
 
+@SuppressAnimalSniffer
 abstract class SpmcArrayQueueProducerIndexCacheField<E> extends SpmcArrayQueueMidPad<E> {
     // This is separated from the consumerIndex which will be highly contended in the hope that this value spends most
     // of it's time in a cache line that is Shared(and rarely invalidated)
@@ -106,6 +111,7 @@ abstract class SpmcArrayQueueL3Pad<E> extends SpmcArrayQueueProducerIndexCacheFi
     }
 }
 
+@SuppressAnimalSniffer
 public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> {
 
     public SpmcArrayQueue(final int capacity) {
