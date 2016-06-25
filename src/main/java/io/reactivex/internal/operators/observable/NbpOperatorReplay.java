@@ -314,8 +314,6 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
         /** The upstream producer. */
         volatile Disposable subscription;
         
-        volatile boolean cancelled;
-        
         public ReplaySubscriber(AtomicReference<ReplaySubscriber<T>> current,
                 ReplayBuffer<T> buffer) {
             this.buffer = buffer;
@@ -326,12 +324,12 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
 
         @Override
         public boolean isDisposed() {
-            return cancelled;
+            return producers.get() == TERMINATED;
         }
         
         @Override
         public void dispose() {
-            producers.getAndSet(TERMINATED);
+            producers.set(TERMINATED);
             // unlike OperatorPublish, we can't null out the terminated so
             // late subscribers can still get replay
             // current.compareAndSet(ReplaySubscriber.this, null);
