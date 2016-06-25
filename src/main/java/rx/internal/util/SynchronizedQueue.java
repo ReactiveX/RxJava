@@ -115,11 +115,7 @@ public class SynchronizedQueue<T> implements Queue<T>, Cloneable {
             return false;
         }
         SynchronizedQueue<?> other = (SynchronizedQueue<?>) obj;
-        if (list == null) {
-            if (other.list != null) {
-                return false;
-            }
-        } else if (!list.equals(other.list)) {
+        if (!list.equals(other.list)) {
             return false;
         }
         return true;

@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.*;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.internal.util.RxJavaPluginUtils;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Nulls out references to upstream data structures when the source terminates or 
@@ -80,7 +80,7 @@ public final class OnSubscribeDetach<T> implements OnSubscribe<T> {
             if (a != null) {
                 a.onError(e);
             } else {
-                RxJavaPluginUtils.handleException(e);
+                RxJavaHooks.onError(e);
             }
         }
 

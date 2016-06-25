@@ -17,8 +17,8 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.*;
 
-import rx.Observable.Operator;
 import rx.*;
+import rx.Observable.Operator;
 
 /**
  * An operator which drops all but the last received value in case the downstream

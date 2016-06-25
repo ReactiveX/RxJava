@@ -16,8 +16,7 @@
 
 package rx.internal.operators;
 
-import rx.Single;
-import rx.SingleSubscriber;
+import rx.*;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 

@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.*;
 import rx.Observable.Operator;
-import rx.exceptions.*;
+import rx.exceptions.Exceptions;
 import rx.functions.*;
 import rx.internal.util.atomic.SpscLinkedAtomicQueue;
 import rx.internal.util.unsafe.*;

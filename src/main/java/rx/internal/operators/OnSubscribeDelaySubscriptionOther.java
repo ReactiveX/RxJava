@@ -19,7 +19,7 @@ package rx.internal.operators;
 import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.observers.Subscribers;
-import rx.plugins.*;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.*;
 
 /**

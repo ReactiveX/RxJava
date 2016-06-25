@@ -17,9 +17,8 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Subscriber;
 
 /**
  * An {@code Observable} that emits the first {@code num} items emitted by the source {@code Observable}.

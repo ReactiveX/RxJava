@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.internal.schedulers.*;
 import rx.internal.util.unsafe.*;
+import rx.plugins.RxJavaHooks;
 
 public abstract class ObjectPool<T> implements SchedulerLifecycle {
     Queue<T> pool;
@@ -130,7 +131,7 @@ public abstract class ObjectPool<T> implements SchedulerLifecycle {
         
                 }, validationInterval, validationInterval, TimeUnit.SECONDS);
             } catch (RejectedExecutionException ex) {
-                RxJavaPluginUtils.handleException(ex);
+                RxJavaHooks.onError(ex);
                 break;
             }
             if (!periodicTask.compareAndSet(null, f)) {

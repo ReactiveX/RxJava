@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.Completable.CompletableSubscriber;
 import rx.Subscription;
 import rx.annotations.Experimental;
-import rx.internal.util.RxJavaPluginUtils;
+import rx.plugins.RxJavaHooks;
 
 /**
  * An abstract base class for CompletableSubscriber implementations that want to expose an unsubscription
@@ -74,7 +74,7 @@ public abstract class AsyncCompletableSubscriber implements CompletableSubscribe
         if (!upstream.compareAndSet(null, d)) {
             d.unsubscribe();
             if (upstream.get() != UNSUBSCRIBED) {
-                RxJavaPluginUtils.handleException(new IllegalStateException("Subscription already set!"));
+                RxJavaHooks.onError(new IllegalStateException("Subscription already set!"));
             }
         } else {
             onStart();

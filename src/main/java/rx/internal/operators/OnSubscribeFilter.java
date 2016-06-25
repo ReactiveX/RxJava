@@ -19,7 +19,7 @@ import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.Func1;
-import rx.internal.util.RxJavaPluginUtils;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Filters an Observable by discarding any items it emits that do not meet some test.
@@ -82,7 +82,7 @@ public final class OnSubscribeFilter<T> implements OnSubscribe<T> {
         @Override
         public void onError(Throwable e) {
             if (done) {
-                RxJavaPluginUtils.handleException(e);
+                RxJavaHooks.onError(e);
                 return;
             }
             done = true;

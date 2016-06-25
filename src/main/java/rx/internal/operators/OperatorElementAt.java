@@ -17,9 +17,8 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Subscriber;
 
 /**
  * Returns the element at a specified index in a sequence.

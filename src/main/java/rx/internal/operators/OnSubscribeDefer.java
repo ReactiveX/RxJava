@@ -15,9 +15,8 @@
  */
 package rx.internal.operators;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Func0;
 import rx.observers.Subscribers;

@@ -18,7 +18,7 @@ package rx.internal.operators;
 import rx.*;
 import rx.exceptions.Exceptions;
 import rx.functions.Action0;
-import rx.internal.util.RxJavaPluginUtils;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Execute an action after onSuccess or onError has been delivered.
@@ -75,7 +75,7 @@ public final class SingleDoAfterTerminate<T> implements Single.OnSubscribe<T> {
                 action.call();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                RxJavaPluginUtils.handleException(ex);
+                RxJavaHooks.onError(ex);
             }
         }
     }

@@ -15,13 +15,11 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Scheduler;
-import rx.Subscriber;
 import rx.schedulers.Timestamped;
 
 /**

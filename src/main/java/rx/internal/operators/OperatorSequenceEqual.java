@@ -15,12 +15,10 @@
  */
 package rx.internal.operators;
 
-import static rx.Observable.concat;
-import static rx.Observable.just;
-import static rx.Observable.zip;
+import static rx.Observable.*;
+
 import rx.Observable;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
 import rx.internal.util.UtilityFunctions;
 
 /**

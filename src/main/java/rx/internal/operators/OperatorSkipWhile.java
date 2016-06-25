@@ -18,8 +18,7 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
 
 /**
  * Skips any emitted source items as long as the specified condition holds true. Emits all further source items

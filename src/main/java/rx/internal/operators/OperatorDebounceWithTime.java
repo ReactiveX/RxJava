@@ -16,11 +16,11 @@
 package rx.internal.operators;
 
 import java.util.concurrent.TimeUnit;
+
+import rx.*;
 import rx.Observable.Operator;
-import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.exceptions.Exceptions;
-import rx.Subscriber;
 import rx.functions.Action0;
 import rx.observers.SerializedSubscriber;
 import rx.subscriptions.SerialSubscription;

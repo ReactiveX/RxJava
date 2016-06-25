@@ -26,8 +26,8 @@ import rx.functions.*;
 import rx.internal.producers.ProducerArbiter;
 import rx.internal.util.*;
 import rx.observables.GroupedObservable;
-import rx.plugins.RxJavaHooks;
 import rx.observers.Subscribers;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.Subscriptions;
 
 /**

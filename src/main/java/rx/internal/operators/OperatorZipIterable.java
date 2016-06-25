@@ -18,8 +18,8 @@ package rx.internal.operators;
 import java.util.Iterator;
 
 import rx.Observable.Operator;
-import rx.exceptions.Exceptions;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Func2;
 import rx.observers.Subscribers;
 

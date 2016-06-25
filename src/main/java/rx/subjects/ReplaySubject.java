@@ -25,7 +25,7 @@ import rx.Observer;
 import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 import rx.internal.operators.BackpressureUtils;
-import rx.internal.util.RxJavaPluginUtils;
+import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
 
 /**
@@ -568,7 +568,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @Override
         public void error(Throwable e) {
             if (done) {
-                RxJavaPluginUtils.handleException(e);
+                RxJavaHooks.onError(e);
                 return;
             }
             error = e;

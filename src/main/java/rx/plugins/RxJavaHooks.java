@@ -223,8 +223,18 @@ public final class RxJavaHooks {
     public static void onError(Throwable ex) {
         Action1<Throwable> f = onError;
         if (f != null) {
+            try {
             f.call(ex);
-            return;
+                return;
+            } catch (Throwable pluginException) {
+                /*
+                 * We don't want errors from the plugin to affect normal flow.
+                 * Since the plugin should never throw this is a safety net
+                 * and will complain loudly to System.err so it gets fixed.
+                 */
+                System.err.println("RxJavaErrorHandler threw an Exception. It shouldn't. => " + pluginException.getMessage()); // NOPMD 
+                pluginException.printStackTrace(); // NOPMD 
+            }
         }
         Thread current = Thread.currentThread();
         current.getUncaughtExceptionHandler().uncaughtException(current, ex);

@@ -22,8 +22,8 @@ import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.Exceptions;
 import rx.functions.FuncN;
-import rx.internal.util.RxJavaPluginUtils;
 import rx.observers.SerializedSubscriber;
+import rx.plugins.RxJavaHooks;
 
 public final class OperatorWithLatestFromMany<T, R> implements OnSubscribe<R> {
     final Observable<T> main;
@@ -144,7 +144,7 @@ public final class OperatorWithLatestFromMany<T, R> implements OnSubscribe<R> {
         @Override
         public void onError(Throwable e) {
             if (done) {
-                RxJavaPluginUtils.handleException(e);
+                RxJavaHooks.onError(e);
                 return;
             }
             done = true;

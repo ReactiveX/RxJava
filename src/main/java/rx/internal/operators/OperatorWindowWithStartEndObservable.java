@@ -17,10 +17,10 @@ package rx.internal.operators;
 
 import java.util.*;
 
-import rx.*;
-import rx.Observable.Operator;
 import rx.Observable;
+import rx.Observable.Operator;
 import rx.Observer;
+import rx.Subscriber;
 import rx.functions.Func1;
 import rx.observers.*;
 import rx.subjects.UnicastSubject;

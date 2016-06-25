@@ -15,12 +15,11 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import rx.Observable.OnSubscribe;
-import rx.exceptions.Exceptions;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Action0;
 import rx.internal.producers.SingleProducer;
 import rx.subscriptions.Subscriptions;

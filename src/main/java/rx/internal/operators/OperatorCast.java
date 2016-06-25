@@ -18,7 +18,7 @@ package rx.internal.operators;
 import rx.*;
 import rx.Observable.Operator;
 import rx.exceptions.*;
-import rx.internal.util.RxJavaPluginUtils;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Converts the elements of an observable sequence to the specified type.
@@ -72,7 +72,7 @@ public class OperatorCast<T, R> implements Operator<R, T> {
         @Override
         public void onError(Throwable e) {
             if (done) {
-                RxJavaPluginUtils.handleException(e);
+                RxJavaHooks.onError(e);
                 return;
             }
             done = true;

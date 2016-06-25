@@ -16,12 +16,11 @@
 
 package rx.internal.operators;
 
-import rx.Observable;
-import rx.Subscriber;
+import java.util.concurrent.Callable;
+
+import rx.*;
 import rx.exceptions.Exceptions;
 import rx.internal.producers.SingleDelayedProducer;
-
-import java.util.concurrent.Callable;
 
 /**
  * Do not invoke the function until an Observer subscribes; Invokes function on each
