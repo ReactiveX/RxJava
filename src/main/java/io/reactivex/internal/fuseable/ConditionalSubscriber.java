@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.subscribers.flowable;
+package io.reactivex.internal.fuseable;
 
 import org.reactivestreams.Subscriber;
 
@@ -24,14 +24,12 @@ import org.reactivestreams.Subscriber;
  * to avoid requesting 1 on behalf of a dropped value.
  * 
  * @param <T> the value type
- * @deprecated the interface will be moved to internal.fuseable and its method renamed.
  */
-@Deprecated
 public interface ConditionalSubscriber<T> extends Subscriber<T> {
     /**
      * Conditionally takes the value.
      * @param t the value to deliver
      * @return true if the value has been accepted, false if the value has been rejected
      */
-    boolean onNextIf(T t);
+    boolean tryOnNext(T t);
 }

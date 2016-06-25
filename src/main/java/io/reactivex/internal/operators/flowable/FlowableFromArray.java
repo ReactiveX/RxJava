@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.internal.subscribers.flowable.ConditionalSubscriber;
+import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
@@ -170,7 +170,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
                         return;
                     }
                     while (r != 0 && i < len) {
-                        boolean b = s.onNextIf(a[i]);
+                        boolean b = s.tryOnNext(a[i]);
                         if (cancelled) {
                             return;
                         }

@@ -17,7 +17,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Predicate;
-import io.reactivex.internal.subscribers.flowable.ConditionalSubscriber;
+import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableFilter<T> extends Flowable<T> {
@@ -54,13 +54,13 @@ public final class FlowableFilter<T> extends Flowable<T> {
         
         @Override
         public void onNext(T t) {
-            if (!onNextIf(t)) {
+            if (!tryOnNext(t)) {
                 subscription.request(1);
             }
         }
         
         @Override
-        public boolean onNextIf(T t) {
+        public boolean tryOnNext(T t) {
             boolean b;
             try {
                 b = filter.test(t);
