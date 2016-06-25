@@ -22,7 +22,6 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
-import io.reactivex.internal.disposables.SetCompositeResource;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -50,7 +49,7 @@ public final class CompletableMerge extends Completable {
         private static final long serialVersionUID = -2108443387387077490L;
         
         final CompletableSubscriber actual;
-        final SetCompositeResource<Disposable> set;
+        final CompositeDisposable set;
         final int maxConcurrency;
         final boolean delayErrors;
         
@@ -66,7 +65,7 @@ public final class CompletableMerge extends Completable {
             this.actual = actual;
             this.maxConcurrency = maxConcurrency;
             this.delayErrors = delayErrors;
-            this.set = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+            this.set = new CompositeDisposable();
             lazySet(1);
         }
         

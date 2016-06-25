@@ -30,7 +30,6 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
-import io.reactivex.observers.Observers;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.ReplaySubject;

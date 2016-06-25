@@ -48,14 +48,14 @@ public final class IoScheduler extends Scheduler implements SchedulerLifecycle {
     private static final class CachedWorkerPool {
         private final long keepAliveTime;
         private final ConcurrentLinkedQueue<ThreadWorker> expiringWorkerQueue;
-        private final SetCompositeResource<Disposable> allWorkers;
+        private final CompositeDisposable allWorkers;
         private final ScheduledExecutorService evictorService;
         private final Future<?> evictorTask;
 
         CachedWorkerPool(long keepAliveTime, TimeUnit unit) {
             this.keepAliveTime = unit != null ? unit.toNanos(keepAliveTime) : 0L;
             this.expiringWorkerQueue = new ConcurrentLinkedQueue<ThreadWorker>();
-            this.allWorkers = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+            this.allWorkers = new CompositeDisposable();
 
             ScheduledExecutorService evictor = null;
             Future<?> task = null;
@@ -182,7 +182,7 @@ public final class IoScheduler extends Scheduler implements SchedulerLifecycle {
     }
 
     private static final class EventLoopWorker extends Scheduler.Worker {
-        private final SetCompositeResource<Disposable> tasks;
+        private final CompositeDisposable tasks;
         private final CachedWorkerPool pool;
         private final ThreadWorker threadWorker;
 
@@ -190,7 +190,7 @@ public final class IoScheduler extends Scheduler implements SchedulerLifecycle {
 
         EventLoopWorker(CachedWorkerPool pool) {
             this.pool = pool;
-            this.tasks = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+            this.tasks = new CompositeDisposable();
             this.threadWorker = pool.get();
         }
 

@@ -11,35 +11,27 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.disposables;
+package io.reactivex.internal.subscriptions;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
+import org.reactivestreams.Subscription;
+
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 /**
- * A composite resource with a fixed number of slots.
+ * A composite disposable with a fixed number of slots.
  *
  * <p>Note that since the implementation leaks the methods of AtomicReferenceArray, one must be
  * careful to only call setResource, replaceResource and dispose on it. All other methods may lead to undefined behavior
  * and should be used by internal means only.
- * 
- * @param <T> the resource tpye
- * @deprecated Use more type-specific and inlined resource management
  */
-@Deprecated
-public final class ArrayCompositeResource<T> extends AtomicReferenceArray<Object> implements Disposable {
+public final class ArrayCompositeSubscription extends AtomicReferenceArray<Subscription> implements Disposable {
     /** */
     private static final long serialVersionUID = 2746389416410565408L;
 
-    final Consumer<? super T> disposer;
-
-    static final Object DISPOSED = new Object();
-    
-    public ArrayCompositeResource(int capacity, Consumer<? super T> disposer) {
+    public ArrayCompositeSubscription(int capacity) {
         super(capacity);
-        this.disposer = disposer;
     }
 
     /**
@@ -48,17 +40,16 @@ public final class ArrayCompositeResource<T> extends AtomicReferenceArray<Object
      * @param resource
      * @return true if the resource has ben set, false if the composite has been disposed
      */
-    @SuppressWarnings("unchecked")
-    public boolean setResource(int index, T resource) {
+    public boolean setResource(int index, Subscription resource) {
         for (;;) {
-            Object o = get(index);
-            if (o == DISPOSED) {
-                disposer.accept(resource);
+            Subscription o = get(index);
+            if (o == SubscriptionHelper.CANCELLED) {
+                resource.cancel();
                 return false;
             }
             if (compareAndSet(index, o, resource)) {
                 if (o != null) {
-                    disposer.accept((T)o);
+                    o.cancel();
                 }
                 return true;
             }
@@ -71,31 +62,29 @@ public final class ArrayCompositeResource<T> extends AtomicReferenceArray<Object
      * @param resource
      * @return the old resource, can be null
      */
-    @SuppressWarnings("unchecked")
-    public T replaceResource(int index, T resource) {
+    public Subscription replaceResource(int index, Subscription resource) {
         for (;;) {
-            Object o = get(index);
-            if (o == DISPOSED) {
-                disposer.accept(resource);
+            Subscription o = get(index);
+            if (o == SubscriptionHelper.CANCELLED) {
+                resource.cancel();
                 return null;
             }
             if (compareAndSet(index, o, resource)) {
-                return (T)o;
+                return o;
             }
         }
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public void dispose() {
-        if (get(0) != DISPOSED) {
+        if (get(0) != SubscriptionHelper.CANCELLED) {
             int s = length();
             for (int i = 0; i < s; i++) {
-                Object o = get(i);
-                if (o != DISPOSED) {
-                    o = getAndSet(i, DISPOSED);
-                    if (o != DISPOSED && o != null) {
-                        disposer.accept((T)o);
+                Subscription o = get(i);
+                if (o != SubscriptionHelper.CANCELLED) {
+                    o = getAndSet(i, SubscriptionHelper.CANCELLED);
+                    if (o != SubscriptionHelper.CANCELLED && o != null) {
+                        o.cancel();
                     }
                 }
             }
@@ -104,6 +93,6 @@ public final class ArrayCompositeResource<T> extends AtomicReferenceArray<Object
     
     @Override
     public boolean isDisposed() {
-        return get(0) == DISPOSED;
+        return get(0) == SubscriptionHelper.CANCELLED;
     }
 }

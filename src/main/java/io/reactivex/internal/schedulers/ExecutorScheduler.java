@@ -70,18 +70,18 @@ public final class ExecutorScheduler extends Scheduler {
                 return EmptyDisposable.INSTANCE;
             }
         }
-        MultipleAssignmentResource<Disposable> first = new MultipleAssignmentResource<Disposable>(Disposables.consumeAndDispose());
+        SerialDisposable first = new SerialDisposable();
 
-        final MultipleAssignmentResource<Disposable> mar = new MultipleAssignmentResource<Disposable>(Disposables.consumeAndDispose(), first);
+        final SerialDisposable mar = new SerialDisposable(first);
 
         Disposable delayed = HELPER.scheduleDirect(new Runnable() {
             @Override
             public void run() {
-                mar.setResource(scheduleDirect(decoratedRun));
+                mar.replace(scheduleDirect(decoratedRun));
             }
         }, delay, unit);
         
-        first.setResource(delayed);
+        first.replace(delayed);
         
         return mar;
     }
@@ -110,7 +110,7 @@ public final class ExecutorScheduler extends Scheduler {
         
         final AtomicInteger wip = new AtomicInteger();
         
-        final SetCompositeResource<Disposable> tasks = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+        final CompositeDisposable tasks = new CompositeDisposable();
         
         public ExecutorWorker(Executor executor) {
             this.executor = executor;
@@ -152,16 +152,16 @@ public final class ExecutorScheduler extends Scheduler {
             }
             
 
-            MultipleAssignmentResource<Disposable> first = new MultipleAssignmentResource<Disposable>(Disposables.consumeAndDispose());
+            SerialDisposable first = new SerialDisposable();
 
-            final MultipleAssignmentResource<Disposable> mar = new MultipleAssignmentResource<Disposable>(Disposables.consumeAndDispose(), first);
+            final SerialDisposable mar = new SerialDisposable(first);
             
             final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             
             ScheduledRunnable sr = new ScheduledRunnable(new Runnable() {
                 @Override
                 public void run() {
-                    mar.setResource(schedule(decoratedRun));
+                    mar.replace(schedule(decoratedRun));
                 }
             }, tasks);
             tasks.add(sr);
@@ -208,7 +208,7 @@ public final class ExecutorScheduler extends Scheduler {
                 });
             }
             
-            first.setResource(sr);
+            first.replace(sr);
             
             return mar;
         }

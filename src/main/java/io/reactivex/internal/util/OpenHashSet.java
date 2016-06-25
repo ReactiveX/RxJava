@@ -229,4 +229,8 @@ public final class OpenHashSet<T> {
     public Object[] keys() {
         return keys;
     }
+    
+    public int size() {
+        return size;
+    }
 }

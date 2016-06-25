@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableInterval extends Observable<Long> {
     final Scheduler scheduler;
@@ -47,6 +46,9 @@ public final class ObservableInterval extends Observable<Long> {
     static final class IntervalSubscriber
     extends AtomicReference<Disposable>
     implements Disposable, Runnable {
+
+        /** */
+        private static final long serialVersionUID = 346773832286157679L;
 
         final Observer<? super Long> actual;
         

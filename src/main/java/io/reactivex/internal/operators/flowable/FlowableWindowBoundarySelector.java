@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -22,7 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.SetCompositeResource;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -60,7 +59,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends Flowable<Flow
         final Publisher<B> open;
         final Function<? super B, ? extends Publisher<V>> close;
         final int bufferSize;
-        final SetCompositeResource<Disposable> resources;
+        final CompositeDisposable resources;
 
         Subscription s;
         
@@ -76,7 +75,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends Flowable<Flow
             this.open = open;
             this.close = close;
             this.bufferSize = bufferSize;
-            this.resources = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+            this.resources = new CompositeDisposable();
             this.ws = new ArrayList<UnicastProcessor<T>>();
             windows.lazySet(1);
         }

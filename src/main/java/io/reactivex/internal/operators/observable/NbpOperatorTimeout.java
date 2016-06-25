@@ -50,6 +50,8 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
     static final class TimeoutSubscriber<T, U, V>
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable, OnTimeout {
+        /** */
+        private static final long serialVersionUID = 2672739326310051084L;
         final Observer<? super T> actual;
         final Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector; 
         final Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector; 
@@ -215,6 +217,8 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
     static final class TimeoutOtherSubscriber<T, U, V>
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable, OnTimeout {
+        /** */
+        private static final long serialVersionUID = -1957813281749686898L;
         final Observer<? super T> actual;
         final Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector; 
         final Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector;

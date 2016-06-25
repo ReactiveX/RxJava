@@ -17,6 +17,9 @@ import io.reactivex.internal.functions.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 abstract class ReferenceDisposable<T> extends AtomicReference<T> implements Disposable {
+    /** */
+    private static final long serialVersionUID = 6537757548749041217L;
+
     ReferenceDisposable(T value) {
         super(Objects.requireNonNull(value, "value is null"));
     }

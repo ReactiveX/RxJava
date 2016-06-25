@@ -84,7 +84,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
                     return;
                 }
                 
-                final SubscriberResourceWrapper<R, Disposable> srw = new SubscriberResourceWrapper<R, Disposable>(child, Disposables.consumeAndDispose());
+                final SubscriberResourceWrapper<R> srw = new SubscriberResourceWrapper<R>(child);
                 
                 observable.subscribe(srw);
                 

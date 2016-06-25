@@ -56,6 +56,9 @@ public final class RefCountDisposable implements Disposable {
     }
     
     static final class InnerDisposable extends ReferenceDisposable<RefCountDisposable> {
+        /** */
+        private static final long serialVersionUID = -6066815451193282256L;
+
         InnerDisposable(RefCountDisposable parent) {
             super(parent);
         }

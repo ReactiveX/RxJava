@@ -60,7 +60,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the source or its wrapper Completable
      * @throws NullPointerException if source is null
      */
-    static Completable wrap(CompletableConsumable source) {
+    public static Completable wrap(CompletableConsumable source) {
         Objects.requireNonNull(source, "source is null");
         if (source instanceof Completable) {
             return (Completable)source;
@@ -175,10 +175,8 @@ public abstract class Completable implements CompletableConsumable {
      * when the Completable is subscribed to.
      * @return the created Completable instance
      * @throws NullPointerException if onSubscribe is null
-     * @deprecated
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Deprecated // FIXME temporary
     public static Completable create(CompletableConsumable onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         if (onSubscribe instanceof Completable) {
@@ -798,7 +796,6 @@ public abstract class Completable implements CompletableConsumable {
      * @throws NullPointerException if onLift is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Deprecated // FIXME temporary
     public final Completable lift(final CompletableOperator onLift) {
         Objects.requireNonNull(onLift, "onLift is null");
         return new CompletableLift(this, onLift);

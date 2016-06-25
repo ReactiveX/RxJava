@@ -126,7 +126,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
             public void subscribe(Subscriber<? super R> sr) {
                 ConnectableFlowable<T> op = create(source, bufferSize);
                 
-                final SubscriberResourceWrapper<R, Disposable> srw = new SubscriberResourceWrapper<R, Disposable>(sr, Disposables.consumeAndDispose());
+                final SubscriberResourceWrapper<R> srw = new SubscriberResourceWrapper<R>(sr);
                 
                 selector.apply(op).subscribe(srw);
                 

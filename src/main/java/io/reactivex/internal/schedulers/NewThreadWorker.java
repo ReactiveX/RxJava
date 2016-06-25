@@ -104,7 +104,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
      * @param parent the optional tracker parent to add the created ScheduledRunnable instance to before it gets scheduled
      * @return the ScheduledRunnable instance
      */
-    public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, TimeUnit unit, CompositeResource<Disposable> parent) {
+    public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, TimeUnit unit, DisposableContainer parent) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         
         ScheduledRunnable sr = new ScheduledRunnable(decoratedRun, parent);

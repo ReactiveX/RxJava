@@ -17,8 +17,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
 
-import io.reactivex.plugins.RxJavaPlugins;
-
 /**
  * A Subscription that holds a constant value and emits it only when requested.
  * @param <T> the value type

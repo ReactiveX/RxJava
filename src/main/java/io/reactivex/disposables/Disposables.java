@@ -13,11 +13,12 @@
 
 package io.reactivex.disposables;
 
-import io.reactivex.functions.Consumer;
+import java.util.concurrent.Future;
+
+import org.reactivestreams.Subscription;
+
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Functions;
-import java.util.concurrent.Future;
-import org.reactivestreams.Subscription;
 
 /**
  * Utility class to help create disposables by wrapping
@@ -51,22 +52,5 @@ public final class Disposables {
 
     public static Disposable disposed() {
         return EmptyDisposable.INSTANCE;
-    }
-
-    private static final Consumer<Disposable> DISPOSER = new Consumer<Disposable>() {
-        @Override
-        public void accept(Disposable d) {
-            d.dispose();
-        }
-    };
-    
-    /**
-     * Returns a consumer that calls dispose on the received Disposable.
-     * @return the consumer that calls dispose on the received Disposable.
-     * @deprecated that generic resource management will be removed
-     */
-    @Deprecated
-    public static Consumer<Disposable> consumeAndDispose() {
-        return DISPOSER;
     }
 }

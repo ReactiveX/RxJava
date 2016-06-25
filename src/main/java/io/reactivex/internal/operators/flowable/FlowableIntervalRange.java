@@ -23,7 +23,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
-import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableIntervalRange extends Flowable<Long> {
     final Scheduler scheduler;

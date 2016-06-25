@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observables.ConnectableObservable;
 
 /**
@@ -33,13 +33,13 @@ public final class ObservableRefCount<T> extends Observable<T> {
 
     final class ConnectionSubscriber implements Observer<T>, Disposable {
         final Observer<? super T> subscriber;
-        final SetCompositeResource<Disposable> currentBase;
+        final CompositeDisposable currentBase;
         final Disposable resource;
 
         Disposable s;
         
         private ConnectionSubscriber(Observer<? super T> subscriber,
-                SetCompositeResource<Disposable> currentBase, Disposable resource) {
+                CompositeDisposable currentBase, Disposable resource) {
             this.subscriber = subscriber;
             this.currentBase = currentBase;
             this.resource = resource;
@@ -88,7 +88,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
             try {
                 if (baseSubscription == currentBase) {
                     baseSubscription.dispose();
-                    baseSubscription = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+                    baseSubscription = new CompositeDisposable();
                     subscriptionCount.set(0);
                 }
             } finally {
@@ -99,7 +99,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
 
     final ConnectableObservable<? extends T> source;
     
-    volatile SetCompositeResource<Disposable> baseSubscription = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+    volatile CompositeDisposable baseSubscription = new CompositeDisposable();
     
     final AtomicInteger subscriptionCount = new AtomicInteger();
 
@@ -170,7 +170,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
         };
     }
     
-    void doSubscribe(final Observer<? super T> subscriber, final SetCompositeResource<Disposable> currentBase) {
+    void doSubscribe(final Observer<? super T> subscriber, final CompositeDisposable currentBase) {
         // handle unsubscribing from the base subscription
         Disposable d = disconnect(currentBase);
         
@@ -179,7 +179,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
         source.unsafeSubscribe(s);
     }
 
-    private Disposable disconnect(final SetCompositeResource<Disposable> current) {
+    private Disposable disconnect(final CompositeDisposable current) {
         return Disposables.from(new Runnable() {
             @Override
             public void run() {
@@ -190,7 +190,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
                             baseSubscription.dispose();
                             // need a new baseSubscription because once
                             // unsubscribed stays that way
-                            baseSubscription = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+                            baseSubscription = new CompositeDisposable();
                         }
                     }
                 } finally {
