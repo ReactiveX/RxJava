@@ -18,79 +18,130 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.fuseable.ConditionalSubscriber;
+import io.reactivex.internal.subscribers.flowable.*;
 
 public final class FlowableMap<T, U> extends Flowable<U> {
     final Publisher<T> source;
-    final Function<? super T, ? extends U> function;
-    public FlowableMap(Publisher<T> source, Function<? super T, ? extends U> function) {
+    final Function<? super T, ? extends U> mapper;
+    public FlowableMap(Publisher<T> source, Function<? super T, ? extends U> mapper) {
         this.source = source;
-        this.function = function;
+        this.mapper = mapper;
     }
     
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
-        source.subscribe(new MapperSubscriber<T, U>(s, function));
+        if (s instanceof ConditionalSubscriber) {
+            source.subscribe(new MapConditionalSubscriber<T, U>((ConditionalSubscriber<? super U>)s, mapper));
+        } else {
+            source.subscribe(new MapSubscriber<T, U>(s, mapper));
+        }
     }
-    
-    static final class MapperSubscriber<T, U> implements Subscriber<T> {
-        final Subscriber<? super U> actual;
-        final Function<? super T, ? extends U> function;
-        
-        Subscription subscription;
-        
-        boolean done;
-        
-        public MapperSubscriber(Subscriber<? super U> actual, Function<? super T, ? extends U> function) {
-            this.actual = actual;
-            this.function = function;
+
+    static final class MapSubscriber<T, U> extends BasicFuseableSubscriber<T, U> {
+        final Function<? super T, ? extends U> mapper;
+
+        public MapSubscriber(Subscriber<? super U> actual, Function<? super T, ? extends U> mapper) {
+            super(actual);
+            this.mapper = mapper;
         }
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.subscription, s)) {
-                subscription = s;
-                actual.onSubscribe(s);
-            }
-        }
+
         @Override
         public void onNext(T t) {
             if (done) {
                 return;
             }
-            U u;
+            
+            if (sourceMode == ASYNC) {
+                actual.onNext(null);
+                return;
+            }
+            
+            U v;
+            
             try {
-                u = function.apply(t);
-            } catch (Throwable e) {
-                done = true;
-                subscription.cancel();
-                actual.onError(e);
+                v = nullCheck(mapper.apply(t), "The mapper function returned a null value.");
+            } catch (Throwable ex) {
+                fail(ex);
                 return;
             }
-            if (u == null) {
-                done = true;
-                subscription.cancel();
-                actual.onError(new NullPointerException("Value returned by the function is null"));
-                return;
-            }
-            actual.onNext(u);
+            actual.onNext(v);
         }
+
         @Override
-        public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            done = true;
-            actual.onError(t);
+        public int requestFusion(int mode) {
+            return transitiveBoundaryFusion(mode);
         }
+
         @Override
-        public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-            actual.onComplete();
+        public U poll() {
+            T t = qs.poll();
+            return t != null ? nullCheck(mapper.apply(t), "The mapper function returned a null value.") : null;
         }
     }
+
+    static final class MapConditionalSubscriber<T, U> extends BasicFuseableConditionalSubscriber<T, U> {
+        final Function<? super T, ? extends U> mapper;
+
+        public MapConditionalSubscriber(ConditionalSubscriber<? super U> actual, Function<? super T, ? extends U> function) {
+            super(actual);
+            this.mapper = function;
+        }
+
+        @Override
+        public void onNext(T t) {
+            if (done) {
+                return;
+            }
+            
+            if (sourceMode == ASYNC) {
+                actual.onNext(null);
+                return;
+            }
+            
+            U v;
+            
+            try {
+                v = nullCheck(mapper.apply(t), "The mapper function returned a null value.");
+            } catch (Throwable ex) {
+                fail(ex);
+                return;
+            }
+            actual.onNext(v);
+        }
+        
+        @Override
+        public boolean tryOnNext(T t) {
+            if (done) {
+                return false;
+            }
+            
+            if (sourceMode == ASYNC) {
+                actual.onNext(null);
+                return true;
+            }
+            
+            U v;
+            
+            try {
+                v = mapper.apply(t);
+            } catch (Throwable ex) {
+                fail(ex);
+                return true;
+            }
+            return actual.tryOnNext(v);
+        }
+
+        @Override
+        public int requestFusion(int mode) {
+            return transitiveBoundaryFusion(mode);
+        }
+
+        @Override
+        public U poll() {
+            T t = qs.poll();
+            return t != null ? nullCheck(mapper.apply(t), "The mapper function returned a null value.") : null;
+        }
+    }
+
 }

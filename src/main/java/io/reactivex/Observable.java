@@ -1099,7 +1099,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<Boolean> all(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return lift(new NbpOperatorAll<T>(predicate));
+        return (new ObservableAll<T>(this, predicate));
     }
 
     @SuppressWarnings("unchecked")
@@ -1112,7 +1112,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<Boolean> any(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return lift(new NbpOperatorAny<T>(predicate));
+        return new ObservableAny<T>(this, predicate);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1149,7 +1149,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
             throw new IllegalArgumentException("skip > 0 required but it was " + count);
         }
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return lift(new NbpOperatorBuffer<T, U>(count, skip, bufferSupplier));
+        return new ObservableBuffer<T, U>(this, count, skip, bufferSupplier);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1182,7 +1182,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return lift(new NbpOperatorBufferTimed<T, U>(timespan, timeskip, unit, scheduler, bufferSupplier, Integer.MAX_VALUE, false));
+        return new ObservableBufferTimed<T, U>(this, timespan, timeskip, unit, scheduler, bufferSupplier, Integer.MAX_VALUE, false);
     }
 
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -1217,7 +1217,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         if (count <= 0) {
             throw new IllegalArgumentException("count > 0 required but it was " + count);
         }
-        return lift(new NbpOperatorBufferTimed<T, U>(timespan, timespan, unit, scheduler, bufferSupplier, count, restartTimerOnMaxSize));
+        return new ObservableBufferTimed<T, U>(this, timespan, timespan, unit, scheduler, bufferSupplier, count, restartTimerOnMaxSize);
     }
 
     @SchedulerSupport(SchedulerSupport.CUSTOM)
@@ -1250,7 +1250,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(bufferOpenings, "bufferOpenings is null");
         Objects.requireNonNull(bufferClosingSelector, "bufferClosingSelector is null");
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return lift(new NbpOperatorBufferBoundary<T, U, TOpening, TClosing>(bufferOpenings, bufferClosingSelector, bufferSupplier));
+        return new ObservableBufferBoundary<T, U, TOpening, TClosing>(this, bufferOpenings, bufferClosingSelector, bufferSupplier);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1280,7 +1280,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <B, U extends Collection<? super T>> Observable<U> buffer(ObservableConsumable<B> boundary, Supplier<U> bufferSupplier) {
         Objects.requireNonNull(boundary, "boundary is null");
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return lift(new NbpOperatorBufferExactBoundary<T, U, B>(boundary, bufferSupplier));
+        return new ObservableBufferExactBoundary<T, U, B>(this, boundary, bufferSupplier);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1298,7 +1298,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <B, U extends Collection<? super T>> Observable<U> buffer(Supplier<? extends ObservableConsumable<B>> boundarySupplier, Supplier<U> bufferSupplier) {
         Objects.requireNonNull(boundarySupplier, "boundarySupplier is null");
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return lift(new NbpOperatorBufferBoundarySupplier<T, U, B>(boundarySupplier, bufferSupplier));
+        return new ObservableBufferBoundarySupplier<T, U, B>(this, boundarySupplier, bufferSupplier);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)

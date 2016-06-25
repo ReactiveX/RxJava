@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Observable.NbpOperator;
+import io.reactivex.Observable;
 import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
@@ -28,24 +28,27 @@ import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpOperatorBufferBoundary<T, U extends Collection<? super T>, Open, Close> implements NbpOperator<U, T> {
+public final class ObservableBufferBoundary<T, U extends Collection<? super T>, Open, Close> 
+extends Observable<U> {
+    final ObservableConsumable<T> source;
     final Supplier<U> bufferSupplier;
     final ObservableConsumable<? extends Open> bufferOpen;
     final Function<? super Open, ? extends ObservableConsumable<? extends Close>> bufferClose;
 
-    public NbpOperatorBufferBoundary(ObservableConsumable<? extends Open> bufferOpen,
+    public ObservableBufferBoundary(ObservableConsumable<T> source, ObservableConsumable<? extends Open> bufferOpen,
             Function<? super Open, ? extends ObservableConsumable<? extends Close>> bufferClose, Supplier<U> bufferSupplier) {
+        this.source = source;
         this.bufferOpen = bufferOpen;
         this.bufferClose = bufferClose;
         this.bufferSupplier = bufferSupplier;
     }
     
     @Override
-    public Observer<? super T> apply(Observer<? super U> t) {
-        return new BufferBoundarySubscriber<T, U, Open, Close>(
+    protected void subscribeActual(Observer<? super U> t) {
+        source.subscribe(new BufferBoundarySubscriber<T, U, Open, Close>(
                 new SerializedObserver<U>(t),
                 bufferOpen, bufferClose, bufferSupplier
-                );
+                ));
     }
     
     static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, Open, Close>
@@ -53,7 +56,7 @@ public final class NbpOperatorBufferBoundary<T, U extends Collection<? super T>,
         final ObservableConsumable<? extends Open> bufferOpen;
         final Function<? super Open, ? extends ObservableConsumable<? extends Close>> bufferClose;
         final Supplier<U> bufferSupplier;
-        final SetCompositeResource<Disposable> resources;
+        final CompositeDisposable resources;
         
         Disposable s;
         
@@ -70,7 +73,7 @@ public final class NbpOperatorBufferBoundary<T, U extends Collection<? super T>,
             this.bufferClose = bufferClose;
             this.bufferSupplier = bufferSupplier;
             this.buffers = new LinkedList<U>();
-            this.resources = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+            this.resources = new CompositeDisposable();
         }
         @Override
         public void onSubscribe(Disposable s) {
