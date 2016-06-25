@@ -33,7 +33,7 @@ import rx.subjects.PublishSubject;
 public class BlockingOperatorLatestTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(BlockingOperatorLatest.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(BlockingOperatorLatest.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 
     @Test(timeout = 1000)

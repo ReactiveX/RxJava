@@ -22,6 +22,6 @@ import org.junit.Test;
 public class SingleOperatorZipTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(SingleOperatorZip.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(SingleOperatorZip.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 }

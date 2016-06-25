@@ -33,7 +33,7 @@ import rx.subscriptions.Subscriptions;
 public class SubscribersTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(Subscribers.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(Subscribers.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
     
     @Test

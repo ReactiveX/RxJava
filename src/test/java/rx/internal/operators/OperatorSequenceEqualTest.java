@@ -33,7 +33,7 @@ import rx.functions.Func2;
 public class OperatorSequenceEqualTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(OperatorSequenceEqual.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(OperatorSequenceEqual.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 
     @Test

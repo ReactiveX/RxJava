@@ -38,7 +38,7 @@ import rx.subjects.Subject;
 public class BlockingOperatorMostRecentTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(BlockingOperatorMostRecent.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(BlockingOperatorMostRecent.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 
     @Test

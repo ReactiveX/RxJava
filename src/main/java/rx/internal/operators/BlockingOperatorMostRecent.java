@@ -29,7 +29,7 @@ import rx.exceptions.Exceptions;
  */
 public final class BlockingOperatorMostRecent {
     private BlockingOperatorMostRecent() {
-        throw new AssertionError("No instances.");
+        throw new IllegalStateException("No instances!");
     }
     /**
      * Returns an {@code Iterable} that always returns the item most recently emitted by the {@code Observable}.

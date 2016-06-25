@@ -34,7 +34,7 @@ import rx.internal.util.RxRingBuffer;
 public class BlockingOperatorToIteratorTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(BlockingOperatorToIterator.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(BlockingOperatorToIterator.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 
     @Test

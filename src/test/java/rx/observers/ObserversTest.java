@@ -35,7 +35,7 @@ import rx.functions.*;
 public class ObserversTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(Observers.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(Observers.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
     
     @Test

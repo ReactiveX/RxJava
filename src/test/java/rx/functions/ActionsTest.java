@@ -274,6 +274,6 @@ public class ActionsTest {
     
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(Actions.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(Actions.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 }

@@ -31,7 +31,7 @@ public final class Exceptions {
 
     /** Utility class, no instances. */
     private Exceptions() {
-        throw new AssertionError("No instances.");
+        throw new IllegalStateException("No instances!");
     }
 
     /**

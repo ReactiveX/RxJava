@@ -23,7 +23,7 @@ public final class Actions {
     private static final EmptyAction EMPTY_ACTION = new EmptyAction();
 
     private Actions() {
-        throw new AssertionError("No instances.");
+        throw new IllegalStateException("No instances!");
     }
 
     @SuppressWarnings("unchecked")

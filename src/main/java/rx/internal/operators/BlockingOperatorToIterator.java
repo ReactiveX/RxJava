@@ -33,7 +33,7 @@ import rx.internal.util.RxRingBuffer;
  */
 public final class BlockingOperatorToIterator {
     private BlockingOperatorToIterator() {
-        throw new AssertionError("No instances.");
+        throw new IllegalStateException("No instances!");
     }
 
     /**

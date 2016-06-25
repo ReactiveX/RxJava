@@ -22,6 +22,6 @@ import org.junit.Test;
 public class Pow2Test {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(Pow2.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(Pow2.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 }

@@ -75,7 +75,7 @@ public final class RxJavaHooks {
 
     /** Utility class. */
     private RxJavaHooks() {
-        throw new AssertionError("No instances.");
+        throw new IllegalStateException("No instances!");
     }
     
 

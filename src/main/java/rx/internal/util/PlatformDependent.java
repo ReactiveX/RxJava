@@ -36,7 +36,7 @@ public final class PlatformDependent {
 
     /** Utility class. */
     private PlatformDependent() {
-        throw new AssertionError("No instances.");
+        throw new IllegalStateException("No instances!");
     }
     
     /**

@@ -40,7 +40,7 @@ public class RxJavaHooksTest {
     
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(RxJavaHooks.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(RxJavaHooks.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 
     @Test

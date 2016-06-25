@@ -22,6 +22,6 @@ import org.junit.Test;
 public class EventStreamTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(EventStream.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(EventStream.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 }

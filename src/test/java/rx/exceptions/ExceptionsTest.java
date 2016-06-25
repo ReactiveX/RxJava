@@ -37,7 +37,7 @@ import rx.subjects.PublishSubject;
 public class ExceptionsTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(Exceptions.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(Exceptions.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 
     @Test(expected = OnErrorNotImplementedException.class)

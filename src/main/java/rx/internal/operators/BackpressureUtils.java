@@ -38,7 +38,7 @@ public final class BackpressureUtils {
 
     /** Utility class, no instances. */
     private BackpressureUtils() {
-        throw new AssertionError("No instances.");
+        throw new IllegalStateException("No instances!");
     }
     /**
      * Adds {@code n} to {@code requested} field and returns the value prior to

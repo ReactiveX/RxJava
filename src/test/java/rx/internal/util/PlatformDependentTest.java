@@ -22,6 +22,6 @@ import org.junit.Test;
 public class PlatformDependentTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(PlatformDependent.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(PlatformDependent.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 }

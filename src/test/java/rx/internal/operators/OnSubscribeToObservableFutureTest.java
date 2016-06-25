@@ -33,7 +33,7 @@ import rx.schedulers.Schedulers;
 public class OnSubscribeToObservableFutureTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(OnSubscribeToObservableFuture.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(OnSubscribeToObservableFuture.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 
     @Test

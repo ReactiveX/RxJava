@@ -27,6 +27,6 @@ import static org.junit.Assert.fail;
 public class UtilityFunctionsTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(UtilityFunctions.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(UtilityFunctions.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 }

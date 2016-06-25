@@ -22,6 +22,6 @@ import org.junit.Test;
 public class UnsafeAccessTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(UnsafeAccess.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+        PrivateConstructorChecker.forClass(UnsafeAccess.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 }

@@ -24,7 +24,7 @@ import rx.functions.*;
  */
 public final class Subscribers {
     private Subscribers() {
-        throw new AssertionError("No instances.");
+        throw new IllegalStateException("No instances!");
     }
 
     /**

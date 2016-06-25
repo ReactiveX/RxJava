@@ -29,7 +29,7 @@ public final class SingleOperatorZip {
 
     /** Utility class. */
     private SingleOperatorZip() {
-        throw new AssertionError("No instances.");
+        throw new IllegalStateException("No instances!");
     }
     
     public static <T, R> Single<R> zip(final Single<? extends T>[] singles, final FuncN<? extends R> zipper) {
