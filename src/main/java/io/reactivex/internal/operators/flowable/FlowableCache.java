@@ -19,7 +19,6 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.SerialResource;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 
@@ -118,7 +117,7 @@ public final class FlowableCache<T> extends Flowable<T> {
         /** The source observable to connect to. */
         final Flowable<? extends T> source;
         /** Holds onto the subscriber connected to source. */
-        final SerialResource<Subscription> connection;
+        final AtomicReference<Subscription> connection = new AtomicReference<Subscription>();
         /** Guarded by connection (not this). */
         volatile ReplaySubscription<?>[] producers;
         /** The default empty array of producers. */
@@ -136,7 +135,6 @@ public final class FlowableCache<T> extends Flowable<T> {
             super(capacityHint);
             this.source = source;
             this.producers = EMPTY;
-            this.connection = new SerialResource<Subscription>(SubscriptionHelper.consumeAndCancel());
         }
         /**
          * Adds a ReplayProducer to the producers array atomically.
@@ -185,7 +183,7 @@ public final class FlowableCache<T> extends Flowable<T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (connection.setResource(s)) {
+            if (SubscriptionHelper.setOnce(connection, s)) {
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -212,7 +210,7 @@ public final class FlowableCache<T> extends Flowable<T> {
                 sourceDone = true;
                 Object o = NotificationLite.error(e);
                 add(o);
-                connection.dispose();
+                SubscriptionHelper.dispose(connection);
                 dispatch();
             }
         }
@@ -222,7 +220,7 @@ public final class FlowableCache<T> extends Flowable<T> {
                 sourceDone = true;
                 Object o = NotificationLite.complete();
                 add(o);
-                connection.dispose();
+                SubscriptionHelper.dispose(connection);
                 dispatch();
             }
         }
