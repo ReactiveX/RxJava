@@ -18,7 +18,7 @@ package rx.internal.util.unsafe;
 
 public final class Pow2 {
     private Pow2() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
 
     /**

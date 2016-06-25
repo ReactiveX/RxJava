@@ -21,7 +21,7 @@ public final class UtilityFunctions {
 
     /** Utility class. */
     private UtilityFunctions() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
     
     /**

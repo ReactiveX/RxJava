@@ -30,7 +30,7 @@ public final class Subscriptions {
     private static final Unsubscribed UNSUBSCRIBED = new Unsubscribed();
 
     private Subscriptions() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
     /**
      * Returns a {@link Subscription} to which {@code unsubscribe} does nothing except to change

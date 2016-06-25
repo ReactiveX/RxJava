@@ -41,7 +41,7 @@ import rx.schedulers.Schedulers;
  */
 public final class TestObstructionDetection {
     private TestObstructionDetection() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
     /**
      * Checks if tasks can be immediately executed on the computation scheduler.

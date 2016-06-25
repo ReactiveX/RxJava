@@ -15,10 +15,17 @@
  */
 package rx.internal.operators;
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class BackpressureUtilsTest {
+    @Test
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(BackpressureUtils.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+    }
+
     @Test
     public void testAddCap() {
         assertEquals(2L, BackpressureUtils.addCap(1, 1));

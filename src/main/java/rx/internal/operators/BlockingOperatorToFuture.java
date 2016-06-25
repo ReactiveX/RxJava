@@ -30,7 +30,7 @@ import rx.*;
  */
 public final class BlockingOperatorToFuture {
     private BlockingOperatorToFuture() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
     /**
      * Returns a Future that expects a single item from the observable.

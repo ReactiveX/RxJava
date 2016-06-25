@@ -17,7 +17,7 @@ package rx.functions;
 
 public final class Functions {
     private Functions() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
 
     /**

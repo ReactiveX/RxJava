@@ -24,7 +24,7 @@ import rx.functions.*;
  */
 public final class Observers {
     private Observers() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
 
     private static final Observer<Object> EMPTY = new Observer<Object>() {

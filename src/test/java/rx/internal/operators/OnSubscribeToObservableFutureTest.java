@@ -19,6 +19,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -29,6 +31,10 @@ import rx.observers.*;
 import rx.schedulers.Schedulers;
 
 public class OnSubscribeToObservableFutureTest {
+    @Test
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(OnSubscribeToObservableFuture.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+    }
 
     @Test
     public void testSuccess() throws Exception {

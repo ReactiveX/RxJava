@@ -31,7 +31,7 @@ public final class OperatorSequenceEqual {
     static final Object LOCAL_ONCOMPLETED = new Object();
 
     private OperatorSequenceEqual() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
 
     static <T> Observable<Object> materializeLite(Observable<T> source) {

@@ -20,6 +20,8 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -29,6 +31,10 @@ import rx.exceptions.TestException;
 import rx.functions.Func2;
 
 public class OperatorSequenceEqualTest {
+    @Test
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(OperatorSequenceEqual.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+    }
 
     @Test
     public void test1() {

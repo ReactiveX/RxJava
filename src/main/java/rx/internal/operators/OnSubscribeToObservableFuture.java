@@ -37,7 +37,7 @@ import rx.subscriptions.Subscriptions;
  */
 public final class OnSubscribeToObservableFuture {
     private OnSubscribeToObservableFuture() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
 
     /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribe<T> {

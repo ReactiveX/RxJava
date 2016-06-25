@@ -30,7 +30,7 @@ import rx.exceptions.Exceptions;
  */
 public final class BlockingOperatorNext {
     private BlockingOperatorNext() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
 
     /**

@@ -30,7 +30,7 @@ import rx.exceptions.Exceptions;
 public final class BlockingOperatorLatest {
     /** Utility class. */
     private BlockingOperatorLatest() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
 
     /**

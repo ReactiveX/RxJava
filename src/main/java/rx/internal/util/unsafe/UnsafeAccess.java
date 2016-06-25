@@ -35,7 +35,7 @@ public final class UnsafeAccess {
     private static final boolean DISABLED_BY_USER = System.getProperty("rx.unsafe-disable") != null;
 
     private UnsafeAccess() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
 
     static {

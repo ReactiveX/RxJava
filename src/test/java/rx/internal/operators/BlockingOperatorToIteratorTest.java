@@ -18,6 +18,8 @@ package rx.internal.operators;
 import static org.junit.Assert.assertEquals;
 import static rx.internal.operators.BlockingOperatorToIterator.toIterator;
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+
 import java.util.Iterator;
 
 import org.junit.Test;
@@ -30,6 +32,10 @@ import rx.internal.operators.BlockingOperatorToIterator.SubscriberIterator;
 import rx.internal.util.RxRingBuffer;
 
 public class BlockingOperatorToIteratorTest {
+    @Test
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(BlockingOperatorToIterator.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+    }
 
     @Test
     public void testToIterator() {

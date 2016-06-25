@@ -22,7 +22,7 @@ import rx.functions.Func2;
 
 public final class AssertObservable {
     private AssertObservable() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
     /**
      * Asserts that two Observables are equal. If they are not, an {@link AssertionError} is thrown

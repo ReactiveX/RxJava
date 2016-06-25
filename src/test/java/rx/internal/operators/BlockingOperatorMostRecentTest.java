@@ -20,6 +20,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static rx.internal.operators.BlockingOperatorMostRecent.mostRecent;
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +36,11 @@ import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
 public class BlockingOperatorMostRecentTest {
+    @Test
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(BlockingOperatorMostRecent.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+    }
+
     @Test
     public void testMostRecentNull() {
         assertEquals(null, Observable.<Void>never().toBlocking().mostRecent(null).iterator().next());

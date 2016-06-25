@@ -29,7 +29,7 @@ import rx.schedulers.Schedulers;
  */
 public final class EventStream {
     private EventStream() {
-        throw new IllegalStateException("No instances!");
+        throw new AssertionError("No instances.");
     }
     public static Observable<Event> getEventStream(final String type, final int numInstances) {
         return Observable.create(new OnSubscribe<Event>() {

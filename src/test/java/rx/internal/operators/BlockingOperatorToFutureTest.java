@@ -20,6 +20,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static rx.internal.operators.BlockingOperatorToFuture.toFuture;
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CancellationException;
@@ -35,6 +37,10 @@ import rx.Subscriber;
 import rx.exceptions.TestException;
 
 public class BlockingOperatorToFutureTest {
+    @Test
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(BlockingOperatorToFuture.class).expectedTypeOfException(AssertionError.class).expectedExceptionMessage("No instances.").check();
+    }
 
     @Test
     public void testToFuture() throws InterruptedException, ExecutionException {
