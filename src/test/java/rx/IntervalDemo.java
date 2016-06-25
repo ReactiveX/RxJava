@@ -25,8 +25,7 @@ import org.junit.Test;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
-@Ignore
-// since this doesn't do any automatic testing
+@Ignore("Since this doesn't do any automatic testing")
 public class IntervalDemo {
 
     @Test
