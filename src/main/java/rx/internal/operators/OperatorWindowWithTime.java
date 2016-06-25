@@ -19,10 +19,10 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import rx.*;
-import rx.Observable.Operator;
-import rx.Scheduler.Worker;
 import rx.Observable;
+import rx.Observable.Operator;
 import rx.Observer;
+import rx.Scheduler.Worker;
 import rx.functions.Action0;
 import rx.observers.*;
 import rx.subjects.UnicastSubject;

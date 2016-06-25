@@ -17,8 +17,7 @@ package rx.observers;
 
 import rx.Observer;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action0;
-import rx.functions.Action1;
+import rx.functions.*;
 
 /**
  * Helper methods and utilities for creating and working with {@link Observer} objects.

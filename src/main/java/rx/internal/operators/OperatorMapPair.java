@@ -19,7 +19,7 @@ import rx.*;
 import rx.Observable.Operator;
 import rx.exceptions.*;
 import rx.functions.*;
-import rx.internal.util.RxJavaPluginUtils;
+import rx.plugins.RxJavaHooks;
 
 /**
  * An {@link Operator} that pairs up items emitted by a source {@link Observable} with the sequence of items
@@ -105,7 +105,7 @@ public final class OperatorMapPair<T, U, R> implements Operator<Observable<? ext
         @Override
         public void onError(Throwable e) {
             if (done) {
-                RxJavaPluginUtils.handleException(e);
+                RxJavaHooks.onError(e);
                 return;
             }
             done = true;

@@ -15,8 +15,7 @@
  */
 package rx.internal.operators;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import rx.Observable;
 import rx.Subscriber;

@@ -16,16 +16,12 @@
 
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import rx.Observable.Operator;
-import rx.exceptions.Exceptions;
 import rx.Subscriber;
-import rx.functions.Func0;
-import rx.functions.Func1;
+import rx.exceptions.Exceptions;
+import rx.functions.*;
 import rx.observers.Subscribers;
 
 /**

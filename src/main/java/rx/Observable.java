@@ -9158,7 +9158,7 @@ public class Observable<T> {
             Exceptions.throwIfFatal(e);
             // in case the subscriber can't listen to exceptions anymore
             if (subscriber.isUnsubscribed()) {
-                RxJavaPluginUtils.handleException(RxJavaHooks.onObservableError(e));
+                RxJavaHooks.onError(RxJavaHooks.onObservableError(e));
             } else {
                 // if an unhandled error occurs executing the onSubscribe we will propagate it
                 try {

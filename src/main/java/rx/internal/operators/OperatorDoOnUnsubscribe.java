@@ -16,7 +16,7 @@
 package rx.internal.operators;
 
 import rx.Observable.Operator;
-import rx.*;
+import rx.Subscriber;
 import rx.functions.Action0;
 import rx.observers.Subscribers;
 import rx.subscriptions.Subscriptions;

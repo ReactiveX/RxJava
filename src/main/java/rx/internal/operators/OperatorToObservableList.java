@@ -18,8 +18,8 @@ package rx.internal.operators;
 import java.util.*;
 
 import rx.Observable.Operator;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.*;
 import rx.internal.producers.SingleDelayedProducer;
 
 /**

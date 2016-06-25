@@ -18,13 +18,8 @@ package rx.observers;
 import java.util.Arrays;
 
 import rx.Subscriber;
-import rx.exceptions.CompositeException;
-import rx.exceptions.Exceptions;
-import rx.exceptions.OnCompletedFailedException;
-import rx.exceptions.OnErrorFailedException;
-import rx.exceptions.OnErrorNotImplementedException;
-import rx.exceptions.UnsubscribeFailedException;
-import rx.internal.util.RxJavaPluginUtils;
+import rx.exceptions.*;
+import rx.plugins.RxJavaHooks;
 
 /**
  * {@code SafeSubscriber} is a wrapper around {@code Subscriber} that ensures that the {@code Subscriber}
@@ -86,7 +81,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                 // we handle here instead of another method so we don't add stacks to the frame
                 // which can prevent it from being able to handle StackOverflow
                 Exceptions.throwIfFatal(e);
-                RxJavaPluginUtils.handleException(e);
+                RxJavaHooks.onError(e);
                 throw new OnCompletedFailedException(e.getMessage(), e);
             } finally { // NOPMD 
                 try {
@@ -94,7 +89,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                     // and we throw an UnsubscribeFailureException.
                     unsubscribe();
                 } catch (Throwable e) {
-                    RxJavaPluginUtils.handleException(e);
+                    RxJavaHooks.onError(e);
                     throw new UnsubscribeFailedException(e.getMessage(), e);
                 }
             }
@@ -152,7 +147,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/issues/630">the report of this bug</a>
      */
     protected void _onError(Throwable e) { // NOPMD 
-        RxJavaPluginUtils.handleException(e);
+        RxJavaHooks.onError(e);
         try {
             actual.onError(e);
         } catch (OnErrorNotImplementedException e2) { // NOPMD 
@@ -170,7 +165,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
             try {
                 unsubscribe();
             } catch (Throwable unsubscribeException) {
-                RxJavaPluginUtils.handleException(unsubscribeException);
+                RxJavaHooks.onError(unsubscribeException);
                 throw new OnErrorNotImplementedException("Observer.onError not implemented and error while unsubscribing.", new CompositeException(Arrays.asList(e, unsubscribeException))); // NOPMD 
             }
             throw e2;
@@ -180,11 +175,11 @@ public class SafeSubscriber<T> extends Subscriber<T> {
              * 
              * https://github.com/ReactiveX/RxJava/issues/198
              */
-            RxJavaPluginUtils.handleException(e2);
+            RxJavaHooks.onError(e2);
             try {
                 unsubscribe();
             } catch (Throwable unsubscribeException) {
-                RxJavaPluginUtils.handleException(unsubscribeException);
+                RxJavaHooks.onError(unsubscribeException);
                 throw new OnErrorFailedException("Error occurred when trying to propagate error to Observer.onError and during unsubscription.", new CompositeException(Arrays.asList(e, e2, unsubscribeException)));
             }
 
@@ -194,7 +189,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
         try {
             unsubscribe();
         } catch (Throwable unsubscribeException) {
-            RxJavaPluginUtils.handleException(unsubscribeException);
+            RxJavaHooks.onError(unsubscribeException);
             throw new OnErrorFailedException(unsubscribeException);
         }
     }

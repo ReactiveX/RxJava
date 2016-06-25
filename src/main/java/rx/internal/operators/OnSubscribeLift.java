@@ -19,7 +19,7 @@ package rx.internal.operators;
 import rx.Observable.*;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.plugins.*;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Transforms the downstream Subscriber into a Subscriber via an operator

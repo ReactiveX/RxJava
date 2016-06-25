@@ -17,10 +17,10 @@ package rx.internal.operators;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import rx.*;
 import rx.Observable.Operator;
-import rx.Scheduler;
 import rx.Scheduler.Worker;
-import rx.Subscriber;
 import rx.functions.Action0;
 
 /**

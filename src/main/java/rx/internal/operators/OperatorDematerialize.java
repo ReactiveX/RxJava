@@ -15,9 +15,8 @@
  */
 package rx.internal.operators;
 
-import rx.Notification;
+import rx.*;
 import rx.Observable.Operator;
-import rx.Subscriber;
 
 /**
  * Reverses the effect of {@link OperatorMaterialize} by transforming the Notification objects

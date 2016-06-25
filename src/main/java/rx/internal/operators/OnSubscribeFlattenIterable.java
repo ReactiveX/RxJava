@@ -27,6 +27,7 @@ import rx.functions.Func1;
 import rx.internal.util.*;
 import rx.internal.util.atomic.*;
 import rx.internal.util.unsafe.*;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Flattens a sequence if Iterable sources, generated via a function, into a single sequence.
@@ -136,7 +137,7 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
                 done = true;
                 drain();
             } else {
-                RxJavaPluginUtils.handleException(e);
+                RxJavaHooks.onError(e);
             }
         }
         

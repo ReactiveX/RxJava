@@ -15,15 +15,13 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
 import rx.Observable;
 import rx.Observable.Operator;
-import rx.exceptions.Exceptions;
 import rx.Observer;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.observers.SerializedSubscriber;
 import rx.subscriptions.CompositeSubscription;

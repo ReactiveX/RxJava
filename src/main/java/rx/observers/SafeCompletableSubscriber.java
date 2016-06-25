@@ -19,7 +19,7 @@ import rx.Completable.CompletableSubscriber;
 import rx.Subscription;
 import rx.annotations.Experimental;
 import rx.exceptions.*;
-import rx.internal.util.RxJavaPluginUtils;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Wraps another CompletableSubscriber and handles exceptions thrown
@@ -56,7 +56,7 @@ public final class SafeCompletableSubscriber implements CompletableSubscriber, S
 
     @Override
     public void onError(Throwable e) {
-        RxJavaPluginUtils.handleException(e);
+        RxJavaHooks.onError(e);
         if (done) {
             return;
         }

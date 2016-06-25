@@ -18,7 +18,7 @@ package rx.internal.operators;
 import rx.*;
 import rx.exceptions.*;
 import rx.functions.Func1;
-import rx.internal.util.RxJavaPluginUtils;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Applies a function of your choosing to every item emitted by an {@code Single}, and emits the results of
@@ -77,7 +77,7 @@ public final class SingleOnSubscribeMap<T, R> implements Single.OnSubscribe<R> {
         @Override
         public void onError(Throwable e) {
             if (done) {
-                RxJavaPluginUtils.handleException(e);
+                RxJavaHooks.onError(e);
                 return;
             }
             done = true;
