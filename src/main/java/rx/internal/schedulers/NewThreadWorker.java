@@ -15,7 +15,7 @@
  */
 package rx.internal.schedulers;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.Iterator;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,6 +45,17 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     public static final int PURGE_FREQUENCY;
     private static final ConcurrentHashMap<ScheduledThreadPoolExecutor, ScheduledThreadPoolExecutor> EXECUTORS;
     private static final AtomicReference<ScheduledExecutorService> PURGE;
+    /**
+     * Improves performance of {@link #tryEnableCancelPolicy(ScheduledExecutorService)}.
+     * Also, it works even for inheritance: {@link Method} of base class can be invoked on the instance of child class.
+     */
+    private static volatile Object cachedSetRemoveOnCancelPolicyMethod;
+
+    /**
+     * Possible value of {@link #cachedSetRemoveOnCancelPolicyMethod} which means that cancel policy is not supported.
+     */
+    private static final Object SET_REMOVE_ON_CANCEL_POLICY_METHOD_NOT_SUPPORTED = new Object();
+    
     static {
         EXECUTORS = new ConcurrentHashMap<ScheduledThreadPoolExecutor, ScheduledThreadPoolExecutor>();
         PURGE = new AtomicReference<ScheduledExecutorService>();
@@ -116,17 +127,6 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     }
 
     /**
-     * Improves performance of {@link #tryEnableCancelPolicy(ScheduledExecutorService)}.
-     * Also, it works even for inheritance: {@link Method} of base class can be invoked on the instance of child class.
-     */
-    private static volatile Object cachedSetRemoveOnCancelPolicyMethod;
-
-    /**
-     * Possible value of {@link #cachedSetRemoveOnCancelPolicyMethod} which means that cancel policy is not supported.
-     */
-     private static final Object SET_REMOVE_ON_CANCEL_POLICY_METHOD_NOT_SUPPORTED = new Object();
-
-    /**
      * Tries to enable the Java 7+ setRemoveOnCancelPolicy.
      * <p>{@code public} visibility reason: called from other package(s) within RxJava.
      * If the method returns false, the {@link #registerExecutor(ScheduledThreadPoolExecutor)} may
@@ -135,10 +135,10 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
      * @return true if the policy was successfully enabled 
      */
     public static boolean tryEnableCancelPolicy(ScheduledExecutorService executor) {
-        if (SHOULD_TRY_ENABLE_CANCEL_POLICY) {
+        if (SHOULD_TRY_ENABLE_CANCEL_POLICY) { // NOPMD 
             final boolean isInstanceOfScheduledThreadPoolExecutor = executor instanceof ScheduledThreadPoolExecutor;
 
-            final Method methodToCall;
+            Method methodToCall;
 
             if (isInstanceOfScheduledThreadPoolExecutor) {
                 final Object localSetRemoveOnCancelPolicyMethod = cachedSetRemoveOnCancelPolicyMethod;
@@ -166,7 +166,11 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
                 try {
                     methodToCall.invoke(executor, true);
                     return true;
-                } catch (Exception e) {
+                } catch (InvocationTargetException e) {
+                    RxJavaHooks.onError(e);
+                } catch (IllegalAccessException e) {
+                    RxJavaHooks.onError(e);
+                } catch (IllegalArgumentException e) {
                     RxJavaHooks.onError(e);
                 }
             }

@@ -20,6 +20,7 @@ import rx.Single;
 import rx.SingleSubscriber;
 import rx.Subscription;
 import rx.annotations.Experimental;
+import rx.exceptions.Exceptions;
 import rx.internal.operators.BlockingOperatorToFuture;
 import rx.internal.util.BlockingUtils;
 
@@ -35,9 +36,10 @@ import java.util.concurrent.atomic.AtomicReference;
  * or {@link Single#toBlocking()}.
  * 
  * @param <T> the value type of the sequence
+ * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
  */
 @Experimental
-public class BlockingSingle<T> {
+public final class BlockingSingle<T> {
     private final Single<? extends T> single;
 
     private BlockingSingle(Single<? extends T> single) {
@@ -88,10 +90,7 @@ public class BlockingSingle<T> {
         BlockingUtils.awaitForComplete(latch, subscription);
         Throwable throwable = returnException.get();
         if (throwable != null) {
-            if (throwable instanceof RuntimeException) {
-                throw (RuntimeException) throwable;
-            }
-            throw new RuntimeException(throwable);
+            throw Exceptions.propagate(throwable);
         }
         return returnItem.get();
     }

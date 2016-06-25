@@ -34,9 +34,6 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements Comp
     @Override
     public void call(final CompletableSubscriber s) {
         final CompositeSubscription set = new CompositeSubscription();
-        final AtomicInteger wip = new AtomicInteger(1);
-        
-        final Queue<Throwable> queue = new MpscLinkedQueue<Throwable>();
         
         s.onSubscribe(set);
         
@@ -53,7 +50,11 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements Comp
             s.onError(new NullPointerException("The source iterator returned is null"));
             return;
         }
+
+        final AtomicInteger wip = new AtomicInteger(1);
         
+        final Queue<Throwable> queue = new MpscLinkedQueue<Throwable>();
+
         for (;;) {
             if (set.isUnsubscribed()) {
                 return;

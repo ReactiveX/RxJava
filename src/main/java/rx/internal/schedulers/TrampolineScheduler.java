@@ -40,15 +40,12 @@ public final class TrampolineScheduler extends Scheduler {
     private TrampolineScheduler() {
     }
 
-    private static class InnerCurrentThreadScheduler extends Scheduler.Worker implements Subscription {
+    static final class InnerCurrentThreadScheduler extends Scheduler.Worker implements Subscription {
 
         final AtomicInteger counter = new AtomicInteger();
         final PriorityBlockingQueue<TimedAction> queue = new PriorityBlockingQueue<TimedAction>();
         private final BooleanSubscription innerSubscription = new BooleanSubscription();
         private final AtomicInteger wip = new AtomicInteger();
-
-        InnerCurrentThreadScheduler() {
-        }
 
         @Override
         public Subscription schedule(Action0 action) {
@@ -102,7 +99,7 @@ public final class TrampolineScheduler extends Scheduler {
 
     }
 
-    private static final class TimedAction implements Comparable<TimedAction> {
+    static final class TimedAction implements Comparable<TimedAction> {
         final Action0 action;
         final Long execTime;
         final int count; // In case if time between enqueueing took less than 1ms

@@ -16,6 +16,7 @@
 package rx.internal.schedulers;
 
 import rx.Scheduler;
+import rx.exceptions.Exceptions;
 import rx.functions.Action0;
 
 /* package */class SleepingAction implements Action0 {
@@ -41,7 +42,7 @@ import rx.functions.Action0;
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
+                Exceptions.propagate(e);
             }
         }
 

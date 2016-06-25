@@ -39,7 +39,7 @@ import rx.functions.Func1;
  * worker threads.
  * 
  */
-public abstract class RxJavaObservableExecutionHook {
+public abstract class RxJavaObservableExecutionHook { // NOPMD 
     /**
      * Invoked during the construction by {@link Observable#create(OnSubscribe)}
      * <p>

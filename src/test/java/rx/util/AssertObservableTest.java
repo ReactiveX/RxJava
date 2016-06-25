@@ -15,7 +15,7 @@
  */
 package rx.util;
 
-import org.junit.Test;
+import org.junit.*;
 
 import rx.Observable;
 
@@ -31,13 +31,23 @@ public class AssertObservableTest {
         AssertObservable.assertObservableEqualsBlocking("foo", null, null);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testFailNotNull() {
-        AssertObservable.assertObservableEqualsBlocking("foo", Observable.just(1, 2), Observable.just(1));
+        try {
+            AssertObservable.assertObservableEqualsBlocking("foo", Observable.just(1, 2), Observable.just(1));
+            Assert.fail("Failed to throw");
+        } catch (AssertionError expected) {
+            // expected
+        }
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testFailNull() {
-        AssertObservable.assertObservableEqualsBlocking("foo", Observable.just(1, 2), null);
+        try {
+            AssertObservable.assertObservableEqualsBlocking("foo", Observable.just(1, 2), null);
+            Assert.fail("Failed to throw");
+        } catch (AssertionError expected) {
+            // expected
+        }
     }
 }

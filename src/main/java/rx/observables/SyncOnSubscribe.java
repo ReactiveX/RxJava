@@ -105,7 +105,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      *            {@link #next(Object, Observer) next(S, Observer&lt;T&gt;)} before unsubscribe.
      */
     protected void onUnsubscribe(S state) {
-
+        // default behavior is no-op
     }
 
     /**
@@ -279,7 +279,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @param <T>
      *            the type of compatible Subscribers
      */
-    private static final class SyncOnSubscribeImpl<S, T> extends SyncOnSubscribe<S, T> {
+    static final class SyncOnSubscribeImpl<S, T> extends SyncOnSubscribe<S, T> {
         private final Func0<? extends S> generator;
         private final Func2<? super S, ? super Observer<? super T>, ? extends S> next;
         private final Action1<? super S> onUnsubscribe;
@@ -314,8 +314,9 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
 
         @Override
         protected void onUnsubscribe(S state) {
-            if (onUnsubscribe != null)
+            if (onUnsubscribe != null) {
                 onUnsubscribe.call(state);
+            }
         }
     }
 
@@ -325,7 +326,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @param <T>
      *            the type of compatible Subscribers
      */
-    private static class SubscriptionProducer<S, T> 
+    static final class SubscriptionProducer<S, T> 
     extends AtomicLong implements Producer, Subscription, Observer<T> {
         /** */
         private static final long serialVersionUID = -3736864024352728072L;
@@ -355,11 +356,12 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
                     doUnsubscribe();
                     return;
                 }
-                else if (compareAndSet(requestCount, -2L))
+                else if (compareAndSet(requestCount, -2L)) {
                     // the loop is iterating concurrently
                     // need to check if requestCount == -1
                     // and unsub if so after loop iteration
                     return;
+                }
             }
         }
         
@@ -440,12 +442,14 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
                     if (tryUnsubscribe()) {
                         return;
                     }
-                    if (onNextCalled)
+                    if (onNextCalled) {
                         numRemaining--;
+                    }
                 } while (numRemaining != 0L);
                 numRequested = addAndGet(-numRequested);
-                if (numRequested <= 0L)
+                if (numRequested <= 0L) {
                     break;
+                }
             }
             // catches cases where unsubscribe is called before decrementing atomic request count
             tryUnsubscribe();

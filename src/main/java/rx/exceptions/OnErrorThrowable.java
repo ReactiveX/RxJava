@@ -99,7 +99,7 @@ public final class OnErrorThrowable extends RuntimeException {
             e = new NullPointerException();
         }
         Throwable lastCause = Exceptions.getFinalCause(e);
-        if (lastCause != null && lastCause instanceof OnNextValue) {
+        if (lastCause instanceof OnNextValue) {
             // purposefully using == for object reference check
             if (((OnNextValue) lastCause).getValue() == value) {
                 // don't add another
@@ -117,9 +117,11 @@ public final class OnErrorThrowable extends RuntimeException {
     public static class OnNextValue extends RuntimeException {
 
         private static final long serialVersionUID = -3454462756050397899L;
+
+        private final Object value;
         
         // Lazy loaded singleton 
-        private static final class Primitives {
+        static final class Primitives {
             
             static final Set<Class<?>> INSTANCE = create();
 
@@ -138,8 +140,6 @@ public final class OnErrorThrowable extends RuntimeException {
                 return set;
             }
         }
-
-        private final Object value;
 
         /**
          * Create an {@code OnNextValue} exception and include in its error message a string representation of

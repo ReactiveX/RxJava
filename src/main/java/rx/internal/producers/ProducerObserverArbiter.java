@@ -49,7 +49,7 @@ public final class ProducerObserverArbiter<T> implements Producer, Observer<T> {
     static final Producer NULL_PRODUCER = new Producer() {
         @Override
         public void request(long n) {
-            
+            // deliberately ignored
         }
     };
      

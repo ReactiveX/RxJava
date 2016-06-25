@@ -42,6 +42,8 @@ import rx.schedulers.Schedulers;
  */
 public class RxJavaSchedulersHook {
 
+    private final static RxJavaSchedulersHook DEFAULT_INSTANCE = new RxJavaSchedulersHook();
+
     /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#computation()}.
      * @return the created Scheduler instance
@@ -59,7 +61,9 @@ public class RxJavaSchedulersHook {
      */
     @Experimental
     public static Scheduler createComputationScheduler(ThreadFactory threadFactory) {
-        if (threadFactory == null) throw new NullPointerException("threadFactory == null");
+        if (threadFactory == null) {
+            throw new NullPointerException("threadFactory == null");
+        }
         return new EventLoopsScheduler(threadFactory);
     }
 
@@ -80,7 +84,9 @@ public class RxJavaSchedulersHook {
      */
     @Experimental
     public static Scheduler createIoScheduler(ThreadFactory threadFactory) {
-        if (threadFactory == null) throw new NullPointerException("threadFactory == null");
+        if (threadFactory == null) {
+            throw new NullPointerException("threadFactory == null");
+        }
         return new CachedThreadScheduler(threadFactory);
     }
 
@@ -101,15 +107,11 @@ public class RxJavaSchedulersHook {
      */
     @Experimental
     public static Scheduler createNewThreadScheduler(ThreadFactory threadFactory) {
-        if (threadFactory == null) throw new NullPointerException("threadFactory == null");
+        if (threadFactory == null) {
+            throw new NullPointerException("threadFactory == null");
+        }
         return new NewThreadScheduler(threadFactory);
     }
-
-    protected RxJavaSchedulersHook() {
-
-    }
-
-    private final static RxJavaSchedulersHook DEFAULT_INSTANCE = new RxJavaSchedulersHook();
 
     /**
      * Scheduler to return from {@link rx.schedulers.Schedulers#computation()} or null if default should be

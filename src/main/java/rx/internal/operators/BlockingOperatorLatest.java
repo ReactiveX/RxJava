@@ -62,6 +62,8 @@ public final class BlockingOperatorLatest {
         final Semaphore notify = new Semaphore(0);
         // observer's notification
         final AtomicReference<Notification<? extends T>> value = new AtomicReference<Notification<? extends T>>();
+        // iterator's notification
+        Notification<? extends T> iNotif;
 
         @Override
         public void onNext(Notification<? extends T> args) {
@@ -80,9 +82,6 @@ public final class BlockingOperatorLatest {
         public void onCompleted() {
             // not expected
         }
-
-        // iterator's notification
-        Notification<? extends T> iNotif;
 
         @Override
         public boolean hasNext() {

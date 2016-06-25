@@ -22,7 +22,7 @@ import rx.Scheduler;
  */
 @Deprecated
 // Class was part of public API.
-public final class ImmediateScheduler extends Scheduler {
+public final class ImmediateScheduler extends Scheduler { // NOPMD 
     private ImmediateScheduler() {
         throw new AssertionError();
     }

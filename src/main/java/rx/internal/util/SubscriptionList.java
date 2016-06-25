@@ -27,16 +27,28 @@ import rx.exceptions.Exceptions;
  */
 public final class SubscriptionList implements Subscription {
 
-    private LinkedList<Subscription> subscriptions;
+    private List<Subscription> subscriptions;
     private volatile boolean unsubscribed;
 
+    /**
+     * Constructs an empty SubscriptionList.
+     */
     public SubscriptionList() {
+        // nothing to do
     }
 
+    /**
+     * Constructs a SubscriptionList with the given initial child subscriptions.
+     * @param subscriptions the array of subscriptions to start with
+     */
     public SubscriptionList(final Subscription... subscriptions) {
         this.subscriptions = new LinkedList<Subscription>(Arrays.asList(subscriptions));
     }
 
+    /**
+     * Constructs a SubscriptionList with the given initial child subscription.
+     * @param s the initial subscription instance
+     */
     public SubscriptionList(Subscription s) {
         this.subscriptions = new LinkedList<Subscription>();
         this.subscriptions.add(s);
@@ -62,7 +74,7 @@ public final class SubscriptionList implements Subscription {
         if (!unsubscribed) {
             synchronized (this) {
                 if (!unsubscribed) {
-                    LinkedList<Subscription> subs = subscriptions;
+                    List<Subscription> subs = subscriptions;
                     if (subs == null) {
                         subs = new LinkedList<Subscription>();
                         subscriptions = subs;
@@ -80,7 +92,7 @@ public final class SubscriptionList implements Subscription {
         if (!unsubscribed) {
             boolean unsubscribe = false;
             synchronized (this) {
-                LinkedList<Subscription> subs = subscriptions;
+                List<Subscription> subs = subscriptions;
                 if (unsubscribed || subs == null) {
                     return;
                 }

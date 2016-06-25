@@ -53,7 +53,7 @@ public final class BlockingUtils {
             // for more information see https://github.com/ReactiveX/RxJava/pull/147#issuecomment-13624780
             Thread.currentThread().interrupt();
             // using Runtime so it is not checked
-            throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
+            throw new IllegalStateException("Interrupted while waiting for subscription to complete.", e);
         }
     }
 }

@@ -182,22 +182,27 @@ public final class Notification<T> {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder("[").append(super.toString()).append(" ").append(getKind());
-        if (hasValue())
-            str.append(" ").append(getValue());
-        if (hasThrowable())
-            str.append(" ").append(getThrowable().getMessage());
-        str.append("]");
+        StringBuilder str = new StringBuilder(64).append('[').append(super.toString())
+                .append(' ').append(getKind());
+        if (hasValue()) {
+            str.append(' ').append(getValue());
+        }
+        if (hasThrowable()) {
+            str.append(' ').append(getThrowable().getMessage());
+        }
+        str.append(']');
         return str.toString();
     }
 
     @Override
     public int hashCode() {
         int hash = getKind().hashCode();
-        if (hasValue())
+        if (hasValue()) {
             hash = hash * 31 + getValue().hashCode();
-        if (hasThrowable())
+        }
+        if (hasThrowable()) {
             hash = hash * 31 + getThrowable().hashCode();
+        }
         return hash;
     }
 
@@ -224,10 +229,6 @@ public final class Notification<T> {
             return false;
         }
 
-        if (!(throwable == notification.throwable || (throwable != null && throwable.equals(notification.throwable)))) {
-            return false;
-        }
-
-        return true;
+        return (throwable == notification.throwable || (throwable != null && throwable.equals(notification.throwable)));
     }
 }

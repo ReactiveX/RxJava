@@ -38,7 +38,7 @@ import rx.functions.Func1;
  * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
  */
 @Experimental
-public abstract class RxJavaCompletableExecutionHook {
+public abstract class RxJavaCompletableExecutionHook { // NOPMD 
     /**
      * Invoked during the construction by {@link Completable#create(Completable.CompletableOnSubscribe)}
      * <p>

@@ -94,7 +94,7 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      *            {@link #next(Object, long, Observer)} or unsubscribing.
      */
     protected void onUnsubscribe(S state) {
-
+        // default behavior is no-op
     }
 
     /**
@@ -269,7 +269,7 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @param <T>
      *            the type of compatible Subscribers
      */
-    private static final class AsyncOnSubscribeImpl<S, T> extends AsyncOnSubscribe<S, T> {
+    static final class AsyncOnSubscribeImpl<S, T> extends AsyncOnSubscribe<S, T> {
         private final Func0<? extends S> generator;
         private final Func3<? super S, Long, ? super Observer<Observable<? extends T>>, ? extends S> next;
         private final Action1<? super S> onUnsubscribe;
@@ -304,8 +304,9 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
 
         @Override
         protected void onUnsubscribe(S state) {
-            if (onUnsubscribe != null)
+            if (onUnsubscribe != null) {
                 onUnsubscribe.call(state);
+            }
         }
     }
 
@@ -586,8 +587,9 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
                 throw new IllegalStateException("onNext called multiple times!");
             }
             onNextCalled = true;
-            if (hasTerminated)
+            if (hasTerminated) {
                 return;
+            }
             subscribeBufferToObservable(t);
         }
 
@@ -631,11 +633,11 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
     }
 
     static final class UnicastSubject<T> extends Observable<T>implements Observer<T> {
+        private final State<T> state;
+
         public static <T> UnicastSubject<T> create() {
             return new UnicastSubject<T>(new State<T>());
         }
-
-        private State<T> state;
 
         protected UnicastSubject(final State<T> state) {
             super(state);

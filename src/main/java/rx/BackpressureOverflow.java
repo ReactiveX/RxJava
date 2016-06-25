@@ -24,6 +24,30 @@ import rx.exceptions.MissingBackpressureException;
 @Experimental
 public final class BackpressureOverflow {
 
+    /**
+     * Signal a MissingBackressureException due to lack of requests.
+     */
+    public static final BackpressureOverflow.Strategy ON_OVERFLOW_ERROR = Error.INSTANCE;
+
+    /**
+     * By default, signal a MissingBackressureException due to lack of requests.
+     */
+    public static final BackpressureOverflow.Strategy ON_OVERFLOW_DEFAULT = ON_OVERFLOW_ERROR;
+
+    /**
+     * Drop the oldest value in the buffer.
+     */
+    public static final BackpressureOverflow.Strategy ON_OVERFLOW_DROP_OLDEST = DropOldest.INSTANCE;
+
+    /**
+     * Drop the latest value.
+     */
+    public static final BackpressureOverflow.Strategy ON_OVERFLOW_DROP_LATEST = DropLatest.INSTANCE;
+
+    /**
+     * Represents a callback called when a value is about to be dropped
+     * due to lack of downstream requests.
+     */
     public interface Strategy {
 
         /**
@@ -35,14 +59,6 @@ public final class BackpressureOverflow {
          */
         boolean mayAttemptDrop() throws MissingBackpressureException;
     }
-
-    public static final BackpressureOverflow.Strategy ON_OVERFLOW_DEFAULT = Error.INSTANCE;
-
-    public static final BackpressureOverflow.Strategy ON_OVERFLOW_ERROR = Error.INSTANCE;
-
-    public static final BackpressureOverflow.Strategy ON_OVERFLOW_DROP_OLDEST = DropOldest.INSTANCE;
-
-    public static final BackpressureOverflow.Strategy ON_OVERFLOW_DROP_LATEST = DropLatest.INSTANCE;
 
     /**
      * Drop oldest items from the buffer making room for newer ones.

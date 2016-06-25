@@ -46,6 +46,11 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
     final TimeUnit unit;
     final Scheduler scheduler;
     final int size;
+    /** Indicate the current subject should complete and a new subject be emitted. */
+    static final Object NEXT_SUBJECT = new Object();
+    /** For error and completion indication. */
+    static final NotificationLite<Object> NL = NotificationLite.instance();
+    
     
     public OperatorWindowWithTime(long timespan, long timeshift, TimeUnit unit, int size, Scheduler scheduler) {
         this.timespan = timespan;
@@ -73,11 +78,6 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
         s.scheduleChunk();
         return s;
     }
-    /** Indicate the current subject should complete and a new subject be emitted. */
-    static final Object NEXT_SUBJECT = new Object();
-    /** For error and completion indication. */
-    static final NotificationLite<Object> nl = NotificationLite.instance();
-    
     /** The immutable windowing state with one subject. */
     static final class State<T> {
         final Observer<T> consumer;
@@ -187,11 +187,11 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                         return false;
                     }
                 } else
-                if (nl.isError(o)) {
-                    error(nl.getError(o));
+                if (NL.isError(o)) {
+                    error(NL.getError(o));
                     break;
                 } else
-                if (nl.isCompleted(o)) {
+                if (NL.isCompleted(o)) {
                     complete();
                     break;
                 } else {
@@ -244,7 +244,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
             synchronized (guard) {
                 if (emitting) {
                     // drop any queued action and terminate asap
-                    queue = Collections.<Object>singletonList(nl.error(e));
+                    queue = Collections.<Object>singletonList(NL.error(e));
                     return;
                 }
                 queue = null;
@@ -278,7 +278,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                     if (queue == null) {
                         queue = new ArrayList<Object>();
                     }
-                    queue.add(nl.completed());
+                    queue.add(NL.completed());
                     return;
                 }
                 localQueue = queue;

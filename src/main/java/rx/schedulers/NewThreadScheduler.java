@@ -22,7 +22,7 @@ import rx.Scheduler;
  */
 @Deprecated
 // Class was part of public API.
-public final class NewThreadScheduler extends Scheduler {
+public final class NewThreadScheduler extends Scheduler { // NOPMD 
     private NewThreadScheduler() {
         throw new AssertionError();
     }

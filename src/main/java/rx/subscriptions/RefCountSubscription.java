@@ -29,7 +29,7 @@ public final class RefCountSubscription implements Subscription {
     static final State EMPTY_STATE = new State(false, 0);
     final AtomicReference<State> state = new AtomicReference<State>(EMPTY_STATE);
 
-    private static final class State {
+    static final class State {
         final boolean isUnsubscribed;
         final int children;
 
@@ -125,7 +125,7 @@ public final class RefCountSubscription implements Subscription {
     }
 
     /** The individual sub-subscriptions. */
-    private static final class InnerSubscription extends AtomicInteger implements Subscription {
+    static final class InnerSubscription extends AtomicInteger implements Subscription {
         /** */
         private static final long serialVersionUID = 7005765588239987643L;
         

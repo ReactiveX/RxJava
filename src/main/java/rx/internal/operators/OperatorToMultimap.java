@@ -39,6 +39,12 @@ import rx.observers.Subscribers;
  * @param <V> the multimap-value type
  */
 public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collection<V>>, T> {
+
+    final Func1<? super T, ? extends K> keySelector;
+    final Func1<? super T, ? extends V> valueSelector;
+    private final Func0<? extends Map<K, Collection<V>>> mapFactory;
+    final Func1<? super K, ? extends Collection<V>> collectionFactory;
+
     /**
      * The default multimap factory returning a HashMap.
      * @param <K> the key type
@@ -64,11 +70,6 @@ public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collec
             return new ArrayList<V>();
         }
     }
-
-    final Func1<? super T, ? extends K> keySelector;
-    final Func1<? super T, ? extends V> valueSelector;
-    private final Func0<? extends Map<K, Collection<V>>> mapFactory;
-    final Func1<? super K, ? extends Collection<V>> collectionFactory;
 
     /**
      * ToMultimap with key selector, custom value selector,

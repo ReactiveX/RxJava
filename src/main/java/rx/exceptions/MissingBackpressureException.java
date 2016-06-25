@@ -52,7 +52,7 @@ public class MissingBackpressureException extends Exception {
      * Constructs the exception without any custom message.
      */
     public MissingBackpressureException() {
-        
+        super();
     }
 
     /**

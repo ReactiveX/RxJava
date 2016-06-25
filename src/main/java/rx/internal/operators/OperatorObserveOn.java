@@ -89,7 +89,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
     }
 
     /** Observe through individual queue per observer. */
-    private static final class ObserveOnSubscriber<T> extends Subscriber<T> implements Action0 {
+    static final class ObserveOnSubscriber<T> extends Subscriber<T> implements Action0 {
         final Subscriber<? super T> child;
         final Scheduler.Worker recursiveScheduler;
         final NotificationLite<T> on;

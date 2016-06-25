@@ -35,7 +35,11 @@ public final class CompositeSubscription implements Subscription {
     private Set<Subscription> subscriptions;
     private volatile boolean unsubscribed;
 
+    /**
+     * Constructs an empty Composite subscription.
+     */
     public CompositeSubscription() {
+        // start empty
     }
 
     public CompositeSubscription(final Subscription... subscriptions) {

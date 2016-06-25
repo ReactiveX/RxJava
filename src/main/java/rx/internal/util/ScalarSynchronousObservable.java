@@ -34,6 +34,9 @@ import rx.plugins.*;
  * @param <T> the value type
  */
 public final class ScalarSynchronousObservable<T> extends Observable<T> {
+    /** The constant scalar value to emit on request. */
+    final T t;
+
     /**
      * Indicates that the Producer used by this Observable should be fully
      * threadsafe. It is possible, but unlikely that multiple concurrent
@@ -69,9 +72,6 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
         return new ScalarSynchronousObservable<T>(t);
     }
 
-    /** The constant scalar value to emit on request. */
-    final T t;
-
     protected ScalarSynchronousObservable(final T t) {
         super(RxJavaHooks.onCreate(new JustOnSubscribe<T>(t)));
         this.t = t;
@@ -93,7 +93,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
      * @return the new observable
      */
     public Observable<T> scalarScheduleOn(final Scheduler scheduler) {
-        final Func1<Action0, Subscription> onSchedule;
+        Func1<Action0, Subscription> onSchedule;
         if (scheduler instanceof EventLoopsScheduler) {
             final EventLoopsScheduler els = (EventLoopsScheduler) scheduler;
             onSchedule = new Func1<Action0, Subscription>() {

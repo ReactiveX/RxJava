@@ -53,13 +53,16 @@ import rx.subscriptions.CompositeSubscription;
  *            the type of the items emitted by both the source and merged {@code Observable}s
  */
 public final class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
+    final boolean delayErrors;
+    final int maxConcurrent;
+
     /** Lazy initialization via inner-class holder. */
-    private static final class HolderNoDelay {
+    static final class HolderNoDelay {
         /** A singleton instance. */
         static final OperatorMerge<Object> INSTANCE = new OperatorMerge<Object>(false, Integer.MAX_VALUE);
     }
     /** Lazy initialization via inner-class holder. */
-    private static final class HolderDelayErrors {
+    static final class HolderDelayErrors {
         /** A singleton instance. */
         static final OperatorMerge<Object> INSTANCE = new OperatorMerge<Object>(true, Integer.MAX_VALUE);
     }
@@ -91,9 +94,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         }
         return new OperatorMerge<T>(delayErrors, maxConcurrent);
     }
-
-    final boolean delayErrors;
-    final int maxConcurrent;
 
     OperatorMerge(boolean delayErrors, int maxConcurrent) {
         this.delayErrors = delayErrors;
@@ -824,7 +824,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         volatile boolean done;
         volatile RxRingBuffer queue;
         int outstanding;
-        static final int limit = RxRingBuffer.SIZE / 4;
+        static final int LIMIT = RxRingBuffer.SIZE / 4;
         
         public InnerSubscriber(MergeSubscriber<T> parent, long id) {
             this.parent = parent;
@@ -852,7 +852,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         }
         public void requestMore(long n) {
             int r = outstanding - (int)n;
-            if (r > limit) {
+            if (r > LIMIT) {
                 outstanding = r;
                 return;
             }

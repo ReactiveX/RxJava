@@ -42,7 +42,7 @@ public final class OperatorSkip<T> implements Observable.Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         return new Subscriber<T>(child) {
 
-            int skipped = 0;
+            int skipped;
 
             @Override
             public void onCompleted() {

@@ -52,7 +52,7 @@ public final class OperatorElementAt<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         Subscriber<T> parent = new Subscriber<T>() {
 
-            private int currentIndex = 0;
+            private int currentIndex;
 
             @Override
             public void onNext(T value) {

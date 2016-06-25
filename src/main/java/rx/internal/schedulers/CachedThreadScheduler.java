@@ -28,12 +28,22 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
     private static final TimeUnit KEEP_ALIVE_UNIT = TimeUnit.SECONDS;
     
     static final ThreadWorker SHUTDOWN_THREADWORKER;
+
+    static final CachedWorkerPool NONE;
+
+    final ThreadFactory threadFactory;
+
+    final AtomicReference<CachedWorkerPool> pool;
+    
     static {
         SHUTDOWN_THREADWORKER = new ThreadWorker(RxThreadFactory.NONE);
         SHUTDOWN_THREADWORKER.unsubscribe();
+
+        NONE = new CachedWorkerPool(null, 0, null);
+        NONE.shutdown();
     }
     
-    private static final class CachedWorkerPool {
+    static final class CachedWorkerPool {
         private final ThreadFactory threadFactory;
         private final long keepAliveTime;
         private final ConcurrentLinkedQueue<ThreadWorker> expiringWorkerQueue;
@@ -131,15 +141,6 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         }
     }
 
-    final ThreadFactory threadFactory;
-    final AtomicReference<CachedWorkerPool> pool;
-    
-    static final CachedWorkerPool NONE;
-    static {
-        NONE = new CachedWorkerPool(null, 0, null);
-        NONE.shutdown();
-    }
-    
     public CachedThreadScheduler(ThreadFactory threadFactory) {
         this.threadFactory = threadFactory;
         this.pool = new AtomicReference<CachedWorkerPool>(NONE);
@@ -173,7 +174,7 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         return new EventLoopWorker(pool.get());
     }
 
-    private static final class EventLoopWorker extends Scheduler.Worker {
+    static final class EventLoopWorker extends Scheduler.Worker {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final CachedWorkerPool pool;
         private final ThreadWorker threadWorker;
@@ -226,7 +227,7 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         }
     }
 
-    private static final class ThreadWorker extends NewThreadWorker {
+    static final class ThreadWorker extends NewThreadWorker {
         private long expirationTime;
 
         ThreadWorker(ThreadFactory threadFactory) {

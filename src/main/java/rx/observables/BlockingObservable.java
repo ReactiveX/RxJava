@@ -23,7 +23,7 @@ import rx.*;
 import rx.Observable;
 import rx.Observer;
 import rx.annotations.Experimental;
-import rx.exceptions.OnErrorNotImplementedException;
+import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.util.BlockingUtils;
@@ -52,6 +52,15 @@ import rx.subscriptions.Subscriptions;
 public final class BlockingObservable<T> {
 
     private final Observable<? extends T> o;
+
+    /** Constant to indicate the onStart method should be called. */
+    static final Object ON_START = new Object();
+
+    /** Constant indicating the setProducer method should be called. */
+    static final Object SET_PRODUCER = new Object();
+
+    /** Indicates an unsubscription happened */
+    static final Object UNSUBSCRIBE = new Object();
 
     private BlockingObservable(Observable<? extends T> o) {
         this.o = o;
@@ -129,11 +138,7 @@ public final class BlockingObservable<T> {
         BlockingUtils.awaitForComplete(latch, subscription);
 
         if (exceptionFromOnError.get() != null) {
-            if (exceptionFromOnError.get() instanceof RuntimeException) {
-                throw (RuntimeException) exceptionFromOnError.get();
-            } else {
-                throw new RuntimeException(exceptionFromOnError.get());
-            }
+            Exceptions.propagate(exceptionFromOnError.get());
         }
     }
 
@@ -457,11 +462,7 @@ public final class BlockingObservable<T> {
         BlockingUtils.awaitForComplete(latch, subscription);
 
         if (returnException.get() != null) {
-            if (returnException.get() instanceof RuntimeException) {
-                throw (RuntimeException) returnException.get();
-            } else {
-                throw new RuntimeException(returnException.get());
-            }
+            Exceptions.propagate(returnException.get());
         }
 
         return returnItem.get();
@@ -478,7 +479,7 @@ public final class BlockingObservable<T> {
         Subscription s = ((Observable<T>)o).subscribe(new Subscriber<T>() {
             @Override
             public void onNext(T t) {
-                
+                // deliberately ignored
             }
             @Override
             public void onError(Throwable e) {
@@ -495,11 +496,7 @@ public final class BlockingObservable<T> {
         BlockingUtils.awaitForComplete(cdl, s);
         Throwable e = error[0];
         if (e != null) {
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            } else {
-                throw new RuntimeException(e);
-            }
+            Exceptions.propagate(e);
         }
     }
     
@@ -546,15 +543,6 @@ public final class BlockingObservable<T> {
         }
     }
     
-    /** Constant to indicate the onStart method should be called. */
-    static final Object ON_START = new Object();
-
-    /** Constant indicating the setProducer method should be called. */
-    static final Object SET_PRODUCER = new Object();
-
-    /** Indicates an unsubscription happened */
-    static final Object UNSUBSCRIBE = new Object();
-
     /**
      * Subscribes to the source and calls the Subscriber methods on the current thread.
      * <p>

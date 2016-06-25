@@ -19,6 +19,11 @@ import rx.plugins.RxJavaHooks;
 
 public final class RxJavaPluginUtils {
 
+    /** Utility class. */
+    private RxJavaPluginUtils() {
+        throw new IllegalStateException("No instances!");
+    }
+    
     public static void handleException(Throwable e) {
         try {
             RxJavaHooks.onError(e);
@@ -33,8 +38,8 @@ public final class RxJavaPluginUtils {
          * Since the plugin should never throw this is a safety net
          * and will complain loudly to System.err so it gets fixed.
          */
-        System.err.println("RxJavaErrorHandler threw an Exception. It shouldn't. => " + pluginException.getMessage());
-        pluginException.printStackTrace();
+        System.err.println("RxJavaErrorHandler threw an Exception. It shouldn't. => " + pluginException.getMessage()); // NOPMD 
+        pluginException.printStackTrace(); // NOPMD 
     }
     
 }

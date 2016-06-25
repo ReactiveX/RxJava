@@ -53,6 +53,11 @@ import rx.subjects.BehaviorSubject;
 import rx.subscriptions.SerialSubscription;
 
 public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
+    final Observable<T> source;
+    private final Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> controlHandlerFunction;
+    final boolean stopOnComplete;
+    final boolean stopOnError;
+    private final Scheduler scheduler;
 
     static final Func1<Observable<? extends Notification<?>>, Observable<?>> REDO_INFINITE = new Func1<Observable<? extends Notification<?>>, Observable<?>>() {
         @Override
@@ -77,7 +82,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
         public Observable<?> call(Observable<? extends Notification<?>> ts) {
             return ts.map(new Func1<Notification<?>, Notification<?>>() {
 
-                int num=0;
+                int num;
                 
                 @Override
                 public Notification<?> call(Notification<?> terminalNotification) {
@@ -111,10 +116,11 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 @Override
                 public Notification<Integer> call(Notification<Integer> n, Notification<?> term) {
                     final int value = n.getValue();
-                    if (predicate.call(value, term.getThrowable()))
+                    if (predicate.call(value, term.getThrowable())) {
                         return Notification.createOnNext(value + 1);
-                    else
+                    } else {
                         return (Notification<Integer>) term;
+                    }
                 }
             });
         }
@@ -125,10 +131,12 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     }
 
     public static <T> Observable<T> retry(Observable<T> source, final long count) {
-        if (count < 0)
+        if (count < 0) {
             throw new IllegalArgumentException("count >= 0 expected");
-        if (count == 0)
+        }
+        if (count == 0) {
             return source;
+        }
         return retry(source, new RedoFinite(count));
     }
 
@@ -156,8 +164,9 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
         if(count == 0) {
             return Observable.empty();
         }
-        if (count < 0)
+        if (count < 0) {
             throw new IllegalArgumentException("count >= 0 expected");
+        }
         return repeat(source, new RedoFinite(count - 1), scheduler);
     }
 
@@ -172,12 +181,6 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     public static <T> Observable<T> redo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
         return create(new OnSubscribeRedo<T>(source, notificationHandler, false, false, scheduler));
     }
-
-    final Observable<T> source;
-    private final Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> controlHandlerFunction;
-    final boolean stopOnComplete;
-    final boolean stopOnError;
-    private final Scheduler scheduler;
 
     private OnSubscribeRedo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> f, boolean stopOnComplete, boolean stopOnError,
             Scheduler scheduler) {
@@ -362,8 +365,9 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 if (n > 0) {
                     BackpressureUtils.getAndAddRequest(consumerCapacity, n);
                     arbiter.request(n);
-                    if (resumeBoundary.compareAndSet(true, false))
+                    if (resumeBoundary.compareAndSet(true, false)) {
                         worker.schedule(subscribeToSource);
+                    }
                 }
             }
         });

@@ -36,8 +36,7 @@ abstract class AtomicReferenceArrayQueue<E> extends AbstractQueue<E> {
     @Override
     public void clear() {
         // we have to test isEmpty because of the weaker poll() guarantee
-        while (poll() != null || !isEmpty())
-            ;
+        while (poll() != null || !isEmpty()) ; // NOPMD 
     }
     protected final int calcElementOffset(long index, int mask) {
         return (int)index & mask;

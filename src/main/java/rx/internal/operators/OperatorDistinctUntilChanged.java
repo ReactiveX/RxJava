@@ -31,7 +31,7 @@ public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T>,
     
     final Func2<? super U, ? super U, Boolean> comparator;
     
-    private static class Holder {
+    static final class Holder {
         static final OperatorDistinctUntilChanged<?,?> INSTANCE = new OperatorDistinctUntilChanged<Object,Object>(UtilityFunctions.identity());
     }
     
@@ -72,14 +72,14 @@ public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T>,
             boolean hasPrevious;
             @Override
             public void onNext(T t) {
-                U currentKey = previousKey;
-                final U key;
+                U key;
                 try {
                     key = keySelector.call(t);
                 } catch (Throwable e) {
                     Exceptions.throwOrReport(e, child, t);
                     return;
                 }
+                U currentKey = previousKey;
                 previousKey = key;
                 
                 if (hasPrevious) {

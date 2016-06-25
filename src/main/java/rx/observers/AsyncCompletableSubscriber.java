@@ -58,6 +58,10 @@ import rx.internal.util.RxJavaPluginUtils;
  */
 @Experimental
 public abstract class AsyncCompletableSubscriber implements CompletableSubscriber, Subscription {
+    /**
+     * Indicates the unsubscribed state.
+     */
+    static final Unsubscribed UNSUBSCRIBED = new Unsubscribed();
 
     /** 
      * Holds onto a deferred subscription and allows asynchronous cancellation before the call
@@ -81,6 +85,7 @@ public abstract class AsyncCompletableSubscriber implements CompletableSubscribe
      * Called before the first onSubscribe() call succeeds.
      */
     protected void onStart() {
+        // default behavior is no op
     }
     
     @Override
@@ -106,11 +111,6 @@ public abstract class AsyncCompletableSubscriber implements CompletableSubscribe
         }
         
     }
-    
-    /**
-     * Indicates the unsubscribed state.
-     */
-    static final Unsubscribed UNSUBSCRIBED = new Unsubscribed();
     
     static final class Unsubscribed implements Subscription {
 

@@ -25,7 +25,7 @@ import rx.Subscriber;
 
 public class OperatorTakeLastOne<T> implements Operator<T, T> {
 
-    private static class Holder {
+    static final class Holder {
         static final OperatorTakeLastOne<Object> INSTANCE = new OperatorTakeLastOne<Object>();
     }
 
@@ -35,7 +35,7 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
     }
 
     OperatorTakeLastOne() {
-
+        // singleton
     }
 
     @Override
@@ -52,7 +52,7 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
         return parent;
     }
 
-    private static class ParentSubscriber<T> extends Subscriber<T> {
+    static final class ParentSubscriber<T> extends Subscriber<T> {
 
         private final static int NOT_REQUESTED_NOT_COMPLETED = 0;
         private final static int NOT_REQUESTED_COMPLETED = 1;
@@ -109,9 +109,10 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
                             emit();
                             return;
                         }
-                    } else
+                    } else {
                         // already requested so we exit
                         return;
+                    }
                 }
             }
         }
@@ -141,9 +142,10 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
                         emit();
                         return;
                     }
-                } else
+                } else {
                     // already completed so we exit
                     return;
+                }
             }
         }
 
@@ -171,8 +173,9 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
                     return;
                 }
             }
-            if (!isUnsubscribed())
+            if (!isUnsubscribed()) {
                 child.onCompleted();
+            }
         }
 
         @Override

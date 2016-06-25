@@ -26,7 +26,11 @@ import rx.Observable.OnSubscribe;
 public enum EmptyObservableHolder implements OnSubscribe<Object> {
     INSTANCE
     ;
+
+    /** The singleton instance. */
+    static final Observable<Object> EMPTY = Observable.create(INSTANCE);
     
+
     /**
      * Returns a type-corrected singleton instance of the empty Observable.
      * @param <T> the value type
@@ -36,9 +40,6 @@ public enum EmptyObservableHolder implements OnSubscribe<Object> {
     public static <T> Observable<T> instance() {
         return (Observable<T>)EMPTY;
     }
-    
-    /** The singleton instance. */
-    static final Observable<Object> EMPTY = Observable.create(INSTANCE);
     
     @Override
     public void call(Subscriber<? super Object> child) {

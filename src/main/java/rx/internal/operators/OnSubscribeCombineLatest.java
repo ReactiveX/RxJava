@@ -245,10 +245,9 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                 }
                 
                 long requestAmount = localRequested.get();
-                boolean unbounded = requestAmount == Long.MAX_VALUE;
                 long emitted = 0L;
                 
-                while (requestAmount != 0L) {
+                while (emitted != requestAmount) {
                     
                     boolean d = done;
                     @SuppressWarnings("unchecked")
@@ -287,14 +286,11 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                     
                     cs.requestMore(1);
                     
-                    requestAmount--;
-                    emitted--;
+                    emitted++;
                 }
                 
-                if (emitted != 0L) {
-                    if (!unbounded) {
-                        localRequested.addAndGet(emitted);
-                    }
+                if (emitted != 0L && requestAmount != Long.MAX_VALUE) {
+                    BackpressureUtils.produced(localRequested, emitted);
                 }
                 
                 missed = addAndGet(-missed);

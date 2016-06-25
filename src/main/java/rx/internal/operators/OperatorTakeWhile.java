@@ -48,9 +48,9 @@ public final class OperatorTakeWhile<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
         Subscriber<T> s = new Subscriber<T>(subscriber, false) {
 
-            private int counter = 0;
+            private int counter;
 
-            private boolean done = false;
+            private boolean done;
 
             @Override
             public void onNext(T t) {

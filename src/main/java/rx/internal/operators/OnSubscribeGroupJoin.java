@@ -38,11 +38,11 @@ import rx.subscriptions.*;
  * @param <R> the result value type
  */
 public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscribe<R> {
-    protected final Observable<T1> left;
-    protected final Observable<T2> right;
-    protected final Func1<? super T1, ? extends Observable<D1>> leftDuration;
-    protected final Func1<? super T2, ? extends Observable<D2>> rightDuration;
-    protected final Func2<? super T1, ? super Observable<T2>, ? extends R> resultSelector;
+    final Observable<T1> left;
+    final Observable<T2> right;
+    final Func1<? super T1, ? extends Observable<D1>> leftDuration;
+    final Func1<? super T2, ? extends Observable<D2>> rightDuration;
+    final Func2<? super T1, ? super Observable<T2>, ? extends R> resultSelector;
 
     public OnSubscribeGroupJoin(
             Observable<T1> left,
@@ -75,9 +75,9 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
         /** Guarded by guard. */
         int rightIds;
         /** Guarded by guard. */
-        final Map<Integer, Observer<T2>> leftMap = new HashMap<Integer, Observer<T2>>();
+        final Map<Integer, Observer<T2>> leftMap = new HashMap<Integer, Observer<T2>>(); // NOPMD 
         /** Guarded by guard. */
-        final Map<Integer, T2> rightMap = new HashMap<Integer, T2>();
+        final Map<Integer, T2> rightMap = new HashMap<Integer, T2>(); // NOPMD 
         /** Guarded by guard. */
         boolean leftDone;
         /** Guarded by guard. */

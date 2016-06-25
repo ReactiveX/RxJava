@@ -34,6 +34,8 @@ import rx.internal.util.RxJavaPluginUtils;
  *            the type of items to be emitted by this {@code Operator}
  */
 public final class OperatorMapPair<T, U, R> implements Operator<Observable<? extends R>, T> {
+    final Func1<? super T, ? extends Observable<? extends U>> collectionSelector;
+    final Func2<? super T, ? super U, ? extends R> resultSelector;
 
     /**
      * Creates the function that generates a {@code Observable} based on an item emitted by another {@code Observable}.
@@ -53,9 +55,6 @@ public final class OperatorMapPair<T, U, R> implements Operator<Observable<? ext
             }
         };
     }
-
-    final Func1<? super T, ? extends Observable<? extends U>> collectionSelector;
-    final Func2<? super T, ? super U, ? extends R> resultSelector;
 
     public OperatorMapPair(final Func1<? super T, ? extends Observable<? extends U>> collectionSelector, final Func2<? super T, ? super U, ? extends R> resultSelector) {
         this.collectionSelector = collectionSelector;

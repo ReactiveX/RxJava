@@ -31,7 +31,9 @@ import rx.exceptions.Exceptions;
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins: <a
  * href="https://github.com/ReactiveX/RxJava/wiki/Plugins">https://github.com/ReactiveX/RxJava/wiki/Plugins</a>.
  */
-public abstract class RxJavaErrorHandler {
+public abstract class RxJavaErrorHandler { // NOPMD 
+
+    protected static final String ERROR_IN_RENDERING_SUFFIX = ".errorRendering";
 
     /**
      * Receives all {@code Exception}s from an {@link Observable} passed to
@@ -47,8 +49,6 @@ public abstract class RxJavaErrorHandler {
     public void handleError(Throwable e) {
         // do nothing by default
     }
-
-    protected static final String ERROR_IN_RENDERING_SUFFIX = ".errorRendering";
 
     /**
      * Receives items causing {@code OnErrorThrowable.OnNextValue} and gives a chance to choose the String

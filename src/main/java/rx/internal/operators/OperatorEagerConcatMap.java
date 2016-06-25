@@ -73,7 +73,7 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
         final int bufferSize;
         final Subscriber<? super R> actual;
         
-        final LinkedList<EagerInnerSubscriber<R>> subscribers;
+        final Queue<EagerInnerSubscriber<R>> subscribers;
         
         volatile boolean done;
         Throwable error;
@@ -131,10 +131,12 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
                 return;
             }
             
-            EagerInnerSubscriber<R> inner = new EagerInnerSubscriber<R>(this, bufferSize);
             if (cancelled) {
                 return;
             }
+            
+            EagerInnerSubscriber<R> inner = new EagerInnerSubscriber<R>(this, bufferSize);
+            
             synchronized (subscribers) {
                 if (cancelled) {
                     return;
@@ -202,7 +204,6 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
                 if (!empty) {
                     long requestedAmount = requested.get();
                     long emittedAmount = 0L;
-                    boolean unbounded = requestedAmount == Long.MAX_VALUE;
                     
                     Queue<Object> innerQueue = innerSubscriber.queue;
                     boolean innerDone = false;
@@ -235,7 +236,7 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
                             break;
                         }
                         
-                        if (requestedAmount == 0L) {
+                        if (requestedAmount == emittedAmount) {
                             break;
                         }
                         
@@ -248,16 +249,15 @@ public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {
                             return;
                         }
                         
-                        requestedAmount--;
-                        emittedAmount--;
+                        emittedAmount++;
                     }
                     
                     if (emittedAmount != 0L) {
-                        if (!unbounded) {
-                            requested.addAndGet(emittedAmount);
+                        if (requestedAmount != Long.MAX_VALUE) {
+                            BackpressureUtils.produced(requested, emittedAmount);
                         }
                         if (!innerDone) {
-                            innerSubscriber.requestMore(-emittedAmount);
+                            innerSubscriber.requestMore(emittedAmount);
                         }
                     }
                     

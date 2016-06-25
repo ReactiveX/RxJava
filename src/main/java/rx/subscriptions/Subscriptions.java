@@ -24,6 +24,11 @@ import rx.functions.Action0;
  * Helper methods and utilities for creating and working with {@link Subscription} objects
  */
 public final class Subscriptions {
+    /**
+     * A {@link Subscription} that does nothing when its unsubscribe method is called.
+     */
+    private static final Unsubscribed UNSUBSCRIBED = new Unsubscribed();
+
     private Subscriptions() {
         throw new IllegalStateException("No instances!");
     }
@@ -85,7 +90,7 @@ public final class Subscriptions {
     }
 
         /** Naming classes helps with debugging. */
-    private static final class FutureSubscription implements Subscription {
+    static final class FutureSubscription implements Subscription {
         final Future<?> f;
 
         public FutureSubscription(Future<?> f) {
@@ -115,14 +120,11 @@ public final class Subscriptions {
         return new CompositeSubscription(subscriptions);
     }
 
-    /**
-     * A {@link Subscription} that does nothing when its unsubscribe method is called.
-     */
-    private static final Unsubscribed UNSUBSCRIBED = new Unsubscribed();
         /** Naming classes helps with debugging. */
     static final class Unsubscribed implements Subscription {
         @Override
         public void unsubscribe() {
+            // deliberately ignored
         }
 
         @Override

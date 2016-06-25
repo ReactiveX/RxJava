@@ -30,9 +30,9 @@ import rx.exceptions.CompositeException;
 public class TestObserver<T> implements Observer<T> {
 
     private final Observer<T> delegate;
-    private final ArrayList<T> onNextEvents = new ArrayList<T>();
-    private final ArrayList<Throwable> onErrorEvents = new ArrayList<Throwable>();
-    private final ArrayList<Notification<T>> onCompletedEvents = new ArrayList<Notification<T>>();
+    private final List<T> onNextEvents = new ArrayList<T>();
+    private final List<Throwable> onErrorEvents = new ArrayList<Throwable>();
+    private final List<Notification<T>> onCompletedEvents = new ArrayList<Notification<T>>();
 
     public TestObserver(Observer<T> delegate) {
         this.delegate = delegate;
@@ -160,7 +160,7 @@ public class TestObserver<T> implements Observer<T> {
             assertionError("Received both an onError and onCompleted. Should be one or the other.");
         }
 
-        if (onCompletedEvents.size() == 0 && onErrorEvents.size() == 0) {
+        if (onCompletedEvents.isEmpty() && onErrorEvents.isEmpty()) {
             assertionError("No terminal events received.");
         }
     }
@@ -173,17 +173,16 @@ public class TestObserver<T> implements Observer<T> {
     final void assertionError(String message) {
         StringBuilder b = new StringBuilder(message.length() + 32);
         
-        b.append(message);
+        b.append(message)
+        .append(" (");
         
-        
-        b.append(" (");
         int c = onCompletedEvents.size();
-        b.append(c);
-        b.append(" completion");
+        b.append(c)
+        .append(" completion");
         if (c != 1) {
-            b.append("s");
+            b.append('s');
         }
-        b.append(")");
+        b.append(')');
         
         if (!onErrorEvents.isEmpty()) {
             int size = onErrorEvents.size();
@@ -191,9 +190,9 @@ public class TestObserver<T> implements Observer<T> {
             .append(size)
             .append(" error");
             if (size != 1) {
-                b.append("s");
+                b.append('s');
             }
-            b.append(")");
+            b.append(')');
         }
         
         AssertionError ae = new AssertionError(b.toString());
@@ -208,21 +207,21 @@ public class TestObserver<T> implements Observer<T> {
     }
     
     // do nothing ... including swallowing errors
-    private static Observer<Object> INERT = new Observer<Object>() {
+    private static final Observer<Object> INERT = new Observer<Object>() {
 
         @Override
         public void onCompleted() {
-            
+            // deliberately ignored
         }
 
         @Override
         public void onError(Throwable e) {
-            
+            // deliberately ignored
         }
 
         @Override
         public void onNext(Object t) {
-            
+             // deliberately ignored
         }
         
     };

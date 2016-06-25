@@ -36,7 +36,7 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> observer) {
         return new Subscriber<T>(observer) {
 
-            private boolean done = false;
+            private boolean done;
 
             @Override
             public void onCompleted() {

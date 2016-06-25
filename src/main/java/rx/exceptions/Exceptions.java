@@ -26,6 +26,9 @@ import rx.annotations.Experimental;
  * manage fatal and regular exception delivery.
  */
 public final class Exceptions {
+
+    private static final int MAX_DEPTH = 25;
+
     /** Utility class, no instances. */
     private Exceptions() {
         throw new IllegalStateException("No instances!");
@@ -52,7 +55,7 @@ public final class Exceptions {
         } else if (t instanceof Error) {
             throw (Error) t;
         } else {
-            throw new RuntimeException(t);
+            throw new RuntimeException(t); // NOPMD 
         }
     }
     /**
@@ -96,8 +99,6 @@ public final class Exceptions {
         }
     }
 
-    private static final int MAX_DEPTH = 25;
-
     /**
      * Adds a {@code Throwable} to a causality-chain of Throwables, as an additional cause (if it does not
      * already appear in the chain among the causes).
@@ -126,7 +127,7 @@ public final class Exceptions {
         // we now have 'e' as the last in the chain
         try {
             e.initCause(cause);
-        } catch (Throwable t) {
+        } catch (Throwable t) { // NOPMD 
             // ignore
             // the javadocs say that some Throwables (depending on how they're made) will never
             // let me call initCause without blowing up even if it returns null
@@ -171,7 +172,7 @@ public final class Exceptions {
                 } else if (t instanceof Error) {
                     throw (Error) t;
                 } else {
-                    throw new RuntimeException(t);
+                    throw new RuntimeException(t); // NOPMD 
                 }
             }
             throw new CompositeException(exceptions);

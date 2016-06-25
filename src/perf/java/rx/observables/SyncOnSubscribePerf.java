@@ -42,7 +42,7 @@ public class SyncOnSubscribePerf {
         SyncOnSubscribePerf perf = new SyncOnSubscribePerf();
         perf.benchSyncOnSubscribe(singleInput);
     }
-    private static class generated {
+    static class generated {
         private static Blackhole _jmh_tryInit_() {
             return new Blackhole();
         }

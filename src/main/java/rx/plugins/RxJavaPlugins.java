@@ -58,6 +58,9 @@ public class RxJavaPlugins {
     private final AtomicReference<RxJavaCompletableExecutionHook> completableExecutionHook = new AtomicReference<RxJavaCompletableExecutionHook>();
     private final AtomicReference<RxJavaSchedulersHook> schedulersHook = new AtomicReference<RxJavaSchedulersHook>();
 
+    static final RxJavaErrorHandler DEFAULT_ERROR_HANDLER = new RxJavaErrorHandler() {
+    };
+
     /**
      * Retrieves the single {@code RxJavaPlugins} instance.
      *
@@ -71,7 +74,7 @@ public class RxJavaPlugins {
     }
 
     /* package accessible for unit tests */RxJavaPlugins() {
-
+        // nothing to do
     }
     
     /**
@@ -90,9 +93,6 @@ public class RxJavaPlugins {
         INSTANCE.singleExecutionHook.set(null);
         INSTANCE.schedulersHook.set(null);
     }
-
-    static final RxJavaErrorHandler DEFAULT_ERROR_HANDLER = new RxJavaErrorHandler() {
-    };
 
     /**
      * Retrieves an instance of {@link RxJavaErrorHandler} to use based on order of precedence as defined in
@@ -277,14 +277,14 @@ public class RxJavaPlugins {
          * System.getProperties as it will never get called in normal operations.
          */
         
-        final String pluginPrefix = "rxjava.plugin.";
+        String pluginPrefix = "rxjava.plugin.";
         
         String defaultKey = pluginPrefix + classSimpleName + ".implementation";
         String implementingClass = props.getProperty(defaultKey);
 
         if (implementingClass == null) {
-            final String classSuffix = ".class";
-            final String implSuffix = ".impl";
+            String classSuffix = ".class";
+            String implSuffix = ".impl";
     
             for (Map.Entry<Object, Object> e : props.entrySet()) {
                 String key = e.getKey().toString();
@@ -299,7 +299,7 @@ public class RxJavaPlugins {
                         implementingClass = props.getProperty(implKey);
                         
                         if (implementingClass == null) {
-                            throw new RuntimeException("Implementing class declaration for " + classSimpleName + " missing: " + implKey);
+                            throw new IllegalStateException("Implementing class declaration for " + classSimpleName + " missing: " + implKey);
                         }
                         
                         break;
@@ -315,13 +315,13 @@ public class RxJavaPlugins {
                 cls = cls.asSubclass(pluginClass);
                 return cls.newInstance();
             } catch (ClassCastException e) {
-                throw new RuntimeException(classSimpleName + " implementation is not an instance of " + classSimpleName + ": " + implementingClass);
+                throw new IllegalStateException(classSimpleName + " implementation is not an instance of " + classSimpleName + ": " + implementingClass, e);
             } catch (ClassNotFoundException e) {
-                throw new RuntimeException(classSimpleName + " implementation class not found: " + implementingClass, e);
+                throw new IllegalStateException(classSimpleName + " implementation class not found: " + implementingClass, e);
             } catch (InstantiationException e) {
-                throw new RuntimeException(classSimpleName + " implementation not able to be instantiated: " + implementingClass, e);
+                throw new IllegalStateException(classSimpleName + " implementation not able to be instantiated: " + implementingClass, e);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(classSimpleName + " implementation not able to be accessed: " + implementingClass, e);
+                throw new IllegalStateException(classSimpleName + " implementation not able to be accessed: " + implementingClass, e);
             }
         }
 

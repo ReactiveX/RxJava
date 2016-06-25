@@ -63,7 +63,7 @@ public final class BooleanSubscription implements Subscription {
     }
 
     @Override
-    public final void unsubscribe() {
+    public void unsubscribe() {
         Action0 action = actionRef.get();
         if (action != EMPTY_ACTION) {
             action = actionRef.getAndSet(EMPTY_ACTION);
@@ -76,7 +76,7 @@ public final class BooleanSubscription implements Subscription {
     static final Action0 EMPTY_ACTION = new Action0() {
         @Override
         public void call() {
-
+            // deliberately no-op
         }
     };
 

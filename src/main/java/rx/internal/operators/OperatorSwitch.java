@@ -37,13 +37,14 @@ import rx.subscriptions.*;
  * @param <T> the value type
  */
 public final class OperatorSwitch<T> implements Operator<T, Observable<? extends T>> {
+    final boolean delayError;
     /** Lazy initialization via inner-class holder. */
-    private static final class Holder {
+    static final class Holder {
         /** A singleton instance. */
         static final OperatorSwitch<Object> INSTANCE = new OperatorSwitch<Object>(false);
     }
     /** Lazy initialization via inner-class holder. */
-    private static final class HolderDelayError {
+    static final class HolderDelayError {
         /** A singleton instance. */
         static final OperatorSwitch<Object> INSTANCE = new OperatorSwitch<Object>(true);
     }
@@ -61,8 +62,6 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         return (OperatorSwitch<T>)Holder.INSTANCE;
     }
 
-    final boolean delayError;
-    
     OperatorSwitch(boolean delayError) { 
         this.delayError = delayError;
     }
@@ -75,7 +74,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         return sws;
     }
 
-    private static final class SwitchSubscriber<T> extends Subscriber<Observable<? extends T>> {
+    static final class SwitchSubscriber<T> extends Subscriber<Observable<? extends T>> {
         final Subscriber<? super T> child;
         final SerialSubscription ssub;
         final boolean delayError;
@@ -267,7 +266,6 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         }
         
         void drain() {
-            boolean localMainDone = mainDone;
             boolean localInnerActive;
             long localRequested;
             Throwable localError;
@@ -288,6 +286,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
             final SpscLinkedArrayQueue<Object> localQueue = queue;
             final AtomicLong localIndex = index;
             final Subscriber<? super T> localChild = child;
+            boolean localMainDone = mainDone;
 
             for (;;) {
 
