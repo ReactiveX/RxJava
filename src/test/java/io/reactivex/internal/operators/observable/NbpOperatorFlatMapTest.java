@@ -430,7 +430,7 @@ public class NbpOperatorFlatMapTest {
         verify(o, never()).onError(any(Throwable.class));
     }
     
-    @Ignore // don't care for any reordering
+    @Ignore("Don't care for any reordering")
     @Test(timeout = 10000)
     public void flatMapRangeAsyncLoop() {
         for (int i = 0; i < 2000; i++) {
