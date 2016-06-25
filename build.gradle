@@ -9,6 +9,7 @@ description = 'RxJava: Reactive Extensions for the JVM – a library for composi
 
 apply plugin: 'java'
 apply plugin: 'pmd'
+apply plugin: 'findbugs'
 apply plugin: 'jacoco'
 apply plugin: 'nebula.rxjava-project'
 
@@ -92,3 +93,17 @@ task pmdPrint(dependsOn: 'pmdMain') << {
 }
 
 build.dependsOn pmdPrint
+
+findbugs {
+    ignoreFailures true
+    toolVersion = '3.0.1'
+    effort = 'max'
+    reportLevel = 'low'
+}
+
+findbugsMain {
+    reports {
+        html.enabled = false // Findbugs can only have on report enabled
+        xml.enabled = true
+    }
+}
