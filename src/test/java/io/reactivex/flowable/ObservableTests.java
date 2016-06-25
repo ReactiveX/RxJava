@@ -270,8 +270,8 @@ public class ObservableTests {
         verify(w).onNext(60);
     }
 
-    @Ignore // FIXME throwing is not allowed from the create?!
-    @Test
+    @Ignore("Throwing is not allowed from the create?!")
+    @Test // FIXME throwing is not allowed from the create?!
     public void testOnSubscribeFails() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
 

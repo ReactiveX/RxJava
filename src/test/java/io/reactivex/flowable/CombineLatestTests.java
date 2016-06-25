@@ -64,7 +64,7 @@ public class CombineLatestTests {
         }
     };
 
-    @Ignore
+    @Ignore("No longer allowed")
     @Test
     public void testNullEmitting() throws Exception {
         // FIXME this is no longer allowed
