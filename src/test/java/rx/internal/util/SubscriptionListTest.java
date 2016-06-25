@@ -328,7 +328,7 @@ public class SubscriptionListTest {
         
         Assert.assertTrue(s0.isUnsubscribed());
 
-        Assert.assertTrue(slist.hasSubscriptions());
+        Assert.assertFalse(slist.hasSubscriptions());
 
         slist.clear();
     }
