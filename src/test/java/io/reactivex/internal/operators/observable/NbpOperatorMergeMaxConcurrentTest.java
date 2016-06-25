@@ -26,7 +26,7 @@ import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.schedulers.IOScheduler;
+import io.reactivex.internal.schedulers.IoScheduler;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -192,7 +192,7 @@ public class NbpOperatorMergeMaxConcurrentTest {
     }
     @Test//(timeout = 20000)
     public void testSimpleAsyncLoop() {
-        IOScheduler ios = (IOScheduler)Schedulers.io();
+        IoScheduler ios = (IoScheduler)Schedulers.io();
         int c = ios.size();
         for (int i = 0; i < 200; i++) {
             testSimpleAsync();
