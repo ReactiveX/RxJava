@@ -13,11 +13,16 @@
 
 package io.reactivex.internal.disposables;
 
-public interface CompositeResource<T> {
+import io.reactivex.disposables.Disposable;
+
+/**
+ * Common interface to add and remove disposables from a container.
+ */
+public interface DisposableContainer {
     
-    boolean add(T resource);
+    boolean add(Disposable d);
     
-    boolean remove(T resource);
+    boolean remove(Disposable d);
     
-    boolean delete(T resource);
+    boolean delete(Disposable d);
 }

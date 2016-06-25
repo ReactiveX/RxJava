@@ -16,8 +16,8 @@ package io.reactivex.internal.schedulers;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.CompositeResource;
+import io.reactivex.disposables.*;
+import io.reactivex.internal.disposables.DisposableContainer;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ScheduledRunnable extends AtomicReferenceArray<Object> implements Runnable, Disposable {
@@ -38,14 +38,13 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
      * @param actual the runnable to wrap, not-null (not verified)
      * @param parent the parent tracking container or null if none
      */
-    public ScheduledRunnable(Runnable actual, CompositeResource<Disposable> parent) {
+    public ScheduledRunnable(Runnable actual, DisposableContainer parent) {
         super(2);
         this.actual = actual;
         this.lazySet(0, parent);
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public void run() {
         try {
             actual.run();
@@ -56,7 +55,7 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
             if (o != DISPOSED && o != null) {
                 // done races with dispose here
                 if (compareAndSet(PARENT_INDEX, o, DONE)) {
-                    ((CompositeResource<Disposable>)o).delete(this);
+                    ((DisposableContainer)o).delete(this);
                 }
             }
             
@@ -99,7 +98,6 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public void dispose() {
         for (;;) {
             Object o = get(FUTURE_INDEX);
@@ -120,7 +118,7 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
                 break;
             }
             if (compareAndSet(PARENT_INDEX, o, DISPOSED)) {
-                ((CompositeResource<Disposable>)o).delete(this);
+                ((DisposableContainer)o).delete(this);
                 return;
             }
         }

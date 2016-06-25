@@ -22,7 +22,7 @@ import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.NotificationLite;
@@ -55,7 +55,7 @@ public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOper
         final ObservableConsumable<B> open;
         final Function<? super B, ? extends ObservableConsumable<V>> close;
         final int bufferSize;
-        final SetCompositeResource<Disposable> resources;
+        final CompositeDisposable resources;
 
         Disposable s;
         
@@ -71,7 +71,7 @@ public final class NbpOperatorWindowBoundarySelector<T, B, V> implements NbpOper
             this.open = open;
             this.close = close;
             this.bufferSize = bufferSize;
-            this.resources = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+            this.resources = new CompositeDisposable();
             this.ws = new ArrayList<UnicastSubject<T>>();
             windows.lazySet(1);
         }

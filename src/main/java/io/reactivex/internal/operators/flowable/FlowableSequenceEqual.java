@@ -20,9 +20,8 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.BiPredicate;
-import io.reactivex.internal.disposables.ArrayCompositeResource;
 import io.reactivex.internal.queue.*;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.Pow2;
 
 public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
@@ -50,7 +49,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
         private static final long serialVersionUID = -6178010334400373240L;
         final Subscriber<? super Boolean> actual;
         final BiPredicate<? super T, ? super T> comparer;
-        final ArrayCompositeResource<Subscription> resources;
+        final ArrayCompositeSubscription resources;
         final Publisher<? extends T> first;
         final Publisher<? extends T> second;
         final EqualSubscriber<T>[] subscribers;
@@ -71,7 +70,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
             this.subscribers = as;
             as[0] = new EqualSubscriber<T>(this, 0, bufferSize);
             as[1] = new EqualSubscriber<T>(this, 1, bufferSize);
-            this.resources = new ArrayCompositeResource<Subscription>(2, SubscriptionHelper.consumeAndCancel());
+            this.resources = new ArrayCompositeSubscription(2);
         }
         
         boolean setSubscription(Subscription s, int index) {

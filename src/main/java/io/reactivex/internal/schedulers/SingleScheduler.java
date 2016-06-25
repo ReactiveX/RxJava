@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.*;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleScheduler extends Scheduler {
@@ -109,13 +109,13 @@ public final class SingleScheduler extends Scheduler {
         
         final ScheduledExecutorService executor;
         
-        final SetCompositeResource<Disposable> tasks;
+        final CompositeDisposable tasks;
         
         volatile boolean disposed;
         
         public ScheduledWorker(ScheduledExecutorService executor) {
             this.executor = executor;
-            this.tasks = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+            this.tasks = new CompositeDisposable();
         }
         
         @Override

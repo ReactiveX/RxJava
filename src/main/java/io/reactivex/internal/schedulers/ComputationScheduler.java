@@ -140,20 +140,20 @@ public final class ComputationScheduler extends Scheduler {
     
 
     private static class EventLoopWorker extends Scheduler.Worker {
-        private final ListCompositeResource<Disposable> serial;
-        private final SetCompositeResource<Disposable> timed;
-        private final ArrayCompositeResource<Disposable> both;
+        private final ListCompositeDisposable serial;
+        private final CompositeDisposable timed;
+        private final ListCompositeDisposable both;
         private final PoolWorker poolWorker;
         
         volatile boolean disposed;
 
         EventLoopWorker(PoolWorker poolWorker) {
             this.poolWorker = poolWorker;
-            this.serial = new ListCompositeResource<Disposable>(Disposables.consumeAndDispose());
-            this.timed = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
-            this.both = new ArrayCompositeResource<Disposable>(2, Disposables.consumeAndDispose());
-            this.both.lazySet(0, serial);
-            this.both.lazySet(1, timed);
+            this.serial = new ListCompositeDisposable();
+            this.timed = new CompositeDisposable();
+            this.both = new ListCompositeDisposable();
+            this.both.add(serial);
+            this.both.add(timed);
         }
 
         @Override

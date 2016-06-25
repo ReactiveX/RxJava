@@ -16,7 +16,7 @@ package io.reactivex.observers;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observer;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.Objects;
 
@@ -36,7 +36,7 @@ public abstract class AsyncObserver<T> implements Observer<T>, Disposable {
     private final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
     /** The resource composite, can be null. */
-    private final ListCompositeResource<Disposable> resources;
+    private final ListCompositeDisposable resources;
     
     /**
      * Constructs an AsyncObserver with resource support.
@@ -50,7 +50,7 @@ public abstract class AsyncObserver<T> implements Observer<T>, Disposable {
      * @param withResources true if resource support should be on.
      */
     public AsyncObserver(boolean withResources) {
-        this.resources = withResources ? new ListCompositeResource<Disposable>(Disposables.consumeAndDispose()) : null;
+        this.resources = withResources ? new ListCompositeDisposable() : null;
     }
 
     /**

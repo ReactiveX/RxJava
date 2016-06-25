@@ -15,6 +15,9 @@ package io.reactivex.disposables;
 import java.util.concurrent.Future;
 
 final class FutureDisposable extends ReferenceDisposable<Future<?>> {
+    /** */
+    private static final long serialVersionUID = 6545242830671168775L;
+    
     private final boolean allowInterrupt;
 
     FutureDisposable(Future<?> run, boolean allowInterrupt) {

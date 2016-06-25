@@ -17,23 +17,18 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObserverResourceWrapper<T, R> extends AtomicReference<Object> implements Observer<T>, Disposable {
+public final class ObserverResourceWrapper<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
     /** */
     private static final long serialVersionUID = -8612022020200669122L;
 
     final Observer<? super T> actual;
-    final Consumer<? super R> disposer;
     
     final AtomicReference<Disposable> subscription = new AtomicReference<Disposable>();
     
-    private static final Object TERMINATED = new Object();
-    
-    public ObserverResourceWrapper(Observer<? super T> actual, Consumer<? super R> disposer) {
+    public ObserverResourceWrapper(Observer<? super T> actual) {
         this.actual = actual;
-        this.disposer = disposer;
     }
     
     @Override
@@ -61,17 +56,10 @@ public final class ObserverResourceWrapper<T, R> extends AtomicReference<Object>
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public void dispose() {
         DisposableHelper.dispose(subscription);
 
-        Object o = get();
-        if (o != TERMINATED) {
-            o = getAndSet(TERMINATED);
-            if (o != TERMINATED && o != null) {
-                disposer.accept((R)o);
-            }
-        }
+        DisposableHelper.dispose(this);
     }
 
     @Override
@@ -79,20 +67,7 @@ public final class ObserverResourceWrapper<T, R> extends AtomicReference<Object>
         return subscription.get() == DisposableHelper.DISPOSED;
     }
 
-    @SuppressWarnings("unchecked")
-    public void setResource(R resource) {
-        for (;;) {
-            Object r = get();
-            if (r == TERMINATED) {
-                disposer.accept(resource);
-                return;
-            }
-            if (compareAndSet(r, resource)) {
-                if (r != null) {
-                    disposer.accept((R)r);
-                }
-                return;
-            }
-        }
+    public void setResource(Disposable resource) {
+        DisposableHelper.set(this, resource);
     }
 }

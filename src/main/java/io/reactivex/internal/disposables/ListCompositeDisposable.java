@@ -10,37 +10,37 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
-package io.reactivex.disposables;
+package io.reactivex.internal.disposables;
 
 import java.util.*;
 
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
-import io.reactivex.internal.disposables.DisposableContainer;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.util.*;
 
 /**
  * A disposable container that can hold onto multiple other disposables.
  */
-public final class CompositeDisposable implements Disposable, DisposableContainer {
+public final class ListCompositeDisposable implements Disposable, DisposableContainer {
     
-    OpenHashSet<Disposable> resources;
+    List<Disposable> resources;
 
     volatile boolean disposed;
     
-    public CompositeDisposable() {
+    public ListCompositeDisposable() {
     }
     
-    public CompositeDisposable(Disposable... resources) {
+    public ListCompositeDisposable(Disposable... resources) {
         Objects.requireNonNull(resources, "resources is null");
-        this.resources = new OpenHashSet<Disposable>(resources.length + 1);
+        this.resources = new LinkedList<Disposable>();
         for (Disposable d : resources) {
             Objects.requireNonNull(d, "Disposable item is null");
             this.resources.add(d);
         }
     }
     
-    public CompositeDisposable(Iterable<? extends Disposable> resources) {
+    public ListCompositeDisposable(Iterable<? extends Disposable> resources) {
         Objects.requireNonNull(resources, "resources is null");
         for (Disposable d : resources) {
             Objects.requireNonNull(d, "Disposable item is null");
@@ -53,7 +53,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         if (disposed) {
             return;
         }
-        OpenHashSet<Disposable> set;
+        List<Disposable> set;
         synchronized (this) {
             if (disposed) {
                 return;
@@ -76,9 +76,9 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         if (!disposed) {
             synchronized (this) {
                 if (!disposed) {
-                    OpenHashSet<Disposable> set = resources;
+                    List<Disposable> set = resources;
                     if (set == null) {
-                        set = new OpenHashSet<Disposable>();
+                        set = new LinkedList<Disposable>();
                         resources = set;
                     }
                     set.add(d);
@@ -95,9 +95,9 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         if (!disposed) {
             synchronized (this) {
                 if (!disposed) {
-                    OpenHashSet<Disposable> set = resources;
+                    List<Disposable> set = resources;
                     if (set == null) {
-                        set = new OpenHashSet<Disposable>(ds.length + 1);
+                        set = new LinkedList<Disposable>();
                         resources = set;
                     }
                     for (Disposable d : ds) {
@@ -132,7 +132,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
                 return false;
             }
             
-            OpenHashSet<Disposable> set = resources;
+            List<Disposable> set = resources;
             if (set == null || !set.remove(d)) {
                 return false;
             }
@@ -144,7 +144,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         if (disposed) {
             return;
         }
-        OpenHashSet<Disposable> set;
+        List<Disposable> set;
         synchronized (this) {
             if (disposed) {
                 return;
@@ -157,34 +157,19 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         dispose(set);
     }
     
-    public int size() {
-        if (disposed) {
-            return 0;
-        }
-        synchronized (this) {
-            if (disposed) {
-                return 0;
-            }
-            return resources.size();
-        }
-    }
-    
-    void dispose(OpenHashSet<Disposable> set) {
+    void dispose(List<Disposable> set) {
         if (set == null) {
             return;
         }
         List<Throwable> errors = null;
-        Object[] array = set.keys();
-        for (Object o : array) {
-            if (o instanceof Disposable) {
-                try {
-                    ((Disposable) o).dispose();
-                } catch (Throwable ex) {
-                    if (errors == null) {
-                        errors = new ArrayList<Throwable>();
-                    }
-                    errors.add(ex);
+        for (Disposable o : set) {
+            try {
+                o.dispose();
+            } catch (Throwable ex) {
+                if (errors == null) {
+                    errors = new ArrayList<Throwable>();
                 }
+                errors.add(ex);
             }
         }
         if (errors != null) {

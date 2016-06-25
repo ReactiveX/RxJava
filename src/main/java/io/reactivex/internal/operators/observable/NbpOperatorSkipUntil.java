@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.observers.SerializedObserver;
 
@@ -32,7 +32,7 @@ public final class NbpOperatorSkipUntil<T, U> implements NbpOperator<T, T> {
         
         final SerializedObserver<T> serial = new SerializedObserver<T>(child);
         
-        final ArrayCompositeResource<Disposable> frc = new ArrayCompositeResource<Disposable>(2, Disposables.consumeAndDispose());
+        final ArrayCompositeDisposable frc = new ArrayCompositeDisposable(2);
         
         final SkipUntilSubscriber<T> sus = new SkipUntilSubscriber<T>(serial, frc);
         
@@ -76,14 +76,14 @@ public final class NbpOperatorSkipUntil<T, U> implements NbpOperator<T, T> {
         /** */
         private static final long serialVersionUID = -1113667257122396604L;
         final Observer<? super T> actual;
-        final ArrayCompositeResource<Disposable> frc;
+        final ArrayCompositeDisposable frc;
         
         Disposable s;
         
         volatile boolean notSkipping;
         boolean notSkippingLocal;
 
-        public SkipUntilSubscriber(Observer<? super T> actual, ArrayCompositeResource<Disposable> frc) {
+        public SkipUntilSubscriber(Observer<? super T> actual, ArrayCompositeDisposable frc) {
             this.actual = actual;
             this.frc = frc;
         }

@@ -14,8 +14,8 @@
 package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
-import io.reactivex.internal.disposables.ArrayCompositeResource;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.ArrayCompositeDisposable;
 
 public final class CompletableObserveOn extends Completable {
 
@@ -30,7 +30,7 @@ public final class CompletableObserveOn extends Completable {
     @Override
     protected void subscribeActual(final CompletableSubscriber s) {
 
-        final ArrayCompositeResource<Disposable> ad = new ArrayCompositeResource<Disposable>(2, Disposables.consumeAndDispose());
+        final ArrayCompositeDisposable ad = new ArrayCompositeDisposable(2);
         final Scheduler.Worker w = scheduler.createWorker();
         ad.set(0, w);
         

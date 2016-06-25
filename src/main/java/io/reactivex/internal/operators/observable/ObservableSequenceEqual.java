@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.BiPredicate;
-import io.reactivex.internal.disposables.ArrayCompositeResource;
+import io.reactivex.internal.disposables.ArrayCompositeDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 
 public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
@@ -47,7 +47,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
         private static final long serialVersionUID = -6178010334400373240L;
         final Observer<? super Boolean> actual;
         final BiPredicate<? super T, ? super T> comparer;
-        final ArrayCompositeResource<Disposable> resources;
+        final ArrayCompositeDisposable resources;
         final ObservableConsumable<? extends T> first;
         final ObservableConsumable<? extends T> second;
         final EqualSubscriber<T>[] subscribers;
@@ -66,7 +66,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
             this.subscribers = as;
             as[0] = new EqualSubscriber<T>(this, 0, bufferSize);
             as[1] = new EqualSubscriber<T>(this, 1, bufferSize);
-            this.resources = new ArrayCompositeResource<Disposable>(2, Disposables.consumeAndDispose());
+            this.resources = new ArrayCompositeDisposable(2);
         }
         
         boolean setSubscription(Disposable s, int index) {

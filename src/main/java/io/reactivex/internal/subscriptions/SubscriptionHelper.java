@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.Subscription;
 
-import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -65,24 +64,6 @@ public enum SubscriptionHelper {
             return false;
         }
         return true;
-    }
-    
-    /** Singleton instance of a function which calls cancel on the supplied Subscription. */
-    static final Consumer<Subscription> CONSUME_AND_CANCEL = new Consumer<Subscription>() {
-        @Override
-        public void accept(Subscription s) {
-            s.cancel();
-        }
-    };
-    
-    /**
-     * Returns a consumer which calls cancel on the supplied Subscription.
-     * @return  a consumer which calls cancel on the supplied Subscription
-     * @deprecated use different resource management
-     */
-    @Deprecated
-    public static Consumer<Subscription> consumeAndCancel() {
-        return CONSUME_AND_CANCEL;
     }
     
     /**

@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.internal.disposables.ArrayCompositeResource;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.subscribers.SerializedSubscriber;
 
@@ -34,7 +33,7 @@ public final class FlowableSkipUntil<T, U> extends Flowable<T> {
     protected void subscribeActual(Subscriber<? super T> child) {
         final SerializedSubscriber<T> serial = new SerializedSubscriber<T>(child);
         
-        final ArrayCompositeResource<Subscription> frc = new ArrayCompositeResource<Subscription>(2, SubscriptionHelper.consumeAndCancel());
+        final ArrayCompositeSubscription frc = new ArrayCompositeSubscription(2);
         
         final SkipUntilSubscriber<T> sus = new SkipUntilSubscriber<T>(serial, frc);
         
@@ -81,14 +80,14 @@ public final class FlowableSkipUntil<T, U> extends Flowable<T> {
         /** */
         private static final long serialVersionUID = -1113667257122396604L;
         final Subscriber<? super T> actual;
-        final ArrayCompositeResource<Subscription> frc;
+        final ArrayCompositeSubscription frc;
         
         Subscription s;
         
         volatile boolean notSkipping;
         boolean notSkippingLocal;
 
-        public SkipUntilSubscriber(Subscriber<? super T> actual, ArrayCompositeResource<Subscription> frc) {
+        public SkipUntilSubscriber(Subscriber<? super T> actual, ArrayCompositeSubscription frc) {
             this.actual = actual;
             this.frc = frc;
         }

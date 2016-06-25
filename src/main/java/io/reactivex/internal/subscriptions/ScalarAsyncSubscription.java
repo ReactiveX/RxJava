@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.reactivestreams.*;
 
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * A Subscription that coordinates the emission of a single value set asynchronously.

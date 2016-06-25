@@ -122,7 +122,7 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
             public void subscribe(Observer<? super R> sr) {
                 ConnectableObservable<T> op = create(source, bufferSize);
                 
-                final ObserverResourceWrapper<R, Disposable> srw = new ObserverResourceWrapper<R, Disposable>(sr, Disposables.consumeAndDispose());
+                final ObserverResourceWrapper<R> srw = new ObserverResourceWrapper<R>(sr);
                 
                 selector.apply(op).subscribe(srw);
                 

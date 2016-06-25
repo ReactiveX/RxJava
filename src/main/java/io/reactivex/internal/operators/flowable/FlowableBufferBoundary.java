@@ -21,7 +21,6 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.SetCompositeResource;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -57,7 +56,7 @@ extends Flowable<U> {
         final Publisher<? extends Open> bufferOpen;
         final Function<? super Open, ? extends Publisher<? extends Close>> bufferClose;
         final Supplier<U> bufferSupplier;
-        final SetCompositeResource<Disposable> resources;
+        final CompositeDisposable resources;
         
         Subscription s;
         
@@ -74,7 +73,7 @@ extends Flowable<U> {
             this.bufferClose = bufferClose;
             this.bufferSupplier = bufferSupplier;
             this.buffers = new LinkedList<U>();
-            this.resources = new SetCompositeResource<Disposable>(Disposables.consumeAndDispose());
+            this.resources = new CompositeDisposable();
         }
         @Override
         public void onSubscribe(Subscription s) {
