@@ -13,15 +13,11 @@
 
 package io.reactivex.disposables;
 
-import io.reactivex.internal.disposables.EmptyDisposable;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.reactivestreams.Subscription;
-
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.Functions;
+import java.util.concurrent.Future;
+import org.reactivestreams.Subscription;
 
 /**
  * Utility class to help create disposables by wrapping
@@ -34,7 +30,7 @@ public final class Disposables {
     }
     
     public static Disposable from(Runnable run) {
-        return new BooleanDisposable(run);
+        return new RunnableDisposable(run);
     }
 
     public static Disposable from(Future<?> future) {
@@ -42,91 +38,22 @@ public final class Disposables {
     }
 
     public static Disposable from(Future<?> future, boolean allowInterrupt) {
-        Objects.requireNonNull(future, "future is null");
         return new FutureDisposable(future, allowInterrupt);
     }
 
-    public static Disposable from(final Subscription subscription) {
-        Objects.requireNonNull(subscription, "subscription is null");
-        // TODO optimize this case.
-        return from(new Runnable() {
-            @Override
-            public void run() {
-                subscription.cancel();
-            }
-        });
+    public static Disposable from(Subscription subscription) {
+        return new SubscriptionDisposable(subscription);
     }
 
     public static Disposable empty() {
-        return new BooleanDisposable();
+        return from(Functions.emptyRunnable());
     }
 
     public static Disposable disposed() {
         return EmptyDisposable.INSTANCE;
     }
-    
-    /** Wraps a Future instance. */
-    static final class FutureDisposable
-    extends AtomicReference<Future<?>>
-    implements Disposable {
-        /** */
-        private static final long serialVersionUID = -569898983717900525L;
 
-        final boolean allowInterrupt;
-
-        public FutureDisposable(Future<?> run, boolean allowInterrupt) {
-            super(run);
-            this.allowInterrupt = allowInterrupt;
-        }
-        
-        @Override
-        public void dispose() {
-            Future<?> r = get();
-            if (r != DisposedFuture.INSTANCE) {
-                r = getAndSet(DisposedFuture.INSTANCE);
-                if (r != DisposedFuture.INSTANCE) {
-                    r.cancel(allowInterrupt);
-                }
-            }
-        }
-
-        @Override public boolean isDisposed() {
-            return get() == DisposedFuture.INSTANCE;
-        }
-    }
-
-    /** A singleton instance of the disposed future. */
-    enum DisposedFuture implements Future<Object> {
-        INSTANCE;
-
-        @Override
-        public boolean cancel(boolean mayInterruptIfRunning) {
-            return false;
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return true;
-        }
-
-        @Override
-        public boolean isDone() {
-            return false;
-        }
-
-        @Override
-        public Object get() throws InterruptedException, ExecutionException {
-            return null;
-        }
-
-        @Override
-        public Object get(long timeout, TimeUnit unit)
-                throws InterruptedException, ExecutionException, TimeoutException {
-            return null;
-        }
-    }
-    
-    static final Consumer<Disposable> DISPOSER = new Consumer<Disposable>() {
+    private static final Consumer<Disposable> DISPOSER = new Consumer<Disposable>() {
         @Override
         public void accept(Disposable d) {
             d.dispose();
