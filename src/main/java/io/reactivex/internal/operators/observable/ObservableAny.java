@@ -12,33 +12,34 @@
  */
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.Observable.NbpOperator;
-import io.reactivex.Observer;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpOperatorAll<T> implements NbpOperator<Boolean, T> {
+public final class ObservableAny<T> extends Observable<Boolean> {
+    final ObservableConsumable<T> source;
     final Predicate<? super T> predicate;
-    public NbpOperatorAll(Predicate<? super T> predicate) {
+    public ObservableAny(ObservableConsumable<T> source, Predicate<? super T> predicate) {
+        this.source = source;
         this.predicate = predicate;
     }
     
     @Override
-    public Observer<? super T> apply(Observer<? super Boolean> t) {
-        return new AllSubscriber<T>(t, predicate);
+    protected void subscribeActual(Observer<? super Boolean> t) {
+        source.subscribe(new AnySubscriber<T>(t, predicate));
     }
     
-    static final class AllSubscriber<T> implements Observer<T> {
+    static final class AnySubscriber<T> implements Observer<T> {
+        
         final Observer<? super Boolean> actual;
         final Predicate<? super T> predicate;
         
         Disposable s;
         
         boolean done;
-        
-        public AllSubscriber(Observer<? super Boolean> actual, Predicate<? super T> predicate) {
+
+        public AnySubscriber(Observer<? super Boolean> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }
@@ -64,32 +65,29 @@ public final class NbpOperatorAll<T> implements NbpOperator<Boolean, T> {
                 actual.onError(e);
                 return;
             }
-            if (!b) {
+            if (b) {
                 done = true;
                 s.dispose();
-                actual.onNext(false);
+                actual.onNext(true);
                 actual.onComplete();
             }
         }
         
         @Override
         public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
+            if (!done) {
+                done = true;
+                actual.onError(t);
             }
-            done = true;
-            actual.onError(t);
         }
         
         @Override
         public void onComplete() {
-            if (done) {
-                return;
+            if (!done) {
+                done = true;
+                actual.onNext(false);
+                actual.onComplete();
             }
-            done = true;
-            actual.onNext(true);
-            actual.onComplete();
         }
     }
 }

@@ -17,9 +17,9 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.Observable.NbpOperator;
+import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Supplier;
@@ -29,8 +29,10 @@ import io.reactivex.internal.subscribers.observable.NbpQueueDrainSubscriber;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.SerializedObserver;
 
-public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> implements NbpOperator<U, T> {
+public final class ObservableBufferTimed<T, U extends Collection<? super T>> 
+extends Observable<U> {
 
+    final ObservableConsumable<T> source;
     final long timespan;
     final long timeskip;
     final TimeUnit unit;
@@ -39,8 +41,9 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
     final int maxSize;
     final boolean restartTimerOnMaxSize;
     
-    public NbpOperatorBufferTimed(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Supplier<U> bufferSupplier, int maxSize,
+    public ObservableBufferTimed(ObservableConsumable<T> source, long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Supplier<U> bufferSupplier, int maxSize,
             boolean restartTimerOnMaxSize) {
+        this.source = source;
         this.timespan = timespan;
         this.timeskip = timeskip;
         this.unit = unit;
@@ -51,26 +54,29 @@ public final class NbpOperatorBufferTimed<T, U extends Collection<? super T>> im
     }
 
     @Override
-    public Observer<? super T> apply(Observer<? super U> t) {
+    protected void subscribeActual(Observer<? super U> t) {
         if (timespan == timeskip && maxSize == Integer.MAX_VALUE) {
-            return new BufferExactUnboundedSubscriber<T, U>(
+            source.subscribe(new BufferExactUnboundedSubscriber<T, U>(
                     new SerializedObserver<U>(t), 
-                    bufferSupplier, timespan, unit, scheduler);
+                    bufferSupplier, timespan, unit, scheduler));
+            return;
         }
         Scheduler.Worker w = scheduler.createWorker();
 
         if (timespan == timeskip) {
-            return new BufferExactBoundedSubscriber<T, U>(
+            source.subscribe(new BufferExactBoundedSubscriber<T, U>(
                     new SerializedObserver<U>(t),
                     bufferSupplier,
                     timespan, unit, maxSize, restartTimerOnMaxSize, w
-            );
+            ));
+            return;
         }
         // Can't use maxSize because what to do if a buffer is full but its
         // timespan hasn't been elapsed?
-        return new BufferSkipBoundedSubscriber<T, U>(
+        source.subscribe(new BufferSkipBoundedSubscriber<T, U>(
                 new SerializedObserver<U>(t),
-                bufferSupplier, timespan, timeskip, unit, w);
+                bufferSupplier, timespan, timeskip, unit, w));
+        
     }
     
     static final class BufferExactUnboundedSubscriber<T, U extends Collection<? super T>>

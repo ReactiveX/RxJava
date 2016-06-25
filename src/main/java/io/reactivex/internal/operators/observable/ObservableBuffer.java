@@ -16,34 +16,36 @@ package io.reactivex.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.Observable.NbpOperator;
+import io.reactivex.Observable;
+import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.subscribers.observable.NbpEmptySubscriber;
 
-public final class NbpOperatorBuffer<T, U extends Collection<? super T>> implements NbpOperator<U, T> {
+public final class ObservableBuffer<T, U extends Collection<? super T>> extends Observable<U> {
+    final ObservableConsumable<T> source;
     final int count;
     final int skip;
     final Supplier<U> bufferSupplier;
     
-    public NbpOperatorBuffer(int count, int skip, Supplier<U> bufferSupplier) {
+    public ObservableBuffer(ObservableConsumable<T> source, int count, int skip, Supplier<U> bufferSupplier) {
+        this.source = source;
         this.count = count;
         this.skip = skip;
         this.bufferSupplier = bufferSupplier;
     }
 
     @Override
-    public Observer<? super T> apply(Observer<? super U> t) {
+    protected void subscribeActual(Observer<? super U> t) {
         if (skip == count) {
             BufferExactSubscriber<T, U> bes = new BufferExactSubscriber<T, U>(t, count, bufferSupplier);
             if (bes.createBuffer()) {
-                return bes;
+                source.subscribe(bes);
             }
-            return NbpEmptySubscriber.INSTANCE;
+        } else {
+            source.subscribe(new BufferSkipSubscriber<T, U>(t, count, skip, bufferSupplier));
         }
-        return new BufferSkipSubscriber<T, U>(t, count, skip, bufferSupplier);
     }
     
     static final class BufferExactSubscriber<T, U extends Collection<? super T>> implements Observer<T> {

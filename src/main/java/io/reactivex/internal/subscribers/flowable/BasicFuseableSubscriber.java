@@ -17,6 +17,7 @@ import java.util.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.Exceptions;
@@ -102,12 +103,8 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
         actual.onNext(value);
     }
     
-    /**
-     * Emits the throwable to the actual subscriber if {@link #done} is false,
-     * signals the throwable to {@link RxJavaPlugins#onError(Throwable)} otherwise.
-     * @param t the throwable t signal
-     */
-    protected final void error(Throwable t) {
+    @Override
+    public void onError(Throwable t) {
         if (done) {
             RxJavaPlugins.onError(t);
             return;
@@ -122,7 +119,27 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
      */
     protected final void fail(Throwable t) {
         Exceptions.throwIfFatal(t);
-        error(t);
+        s.cancel();
+        onError(t);
+    }
+    
+    @Override
+    public void onComplete() {
+        if (done) {
+            return;
+        }
+        done = true;
+        actual.onComplete();
+    }
+    
+    /**
+     * Checks if the value is null and if so, throws a NullPointerException.
+     * @param value the value to check
+     * @param message the message to indicate the source of the value
+     * @return the value if not null
+     */
+    protected final <V> V nullCheck(V value, String message) {
+        return Objects.requireNonNull(value, message);
     }
     
     /**

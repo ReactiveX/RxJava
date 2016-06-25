@@ -70,7 +70,7 @@ public final class CompositeDisposable implements Disposable {
         return disposed;
     }
     
-    public void add(Disposable d) {
+    public boolean add(Disposable d) {
         Objects.requireNonNull(d, "d is null");
         if (!disposed) {
             synchronized (this) {
@@ -81,14 +81,15 @@ public final class CompositeDisposable implements Disposable {
                         resources = set;
                     }
                     set.add(d);
-                    return;
+                    return true;
                 }
             }
         }
         d.dispose();
+        return false;
     }
 
-    public void addAll(Disposable... ds) {
+    public boolean addAll(Disposable... ds) {
         Objects.requireNonNull(ds, "ds is null");
         if (!disposed) {
             synchronized (this) {
@@ -102,48 +103,40 @@ public final class CompositeDisposable implements Disposable {
                         Objects.requireNonNull(d, "d is null");
                         set.add(d);
                     }
-                    return;
+                    return true;
                 }
             }
         }
         for (Disposable d : ds) {
             d.dispose();
         }
+        return false;
     }
 
-    public void remove(Disposable d) {
-        Objects.requireNonNull(d, "Disposable item is null");
-        if (disposed) {
-            return;
+    public boolean remove(Disposable d) {
+        if (delete(d)) {
+            d.dispose();
+            return true;
         }
-        synchronized (this) {
-            if (disposed) {
-                return;
-            }
-            
-            OpenHashSet<Disposable> set = resources;
-            if (set == null || !set.remove(d)) {
-                return;
-            }
-        }
-        d.dispose();
+        return false;
     }
     
-    public void delete(Disposable d) {
+    public boolean delete(Disposable d) {
         Objects.requireNonNull(d, "Disposable item is null");
         if (disposed) {
-            return;
+            return false;
         }
         synchronized (this) {
             if (disposed) {
-                return;
+                return false;
             }
             
             OpenHashSet<Disposable> set = resources;
             if (set == null || !set.remove(d)) {
-                return;
+                return false;
             }
         }
+        return true;
     }
     
     public void clear() {

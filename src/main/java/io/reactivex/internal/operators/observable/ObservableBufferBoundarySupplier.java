@@ -14,9 +14,9 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
@@ -24,44 +24,50 @@ import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.SerializedObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? super T>, B> implements NbpOperator<U, T> {
-    final ObservableConsumable<B> boundary;
+public final class ObservableBufferBoundarySupplier<T, U extends Collection<? super T>, B> 
+extends Observable<U> {
+    final ObservableConsumable<T> source;
+    final Supplier<? extends ObservableConsumable<B>> boundarySupplier;
     final Supplier<U> bufferSupplier;
     
-    public NbpOperatorBufferExactBoundary(ObservableConsumable<B> boundary, Supplier<U> bufferSupplier) {
-        this.boundary = boundary;
+    public ObservableBufferBoundarySupplier(ObservableConsumable<T> source, Supplier<? extends ObservableConsumable<B>> boundarySupplier, Supplier<U> bufferSupplier) {
+        this.source = source;
+        this.boundarySupplier = boundarySupplier;
         this.bufferSupplier = bufferSupplier;
     }
 
     @Override
-    public Observer<? super T> apply(Observer<? super U> t) {
-        return new BufferExactBondarySubscriber<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundary);
+    protected void subscribeActual(Observer<? super U> t) {
+        source.subscribe(new BufferBondarySupplierSubscriber<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundarySupplier));
     }
     
-    static final class BufferExactBondarySubscriber<T, U extends Collection<? super T>, B>
+    static final class BufferBondarySupplierSubscriber<T, U extends Collection<? super T>, B>
     extends NbpQueueDrainSubscriber<T, U, U> implements Observer<T>, Disposable {
         /** */
         final Supplier<U> bufferSupplier;
-        final ObservableConsumable<B> boundary;
+        final Supplier<? extends ObservableConsumable<B>> boundarySupplier;
         
         Disposable s;
         
-        Disposable other;
+        final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
         
         U buffer;
         
-        public BufferExactBondarySubscriber(Observer<? super U> actual, Supplier<U> bufferSupplier,
-                ObservableConsumable<B> boundary) {
+        public BufferBondarySupplierSubscriber(Observer<? super U> actual, Supplier<U> bufferSupplier,
+                Supplier<? extends ObservableConsumable<B>> boundarySupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
-            this.boundary = boundary;
+            this.boundarySupplier = boundarySupplier;
         }
         
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
+                
+                Observer<? super U> actual = this.actual;
                 
                 U b;
                 
@@ -82,8 +88,26 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
                 }
                 buffer = b;
                 
+                ObservableConsumable<B> boundary;
+                
+                try {
+                    boundary = boundarySupplier.get();
+                } catch (Throwable ex) {
+                    cancelled = true;
+                    s.dispose();
+                    EmptyDisposable.error(ex, actual);
+                    return;
+                }
+                
+                if (boundary == null) {
+                    cancelled = true;
+                    s.dispose();
+                    EmptyDisposable.error(new NullPointerException("The boundary publisher supplied is null"), actual);
+                    return;
+                }
+                
                 BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
-                other = bs;
+                other.set(bs);
                 
                 actual.onSubscribe(this);
                 
@@ -131,8 +155,8 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
         public void dispose() {
             if (!cancelled) {
                 cancelled = true;
-                other.dispose();
                 s.dispose();
+                disposeOther();
                 
                 if (enter()) {
                     queue.clear();
@@ -145,7 +169,13 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
             return cancelled;
         }
 
+        void disposeOther() {
+            DisposableHelper.dispose(other);
+        }
+        
         void next() {
+            
+            Disposable o = other.get();
             
             U next;
             
@@ -163,6 +193,30 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
                 return;
             }
             
+            ObservableConsumable<B> boundary;
+            
+            try {
+                boundary = boundarySupplier.get();
+            } catch (Throwable ex) {
+                cancelled = true;
+                s.dispose();
+                actual.onError(ex);
+                return;
+            }
+            
+            if (boundary == null) {
+                cancelled = true;
+                s.dispose();
+                actual.onError(new NullPointerException("The boundary publisher supplied is null"));
+                return;
+            }
+            
+            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
+            
+            if (!other.compareAndSet(o, bs)) {
+                return;
+            }
+            
             U b;
             synchronized (this) {
                 b = buffer;
@@ -171,6 +225,8 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
                 }
                 buffer = next;
             }
+            
+            boundary.subscribe(bs);
             
             fastpathEmit(b, false, this);
         }
@@ -184,25 +240,41 @@ public final class NbpOperatorBufferExactBoundary<T, U extends Collection<? supe
     
     static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, B> 
     extends DisposableObserver<B> {
-        final BufferExactBondarySubscriber<T, U, B> parent;
+        final BufferBondarySupplierSubscriber<T, U, B> parent;
         
-        public BufferBoundarySubscriber(BufferExactBondarySubscriber<T, U, B> parent) {
+        boolean once;
+        
+        public BufferBoundarySubscriber(BufferBondarySupplierSubscriber<T, U, B> parent) {
             this.parent = parent;
         }
 
         @Override
         public void onNext(B t) {
+            if (once) {
+                return;
+            }
+            once = true;
+            dispose();
             parent.next();
         }
         
         @Override
         public void onError(Throwable t) {
+            if (once) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            once = true;
             parent.onError(t);
         }
         
         @Override
         public void onComplete() {
-            parent.onComplete();
+            if (once) {
+                return;
+            }
+            once = true;
+            parent.next();
         }
     }
 }
