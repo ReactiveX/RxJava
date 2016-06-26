@@ -369,7 +369,7 @@ public abstract class Completable implements CompletableConsumable {
      * @throws NullPointerException if sources is null
      * @throws IllegalArgumentException if maxConcurrency is less than 1
      */
-    protected static Completable merge0(Publisher<? extends CompletableConsumable> sources, int maxConcurrency, boolean delayErrors) {
+    private static Completable merge0(Publisher<? extends CompletableConsumable> sources, int maxConcurrency, boolean delayErrors) {
         Objects.requireNonNull(sources, "sources is null");
         if (maxConcurrency < 1) {
             throw new IllegalArgumentException("maxConcurrency > 0 required but it was " + maxConcurrency);
@@ -469,7 +469,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param ex the Throwable instance to use as cause, not null (not verified)
      * @return the created NullPointerException
      */
-    static NullPointerException toNpe(Throwable ex) {
+    private static NullPointerException toNpe(Throwable ex) {
         NullPointerException npe = new NullPointerException("Actually not, but can't pass out an exception otherwise...");
         npe.initCause(ex);
         return npe;
@@ -671,7 +671,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    protected final Completable doOnLifecycle(
+    private Completable doOnLifecycle(
             final Consumer<? super Disposable> onSubscribe, 
             final Consumer<? super Throwable> onError, 
             final Runnable onComplete, 
@@ -1199,7 +1199,7 @@ public abstract class Completable implements CompletableConsumable {
      * @throws NullPointerException if unit or scheduler
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Completable timeout0(long timeout, TimeUnit unit, Scheduler scheduler, CompletableConsumable other) {
+    private Completable timeout0(long timeout, TimeUnit unit, Scheduler scheduler, CompletableConsumable other) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
         return new CompletableTimeout(this, timeout, unit, scheduler, other);
