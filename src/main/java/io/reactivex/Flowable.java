@@ -3478,7 +3478,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> toNbpObservable() {
+    public final Observable<T> toObservable() {
         return Observable.fromPublisher(this);
     }
     
