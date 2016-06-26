@@ -207,7 +207,7 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
             for (;;) {
                 
                 for (;;) {
-                    boolean term = terminated;
+                    boolean term = terminated; // NOPMD
                     
                     boolean d = done;
                     
@@ -683,7 +683,7 @@ public final class NbpOperatorWindowTimed<T> implements NbpOperator<Observable<T
                     boolean empty = v == null;
                     boolean sw = v instanceof SubjectWork;
                     
-                    if (d && (v == null || v instanceof SubjectWork)) {
+                    if (d && (empty || sw)) {
                         q.clear();
                         disposeWorker();
                         Throwable e = error;

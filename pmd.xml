@@ -71,7 +71,6 @@
    <rule ref="rulesets/java/basic.xml/DontUseFloatTypeForLoopIndices"/>
    <rule ref="rulesets/java/basic.xml/DoubleCheckedLocking"/>
    <rule ref="rulesets/java/imports.xml/DuplicateImports"/>
-   <rule ref="rulesets/java/empty.xml/EmptyCatchBlock"/>
    <rule ref="rulesets/java/finalizers.xml/EmptyFinalizer"/>
    <rule ref="rulesets/java/empty.xml/EmptyFinallyBlock"/>
    <rule ref="rulesets/java/empty.xml/EmptyInitializer"/>
@@ -110,7 +109,6 @@
    <rule ref="rulesets/java/migrating.xml/JUnit4SuitesShouldUseSuiteAnnotation"/>
    <rule ref="rulesets/java/migrating.xml/JUnit4TestShouldUseAfterAnnotation"/>
    <rule ref="rulesets/java/migrating.xml/JUnit4TestShouldUseBeforeAnnotation"/>
-   <rule ref="rulesets/java/migrating.xml/JUnit4TestShouldUseTestAnnotation"/>
    <rule ref="rulesets/java/junit.xml/JUnitAssertionsShouldIncludeMessage"/>
    <rule ref="rulesets/java/junit.xml/JUnitSpelling"/>
    <rule ref="rulesets/java/junit.xml/JUnitStaticSuite"/>
@@ -134,9 +132,6 @@
    <rule ref="rulesets/java/javabeans.xml/MissingSerialVersionUID"/>
    <rule ref="rulesets/java/design.xml/MissingStaticMethodInNonInstantiatableClass"/>
    <rule ref="rulesets/java/logging-java.xml/MoreThanOneLogger"/>
-   <rule ref="rulesets/java/codesize.xml/NcssConstructorCount"/>
-   <rule ref="rulesets/java/codesize.xml/NcssMethodCount"/>
-   <rule ref="rulesets/java/codesize.xml/NcssTypeCount"/>
    <rule ref="rulesets/java/naming.xml/NoPackage"/>
    <rule ref="rulesets/java/design.xml/NonCaseLabelInSwitchStatement"/>
    <rule ref="rulesets/java/design.xml/NonStaticInitializer"/>
@@ -160,7 +155,6 @@
    <rule ref="rulesets/java/design.xml/ReturnEmptyArrayRatherThanNull"/>
    <rule ref="rulesets/java/basic.xml/ReturnFromFinallyBlock"/>
    <rule ref="rulesets/java/migrating.xml/ShortInstantiation"/>
-   <rule ref="rulesets/java/naming.xml/ShortMethodName"/>
    <rule ref="rulesets/java/strictexception.xml/SignatureDeclareThrowsException"/>
    <rule ref="rulesets/java/design.xml/SimpleDateFormatNeedsLocale"/>
    <rule ref="rulesets/java/junit.xml/SimplifyBooleanAssertion"/>
@@ -183,8 +177,6 @@
    <rule ref="rulesets/java/junit.xml/TestClassWithoutTestCases"/>
    <rule ref="rulesets/java/design.xml/TooFewBranchesForASwitchStatement"/>
    <rule ref="rulesets/java/imports.xml/TooManyStaticImports"/>
-   <rule ref="rulesets/java/design.xml/UncommentedEmptyConstructor"/>
-   <rule ref="rulesets/java/design.xml/UncommentedEmptyMethodBody"/>
    <rule ref="rulesets/java/basic.xml/UnconditionalIfStatement"/>
    <rule ref="rulesets/java/junit.xml/UnnecessaryBooleanAssertion"/>
    <rule ref="rulesets/java/strings.xml/UnnecessaryCaseChange"/>

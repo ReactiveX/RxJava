@@ -139,7 +139,7 @@ public final class TrampolineScheduler extends Scheduler {
         
         volatile boolean disposed;
 
-        private TimedRunnable(Runnable run, Long execTime, int count) {
+        TimedRunnable(Runnable run, Long execTime, int count) {
             this.run = run;
             this.execTime = execTime;
             this.count = count;

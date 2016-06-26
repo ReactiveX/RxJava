@@ -49,7 +49,7 @@ public enum SingleAwait {
             try {
                 cdl.await();
             } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
+                throw new IllegalStateException(ex);
             }
         }
         Throwable e = errorRef.get();

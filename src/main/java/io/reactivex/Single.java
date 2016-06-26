@@ -33,6 +33,8 @@ import io.reactivex.schedulers.Schedulers;
  * @param <T> the value type
  */
 public abstract class Single<T> implements SingleConsumable<T> {
+
+    static final Single<Object> NEVER = new SingleNever<Object>();
     
     public interface SingleOperator<Downstream, Upstream> extends Function<SingleSubscriber<? super Downstream>, SingleSubscriber<? super Upstream>> {
         
@@ -392,8 +394,6 @@ public abstract class Single<T> implements SingleConsumable<T> {
         return merge(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
     }
     
-    static final Single<Object> NEVER = new SingleNever<Object>();
-    
     @SuppressWarnings("unchecked")
     public static <T> Single<T> never() {
         return (Single<T>)NEVER; 
@@ -409,7 +409,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
         return new SingleTimer(delay, unit, scheduler);
     }
     
-    public static <T> Single<Boolean> equals(final SingleConsumable<? extends T> first, final SingleConsumable<? extends T> second) {
+    public static <T> Single<Boolean> equals(final SingleConsumable<? extends T> first, final SingleConsumable<? extends T> second) { // NOPMD
         Objects.requireNonNull(first, "first is null");
         Objects.requireNonNull(second, "second is null");
         return new SingleEquals<T>(first, second);

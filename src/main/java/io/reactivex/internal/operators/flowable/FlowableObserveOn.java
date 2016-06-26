@@ -190,9 +190,8 @@ public final class FlowableObserveOn<T> extends Flowable<T> {
                 
                 long r = requested.get();
                 long e = 0L;
-                boolean unbounded = r == Long.MAX_VALUE;
                 
-                while (r != 0L) {
+                while (e != r) {
                     boolean d = done;
                     T v = q.poll();
                     boolean empty = v == null;
@@ -207,7 +206,6 @@ public final class FlowableObserveOn<T> extends Flowable<T> {
                     
                     a.onNext(v);
                     
-                    r--;
                     e++;
                 }
                 
@@ -215,7 +213,7 @@ public final class FlowableObserveOn<T> extends Flowable<T> {
                     return;
                 }
                 if (e != 0L) {
-                    if (!unbounded) {
+                    if (r != Long.MAX_VALUE) {
                         requested.addAndGet(-e);
                     }
                     s.request(e);

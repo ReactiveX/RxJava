@@ -95,7 +95,7 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
             if (firstTimeoutSelector != null) {
                 try {
                     p = firstTimeoutSelector.get();
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     cancel();
                     EmptySubscription.error(ex, a);
                     return;
@@ -272,7 +272,7 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
                 
                 try {
                     p = firstTimeoutSelector.get();
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     dispose();
                     EmptySubscription.error(ex, a);
                     return;

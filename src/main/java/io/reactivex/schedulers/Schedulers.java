@@ -20,16 +20,6 @@ import io.reactivex.internal.schedulers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class Schedulers {
-    
-    /*
-     * TODO I started to like enums for singletons and non-instantiatable
-     * utility classes, but since this is part of the public API,
-     * that would act quite unorthodoxically.
-     */
-    private Schedulers() {
-        throw new IllegalStateException("No instances");
-    }
-
     static final Scheduler SINGLE;
     
     static final Scheduler COMPUTATION;
@@ -51,6 +41,15 @@ public final class Schedulers {
         TRAMPOLINE = TrampolineScheduler.instance();
         
         NEW_THREAD = RxJavaPlugins.initNewThreadScheduler(NewThreadScheduler.instance());
+    }
+    
+    /*
+     * TODO I started to like enums for singletons and non-instantiatable
+     * utility classes, but since this is part of the public API,
+     * that would act quite unorthodoxically.
+     */
+    private Schedulers() {
+        throw new IllegalStateException("No instances");
     }
     
     public static Scheduler computation() {

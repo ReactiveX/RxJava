@@ -57,6 +57,9 @@ public enum BlockingObservableLatest {
 
     /** Observer of source, iterator for output. */
     static final class LatestObserverIterator<T> extends DisposableObserver<Try<Optional<T>>> implements Iterator<T> {
+        // iterator's notification
+        Try<Optional<T>> iNotif;
+
         final Semaphore notify = new Semaphore(0);
         // observer's notification
         final AtomicReference<Try<Optional<T>>> value = new AtomicReference<Try<Optional<T>>>();
@@ -78,9 +81,6 @@ public enum BlockingObservableLatest {
         public void onComplete() {
             // not expected
         }
-
-        // iterator's notification
-        Try<Optional<T>> iNotif;
 
         @Override
         public boolean hasNext() {

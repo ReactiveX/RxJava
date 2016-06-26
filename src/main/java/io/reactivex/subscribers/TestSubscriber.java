@@ -360,7 +360,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
             } else {
                 ce.suppress(e);
             }
-        };
+        }
         if (!ce.isEmpty()) {
             ae.initCause(ce);
         }

@@ -36,7 +36,7 @@ public final class CompletableLift extends Completable {
             CompletableSubscriber sw = onLift.apply(s);
             
             source.subscribe(sw);
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException ex) { // NOPMD
             throw ex;
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);

@@ -72,13 +72,13 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         public void run() {
             S s = state;
             
-            final BiFunction<S, ? super Observer<T>, S> f = generator;
-            
             if (cancelled) {
                 dispose(s);
                 return;
             }
-            
+
+            final BiFunction<S, ? super Observer<T>, S> f = generator;
+
             for (;;) {
                 
                 if (cancelled) {

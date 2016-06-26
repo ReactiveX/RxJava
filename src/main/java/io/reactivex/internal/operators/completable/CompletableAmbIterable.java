@@ -33,6 +33,22 @@ public final class CompletableAmbIterable extends Completable {
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
 
+        Iterator<? extends CompletableConsumable> it;
+        
+        try {
+            it = sources.iterator();
+        } catch (Throwable e) {
+            s.onError(e);
+            return;
+        }
+        
+        if (it == null) {
+            s.onError(new NullPointerException("The iterator returned is null"));
+            return;
+        }
+        
+        boolean empty = true;
+
         final AtomicBoolean once = new AtomicBoolean();
         
         CompletableSubscriber inner = new CompletableSubscriber() {
@@ -60,23 +76,7 @@ public final class CompletableAmbIterable extends Completable {
             }
             
         };
-        
-        Iterator<? extends CompletableConsumable> it;
-        
-        try {
-            it = sources.iterator();
-        } catch (Throwable e) {
-            s.onError(e);
-            return;
-        }
-        
-        if (it == null) {
-            s.onError(new NullPointerException("The iterator returned is null"));
-            return;
-        }
-        
-        boolean empty = true;
-        
+
         for (;;) {
             if (once.get() || set.isDisposed()) {
                 return;

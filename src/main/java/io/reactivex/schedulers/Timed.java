@@ -60,6 +60,14 @@ public final class Timed<T> {
     }
     
     @Override
+    public int hashCode() {
+         int h = value != null ? value.hashCode() : 0;
+         h = h * 31 + (int)((time >>> 31) ^ (time & 0xFFFFFFFF));
+         h = h * 31 + unit.hashCode();
+         return h;
+    }
+    
+    @Override
     public String toString() {
         return "Timed[time=" + time + ", unit=" + unit + ", value=" + value + "]";
     }

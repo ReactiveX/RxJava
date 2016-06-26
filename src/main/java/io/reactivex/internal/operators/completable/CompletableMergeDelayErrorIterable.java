@@ -30,9 +30,6 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
     @Override
     public void subscribeActual(final CompletableSubscriber s) {
         final CompositeDisposable set = new CompositeDisposable();
-        final AtomicInteger wip = new AtomicInteger(1);
-        
-        final Queue<Throwable> queue = new MpscLinkedQueue<Throwable>();
         
         s.onSubscribe(set);
         
@@ -49,7 +46,11 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
             s.onError(new NullPointerException("The source iterator returned is null"));
             return;
         }
+
+        final AtomicInteger wip = new AtomicInteger(1);
         
+        final Queue<Throwable> queue = new MpscLinkedQueue<Throwable>();
+
         for (;;) {
             if (set.isDisposed()) {
                 return;

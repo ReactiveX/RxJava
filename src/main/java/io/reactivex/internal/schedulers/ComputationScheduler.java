@@ -27,6 +27,8 @@ import io.reactivex.internal.disposables.*;
  * to requested Scheduler.Workers in a round-robin fashion. 
  */
 public final class ComputationScheduler extends Scheduler {
+    /** This will indicate no pool is active. */
+    static final FixedSchedulerPool NONE = new FixedSchedulerPool(0);
     /** Manages a fixed number of workers. */
     private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
@@ -37,6 +39,11 @@ public final class ComputationScheduler extends Scheduler {
     static final String KEY_MAX_THREADS = "rx2.computation-threads";
     /** The maximum number of computation scheduler threads. */
     static final int MAX_THREADS;
+    
+    static final PoolWorker SHUTDOWN_WORKER;
+
+    final AtomicReference<FixedSchedulerPool> pool;
+
     static {
         int maxThreads = Integer.getInteger(KEY_MAX_THREADS, 0);
         int ncpu = Runtime.getRuntime().availableProcessors();
@@ -47,14 +54,11 @@ public final class ComputationScheduler extends Scheduler {
             max = maxThreads;
         }
         MAX_THREADS = max;
-    }
-    
-    static final PoolWorker SHUTDOWN_WORKER;
-    static {
+
         SHUTDOWN_WORKER = new PoolWorker(new RxThreadFactory("RxComputationShutdown-"));
         SHUTDOWN_WORKER.dispose();
     }
-    
+
     static final class FixedSchedulerPool {
         final int cores;
 
@@ -85,10 +89,6 @@ public final class ComputationScheduler extends Scheduler {
             }
         }
     }
-    /** This will indicate no pool is active. */
-    static final FixedSchedulerPool NONE = new FixedSchedulerPool(0);
-
-    final AtomicReference<FixedSchedulerPool> pool;
     
     /**
      * Create a scheduler with pool size equal to the available processor
@@ -139,7 +139,7 @@ public final class ComputationScheduler extends Scheduler {
     }
     
 
-    private static class EventLoopWorker extends Scheduler.Worker {
+    static final class EventLoopWorker extends Scheduler.Worker {
         private final ListCompositeDisposable serial;
         private final CompositeDisposable timed;
         private final ListCompositeDisposable both;
@@ -187,7 +187,7 @@ public final class ComputationScheduler extends Scheduler {
         }
     }
     
-    private static final class PoolWorker extends NewThreadWorker {
+    static final class PoolWorker extends NewThreadWorker {
         PoolWorker(ThreadFactory threadFactory) {
             super(threadFactory);
         }

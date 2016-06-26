@@ -65,7 +65,7 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
             try {
                 s.cancel();
             } catch (Throwable e1) {
-                CompositeException ce = new CompositeException();
+                CompositeException ce = new CompositeException(); // NOPMD
                 ce.suppress(e1);
                 ce.suppress(e);
                 e = ce;

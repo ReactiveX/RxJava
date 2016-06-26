@@ -270,7 +270,7 @@ extends Observable<U> {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
                 
-                final U b;
+                final U b; // NOPMD
 
                 try {
                     b = bufferSupplier.get();
@@ -367,7 +367,7 @@ extends Observable<U> {
             if (cancelled) {
                 return;
             }
-            final U b;
+            final U b; // NOPMD
             
             try {
                 b = bufferSupplier.get();

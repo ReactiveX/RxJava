@@ -31,72 +31,6 @@ import io.reactivex.observables.ConnectableObservable;
  */
 public final class ObservableRefCount<T> extends Observable<T> {
 
-    final class ConnectionSubscriber implements Observer<T>, Disposable {
-        final Observer<? super T> subscriber;
-        final CompositeDisposable currentBase;
-        final Disposable resource;
-
-        Disposable s;
-        
-        private ConnectionSubscriber(Observer<? super T> subscriber,
-                CompositeDisposable currentBase, Disposable resource) {
-            this.subscriber = subscriber;
-            this.currentBase = currentBase;
-            this.resource = resource;
-        }
-
-        @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                subscriber.onSubscribe(this);
-            }
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            cleanup();
-            subscriber.onError(e);
-        }
-
-        @Override
-        public void onNext(T t) {
-            subscriber.onNext(t);
-        }
-
-        @Override
-        public void onComplete() {
-            cleanup();
-            subscriber.onComplete();
-        }
-        
-        @Override
-        public void dispose() {
-            s.dispose();
-            resource.dispose();
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return s.isDisposed();
-        }
-
-        void cleanup() {
-            // on error or completion we need to unsubscribe the base subscription
-            // and set the subscriptionCount to 0 
-            lock.lock();
-            try {
-                if (baseSubscription == currentBase) {
-                    baseSubscription.dispose();
-                    baseSubscription = new CompositeDisposable();
-                    subscriptionCount.set(0);
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
-    }
-
     final ConnectableObservable<? extends T> source;
     
     volatile CompositeDisposable baseSubscription = new CompositeDisposable();
@@ -199,4 +133,71 @@ public final class ObservableRefCount<T> extends Observable<T> {
             }
         });
     }
+
+    final class ConnectionSubscriber implements Observer<T>, Disposable {
+        final Observer<? super T> subscriber;
+        final CompositeDisposable currentBase;
+        final Disposable resource;
+
+        Disposable s;
+        
+        ConnectionSubscriber(Observer<? super T> subscriber,
+                CompositeDisposable currentBase, Disposable resource) {
+            this.subscriber = subscriber;
+            this.currentBase = currentBase;
+            this.resource = resource;
+        }
+
+        @Override
+        public void onSubscribe(Disposable s) {
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                subscriber.onSubscribe(this);
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            cleanup();
+            subscriber.onError(e);
+        }
+
+        @Override
+        public void onNext(T t) {
+            subscriber.onNext(t);
+        }
+
+        @Override
+        public void onComplete() {
+            cleanup();
+            subscriber.onComplete();
+        }
+        
+        @Override
+        public void dispose() {
+            s.dispose();
+            resource.dispose();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
+        void cleanup() {
+            // on error or completion we need to unsubscribe the base subscription
+            // and set the subscriptionCount to 0 
+            lock.lock();
+            try {
+                if (baseSubscription == currentBase) {
+                    baseSubscription.dispose();
+                    baseSubscription = new CompositeDisposable();
+                    subscriptionCount.set(0);
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
 }

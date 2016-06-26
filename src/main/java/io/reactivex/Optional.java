@@ -21,12 +21,12 @@ import io.reactivex.internal.functions.Objects;
  * @param <T> the value type
  */
 public final class Optional<T> {
+    static final Optional<Object> EMPTY = new Optional<Object>(null);
+    
     final T value;
     protected Optional(T value) {
         this.value = value;
     }
-    
-    static final Optional<Object> EMPTY = new Optional<Object>(null);
     
     @SuppressWarnings("unchecked")
     public static <T> Optional<T> empty() {
@@ -48,7 +48,7 @@ public final class Optional<T> {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;

@@ -95,7 +95,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
                     return;
                 }
                 
-                boolean unbounded = n == Long.MAX_VALUE;
+                boolean unbounded = n == Long.MAX_VALUE; // NOPMD
                 
                 while (n != 0L) {
                     

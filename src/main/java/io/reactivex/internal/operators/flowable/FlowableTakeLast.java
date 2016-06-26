@@ -110,10 +110,9 @@ public final class FlowableTakeLast<T> extends Flowable<T> {
                         return;
                     }
                     if (done) {
-                        boolean unbounded = r == Long.MAX_VALUE;
                         long e = 0L;
                         
-                        while (r != 0L) {
+                        while (e != r) {
                             if (cancelled) {
                                 return;
                             }
@@ -123,10 +122,9 @@ public final class FlowableTakeLast<T> extends Flowable<T> {
                                 return;
                             }
                             a.onNext(v);
-                            r--;
                             e++;
                         }
-                        if (!unbounded && e != 0L) {
+                        if (e != 0L && r != Long.MAX_VALUE) {
                             r = requested.addAndGet(-e);
                         }
                     }

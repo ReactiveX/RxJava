@@ -40,15 +40,6 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public final class PublishProcessor<T> extends FlowProcessor<T> {
     
-    /**
-     * Constructs a PublishSubject.
-     * @param <T> the value type
-     * @return the new PublishSubject
-     */
-    public static <T> PublishProcessor<T> create() {
-        return new PublishProcessor<T>();
-    }
-    
     /** Holds the terminal event and manages the array of subscribers. */
     final State<T> state;
     /** 
@@ -57,6 +48,15 @@ public final class PublishProcessor<T> extends FlowProcessor<T> {
      * the reactive-streams contract is held).
      */
     boolean done;
+    
+    /**
+     * Constructs a PublishSubject.
+     * @param <T> the value type
+     * @return the new PublishSubject
+     */
+    public static <T> PublishProcessor<T> create() {
+        return new PublishProcessor<T>();
+    }
     
     protected PublishProcessor() {
         this.state = new State<T>();

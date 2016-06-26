@@ -127,8 +127,6 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                     }
                     
                     boolean d1 = s1.done;
-                    T v1 = q1.peek();
-                    boolean e1 = v1 == null;
                     
                     if (d1) {
                         Throwable e = s1.error;
@@ -141,9 +139,6 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                     }
                     
                     boolean d2 = s2.done;
-                    T v2 = q2.peek();
-                    boolean e2 = v2 == null;
-
                     if (d2) {
                         Throwable e = s2.error;
                         if (e != null) {
@@ -153,7 +148,13 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                             return;
                         }
                     }
-                    
+
+                    T v1 = q1.peek();
+                    boolean e1 = v1 == null;
+
+                    T v2 = q2.peek();
+                    boolean e2 = v2 == null;
+
                     if (d1 && d2 && e1 && e2) {
                         actual.onNext(true);
                         actual.onComplete();

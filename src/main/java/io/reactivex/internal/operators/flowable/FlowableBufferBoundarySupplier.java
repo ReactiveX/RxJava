@@ -181,8 +181,6 @@ extends Flowable<U> {
         
         void next() {
             
-            Disposable o = other.get();
-            
             U next;
             
             try {
@@ -218,6 +216,8 @@ extends Flowable<U> {
             }
             
             BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
+            
+            Disposable o = other.get();
             
             if (!other.compareAndSet(o, bs)) {
                 return;

@@ -33,15 +33,17 @@ public final class TestScheduler extends Scheduler {
     private final Queue<TimedRunnable> queue = new PriorityBlockingQueue<TimedRunnable>(11);
     /** The per-scheduler global order counter. */
     long counter;
+    // Storing time in nanoseconds internally.
+    private volatile long time;
 
-    private static final class TimedRunnable implements Comparable<TimedRunnable> {
+    static final class TimedRunnable implements Comparable<TimedRunnable> {
 
         private final long time;
         private final Runnable run;
         private final TestWorker scheduler;
         private final long count; // for differentiating tasks at same time
 
-        private TimedRunnable(TestWorker scheduler, long time, Runnable run, long count) {
+        TimedRunnable(TestWorker scheduler, long time, Runnable run, long count) {
             this.time = time;
             this.run = run;
             this.scheduler = scheduler;
@@ -61,9 +63,6 @@ public final class TestScheduler extends Scheduler {
             return Objects.compare(time, o.time);
         }
     }
-
-    // Storing time in nanoseconds internally.
-    private volatile long time;
 
     @Override
     public long now(TimeUnit unit) {

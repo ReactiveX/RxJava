@@ -58,6 +58,9 @@ public enum BlockingFlowableLatest {
         // observer's notification
         final AtomicReference<Try<Optional<T>>> value = new AtomicReference<Try<Optional<T>>>();
 
+        // iterator's notification
+        Try<Optional<T>> iNotif;
+
         @Override
         public void onNext(Try<Optional<T>> args) {
             boolean wasntAvailable = value.getAndSet(args) == null;
@@ -75,9 +78,6 @@ public enum BlockingFlowableLatest {
         public void onComplete() {
             // not expected
         }
-
-        // iterator's notification
-        Try<Optional<T>> iNotif;
 
         @Override
         public boolean hasNext() {

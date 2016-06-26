@@ -71,7 +71,7 @@ public final class ObservableLift<R, T> extends Observable<R> {
             }
 
             source.subscribe(st);
-        } catch (NullPointerException e) {
+        } catch (NullPointerException e) { // NOPMD
             throw e;
         } catch (Throwable e) {
             // TODO throw if fatal?

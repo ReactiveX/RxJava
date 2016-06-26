@@ -23,7 +23,7 @@ public final class SingleWrapper<T> extends Single<T> {
     }
     
     @Override
-    protected void subscribeActual(io.reactivex.SingleSubscriber<? super T> subscriber) {
+    protected void subscribeActual(SingleSubscriber<? super T> subscriber) {
         onSubscribe.subscribe(subscriber);
     }
 }

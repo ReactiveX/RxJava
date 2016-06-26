@@ -39,7 +39,7 @@ public final class SpscArrayQueue<E> extends BaseArrayQueue<E> {
     private static final long serialVersionUID = -1296597691183856449L;
     private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
     final AtomicLong producerIndex;
-    protected long producerLookAhead;
+    long producerLookAhead;
     final AtomicLong consumerIndex;
     final int lookAheadStep;
     public SpscArrayQueue(int capacity) {

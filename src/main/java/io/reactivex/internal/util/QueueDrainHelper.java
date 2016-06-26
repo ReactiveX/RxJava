@@ -165,7 +165,6 @@ public enum QueueDrainHelper {
             }
             
             long r = qd.requested();
-            boolean unbounded = r == Long.MAX_VALUE;
             long e = 0L;
             
             while (e != r) {
@@ -187,7 +186,7 @@ public enum QueueDrainHelper {
                 }
             }
             
-            if (e != 0L && !unbounded) {
+            if (e != 0L && r != Long.MAX_VALUE) {
                 qd.produced(e);
             }
             

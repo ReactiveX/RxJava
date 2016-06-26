@@ -30,15 +30,15 @@ import io.reactivex.internal.util.Pow2;
  */
 public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     static final int MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
-    protected final AtomicLong producerIndex = new AtomicLong();
+    final AtomicLong producerIndex = new AtomicLong();
     
-    protected int producerLookAheadStep;
-    protected long producerLookAhead;
-    protected int producerMask;
-    protected AtomicReferenceArray<Object> producerBuffer;
-    protected int consumerMask;
-    protected AtomicReferenceArray<Object> consumerBuffer;
-    protected final AtomicLong consumerIndex = new AtomicLong();
+    int producerLookAheadStep;
+    long producerLookAhead;
+    int producerMask;
+    AtomicReferenceArray<Object> producerBuffer;
+    int consumerMask;
+    AtomicReferenceArray<Object> consumerBuffer;
+    final AtomicLong consumerIndex = new AtomicLong();
 
     private static final Object HAS_NEXT = new Object();
 
@@ -61,7 +61,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
      * This implementation is correct for single producer thread use only.
      */
     @Override
-    public final boolean offer(final T e) {
+    public boolean offer(final T e) {
         // local load of field to avoid repeated loads after volatile reads
         final AtomicReferenceArray<Object> buffer = producerBuffer;
         final long index = lpProducerIndex();
@@ -118,7 +118,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public final T poll() {
+    public T poll() {
         // local load of field to avoid repeated loads after volatile reads
         final AtomicReferenceArray<Object> buffer = consumerBuffer;
         final long index = lpConsumerIndex();
@@ -158,7 +158,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public final T peek() {
+    public T peek() {
         final AtomicReferenceArray<Object> buffer = consumerBuffer;
         final long index = lpConsumerIndex();
         final int mask = consumerMask;
@@ -173,7 +173,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     
     @Override
     public void clear() {
-        while (poll() != null || !isEmpty());
+        while (poll() != null || !isEmpty()); // NOPMD
     }
 
     @SuppressWarnings("unchecked")
@@ -184,7 +184,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     }
 
     @Override
-    public final int size() {
+    public int size() {
         /*
          * It is possible for a thread to be interrupted or reschedule between the read of the producer and
          * consumer indices, therefore protection is required to ensure size is within valid range. In the
@@ -235,22 +235,22 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
         consumerIndex.lazySet(v);
     }
 
-    private static final int calcWrappedOffset(long index, int mask) {
+    private static int calcWrappedOffset(long index, int mask) {
         return calcDirectOffset((int)index & mask);
     }
-    private static final int calcDirectOffset(int index) {
+    private static int calcDirectOffset(int index) {
         return index;
     }
-    private static final void soElement(AtomicReferenceArray<Object> buffer, int offset, Object e) {
+    private static void soElement(AtomicReferenceArray<Object> buffer, int offset, Object e) {
         buffer.lazySet(offset, e);
     }
 
-    private static final <E> Object lvElement(AtomicReferenceArray<Object> buffer, int offset) {
+    private static <E> Object lvElement(AtomicReferenceArray<Object> buffer, int offset) {
         return buffer.get(offset);
     }
 
     @Override
-    public final Iterator<T> iterator() {
+    public Iterator<T> iterator() {
         throw new UnsupportedOperationException();
     }
 

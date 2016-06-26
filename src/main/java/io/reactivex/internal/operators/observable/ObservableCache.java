@@ -27,7 +27,7 @@ import io.reactivex.internal.util.*;
  */
 public final class ObservableCache<T> extends Observable<T> {
     /** The cache and replay state. */
-    private CacheState<T> state;
+    final CacheState<T> state;
     
     final AtomicBoolean once;
 

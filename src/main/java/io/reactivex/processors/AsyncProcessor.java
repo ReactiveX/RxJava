@@ -34,6 +34,14 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the value type
  */
 public final class AsyncProcessor<T> extends FlowProcessor<T> {
+    /** The state holding onto the latest value or error and the array of subscribers. */
+    final State<T> state;
+    /** 
+     * Indicates the subject has been terminated. It is checked in the onXXX methods in
+     * a relaxed matter: concurrent calls may not properly see it (which shouldn't happen if
+     * the reactive-streams contract is held).
+     */
+    boolean done;
     
     /**
      * Constructs an empty AsyncSubject.
@@ -43,15 +51,6 @@ public final class AsyncProcessor<T> extends FlowProcessor<T> {
     public static <T> AsyncProcessor<T> create() {
         return new AsyncProcessor<T>();
     }
-    
-    /** The state holding onto the latest value or error and the array of subscribers. */
-    final State<T> state;
-    /** 
-     * Indicates the subject has been terminated. It is checked in the onXXX methods in
-     * a relaxed matter: concurrent calls may not properly see it (which shouldn't happen if
-     * the reactive-streams contract is held).
-     */
-    boolean done;
     
     protected AsyncProcessor() {
         this.state = new State<T>();

@@ -26,6 +26,9 @@ import io.reactivex.Flowable;
  * @param <T> the item value type
  */
 public abstract class FlowProcessor<T> extends Flowable<T> implements Processor<T, T> {
+    /** An empty array to avoid allocation in getValues(). */
+    private static final Object[] EMPTY = new Object[0];
+    
     
     /**
      * Returns true if the subject has subscribers.
@@ -96,9 +99,6 @@ public abstract class FlowProcessor<T> extends Flowable<T> implements Processor<
         }
         return new SerializedProcessor<T>(this);
     }
-    
-    /** An empty array to avoid allocation in getValues(). */
-    private static final Object[] EMPTY = new Object[0];
     
     /**
      * Returns an Object array containing snapshot all values of the Subject.

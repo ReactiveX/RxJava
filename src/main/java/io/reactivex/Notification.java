@@ -19,11 +19,11 @@ import io.reactivex.internal.functions.Objects;
  * Utility class to help construct notification objects.
  */
 public final class Notification {
+    static final Try<Optional<Object>> COMPLETE = Try.ofValue(Optional.<Object>empty());
+    
     private Notification() {
         throw new IllegalStateException();
     }
-    
-    static final Try<Optional<Object>> COMPLETE = Try.ofValue(Optional.<Object>empty());
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Try<Optional<T>> complete() {

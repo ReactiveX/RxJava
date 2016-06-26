@@ -40,7 +40,7 @@ public enum NotificationLite {
     /**
      * Wraps a Throwable.
      */
-    private static final class ErrorNotification implements Serializable {
+    static final class ErrorNotification implements Serializable {
         /** */
         private static final long serialVersionUID = -8759979445933046293L;
         final Throwable e;
@@ -57,7 +57,7 @@ public enum NotificationLite {
     /**
      * Wraps a Subscription.
      */
-    private static final class SubscriptionNotification implements Serializable {
+    static final class SubscriptionNotification implements Serializable {
         /** */
         private static final long serialVersionUID = -1322257508628817540L;
         final Subscription s;
@@ -74,7 +74,7 @@ public enum NotificationLite {
     /**
      * Wraps a Disposable.
      */
-    private static final class DisposableNotification implements Serializable {
+    static final class DisposableNotification implements Serializable {
         /** */
         private static final long serialVersionUID = -7482590109178395495L;
         final Disposable d;

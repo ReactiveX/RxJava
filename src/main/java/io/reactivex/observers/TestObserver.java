@@ -300,7 +300,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
             } else {
                 ce.suppress(e);
             }
-        };
+        }
         if (!ce.isEmpty()) {
             ae.initCause(ce);
         }
