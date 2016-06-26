@@ -38,7 +38,8 @@ import io.reactivex.schedulers.*;
  * @param <T>
  */
 public abstract class Observable<T> implements ObservableConsumable<T> {
-
+    static final Object OBJECT = new Object();
+    
     public interface NbpOperator<Downstream, Upstream> extends Function<Observer<? super Downstream>, Observer<? super Upstream>> {
         
     }
@@ -64,11 +65,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         }
     });
     
-    static final Object OBJECT = new Object();
-    
     public static <T> Observable<T> amb(Iterable<? extends ObservableConsumable<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
-        return (new ObservableAmb<T>(null, sources));
+        return new ObservableAmb<T>(null, sources);
     }
     
     @SuppressWarnings("unchecked")
@@ -82,7 +81,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         if (len == 1) {
             return (Observable<T>)sources[0]; // FIXME wrap()
         }
-        return (new ObservableAmb<T>(sources, null));
+        return new ObservableAmb<T>(sources, null);
     }
     
     /**
@@ -116,7 +115,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
-        return (new ObservableCombineLatest<T, R>(null, sources, combiner, s, delayError));
+        return new ObservableCombineLatest<T, R>(null, sources, combiner, s, delayError);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -138,7 +137,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         }
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
-        return (new ObservableCombineLatest<T, R>(sources, null, combiner, s, delayError));
+        return new ObservableCombineLatest<T, R>(sources, null, combiner, s, delayError);
     }
     
     @SuppressWarnings("unchecked")
@@ -368,7 +367,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> defer(Supplier<? extends ObservableConsumable<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return (new ObservableDefer<T>(supplier));
+        return new ObservableDefer<T>(supplier);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -380,7 +379,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> error(Supplier<? extends Throwable> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
-        return (new ObservableError<T>(errorSupplier));
+        return new ObservableError<T>(errorSupplier);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -403,13 +402,13 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         if (values.length == 1) {
             return just(values[0]);
         }
-        return (new ObservableFromArray<T>(values));
+        return new ObservableFromArray<T>(values);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromCallable(Callable<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return (new ObservableFromCallable<T>(supplier));
+        return new ObservableFromCallable<T>(supplier);
     }
 
     /*
@@ -420,15 +419,14 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromFuture(Future<? extends T> future) {
         Objects.requireNonNull(future, "future is null");
-        return (new ObservableFromFuture<T>(future, 0L, null));
+        return new ObservableFromFuture<T>(future, 0L, null);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
         Objects.requireNonNull(future, "future is null");
         Objects.requireNonNull(unit, "unit is null");
-        Observable<T> o = create(new ObservableFromFuture<T>(future, timeout, unit));
-        return o;
+        return new ObservableFromFuture<T>(future, timeout, unit);
     }
 
     @SchedulerSupport(SchedulerSupport.CUSTOM)
@@ -447,7 +445,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     public static <T> Observable<T> fromIterable(Iterable<? extends T> source) {
         Objects.requireNonNull(source, "source is null");
-        return (new ObservableFromIterable<T>(source));
+        return new ObservableFromIterable<T>(source);
     }
 
     public static <T> Observable<T> fromPublisher(final Publisher<? extends T> publisher) {
@@ -533,7 +531,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(initialState, "initialState is null");
         Objects.requireNonNull(generator, "generator  is null");
         Objects.requireNonNull(disposeState, "diposeState is null");
-        return (new ObservableGenerate<T, S>(initialState, generator, disposeState));
+        return new ObservableGenerate<T, S>(initialState, generator, disposeState);
     }
 
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -552,7 +550,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
 
-        return (new ObservableInterval(initialDelay, period, unit, scheduler));
+        return new ObservableInterval(initialDelay, period, unit, scheduler);
     }
 
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -587,7 +585,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
 
-        return (new ObservableIntervalRange(start, end, initialDelay, period, unit, scheduler));
+        return new ObservableIntervalRange(start, end, initialDelay, period, unit, scheduler);
     }
 
     public static <T> Observable<T> just(T value) {
@@ -907,7 +905,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(p2, "p2 is null");
         Objects.requireNonNull(isEqual, "isEqual is null");
         validateBufferSize(bufferSize);
-        return (new ObservableSequenceEqual<T>(p1, p2, isEqual, bufferSize));
+        return new ObservableSequenceEqual<T>(p1, p2, isEqual, bufferSize);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -941,7 +939,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
 
-        return (new ObservableTimer(delay, unit, scheduler));
+        return new ObservableTimer(delay, unit, scheduler);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -954,7 +952,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
         Objects.requireNonNull(sourceSupplier, "sourceSupplier is null");
         Objects.requireNonNull(disposer, "disposer is null");
-        return (new ObservableUsing<T, D>(resourceSupplier, sourceSupplier, disposer, eager));
+        return new ObservableUsing<T, D>(resourceSupplier, sourceSupplier, disposer, eager);
     }
 
     private static void validateBufferSize(int bufferSize) {
@@ -967,7 +965,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public static <T, R> Observable<R> zip(Iterable<? extends ObservableConsumable<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
-        return (new ObservableZip<T, R>(null, sources, zipper, bufferSize(), false));
+        return new ObservableZip<T, R>(null, sources, zipper, bufferSize(), false);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1082,7 +1080,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         }
         Objects.requireNonNull(zipper, "zipper is null");
         validateBufferSize(bufferSize);
-        return (new ObservableZip<T, R>(sources, null, zipper, bufferSize, delayError));
+        return new ObservableZip<T, R>(sources, null, zipper, bufferSize, delayError);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1092,14 +1090,14 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
         validateBufferSize(bufferSize);
-        return (new ObservableZip<T, R>(null, sources, zipper, bufferSize, delayError));
+        return new ObservableZip<T, R>(null, sources, zipper, bufferSize, delayError);
     }
 
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<Boolean> all(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return (new ObservableAll<T>(this, predicate));
+        return new ObservableAll<T>(this, predicate);
     }
 
     @SuppressWarnings("unchecked")
@@ -1493,7 +1491,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @Experimental
     public final <U> Observable<T> delaySubscription(ObservableConsumable<U> other) {
         Objects.requireNonNull(other, "other is null");
-        return (new ObservableDelaySubscriptionOther<T, U>(this, other));
+        return new ObservableDelaySubscriptionOther<T, U>(this, other);
     }
 
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -1521,7 +1519,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(delaySupplier, "delaySupplier is null");
         return fromCallable(new Callable<ObservableConsumable<U>>() {
             @Override
-            public ObservableConsumable<U> call() throws Exception {
+            public ObservableConsumable<U> call() {
                 return delaySupplier.get();
             }
         })
@@ -1778,7 +1776,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         validateBufferSize(bufferSize);
         if (this instanceof ObservableJust) {
             ObservableJust<T> scalar = (ObservableJust<T>) this;
-            return (scalar.scalarFlatMap(mapper));
+            return scalar.scalarFlatMap(mapper);
         }
         return lift(new NbpOperatorFlatMap<T, R>(mapper, delayErrors, maxConcurrency, bufferSize));
     }
@@ -2024,7 +2022,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     public final <R> Observable<R> lift(NbpOperator<? extends R, ? super T> onLift) {
         Objects.requireNonNull(onLift, "onLift is null");
-        return (new ObservableLift<R, T>(this, onLift));
+        return new ObservableLift<R, T>(this, onLift);
     }
 
     public final <R> Observable<R> map(Function<? super T, ? extends R> mapper) {
@@ -2175,13 +2173,13 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         if (times == 0) {
             return empty();
         }
-        return (new ObservableRepeat<T>(this, times));
+        return new ObservableRepeat<T>(this, times);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> repeatUntil(BooleanSupplier stop) {
         Objects.requireNonNull(stop, "stop is null");
-        return (new ObservableRepeatUntil<T>(this, stop));
+        return new ObservableRepeatUntil<T>(this, stop);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2201,7 +2199,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         }
         ;
         
-        return (new ObservableRedo<T>(this, f));
+        return new ObservableRedo<T>(this, f);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2354,7 +2352,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final Observable<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         
-        return (new ObservableRetryBiPredicate<T>(this, predicate));
+        return new ObservableRetryBiPredicate<T>(this, predicate);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2370,7 +2368,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         }
         Objects.requireNonNull(predicate, "predicate is null");
 
-        return (new ObservableRetryPredicate<T>(this, times, predicate));
+        return new ObservableRetryPredicate<T>(this, times, predicate);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2415,7 +2413,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         }
         ;
         
-        return (new ObservableRedo<T>(this, f));
+        return new ObservableRedo<T>(this, f);
     }
     
     // TODO decide if safe subscription or unsafe should be the default
@@ -2649,7 +2647,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<T> subscribeOn(Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return (new ObservableSubscribeOn<T>(this, scheduler));
+        return new ObservableSubscribeOn<T>(this, scheduler);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3381,7 +3379,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <U, R> Observable<R> zipWith(Iterable<U> other,  BiFunction<? super T, ? super U, ? extends R> zipper) {
         Objects.requireNonNull(other, "other is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return (new ObservableZipIterable<T, U, R>(this, other, zipper));
+        return new ObservableZipIterable<T, U, R>(this, other, zipper);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)

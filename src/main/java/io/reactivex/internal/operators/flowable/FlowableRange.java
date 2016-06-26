@@ -85,7 +85,7 @@ public final class FlowableRange extends Flowable<Integer> {
             
             for (;;) {
                 long fs = end - idx + 1;
-                final boolean complete = fs <= r;
+                final boolean complete = fs <= r; // NOPMD
 
                 fs = Math.min(fs, r) + idx;
                 final Subscriber<? super Integer> o = this.actual;

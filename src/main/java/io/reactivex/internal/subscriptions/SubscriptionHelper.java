@@ -25,6 +25,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public enum SubscriptionHelper {
     ;
+    /**
+     * Represents a cancelled Subscription.
+     * <p>Don't leak this instance!
+     */
+    public static final Subscription CANCELLED = Cancelled.INSTANCE;
     
     /**
      * Verifies that current is null, next is not null, otherwise signals errors
@@ -65,11 +70,6 @@ public enum SubscriptionHelper {
         }
         return true;
     }
-    
-    /**
-     * Represents a cancelled Subscription.
-     */
-    public static final Subscription CANCELLED = Cancelled.INSTANCE;
     
     /**
      * Check if the given subscription is the common cancelled subscription.

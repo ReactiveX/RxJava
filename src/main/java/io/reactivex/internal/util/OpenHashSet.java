@@ -30,6 +30,8 @@ import io.reactivex.functions.Consumer;
  * @param <T> the element type
  */
 public final class OpenHashSet<T> {
+    private static final int INT_PHI = 0x9E3779B9;
+    
     final float loadFactor;
     int mask;
     int size;
@@ -161,7 +163,7 @@ public final class OpenHashSet<T> {
         
         
         for (int j = size; j-- != 0; ) {
-            while (a[--i] == null);
+            while (a[--i] == null); // NOPMD
             int pos = mix(a[i].hashCode()) & m;
             if (b[pos] != null) {
                 for (;;) {
@@ -178,8 +180,6 @@ public final class OpenHashSet<T> {
         this.maxSize = (int)(newCap * loadFactor);
         this.keys = b;
     }
-    
-    private static final int INT_PHI = 0x9E3779B9;
     
     static int mix(int x) {
         final int h = x * INT_PHI;
@@ -227,7 +227,7 @@ public final class OpenHashSet<T> {
     }
     
     public Object[] keys() {
-        return keys;
+        return keys; // NOPMD
     }
     
     public int size() {

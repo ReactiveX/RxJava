@@ -176,12 +176,12 @@ public final class NbpOperatorGroupBy<T, K, V> implements NbpOperator<GroupedObs
     
     static final class GroupedUnicast<K, T> extends GroupedObservable<K, T> {
         
+        final State<T, K> state;
+        
         public static <T, K> GroupedUnicast<K, T> createWith(K key, int bufferSize, GroupBySubscriber<?, K, T> parent, boolean delayError) {
             State<T, K> state = new State<T, K>(bufferSize, parent, key, delayError);
             return new GroupedUnicast<K, T>(key, state);
         }
-        
-        final State<T, K> state;
         
         protected GroupedUnicast(K key, State<T, K> state) {
             super(key);

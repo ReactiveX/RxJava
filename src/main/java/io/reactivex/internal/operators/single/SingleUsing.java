@@ -41,7 +41,7 @@ public final class SingleUsing<T, U> extends Single<T> {
     @Override
     protected void subscribeActual(final SingleSubscriber<? super T> s) {
 
-        final U resource;
+        final U resource; // NOPMD
         
         try {
             resource = resourceSupplier.get();

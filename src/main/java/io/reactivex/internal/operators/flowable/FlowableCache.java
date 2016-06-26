@@ -30,9 +30,9 @@ import io.reactivex.internal.util.*;
  */
 public final class FlowableCache<T> extends Flowable<T> {
     /** The cache and replay state. */
-    private CacheState<T> state;
+    final CacheState<T> state;
 
-    private final AtomicBoolean once;
+    final AtomicBoolean once;
     /**
      * Creates a cached Observable with a default capacity hint of 16.
      * @param <T> the value type

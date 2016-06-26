@@ -30,11 +30,9 @@ public final class SingleAmbIterable<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(final SingleSubscriber<? super T> s) {
-        final AtomicBoolean once = new AtomicBoolean();
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
         
-        int c = 0;
         Iterator<? extends SingleConsumable<? extends T>> iterator;
         
         try {
@@ -48,6 +46,10 @@ public final class SingleAmbIterable<T> extends Single<T> {
             s.onError(new NullPointerException("The iterator returned is null"));
             return;
         }
+
+        final AtomicBoolean once = new AtomicBoolean();
+        int c = 0;
+        
         for (;;) {
             if (once.get()) {
                 return;
@@ -70,11 +72,11 @@ public final class SingleAmbIterable<T> extends Single<T> {
                 break;
             }
             
-            SingleConsumable<? extends T> s1;
-
             if (once.get()) {
                 return;
             }
+
+            SingleConsumable<? extends T> s1;
 
             try {
                 s1 = iterator.next();

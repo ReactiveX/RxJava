@@ -155,10 +155,9 @@ public final class FlowableZip<T, R> extends Flowable<R> {
             for (;;) {
 
                 long r = requested.get();
-                boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0;
                 
-                while (r != 0) {
+                while (e != r) {
                     int i = 0;
                     int emptyCount = 0;
                     for (ZipSubscriber<T, R> z : zs) {
@@ -204,12 +203,11 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                     
                     a.onNext(v);
                     
-                    r--;
                     e++;
                 }
                 
                 if (e != 0) {
-                    if (!unbounded) {
+                    if (r != Long.MAX_VALUE) {
                         requested.addAndGet(-e);
                     }
                     for (ZipSubscriber<T, R> z : zs) {

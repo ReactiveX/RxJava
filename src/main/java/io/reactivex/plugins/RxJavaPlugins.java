@@ -188,14 +188,14 @@ public final class RxJavaPlugins {
                 if (error == null) {
                     error = new NullPointerException();
                 }
-                e.printStackTrace();
+                e.printStackTrace(); // NOPMD
             }
         } else {
             if (error == null) {
                 error = new NullPointerException();
             }
         }
-        error.printStackTrace();
+        error.printStackTrace(); // NOPMD
     }
     
     public static Scheduler onIoScheduler(Scheduler defaultScheduler) {
@@ -416,7 +416,7 @@ public final class RxJavaPlugins {
      * Returns a consumer which relays the received Throwable to RxJavaPlugins.onError().
      * @return the consumer
      */
-    public static final Consumer<Throwable> errorConsumer() {
+    public static Consumer<Throwable> errorConsumer() {
         return CONSUME_BY_RXJAVA_PLUGIN;
     }
     

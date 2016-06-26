@@ -24,6 +24,8 @@ import io.reactivex.internal.subscribers.observable.NbpEmptySubscriber;
 
 public final class NbpOperatorToList<T, U extends Collection<? super T>> implements NbpOperator<U, T> {
     
+    final Supplier<U> collectionSupplier;
+    
     @SuppressWarnings({"rawtypes", "unchecked"})
     static final NbpOperatorToList DEFAULT = new NbpOperatorToList(new Supplier() {
         @Override
@@ -36,8 +38,6 @@ public final class NbpOperatorToList<T, U extends Collection<? super T>> impleme
     public static <T> NbpOperatorToList<T, List<T>> defaultInstance() {
         return DEFAULT;
     }
-    
-    final Supplier<U> collectionSupplier;
     
     public NbpOperatorToList(Supplier<U> collectionSupplier) {
         this.collectionSupplier = collectionSupplier;

@@ -23,13 +23,14 @@ import io.reactivex.internal.disposables.DisposableHelper;
 public final class NbpOperatorSingle<T> implements NbpOperator<T, T> {
     
     static final NbpOperatorSingle<Object> NO_DEFAULT = new NbpOperatorSingle<Object>(null);
+
+    final T defaultValue;
     
     @SuppressWarnings("unchecked")
     public static <T> NbpOperatorSingle<T> instanceNoDefault() {
         return (NbpOperatorSingle<T>)NO_DEFAULT;
     }
     
-    final T defaultValue;
     public NbpOperatorSingle(T defaultValue) {
         this.defaultValue = defaultValue;
     }

@@ -37,7 +37,10 @@ import io.reactivex.internal.util.BackpressureHelper;
  * @param <T> the value type unicasted
  */
 public final class UnicastProcessor<T> extends FlowProcessor<T> {
-    
+
+    /** The subject state. */
+    final State<T> state;
+
     /**
      * Creates an UnicastSubject with an internal buffer capacity hint 16.
      * @param <T> the value type
@@ -74,8 +77,6 @@ public final class UnicastProcessor<T> extends FlowProcessor<T> {
         return new UnicastProcessor<T>(state);
     }
 
-    /** The subject state. */
-    final State<T> state;
     /**
      * Constructs the Observable base class.
      * @param state the subject state
@@ -298,10 +299,9 @@ public final class UnicastProcessor<T> extends FlowProcessor<T> {
                     }
                     
                     long r = requested.get();
-                    boolean unbounded = r == Long.MAX_VALUE;
                     long e = 0L;
                     
-                    while (r != 0L) {
+                    while (e != r) {
                         
                         if (cancelled) {
                             clear(q);
@@ -330,12 +330,11 @@ public final class UnicastProcessor<T> extends FlowProcessor<T> {
                         
                         a.onNext(v);
                         
-                        r--;
-                        e--;
+                        e++;
                     }
                     
-                    if (e != 0 && !unbounded) {
-                        requested.getAndAdd(e);
+                    if (e != 0 && r != Long.MAX_VALUE) {
+                        requested.getAndAdd(-e);
                     }
                     
                 }

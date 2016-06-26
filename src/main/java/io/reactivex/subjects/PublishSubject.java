@@ -22,11 +22,11 @@ import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class PublishSubject<T> extends Subject<T> {
+    final State<T> state;
     public static <T> PublishSubject<T> create() {
         return new PublishSubject<T>();
     }
     
-    final State<T> state;
     protected PublishSubject() {
         this.state = new State<T>();
     }

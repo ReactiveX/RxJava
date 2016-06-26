@@ -31,6 +31,12 @@ import io.reactivex.schedulers.Schedulers;
  * The class follows a similar event pattern as Reactive-Streams: onSubscribe (onError|onComplete)?
  */
 public abstract class Completable implements CompletableConsumable {
+    /** Single instance of a complete Completable. */
+    static final Completable COMPLETE = new CompletableEmpty();
+    
+    /** Single instance of a never Completable. */
+    static final Completable NEVER = new CompletableNever();
+    
     /**
      * Convenience interface and callback used by the lift operator that given a child CompletableSubscriber,
      * return a parent CompletableSubscriber that does any kind of lifecycle-related transformations.
@@ -46,12 +52,6 @@ public abstract class Completable implements CompletableConsumable {
     public interface CompletableTransformer extends Function<Completable, CompletableConsumable> {
         
     }
-    
-    /** Single instance of a complete Completable. */
-    static final Completable COMPLETE = new CompletableEmpty();
-    
-    /** Single instance of a never Completable. */
-    static final Completable NEVER = new CompletableNever();
     
     /**
      * Wraps the given CompletableConsumable into a Completable
@@ -186,7 +186,7 @@ public abstract class Completable implements CompletableConsumable {
             // TODO plugin wrapping onSubscribe
             
             return new CompletableWrapper(onSubscribe);
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException ex) { // NOPMD
             throw ex;
         } catch (Throwable ex) {
             RxJavaPlugins.onError(ex);
@@ -1038,7 +1038,7 @@ public abstract class Completable implements CompletableConsumable {
             // TODO plugin wrapping the subscriber
             
             subscribeActual(s);
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException ex) { // NOPMD
             throw ex;
         } catch (Throwable ex) {
             RxJavaPlugins.onError(ex);

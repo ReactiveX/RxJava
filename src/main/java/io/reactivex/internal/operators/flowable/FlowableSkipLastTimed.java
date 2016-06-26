@@ -147,10 +147,9 @@ public final class FlowableSkipLastTimed<T> extends Flowable<T> {
                 }
                 
                 long r = requested.get();
-                boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0L;
                 
-                while (r != 0) {
+                while (e != r) {
                     boolean d = done;
                     
                     Long ts = (Long)q.peek();
@@ -189,13 +188,12 @@ public final class FlowableSkipLastTimed<T> extends Flowable<T> {
                     
                     a.onNext(v);
                     
-                    r--;
-                    e--;
+                    e++;
                 }
                 
                 if (e != 0L) {
-                    if (!unbounded) {
-                        requested.addAndGet(e);
+                    if (r != Long.MAX_VALUE) {
+                        requested.addAndGet(-e);
                     }
                 }
                 

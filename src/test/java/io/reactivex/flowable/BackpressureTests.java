@@ -33,7 +33,7 @@ import io.reactivex.subscribers.*;
 
 public class BackpressureTests {
 
-    private static final class FirehoseNoBackpressure extends AtomicBoolean implements Subscription {
+    static final class FirehoseNoBackpressure extends AtomicBoolean implements Subscription {
         /** */
         private static final long serialVersionUID = -669931580197884015L;
         final Subscriber<? super Integer> s;

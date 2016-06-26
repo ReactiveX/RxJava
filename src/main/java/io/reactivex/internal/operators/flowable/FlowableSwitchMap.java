@@ -224,18 +224,18 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
                     }
                     
                     long r = requested.get();
-                    boolean unbounded = r == Long.MAX_VALUE;
                     long e = 0L;
                     boolean retry = false;
                     
-                    while (r != 0L) {
+                    while (e != r) {
+                        if (cancelled) {
+                            return;
+                        }
+
                         boolean d = inner.done;
                         R v = q.poll();
                         boolean empty = v == null;
 
-                        if (cancelled) {
-                            return;
-                        }
                         if (inner != active.get()) {
                             retry = true;
                             break;
@@ -261,16 +261,15 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
                         
                         a.onNext(v);
                         
-                        r--;
-                        e--;
+                        e++;
                     }
                     
                     if (e != 0L) {
                         if (!cancelled) {
-                            if (!unbounded) {
-                                requested.addAndGet(e);
+                            if (r != Long.MAX_VALUE) {
+                                requested.addAndGet(-e);
                             }
-                            inner.get().request(-e);
+                            inner.get().request(e);
                         }
                     }
                     

@@ -52,15 +52,15 @@ public enum BlockingFlowableNext {
     }
 
     // test needs to access the observer.waiting flag non-blockingly.
-    /* private */static final class NextIterator<T> implements Iterator<T> {
+    static final class NextIterator<T> implements Iterator<T> {
 
         private final NextObserver<T> observer;
         private final Publisher<? extends T> items;
         private T next;
         private boolean hasNext = true;
         private boolean isNextConsumed = true;
-        private Throwable error = null;
-        private boolean started = false;
+        private Throwable error;
+        private boolean started;
 
         private NextIterator(Publisher<? extends T> items, NextObserver<T> observer) {
             this.items = items;
@@ -75,11 +75,11 @@ public enum BlockingFlowableNext {
             }
             // Since an iterator should not be used in different thread,
             // so we do not need any synchronization.
-            if (hasNext == false) {
+            if (!hasNext) {
                 // the iterator has reached the end.
                 return false;
             }
-            if (isNextConsumed == false) {
+            if (!isNextConsumed) {
                 // next has not been used yet.
                 return true;
             }
@@ -117,7 +117,7 @@ public enum BlockingFlowableNext {
                 observer.dispose();
                 Thread.currentThread().interrupt();
                 error = e;
-                throw Exceptions.propagate(error);
+                throw Exceptions.propagate(e);
             }
         }
 
@@ -142,7 +142,7 @@ public enum BlockingFlowableNext {
         }
     }
 
-    private static class NextObserver<T> extends DisposableSubscriber<Try<Optional<T>>> {
+    static final class NextObserver<T> extends DisposableSubscriber<Try<Optional<T>>> {
         private final BlockingQueue<Try<Optional<T>>> buf = new ArrayBlockingQueue<Try<Optional<T>>>(1);
         final AtomicInteger waiting = new AtomicInteger();
 

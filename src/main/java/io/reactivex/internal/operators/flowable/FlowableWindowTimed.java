@@ -230,7 +230,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
             for (;;) {
                 
                 for (;;) {
-                    boolean term = terminated;
+                    boolean term = terminated; // NOPMD
                     
                     boolean d = done;
                     
@@ -802,7 +802,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
                     boolean empty = v == null;
                     boolean sw = v instanceof SubjectWork;
                     
-                    if (d && (v == null || v instanceof SubjectWork)) {
+                    if (d && (empty || sw)) {
                         q.clear();
                         dispose();
                         Throwable e = error;

@@ -43,7 +43,7 @@ public final class CompletableUsing<R> extends Completable {
 
     @Override
     protected void subscribeActual(final CompletableSubscriber s) {
-        final R resource;
+        final R resource; // NOPMD
         
         try {
             resource = resourceSupplier.get();

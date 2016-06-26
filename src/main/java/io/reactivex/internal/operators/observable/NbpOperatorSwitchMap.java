@@ -215,10 +215,6 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
                     boolean retry = false;
                     
                     for (;;) {
-                        boolean d = inner.done;
-                        R v = q.poll();
-                        boolean empty = v == null;
-
                         if (cancelled) {
                             return;
                         }
@@ -226,7 +222,11 @@ public final class NbpOperatorSwitchMap<T, R> implements NbpOperator<R, T> {
                             retry = true;
                             break;
                         }
-                        
+
+                        boolean d = inner.done;
+                        R v = q.poll();
+                        boolean empty = v == null;
+
                         if (d) {
                             Throwable err = inner.error;
                             if (err != null) {

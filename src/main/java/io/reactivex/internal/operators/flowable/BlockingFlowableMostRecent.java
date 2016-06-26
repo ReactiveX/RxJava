@@ -57,7 +57,7 @@ public enum BlockingFlowableMostRecent {
         };
     }
 
-    private static final class MostRecentObserver<T> extends DefaultObserver<T> {
+    static final class MostRecentObserver<T> extends DefaultObserver<T> {
         volatile Object value;
         
         private MostRecentObserver(T value) {
@@ -89,7 +89,7 @@ public enum BlockingFlowableMostRecent {
                 /**
                  * buffer to make sure that the state of the iterator doesn't change between calling hasNext() and next().
                  */
-                private Object buf = null;
+                private Object buf;
 
                 @Override
                 public boolean hasNext() {
@@ -101,10 +101,12 @@ public enum BlockingFlowableMostRecent {
                 public T next() {
                     try {
                         // if hasNext wasn't called before calling next.
-                        if (buf == null)
+                        if (buf == null) {
                             buf = value;
-                        if (NotificationLite.isComplete(buf))
+                        }
+                        if (NotificationLite.isComplete(buf)) {
                             throw new NoSuchElementException();
+                        }
                         if (NotificationLite.isError(buf)) {
                             throw Exceptions.propagate(NotificationLite.getError(buf));
                         }

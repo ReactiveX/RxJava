@@ -33,6 +33,13 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
 public abstract class Flowable<T> implements Publisher<T> {
+    private static final Object OBJECT = new Object(); 
+    /** The default buffer size. */
+    static final int BUFFER_SIZE;
+    static {
+        BUFFER_SIZE = Math.max(16, Integer.getInteger("rx2.buffer-size", 128));
+    }
+    
     /**
      * Interface to map/wrap a downstream subscriber to an upstream subscriber.
      *
@@ -51,12 +58,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     public interface Transformer<T, R> extends Function<Flowable<T>, Publisher<? extends R>> {
         
-    }
-
-    /** The default buffer size. */
-    static final int BUFFER_SIZE;
-    static {
-        BUFFER_SIZE = Math.max(16, Integer.getInteger("rx2.buffer-size", 128));
     }
 
     /** A never observable instance as there is no need to instantiate this more than once. */
@@ -459,8 +460,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
         Objects.requireNonNull(future, "future is null");
         Objects.requireNonNull(unit, "unit is null");
-        Flowable<T> o = new FlowableFromFuture<T>(future, timeout, unit);
-        return o;
+        return new FlowableFromFuture<T>(future, timeout, unit);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1613,8 +1613,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         });
     }
 
-    private static final Object OBJECT = new Object(); 
-    
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1622,7 +1620,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(delaySupplier, "delaySupplier is null");
         return fromCallable(new Callable<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object call() {
                 return delaySupplier.get();
             }
         })  
@@ -2936,7 +2934,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             }
             
             subscribeActual(s);
-        } catch (NullPointerException e) {
+        } catch (NullPointerException e) { // NOPMD
             throw e;
         } catch (Throwable e) {
             // TODO throw if fatal?

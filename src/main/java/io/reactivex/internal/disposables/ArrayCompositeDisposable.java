@@ -42,7 +42,7 @@ public final class ArrayCompositeDisposable extends AtomicReferenceArray<Disposa
         for (;;) {
             Disposable o = get(index);
             if (o == DisposableHelper.DISPOSED) {
-                resource.dispose();;
+                resource.dispose();
                 return false;
             }
             if (compareAndSet(index, o, resource)) {

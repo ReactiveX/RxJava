@@ -62,7 +62,7 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
         }
     }
     
-    static final <T> BlockingIterator<T> iterate(Publisher<? extends T> p) {
+    static <T> BlockingIterator<T> iterate(Publisher<? extends T> p) {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
 
         LambdaSubscriber<T> ls = new LambdaSubscriber<T>(
@@ -431,7 +431,7 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
             // for more information see https://github.com/ReactiveX/RxJava/pull/147#issuecomment-13624780
             Thread.currentThread().interrupt();
             // using Runtime so it is not checked
-            throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
+            throw new IllegalStateException("Interrupted while waiting for subscription to complete.", e);
         }
     }
     
@@ -465,11 +465,7 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
         awaitForComplete(cdl, ls);
         Throwable e = error[0];
         if (e != null) {
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            } else {
-                throw new RuntimeException(e);
-            }
+            Exceptions.propagate(e);
         }
     }
     

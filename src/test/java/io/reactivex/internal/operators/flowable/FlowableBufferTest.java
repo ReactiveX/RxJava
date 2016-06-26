@@ -287,7 +287,7 @@ public class FlowableBufferTest {
         assertFalse(action.fail);
     }
 
-    private static class LongTimeAction implements Consumer<List<Integer>> {
+    static final class LongTimeAction implements Consumer<List<Integer>> {
 
         CountDownLatch latch;
         boolean fail = false;

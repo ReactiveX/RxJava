@@ -175,7 +175,7 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
                     }
                     
                     long r = requested.get();
-                    boolean unbounded = r == Long.MAX_VALUE;
+                    boolean unbounded = r == Long.MAX_VALUE; // NOPMD
                     long e = 0L;
                     
                     for (;;) {

@@ -34,11 +34,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 
 public final class AsyncSubject<T> extends Subject<T> {
+    final State<T> state;
+    
     public static <T> AsyncSubject<T> create() {
         return new AsyncSubject<T>();
     }
-    
-    final State<T> state;
     
     protected AsyncSubject() {
         this.state = new State<T>();

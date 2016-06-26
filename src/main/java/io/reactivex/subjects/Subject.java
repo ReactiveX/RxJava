@@ -24,6 +24,8 @@ import io.reactivex.*;
  * @param <T> the item value type
  */
 public abstract class Subject<T> extends Observable<T> implements Observer<T> {
+    /** An empty array to avoid allocation in getValues(). */
+    private static final Object[] EMPTY = new Object[0];
     
     /**
      * Returns true if the subject has subscribers.
@@ -94,9 +96,6 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
         }
         return new SerializedSubject<T>(this);
     }
-    
-    /** An empty array to avoid allocation in getValues(). */
-    private static final Object[] EMPTY = new Object[0];
     
     /**
      * Returns an Object array containing snapshot all values of the Subject.

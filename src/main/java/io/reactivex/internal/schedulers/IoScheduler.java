@@ -40,12 +40,18 @@ public final class IoScheduler extends Scheduler implements SchedulerLifecycle {
     private static final TimeUnit KEEP_ALIVE_UNIT = TimeUnit.SECONDS;
     
     static final ThreadWorker SHUTDOWN_THREADWORKER;
+    final AtomicReference<CachedWorkerPool> pool;
+    
+    static final CachedWorkerPool NONE;
     static {
+        NONE = new CachedWorkerPool(0, null);
+        NONE.shutdown();
+
         SHUTDOWN_THREADWORKER = new ThreadWorker(new RxThreadFactory("RxCachedThreadSchedulerShutdown-"));
         SHUTDOWN_THREADWORKER.dispose();
     }
     
-    private static final class CachedWorkerPool {
+    static final class CachedWorkerPool {
         private final long keepAliveTime;
         private final ConcurrentLinkedQueue<ThreadWorker> expiringWorkerQueue;
         private final CompositeDisposable allWorkers;
@@ -138,14 +144,6 @@ public final class IoScheduler extends Scheduler implements SchedulerLifecycle {
         }
     }
 
-    final AtomicReference<CachedWorkerPool> pool;
-    
-    static final CachedWorkerPool NONE;
-    static {
-        NONE = new CachedWorkerPool(0, null);
-        NONE.shutdown();
-    }
-    
     public IoScheduler() {
         this.pool = new AtomicReference<CachedWorkerPool>(NONE);
         start();
@@ -181,7 +179,7 @@ public final class IoScheduler extends Scheduler implements SchedulerLifecycle {
         return pool.get().allWorkers.size();
     }
 
-    private static final class EventLoopWorker extends Scheduler.Worker {
+    static final class EventLoopWorker extends Scheduler.Worker {
         private final CompositeDisposable tasks;
         private final CachedWorkerPool pool;
         private final ThreadWorker threadWorker;
@@ -226,7 +224,7 @@ public final class IoScheduler extends Scheduler implements SchedulerLifecycle {
         }
     }
 
-    private static final class ThreadWorker extends NewThreadWorker {
+    static final class ThreadWorker extends NewThreadWorker {
         private long expirationTime;
 
         ThreadWorker(ThreadFactory threadFactory) {

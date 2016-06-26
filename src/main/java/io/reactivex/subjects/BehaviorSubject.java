@@ -25,6 +25,7 @@ import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class BehaviorSubject<T> extends Subject<T> {
+    final State<T> state;
 
     public static <T> BehaviorSubject<T> create() {
         State<T> state = new State<T>();
@@ -39,7 +40,6 @@ public final class BehaviorSubject<T> extends Subject<T> {
         return new BehaviorSubject<T>(state);
     }
     
-    final State<T> state;
     protected BehaviorSubject(State<T> state) {
         this.state = state;
     }

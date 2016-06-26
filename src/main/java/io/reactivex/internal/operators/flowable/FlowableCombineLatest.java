@@ -221,10 +221,9 @@ public final class FlowableCombineLatest<T, R> extends Flowable<R> {
                 }
                 
                 long r = requested.get();
-                boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0L;
                 
-                while (r != 0L) {
+                while (e != r) {
                     
                     boolean d = done;
                     @SuppressWarnings("unchecked")
@@ -270,13 +269,12 @@ public final class FlowableCombineLatest<T, R> extends Flowable<R> {
                     
                     cs.request(1);
                     
-                    r--;
-                    e--;
+                    e++;
                 }
                 
                 if (e != 0L) {
-                    if (!unbounded) {
-                        requested.addAndGet(e);
+                    if (r != Long.MAX_VALUE) {
+                        requested.addAndGet(-e);
                     }
                 }
                 

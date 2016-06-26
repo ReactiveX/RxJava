@@ -32,6 +32,14 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  *            the value type
  */
 public final class FlowableRefCount<T> extends Flowable<T> {
+    final ConnectableFlowable<? extends T> source;
+    volatile CompositeDisposable baseSubscription = new CompositeDisposable();
+    final AtomicInteger subscriptionCount = new AtomicInteger(0);
+
+    /**
+     * Use this lock for every subscription and disconnect action.
+     */
+    final ReentrantLock lock = new ReentrantLock();
 
     final class ConnectionSubscriber implements Subscriber<T>, Subscription {
         final Subscriber<? super T> subscriber;
@@ -40,7 +48,7 @@ public final class FlowableRefCount<T> extends Flowable<T> {
 
         Subscription s;
         
-        private ConnectionSubscriber(Subscriber<? super T> subscriber,
+        ConnectionSubscriber(Subscriber<? super T> subscriber,
                 CompositeDisposable currentBase, Disposable resource) {
             this.subscriber = subscriber;
             this.currentBase = currentBase;
@@ -98,15 +106,6 @@ public final class FlowableRefCount<T> extends Flowable<T> {
             }
         }
     }
-
-    final ConnectableFlowable<? extends T> source;
-    volatile CompositeDisposable baseSubscription = new CompositeDisposable();
-    final AtomicInteger subscriptionCount = new AtomicInteger(0);
-
-    /**
-     * Use this lock for every subscription and disconnect action.
-     */
-    final ReentrantLock lock = new ReentrantLock();
 
     /**
      * Constructor.

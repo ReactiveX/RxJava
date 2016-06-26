@@ -38,6 +38,8 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
     /** The size of the prefetch buffer. */
     final int bufferSize;
 
+    final ObservableConsumable<T> onSubscribe;
+    
     /**
      * Creates a OperatorPublish instance to publish values of the given source observable.
      * @param <T> the source value type
@@ -108,7 +110,7 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
                     // setting the producer will trigger the first request to be considered by 
                     // the subscriber-to-source.
                     child.onSubscribe(inner);
-                    break;
+                    break; // NOPMD
                 }
             }
         };
@@ -136,8 +138,6 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
         });
     }
 
-    final ObservableConsumable<T> onSubscribe;
-    
     private NbpOperatorPublish(ObservableConsumable<T> onSubscribe, ObservableConsumable<? extends T> source, 
             final AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
         this.onSubscribe = onSubscribe;
@@ -174,7 +174,7 @@ public final class NbpOperatorPublish<T> extends ConnectableObservable<T> {
             // if connect() was called concurrently, only one of them should actually 
             // connect to the source
             doConnect = !ps.shouldConnect.get() && ps.shouldConnect.compareAndSet(false, true);
-            break;
+            break; // NOPMD
         }
         /* 
          * Notify the callback that we have a (new) connection which it can unsubscribe

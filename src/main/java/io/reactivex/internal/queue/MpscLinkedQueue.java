@@ -46,7 +46,7 @@ public final class MpscLinkedQueue<T> extends BaseLinkedQueue<T> {
      * @see java.util.Queue#offer(java.lang.Object)
      */
     @Override
-    public final boolean offer(final T nextValue) {
+    public boolean offer(final T nextValue) {
         final LinkedQueueNode<T> nextNode = new LinkedQueueNode<T>(nextValue);
         final LinkedQueueNode<T> prevProducerNode = xchgProducerNode(nextNode);
         // Should a producer thread get interrupted here the chain WILL be broken until that thread is resumed
@@ -71,7 +71,7 @@ public final class MpscLinkedQueue<T> extends BaseLinkedQueue<T> {
      * @see java.util.Queue#poll()
      */
     @Override
-    public final T poll() {
+    public T poll() {
         LinkedQueueNode<T> currConsumerNode = lpConsumerNode(); // don't load twice, it's alright
         LinkedQueueNode<T> nextNode = currConsumerNode.lvNext();
         if (nextNode != null) {
@@ -82,7 +82,7 @@ public final class MpscLinkedQueue<T> extends BaseLinkedQueue<T> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null);
+            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD
             // got the next node...
             
             // we have to null out the value because we are going to hang on to the node
@@ -94,7 +94,7 @@ public final class MpscLinkedQueue<T> extends BaseLinkedQueue<T> {
     }
 
     @Override
-    public final T peek() {
+    public T peek() {
         LinkedQueueNode<T> currConsumerNode = lpConsumerNode(); // don't load twice, it's alright
         LinkedQueueNode<T> nextNode = currConsumerNode.lvNext();
         if (nextNode != null) {
@@ -102,7 +102,7 @@ public final class MpscLinkedQueue<T> extends BaseLinkedQueue<T> {
         } else 
         if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while ((nextNode = currConsumerNode.lvNext()) == null);
+            while ((nextNode = currConsumerNode.lvNext()) == null); // NOPMD
             // got the next node...
             return nextNode.lpValue();
         }

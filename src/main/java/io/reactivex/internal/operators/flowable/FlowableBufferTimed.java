@@ -288,7 +288,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             }
             this.s = s;
             
-            final U b;
+            final U b; // NOPMD
 
             try {
                 b = bufferSupplier.get();
@@ -383,7 +383,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             if (cancelled) {
                 return;
             }
-            final U b;
+            final U b; // NOPMD
             
             try {
                 b = bufferSupplier.get();

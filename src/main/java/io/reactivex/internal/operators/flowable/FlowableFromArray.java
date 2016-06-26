@@ -28,7 +28,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
         this.array = array;
     }
     public T[] array() {
-        return array;
+        return array; // NOPMD
     }
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
@@ -85,10 +85,10 @@ public final class FlowableFromArray<T> extends Flowable<T> {
                         s.onComplete();
                         return;
                     }
-                    long e = 0;
                     if (cancelled) {
                         return;
                     }
+                    long e = 0;
                     while (r != 0 && i < len) {
                         T t = a[i];
                         if (t == null) {
@@ -165,15 +165,15 @@ public final class FlowableFromArray<T> extends Flowable<T> {
                         s.onComplete();
                         return;
                     }
-                    long e = 0;
                     if (cancelled) {
                         return;
                     }
+                    long e = 0;
                     while (r != 0 && i < len) {
-                        boolean b = s.tryOnNext(a[i]);
                         if (cancelled) {
                             return;
                         }
+                        boolean b = s.tryOnNext(a[i]); // NOPMD
                         if (++i == len) {
                             s.onComplete();
                             return;

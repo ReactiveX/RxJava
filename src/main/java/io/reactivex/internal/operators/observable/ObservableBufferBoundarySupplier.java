@@ -175,8 +175,6 @@ extends Observable<U> {
         
         void next() {
             
-            Disposable o = other.get();
-            
             U next;
             
             try {
@@ -192,7 +190,7 @@ extends Observable<U> {
                 actual.onError(new NullPointerException("The buffer supplied is null"));
                 return;
             }
-            
+
             ObservableConsumable<B> boundary;
             
             try {
@@ -212,6 +210,8 @@ extends Observable<U> {
             }
             
             BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
+
+            Disposable o = other.get();
             
             if (!other.compareAndSet(o, bs)) {
                 return;

@@ -80,7 +80,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                 if (firstTimeoutSelector != null) {
                     try {
                         p = firstTimeoutSelector.get();
-                    } catch (Exception ex) {
+                    } catch (Throwable ex) {
                         dispose();
                         EmptyDisposable.error(ex, a);
                         return;
@@ -256,7 +256,7 @@ public final class NbpOperatorTimeout<T, U, V> implements NbpOperator<T, T> {
                     
                     try {
                         p = firstTimeoutSelector.get();
-                    } catch (Exception ex) {
+                    } catch (Throwable ex) {
                         dispose();
                         EmptyDisposable.error(ex, a);
                         return;

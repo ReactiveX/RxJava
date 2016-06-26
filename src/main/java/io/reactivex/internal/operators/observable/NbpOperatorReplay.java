@@ -35,6 +35,8 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
     /** A factory that creates the appropriate buffer for the ReplaySubscriber. */
     final Supplier<? extends ReplayBuffer<T>> bufferFactory;
 
+    final ObservableConsumable<T> onSubscribe;
+    
     @SuppressWarnings("rawtypes")
     static final Supplier DEFAULT_UNBOUNDED_FACTORY = new Supplier() {
         @Override
@@ -191,7 +193,7 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
                     // if there isn't one
                     if (r == null) {
                         // create a new subscriber to source
-                        ReplaySubscriber<T> u = new ReplaySubscriber<T>(curr, bufferFactory.get());
+                        ReplaySubscriber<T> u = new ReplaySubscriber<T>(bufferFactory.get());
                         // let's try setting it as the current subscriber-to-source
                         if (!curr.compareAndSet(r, u)) {
                             // didn't work, maybe someone else did it or the current subscriber 
@@ -217,14 +219,12 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
                     // replay the contents of the buffer
                     r.buffer.replay(inner);
                     
-                    break;
+                    break; // NOPMD
                 }
             }
         };
         return new NbpOperatorReplay<T>(onSubscribe, source, curr, bufferFactory);
     }
-    
-    final ObservableConsumable<T> onSubscribe;
     
     private NbpOperatorReplay(ObservableConsumable<T> onSubscribe, Observable<? extends T> source, 
             final AtomicReference<ReplaySubscriber<T>> current,
@@ -251,7 +251,7 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
             // if there is none yet or the current has unsubscribed
             if (ps == null || ps.isDisposed()) {
                 // create a new subscriber-to-source
-                ReplaySubscriber<T> u = new ReplaySubscriber<T>(current, bufferFactory.get());
+                ReplaySubscriber<T> u = new ReplaySubscriber<T>(bufferFactory.get());
                 // try setting it as the current subscriber-to-source
                 if (!current.compareAndSet(ps, u)) {
                     // did not work, perhaps a new subscriber arrived 
@@ -263,7 +263,7 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
             // if connect() was called concurrently, only one of them should actually 
             // connect to the source
             doConnect = !ps.shouldConnect.get() && ps.shouldConnect.compareAndSet(false, true);
-            break;
+            break; // NOPMD
         }
         /* 
          * Notify the callback that we have a (new) connection which it can unsubscribe
@@ -314,8 +314,7 @@ public final class NbpOperatorReplay<T> extends ConnectableObservable<T> {
         /** The upstream producer. */
         volatile Disposable subscription;
         
-        public ReplaySubscriber(AtomicReference<ReplaySubscriber<T>> current,
-                ReplayBuffer<T> buffer) {
+        public ReplaySubscriber(ReplayBuffer<T> buffer) {
             this.buffer = buffer;
             
             this.producers = new AtomicReference<InnerSubscription[]>(EMPTY);

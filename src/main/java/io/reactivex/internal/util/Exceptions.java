@@ -38,7 +38,7 @@ public enum Exceptions {
         } else if (t instanceof Error) {
             throw (Error) t;
         } else {
-            throw new RuntimeException(t);
+            throw new RuntimeException(t); // NOPMD
         }
     }
     

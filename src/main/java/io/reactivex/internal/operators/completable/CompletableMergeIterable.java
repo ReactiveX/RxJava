@@ -30,8 +30,6 @@ public final class CompletableMergeIterable extends Completable {
     @Override
     public void subscribeActual(final CompletableSubscriber s) {
         final CompositeDisposable set = new CompositeDisposable();
-        final AtomicInteger wip = new AtomicInteger(1);
-        final AtomicBoolean once = new AtomicBoolean();
         
         s.onSubscribe(set);
         
@@ -48,7 +46,10 @@ public final class CompletableMergeIterable extends Completable {
             s.onError(new NullPointerException("The source iterator returned is null"));
             return;
         }
-        
+
+        final AtomicInteger wip = new AtomicInteger(1);
+        final AtomicBoolean once = new AtomicBoolean();
+
         for (;;) {
             if (set.isDisposed()) {
                 return;

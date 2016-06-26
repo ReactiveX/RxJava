@@ -152,11 +152,10 @@ public final class FlowableOnBackpressureBuffer<T> extends Flowable<T> {
                     }
                     
                     long r = requested.get();
-                    boolean unbounded = r == Long.MAX_VALUE;
                     
                     long e = 0L;
                     
-                    while (r != 0L) {
+                    while (e != r) {
                         boolean d = done;
                         T v = q.poll();
                         boolean empty = v == null;
@@ -171,13 +170,12 @@ public final class FlowableOnBackpressureBuffer<T> extends Flowable<T> {
                         
                         a.onNext(v);
                         
-                        r--;
-                        e--;
+                        e++;
                     }
                     
                     if (e != 0L) {
-                        if (!unbounded) {
-                            requested.addAndGet(e);
+                        if (r != Long.MAX_VALUE) {
+                            requested.addAndGet(-e);
                         }
                     }
                     

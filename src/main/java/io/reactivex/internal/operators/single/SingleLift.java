@@ -37,7 +37,7 @@ public final class SingleLift<T, R> extends Single<R> {
             }
             // TODO plugin wrapper
             source.subscribe(sr);
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException ex) { // NOPMD
             throw ex;
         } catch (Throwable ex) {
             RxJavaPlugins.onError(ex);

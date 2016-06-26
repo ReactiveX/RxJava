@@ -34,6 +34,7 @@ import io.reactivex.schedulers.Schedulers;
  * @param <T> the value type
  */
 public final class ReplaySubject<T> extends Subject<T> {
+    final State<T> state;
 
     public static <T> ReplaySubject<T> create() {
         return create(16);
@@ -84,8 +85,6 @@ public final class ReplaySubject<T> extends Subject<T> {
     }
 
 
-    final State<T> state;
-    
     protected ReplaySubject(State<T> state) {
         this.state = state;
     }
@@ -164,7 +163,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     
     @Override
     public boolean hasValue() {
-        return state.buffer.size() != 0;
+        return state.buffer.size() != 0; // NOPMD
     }
     
     /* test*/ int size() {

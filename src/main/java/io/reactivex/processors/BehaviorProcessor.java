@@ -26,6 +26,7 @@ import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class BehaviorProcessor<T> extends FlowProcessor<T> {
+    final State<T> state;
 
     public static <T> BehaviorProcessor<T> create() {
         return new BehaviorProcessor<T>(new State<T>());
@@ -38,8 +39,6 @@ public final class BehaviorProcessor<T> extends FlowProcessor<T> {
         state.lazySet(defaultValue);
         return new BehaviorProcessor<T>(state);
     }
-    
-    final State<T> state;
     
     protected BehaviorProcessor(State<T> state) {
         this.state = state;

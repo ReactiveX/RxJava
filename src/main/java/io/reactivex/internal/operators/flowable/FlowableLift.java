@@ -73,7 +73,7 @@ public final class FlowableLift<R, T> extends Flowable<R> {
             }
 
             source.subscribe(st);
-        } catch (NullPointerException e) {
+        } catch (NullPointerException e) { // NOPMD
             throw e;
         } catch (Throwable e) {
             // TODO throw if fatal?

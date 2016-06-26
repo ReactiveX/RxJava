@@ -38,8 +38,7 @@ abstract class BaseArrayQueue<E> extends AtomicReferenceArray<E> implements Queu
     @Override
     public void clear() {
         // we have to test isEmpty because of the weaker poll() guarantee
-        while (poll() != null || !isEmpty())
-            ;
+        while (poll() != null || !isEmpty()) ; // NOPMD
     }
     protected final int calcElementOffset(long index, int mask) {
         return (int)index & mask;

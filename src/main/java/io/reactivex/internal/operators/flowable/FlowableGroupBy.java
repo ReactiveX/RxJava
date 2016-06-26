@@ -219,10 +219,9 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
                 }
                 
                 long r = requested.get();
-                boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0L;
                 
-                while (r != 0) {
+                while (e != r) {
                     boolean d = done;
                     
                     GroupedFlowable<K, V> t = q.poll();
@@ -239,15 +238,14 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
 
                     a.onNext(t);
                     
-                    r--;
-                    e--;
+                    e++;
                 }
                 
                 if (e != 0L) {
-                    if (!unbounded) {
-                        requested.addAndGet(e);
+                    if (r != Long.MAX_VALUE) {
+                        requested.addAndGet(-e);
                     }
-                    s.request(-e);
+                    s.request(e);
                 }
                 
                 missed = addAndGet(-missed);
@@ -295,12 +293,12 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
     
     static final class GroupedUnicast<K, T> extends GroupedFlowable<K, T> {
         
+        final State<T, K> state;
+        
         public static <T, K> GroupedUnicast<K, T> createWith(K key, int bufferSize, GroupBySubscriber<?, K, T> parent, boolean delayError) {
             State<T, K> state = new State<T, K>(bufferSize, parent, key, delayError);
             return new GroupedUnicast<K, T>(key, state);
         }
-        
-        final State<T, K> state;
         
         protected GroupedUnicast(K key, State<T, K> state) {
             super(key);
@@ -418,10 +416,9 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
                     }
                     
                     long r = requested.get();
-                    boolean unbounded = r == Long.MAX_VALUE;
                     long e = 0;
                     
-                    while (r != 0L) {
+                    while (e != r) {
                         boolean d = done;
                         T v = q.poll();
                         boolean empty = v == null;
@@ -436,15 +433,14 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
                         
                         a.onNext(v);
                         
-                        r--;
-                        e--;
+                        e++;
                     }
                     
                     if (e != 0L) {
-                        if (!unbounded) {
-                            requested.addAndGet(e);
+                        if (r != Long.MAX_VALUE) {
+                            requested.addAndGet(-e);
                         }
-                        parent.s.request(-e);
+                        parent.s.request(e);
                     }
                 }
                 

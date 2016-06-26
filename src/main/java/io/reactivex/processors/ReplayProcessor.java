@@ -35,7 +35,8 @@ import io.reactivex.schedulers.Schedulers;
  * @param <T> the value type
  */
 public final class ReplayProcessor<T> extends FlowProcessor<T> {
-
+    final State<T> state;
+    
     public static <T> ReplayProcessor<T> create() {
         return create(16);
     }
@@ -85,8 +86,6 @@ public final class ReplayProcessor<T> extends FlowProcessor<T> {
     }
 
 
-    final State<T> state;
-    
     protected ReplayProcessor(State<T> state) {
         this.state = state;
     }
@@ -165,7 +164,7 @@ public final class ReplayProcessor<T> extends FlowProcessor<T> {
     
     @Override
     public boolean hasValue() {
-        return state.buffer.size() != 0;
+        return state.buffer.size() != 0; // NOPMD
     }
     
     /* test*/ int size() {
@@ -486,7 +485,6 @@ public final class ReplayProcessor<T> extends FlowProcessor<T> {
 
                 int s = size;
                 long r = rs.requested.get();
-                boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0L;
                 
                 while (s != index) {
@@ -528,7 +526,7 @@ public final class ReplayProcessor<T> extends FlowProcessor<T> {
                 }
                 
                 if (e != 0L) {
-                    if (!unbounded) {
+                    if (rs.requested.get() != Long.MAX_VALUE) {
                         r = rs.requested.addAndGet(e);
                     }
                 }
@@ -718,7 +716,6 @@ public final class ReplayProcessor<T> extends FlowProcessor<T> {
                 }
 
                 long r = rs.requested.get();
-                boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0;
                 
                 for (;;) {
@@ -764,7 +761,7 @@ public final class ReplayProcessor<T> extends FlowProcessor<T> {
                 }
                 
                 if (e != 0L) {
-                    if (!unbounded) {
+                    if (rs.requested.get() != Long.MAX_VALUE) {
                         r = rs.requested.addAndGet(e);
                     }
                 }
@@ -999,7 +996,6 @@ public final class ReplayProcessor<T> extends FlowProcessor<T> {
                 }
 
                 long r = rs.requested.get();
-                boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0;
                 
                 for (;;) {
@@ -1045,7 +1041,7 @@ public final class ReplayProcessor<T> extends FlowProcessor<T> {
                 }
                 
                 if (e != 0L) {
-                    if (!unbounded) {
+                    if (rs.requested.get() != Long.MAX_VALUE) {
                         r = rs.requested.addAndGet(e);
                     }
                 }

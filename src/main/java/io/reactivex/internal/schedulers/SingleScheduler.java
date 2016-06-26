@@ -35,8 +35,7 @@ public final class SingleScheduler extends Scheduler {
     }
 
     static ScheduledExecutorService createExecutor() {
-        ScheduledExecutorService exec = SchedulerPoolFactory.create(new RxThreadFactory("RxSingleScheduler-"));
-        return exec;
+        return SchedulerPoolFactory.create(new RxThreadFactory("RxSingleScheduler-"));
     }
     
     @Override

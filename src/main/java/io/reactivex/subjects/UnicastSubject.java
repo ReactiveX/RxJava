@@ -36,6 +36,8 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
  * @param <T> the value type unicasted
  */
 public final class UnicastSubject<T> extends Subject<T> {
+    /** The subject state. */
+    final State<T> state;
     
     /**
      * Creates an UnicastSubject with an internal buffer capacity hint 16.
@@ -73,8 +75,6 @@ public final class UnicastSubject<T> extends Subject<T> {
         return new UnicastSubject<T>(state);
     }
 
-    /** The subject state. */
-    final State<T> state;
     /**
      * Constructs the Observable base class.
      * @param state the subject state
