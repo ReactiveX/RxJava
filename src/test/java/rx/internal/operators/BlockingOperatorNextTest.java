@@ -15,32 +15,21 @@
  */
 package rx.internal.operators;
 
-import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+import static org.junit.Assert.*;
+import static rx.internal.operators.BlockingOperatorNext.next;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.*;
 
+import rx.*;
 import rx.Observable;
-import rx.Subscriber;
 import rx.exceptions.TestException;
 import rx.observables.BlockingObservable;
 import rx.schedulers.Schedulers;
-import rx.subjects.BehaviorSubject;
-import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static rx.internal.operators.BlockingOperatorNext.next;
+import rx.subjects.*;
 
 public class BlockingOperatorNextTest {
 
@@ -74,7 +63,7 @@ public class BlockingOperatorNextTest {
 
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(BlockingOperatorNext.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+        TestUtil.checkUtilityClass(BlockingOperatorNext.class);
     }
 
     @Test

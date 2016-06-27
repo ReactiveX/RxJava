@@ -15,29 +15,21 @@
  */
 package rx.exceptions;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import rx.Single;
-import rx.SingleSubscriber;
-import rx.Subscriber;
-import rx.Observable;
-import rx.Observer;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import rx.*;
+import rx.functions.*;
 import rx.observables.GroupedObservable;
 import rx.subjects.PublishSubject;
 
 public class ExceptionsTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(Exceptions.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+        TestUtil.checkUtilityClass(Exceptions.class);
     }
 
     @Test(expected = OnErrorNotImplementedException.class)

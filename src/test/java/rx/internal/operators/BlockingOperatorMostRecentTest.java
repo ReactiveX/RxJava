@@ -15,30 +15,24 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static rx.internal.operators.BlockingOperatorMostRecent.mostRecent;
-
-import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
 
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 
-import rx.Observable;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.observables.BlockingObservable;
 import rx.schedulers.TestScheduler;
-import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
+import rx.subjects.*;
 
 public class BlockingOperatorMostRecentTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(BlockingOperatorMostRecent.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+        TestUtil.checkUtilityClass(BlockingOperatorMostRecent.class);
     }
 
     @Test

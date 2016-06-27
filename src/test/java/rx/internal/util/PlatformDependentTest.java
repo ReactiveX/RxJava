@@ -15,13 +15,13 @@
  */
 package rx.internal.util;
 
-import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
-
 import org.junit.Test;
+
+import rx.TestUtil;
 
 public class PlatformDependentTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(PlatformDependent.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+        TestUtil.checkUtilityClass(PlatformDependent.class);
     }
 }
