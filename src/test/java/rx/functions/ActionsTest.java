@@ -15,13 +15,15 @@
  */
 package rx.functions;
 
-import static org.junit.Assert.*;
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
 
-import java.lang.reflect.*;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class ActionsTest {
 
@@ -271,20 +273,7 @@ public class ActionsTest {
     }
     
     @Test
-    public void testNotInstantiable() {
-        try {
-            Constructor<?> c = Actions.class.getDeclaredConstructor();
-            c.setAccessible(true);
-            Object instance = c.newInstance();
-            fail("Could instantiate Actions! " + instance);
-        } catch (NoSuchMethodException ex) {
-            ex.printStackTrace();
-        } catch (InvocationTargetException ex) {
-            ex.printStackTrace();
-        } catch (InstantiationException ex) {
-            ex.printStackTrace();
-        } catch (IllegalAccessException ex) {
-            ex.printStackTrace();
-        }
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(Actions.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 }

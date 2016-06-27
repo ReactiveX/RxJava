@@ -22,12 +22,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static rx.subscriptions.Subscriptions.create;
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+
 import org.junit.Test;
 
 import rx.Subscription;
 import rx.functions.Action0;
 
 public class SubscriptionsTest {
+    @Test
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(Subscriptions.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+    }
 
     @Test
     public void testUnsubscribeOnlyOnce() {

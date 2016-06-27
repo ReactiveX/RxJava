@@ -18,6 +18,8 @@ package rx.observers;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+
 import java.lang.reflect.*;
 import java.util.concurrent.atomic.*;
 
@@ -30,21 +32,8 @@ import rx.subscriptions.Subscriptions;
 
 public class SubscribersTest {
     @Test
-    public void testNotInstantiable() {
-        try {
-            Constructor<?> c = Subscribers.class.getDeclaredConstructor();
-            c.setAccessible(true);
-            Object instance = c.newInstance();
-            fail("Could instantiate Actions! " + instance);
-        } catch (NoSuchMethodException ex) {
-            ex.printStackTrace();
-        } catch (InvocationTargetException ex) {
-            ex.printStackTrace();
-        } catch (InstantiationException ex) {
-            ex.printStackTrace();
-        } catch (IllegalAccessException ex) {
-            ex.printStackTrace();
-        }
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(Subscribers.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
     
     @Test

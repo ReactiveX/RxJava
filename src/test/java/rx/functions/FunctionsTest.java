@@ -15,31 +15,19 @@
  */
 package rx.functions;
 
-import static org.junit.Assert.*;
-
-import java.lang.reflect.*;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicLong;
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static org.junit.Assert.assertEquals;
+
 public class FunctionsTest {
     @Test
-    public void testNotInstantiable() {
-        try {
-            Constructor<?> c = Functions.class.getDeclaredConstructor();
-            c.setAccessible(true);
-            Object instance = c.newInstance();
-            fail("Could instantiate Actions! " + instance);
-        } catch (NoSuchMethodException ex) {
-            ex.printStackTrace();
-        } catch (InvocationTargetException ex) {
-            ex.printStackTrace();
-        } catch (InstantiationException ex) {
-            ex.printStackTrace();
-        } catch (IllegalAccessException ex) {
-            ex.printStackTrace();
-        }
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(Functions.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
     
     @Test(expected = RuntimeException.class)

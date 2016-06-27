@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -68,6 +70,11 @@ public class BlockingOperatorNextTest {
                 o.onError(new TestException());
             }
         }.start();
+    }
+
+    @Test
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(BlockingOperatorNext.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
 
     @Test

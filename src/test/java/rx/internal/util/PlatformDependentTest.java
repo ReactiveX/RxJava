@@ -15,29 +15,13 @@
  */
 package rx.internal.util;
 
-import static org.junit.Assert.fail;
-
-import java.lang.reflect.*;
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
 
 import org.junit.Test;
 
 public class PlatformDependentTest {
     @Test
-    public void testNotInstantiable() {
-        try {
-            Constructor<?> c = PlatformDependent.class.getDeclaredConstructor();
-            c.setAccessible(true);
-            Object instance = c.newInstance();
-            fail("Could instantiate Actions! " + instance);
-        } catch (NoSuchMethodException ex) {
-            ex.printStackTrace();
-        } catch (InvocationTargetException ex) {
-            ex.printStackTrace();
-        } catch (InstantiationException ex) {
-            ex.printStackTrace();
-        } catch (IllegalAccessException ex) {
-            ex.printStackTrace();
-        }
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(PlatformDependent.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
     }
-
 }

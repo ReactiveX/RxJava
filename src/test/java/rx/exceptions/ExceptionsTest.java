@@ -18,6 +18,8 @@ package rx.exceptions;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -33,6 +35,10 @@ import rx.observables.GroupedObservable;
 import rx.subjects.PublishSubject;
 
 public class ExceptionsTest {
+    @Test
+    public void constructorShouldBePrivate() {
+        PrivateConstructorChecker.forClass(Exceptions.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+    }
 
     @Test(expected = OnErrorNotImplementedException.class)
     public void testOnErrorNotImplementedIsThrown() {
