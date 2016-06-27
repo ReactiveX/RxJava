@@ -55,6 +55,7 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
     
     // final: fixed protocol steps to support fuseable and non-fuseable upstream
     @SuppressWarnings("unchecked")
+    @Override
     public final void onSubscribe(Subscription s) {
         if (SubscriptionHelper.validateSubscription(this.s, s)) {
             
@@ -129,7 +130,7 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
     }
     
     /**
-     * Rethrows the throwable if it is a fatal exception or calls {@link #error(Throwable)}.
+     * Rethrows the throwable if it is a fatal exception or calls {@link #onError(Throwable)}.
      * @param t the throwable to rethrow or signal to the actual subscriber
      */
     protected final void fail(Throwable t) {
