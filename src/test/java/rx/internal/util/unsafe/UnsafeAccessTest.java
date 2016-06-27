@@ -15,13 +15,13 @@
  */
 package rx.internal.util.unsafe;
 
-import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
-
 import org.junit.Test;
+
+import rx.TestUtil;
 
 public class UnsafeAccessTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(UnsafeAccess.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+        TestUtil.checkUtilityClass(UnsafeAccess.class);
     }
 }

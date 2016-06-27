@@ -18,24 +18,21 @@ package rx.observers;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
-
 import java.io.IOException;
-import java.lang.reflect.*;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 
-import rx.Observer;
+import rx.*;
 import rx.exceptions.*;
 import rx.functions.*;
 
 public class ObserversTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(Observers.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+        TestUtil.checkUtilityClass(Observers.class);
     }
     
     @Test

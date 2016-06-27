@@ -15,18 +15,13 @@
  */
 package rx.internal.util;
 
-import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
-
 import org.junit.Test;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
-import static org.junit.Assert.fail;
+import rx.TestUtil;
 
 public class UtilityFunctionsTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(UtilityFunctions.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+        TestUtil.checkUtilityClass(UtilityFunctions.class);
     }
 }
