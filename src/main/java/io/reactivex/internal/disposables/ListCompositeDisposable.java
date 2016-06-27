@@ -71,6 +71,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
         return disposed;
     }
     
+    @Override
     public boolean add(Disposable d) {
         Objects.requireNonNull(d, "d is null");
         if (!disposed) {
@@ -114,6 +115,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
         return false;
     }
 
+    @Override
     public boolean remove(Disposable d) {
         if (delete(d)) {
             d.dispose();
@@ -122,6 +124,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
         return false;
     }
     
+    @Override
     public boolean delete(Disposable d) {
         Objects.requireNonNull(d, "Disposable item is null");
         if (disposed) {

@@ -23,6 +23,7 @@ public interface Disposable {
 
     /**
      * Returns true if this resource has been disposed.
+     * @return true if this resource has been disposed
      */
     boolean isDisposed();
 }
