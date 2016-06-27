@@ -679,7 +679,7 @@ public class ObservableConcatTest {
         ts.assertValues("hello", "hello");
     }
 
-    @Test(timeout = 10000)
+    @Test(timeout = 30000)
     public void testIssue2890NoStackoverflow() throws InterruptedException {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
@@ -725,7 +725,7 @@ public class ObservableConcatTest {
             }
         });
 
-        executor.awaitTermination(12000, TimeUnit.MILLISECONDS);
+        executor.awaitTermination(20000, TimeUnit.MILLISECONDS);
         
         assertEquals(n, counter.get());
     }

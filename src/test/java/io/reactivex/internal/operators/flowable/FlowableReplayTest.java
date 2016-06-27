@@ -1003,7 +1003,7 @@ public class FlowableReplayTest {
                 .subscribeOn(Schedulers.io());
         Flowable<Long> cached = source.replay().autoConnect();
         
-        Flowable<Long> output = cached.observeOn(Schedulers.computation());
+        Flowable<Long> output = cached.observeOn(Schedulers.computation(), false, 1024);
         
         List<TestSubscriber<Long>> list = new ArrayList<TestSubscriber<Long>>(100);
         for (int i = 0; i < 100; i++) {
