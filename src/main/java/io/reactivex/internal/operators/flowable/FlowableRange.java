@@ -13,106 +13,158 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
+import io.reactivex.internal.fuseable.ConditionalSubscriber;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
-import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * 
+ * Emits a range of integer values.
  */
 public final class FlowableRange extends Flowable<Integer> {
     final int start;
-    final long end;
+    final int end;
     public FlowableRange(int start, int count) {
         this.start = start;
-        this.end = (long)start + (count - 1);
+        this.end = start + count;
     }
     @Override
     public void subscribeActual(Subscriber<? super Integer> s) {
-        s.onSubscribe(new RangeSubscription(s, start, end));
+        if (s instanceof ConditionalSubscriber) {
+            s.onSubscribe(new RangeConditionalSubscription(
+                    (ConditionalSubscriber<? super Integer>)s, start, end));
+        } else {
+            s.onSubscribe(new RangeSubscription(s, start, end));
+        }
     }
     
-    static final class RangeSubscription extends AtomicLong implements Subscription {
+    static abstract class BaseRangeSubscription extends BasicQueueSubscription<Integer> {
         /** */
-        private static final long serialVersionUID = 7600071995978874818L;
-        final long end;
-        final Subscriber<? super Integer> actual;
+        private static final long serialVersionUID = -2252972430506210021L;
 
-        long index;
+        final int end;
+        
+        int index;
+        
         volatile boolean cancelled;
         
-        public RangeSubscription(Subscriber<? super Integer> actual, int start, long end) {
-            this.actual = actual;
-            this.index = start;
+        public BaseRangeSubscription(int index, int end) {
+            this.index = index;
             this.end = end;
         }
+        
         @Override
-        public void request(long n) {
-            if (n == Long.MAX_VALUE && compareAndSet(0L, Long.MAX_VALUE)) {
-                fastpath();
-            } else
-            if (n > 0) {
+        public final int requestFusion(int mode) {
+            return mode & SYNC;
+        }
+
+        @Override
+        public final Integer poll() {
+            int i = index;
+            if (i == end) {
+                return null;
+            }
+            index = i + 1;
+            return i;
+        }
+
+        @Override
+        public final boolean isEmpty() {
+            return index == end;
+        }
+
+        @Override
+        public final void clear() {
+            index = end;
+        }
+
+        @Override
+        public final void request(long n) {
+            if (SubscriptionHelper.validateRequest(n)) {
                 if (BackpressureHelper.add(this, n) == 0L) {
-                    slowpath(n);
+                    if (n == Long.MAX_VALUE) {
+                        fastPath();
+                    } else {
+                        slowPath(n);
+                    }
                 }
-            } else {
-                RxJavaPlugins.onError(new IllegalArgumentException("request > 0 required but it was " + n));
             }
         }
         
-        void fastpath() {
-            final long e = end + 1L;
-            final Subscriber<? super Integer> actual = this.actual;
-            for (long i = index; i != e; i++) {
+
+        @Override
+        public final void cancel() {
+            cancelled = true;
+        }
+
+        
+        abstract void fastPath();
+        
+        abstract void slowPath(long r);
+    }
+    
+    static final class RangeSubscription extends BaseRangeSubscription {
+
+        /** */
+        private static final long serialVersionUID = 2587302975077663557L;
+
+        final Subscriber<? super Integer> actual;
+        
+        public RangeSubscription(Subscriber<? super Integer> actual, int index, int end) {
+            super(index, end);
+            this.actual = actual;
+        }
+
+        @Override
+        void fastPath() {
+            int f = end;
+            Subscriber<? super Integer> a = actual;
+            
+            for (int i = index; i != f; i++) {
                 if (cancelled) {
                     return;
                 }
-                actual.onNext((int)i);
+                a.onNext(i);
             }
-            if (!cancelled) {
-                actual.onComplete();
+            if (cancelled) {
+                return;
             }
+            a.onComplete();
         }
         
-        void slowpath(long r) {
-            long idx = index;
-            
-            long e = 0L;
+        @Override
+        void slowPath(long r) {
+            long e = 0;
+            int f = end;
+            int i = index;
+            Subscriber<? super Integer> a = actual;
             
             for (;;) {
-                long fs = end - idx + 1;
-                final boolean complete = fs <= r; // NOPMD
-
-                fs = Math.min(fs, r) + idx;
-                final Subscriber<? super Integer> o = this.actual;
                 
-                for (long i = idx; i != fs; i++) {
+                while (e != r && i != f) {
                     if (cancelled) {
                         return;
                     }
-                    o.onNext((int) i);
+                    
+                    a.onNext(i);
+                    
+                    e++;
+                    i++;
                 }
                 
-                if (complete) {
+                if (i == f) {
                     if (!cancelled) {
-                        o.onComplete();
+                        a.onComplete();
                     }
                     return;
                 }
                 
-                e -= fs - idx;
-
-                idx = fs;
-
-                r = get() + e;
-                
-                if (r == 0L) {
-                    index = fs;
-                    r = addAndGet(e);
+                r = get();
+                if (e == r) {
+                    index = i;
+                    r = addAndGet(-e);
                     if (r == 0L) {
                         return;
                     }
@@ -120,10 +172,75 @@ public final class FlowableRange extends Flowable<Integer> {
                 }
             }
         }
+    }
+    
+    static final class RangeConditionalSubscription extends BaseRangeSubscription {
+
+        /** */
+        private static final long serialVersionUID = 2587302975077663557L;
+
+        final ConditionalSubscriber<? super Integer> actual;
+        
+        public RangeConditionalSubscription(ConditionalSubscriber<? super Integer> actual, int index, int end) {
+            super(index, end);
+            this.actual = actual;
+        }
+
+        @Override
+        void fastPath() {
+            int f = end;
+            ConditionalSubscriber<? super Integer> a = actual;
+            
+            for (int i = index; i != f; i++) {
+                if (cancelled) {
+                    return;
+                }
+                a.tryOnNext(i);
+            }
+            if (cancelled) {
+                return;
+            }
+            a.onComplete();
+        }
         
         @Override
-        public void cancel() {
-            cancelled = true;
+        void slowPath(long r) {
+            long e = 0;
+            int f = end;
+            int i = index;
+            ConditionalSubscriber<? super Integer> a = actual;
+            
+            for (;;) {
+                
+                while (e != r && i != f) {
+                    if (cancelled) {
+                        return;
+                    }
+                    
+                    if (a.tryOnNext(i)) {
+                        e++;
+                    }
+                    
+                    i++;
+                }
+                
+                if (i == f) {
+                    if (!cancelled) {
+                        a.onComplete();
+                    }
+                    return;
+                }
+                
+                r = get();
+                if (e == r) {
+                    index = i;
+                    r = addAndGet(-e);
+                    if (r == 0) {
+                        return;
+                    }
+                    e = 0;
+                }
+            }
         }
     }
 }

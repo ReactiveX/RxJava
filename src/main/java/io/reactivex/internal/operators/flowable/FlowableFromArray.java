@@ -13,17 +13,17 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
+import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
 
 public final class FlowableFromArray<T> extends Flowable<T> {
     final T[] array;
+    
     public FlowableFromArray(T[] array) {
         this.array = array;
     }
@@ -33,167 +33,245 @@ public final class FlowableFromArray<T> extends Flowable<T> {
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
-            ConditionalSubscriber<? super T> cs = (ConditionalSubscriber<? super T>) s;
-            s.onSubscribe(new ConditionalArraySourceSubscription<T>(array, cs));
+            s.onSubscribe(new ArrayConditionalSubscription<T>(
+                    (ConditionalSubscriber<? super T>)s, array));
         } else {
-            s.onSubscribe(new ArraySourceSubscription<T>(array, s));
+            s.onSubscribe(new ArraySubscription<T>(s, array));
         }
     }
     
-    static final class ArraySourceSubscription<T> extends AtomicLong implements Subscription {
+    static abstract class BaseArraySubscription<T> extends BasicQueueSubscription<T> {
         /** */
-        private static final long serialVersionUID = -225561973532207332L;
-        
+        private static final long serialVersionUID = -2252972430506210021L;
+
         final T[] array;
-        final Subscriber<? super T> subscriber;
         
         int index;
+        
         volatile boolean cancelled;
         
-        public ArraySourceSubscription(T[] array, Subscriber<? super T> subscriber) {
+        public BaseArraySubscription(T[] array) {
             this.array = array;
-            this.subscriber = subscriber;
         }
         
         @Override
-        public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
-                return;
+        public final int requestFusion(int mode) {
+            return mode & SYNC;
+        }
+
+        @Override
+        public final T poll() {
+            int i = index;
+            T[] arr = array;
+            if (i == arr.length) {
+                return null;
             }
-            if (BackpressureHelper.add(this, n) == 0L) {
-                long r = n;
-                final Subscriber<? super T> s = subscriber;
-                for (;;) {
-                    int i = index;
-                    T[] a = array;
-                    int len = a.length;
-                    if (i + r >= len) {
-                        if (cancelled) {
-                            return;
-                        }
-                        for (int j = i; j < len; j++) {
-                            T t = a[j];
-                            if (t == null) {
-                                s.onError(new NullPointerException("The " + j + "th array element is null"));
-                                return;
-                            }
-                            s.onNext(t);
-                            if (cancelled) {
-                                return;
-                            }
-                        }
-                        s.onComplete();
-                        return;
-                    }
-                    if (cancelled) {
-                        return;
-                    }
-                    long e = 0;
-                    while (r != 0 && i < len) {
-                        T t = a[i];
-                        if (t == null) {
-                            s.onError(new NullPointerException("The " + i + "th array element is null"));
-                            return;
-                        }
-                        s.onNext(t);
-                        if (cancelled) {
-                            return;
-                        }
-                        if (++i == len) {
-                            s.onComplete();
-                            return;
-                        }
-                        r--;
-                        e--;
-                    }
-                    index = i;
-                    r = addAndGet(e);
-                    if (r == 0L) {
-                        return;
+            
+            index = i + 1;
+            return Objects.requireNonNull(arr[i], "array element is null");
+        }
+        
+        @Override
+        public final boolean isEmpty() {
+            return index == array.length;
+        }
+
+        @Override
+        public final void clear() {
+            index = array.length;
+        }
+
+        @Override
+        public final void request(long n) {
+            if (SubscriptionHelper.validateRequest(n)) {
+                if (BackpressureHelper.add(this, n) == 0L) {
+                    if (n == Long.MAX_VALUE) {
+                        fastPath();
+                    } else {
+                        slowPath(n);
                     }
                 }
             }
         }
+        
+
         @Override
-        public void cancel() {
+        public final void cancel() {
             cancelled = true;
         }
+
+        
+        abstract void fastPath();
+        
+        abstract void slowPath(long r);
     }
     
-    static final class ConditionalArraySourceSubscription<T> extends AtomicLong implements Subscription {
+    static final class ArraySubscription<T> extends BaseArraySubscription<T> {
+
         /** */
-        private static final long serialVersionUID = -225561973532207332L;
+        private static final long serialVersionUID = 2587302975077663557L;
+
+        final Subscriber<? super T> actual;
         
-        final T[] array;
-        final ConditionalSubscriber<? super T> subscriber;
-        
-        int index;
-        volatile boolean cancelled;
-        
-        public ConditionalArraySourceSubscription(T[] array, ConditionalSubscriber<? super T> subscriber) {
-            this.array = array;
-            this.subscriber = subscriber;
+        public ArraySubscription(Subscriber<? super T> actual, T[] array) {
+            super(array);
+            this.actual = actual;
+        }
+
+        @Override
+        void fastPath() {
+            T[] arr = array;
+            int f = arr.length;
+            Subscriber<? super T> a = actual;
+            
+            for (int i = index; i != f; i++) {
+                if (cancelled) {
+                    return;
+                }
+                T t = arr[i];
+                if (t == null) {
+                    a.onError(new NullPointerException("array element is null"));
+                    return;
+                } else {
+                    a.onNext(t);
+                }
+            }
+            if (cancelled) {
+                return;
+            }
+            a.onComplete();
         }
         
         @Override
-        public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
-                return;
-            }
-            if (BackpressureHelper.add(this, n) == 0L) {
-                long r = n;
-                final ConditionalSubscriber<? super T> s = subscriber;
-                for (;;) {
-                    int i = index;
-                    T[] a = array;
-                    int len = a.length;
-                    if (i + r >= len) {
-                        if (cancelled) {
-                            return;
-                        }
-                        for (int j = i; j < len; j++) {
-                            T t = a[j];
-                            if (t == null) {
-                                s.onError(new NullPointerException("The " + j + "th array element is null"));
-                                return;
-                            }
-                            s.onNext(t);
-                            if (cancelled) {
-                                return;
-                            }
-                        }
-                        s.onComplete();
-                        return;
-                    }
+        void slowPath(long r) {
+            long e = 0;
+            T[] arr = array;
+            int f = arr.length;
+            int i = index;
+            Subscriber<? super T> a = actual;
+            
+            for (;;) {
+                
+                while (e != r && i != f) {
                     if (cancelled) {
                         return;
                     }
-                    long e = 0;
-                    while (r != 0 && i < len) {
-                        if (cancelled) {
-                            return;
-                        }
-                        boolean b = s.tryOnNext(a[i]); // NOPMD
-                        if (++i == len) {
-                            s.onComplete();
-                            return;
-                        }
-                        if (b) {
-                            r--;
-                            e--;
-                        }
+                    
+                    T t = arr[i];
+                    
+                    if (t == null) {
+                        a.onError(new NullPointerException("array element is null"));
+                        return;
+                    } else {
+                        a.onNext(t);
                     }
+                    
+                    e++;
+                    i++;
+                }
+                
+                if (i == f) {
+                    if (!cancelled) {
+                        a.onComplete();
+                    }
+                    return;
+                }
+                
+                r = get();
+                if (e == r) {
                     index = i;
-                    r = addAndGet(e);
+                    r = addAndGet(-e);
                     if (r == 0L) {
                         return;
                     }
+                    e = 0L;
                 }
             }
         }
+    }
+    
+    static final class ArrayConditionalSubscription<T> extends BaseArraySubscription<T> {
+
+        /** */
+        private static final long serialVersionUID = 2587302975077663557L;
+
+        final ConditionalSubscriber<? super T> actual;
+        
+        public ArrayConditionalSubscription(ConditionalSubscriber<? super T> actual, T[] array) {
+            super(array);
+            this.actual = actual;
+        }
+
         @Override
-        public void cancel() {
-            cancelled = true;
+        void fastPath() {
+            T[] arr = array;
+            int f = arr.length;
+            ConditionalSubscriber<? super T> a = actual;
+            
+            for (int i = index; i != f; i++) {
+                if (cancelled) {
+                    return;
+                }
+                T t = arr[i];
+                if (t == null) {
+                    a.onError(new NullPointerException("array element is null"));
+                    return;
+                } else {
+                    a.tryOnNext(t);
+                }
+            }
+            if (cancelled) {
+                return;
+            }
+            a.onComplete();
+        }
+        
+        @Override
+        void slowPath(long r) {
+            long e = 0;
+            T[] arr = array;
+            int f = arr.length;
+            int i = index;
+            ConditionalSubscriber<? super T> a = actual;
+            
+            for (;;) {
+                
+                while (e != r && i != f) {
+                    if (cancelled) {
+                        return;
+                    }
+                    
+                    T t = arr[i];
+                    
+                    if (t == null) {
+                        a.onError(new NullPointerException("array element is null"));
+                        return;
+                    } else {
+                        if (a.tryOnNext(t)) {
+                            e++;
+                        }
+                        
+                        i++;
+                    }
+                }
+                
+                if (i == f) {
+                    if (!cancelled) {
+                        a.onComplete();
+                    }
+                    return;
+                }
+                
+                r = get();
+                if (e == r) {
+                    index = i;
+                    r = addAndGet(-e);
+                    if (r == 0L) {
+                        return;
+                    }
+                    e = 0L;
+                }
+            }
         }
     }
 }

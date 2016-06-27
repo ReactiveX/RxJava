@@ -61,12 +61,12 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /** A never observable instance as there is no need to instantiate this more than once. */
-    static final Flowable<Object> NEVER = create(new Publisher<Object>() {
+    static final Flowable<Object> NEVER = new Flowable<Object>() { // FIXME factor out
         @Override
-        public void subscribe(Subscriber<? super Object> s) {
+        public void subscribeActual(Subscriber<? super Object> s) {
             s.onSubscribe(EmptySubscription.INSTANCE);
         }
-    });
+    };
 
     public static <T> Flowable<T> amb(Iterable<? extends Publisher<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
@@ -1186,6 +1186,22 @@ public abstract class Flowable<T> implements Publisher<T> {
         });
     }
 
+    /**
+     * Hides the identity of this Flowable and its Subscription.
+     * <p>Allows hiding extra features such as {@link Processor}'s
+     * {@link Subscriber} methods or preventing certain identity-based 
+     * optimizations (fusion).
+     * @return the new Flowable instance
+     * 
+     * @since 2.0
+     */
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Flowable<T> hide() {
+        return new FlowableHide<T>(this);
+    }
+
+    
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> buffer(int count) {

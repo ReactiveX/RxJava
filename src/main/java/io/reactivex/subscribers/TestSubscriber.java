@@ -22,6 +22,7 @@ import io.reactivex.Notification;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
@@ -65,6 +66,11 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     private boolean checkSubscriptionOnce;
 
+    private int initialFusionMode;
+    
+    private int establishedFusionMode;
+    
+    private QueueSubscription<T> qs;
     /**
      * Constructs a non-forwarding TestSubscriber with an initial request value of Long.MAX_VALUE.
      */
@@ -105,6 +111,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         this.done = new CountDownLatch(1);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public void onSubscribe(Subscription s) {
         lastThread = Thread.currentThread();
@@ -124,6 +131,31 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (cancelled) {
             s.cancel();
         }
+        
+        if (initialFusionMode != 0) {
+            if (s instanceof QueueSubscription) {
+                qs = (QueueSubscription<T>)s;
+                
+                int m = qs.requestFusion(initialFusionMode);
+                establishedFusionMode = m;
+                
+                if (m == QueueSubscription.SYNC) {
+                    checkSubscriptionOnce = true;
+                    lastThread = Thread.currentThread();
+                    try {
+                        T t;
+                        while ((t = qs.poll()) != null) {
+                            values.add(t);
+                        }
+                        completions++;
+                    } catch (Throwable ex) {
+                        errors.add(ex);
+                    }
+                    return;
+                }
+            }
+        }
+        
         
         actual.onSubscribe(s);
         
@@ -150,6 +182,14 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
             }
         }
         lastThread = Thread.currentThread();
+        
+        if (establishedFusionMode == QueueSubscription.ASYNC) {
+            while ((t = qs.poll()) != null) {
+                values.add(t);
+            }
+            return;
+        }
+        
         values.add(t);
         
         if (t == null) {
@@ -200,7 +240,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     }
     
     @Override
-    public void request(long n) {
+    public final void request(long n) {
         if (!SubscriptionHelper.validateRequest(n)) {
             return;
         }
@@ -220,7 +260,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     }
     
     @Override
-    public void cancel() {
+    public final void cancel() {
         if (!cancelled) {
             cancelled = true;
             SubscriptionHelper.dispose(subscription);
@@ -241,7 +281,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     }
 
     @Override
-    public boolean isDisposed() {
+    public final boolean isDisposed() {
         return cancelled;
     }
 
@@ -313,15 +353,17 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     /**
      * Awaits until this TestSubscriber receives an onError or onComplete events.
+     * @return this
      * @throws InterruptedException if the current thread is interrupted while waiting
      * @see #awaitTerminalEvent()
      */
-    public final void await() throws InterruptedException {
+    public final TestSubscriber<T> await() throws InterruptedException {
         if (done.getCount() == 0) {
-            return;
+            return this;
         }
         
         done.await();
+        return this;
     }
     
     /**
@@ -369,8 +411,9 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     /**
      * Assert that this TestSubscriber received exactly one onComplete event.
+     * @return this
      */
-    public void assertComplete() {
+    public final TestSubscriber<T> assertComplete() {
         String prefix = "";
         /*
          * This creates a happens-before relation with the possible completion of the TestSubscriber.
@@ -386,12 +429,14 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (c > 1) {
             fail(prefix, "Multiple completions: " + c, errors);
         }
+        return this;
     }
     
     /**
      * Assert that this TestSubscriber has not received any onComplete event.
+     * @return this
      */
-    public void assertNotComplete() {
+    public final TestSubscriber<T> assertNotComplete() {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
@@ -403,12 +448,14 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (c > 1) {
             fail(prefix, "Multiple completions: " + c, errors);
         }
+        return this;
     }
     
     /**
      * Assert that this TestSubscriber has not received any onError event.
+     * @return this
      */
-    public void assertNoErrors() {
+    public final TestSubscriber<T> assertNoErrors() {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
@@ -417,6 +464,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (s != 0) {
             fail(prefix, "Error(s) present: " + errors, errors);
         }
+        return this;
     }
     
     /**
@@ -426,9 +474,10 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * implement equals(), this assertion may fail. Use the {@link #assertError(Class)}
      * overload to test against the class of an error instead of an instance of an error.
      * @param error the error to check
+     * @return this
      * @see #assertError(Class)
      */
-    public void assertError(Throwable error) {
+    public final TestSubscriber<T> assertError(Throwable error) {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
@@ -444,14 +493,16 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         } else {
             fail(prefix, "Error not present", errors);
         }
+        return this;
     }
     
     /**
      * Asserts that this TestSubscriber received exactly one onError event which is an
      * instance of the specified errorClass class.
      * @param errorClass the error class to expect
+     * @return this
      */
-    public void assertError(Class<? extends Throwable> errorClass) {
+    public final TestSubscriber<T> assertError(Class<? extends Throwable> errorClass) {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
@@ -477,14 +528,16 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         } else {
             fail(prefix, "Error not present", errors);
         }
+        return this;
     }
     
     /**
      * Assert that this TestSubscriber received exactly one onNext value which is equal to
      * the given value with respect to Objects.equals.
      * @param value the value to expect
+     * @return this
      */
-    public final void assertValue(T value) {
+    public final TestSubscriber<T> assertValue(T value) {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
@@ -497,6 +550,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (!Objects.equals(value, v)) {
             fail(prefix, "Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v), errors);
         }
+        return this;
     }
     
     /** Appends the class name to a non-null value. */
@@ -510,8 +564,9 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     /**
      * Assert that this TestSubscriber received the specified number onNext events.
      * @param count the expected number of onNext events
+     * @return this
      */
-    public final void assertValueCount(int count) {
+    public final TestSubscriber<T> assertValueCount(int count) {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
@@ -520,21 +575,24 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (s != count) {
             fail(prefix, "Value counts differ; Expected: " + count + ", Actual: " + s, errors);
         }
+        return this;
     }
     
     /**
      * Assert that this TestSubscriber has not received any onNext events.
+     * @return this
      */
-    public final void assertNoValues() {
-        assertValueCount(0);
+    public final TestSubscriber<T> assertNoValues() {
+        return assertValueCount(0);
     }
     
     /**
      * Assert that the TestSubscriber received only the specified values in the specified order.
      * @param values the values expected
+     * @return this
      * @see #assertValueSet(Collection)
      */
-    public final void assertValues(T... values) {
+    public final TestSubscriber<T> assertValues(T... values) {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
@@ -551,6 +609,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
                 fail(prefix, "Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v), errors);
             }
         }
+        return this;
     }
     
     /**
@@ -559,8 +618,9 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * asynchronous streams.
      * 
      * @param values the collection of values expected in any order
+     * @return this
      */
-    public final void assertValueSet(Collection<? extends T> values) {
+    public final TestSubscriber<T> assertValueSet(Collection<? extends T> values) {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
@@ -577,13 +637,15 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
                 fail(prefix, "Value not in the expected collection: " + valueAndClass(v), errors);
             }
         }
+        return this;
     }
     
     /**
      * Assert that the TestSubscriber received only the specified sequence of values in the same order.
      * @param sequence the sequence of expected values in order
+     * @return this
      */
-    public final void assertValueSequence(Iterable<? extends T> sequence) {
+    public final TestSubscriber<T> assertValueSequence(Iterable<? extends T> sequence) {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
@@ -609,12 +671,14 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (!itNext && !vitNext) {
             fail(prefix, "Fever values received than expected (" + i + ")", errors);
         }
+        return this;
     }
     
     /**
      * Assert that the TestSubscriber terminated (i.e., the terminal latch reached zero).
+     * @return this
      */
-    public final void assertTerminated() {
+    public final TestSubscriber<T> assertTerminated() {
         if (done.getCount() != 0) {
             fail("", "Subscriber still running!", errors);
         }
@@ -630,21 +694,25 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (c != 0 && s != 0) {
             fail("", "Terminated with multiple completions and errors: " + c, errors);
         }
+        return this;
     }
     
     /**
      * Assert that the TestSubscriber has not terminated (i.e., the terminal latch is still non-zero).
+     * @return this
      */
-    public final void assertNotTerminated() {
+    public final TestSubscriber<T> assertNotTerminated() {
         if (done.getCount() == 0) {
             fail("", "Subscriber terminated!", errors);
         }
+        return this;
     }
     
     /**
      * Assert that the onSubscribe method was called exactly once.
+     * @return this
      */
-    public final void assertSubscribed() {
+    public final TestSubscriber<T> assertSubscribed() {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
@@ -652,12 +720,14 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (subscription.get() == null) {
             fail(prefix, "Not subscribed!", errors);
         }
+        return this;
     }
     
     /**
      * Assert that the onSubscribe method hasn't been called at all.
+     * @return this
      */
-    public final void assertNotSubscribed() {
+    public final TestSubscriber<T> assertNotSubscribed() {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
@@ -668,6 +738,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (!errors.isEmpty()) {
             fail(prefix, "Not subscribed but errors found", errors);
         }
+        return this;
     }
     
     /**
@@ -675,7 +746,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * or returns false if the wait has been interrupted.
      * @return true if the TestSubscriber terminated, false if the wait has been interrupted
      */
-    public boolean awaitTerminalEvent() {
+    public final boolean awaitTerminalEvent() {
         try {
             await();
             return true;
@@ -692,7 +763,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @param unit the time unit of the waiting time
      * @return true if the TestSubscriber terminated, false if timeout or interrupt happened
      */
-    public boolean awaitTerminalEvent(long duration, TimeUnit unit) {
+    public final boolean awaitTerminalEvent(long duration, TimeUnit unit) {
         try {
             return await(duration, unit);
         } catch (InterruptedException ex) {
@@ -700,8 +771,13 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
             return false;
         }
     }
-    
-    public void assertErrorMessage(String message) {
+
+    /**
+     * Assert that there is only a single error with the given message.
+     * @param message the message to check
+     * @return this
+     */
+    public final TestSubscriber<T> assertErrorMessage(String message) {
         String prefix = "";
         if (done.getCount() != 0) {
             prefix = "Subscriber still running! ";
@@ -722,6 +798,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         } else {
             fail(prefix, "Multiple errors", errors);
         }
+        return this;
     }
     
     /**
@@ -732,7 +809,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return a list of (values, errors, completion-notifications)
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public List<List<Object>> getEvents() {
+    public final List<List<Object>> getEvents() {
         List<List<Object>> result = new ArrayList<List<Object>>();
         
         result.add((List)values());
@@ -746,6 +823,54 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         result.add(completeList);
         
         return result;
+    }
+
+    /**
+     * Sets the initial fusion mode if the upstream supports fusion.
+     * @param mode the mode to establish, see the {@link QueueSubscription} constants
+     * @return this
+     */
+    public final TestSubscriber<T> setInitialFusionMode(int mode) {
+        this.initialFusionMode = mode;
+        return this;
+    }
+    
+    /**
+     * Asserts that the given fusion mode has been established
+     * @param mode the expected mode
+     * @return this
+     */
+    public final TestSubscriber<T> assertFusionMode(int mode) {
+        if (establishedFusionMode != mode) {
+            if (qs != null) {
+                throw new AssertionError("Fusion mode different. Expected: " + mode + ", actual: " + establishedFusionMode);
+            } else {
+                throw new AssertionError("Upstream is not fuseable");
+            }
+        }
+        return this;
+    }
+    
+    /**
+     * Assert that the upstream is a fuseable source.
+     * @return this
+     */
+    public TestSubscriber<T> assertFuseable() {
+        if (qs == null) {
+            throw new AssertionError("Upstream is not fuseable.");
+        }
+        return this;
+    }
+
+    /**
+     * Assert that the upstream is not a fuseable source.
+     * @return this
+     */
+    public TestSubscriber<T> assertNotFuseable() {
+        if (qs != null) {
+            throw new AssertionError("Upstream is fuseable.");
+        }
+        return this;
     }
 
     /**

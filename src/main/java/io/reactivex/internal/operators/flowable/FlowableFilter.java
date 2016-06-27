@@ -15,47 +15,40 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.Predicate;
-import io.reactivex.internal.fuseable.ConditionalSubscriber;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.subscribers.flowable.*;
 
-public final class FlowableFilter<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableFilter<T> extends FlowableSource<T, T> {
     final Predicate<? super T> predicate;
     public FlowableFilter(Publisher<T> source, Predicate<? super T> predicate) {
-        this.source = source;
+        super(source);
         this.predicate = predicate;
     }
     
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new FilterSubscriber<T>(s, predicate));
+        if (s instanceof ConditionalSubscriber) {
+            source.subscribe(new FilterConditionalSubscriber<T>(
+                    (ConditionalSubscriber<? super T>)s, predicate));
+        } else {
+            source.subscribe(new FilterSubscriber<T>(s, predicate));
+        }
     }
     
-    static final class FilterSubscriber<T> implements ConditionalSubscriber<T> {
+    static final class FilterSubscriber<T> extends BasicFuseableSubscriber<T, T> 
+    implements ConditionalSubscriber<T> {
         final Predicate<? super T> filter;
-        final Subscriber<? super T> actual;
-        
-        Subscription subscription;
         
         public FilterSubscriber(Subscriber<? super T> actual, Predicate<? super T> filter) {
-            this.actual = actual;
+            super(actual);
             this.filter = filter;
-        }
-        
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.subscription, s)) {
-                subscription = s;
-                actual.onSubscribe(s);
-            }
         }
         
         @Override
         public void onNext(T t) {
             if (!tryOnNext(t)) {
-                subscription.request(1);
+                s.request(1);
             }
         }
         
@@ -65,8 +58,7 @@ public final class FlowableFilter<T> extends Flowable<T> {
             try {
                 b = filter.test(t);
             } catch (Throwable e) {
-                subscription.cancel();
-                actual.onError(e);
+                fail(e);
                 return true;
             }
             if (b) {
@@ -74,14 +66,95 @@ public final class FlowableFilter<T> extends Flowable<T> {
             }
             return b;
         }
+
+        @Override
+        public int requestFusion(int mode) {
+            return transitiveBoundaryFusion(mode);
+        }
+
+        @Override
+        public T poll() {
+            QueueSubscription<T> qs = this.qs;
+            Predicate<? super T> f = filter;
+            
+            for (;;) {
+                T t = qs.poll();
+                if (t == null) {
+                    return null;
+                }
+                
+                if (f.test(t)) {
+                    return t;
+                }
+                
+                if (sourceMode == ASYNC) {
+                    qs.request(1);
+                }
+            }
+        }
+        
+        
+    }
+    
+    static final class FilterConditionalSubscriber<T> extends BasicFuseableConditionalSubscriber<T, T> {
+        final Predicate<? super T> filter;
+        
+        public FilterConditionalSubscriber(ConditionalSubscriber<? super T> actual, Predicate<? super T> filter) {
+            super(actual);
+            this.filter = filter;
+        }
         
         @Override
-        public void onError(Throwable t) {
-            actual.onError(t);
+        public void onNext(T t) {
+            if (!tryOnNext(t)) {
+                s.request(1);
+            }
         }
+        
         @Override
-        public void onComplete() {
-            actual.onComplete();
+        public boolean tryOnNext(T t) {
+            if (done) {
+                return false;
+            }
+
+            if (sourceMode == ASYNC) {
+                actual.onNext(null);
+                return true;
+            }
+            boolean b;
+            try {
+                b = filter.test(t);
+            } catch (Throwable e) {
+                fail(e);
+                return true;
+            }
+            return b && actual.tryOnNext(t);
+        }
+
+        @Override
+        public int requestFusion(int mode) {
+            return transitiveBoundaryFusion(mode);
+        }
+
+        @Override
+        public T poll() {
+            QueueSubscription<T> qs = this.qs;
+            Predicate<? super T> f = filter;
+            
+            for (;;) {
+                T t = qs.poll();
+                if (t == null) {
+                    return null;
+                }
+                
+                if (f.test(t)) {
+                    return t;
+                }
+                
+                if (sourceMode == ASYNC) {
+                    qs.request(1);
+                }
+            }
         }
     }
 }
