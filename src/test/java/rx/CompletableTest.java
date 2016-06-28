@@ -2567,15 +2567,15 @@ public class CompletableTest {
     public void subscribeTwoCallbacksNormal() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
         final AtomicBoolean complete = new AtomicBoolean();
-        normal.completable.subscribe(new Action1<Throwable>() {
-            @Override
-            public void call(Throwable e) {
-                err.set(e);
-            }
-        }, new Action0() {
+        normal.completable.subscribe(new Action0() {
             @Override
             public void call() {
                 complete.set(true);
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable e) {
+                err.set(e);
             }
         });
         
@@ -2587,15 +2587,15 @@ public class CompletableTest {
     public void subscribeTwoCallbacksError() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
         final AtomicBoolean complete = new AtomicBoolean();
-        error.completable.subscribe(new Action1<Throwable>() {
-            @Override
-            public void call(Throwable e) {
-                err.set(e);
-            }
-        }, new Action0() {
+        error.completable.subscribe(new Action0() {
             @Override
             public void call() {
                 complete.set(true);
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable e) {
+                err.set(e);
             }
         });
         
@@ -2605,31 +2605,31 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void subscribeTwoCallbacksFirstNull() {
-        normal.completable.subscribe(null, new Action0() {
+        normal.completable.subscribe(null, new Action1<Throwable>() {
             @Override
-            public void call() { }
+            public void call(Throwable throwable) {}
         });
     }
     
     @Test(expected = NullPointerException.class)
     public void subscribeTwoCallbacksSecondNull() {
-        normal.completable.subscribe(null, new Action0() {
+        normal.completable.subscribe(new Action0() {
             @Override
             public void call() { }
-        });
+        }, null);
     }
     
     @Test(timeout = 5000)
     public void subscribeTwoCallbacksCompleteThrows() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
-        normal.completable.subscribe(new Action1<Throwable>() {
+        normal.completable.subscribe(new Action0() {
+            @Override
+            public void call() { throw new TestException(); }
+        }, new Action1<Throwable>() {
             @Override
             public void call(Throwable e) {
                 err.set(e);
             }
-        }, new Action0() {
-            @Override
-            public void call() { throw new TestException(); }
         });
         
         Assert.assertTrue(String.valueOf(err.get()), err.get() instanceof TestException);
@@ -2637,12 +2637,12 @@ public class CompletableTest {
     
     @Test(timeout = 5000)
     public void subscribeTwoCallbacksOnErrorThrows() {
-        error.completable.subscribe(new Action1<Throwable>() {
-            @Override
-            public void call(Throwable e) { throw new TestException(); }
-        }, new Action0() {
+        error.completable.subscribe(new Action0() {
             @Override
             public void call() { }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable e) { throw new TestException(); }
         });
     }
     
@@ -2800,14 +2800,14 @@ public class CompletableTest {
         expectUncaughtTestException(new Action0() {
             @Override
             public void call() {
-                error.completable.subscribe(new Action1<Throwable>() {
+                error.completable.subscribe(new Action0() {
+                    @Override
+                    public void call() {
+                    }
+                }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
                         throw new TestException();
-                    }
-                }, new Action0() {
-                    @Override
-                    public void call() {
                     }
                 });
             }
@@ -3132,14 +3132,14 @@ public class CompletableTest {
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
         
-        c.subscribe(new Action1<Throwable>() {
+        c.subscribe(new Action0() {
+            @Override
+            public void call() { }
+        }, new Action1<Throwable>() {
             @Override
             public void call(Throwable e) {
                 complete.set(e);
             }
-        }, new Action0() {
-            @Override
-            public void call() { }
         });
         
         Assert.assertTrue("First subject no subscribers", ps1.hasObservers());
@@ -3197,14 +3197,14 @@ public class CompletableTest {
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
         
-        c.subscribe(new Action1<Throwable>() {
+        c.subscribe(new Action0() {
+            @Override
+            public void call() { }
+        }, new Action1<Throwable>() {
             @Override
             public void call(Throwable e) {
                 complete.set(e);
             }
-        }, new Action0() {
-            @Override
-            public void call() { }
         });
         
         Assert.assertTrue("First subject no subscribers", ps1.hasObservers());
@@ -3363,14 +3363,14 @@ public class CompletableTest {
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
         
-        c.subscribe(new Action1<Throwable>() {
+        c.subscribe(new Action0() {
+            @Override
+            public void call() { }
+        }, new Action1<Throwable>() {
             @Override
             public void call(Throwable e) {
                 complete.set(e);
             }
-        }, new Action0() {
-            @Override
-            public void call() { }
         });
         
         Assert.assertTrue("First subject no subscribers", ps1.hasObservers());
@@ -3428,14 +3428,14 @@ public class CompletableTest {
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
         
-        c.subscribe(new Action1<Throwable>() {
+        c.subscribe(new Action0() {
+            @Override
+            public void call() { }
+        }, new Action1<Throwable>() {
             @Override
             public void call(Throwable e) {
                 complete.set(e);
             }
-        }, new Action0() {
-            @Override
-            public void call() { }
         });
         
         Assert.assertTrue("First subject no subscribers", ps1.hasObservers());
@@ -3841,14 +3841,14 @@ public class CompletableTest {
         Completable completable = stringSubject.toCompletable();
         
         final AtomicReference<Subscription> subscriptionRef = new AtomicReference<Subscription>();
-        Subscription completableSubscription = completable.subscribe(Actions.empty(), new Action0() {
+        Subscription completableSubscription = completable.subscribe(new Action0() {
             @Override
             public void call() {
                 if (subscriptionRef.get().isUnsubscribed()) {
                     subscriptionRef.set(null);
                 }
             }
-        });
+        }, Actions.empty());
         subscriptionRef.set(completableSubscription);
         
         stringSubject.onCompleted();
@@ -3863,14 +3863,14 @@ public class CompletableTest {
         Completable completable = stringSubject.toCompletable();
         
         final AtomicReference<Subscription> subscriptionRef = new AtomicReference<Subscription>();
-        Subscription completableSubscription = completable.subscribe(new Action1<Throwable>() {
+        Subscription completableSubscription = completable.subscribe(Actions.empty(), new Action1<Throwable>() {
             @Override
             public void call(Throwable e) {
                 if (subscriptionRef.get().isUnsubscribed()) {
                     subscriptionRef.set(null);
                 }
             }
-        }, Actions.empty());
+        });
         subscriptionRef.set(completableSubscription);
         
         stringSubject.onError(new TestException());
