@@ -15,13 +15,13 @@
  */
 package rx.internal.operators;
 
-import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
-
 import org.junit.Test;
+
+import rx.TestUtil;
 
 public class SingleOperatorZipTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(SingleOperatorZip.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+        TestUtil.checkUtilityClass(SingleOperatorZip.class);
     }
 }

@@ -1933,14 +1933,14 @@ public class Completable {
     /**
      * Subscribes to this Completable and calls back either the onError or onComplete functions.
      * 
-     * @param onError the consumer that is called if this Completable emits an error
      * @param onComplete the runnable that is called if the Completable completes normally
+     * @param onError the consumer that is called if this Completable emits an error
      * @return the Subscription that can be used for cancelling the subscription asynchronously
      * @throws NullPointerException if either callback is null
      */
-    public final Subscription subscribe(final Action1<? super Throwable> onError, final Action0 onComplete) {
-        requireNonNull(onError);
+    public final Subscription subscribe(final Action0 onComplete, final Action1<? super Throwable> onError) {
         requireNonNull(onComplete);
+        requireNonNull(onError);
         
         final MultipleAssignmentSubscription mad = new MultipleAssignmentSubscription();
         unsafeSubscribe(new CompletableSubscriber() {

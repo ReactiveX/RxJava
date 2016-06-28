@@ -15,13 +15,11 @@
  */
 package rx;
 
-import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
-
 import org.junit.Test;
 
 public class EventStreamTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(EventStream.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+        TestUtil.checkUtilityClass(EventStream.class);
     }
 }

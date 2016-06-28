@@ -15,19 +15,19 @@
  */
 package rx.functions;
 
-import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
-
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
+import rx.TestUtil;
 
 public class FunctionsTest {
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(Functions.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+        TestUtil.checkUtilityClass(Functions.class);
     }
     
     @Test(expected = RuntimeException.class)

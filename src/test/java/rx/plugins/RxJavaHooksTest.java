@@ -15,8 +15,6 @@
  */
 package rx.plugins;
 
-import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
-
 import java.lang.reflect.Method;
 
 import org.junit.*;
@@ -40,7 +38,7 @@ public class RxJavaHooksTest {
     
     @Test
     public void constructorShouldBePrivate() {
-        PrivateConstructorChecker.forClass(RxJavaHooks.class).expectedTypeOfException(IllegalStateException.class).expectedExceptionMessage("No instances!").check();
+        TestUtil.checkUtilityClass(RxJavaHooks.class);
     }
 
     @Test
