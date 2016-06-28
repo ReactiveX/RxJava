@@ -407,16 +407,6 @@ public class IndexedRingBufferTest {
         }
 
         @Override
-        public void unsubscribe() {
-
-        }
-
-        @Override
-        public boolean isUnsubscribed() {
-            return false;
-        }
-
-        @Override
         public String toString() {
             return "Subscription=>" + n;
         }

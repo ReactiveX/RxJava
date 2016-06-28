@@ -57,7 +57,9 @@ public final class BackpressureOverflow {
          * @return true to request drop of the oldest item, false to drop the newest.
          * @throws MissingBackpressureException
          */
-        boolean mayAttemptDrop() throws MissingBackpressureException;
+        default boolean mayAttemptDrop() throws MissingBackpressureException {
+		    throw new MissingBackpressureException("Overflowed buffer");
+		}
     }
 
     /**
@@ -97,10 +99,5 @@ public final class BackpressureOverflow {
         static final Error INSTANCE = new Error();
 
         private Error() {}
-
-        @Override
-        public boolean mayAttemptDrop() throws MissingBackpressureException {
-            throw new MissingBackpressureException("Overflowed buffer");
-        }
     }
 }

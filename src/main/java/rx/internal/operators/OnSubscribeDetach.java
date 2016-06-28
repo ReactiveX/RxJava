@@ -163,11 +163,6 @@ public final class OnSubscribeDetach<T> implements OnSubscribe<T> {
      * Singleton instance via enum.
      */
     enum TerminatedProducer implements Producer {
-        INSTANCE;
-        
-        @Override
-        public void request(long n) {
-            // ignored
-        }
+        INSTANCE
     }
 }

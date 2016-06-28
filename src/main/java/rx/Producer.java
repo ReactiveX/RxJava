@@ -47,6 +47,8 @@ public interface Producer {
      *          want the Producer to produce items at its own pace
      * @throws IllegalArgumentException if the request amount is negative
      */
-    void request(long n);
+    default void request(long n) {
+	    // ignored
+	}
 
 }

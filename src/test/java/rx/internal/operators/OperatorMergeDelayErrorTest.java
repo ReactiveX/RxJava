@@ -436,11 +436,6 @@ public class OperatorMergeDelayErrorTest {
         volatile Throwable e;
 
         @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
         public void onError(Throwable e) {
             this.e = e;
         }

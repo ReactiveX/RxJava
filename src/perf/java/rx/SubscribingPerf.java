@@ -169,15 +169,6 @@ public class SubscribingPerf {
         }
         
         @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-        
-        @Override
-        public void onCompleted() {
-        }
-        
-        @Override
         public void setProducer(Producer p) {
             p.request(r);
         }
@@ -200,16 +191,6 @@ public class SubscribingPerf {
         public void onNext(T t) {
             bh.consume(t);
         }
-        
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-        
-        @Override
-        public void onCompleted() {
-            
-        }
     }
 
     /**
@@ -226,16 +207,6 @@ public class SubscribingPerf {
         @Override
         public void onNext(T t) {
             bh.consume(t);
-        }
-        
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-        
-        @Override
-        public void onCompleted() {
-            
         }
     }
 }

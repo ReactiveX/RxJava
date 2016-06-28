@@ -422,11 +422,6 @@ public final class IndexedRingBuffer<E> implements Subscription {
         }
     }
 
-    @Override
-    public boolean isUnsubscribed() {
-        return false;
-    }
-
     public int forEach(Func1<? super E, Boolean> action) {
         return forEach(action, 0);
     }

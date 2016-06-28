@@ -354,10 +354,6 @@ public class ExceptionsTest {
 
     private class OnErrorFailedSubscriber extends Subscriber<Integer> {
         @Override
-        public void onCompleted() {
-        }
-
-        @Override
         public void onError(Throwable e) {
             throw new RuntimeException();
         }

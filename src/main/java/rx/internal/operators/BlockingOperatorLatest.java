@@ -77,11 +77,6 @@ public final class BlockingOperatorLatest {
         }
 
         @Override
-        public void onCompleted() {
-            // not expected
-        }
-
-        @Override
         public boolean hasNext() {
             if (iNotif != null && iNotif.isOnError()) {
                 throw Exceptions.propagate(iNotif.getThrowable());

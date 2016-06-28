@@ -19,5 +19,7 @@ package rx.functions;
  * A zero-argument action.
  */
 public interface Action0 extends Action {
-    void call();
+    default void call() {
+	    // deliberately no op
+	}
 }

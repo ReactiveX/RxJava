@@ -124,11 +124,6 @@ public class OperatorTakeLastOneTest {
         }
 
         @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
         public void onError(Throwable e) {
 
         }

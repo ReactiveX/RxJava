@@ -105,16 +105,6 @@ public class FromComparison {
         }
         
         @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-        
-        @Override
-        public void onCompleted() {
-            
-        }
-        
-        @Override
         public void setProducer(Producer p) {
             this.p = p;
             p.request(limit);

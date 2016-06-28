@@ -72,11 +72,6 @@ public final class BlockingOperatorToIterator {
         }
 
         @Override
-        public void onCompleted() {
-            // ignore
-        }
-
-        @Override
         public void onError(Throwable e) {
             notifications.offer(Notification.<T>createOnError(e));
         }
