@@ -16,12 +16,15 @@
 package rx.plugins;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
 import rx.*;
 import rx.Completable.*;
 import rx.Observable.OnSubscribe;
+import rx.Scheduler.Worker;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.OnSubscribeRange;
@@ -474,6 +477,77 @@ public class RxJavaHooksTest {
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertCompleted();
+    }
+
+    void onSchedule(Worker w) throws InterruptedException {
+        try {
+            try {
+                final AtomicInteger value = new AtomicInteger();
+                final CountDownLatch cdl = new CountDownLatch(1);
+                
+                RxJavaHooks.setOnScheduleAction(new Func1<Action0, Action0>() {
+                    @Override
+                    public Action0 call(Action0 t) {
+                        return new Action0() {
+                            @Override
+                            public void call() {
+                                value.set(10);
+                                cdl.countDown();
+                            }
+                        };
+                    }
+                });
+                
+                w.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        value.set(1);
+                        cdl.countDown();
+                    }
+                });
+                
+                cdl.await();
+                
+                Assert.assertEquals(10, value.get());
+                
+            } finally {
+                
+                RxJavaHooks.reset();
+            }
+            
+            // make sure the reset worked
+            final AtomicInteger value = new AtomicInteger();
+            final CountDownLatch cdl = new CountDownLatch(1);
+            
+            w.schedule(new Action0() {
+                @Override
+                public void call() {
+                    value.set(1);
+                    cdl.countDown();
+                }
+            });
+            
+            cdl.await();
+            
+            Assert.assertEquals(1, value.get());
+        } finally {
+            w.unsubscribe();
+        }
+    }
+    
+    @Test
+    public void onScheduleComputation() throws InterruptedException {
+        onSchedule(Schedulers.computation().createWorker());
+    }
+
+    @Test
+    public void onScheduleIO() throws InterruptedException {
+        onSchedule(Schedulers.io().createWorker());
+    }
+
+    @Test
+    public void onScheduleNewThread() throws InterruptedException {
+        onSchedule(Schedulers.newThread().createWorker());
     }
 
 }
