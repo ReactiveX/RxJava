@@ -87,21 +87,21 @@ public class Completable {
     }
     
     /** Single instance of a complete Completable. */
-    static final Completable COMPLETE = create(new CompletableOnSubscribe() {
+    static final Completable COMPLETE = new Completable(new CompletableOnSubscribe() {
         @Override
         public void call(CompletableSubscriber s) {
             s.onSubscribe(Subscriptions.unsubscribed());
             s.onCompleted();
         }
-    });
+    }, true); // hook is handled in complete()
     
     /** Single instance of a never Completable. */
-    static final Completable NEVER = create(new CompletableOnSubscribe() {
+    static final Completable NEVER = new Completable(new CompletableOnSubscribe() {
         @Override
         public void call(CompletableSubscriber s) {
             s.onSubscribe(Subscriptions.unsubscribed());
         }
-    });
+    }, true); // hook is handled in never()
     
     /**
      * Returns a Completable which terminates as soon as one of the source Completables
@@ -311,7 +311,11 @@ public class Completable {
      * @return a Completable instance that completes immediately 
      */
     public static Completable complete() {
-        return COMPLETE;
+        CompletableOnSubscribe cos = RxJavaHooks.onCreate(COMPLETE.onSubscribe);
+        if (cos == COMPLETE.onSubscribe) {
+            return COMPLETE;
+        }
+        return new Completable(cos, true);
     }
     
     /**
@@ -734,7 +738,11 @@ public class Completable {
      * @return the singleton instance that never calls onError or onComplete
      */
     public static Completable never() {
-        return NEVER;
+        CompletableOnSubscribe cos = RxJavaHooks.onCreate(NEVER.onSubscribe);
+        if (cos == NEVER.onSubscribe) {
+            return NEVER;
+        }
+        return new Completable(cos, true);
     }
     
     /**
@@ -975,7 +983,18 @@ public class Completable {
     protected Completable(CompletableOnSubscribe onSubscribe) {
         this.onSubscribe = RxJavaHooks.onCreate(onSubscribe);
     }
-    
+
+    /**
+     * Constructs a Completable instance with the given onSubscribe callback without calling the onCreate
+     * hook.
+     * @param onSubscribe the callback that will receive CompletableSubscribers when they subscribe,
+     * not null (not verified)
+     * @param noHook if true, RxJavaHooks.onCreate won't be called
+     */
+    private Completable(CompletableOnSubscribe onSubscribe, boolean noHook) {
+        this.onSubscribe = noHook ? onSubscribe : RxJavaHooks.onCreate(onSubscribe);
+    }
+
     /**
      * Returns a Completable that emits the a terminated event of either this Completable
      * or the other Completable whichever fires first.

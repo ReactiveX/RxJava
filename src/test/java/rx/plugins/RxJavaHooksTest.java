@@ -20,10 +20,16 @@ import java.lang.reflect.Method;
 import org.junit.*;
 
 import rx.*;
+import rx.Completable.*;
+import rx.Observable.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.*;
+import rx.internal.operators.OnSubscribeRange;
+import rx.internal.producers.SingleProducer;
 import rx.internal.util.UtilityFunctions;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.Subscriptions;
 
 public class RxJavaHooksTest {
 
@@ -167,4 +173,307 @@ public class RxJavaHooksTest {
             RxJavaHooks.reset();
         }
     }
+    
+    Func1<Scheduler, Scheduler> replaceWithImmediate = new Func1<Scheduler, Scheduler>() {
+        @Override
+        public Scheduler call(Scheduler t) {
+            return Schedulers.immediate();
+        }
+    };
+    
+    @Test
+    public void overrideComputationScheduler() {
+        try {
+            RxJavaHooks.setOnComputationScheduler(replaceWithImmediate);
+            
+            Assert.assertSame(Schedulers.immediate(), Schedulers.computation());
+        } finally {
+            RxJavaHooks.reset();
+        }
+        // make sure the reset worked
+        Assert.assertNotSame(Schedulers.immediate(), Schedulers.computation());
+    }
+
+    @Test
+    public void overrideIoScheduler() {
+        try {
+            RxJavaHooks.setOnIOScheduler(replaceWithImmediate);
+            
+            Assert.assertSame(Schedulers.immediate(), Schedulers.io());
+        } finally {
+            RxJavaHooks.reset();
+        }
+        // make sure the reset worked
+        Assert.assertNotSame(Schedulers.immediate(), Schedulers.io());
+    }
+
+    @Test
+    public void overrideNewThreadScheduler() {
+        try {
+            RxJavaHooks.setOnNewThreadScheduler(replaceWithImmediate);
+            
+            Assert.assertSame(Schedulers.immediate(), Schedulers.newThread());
+        } finally {
+            RxJavaHooks.reset();
+        }
+        // make sure the reset worked
+        Assert.assertNotSame(Schedulers.immediate(), Schedulers.newThread());
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void observableCreate() {
+        try {
+            RxJavaHooks.setOnObservableCreate(new Func1<OnSubscribe, OnSubscribe>() {
+                @Override
+                public OnSubscribe call(OnSubscribe t) {
+                    return new OnSubscribeRange(1, 2);
+                }
+            });
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            Observable.range(10, 3).subscribe(ts);
+            
+            ts.assertValues(1, 2);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        } finally {
+            RxJavaHooks.reset();
+        }
+        // make sure the reset worked
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(10, 3).subscribe(ts);
+        
+        ts.assertValues(10, 11, 12);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void observableStart() {
+        try {
+            RxJavaHooks.setOnObservableStart(new Func2<Observable, OnSubscribe, OnSubscribe>() {
+                @Override
+                public OnSubscribe call(Observable o, OnSubscribe t) {
+                    return new OnSubscribeRange(1, 2);
+                }
+            });
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            Observable.range(10, 3).subscribe(ts);
+            
+            ts.assertValues(1, 2);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        } finally {
+            RxJavaHooks.reset();
+        }
+        // make sure the reset worked
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(10, 3).subscribe(ts);
+        
+        ts.assertValues(10, 11, 12);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void observableReturn() {
+        try {
+            final Subscription s = Subscriptions.empty();
+            
+            RxJavaHooks.setOnObservableReturn(new Func1<Subscription, Subscription>() {
+                @Override
+                public Subscription call(Subscription t) {
+                    return s;
+                }
+            });
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            Subscription u = Observable.range(10, 3).subscribe(ts);
+            
+            ts.assertValues(10, 11, 12);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+            
+            Assert.assertSame(s, u);
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void singleCreate() {
+        try {
+            RxJavaHooks.setOnSingleCreate(new Func1<Single.OnSubscribe, Single.OnSubscribe>() {
+                @Override
+                public Single.OnSubscribe call(Single.OnSubscribe t) {
+                    return new Single.OnSubscribe<Object>() {
+                        @Override
+                        public void call(SingleSubscriber<Object> t) {
+                            t.onSuccess(10);
+                        }
+                    };
+                }
+            });
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            Single.just(1).subscribe(ts);
+            
+            ts.assertValue(10);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        } finally {
+            RxJavaHooks.reset();
+        }
+        // make sure the reset worked
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Single.just(1).subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void singleStart() {
+        try {
+            RxJavaHooks.setOnSingleStart(new Func2<Single, OnSubscribe, OnSubscribe>() {
+                @Override
+                public OnSubscribe call(Single o, OnSubscribe t) {
+                    return new OnSubscribe<Object>() {
+                        @Override
+                        public void call(Subscriber<Object> t) {
+                            t.setProducer(new SingleProducer<Integer>(t, 10));
+                        }
+                    };
+                }
+            });
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            Single.just(1).subscribe(ts);
+            
+            ts.assertValue(10);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        } finally {
+            RxJavaHooks.reset();
+        }
+        // make sure the reset worked
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Single.just(1).subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void singleReturn() {
+        try {
+            final Subscription s = Subscriptions.empty();
+            
+            RxJavaHooks.setOnSingleReturn(new Func1<Subscription, Subscription>() {
+                @Override
+                public Subscription call(Subscription t) {
+                    return s;
+                }
+            });
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            Subscription u = Single.just(1).subscribe(ts);
+            
+            ts.assertValue(1);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+            
+            Assert.assertSame(s, u);
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+
+    @Test
+    public void completableCreate() {
+        try {
+            RxJavaHooks.setOnCompletableCreate(new Func1<CompletableOnSubscribe, CompletableOnSubscribe>() {
+                @Override
+                public CompletableOnSubscribe call(CompletableOnSubscribe t) {
+                    return new CompletableOnSubscribe() {
+                        @Override
+                        public void call(CompletableSubscriber t) {
+                            t.onError(new TestException());
+                        }
+                    };
+                }
+            });
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            Completable.complete().subscribe(ts);
+            
+            ts.assertNoValues();
+            ts.assertNotCompleted();
+            ts.assertError(TestException.class);
+        } finally {
+            RxJavaHooks.reset();
+        }
+        // make sure the reset worked
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Completable.complete().subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void completableStart() {
+        try {
+            RxJavaHooks.setOnCompletableStart(new Func2<Completable, CompletableOnSubscribe, CompletableOnSubscribe>() {
+                @Override
+                public CompletableOnSubscribe call(Completable o, CompletableOnSubscribe t) {
+                    return new CompletableOnSubscribe() {
+                        @Override
+                        public void call(CompletableSubscriber t) {
+                            t.onError(new TestException());
+                        }
+                    };
+                }
+            });
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            Completable.complete().subscribe(ts);
+            
+            ts.assertNoValues();
+            ts.assertNotCompleted();
+            ts.assertError(TestException.class);
+        } finally {
+            RxJavaHooks.reset();
+        }
+        // make sure the reset worked
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Completable.complete().subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
 }
