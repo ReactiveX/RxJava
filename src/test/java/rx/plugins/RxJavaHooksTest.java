@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
+import org.junit.Test;
 
 import rx.*;
 import rx.Completable.*;
@@ -33,6 +33,8 @@ import rx.internal.util.UtilityFunctions;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
+import static org.junit.Assert.*;
+
 
 public class RxJavaHooksTest {
 
@@ -62,11 +64,11 @@ public class RxJavaHooksTest {
             
             Throwable ex = ts.getOnErrorEvents().get(0);
             
-            Assert.assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
+            assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
             
-            Assert.assertTrue("" + ex, ex instanceof AssemblyStackTraceException);
+            assertTrue("" + ex, ex instanceof AssemblyStackTraceException);
             
-            Assert.assertTrue(ex.getMessage(), ex.getMessage().contains("createObservable"));
+            assertTrue(ex.getMessage(), ex.getMessage().contains("createObservable"));
         } finally {
             RxJavaHooks.resetAssemblyTracking();
         }
@@ -93,11 +95,11 @@ public class RxJavaHooksTest {
             
             Throwable ex = ts.getOnErrorEvents().get(0);
 
-            Assert.assertTrue("" + ex, ex instanceof AssemblyStackTraceException);
+            assertTrue("" + ex, ex instanceof AssemblyStackTraceException);
 
-            Assert.assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
+            assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
 
-            Assert.assertTrue(ex.getMessage(), ex.getMessage().contains("createSingle"));
+            assertTrue(ex.getMessage(), ex.getMessage().contains("createSingle"));
         } finally {
             RxJavaHooks.resetAssemblyTracking();
         }
@@ -124,11 +126,11 @@ public class RxJavaHooksTest {
             
             Throwable ex = ts.getOnErrorEvents().get(0);
 
-            Assert.assertTrue("" + ex, ex instanceof AssemblyStackTraceException);
+            assertTrue("" + ex, ex instanceof AssemblyStackTraceException);
 
-            Assert.assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
+            assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
 
-            Assert.assertTrue(ex.getMessage(), ex.getMessage().contains("createCompletable"));
+            assertTrue(ex.getMessage(), ex.getMessage().contains("createCompletable"));
         } finally {
             RxJavaHooks.resetAssemblyTracking();
         }
@@ -167,7 +169,7 @@ public class RxJavaHooksTest {
                     
                     Object after = getter.invoke(null);
                     
-                    Assert.assertSame(m.toString(), before, after);
+                    assertSame(m.toString(), before, after);
                 }
             }
             
@@ -189,12 +191,12 @@ public class RxJavaHooksTest {
         try {
             RxJavaHooks.setOnComputationScheduler(replaceWithImmediate);
             
-            Assert.assertSame(Schedulers.immediate(), Schedulers.computation());
+            assertSame(Schedulers.immediate(), Schedulers.computation());
         } finally {
             RxJavaHooks.reset();
         }
         // make sure the reset worked
-        Assert.assertNotSame(Schedulers.immediate(), Schedulers.computation());
+        assertNotSame(Schedulers.immediate(), Schedulers.computation());
     }
 
     @Test
@@ -202,12 +204,12 @@ public class RxJavaHooksTest {
         try {
             RxJavaHooks.setOnIOScheduler(replaceWithImmediate);
             
-            Assert.assertSame(Schedulers.immediate(), Schedulers.io());
+            assertSame(Schedulers.immediate(), Schedulers.io());
         } finally {
             RxJavaHooks.reset();
         }
         // make sure the reset worked
-        Assert.assertNotSame(Schedulers.immediate(), Schedulers.io());
+        assertNotSame(Schedulers.immediate(), Schedulers.io());
     }
 
     @Test
@@ -215,12 +217,12 @@ public class RxJavaHooksTest {
         try {
             RxJavaHooks.setOnNewThreadScheduler(replaceWithImmediate);
             
-            Assert.assertSame(Schedulers.immediate(), Schedulers.newThread());
+            assertSame(Schedulers.immediate(), Schedulers.newThread());
         } finally {
             RxJavaHooks.reset();
         }
         // make sure the reset worked
-        Assert.assertNotSame(Schedulers.immediate(), Schedulers.newThread());
+        assertNotSame(Schedulers.immediate(), Schedulers.newThread());
     }
 
     @SuppressWarnings("rawtypes")
@@ -305,7 +307,7 @@ public class RxJavaHooksTest {
             ts.assertNoErrors();
             ts.assertCompleted();
             
-            Assert.assertSame(s, u);
+            assertSame(s, u);
         } finally {
             RxJavaHooks.reset();
         }
@@ -403,7 +405,7 @@ public class RxJavaHooksTest {
             ts.assertNoErrors();
             ts.assertCompleted();
             
-            Assert.assertSame(s, u);
+            assertSame(s, u);
         } finally {
             RxJavaHooks.reset();
         }
@@ -508,7 +510,7 @@ public class RxJavaHooksTest {
                 
                 cdl.await();
                 
-                Assert.assertEquals(10, value.get());
+                assertEquals(10, value.get());
                 
             } finally {
                 
@@ -529,7 +531,7 @@ public class RxJavaHooksTest {
             
             cdl.await();
             
-            Assert.assertEquals(1, value.get());
+            assertEquals(1, value.get());
         } finally {
             w.unsubscribe();
         }

@@ -989,10 +989,10 @@ public class Completable {
      * hook.
      * @param onSubscribe the callback that will receive CompletableSubscribers when they subscribe,
      * not null (not verified)
-     * @param noHook if true, RxJavaHooks.onCreate won't be called
+     * @param useHook if false, RxJavaHooks.onCreate won't be called
      */
-    private Completable(CompletableOnSubscribe onSubscribe, boolean noHook) {
-        this.onSubscribe = noHook ? onSubscribe : RxJavaHooks.onCreate(onSubscribe);
+    private Completable(CompletableOnSubscribe onSubscribe, boolean useHook) {
+        this.onSubscribe = useHook ? RxJavaHooks.onCreate(onSubscribe) : onSubscribe;
     }
 
     /**
