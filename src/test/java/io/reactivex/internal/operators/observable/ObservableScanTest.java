@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.subjects.PublishSubject;
@@ -33,7 +33,7 @@ public class ObservableScanTest {
 
     @Test
     public void testScanIntegersWithInitialValue() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable<Integer> o = Observable.just(1, 2, 3);
 
@@ -59,7 +59,7 @@ public class ObservableScanTest {
 
     @Test
     public void testScanIntegersWithoutInitialValue() {
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
 
         Observable<Integer> o = Observable.just(1, 2, 3);
 
@@ -85,7 +85,7 @@ public class ObservableScanTest {
 
     @Test
     public void testScanIntegersWithoutInitialValueAndOnlyOneValue() {
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
 
         Observable<Integer> o = Observable.just(1);
 

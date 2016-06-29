@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Predicate;
 
 public class ObservableFilterTest {
@@ -36,7 +35,7 @@ public class ObservableFilterTest {
             }
         });
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         

@@ -28,7 +28,6 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -41,7 +40,7 @@ public class ObservableRetryTest {
 
     @Test
     public void iterativeBackoff() {
-        Observer<String> consumer = TestHelper.mockNbpSubscriber();
+        Observer<String> consumer = TestHelper.mockObserver();
         
         Observable<String> producer = Observable.create(new ObservableConsumable<String>() {
 
@@ -112,7 +111,7 @@ public class ObservableRetryTest {
 
     @Test
     public void testRetryIndefinitely() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         int NUM_RETRIES = 20;
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
         origin.retry().unsafeSubscribe(new TestObserver<String>(NbpObserver));
@@ -131,7 +130,7 @@ public class ObservableRetryTest {
 
     @Test
     public void testSchedulingNotificationHandler() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         int NUM_RETRIES = 2;
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
         TestObserver<String> NbpSubscriber = new TestObserver<String>(NbpObserver);
@@ -171,7 +170,7 @@ public class ObservableRetryTest {
 
     @Test
     public void testOnNextFromNotificationHandler() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         int NUM_RETRIES = 2;
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
         origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
@@ -201,7 +200,7 @@ public class ObservableRetryTest {
 
     @Test
     public void testOnCompletedFromNotificationHandler() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         Observable<String> origin = Observable.create(new FuncWithErrors(1));
         TestObserver<String> NbpSubscriber = new TestObserver<String>(NbpObserver);
         origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
@@ -222,7 +221,7 @@ public class ObservableRetryTest {
 
     @Test
     public void testOnErrorFromNotificationHandler() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         Observable<String> origin = Observable.create(new FuncWithErrors(2));
         origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
             @Override
@@ -274,7 +273,7 @@ public class ObservableRetryTest {
 
     @Test
     public void testOriginFails() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         Observable<String> origin = Observable.create(new FuncWithErrors(1));
         origin.subscribe(NbpObserver);
 
@@ -289,7 +288,7 @@ public class ObservableRetryTest {
     public void testRetryFail() {
         int NUM_RETRIES = 1;
         int NUM_FAILURES = 2;
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
         origin.retry(NUM_RETRIES).subscribe(NbpObserver);
 
@@ -307,7 +306,7 @@ public class ObservableRetryTest {
     @Test
     public void testRetrySuccess() {
         int NUM_FAILURES = 1;
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
         origin.retry(3).subscribe(NbpObserver);
 
@@ -326,7 +325,7 @@ public class ObservableRetryTest {
     @Test
     public void testInfiniteRetry() {
         int NUM_FAILURES = 20;
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
         origin.retry().subscribe(NbpObserver);
 
@@ -613,7 +612,7 @@ public class ObservableRetryTest {
     @Test(timeout = 10000)
     public void testUnsubscribeAfterError() {
 
-        Observer<Long> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Long> NbpObserver = TestHelper.mockObserver();
 
         // NbpObservable that always fails after 100ms
         SlowObservable so = new SlowObservable(100, 0);
@@ -664,7 +663,7 @@ public class ObservableRetryTest {
         for (int j=0;j<NUM_LOOPS;j++) {
             final int NUM_RETRIES = Flowable.bufferSize() * 2;
             for (int i = 0; i < 400; i++) {
-                Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+                Observer<String> NbpObserver = TestHelper.mockObserver();
                 Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
                 TestObserver<String> ts = new TestObserver<String>(NbpObserver);
                 origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
@@ -785,7 +784,7 @@ public class ObservableRetryTest {
     }
     @Test//(timeout = 3000)
     public void testIssue1900() throws InterruptedException {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         final int NUM_MSG = 1034;
         final AtomicInteger count = new AtomicInteger();
 
@@ -825,7 +824,7 @@ public class ObservableRetryTest {
     }
     @Test//(timeout = 3000)
     public void testIssue1900SourceNotSupportingBackpressure() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         final int NUM_MSG = 1034;
         final AtomicInteger count = new AtomicInteger();
 

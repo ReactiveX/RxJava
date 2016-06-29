@@ -22,7 +22,7 @@ import org.junit.*;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.TestHelper;
 import io.reactivex.functions.*;
 
 public class ObservableToMapTest {
@@ -30,7 +30,7 @@ public class ObservableToMapTest {
 
     @Before
     public void before() {
-        objectObserver = TestHelper.mockNbpSubscriber();
+        objectObserver = TestHelper.mockObserver();
     }
 
     Function<String, Integer> lengthFunc = new Function<String, Integer>() {

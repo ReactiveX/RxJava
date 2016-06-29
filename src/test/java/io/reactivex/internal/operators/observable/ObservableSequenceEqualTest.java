@@ -21,7 +21,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.BiPredicate;
 
 public class ObservableSequenceEqualTest {
@@ -131,7 +130,7 @@ public class ObservableSequenceEqualTest {
     }
 
     private void verifyResult(Observable<Boolean> o, boolean result) {
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
         
         o.subscribe(NbpObserver);
 
@@ -142,7 +141,7 @@ public class ObservableSequenceEqualTest {
     }
 
     private void verifyError(Observable<Boolean> NbpObservable) {
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);

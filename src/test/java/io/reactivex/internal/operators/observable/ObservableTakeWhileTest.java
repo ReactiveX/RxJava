@@ -22,7 +22,6 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
@@ -40,7 +39,7 @@ public class ObservableTakeWhileTest {
             }
         });
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         take.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext(1);
         verify(NbpObserver, times(1)).onNext(2);
@@ -59,7 +58,7 @@ public class ObservableTakeWhileTest {
             }
         });
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         take.subscribe(NbpObserver);
 
         s.onNext(1);
@@ -90,7 +89,7 @@ public class ObservableTakeWhileTest {
             }
         });
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         take.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, times(1)).onNext("two");
@@ -123,7 +122,7 @@ public class ObservableTakeWhileTest {
         TestObservable source = new TestObservable(mock(Disposable.class), "one");
         final RuntimeException testException = new RuntimeException("test exception");
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         Observable<String> take = Observable.create(source)
                 .takeWhile(new Predicate<String>() {
             @Override
@@ -150,7 +149,7 @@ public class ObservableTakeWhileTest {
         Disposable s = mock(Disposable.class);
         TestObservable w = new TestObservable(s, "one", "two", "three");
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         Observable<String> take = Observable.create(w)
                 .takeWhile(new Predicate<String>() {
             int index = 0;

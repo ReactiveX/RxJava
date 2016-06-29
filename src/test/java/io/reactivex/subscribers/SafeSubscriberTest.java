@@ -20,8 +20,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.*;
 
 public class SafeSubscriberTest {
 

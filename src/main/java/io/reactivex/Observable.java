@@ -974,7 +974,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
         // FIXME don't want to fiddle with manual type inference, this will be inlined later anyway
-        return new ObservableLift(sources, NbpOperatorToList.<T>defaultInstance())
+        return new ObservableToList(sources, 16)
                 .flatMap(new Function<List<? extends ObservableConsumable<? extends T>>, Observable<R>>() {
             @Override
             public Observable<R> apply(List<? extends ObservableConsumable<? extends T>> list) {
@@ -2902,7 +2902,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
             Scheduler scheduler) {
         Objects.requireNonNull(timeUnit, "timeUnit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return lift(new NbpOperatorTimeoutTimed<T>(timeout, timeUnit, scheduler, other));
+        return new ObservableTimeoutTimed<T>(this, timeout, timeUnit, scheduler, other);
     }
 
     private <U, V> Observable<T> timeout0(
@@ -2951,7 +2951,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<List<T>> toList() {
-        return lift(NbpOperatorToList.<T>defaultInstance());
+        return toList(16);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2959,18 +2959,13 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         if (capacityHint <= 0) {
             throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
         }
-        return lift(new NbpOperatorToList<T, List<T>>(new Supplier<List<T>>() {
-            @Override
-            public List<T> get() {
-                return new ArrayList<T>(capacityHint);
-            }
-        }));
+        return new ObservableToList<T, List<T>>(this, capacityHint);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U extends Collection<? super T>> Observable<U> toList(Supplier<U> collectionSupplier) {
         Objects.requireNonNull(collectionSupplier, "collectionSupplier is null");
-        return lift(new NbpOperatorToList<T, U>(collectionSupplier));
+        return new ObservableToList<T, U>(this, collectionSupplier);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3238,7 +3233,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<T> unsubscribeOn(Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return lift(new NbpOperatorUnsubscribeOn<T>(scheduler));
+        return new ObservableUnsubscribeOn<T>(this, scheduler);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3260,7 +3255,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
             throw new IllegalArgumentException("count > 0 required but it was " + count);
         }
         validateBufferSize(bufferSize);
-        return lift(new NbpOperatorWindow<T>(count, skip, bufferSize));
+        return new ObservableWindow<T>(this, count, skip, bufferSize);
     }
 
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -3278,7 +3273,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         validateBufferSize(bufferSize);
         Objects.requireNonNull(scheduler, "scheduler is null");
         Objects.requireNonNull(unit, "unit is null");
-        return lift(new NbpOperatorWindowTimed<T>(timespan, timeskip, unit, scheduler, Long.MAX_VALUE, bufferSize, false));
+        return new ObservableWindowTimed<T>(this, timespan, timeskip, unit, scheduler, Long.MAX_VALUE, bufferSize, false);
     }
 
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -3326,7 +3321,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         if (count <= 0) {
             throw new IllegalArgumentException("count > 0 required but it was " + count);
         }
-        return lift(new NbpOperatorWindowTimed<T>(timespan, timespan, unit, scheduler, count, bufferSize, restart));
+        return new ObservableWindowTimed<T>(this, timespan, timespan, unit, scheduler, count, bufferSize, restart);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3337,7 +3332,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Observable<Observable<T>> window(ObservableConsumable<B> boundary, int bufferSize) {
         Objects.requireNonNull(boundary, "boundary is null");
-        return lift(new NbpOperatorWindowBoundary<T, B>(boundary, bufferSize));
+        return new ObservableWindowBoundary<T, B>(this, boundary, bufferSize);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3353,7 +3348,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
             Function<? super U, ? extends ObservableConsumable<V>> windowClose, int bufferSize) {
         Objects.requireNonNull(windowOpen, "windowOpen is null");
         Objects.requireNonNull(windowClose, "windowClose is null");
-        return lift(new NbpOperatorWindowBoundarySelector<T, U, V>(windowOpen, windowClose, bufferSize));
+        return new ObservableWindowBoundarySelector<T, U, V>(this, windowOpen, windowClose, bufferSize);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3364,7 +3359,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Observable<Observable<T>> window(Supplier<? extends ObservableConsumable<B>> boundary, int bufferSize) {
         Objects.requireNonNull(boundary, "boundary is null");
-        return lift(new NbpOperatorWindowBoundarySupplier<T, B>(boundary, bufferSize));
+        return new ObservableWindowBoundarySupplier<T, B>(this, boundary, bufferSize);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3372,7 +3367,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(other, "other is null");
         Objects.requireNonNull(combiner, "combiner is null");
 
-        return lift(new NbpOperatorWithLatestFrom<T, U, R>(combiner, other));
+        return new ObservableWithLatestFrom<T, U, R>(this, combiner, other);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)

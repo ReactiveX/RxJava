@@ -21,12 +21,11 @@ import java.util.*;
 import org.junit.*;
 import org.mockito.InOrder;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 
 public class ObservableUsingTest {
@@ -83,7 +82,7 @@ public class ObservableUsingTest {
             }
         };
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), disposeEagerly);
@@ -143,7 +142,7 @@ public class ObservableUsingTest {
             }
         };
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), disposeEagerly);
@@ -289,7 +288,7 @@ public class ObservableUsingTest {
             }
         };
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), true)
@@ -316,7 +315,7 @@ public class ObservableUsingTest {
             }
         };
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), false)
@@ -346,7 +345,7 @@ public class ObservableUsingTest {
             }
         };
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), true)
@@ -374,7 +373,7 @@ public class ObservableUsingTest {
             }
         };
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), false)

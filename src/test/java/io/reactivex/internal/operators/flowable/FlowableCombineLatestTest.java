@@ -27,7 +27,6 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.Optional;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;

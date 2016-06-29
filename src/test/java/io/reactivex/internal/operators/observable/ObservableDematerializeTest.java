@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.observers.TestObserver;
 
 public class ObservableDematerializeTest {
@@ -30,7 +29,7 @@ public class ObservableDematerializeTest {
         Observable<Try<Optional<Integer>>> notifications = Observable.just(1, 2).materialize();
         Observable<Integer> dematerialize = notifications.dematerialize();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         
         dematerialize.subscribe(NbpObserver);
 
@@ -46,7 +45,7 @@ public class ObservableDematerializeTest {
         Observable<Integer> o = Observable.error(exception);
         Observable<Integer> dematerialize = o.materialize().dematerialize();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         
         dematerialize.subscribe(NbpObserver);
 
@@ -61,7 +60,7 @@ public class ObservableDematerializeTest {
         Observable<Integer> o = Observable.error(exception);
         Observable<Integer> dematerialize = o.materialize().dematerialize();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         
         dematerialize.subscribe(NbpObserver);
 
@@ -76,7 +75,7 @@ public class ObservableDematerializeTest {
         Observable<Integer> o = Observable.error(exception);
         Observable<Integer> dematerialize = o.dematerialize();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
 
         dematerialize.subscribe(NbpObserver);
 
@@ -90,7 +89,7 @@ public class ObservableDematerializeTest {
         Observable<Integer> o = Observable.empty();
         Observable<Integer> dematerialize = o.dematerialize();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         
         TestObserver<Integer> ts = new TestObserver<Integer>(NbpObserver);
         dematerialize.subscribe(ts);
@@ -108,7 +107,7 @@ public class ObservableDematerializeTest {
         
         Observable<Integer> result = source.materialize().dematerialize();
         
-        Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        Observer<Integer> o = TestHelper.mockObserver();
         
         result.unsafeSubscribe(o);
         
@@ -123,7 +122,7 @@ public class ObservableDematerializeTest {
         
         Observable<Integer> result = source.materialize().dematerialize();
         
-        Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        Observer<Integer> o = TestHelper.mockObserver();
         
         result.unsafeSubscribe(o);
         

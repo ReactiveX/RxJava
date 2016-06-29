@@ -28,7 +28,6 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
@@ -42,7 +41,7 @@ public class ObservableMergeTest {
     
     @Before
     public void before() {
-        stringObserver = TestHelper.mockNbpSubscriber();
+        stringObserver = TestHelper.mockObserver();
         
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("RxNewThread")) {

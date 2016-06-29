@@ -23,11 +23,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
@@ -100,7 +99,7 @@ public class ObservableRepeatTest {
 
     @Test(timeout = 2000)
     public void testRepeatAndTake() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         Observable.just(1).repeat().take(10).subscribe(o);
         
@@ -111,7 +110,7 @@ public class ObservableRepeatTest {
 
     @Test(timeout = 2000)
     public void testRepeatLimited() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         Observable.just(1).repeat(10).subscribe(o);
         
@@ -122,7 +121,7 @@ public class ObservableRepeatTest {
 
     @Test(timeout = 2000)
     public void testRepeatError() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         Observable.error(new TestException()).repeat(10).subscribe(o);
         
@@ -134,7 +133,7 @@ public class ObservableRepeatTest {
 
     @Test(timeout = 2000)
     public void testRepeatZero() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         Observable.just(1).repeat(0).subscribe(o);
         
@@ -145,7 +144,7 @@ public class ObservableRepeatTest {
 
     @Test(timeout = 2000)
     public void testRepeatOne() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         Observable.just(1).repeat(1).subscribe(o);
         

@@ -18,8 +18,7 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.Flowable;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.*;
 
 public class FlowableCastTest {
 

@@ -23,7 +23,6 @@ import org.mockito.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.TestScheduler;
@@ -38,9 +37,9 @@ public class ObservableTimerTest {
 
     @Before
     public void before() {
-        NbpObserver = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
         
-        observer2 = TestHelper.mockNbpSubscriber();
+        observer2 = TestHelper.mockObserver();
         
         scheduler = new TestScheduler();
     }

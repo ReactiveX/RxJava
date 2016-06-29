@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.TestHelper;
 import io.reactivex.observers.*;
 
 public class ObservableFromIterableTest {
@@ -39,7 +39,7 @@ public class ObservableFromIterableTest {
     public void testListIterable() {
         Observable<String> o = Observable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         
         o.subscribe(NbpObserver);
         
@@ -83,7 +83,7 @@ public class ObservableFromIterableTest {
         };
         Observable<String> o = Observable.fromIterable(it);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         o.subscribe(NbpObserver);
         
@@ -98,7 +98,7 @@ public class ObservableFromIterableTest {
     public void testObservableFromIterable() {
         Observable<String> o = Observable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         o.subscribe(NbpObserver);
         

@@ -23,7 +23,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
@@ -39,7 +38,7 @@ public class ObservableDebounceTest {
     @Before
     public void before() {
         scheduler = new TestScheduler();
-        NbpObserver = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
         innerScheduler = scheduler.createWorker();
     }
 
@@ -164,7 +163,7 @@ public class ObservableDebounceTest {
             }
         };
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.debounce(debounceSel).subscribe(o);
@@ -200,7 +199,7 @@ public class ObservableDebounceTest {
             }
         };
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         source.debounce(debounceSel).subscribe(o);
 
@@ -222,7 +221,7 @@ public class ObservableDebounceTest {
             }
         };
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         source.debounce(debounceSel).subscribe(o);
 
@@ -236,7 +235,7 @@ public class ObservableDebounceTest {
     public void debounceTimedLastIsNotLost() {
         PublishSubject<Integer> source = PublishSubject.create();
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         source.debounce(100, TimeUnit.MILLISECONDS, scheduler).subscribe(o);
         
@@ -262,7 +261,7 @@ public class ObservableDebounceTest {
             }
         };
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         source.debounce(debounceSel).subscribe(o);
         

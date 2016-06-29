@@ -22,7 +22,6 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.observers.TestObserver;
 
 public class ObservableSkipTest {
@@ -32,7 +31,7 @@ public class ObservableSkipTest {
 
         Observable<String> skip = Observable.just("one", "two", "three").skip(-99);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         skip.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, times(1)).onNext("two");
@@ -46,7 +45,7 @@ public class ObservableSkipTest {
 
         Observable<String> skip = Observable.just("one", "two", "three").skip(0);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         skip.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, times(1)).onNext("two");
@@ -60,7 +59,7 @@ public class ObservableSkipTest {
 
         Observable<String> skip = Observable.just("one", "two", "three").skip(1);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         skip.subscribe(NbpObserver);
         verify(NbpObserver, never()).onNext("one");
         verify(NbpObserver, times(1)).onNext("two");
@@ -74,7 +73,7 @@ public class ObservableSkipTest {
 
         Observable<String> skip = Observable.just("one", "two", "three").skip(2);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         skip.subscribe(NbpObserver);
         verify(NbpObserver, never()).onNext("one");
         verify(NbpObserver, never()).onNext("two");
@@ -89,7 +88,7 @@ public class ObservableSkipTest {
         Observable<String> w = Observable.empty();
         Observable<String> skip = w.skip(1);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         skip.subscribe(NbpObserver);
         verify(NbpObserver, never()).onNext(any(String.class));
         verify(NbpObserver, never()).onError(any(Throwable.class));
@@ -102,10 +101,10 @@ public class ObservableSkipTest {
         Observable<String> skip = Observable.just("one", "two", "three")
                 .skip(2);
 
-        Observer<String> observer1 = TestHelper.mockNbpSubscriber();
+        Observer<String> observer1 = TestHelper.mockObserver();
         skip.subscribe(observer1);
 
-        Observer<String> observer2 = TestHelper.mockNbpSubscriber();
+        Observer<String> observer2 = TestHelper.mockObserver();
         skip.subscribe(observer2);
 
         verify(observer1, times(1)).onNext(any(String.class));
@@ -127,7 +126,7 @@ public class ObservableSkipTest {
 
         Observable<String> skip = Observable.concat(ok, error).skip(100);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         skip.subscribe(NbpObserver);
 
         verify(NbpObserver, never()).onNext(any(String.class));

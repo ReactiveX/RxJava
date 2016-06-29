@@ -18,7 +18,6 @@ import static org.mockito.Mockito.*;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 
 public class ObservableFinallyTest {
 
@@ -29,7 +28,7 @@ public class ObservableFinallyTest {
     @Before
     public void before() {
         aAction0 = mock(Runnable.class);
-        NbpObserver = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
     }
 
     private void checkActionCalled(Observable<String> input) {

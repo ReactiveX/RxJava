@@ -25,12 +25,11 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
@@ -59,7 +58,7 @@ public class ObservableRetryWithPredicateTest {
     public void testWithNothingToRetry() {
         Observable<Integer> source = Observable.range(0, 3);
         
-        Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
         
         source.retry(retryTwice).subscribe(o);
@@ -227,7 +226,7 @@ public class ObservableRetryWithPredicateTest {
     @Test(timeout = 10000)
     public void testUnsubscribeAfterError() {
 
-        Observer<Long> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Long> NbpObserver = TestHelper.mockObserver();
 
         // NbpObservable that always fails after 100ms
         ObservableRetryTest.SlowObservable so = new ObservableRetryTest.SlowObservable(100, 0);
@@ -253,7 +252,7 @@ public class ObservableRetryWithPredicateTest {
     @Test(timeout = 10000)
     public void testTimeoutWithRetry() {
 
-        Observer<Long> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Long> NbpObserver = TestHelper.mockObserver();
 
         // NbpObservable that sends every 100ms (timeout fails instead)
         ObservableRetryTest.SlowObservable so = new ObservableRetryTest.SlowObservable(100, 10);

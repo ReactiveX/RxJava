@@ -24,7 +24,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
@@ -47,7 +46,7 @@ public class ObservableTimeoutTests {
 
     @Test
     public void shouldNotTimeoutIfOnNextWithinTimeout() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         
         withTimeout.subscribe(ts);
@@ -62,7 +61,7 @@ public class ObservableTimeoutTests {
 
     @Test
     public void shouldNotTimeoutIfSecondOnNextWithinTimeout() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         
         withTimeout.subscribe(ts);
@@ -79,7 +78,7 @@ public class ObservableTimeoutTests {
 
     @Test
     public void shouldTimeoutIfOnNextNotWithinTimeout() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         
         withTimeout.subscribe(ts);
@@ -91,7 +90,7 @@ public class ObservableTimeoutTests {
 
     @Test
     public void shouldTimeoutIfSecondOnNextNotWithinTimeout() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         withTimeout.subscribe(NbpObserver);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -104,7 +103,7 @@ public class ObservableTimeoutTests {
 
     @Test
     public void shouldCompleteIfUnderlyingComletes() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         withTimeout.subscribe(NbpObserver);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -117,7 +116,7 @@ public class ObservableTimeoutTests {
 
     @Test
     public void shouldErrorIfUnderlyingErrors() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         withTimeout.subscribe(NbpObserver);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -132,7 +131,7 @@ public class ObservableTimeoutTests {
         Observable<String> other = Observable.just("a", "b", "c");
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         source.subscribe(ts);
 
@@ -155,7 +154,7 @@ public class ObservableTimeoutTests {
         Observable<String> other = Observable.just("a", "b", "c");
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         source.subscribe(ts);
 
@@ -178,7 +177,7 @@ public class ObservableTimeoutTests {
         Observable<String> other = Observable.just("a", "b", "c");
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         source.subscribe(ts);
 
@@ -201,7 +200,7 @@ public class ObservableTimeoutTests {
         PublishSubject<String> other = PublishSubject.create();
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         source.subscribe(ts);
 
@@ -232,7 +231,7 @@ public class ObservableTimeoutTests {
         final CountDownLatch exit = new CountDownLatch(1);
         final CountDownLatch timeoutSetuped = new CountDownLatch(1);
 
-        final Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        final Observer<String> NbpObserver = TestHelper.mockObserver();
         final TestObserver<String> ts = new TestObserver<String>(NbpObserver);
 
         new Thread(new Runnable() {
@@ -284,7 +283,7 @@ public class ObservableTimeoutTests {
         TestScheduler testScheduler = new TestScheduler();
         Observable<String> observableWithTimeout = never.timeout(1000, TimeUnit.MILLISECONDS, testScheduler);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         observableWithTimeout.subscribe(ts);
 
@@ -315,7 +314,7 @@ public class ObservableTimeoutTests {
         Observable<String> observableWithTimeout = immediatelyComplete.timeout(1000, TimeUnit.MILLISECONDS,
                 testScheduler);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         observableWithTimeout.subscribe(ts);
 
@@ -346,7 +345,7 @@ public class ObservableTimeoutTests {
         Observable<String> observableWithTimeout = immediatelyError.timeout(1000, TimeUnit.MILLISECONDS,
                 testScheduler);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         observableWithTimeout.subscribe(ts);
 

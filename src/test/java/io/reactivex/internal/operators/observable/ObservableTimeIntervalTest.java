@@ -21,7 +21,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 
@@ -37,7 +36,7 @@ public class ObservableTimeIntervalTest {
 
     @Before
     public void setUp() {
-        NbpObserver = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
         testScheduler = new TestScheduler();
         subject = PublishSubject.create();
         NbpObservable = subject.timeInterval(testScheduler);

@@ -23,7 +23,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
@@ -35,7 +34,7 @@ public class ObservableTakeLastTest {
         Observable<String> w = Observable.empty();
         Observable<String> take = w.takeLast(2);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         take.subscribe(NbpObserver);
         verify(NbpObserver, never()).onNext(any(String.class));
         verify(NbpObserver, never()).onError(any(Throwable.class));
@@ -47,7 +46,7 @@ public class ObservableTakeLastTest {
         Observable<String> w = Observable.just("one", "two", "three");
         Observable<String> take = w.takeLast(2);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         InOrder inOrder = inOrder(NbpObserver);
         take.subscribe(NbpObserver);
         inOrder.verify(NbpObserver, times(1)).onNext("two");
@@ -62,7 +61,7 @@ public class ObservableTakeLastTest {
         Observable<String> w = Observable.just("one");
         Observable<String> take = w.takeLast(10);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         take.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, never()).onError(any(Throwable.class));
@@ -74,7 +73,7 @@ public class ObservableTakeLastTest {
         Observable<String> w = Observable.just("one");
         Observable<String> take = w.takeLast(0);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         take.subscribe(NbpObserver);
         verify(NbpObserver, never()).onNext("one");
         verify(NbpObserver, never()).onError(any(Throwable.class));
@@ -87,7 +86,7 @@ public class ObservableTakeLastTest {
         Observable<String> w = Observable.just("one", null, "three");
         Observable<String> take = w.takeLast(2);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         take.subscribe(NbpObserver);
         verify(NbpObserver, never()).onNext("one");
         verify(NbpObserver, times(1)).onNext(null);

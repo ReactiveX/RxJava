@@ -20,9 +20,8 @@ import static org.mockito.Mockito.*;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.processors.*;

@@ -23,11 +23,10 @@ import java.util.concurrent.*;
 import org.junit.*;
 import org.mockito.InOrder;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
 
@@ -37,7 +36,7 @@ public class ObservableMergeDelayErrorTest {
 
     @Before
     public void before() {
-        stringObserver = TestHelper.mockNbpSubscriber();
+        stringObserver = TestHelper.mockObserver();
     }
 
     @Test
@@ -450,7 +449,7 @@ public class ObservableMergeDelayErrorTest {
         
         Observable<Integer> result = Observable.mergeDelayError(source, Observable.just(2));
         
-        final Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        final Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
         
         result.unsafeSubscribe(new DefaultObserver<Integer>() {
@@ -516,7 +515,7 @@ public class ObservableMergeDelayErrorTest {
                 }
             });
     
-            Observer<String> stringObserver = TestHelper.mockNbpSubscriber();
+            Observer<String> stringObserver = TestHelper.mockObserver();
             
             TestObserver<String> ts = new TestObserver<String>(stringObserver);
             Observable<String> m = Observable.mergeDelayError(parentObservable);

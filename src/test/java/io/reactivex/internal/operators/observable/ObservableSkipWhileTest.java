@@ -20,12 +20,11 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Predicate;
 
 public class ObservableSkipWhileTest {
 
-    Observer<Integer> w = TestHelper.mockNbpSubscriber();
+    Observer<Integer> w = TestHelper.mockObserver();
 
     private static final Predicate<Integer> LESS_THAN_FIVE = new Predicate<Integer>() {
         @Override
@@ -117,7 +116,7 @@ public class ObservableSkipWhileTest {
         Observable<Integer> src = Observable.range(1, 10).skipWhile(LESS_THAN_FIVE);
         int n = 5;
         for (int i = 0; i < n; i++) {
-            Observer<Object> o = TestHelper.mockNbpSubscriber();
+            Observer<Object> o = TestHelper.mockObserver();
             InOrder inOrder = inOrder(o);
             
             src.subscribe(o);

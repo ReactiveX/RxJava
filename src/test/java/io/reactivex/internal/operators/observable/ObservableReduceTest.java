@@ -21,7 +21,6 @@ import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 
 public class ObservableReduceTest {
@@ -29,7 +28,7 @@ public class ObservableReduceTest {
 
     @Before
     public void before() {
-        NbpObserver = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
     }
 
     BiFunction<Integer, Integer, Integer> sum = new BiFunction<Integer, Integer, Integer>() {

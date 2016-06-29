@@ -27,7 +27,6 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
@@ -41,7 +40,7 @@ public class ObservableTakeTest {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Observable<String> take = w.take(2);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         take.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, times(1)).onNext("two");
@@ -55,7 +54,7 @@ public class ObservableTakeTest {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Observable<String> take = w.take(1);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         take.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, never()).onNext("two");
@@ -85,7 +84,7 @@ public class ObservableTakeTest {
             }
         });
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         w.subscribe(NbpObserver);
         InOrder inOrder = inOrder(NbpObserver);
         inOrder.verify(NbpObserver, times(1)).onError(any(IllegalArgumentException.class));
@@ -101,7 +100,7 @@ public class ObservableTakeTest {
             }
         });
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         w.subscribe(NbpObserver);
         InOrder inOrder = inOrder(NbpObserver);
         inOrder.verify(NbpObserver, times(1)).onError(any(IllegalArgumentException.class));
@@ -119,7 +118,7 @@ public class ObservableTakeTest {
             }
         });
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         source.take(1).subscribe(NbpObserver);
 
@@ -145,7 +144,7 @@ public class ObservableTakeTest {
             }
         });
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         source.take(0).subscribe(NbpObserver);
         assertTrue("source subscribed", subscribed.get());
@@ -163,7 +162,7 @@ public class ObservableTakeTest {
         TestObservableFunc f = new TestObservableFunc("one", "two", "three");
         Observable<String> w = Observable.create(f);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         
         Observable<String> take = w.take(1);
         take.subscribe(NbpObserver);
@@ -283,7 +282,7 @@ public class ObservableTakeTest {
     
     @Test(timeout = 2000)
     public void testTakeObserveOn() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         TestObserver<Object> ts = new TestObserver<Object>(o);
         
         INFINITE_OBSERVABLE

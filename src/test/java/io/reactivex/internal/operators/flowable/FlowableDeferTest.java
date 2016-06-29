@@ -19,9 +19,8 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Supplier;
 import io.reactivex.subscribers.DefaultObserver;
 

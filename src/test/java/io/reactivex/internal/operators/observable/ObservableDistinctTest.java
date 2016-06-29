@@ -20,7 +20,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
 
 public class ObservableDistinctTest {
@@ -40,7 +39,7 @@ public class ObservableDistinctTest {
 
     @Before
     public void before() {
-        w = TestHelper.mockNbpSubscriber();
+        w = TestHelper.mockObserver();
     }
 
     @Test

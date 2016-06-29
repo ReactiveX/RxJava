@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Predicate;
 import io.reactivex.observers.TestObserver;
 ;
@@ -28,7 +27,7 @@ import io.reactivex.observers.TestObserver;
 public class ObservableTakeUntilPredicateTest {
     @Test
     public void takeEmpty() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         Observable.empty().takeUntil(new Predicate<Object>() {
             @Override
@@ -43,7 +42,7 @@ public class ObservableTakeUntilPredicateTest {
     }
     @Test
     public void takeAll() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         Observable.just(1, 2).takeUntil(new Predicate<Integer>() {
             @Override
@@ -59,7 +58,7 @@ public class ObservableTakeUntilPredicateTest {
     }
     @Test
     public void takeFirst() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         Observable.just(1, 2).takeUntil(new Predicate<Integer>() {
             @Override
@@ -75,7 +74,7 @@ public class ObservableTakeUntilPredicateTest {
     }
     @Test
     public void takeSome() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         Observable.just(1, 2, 3).takeUntil(new Predicate<Integer>() {
             @Override
@@ -93,7 +92,7 @@ public class ObservableTakeUntilPredicateTest {
     }
     @Test
     public void functionThrows() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         Predicate<Integer> predicate = (new Predicate<Integer>() {
             @Override
@@ -111,7 +110,7 @@ public class ObservableTakeUntilPredicateTest {
     }
     @Test
     public void sourceThrows() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         Observable.just(1)
         .concatWith(Observable.<Integer>error(new TestException()))

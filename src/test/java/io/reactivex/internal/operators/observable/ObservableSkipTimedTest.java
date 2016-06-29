@@ -23,7 +23,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 
@@ -37,7 +36,7 @@ public class ObservableSkipTimedTest {
 
         Observable<Integer> result = source.skip(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -74,7 +73,7 @@ public class ObservableSkipTimedTest {
 
         Observable<Integer> result = source.skip(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -101,7 +100,7 @@ public class ObservableSkipTimedTest {
 
         Observable<Integer> result = source.skip(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -128,7 +127,7 @@ public class ObservableSkipTimedTest {
 
         Observable<Integer> result = source.skip(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 

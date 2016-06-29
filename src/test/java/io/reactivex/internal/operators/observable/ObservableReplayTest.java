@@ -24,13 +24,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 import org.mockito.InOrder;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.operators.observable.ObservableReplay.*;
@@ -48,7 +47,7 @@ public class ObservableReplayTest {
         co.connect();
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -71,7 +70,7 @@ public class ObservableReplayTest {
         }
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -93,7 +92,7 @@ public class ObservableReplayTest {
         co.connect();
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -123,7 +122,7 @@ public class ObservableReplayTest {
         }
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -145,7 +144,7 @@ public class ObservableReplayTest {
         co.connect();
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -169,7 +168,7 @@ public class ObservableReplayTest {
 
         }
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -206,7 +205,7 @@ public class ObservableReplayTest {
         Observable<Integer> co = source.replay(selector);
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -229,7 +228,7 @@ public class ObservableReplayTest {
         }
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -268,7 +267,7 @@ public class ObservableReplayTest {
         Observable<Integer> co = source.replay(selector, 3);
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -291,7 +290,7 @@ public class ObservableReplayTest {
         }
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -330,7 +329,7 @@ public class ObservableReplayTest {
         Observable<Integer> co = source.replay(selector, 100, TimeUnit.MILLISECONDS, scheduler);
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -354,7 +353,7 @@ public class ObservableReplayTest {
 
         }
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -373,7 +372,7 @@ public class ObservableReplayTest {
         co.connect();
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -397,7 +396,7 @@ public class ObservableReplayTest {
         }
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -421,7 +420,7 @@ public class ObservableReplayTest {
         co.connect();
 
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -445,7 +444,7 @@ public class ObservableReplayTest {
 
         }
         {
-            Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+            Observer<Object> observer1 = TestHelper.mockObserver();
             InOrder inOrder = inOrder(observer1);
 
             co.subscribe(observer1);
@@ -515,8 +514,8 @@ public class ObservableReplayTest {
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Runnable sourceCompleted = mock(Runnable.class);
         Runnable sourceUnsubscribed = mock(Runnable.class);
-        Observer<Integer> spiedSubscriberBeforeConnect = TestHelper.mockNbpSubscriber();
-        Observer<Integer> spiedSubscriberAfterConnect = TestHelper.mockNbpSubscriber();
+        Observer<Integer> spiedSubscriberBeforeConnect = TestHelper.mockObserver();
+        Observer<Integer> spiedSubscriberAfterConnect = TestHelper.mockObserver();
 
         // NbpObservable under test
         Observable<Integer> source = Observable.just(1,2);
@@ -567,8 +566,8 @@ public class ObservableReplayTest {
         Runnable sourceUnsubscribed = mock(Runnable.class);
         final TestScheduler mockScheduler = Schedulers.test();
         
-        Observer<Integer> mockObserverBeforeConnect = TestHelper.mockNbpSubscriber();
-        Observer<Integer> mockObserverAfterConnect = TestHelper.mockNbpSubscriber();
+        Observer<Integer> mockObserverBeforeConnect = TestHelper.mockObserver();
+        Observer<Integer> mockObserverAfterConnect = TestHelper.mockObserver();
 
         // NbpObservable under test
         ConnectableObservable<Integer> replay = Observable.just(1, 2, 3)
@@ -620,8 +619,8 @@ public class ObservableReplayTest {
         Consumer<Throwable> sourceError = mock(Consumer.class);
         Runnable sourceUnsubscribed = mock(Runnable.class);
         final TestScheduler mockScheduler = new TestScheduler();
-        Observer<Integer> mockObserverBeforeConnect = TestHelper.mockNbpSubscriber();
-        Observer<Integer> mockObserverAfterConnect = TestHelper.mockNbpSubscriber();
+        Observer<Integer> mockObserverBeforeConnect = TestHelper.mockObserver();
+        Observer<Integer> mockObserverAfterConnect = TestHelper.mockObserver();
 
         // NbpObservable under test
         Function<Integer, Integer> mockFunc = mock(Function.class);

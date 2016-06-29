@@ -24,11 +24,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 import org.mockito.*;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Optional;
-import io.reactivex.Try;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
@@ -38,7 +37,7 @@ public class ObservableCombineLatestTest {
 
     @Test
     public void testCombineLatestWithFunctionThatThrowsAnException() {
-        Observer<String> w = TestHelper.mockNbpSubscriber();
+        Observer<String> w = TestHelper.mockObserver();
 
         PublishSubject<String> w1 = PublishSubject.create();
         PublishSubject<String> w2 = PublishSubject.create();
@@ -61,7 +60,7 @@ public class ObservableCombineLatestTest {
 
     @Test
     public void testCombineLatestDifferentLengthObservableSequences1() {
-        Observer<String> w = TestHelper.mockNbpSubscriber();
+        Observer<String> w = TestHelper.mockObserver();
 
         PublishSubject<String> w1 = PublishSubject.create();
         PublishSubject<String> w2 = PublishSubject.create();
@@ -99,7 +98,7 @@ public class ObservableCombineLatestTest {
 
     @Test
     public void testCombineLatestDifferentLengthObservableSequences2() {
-        Observer<String> w = TestHelper.mockNbpSubscriber();
+        Observer<String> w = TestHelper.mockObserver();
 
         PublishSubject<String> w1 = PublishSubject.create();
         PublishSubject<String> w2 = PublishSubject.create();
@@ -134,7 +133,7 @@ public class ObservableCombineLatestTest {
 
     @Test
     public void testCombineLatestWithInterleavingSequences() {
-        Observer<String> w = TestHelper.mockNbpSubscriber();
+        Observer<String> w = TestHelper.mockObserver();
 
         PublishSubject<String> w1 = PublishSubject.create();
         PublishSubject<String> w2 = PublishSubject.create();
@@ -175,7 +174,7 @@ public class ObservableCombineLatestTest {
         BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
         /* define a NbpObserver to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable<String> w = Observable.combineLatest(Observable.just("one", "two"), Observable.just(2, 3, 4), combineLatestFunction);
         w.subscribe(NbpObserver);
@@ -192,7 +191,7 @@ public class ObservableCombineLatestTest {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define a NbpObserver to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable<String> w = Observable.combineLatest(Observable.just("one", "two"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }), combineLatestFunction);
         w.subscribe(NbpObserver);
@@ -207,7 +206,7 @@ public class ObservableCombineLatestTest {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define a NbpObserver to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable<String> w = Observable.combineLatest(Observable.just("one"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);
         w.subscribe(NbpObserver);
@@ -282,7 +281,7 @@ public class ObservableCombineLatestTest {
 
         Observable<Integer> source = Observable.combineLatest(a, b, or);
 
-        Observer<Object> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Object> NbpObserver = TestHelper.mockObserver();
         InOrder inOrder = inOrder(NbpObserver);
 
         source.subscribe(NbpObserver);
@@ -326,9 +325,9 @@ public class ObservableCombineLatestTest {
 
         Observable<Integer> source = Observable.combineLatest(a, b, or);
 
-        Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
+        Observer<Object> observer1 = TestHelper.mockObserver();
 
-        Observer<Object> observer2 = TestHelper.mockNbpSubscriber();
+        Observer<Object> observer2 = TestHelper.mockObserver();
 
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
@@ -383,7 +382,7 @@ public class ObservableCombineLatestTest {
 
         Observable<Integer> source = Observable.combineLatest(a, b, or);
 
-        Observer<Object> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Object> NbpObserver = TestHelper.mockObserver();
         InOrder inOrder = inOrder(NbpObserver);
 
         source.subscribe(NbpObserver);
@@ -405,7 +404,7 @@ public class ObservableCombineLatestTest {
 
         Observable<Integer> source = Observable.combineLatest(a, b, or);
 
-        Observer<Object> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Object> NbpObserver = TestHelper.mockObserver();
         InOrder inOrder = inOrder(NbpObserver);
 
         source.subscribe(NbpObserver);
@@ -446,7 +445,7 @@ public class ObservableCombineLatestTest {
 
             Observable<List<Object>> result = Observable.combineLatest(sources, func);
 
-            Observer<List<Object>> o = TestHelper.mockNbpSubscriber();
+            Observer<List<Object>> o = TestHelper.mockObserver();
 
             result.subscribe(o);
 
@@ -477,7 +476,7 @@ public class ObservableCombineLatestTest {
 
             Observable<List<Object>> result = Observable.combineLatest(sources, func);
 
-            final Observer<List<Object>> o = TestHelper.mockNbpSubscriber();
+            final Observer<List<Object>> o = TestHelper.mockObserver();
 
             final CountDownLatch cdl = new CountDownLatch(1);
 
@@ -524,7 +523,7 @@ public class ObservableCombineLatestTest {
                     }
                 });
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -547,7 +546,7 @@ public class ObservableCombineLatestTest {
             }
         });
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -571,7 +570,7 @@ public class ObservableCombineLatestTest {
                     }
                 });
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -596,7 +595,7 @@ public class ObservableCombineLatestTest {
                     }
                 });
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -622,7 +621,7 @@ public class ObservableCombineLatestTest {
                     }
                 });
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -649,7 +648,7 @@ public class ObservableCombineLatestTest {
                     }
                 });
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -677,7 +676,7 @@ public class ObservableCombineLatestTest {
                     }
                 });
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -706,7 +705,7 @@ public class ObservableCombineLatestTest {
                     }
                 });
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -727,7 +726,7 @@ public class ObservableCombineLatestTest {
 
         });
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 

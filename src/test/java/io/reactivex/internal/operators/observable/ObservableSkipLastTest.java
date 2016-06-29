@@ -23,7 +23,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -33,7 +32,7 @@ public class ObservableSkipLastTest {
     public void testSkipLastEmpty() {
         Observable<String> o = Observable.<String> empty().skipLast(2);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
         verify(NbpObserver, never()).onNext(any(String.class));
         verify(NbpObserver, never()).onError(any(Throwable.class));
@@ -44,7 +43,7 @@ public class ObservableSkipLastTest {
     public void testSkipLast1() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two", "three")).skipLast(2);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         InOrder inOrder = inOrder(NbpObserver);
         o.subscribe(NbpObserver);
         inOrder.verify(NbpObserver, never()).onNext("two");
@@ -58,7 +57,7 @@ public class ObservableSkipLastTest {
     public void testSkipLast2() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two")).skipLast(2);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
         verify(NbpObserver, never()).onNext(any(String.class));
         verify(NbpObserver, never()).onError(any(Throwable.class));
@@ -70,7 +69,7 @@ public class ObservableSkipLastTest {
         Observable<String> w = Observable.just("one", "two");
         Observable<String> NbpObservable = w.skipLast(0);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, times(1)).onNext("two");
@@ -83,7 +82,7 @@ public class ObservableSkipLastTest {
     public void testSkipLastWithNull() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", null, "two")).skipLast(1);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, times(1)).onNext(null);

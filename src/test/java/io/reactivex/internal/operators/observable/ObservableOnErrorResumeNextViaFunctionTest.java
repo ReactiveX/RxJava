@@ -26,7 +26,6 @@ import org.reactivestreams.Subscription;
 import io.reactivex.*;
 import io.reactivex.Observable.NbpOperator;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
@@ -60,7 +59,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
         };
         Observable<String> NbpObservable = w.onErrorResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         
         NbpObservable.subscribe(NbpObserver);
 
@@ -90,7 +89,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
         };
         Observable<String> o = Observable.create(w).onErrorResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         o.subscribe(NbpObserver);
 

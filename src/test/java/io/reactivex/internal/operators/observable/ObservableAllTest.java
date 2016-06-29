@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 
@@ -33,7 +32,7 @@ public class ObservableAllTest {
     public void testAll() {
         Observable<String> obs = Observable.just("one", "two", "six");
 
-        Observer <Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer <Boolean> NbpObserver = TestHelper.mockObserver();
         
         obs.all(new Predicate<String>() {
             @Override
@@ -53,7 +52,7 @@ public class ObservableAllTest {
     public void testNotAll() {
         Observable<String> obs = Observable.just("one", "two", "three", "six");
 
-        Observer <Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer <Boolean> NbpObserver = TestHelper.mockObserver();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -73,7 +72,7 @@ public class ObservableAllTest {
     public void testEmpty() {
         Observable<String> obs = Observable.empty();
 
-        Observer <Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer <Boolean> NbpObserver = TestHelper.mockObserver();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -94,7 +93,7 @@ public class ObservableAllTest {
         Throwable error = new Throwable();
         Observable<String> obs = Observable.error(error);
 
-        Observer <Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer <Boolean> NbpObserver = TestHelper.mockObserver();
 
         obs.all(new Predicate<String>() {
             @Override

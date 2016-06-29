@@ -27,7 +27,6 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
@@ -42,7 +41,7 @@ public class ObservableBufferTest {
 
     @Before
     public void before() {
-        NbpObserver = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
     }
@@ -340,7 +339,7 @@ public class ObservableBufferTest {
     public void testBufferStopsWhenUnsubscribed1() {
         Observable<Integer> source = Observable.never();
 
-        Observer<List<Integer>> o = TestHelper.mockNbpSubscriber();
+        Observer<List<Integer>> o = TestHelper.mockObserver();
         TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>(o);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
@@ -370,7 +369,7 @@ public class ObservableBufferTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = Mockito.inOrder(o);
 
         source.buffer(boundary).subscribe(o);
@@ -405,7 +404,7 @@ public class ObservableBufferTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = Mockito.inOrder(o);
 
         source.buffer(boundary).subscribe(o);
@@ -424,7 +423,7 @@ public class ObservableBufferTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = Mockito.inOrder(o);
 
         source.buffer(boundary).subscribe(o);
@@ -443,7 +442,7 @@ public class ObservableBufferTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = Mockito.inOrder(o);
 
         source.buffer(boundary).subscribe(o);
@@ -463,7 +462,7 @@ public class ObservableBufferTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         source.buffer(boundary).subscribe(o);
         source.onNext(1);
@@ -479,7 +478,7 @@ public class ObservableBufferTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         source.buffer(boundary).subscribe(o);
 
@@ -496,7 +495,7 @@ public class ObservableBufferTest {
         
         Observable<List<Integer>> result = source.buffer(2).take(1);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         result.subscribe(o);
         
@@ -511,7 +510,7 @@ public class ObservableBufferTest {
         
         Observable<List<Integer>> result = source.buffer(2, 3).take(1);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         result.subscribe(o);
         
@@ -525,7 +524,7 @@ public class ObservableBufferTest {
         
         Observable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler).take(1);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         result.subscribe(o);
         
@@ -541,7 +540,7 @@ public class ObservableBufferTest {
         
         Observable<List<Long>> result = source.buffer(100, 60, TimeUnit.MILLISECONDS, scheduler).take(2);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
         
         result.subscribe(o);
@@ -560,7 +559,7 @@ public class ObservableBufferTest {
         
         Observable<List<Long>> result = source.buffer(boundary).take(2);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
         
         result.subscribe(o);
@@ -588,7 +587,7 @@ public class ObservableBufferTest {
         
         Observable<List<Long>> result = source.buffer(start, end).take(2);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
         
         result
@@ -613,7 +612,7 @@ public class ObservableBufferTest {
         
         Observable<List<Integer>> result = source.buffer(2);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         InOrder inOrder = inOrder(o);
         
@@ -638,7 +637,7 @@ public class ObservableBufferTest {
         
         Observable<List<Integer>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
         
         result.subscribe(o);
@@ -664,7 +663,7 @@ public class ObservableBufferTest {
         
         Observable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, 2, scheduler).take(3);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
         
         result.subscribe(o);
@@ -691,7 +690,7 @@ public class ObservableBufferTest {
 
         Observable<List<Integer>> result = source.buffer(start, end);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         result.subscribe(o);
         
@@ -719,7 +718,7 @@ public class ObservableBufferTest {
 
         Observable<List<Integer>> result = source.buffer(start, end);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         result.subscribe(o);
         
@@ -746,7 +745,7 @@ public class ObservableBufferTest {
 
         Observable<List<Integer>> result = source.buffer(start, end);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         result.subscribe(o);
         
@@ -761,7 +760,7 @@ public class ObservableBufferTest {
 
     @Test(timeout = 3000)
     public void testBufferWithTimeDoesntUnsubscribeDownstream() throws InterruptedException {
-        final Observer<Object> o = TestHelper.mockNbpSubscriber();
+        final Observer<Object> o = TestHelper.mockObserver();
         
         final CountDownLatch cdl = new CountDownLatch(1);
         AsyncObserver<Object> s = new AsyncObserver<Object>() {
