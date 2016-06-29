@@ -33,7 +33,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.operators.observable.NbpOperatorReplay.*;
+import io.reactivex.internal.operators.observable.ObservableReplay.*;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
