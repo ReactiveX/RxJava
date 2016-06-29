@@ -23,7 +23,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 
@@ -38,7 +37,7 @@ public class ObservableSkipLastTimedTest {
         // FIXME the timeunit now matters due to rounding
         Observable<Integer> result = source.skipLast(1000, TimeUnit.MILLISECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -76,7 +75,7 @@ public class ObservableSkipLastTimedTest {
 
         Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -101,7 +100,7 @@ public class ObservableSkipLastTimedTest {
 
         Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 
@@ -129,7 +128,7 @@ public class ObservableSkipLastTimedTest {
 
         Observable<Integer> result = source.skipLast(1, TimeUnit.MILLISECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 

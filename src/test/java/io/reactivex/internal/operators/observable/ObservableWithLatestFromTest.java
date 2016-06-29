@@ -22,7 +22,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
@@ -45,7 +44,7 @@ public class ObservableWithLatestFromTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
         
-        Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
         
         Observable<Integer> result = source.withLatestFrom(other, COMBINER);

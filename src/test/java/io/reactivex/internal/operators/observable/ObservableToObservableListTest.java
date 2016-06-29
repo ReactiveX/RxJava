@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.TestHelper;
 
 public class ObservableToObservableListTest {
 
@@ -33,7 +33,7 @@ public class ObservableToObservableListTest {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Observable<List<String>> NbpObservable = w.toList();
 
-        Observer<List<String>> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<List<String>> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext(Arrays.asList("one", "two", "three"));
         verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
@@ -45,7 +45,7 @@ public class ObservableToObservableListTest {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Observable<List<String>> NbpObservable = w.toList();
 
-        Observer<List<String>> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<List<String>> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext(Arrays.asList("one", "two", "three"));
         verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
@@ -57,10 +57,10 @@ public class ObservableToObservableListTest {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Observable<List<String>> NbpObservable = w.toList();
 
-        Observer<List<String>> o1 = TestHelper.mockNbpSubscriber();
+        Observer<List<String>> o1 = TestHelper.mockObserver();
         NbpObservable.subscribe(o1);
 
-        Observer<List<String>> o2 = TestHelper.mockNbpSubscriber();
+        Observer<List<String>> o2 = TestHelper.mockObserver();
         NbpObservable.subscribe(o2);
 
         List<String> expected = Arrays.asList("one", "two", "three");
@@ -80,7 +80,7 @@ public class ObservableToObservableListTest {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", null, "three"));
         Observable<List<String>> NbpObservable = w.toList();
 
-        Observer<List<String>> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<List<String>> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext(Arrays.asList("one", null, "three"));
         verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));

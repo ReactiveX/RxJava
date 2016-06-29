@@ -19,8 +19,7 @@ import static org.mockito.Mockito.*;
 import org.junit.*;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.Flowable;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.*;
 import io.reactivex.processors.PublishProcessor;
 
 public class FlowableSkipUntilTest {

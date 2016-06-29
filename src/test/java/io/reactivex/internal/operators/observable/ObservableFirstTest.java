@@ -22,7 +22,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Predicate;
 
 public class ObservableFirstTest {
@@ -38,7 +37,7 @@ public class ObservableFirstTest {
 
     @Before
     public void before() {
-        w = TestHelper.mockNbpSubscriber();
+        w = TestHelper.mockObserver();
     }
 
     @Test
@@ -89,7 +88,7 @@ public class ObservableFirstTest {
     public void testFirst() {
         Observable<Integer> o = Observable.just(1, 2, 3).first();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -102,7 +101,7 @@ public class ObservableFirstTest {
     public void testFirstWithOneElement() {
         Observable<Integer> o = Observable.just(1).first();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -115,7 +114,7 @@ public class ObservableFirstTest {
     public void testFirstWithEmpty() {
         Observable<Integer> o = Observable.<Integer> empty().first();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -135,7 +134,7 @@ public class ObservableFirstTest {
                 })
                 .first();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -155,7 +154,7 @@ public class ObservableFirstTest {
                 })
                 .first();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -175,7 +174,7 @@ public class ObservableFirstTest {
                 })
                 .first();
         
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -189,7 +188,7 @@ public class ObservableFirstTest {
         Observable<Integer> o = Observable.just(1, 2, 3)
                 .first(4);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -202,7 +201,7 @@ public class ObservableFirstTest {
     public void testFirstOrDefaultWithOneElement() {
         Observable<Integer> o = Observable.just(1).first(2);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -216,7 +215,7 @@ public class ObservableFirstTest {
         Observable<Integer> o = Observable.<Integer> empty()
                 .first(1);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -236,7 +235,7 @@ public class ObservableFirstTest {
                 })
                 .first(8);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -256,7 +255,7 @@ public class ObservableFirstTest {
                 })
                 .first(4);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -276,7 +275,7 @@ public class ObservableFirstTest {
                 })
                 .first(2);
         
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);

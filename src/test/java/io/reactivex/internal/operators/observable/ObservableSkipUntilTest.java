@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableSkipUntilTest {
@@ -27,7 +26,7 @@ public class ObservableSkipUntilTest {
 
     @Before
     public void before() {
-        NbpObserver = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
     }
 
     @Test

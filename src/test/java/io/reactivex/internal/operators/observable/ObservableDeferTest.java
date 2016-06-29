@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Supplier;
 import io.reactivex.observers.DefaultObserver;
 
@@ -40,7 +39,7 @@ public class ObservableDeferTest {
 
         verifyZeroInteractions(factory);
 
-        Observer<String> firstObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> firstObserver = TestHelper.mockObserver();
         deferred.subscribe(firstObserver);
 
         verify(factory, times(1)).get();
@@ -50,7 +49,7 @@ public class ObservableDeferTest {
         verify(firstObserver, times(0)).onNext("four");
         verify(firstObserver, times(1)).onComplete();
 
-        Observer<String> secondObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> secondObserver = TestHelper.mockObserver();
         deferred.subscribe(secondObserver);
 
         verify(factory, times(2)).get();

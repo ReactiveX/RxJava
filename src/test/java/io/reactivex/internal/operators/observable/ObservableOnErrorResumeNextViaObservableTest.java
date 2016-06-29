@@ -22,7 +22,6 @@ import org.mockito.Mockito;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
@@ -38,7 +37,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> NbpObservable = w.onErrorResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
 
         try {
@@ -79,7 +78,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
 
         Observable<String> NbpObservable = w.onErrorResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         
         NbpObservable.subscribe(NbpObserver);
 
@@ -112,7 +111,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         Observable<String> resume = Observable.just("resume");
         Observable<String> NbpObservable = testObservable.onErrorResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
 
         verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));

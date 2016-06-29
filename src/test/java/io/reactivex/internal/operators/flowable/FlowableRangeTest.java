@@ -22,8 +22,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.Flowable;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subscribers.DefaultObserver;
 import io.reactivex.subscribers.TestSubscriber;

@@ -23,8 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.subscribers.DefaultObserver;
 

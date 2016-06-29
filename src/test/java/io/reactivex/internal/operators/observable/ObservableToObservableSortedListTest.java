@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.TestHelper;
 
 public class ObservableToObservableSortedListTest {
 
@@ -34,7 +34,7 @@ public class ObservableToObservableSortedListTest {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
         Observable<List<Integer>> NbpObservable = w.toSortedList();
 
-        Observer<List<Integer>> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<List<Integer>> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
         verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
@@ -53,7 +53,7 @@ public class ObservableToObservableSortedListTest {
 
         });
 
-        Observer<List<Integer>> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<List<Integer>> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
         verify(NbpObserver, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
         verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));

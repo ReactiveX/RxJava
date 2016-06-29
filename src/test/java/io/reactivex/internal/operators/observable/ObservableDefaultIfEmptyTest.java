@@ -20,7 +20,6 @@ import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.observers.DefaultObserver;
 
 public class ObservableDefaultIfEmptyTest {
@@ -30,7 +29,7 @@ public class ObservableDefaultIfEmptyTest {
         Observable<Integer> source = Observable.just(1, 2, 3);
         Observable<Integer> NbpObservable = source.defaultIfEmpty(10);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         
@@ -47,7 +46,7 @@ public class ObservableDefaultIfEmptyTest {
         Observable<Integer> source = Observable.empty();
         Observable<Integer> NbpObservable = source.defaultIfEmpty(10);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         
@@ -59,7 +58,7 @@ public class ObservableDefaultIfEmptyTest {
     @Test
     @Ignore("Subscribers should not throw")
     public void testEmptyButClientThrows() {
-        final Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        final Observer<Integer> o = TestHelper.mockObserver();
         
         Observable.<Integer>empty().defaultIfEmpty(1).subscribe(new DefaultObserver<Integer>() {
             @Override

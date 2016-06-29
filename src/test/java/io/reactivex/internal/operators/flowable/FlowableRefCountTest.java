@@ -25,9 +25,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.processors.ReplayProcessor;
 import io.reactivex.schedulers.*;

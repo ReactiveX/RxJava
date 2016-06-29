@@ -29,7 +29,6 @@ import org.mockito.stubbing.Answer;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
@@ -58,7 +57,7 @@ public class ObservableTimeoutWithSelectorTest {
 
         Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
@@ -98,7 +97,7 @@ public class ObservableTimeoutWithSelectorTest {
 
         Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
@@ -132,7 +131,7 @@ public class ObservableTimeoutWithSelectorTest {
 
         Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
@@ -163,7 +162,7 @@ public class ObservableTimeoutWithSelectorTest {
 
         Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
@@ -197,7 +196,7 @@ public class ObservableTimeoutWithSelectorTest {
 
         Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
@@ -228,7 +227,7 @@ public class ObservableTimeoutWithSelectorTest {
 
         Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
@@ -260,7 +259,7 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         source.timeout(firstTimeoutFunc, timeoutFunc).subscribe(o);
 
         timeout.onNext(1);
@@ -289,7 +288,7 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         source.timeout(firstTimeoutFunc, timeoutFunc).subscribe(o);
         source.onNext(1);
 
@@ -355,7 +354,7 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        final Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        final Observer<Integer> o = TestHelper.mockObserver();
         doAnswer(new Answer<Void>() {
 
             @Override

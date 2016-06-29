@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.*;
 
@@ -30,7 +29,7 @@ public class ObservableRangeTest {
 
     @Test
     public void testRangeStartAt2Count3() {
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         
         Observable.range(2, 3).subscribe(NbpObserver);
 
@@ -44,7 +43,7 @@ public class ObservableRangeTest {
 
     @Test
     public void testRangeUnsubscribe() {
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         
         final AtomicInteger count = new AtomicInteger();
         

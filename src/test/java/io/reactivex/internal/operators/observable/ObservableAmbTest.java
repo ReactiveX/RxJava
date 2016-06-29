@@ -25,7 +25,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
@@ -90,7 +89,7 @@ public class ObservableAmbTest {
         Observable<String> o = Observable.amb(observable1,
                 observable2, observable3);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
@@ -119,7 +118,7 @@ public class ObservableAmbTest {
         Observable<String> o = Observable.amb(observable1,
                 observable2, observable3);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
@@ -146,7 +145,7 @@ public class ObservableAmbTest {
         Observable<String> o = Observable.amb(observable1,
                 observable2, observable3);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);

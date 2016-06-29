@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableHideTest {
@@ -33,7 +32,7 @@ public class ObservableHideTest {
         
         assertFalse(dst instanceof PublishSubject);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         dst.subscribe(o);
         
@@ -52,7 +51,7 @@ public class ObservableHideTest {
         
         assertFalse(dst instanceof PublishSubject);
         
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         
         dst.subscribe(o);
         

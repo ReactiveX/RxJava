@@ -22,7 +22,7 @@ import org.junit.*;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 
@@ -40,8 +40,8 @@ public class ObservableMapTest {
 
     @Before
     public void before() {
-        stringObserver = TestHelper.mockNbpSubscriber();
-        stringObserver2 = TestHelper.mockNbpSubscriber();
+        stringObserver = TestHelper.mockObserver();
+        stringObserver2 = TestHelper.mockObserver();
     }
 
     @Test

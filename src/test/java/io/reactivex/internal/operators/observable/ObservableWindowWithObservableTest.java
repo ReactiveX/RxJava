@@ -24,8 +24,8 @@ import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Supplier;
 import io.reactivex.observers.*;
 import io.reactivex.subjects.PublishSubject;
@@ -37,14 +37,14 @@ public class ObservableWindowWithObservableTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
-        final Observer<Object> o = TestHelper.mockNbpSubscriber();
+        final Observer<Object> o = TestHelper.mockObserver();
 
         final List<Observer<Object>> values = new ArrayList<Observer<Object>>();
 
         Observer<Observable<Integer>> wo = new DefaultObserver<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> args) {
-                final Observer<Object> mo = TestHelper.mockNbpSubscriber();
+                final Observer<Object> mo = TestHelper.mockObserver();
                 values.add(mo);
 
                 args.subscribe(mo);
@@ -95,14 +95,14 @@ public class ObservableWindowWithObservableTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
-        final Observer<Object> o = TestHelper.mockNbpSubscriber();
+        final Observer<Object> o = TestHelper.mockObserver();
 
         final List<Observer<Object>> values = new ArrayList<Observer<Object>>();
 
         Observer<Observable<Integer>> wo = new DefaultObserver<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> args) {
-                final Observer<Object> mo = TestHelper.mockNbpSubscriber();
+                final Observer<Object> mo = TestHelper.mockObserver();
                 values.add(mo);
 
                 args.subscribe(mo);
@@ -151,14 +151,14 @@ public class ObservableWindowWithObservableTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
-        final Observer<Object> o = TestHelper.mockNbpSubscriber();
+        final Observer<Object> o = TestHelper.mockObserver();
 
         final List<Observer<Object>> values = new ArrayList<Observer<Object>>();
 
         Observer<Observable<Integer>> wo = new DefaultObserver<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> args) {
-                final Observer<Object> mo = TestHelper.mockNbpSubscriber();
+                final Observer<Object> mo = TestHelper.mockObserver();
                 values.add(mo);
 
                 args.subscribe(mo);
@@ -201,14 +201,14 @@ public class ObservableWindowWithObservableTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
-        final Observer<Object> o = TestHelper.mockNbpSubscriber();
+        final Observer<Object> o = TestHelper.mockObserver();
 
         final List<Observer<Object>> values = new ArrayList<Observer<Object>>();
 
         Observer<Observable<Integer>> wo = new DefaultObserver<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> args) {
-                final Observer<Object> mo = TestHelper.mockNbpSubscriber();
+                final Observer<Object> mo = TestHelper.mockObserver();
                 values.add(mo);
 
                 args.subscribe(mo);

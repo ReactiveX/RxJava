@@ -21,10 +21,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.schedulers.IoScheduler;
 import io.reactivex.observers.TestObserver;
@@ -36,7 +35,7 @@ public class ObservableMergeMaxConcurrentTest {
 
     @Before
     public void before() {
-        stringObserver = TestHelper.mockNbpSubscriber();
+        stringObserver = TestHelper.mockObserver();
     }
 
     @Test

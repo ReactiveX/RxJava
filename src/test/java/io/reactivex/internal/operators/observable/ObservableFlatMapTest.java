@@ -25,9 +25,9 @@ import org.junit.*;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -35,7 +35,7 @@ import io.reactivex.schedulers.Schedulers;
 public class ObservableFlatMapTest {
     @Test
     public void testNormal() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
 
@@ -68,7 +68,7 @@ public class ObservableFlatMapTest {
 
     @Test
     public void testCollectionFunctionThrows() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         Function<Integer, List<Integer>> func = new Function<Integer, List<Integer>>() {
             @Override
@@ -95,7 +95,7 @@ public class ObservableFlatMapTest {
 
     @Test
     public void testResultFunctionThrows() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
 
@@ -124,7 +124,7 @@ public class ObservableFlatMapTest {
 
     @Test
     public void testMergeError() {
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         Function<Integer, Observable<Integer>> func = new Function<Integer, Observable<Integer>>() {
             @Override
@@ -177,7 +177,7 @@ public class ObservableFlatMapTest {
 
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         source.flatMap(just(onNext), just(onError), just0(onCompleted)).subscribe(o);
 
@@ -203,7 +203,7 @@ public class ObservableFlatMapTest {
                 );
         
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         source.flatMap(just(onNext), just(onError), just0(onCompleted)).subscribe(o);
 
@@ -242,7 +242,7 @@ public class ObservableFlatMapTest {
 
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         source.flatMap(funcThrow(1, onError), just(onError), just0(onCompleted)).subscribe(o);
 
@@ -259,7 +259,7 @@ public class ObservableFlatMapTest {
 
         Observable<Integer> source = Observable.error(new TestException());
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onCompleted)).subscribe(o);
 
@@ -276,7 +276,7 @@ public class ObservableFlatMapTest {
 
         Observable<Integer> source = Observable.fromIterable(Arrays.<Integer> asList());
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         source.flatMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(o);
 
@@ -293,7 +293,7 @@ public class ObservableFlatMapTest {
 
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         source.flatMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(o);
 
@@ -410,7 +410,7 @@ public class ObservableFlatMapTest {
 
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         TestObserver<Object> ts = new TestObserver<Object>(o);
 
         Function<Throwable, Observable<Integer>> just = just(onError);

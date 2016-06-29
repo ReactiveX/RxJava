@@ -28,7 +28,6 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Optional;
 import io.reactivex.exceptions.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.processors.PublishProcessor;

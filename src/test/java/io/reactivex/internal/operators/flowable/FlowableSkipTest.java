@@ -24,8 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.Flowable;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.*;
 import io.reactivex.functions.LongConsumer;
 import io.reactivex.subscribers.TestSubscriber;
 

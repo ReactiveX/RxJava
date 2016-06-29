@@ -28,7 +28,6 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
@@ -39,7 +38,7 @@ public class ObservableConcatTest {
 
     @Test
     public void testConcat() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         final String[] o = { "1", "3", "5", "7" };
         final String[] e = { "2", "4", "6" };
@@ -55,7 +54,7 @@ public class ObservableConcatTest {
 
     @Test
     public void testConcatWithList() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         final String[] o = { "1", "3", "5", "7" };
         final String[] e = { "2", "4", "6" };
@@ -73,7 +72,7 @@ public class ObservableConcatTest {
 
     @Test
     public void testConcatObservableOfObservables() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         final String[] o = { "1", "3", "5", "7" };
         final String[] e = { "2", "4", "6" };
@@ -105,7 +104,7 @@ public class ObservableConcatTest {
      */
     @Test
     public void testSimpleAsyncConcat() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
         TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
@@ -145,7 +144,7 @@ public class ObservableConcatTest {
      */
     @Test
     public void testNestedAsyncConcat() throws InterruptedException {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         final TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
         final TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
@@ -263,7 +262,7 @@ public class ObservableConcatTest {
 
     @Test
     public void testBlockedObservableOfObservables() {
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         final String[] o = { "1", "3", "5", "7" };
         final String[] e = { "2", "4", "6" };
@@ -308,7 +307,7 @@ public class ObservableConcatTest {
         //This NbpObservable will send "hello" MAX_VALUE time.
         final TestObservable<String> w2 = new TestObservable<String>("hello", Integer.MAX_VALUE);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         
         @SuppressWarnings("unchecked")
         TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.create(w1), Observable.create(w2));
@@ -342,7 +341,7 @@ public class ObservableConcatTest {
         final TestObservable<String> w1 = new TestObservable<String>(null, okToContinueW1, "one", "two", "three");
         final TestObservable<String> w2 = new TestObservable<String>(null, okToContinueW2, "four", "five", "six");
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         
         Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableConsumable<Observable<String>>() {
 
@@ -393,7 +392,7 @@ public class ObservableConcatTest {
         final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
         final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
 
         final Observable<String> concat = Observable.concat(Observable.create(w1), Observable.create(w2));
@@ -435,7 +434,7 @@ public class ObservableConcatTest {
         final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
         final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         
         @SuppressWarnings("unchecked")
@@ -555,8 +554,8 @@ public class ObservableConcatTest {
 
     @Test
     public void testMultipleObservers() {
-        Observer<Object> o1 = TestHelper.mockNbpSubscriber();
-        Observer<Object> o2 = TestHelper.mockNbpSubscriber();
+        Observer<Object> o1 = TestHelper.mockObserver();
+        Observer<Object> o2 = TestHelper.mockObserver();
 
         TestScheduler s = new TestScheduler();
 
@@ -608,7 +607,7 @@ public class ObservableConcatTest {
         
         Observable<List<Integer>> result = Observable.concat(source).toList();
         
-        Observer<List<Integer>> o = TestHelper.mockNbpSubscriber();
+        Observer<List<Integer>> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
         
         result.subscribe(o);
@@ -633,7 +632,7 @@ public class ObservableConcatTest {
         
         Observable<List<Integer>> result = Observable.concat(source).take(n / 2).toList();
         
-        Observer<List<Integer>> o = TestHelper.mockNbpSubscriber();
+        Observer<List<Integer>> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
         
         result.subscribe(o);

@@ -23,8 +23,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;

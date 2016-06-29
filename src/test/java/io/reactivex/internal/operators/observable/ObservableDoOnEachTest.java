@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 
 public class ObservableDoOnEachTest {
@@ -33,8 +32,8 @@ public class ObservableDoOnEachTest {
 
     @Before
     public void before() {
-        subscribedObserver = TestHelper.mockNbpSubscriber();
-        sideEffectObserver = TestHelper.mockNbpSubscriber();
+        subscribedObserver = TestHelper.mockObserver();
+        sideEffectObserver = TestHelper.mockObserver();
     }
 
     @Test

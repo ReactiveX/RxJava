@@ -18,7 +18,6 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 
 public class ObservableCastTest {
 
@@ -27,7 +26,7 @@ public class ObservableCastTest {
         Observable<?> source = Observable.just(1, 2);
         Observable<Integer> NbpObservable = source.cast(Integer.class);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         
         NbpObservable.subscribe(NbpObserver);
         
@@ -43,7 +42,7 @@ public class ObservableCastTest {
         Observable<?> source = Observable.just(1, 2);
         Observable<Boolean> NbpObservable = source.cast(Boolean.class);
 
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         

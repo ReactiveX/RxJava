@@ -25,10 +25,9 @@ import org.junit.Test;
 import org.mockito.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;

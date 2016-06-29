@@ -28,7 +28,6 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Optional;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
@@ -42,8 +41,8 @@ public class ObservableDelayTest {
 
     @Before
     public void before() {
-        NbpObserver = TestHelper.mockNbpSubscriber();
-        observer2 = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
+        observer2 = TestHelper.mockObserver();
         
         scheduler = new TestScheduler();
     }
@@ -195,7 +194,7 @@ public class ObservableDelayTest {
     public void testDelaySubscription() {
         Observable<Integer> result = Observable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         result.subscribe(o);
@@ -217,7 +216,7 @@ public class ObservableDelayTest {
     public void testDelaySubscriptionCancelBeforeTime() {
         Observable<Integer> result = Observable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         TestObserver<Object> ts = new TestObserver<Object>(o);
 
         result.subscribe(ts);
@@ -246,7 +245,7 @@ public class ObservableDelayTest {
             }
         };
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.delay(delayFunc).subscribe(o);
@@ -276,7 +275,7 @@ public class ObservableDelayTest {
                 return delay;
             }
         };
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.delay(delayFunc).subscribe(o);
@@ -302,7 +301,7 @@ public class ObservableDelayTest {
                 return delay;
             }
         };
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.delay(delayFunc).subscribe(o);
@@ -327,7 +326,7 @@ public class ObservableDelayTest {
                 throw new TestException();
             }
         };
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.delay(delayFunc).subscribe(o);
@@ -351,7 +350,7 @@ public class ObservableDelayTest {
                 return delay;
             }
         };
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.delay(delayFunc).subscribe(o);
@@ -382,7 +381,7 @@ public class ObservableDelayTest {
             }
         };
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.delay(subFunc, delayFunc).subscribe(o);
@@ -417,7 +416,7 @@ public class ObservableDelayTest {
             }
         };
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.delay(subFunc, delayFunc).subscribe(o);
@@ -451,7 +450,7 @@ public class ObservableDelayTest {
             }
         };
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.delay(subFunc, delayFunc).subscribe(o);
@@ -478,7 +477,7 @@ public class ObservableDelayTest {
                 return Observable.empty();
             }
         };
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.delay(delayFunc).subscribe(o);
@@ -511,7 +510,7 @@ public class ObservableDelayTest {
             }
         };
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.delay(subFunc, delayFunc).subscribe(o);
@@ -596,7 +595,7 @@ public class ObservableDelayTest {
             }
         });
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         result.subscribe(o);

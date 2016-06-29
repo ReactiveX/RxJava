@@ -23,7 +23,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
@@ -39,8 +38,8 @@ public class ObservableSampleTest {
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
-        NbpObserver = TestHelper.mockNbpSubscriber();
-        observer2 = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
+        observer2 = TestHelper.mockObserver();
     }
 
     @Test

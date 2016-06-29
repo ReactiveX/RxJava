@@ -25,7 +25,6 @@ import org.mockito.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
@@ -38,7 +37,7 @@ public class BehaviorSubjectTest {
     public void testThatSubscriberReceivesDefaultValueAndSubsequentEvents() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -59,7 +58,7 @@ public class BehaviorSubjectTest {
 
         subject.onNext("one");
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("two");
@@ -77,7 +76,7 @@ public class BehaviorSubjectTest {
     public void testSubscribeThenOnComplete() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -95,7 +94,7 @@ public class BehaviorSubjectTest {
         subject.onNext("one");
         subject.onComplete();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         verify(observer, never()).onNext("default");
@@ -111,7 +110,7 @@ public class BehaviorSubjectTest {
         RuntimeException re = new RuntimeException("test error");
         subject.onError(re);
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         verify(observer, never()).onNext("default");
@@ -123,9 +122,9 @@ public class BehaviorSubjectTest {
     @Test
     public void testCompletedStopsEmittingData() {
         BehaviorSubject<Integer> channel = BehaviorSubject.createDefault(2013);
-        Observer<Object> observerA = TestHelper.mockNbpSubscriber();
-        Observer<Object> observerB = TestHelper.mockNbpSubscriber();
-        Observer<Object> observerC = TestHelper.mockNbpSubscriber();
+        Observer<Object> observerA = TestHelper.mockObserver();
+        Observer<Object> observerB = TestHelper.mockObserver();
+        Observer<Object> observerC = TestHelper.mockObserver();
 
         TestObserver<Object> ts = new TestObserver<Object>(observerA);
         
@@ -169,7 +168,7 @@ public class BehaviorSubjectTest {
     public void testCompletedAfterErrorIsNotSent() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -188,7 +187,7 @@ public class BehaviorSubjectTest {
     public void testCompletedAfterErrorIsNotSent2() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -202,7 +201,7 @@ public class BehaviorSubjectTest {
         verify(observer, never()).onNext("two");
         verify(observer, never()).onComplete();
 
-        Observer<Object> o2 = TestHelper.mockNbpSubscriber();
+        Observer<Object> o2 = TestHelper.mockObserver();
         subject.subscribe(o2);
         verify(o2, times(1)).onError(testException);
         verify(o2, never()).onNext(any());
@@ -213,7 +212,7 @@ public class BehaviorSubjectTest {
     public void testCompletedAfterErrorIsNotSent3() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -227,7 +226,7 @@ public class BehaviorSubjectTest {
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onNext("two");
 
-        Observer<Object> o2 = TestHelper.mockNbpSubscriber();
+        Observer<Object> o2 = TestHelper.mockObserver();
         subject.subscribe(o2);
         verify(o2, times(1)).onComplete();
         verify(o2, never()).onNext(any());
@@ -239,7 +238,7 @@ public class BehaviorSubjectTest {
         BehaviorSubject<String> src = BehaviorSubject.createDefault("null"); // FIXME was plain null which is not allowed
         
         for (int i = 0; i < 10; i++) {
-            final Observer<Object> o = TestHelper.mockNbpSubscriber();
+            final Observer<Object> o = TestHelper.mockObserver();
             InOrder inOrder = inOrder(o);
             String v = "" + i;
             src.onNext(v);
@@ -276,7 +275,7 @@ public class BehaviorSubjectTest {
     @Test
     public void testStartEmpty() {
         BehaviorSubject<Integer> source = BehaviorSubject.create();
-        final Observer<Object> o = TestHelper.mockNbpSubscriber();
+        final Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
         
         source.subscribe(o);
@@ -301,7 +300,7 @@ public class BehaviorSubjectTest {
     @Test
     public void testStartEmptyThenAddOne() {
         BehaviorSubject<Integer> source = BehaviorSubject.create();
-        final Observer<Object> o = TestHelper.mockNbpSubscriber();
+        final Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.onNext(1);
@@ -323,7 +322,7 @@ public class BehaviorSubjectTest {
     @Test
     public void testStartEmptyCompleteWithOne() {
         BehaviorSubject<Integer> source = BehaviorSubject.create();
-        final Observer<Object> o = TestHelper.mockNbpSubscriber();
+        final Observer<Object> o = TestHelper.mockObserver();
 
         source.onNext(1);
         source.onComplete();
@@ -340,7 +339,7 @@ public class BehaviorSubjectTest {
     @Test
     public void testTakeOneSubscriber() {
         BehaviorSubject<Integer> source = BehaviorSubject.createDefault(1);
-        final Observer<Object> o = TestHelper.mockNbpSubscriber();
+        final Observer<Object> o = TestHelper.mockObserver();
         
         source.take(1).subscribe(o);
         

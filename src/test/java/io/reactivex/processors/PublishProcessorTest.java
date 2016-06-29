@@ -24,9 +24,8 @@ import org.junit.Test;
 import org.mockito.*;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.subscribers.*;
 

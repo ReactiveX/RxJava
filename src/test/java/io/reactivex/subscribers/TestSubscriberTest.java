@@ -25,10 +25,9 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.exceptions.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;

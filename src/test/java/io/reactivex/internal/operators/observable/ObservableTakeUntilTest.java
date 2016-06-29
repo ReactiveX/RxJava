@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 
@@ -33,7 +32,7 @@ public class ObservableTakeUntilTest {
         TestObservable source = new TestObservable(sSource);
         TestObservable other = new TestObservable(sOther);
 
-        Observer<String> result = TestHelper.mockNbpSubscriber();
+        Observer<String> result = TestHelper.mockObserver();
         Observable<String> stringObservable = Observable.create(source)
                 .takeUntil(Observable.create(other));
         stringObservable.subscribe(result);
@@ -60,7 +59,7 @@ public class ObservableTakeUntilTest {
         TestObservable source = new TestObservable(sSource);
         TestObservable other = new TestObservable(sOther);
 
-        Observer<String> result = TestHelper.mockNbpSubscriber();
+        Observer<String> result = TestHelper.mockObserver();
         Observable<String> stringObservable = Observable.create(source).takeUntil(Observable.create(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
@@ -82,7 +81,7 @@ public class ObservableTakeUntilTest {
         TestObservable other = new TestObservable(sOther);
         Throwable error = new Throwable();
 
-        Observer<String> result = TestHelper.mockNbpSubscriber();
+        Observer<String> result = TestHelper.mockObserver();
         Observable<String> stringObservable = Observable.create(source).takeUntil(Observable.create(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
@@ -107,7 +106,7 @@ public class ObservableTakeUntilTest {
         TestObservable other = new TestObservable(sOther);
         Throwable error = new Throwable();
 
-        Observer<String> result = TestHelper.mockNbpSubscriber();
+        Observer<String> result = TestHelper.mockObserver();
         Observable<String> stringObservable = Observable.create(source).takeUntil(Observable.create(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
@@ -135,7 +134,7 @@ public class ObservableTakeUntilTest {
         TestObservable source = new TestObservable(sSource);
         TestObservable other = new TestObservable(sOther);
 
-        Observer<String> result = TestHelper.mockNbpSubscriber();
+        Observer<String> result = TestHelper.mockObserver();
         Observable<String> stringObservable = Observable.create(source).takeUntil(Observable.create(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");

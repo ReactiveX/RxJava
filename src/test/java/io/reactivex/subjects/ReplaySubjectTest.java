@@ -27,7 +27,6 @@ import org.mockito.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
@@ -40,7 +39,7 @@ public class ReplaySubjectTest {
     public void testCompleted() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
-        Observer<String> o1 = TestHelper.mockNbpSubscriber();
+        Observer<String> o1 = TestHelper.mockObserver();
         subject.subscribe(o1);
 
         subject.onNext("one");
@@ -55,7 +54,7 @@ public class ReplaySubjectTest {
         assertCompletedSubscriber(o1);
 
         // assert that subscribing a 2nd time gets the same data
-        Observer<String> o2 = TestHelper.mockNbpSubscriber();
+        Observer<String> o2 = TestHelper.mockObserver();
         subject.subscribe(o2);
         assertCompletedSubscriber(o2);
     }
@@ -63,10 +62,10 @@ public class ReplaySubjectTest {
     @Test
     public void testCompletedStopsEmittingData() {
         ReplaySubject<Integer> channel = ReplaySubject.create();
-        Observer<Object> observerA = TestHelper.mockNbpSubscriber();
-        Observer<Object> observerB = TestHelper.mockNbpSubscriber();
-        Observer<Object> observerC = TestHelper.mockNbpSubscriber();
-        Observer<Object> observerD = TestHelper.mockNbpSubscriber();
+        Observer<Object> observerA = TestHelper.mockObserver();
+        Observer<Object> observerB = TestHelper.mockObserver();
+        Observer<Object> observerC = TestHelper.mockObserver();
+        Observer<Object> observerD = TestHelper.mockObserver();
         TestObserver<Object> ts = new TestObserver<Object>(observerA);
 
         channel.subscribe(ts);
@@ -133,7 +132,7 @@ public class ReplaySubjectTest {
     public void testCompletedAfterError() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
 
         subject.onNext("one");
         subject.onError(testException);
@@ -163,7 +162,7 @@ public class ReplaySubjectTest {
     public void testError() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -177,7 +176,7 @@ public class ReplaySubjectTest {
 
         assertErrorSubscriber(observer);
 
-        observer = TestHelper.mockNbpSubscriber();
+        observer = TestHelper.mockObserver();
         subject.subscribe(observer);
         assertErrorSubscriber(observer);
     }
@@ -194,7 +193,7 @@ public class ReplaySubjectTest {
     public void testSubscribeMidSequence() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -202,7 +201,7 @@ public class ReplaySubjectTest {
 
         assertObservedUntilTwo(observer);
 
-        Observer<String> anotherSubscriber = TestHelper.mockNbpSubscriber();
+        Observer<String> anotherSubscriber = TestHelper.mockObserver();
         subject.subscribe(anotherSubscriber);
         assertObservedUntilTwo(anotherSubscriber);
 
@@ -217,7 +216,7 @@ public class ReplaySubjectTest {
     public void testUnsubscribeFirstSubscriber() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(observer);
         subject.subscribe(ts);
 
@@ -227,7 +226,7 @@ public class ReplaySubjectTest {
         ts.dispose();
         assertObservedUntilTwo(observer);
 
-        Observer<String> anotherSubscriber = TestHelper.mockNbpSubscriber();
+        Observer<String> anotherSubscriber = TestHelper.mockObserver();
         subject.subscribe(anotherSubscriber);
         assertObservedUntilTwo(anotherSubscriber);
 
@@ -360,7 +359,7 @@ public class ReplaySubjectTest {
         ReplaySubject<String> src = ReplaySubject.create();
         
         for (int i = 0; i < 10; i++) {
-            final Observer<Object> o = TestHelper.mockNbpSubscriber();
+            final Observer<Object> o = TestHelper.mockObserver();
             InOrder inOrder = inOrder(o);
             String v = "" + i;
             src.onNext(v);
@@ -402,7 +401,7 @@ public class ReplaySubjectTest {
         source.onNext(2);
         source.onComplete();
         
-        final Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        final Observer<Integer> o = TestHelper.mockObserver();
         
         source.unsafeSubscribe(new DefaultObserver<Integer>() {
 
@@ -437,7 +436,7 @@ public class ReplaySubjectTest {
         source.onComplete();
         
         for (int i = 0; i < 1; i++) {
-            Observer<Integer> o = TestHelper.mockNbpSubscriber();
+            Observer<Integer> o = TestHelper.mockObserver();
 
             source.subscribe(o);
 
@@ -451,7 +450,7 @@ public class ReplaySubjectTest {
     public void testReplay1Directly() {
         ReplaySubject<Integer> source = ReplaySubject.createWithSize(1);
 
-        Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        Observer<Integer> o = TestHelper.mockObserver();
 
         source.onNext(1);
         source.onNext(2);
@@ -486,7 +485,7 @@ public class ReplaySubjectTest {
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        Observer<Integer> o = TestHelper.mockObserver();
 
         source.subscribe(o);
         
@@ -506,7 +505,7 @@ public class ReplaySubjectTest {
         
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        Observer<Integer> o = TestHelper.mockObserver();
 
         source.subscribe(o);
 

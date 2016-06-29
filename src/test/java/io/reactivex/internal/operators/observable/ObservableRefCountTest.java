@@ -24,11 +24,10 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
@@ -432,7 +431,7 @@ public class ObservableRefCountTest {
     public void testAlreadyUnsubscribedClient() {
         Observer<Integer> done = DisposingObserver.INSTANCE;
 
-        Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        Observer<Integer> o = TestHelper.mockObserver();
 
         Observable<Integer> result = Observable.just(1).publish().refCount();
 
@@ -451,7 +450,7 @@ public class ObservableRefCountTest {
 
         Observer<Integer> done = DisposingObserver.INSTANCE;
 
-        Observer<Integer> o = TestHelper.mockNbpSubscriber();
+        Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         Observable<Integer> result = source.publish().refCount();

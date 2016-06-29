@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Predicate;
 
 public class ObservableLastTest {
@@ -56,7 +55,7 @@ public class ObservableLastTest {
     public void testLast() {
         Observable<Integer> o = Observable.just(1, 2, 3).last();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -69,7 +68,7 @@ public class ObservableLastTest {
     public void testLastWithOneElement() {
         Observable<Integer> o = Observable.just(1).last();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -82,7 +81,7 @@ public class ObservableLastTest {
     public void testLastWithEmpty() {
         Observable<Integer> o = Observable.<Integer> empty().last();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -103,7 +102,7 @@ public class ObservableLastTest {
                 })
                 .last();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -125,7 +124,7 @@ public class ObservableLastTest {
                 })
             .last();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -146,7 +145,7 @@ public class ObservableLastTest {
                     }
                 }).last();
         
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -160,7 +159,7 @@ public class ObservableLastTest {
         Observable<Integer> o = Observable.just(1, 2, 3)
                 .last(4);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -173,7 +172,7 @@ public class ObservableLastTest {
     public void testLastOrDefaultWithOneElement() {
         Observable<Integer> o = Observable.just(1).last(2);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -187,7 +186,7 @@ public class ObservableLastTest {
         Observable<Integer> o = Observable.<Integer> empty()
                 .last(1);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -208,7 +207,7 @@ public class ObservableLastTest {
                 })
                 .last(8);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -229,7 +228,7 @@ public class ObservableLastTest {
                 })
                 .last(4);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -251,7 +250,7 @@ public class ObservableLastTest {
                 })
                 .last(2);
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);

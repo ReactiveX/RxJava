@@ -23,9 +23,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.*;
 import org.mockito.*;
 
-import io.reactivex.Observer;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.TestObserver;
 
@@ -37,7 +36,7 @@ public class AsyncSubjectTest {
     public void testNeverCompleted() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -53,7 +52,7 @@ public class AsyncSubjectTest {
     public void testCompleted() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -71,7 +70,7 @@ public class AsyncSubjectTest {
     public void testNull() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext(null);
@@ -86,7 +85,7 @@ public class AsyncSubjectTest {
     public void testSubscribeAfterCompleted() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
 
         subject.onNext("one");
         subject.onNext("two");
@@ -104,7 +103,7 @@ public class AsyncSubjectTest {
     public void testSubscribeAfterError() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
 
         subject.onNext("one");
         subject.onNext("two");
@@ -124,7 +123,7 @@ public class AsyncSubjectTest {
     public void testError() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -144,7 +143,7 @@ public class AsyncSubjectTest {
     public void testUnsubscribeBeforeCompleted() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(observer);
         subject.subscribe(ts);
 
@@ -169,7 +168,7 @@ public class AsyncSubjectTest {
     public void testEmptySubjectCompleted() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onComplete();

@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -35,7 +34,7 @@ public class ObservableToFutureTest {
         Object value = new Object();
         when(future.get()).thenReturn(value);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         TestObserver<Object> ts = new TestObserver<Object>(o);
         
@@ -56,7 +55,7 @@ public class ObservableToFutureTest {
         RuntimeException e = new RuntimeException();
         when(future.get()).thenThrow(e);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         TestObserver<Object> ts = new TestObserver<Object>(o);
         
@@ -77,7 +76,7 @@ public class ObservableToFutureTest {
         CancellationException e = new CancellationException("unit test synthetic cancellation");
         when(future.get()).thenThrow(e);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         TestObserver<Object> ts = new TestObserver<Object>(o);
         ts.dispose();
@@ -123,7 +122,7 @@ public class ObservableToFutureTest {
             }
         };
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         TestObserver<Object> ts = new TestObserver<Object>(o);
         Observable<Object> futureObservable = Observable.fromFuture(future);

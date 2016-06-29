@@ -22,7 +22,6 @@ import org.mockito.Mockito;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
@@ -38,7 +37,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
 
         try {
@@ -66,7 +65,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
 
         try {
@@ -94,7 +93,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
 
         try {
@@ -122,7 +121,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
 
         try {
@@ -164,7 +163,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
 
         Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         NbpObservable.subscribe(NbpObserver);
 
         try {

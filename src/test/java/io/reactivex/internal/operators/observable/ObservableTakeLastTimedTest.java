@@ -23,7 +23,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 
@@ -43,7 +42,7 @@ public class ObservableTakeLastTimedTest {
         // FIXME time unit now matters!
         Observable<Object> result = source.takeLast(1000, TimeUnit.MILLISECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         InOrder inOrder = inOrder(o);
 
@@ -79,7 +78,7 @@ public class ObservableTakeLastTimedTest {
         // FIXME time unit now matters
         Observable<Object> result = source.takeLast(1000, TimeUnit.MILLISECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         InOrder inOrder = inOrder(o);
 
@@ -112,7 +111,7 @@ public class ObservableTakeLastTimedTest {
         // FIXME time unit now matters!
         Observable<Object> result = source.takeLast(2, 1000, TimeUnit.MILLISECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         InOrder inOrder = inOrder(o);
 
@@ -145,7 +144,7 @@ public class ObservableTakeLastTimedTest {
 
         Observable<Object> result = source.takeLast(1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         InOrder inOrder = inOrder(o);
 
@@ -177,7 +176,7 @@ public class ObservableTakeLastTimedTest {
 
         Observable<Object> result = source.takeLast(0, 1, TimeUnit.SECONDS, scheduler);
 
-        Observer<Object> o = TestHelper.mockNbpSubscriber();
+        Observer<Object> o = TestHelper.mockObserver();
 
         InOrder inOrder = inOrder(o);
 

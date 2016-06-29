@@ -23,7 +23,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
@@ -38,7 +37,7 @@ public class ObservableThrottleFirstTest {
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
-        NbpObserver = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
     }
 
     @Test
@@ -122,7 +121,7 @@ public class ObservableThrottleFirstTest {
 
     @Test
     public void testThrottle() {
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         TestScheduler s = new TestScheduler();
         PublishSubject<Integer> o = PublishSubject.create();
         o.throttleFirst(500, TimeUnit.MILLISECONDS, s).subscribe(NbpObserver);

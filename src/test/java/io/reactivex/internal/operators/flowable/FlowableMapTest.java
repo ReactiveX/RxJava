@@ -21,8 +21,7 @@ import java.util.*;
 import org.junit.*;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.Flowable;
-import io.reactivex.flowable.TestHelper;
+import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 

@@ -25,7 +25,6 @@ import org.mockito.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.processors.PublishProcessor;
@@ -36,7 +35,7 @@ public class PublishSubjectTest {
     public void testCompleted() {
         PublishSubject<String> subject = PublishSubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -44,7 +43,7 @@ public class PublishSubjectTest {
         subject.onNext("three");
         subject.onComplete();
 
-        Observer<String> anotherSubscriber = TestHelper.mockNbpSubscriber();
+        Observer<String> anotherSubscriber = TestHelper.mockObserver();
         subject.subscribe(anotherSubscriber);
 
         subject.onNext("four");
@@ -58,9 +57,9 @@ public class PublishSubjectTest {
     @Test
     public void testCompletedStopsEmittingData() {
         PublishSubject<Object> channel = PublishSubject.create();
-        Observer<Object> observerA = TestHelper.mockNbpSubscriber();
-        Observer<Object> observerB = TestHelper.mockNbpSubscriber();
-        Observer<Object> observerC = TestHelper.mockNbpSubscriber();
+        Observer<Object> observerA = TestHelper.mockObserver();
+        Observer<Object> observerB = TestHelper.mockObserver();
+        Observer<Object> observerC = TestHelper.mockObserver();
 
         TestObserver<Object> ts = new TestObserver<Object>(observerA);
         
@@ -109,7 +108,7 @@ public class PublishSubjectTest {
     public void testError() {
         PublishSubject<String> subject = PublishSubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -117,7 +116,7 @@ public class PublishSubjectTest {
         subject.onNext("three");
         subject.onError(testException);
 
-        Observer<String> anotherSubscriber = TestHelper.mockNbpSubscriber();
+        Observer<String> anotherSubscriber = TestHelper.mockObserver();
         subject.subscribe(anotherSubscriber);
 
         subject.onNext("four");
@@ -140,7 +139,7 @@ public class PublishSubjectTest {
     public void testSubscribeMidSequence() {
         PublishSubject<String> subject = PublishSubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -148,7 +147,7 @@ public class PublishSubjectTest {
 
         assertObservedUntilTwo(observer);
 
-        Observer<String> anotherSubscriber = TestHelper.mockNbpSubscriber();
+        Observer<String> anotherSubscriber = TestHelper.mockObserver();
         subject.subscribe(anotherSubscriber);
 
         subject.onNext("three");
@@ -170,7 +169,7 @@ public class PublishSubjectTest {
     public void testUnsubscribeFirstSubscriber() {
         PublishSubject<String> subject = PublishSubject.create();
 
-        Observer<String> observer = TestHelper.mockNbpSubscriber();
+        Observer<String> observer = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(observer);
         subject.subscribe(ts);
 
@@ -180,7 +179,7 @@ public class PublishSubjectTest {
         ts.dispose();
         assertObservedUntilTwo(observer);
 
-        Observer<String> anotherSubscriber = TestHelper.mockNbpSubscriber();
+        Observer<String> anotherSubscriber = TestHelper.mockObserver();
         subject.subscribe(anotherSubscriber);
 
         subject.onNext("three");
@@ -256,7 +255,7 @@ public class PublishSubjectTest {
     public void testReSubscribe() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        Observer<Integer> o1 = TestHelper.mockNbpSubscriber();
+        Observer<Integer> o1 = TestHelper.mockObserver();
         TestObserver<Integer> ts = new TestObserver<Integer>(o1);
         ps.subscribe(ts);
 
@@ -274,7 +273,7 @@ public class PublishSubjectTest {
         // emit again but nothing will be there to receive it
         ps.onNext(2);
 
-        Observer<Integer> o2 = TestHelper.mockNbpSubscriber();
+        Observer<Integer> o2 = TestHelper.mockObserver();
         TestObserver<Integer> ts2 = new TestObserver<Integer>(o2);
         ps.subscribe(ts2);
 
@@ -296,7 +295,7 @@ public class PublishSubjectTest {
         PublishSubject<String> src = PublishSubject.create();
 
         for (int i = 0; i < 10; i++) {
-            final Observer<Object> o = TestHelper.mockNbpSubscriber();
+            final Observer<Object> o = TestHelper.mockObserver();
             InOrder inOrder = inOrder(o);
             String v = "" + i;
             System.out.printf("Turn: %d%n", i);

@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
@@ -42,7 +41,7 @@ public class ObservableSwitchTest {
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
-        NbpObserver = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
     }
 
     @Test

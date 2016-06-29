@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 
@@ -37,7 +36,7 @@ public class ObservableAnyTest {
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
         
         NbpObservable.subscribe(NbpObserver);
         
@@ -52,7 +51,7 @@ public class ObservableAnyTest {
         Observable<Integer> w = Observable.just(1, 2);
         Observable<Boolean> NbpObservable = w.isEmpty();
 
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         
@@ -72,7 +71,7 @@ public class ObservableAnyTest {
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         
@@ -87,7 +86,7 @@ public class ObservableAnyTest {
         Observable<Integer> w = Observable.just(1);
         Observable<Boolean> NbpObservable = w.isEmpty();
 
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         
@@ -107,7 +106,7 @@ public class ObservableAnyTest {
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         
@@ -122,7 +121,7 @@ public class ObservableAnyTest {
         Observable<Integer> w = Observable.empty();
         Observable<Boolean> NbpObservable = w.isEmpty();
 
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         
@@ -142,7 +141,7 @@ public class ObservableAnyTest {
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         
@@ -162,7 +161,7 @@ public class ObservableAnyTest {
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         
@@ -182,7 +181,7 @@ public class ObservableAnyTest {
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         
@@ -203,7 +202,7 @@ public class ObservableAnyTest {
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
         

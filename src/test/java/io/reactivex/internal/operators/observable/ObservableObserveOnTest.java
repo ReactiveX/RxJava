@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
@@ -40,7 +39,7 @@ public class ObservableObserveOnTest {
     @Test
     @Ignore("immediate scheduler not supported")
     public void testObserveOn() {
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
         Observable.just(1, 2, 3).observeOn(Schedulers.immediate()).subscribe(NbpObserver);
 
         verify(NbpObserver, times(1)).onNext(1);
@@ -55,7 +54,7 @@ public class ObservableObserveOnTest {
         // FIXME null values not allowed
         Observable<String> obs = Observable.just("one", "null", "two", "three", "four");
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         InOrder inOrder = inOrder(NbpObserver);
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
@@ -86,7 +85,7 @@ public class ObservableObserveOnTest {
 //        NbpObservable<String> obs = NbpObservable.just("one", null, "two", "three", "four");
         Observable<String> obs = Observable.just("one", "null", "two", "three", "four");
 
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         final String parentThreadName = Thread.currentThread().getName();
 
         final CountDownLatch completedLatch = new CountDownLatch(1);
@@ -176,8 +175,8 @@ public class ObservableObserveOnTest {
         Observable<Integer> o1 = o.observeOn(scheduler1);
         Observable<Integer> o2 = o.observeOn(scheduler2);
 
-        Observer<Object> observer1 = TestHelper.mockNbpSubscriber();
-        Observer<Object> observer2 = TestHelper.mockNbpSubscriber();
+        Observer<Object> observer1 = TestHelper.mockObserver();
+        Observer<Object> observer2 = TestHelper.mockObserver();
 
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
@@ -383,7 +382,7 @@ public class ObservableObserveOnTest {
     public void testAfterUnsubscribeCalledThenObserverOnNextNeverCalled() {
         final TestScheduler testScheduler = new TestScheduler();
 
-        final Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        final Observer<Integer> NbpObserver = TestHelper.mockObserver();
         TestObserver<Integer> ts = new TestObserver<Integer>(NbpObserver);
         
         Observable.just(1, 2, 3)

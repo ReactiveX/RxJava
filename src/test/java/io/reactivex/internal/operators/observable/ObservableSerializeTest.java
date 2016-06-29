@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.DefaultObserver;
 
@@ -33,7 +32,7 @@ public class ObservableSerializeTest {
 
     @Before
     public void before() {
-        NbpObserver = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
     }
 
     @Test

@@ -29,7 +29,6 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Optional;
 import io.reactivex.disposables.*;
-import io.reactivex.flowable.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Functions;
@@ -59,7 +58,7 @@ public class ObservableZipTest {
         s2 = PublishSubject.create();
         zipped = Observable.zip(s1, s2, concat2Strings);
 
-        NbpObserver = TestHelper.mockNbpSubscriber();
+        NbpObserver = TestHelper.mockObserver();
         inOrder = inOrder(NbpObserver);
 
         zipped.subscribe(NbpObserver);
@@ -72,7 +71,7 @@ public class ObservableZipTest {
         //Function3<String, Integer, int[], String>
 
         /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         @SuppressWarnings("rawtypes")
         Collection ws = java.util.Collections.singleton(Observable.just("one", "two"));
@@ -86,7 +85,7 @@ public class ObservableZipTest {
 
     @Test
     public void testStartpingDifferentLengthObservableSequences1() {
-        Observer<String> w = TestHelper.mockNbpSubscriber();
+        Observer<String> w = TestHelper.mockObserver();
 
         TestObservable w1 = new TestObservable();
         TestObservable w2 = new TestObservable();
@@ -121,7 +120,7 @@ public class ObservableZipTest {
 
     @Test
     public void testStartpingDifferentLengthObservableSequences2() {
-        Observer<String> w = TestHelper.mockNbpSubscriber();
+        Observer<String> w = TestHelper.mockObserver();
 
         TestObservable w1 = new TestObservable();
         TestObservable w2 = new TestObservable();
@@ -178,7 +177,7 @@ public class ObservableZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable.zip(r1, r2, zipr2).subscribe(NbpObserver);
 
@@ -213,7 +212,7 @@ public class ObservableZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         Observable.zip(r1, r2, zipr2).subscribe(NbpObserver);
 
         /* simulate the Observables pushing data into the aggregator */
@@ -240,7 +239,7 @@ public class ObservableZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<Integer> r2 = PublishSubject.create();
         /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable.zip(r1, r2, zipr2).subscribe(NbpObserver);
 
@@ -269,7 +268,7 @@ public class ObservableZipTest {
         PublishSubject<Integer> r2 = PublishSubject.create();
         PublishSubject<List<Integer>> r3 = PublishSubject.create();
         /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable.zip(r1, r2, r3, zipr3).subscribe(NbpObserver);
 
@@ -288,7 +287,7 @@ public class ObservableZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable.zip(r1, r2, zipr2).subscribe(NbpObserver);
 
@@ -323,7 +322,7 @@ public class ObservableZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable.zip(r1, r2, zipr2).subscribe(NbpObserver);
 
@@ -350,7 +349,7 @@ public class ObservableZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
 
         Observable.zip(r1, r2, zipr2).subscribe(ts);
@@ -378,7 +377,7 @@ public class ObservableZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable.zip(r1, r2, zipr2).subscribe(NbpObserver);
 
@@ -406,7 +405,7 @@ public class ObservableZipTest {
         BiFunction<String, Integer, String> zipr = getConcatStringIntegerZipr();
 
         /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable<String> w = Observable.zip(Observable.just("one", "two"), Observable.just(2, 3, 4), zipr);
         w.subscribe(NbpObserver);
@@ -423,7 +422,7 @@ public class ObservableZipTest {
         Function3<String, Integer, int[], String> zipr = getConcatStringIntegerIntArrayZipr();
 
         /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<String> NbpObserver = TestHelper.mockObserver();
 
         Observable<String> w = Observable.zip(Observable.just("one", "two"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }), zipr);
         w.subscribe(NbpObserver);
@@ -438,7 +437,7 @@ public class ObservableZipTest {
     public void testOnNextExceptionInvokesOnError() {
         BiFunction<Integer, Integer, Integer> zipr = getDivideZipr();
 
-        Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        Observer<Integer> NbpObserver = TestHelper.mockObserver();
 
         Observable<Integer> w = Observable.zip(Observable.just(10, 20, 30), Observable.just(0, 1, 2), zipr);
         w.subscribe(NbpObserver);
@@ -451,7 +450,7 @@ public class ObservableZipTest {
         PublishSubject<String> oA = PublishSubject.create();
         PublishSubject<String> oB = PublishSubject.create();
 
-        Observer<String> obs = TestHelper.mockNbpSubscriber();
+        Observer<String> obs = TestHelper.mockObserver();
 
         Observable<String> o = Observable.zip(oA, oB, getConcat2Strings());
         o.subscribe(obs);
@@ -501,7 +500,7 @@ public class ObservableZipTest {
         PublishSubject<String> oA = PublishSubject.create();
         PublishSubject<String> oB = PublishSubject.create();
 
-        Observer<String> obs = TestHelper.mockNbpSubscriber();
+        Observer<String> obs = TestHelper.mockObserver();
 
         Observable<String> o = Observable.zip(oA, oB, getConcat2Strings());
         o.subscribe(obs);
@@ -725,7 +724,7 @@ public class ObservableZipTest {
         // As "TestHelper.mockNbpSubscriber()" will create an instance in the package "rx",
         // we need to wrap "TestHelper.mockNbpSubscriber()" with an NbpObserver instance
         // which is in the package "rx.operators".
-        final Observer<Integer> NbpObserver = TestHelper.mockNbpSubscriber();
+        final Observer<Integer> NbpObserver = TestHelper.mockObserver();
 
         Observable.zip(Observable.just(1),
                 Observable.just(1), new BiFunction<Integer, Integer, Integer>() {

@@ -291,7 +291,7 @@ public class ObservablePublishTest {
     
     @Test
     public void testNoSubscriberRetentionOnCompleted() {
-        NbpOperatorPublish<Integer> source = (NbpOperatorPublish<Integer>)Observable.just(1).publish();
+        ObservablePublish<Integer> source = (ObservablePublish<Integer>)Observable.just(1).publish();
 
         TestObserver<Integer> ts1 = new TestObserver<Integer>();
 
@@ -338,7 +338,7 @@ public class ObservablePublishTest {
     
     @SuppressWarnings("unchecked")
     static boolean checkPublishDisposed(Disposable d) {
-        return ((NbpOperatorPublish.PublishSubscriber<Object>)d).isDisposed();
+        return ((ObservablePublish.PublishSubscriber<Object>)d).isDisposed();
     }
     
     @Test
