@@ -188,10 +188,6 @@ public final class SchedulerTests {
         Throwable error;
 
         @Override
-        public void onCompleted() {
-        }
-
-        @Override
         public void onError(Throwable e) {
             errorCount++;
             error = e;

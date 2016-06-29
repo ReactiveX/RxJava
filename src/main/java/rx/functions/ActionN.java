@@ -19,5 +19,7 @@ package rx.functions;
  * A vector-argument action.
  */
 public interface ActionN extends Action {
-    void call(Object... args);
+    default void call(Object... args) {
+	    // deliberately no op
+	}
 }

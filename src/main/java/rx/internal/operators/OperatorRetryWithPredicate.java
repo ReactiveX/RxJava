@@ -65,11 +65,6 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
         
         
         @Override
-        public void onCompleted() {
-            // ignore as we expect a single nested Observable<T>
-        }
-
-        @Override
         public void onError(Throwable e) {
             child.onError(e);
         }

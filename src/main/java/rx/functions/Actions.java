@@ -45,11 +45,6 @@ public final class Actions {
             ActionN {
 
         @Override
-        public void call() {
-            // deliberately no op
-        }
-
-        @Override
         public void call(T0 t1) {
             // deliberately no op
         }
@@ -91,11 +86,6 @@ public final class Actions {
 
         @Override
         public void call(T0 t1, T1 t2, T2 t3, T3 t4, T4 t5, T5 t6, T6 t7, T7 t8, T8 t9) {
-            // deliberately no op
-        }
-
-        @Override
-        public void call(Object... args) {
             // deliberately no op
         }
     }

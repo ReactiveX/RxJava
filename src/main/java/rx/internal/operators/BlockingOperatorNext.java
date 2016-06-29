@@ -149,11 +149,6 @@ public final class BlockingOperatorNext {
         final AtomicInteger waiting = new AtomicInteger();
 
         @Override
-        public void onCompleted() {
-            // ignore
-        }
-
-        @Override
         public void onError(Throwable e) {
             // ignore
         }

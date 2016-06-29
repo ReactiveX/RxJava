@@ -115,11 +115,6 @@ public abstract class AsyncCompletableSubscriber implements CompletableSubscribe
     static final class Unsubscribed implements Subscription {
 
         @Override
-        public void unsubscribe() {
-            // deliberately no op
-        }
-
-        @Override
         public boolean isUnsubscribed() {
             return true;
         }

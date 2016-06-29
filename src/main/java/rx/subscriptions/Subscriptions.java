@@ -123,11 +123,6 @@ public final class Subscriptions {
         /** Naming classes helps with debugging. */
     static final class Unsubscribed implements Subscription {
         @Override
-        public void unsubscribe() {
-            // deliberately ignored
-        }
-
-        @Override
         public boolean isUnsubscribed() {
             return true;
         }

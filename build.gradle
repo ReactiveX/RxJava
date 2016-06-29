@@ -11,6 +11,10 @@ buildscript {
 description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
 
 apply plugin: 'java'
+	compileJava {
+		sourceCompatibility = '1.8'
+		targetCompatibility = '1.8'
+	}
 apply plugin: 'pmd'
 apply plugin: 'findbugs'
 apply plugin: 'jacoco'
