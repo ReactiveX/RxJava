@@ -137,7 +137,7 @@ public final class Schedulers {
      * @return a {@link Scheduler} meant for IO-bound work
      */
     public static Scheduler io() {
-        return RxJavaHooks.onComputationScheduler(getInstance().ioScheduler);
+        return RxJavaHooks.onIOScheduler(getInstance().ioScheduler);
     }
 
     /**

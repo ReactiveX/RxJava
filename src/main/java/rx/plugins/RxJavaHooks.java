@@ -171,6 +171,10 @@ public final class RxJavaHooks {
             return;
         }
         init();
+        
+        onComputationScheduler = null;
+        onIOScheduler = null;
+        onNewThreadScheduler = null;
     }
 
     /**
@@ -224,7 +228,7 @@ public final class RxJavaHooks {
         Action1<Throwable> f = onError;
         if (f != null) {
             try {
-            f.call(ex);
+                f.call(ex);
                 return;
             } catch (Throwable pluginException) {
                 /*
