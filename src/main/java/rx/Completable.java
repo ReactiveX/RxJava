@@ -93,7 +93,7 @@ public class Completable {
             s.onSubscribe(Subscriptions.unsubscribed());
             s.onCompleted();
         }
-    }, true); // hook is handled in complete()
+    }, false); // hook is handled in complete()
     
     /** Single instance of a never Completable. */
     static final Completable NEVER = new Completable(new CompletableOnSubscribe() {
@@ -101,7 +101,7 @@ public class Completable {
         public void call(CompletableSubscriber s) {
             s.onSubscribe(Subscriptions.unsubscribed());
         }
-    }, true); // hook is handled in never()
+    }, false); // hook is handled in never()
     
     /**
      * Returns a Completable which terminates as soon as one of the source Completables
@@ -315,7 +315,7 @@ public class Completable {
         if (cos == COMPLETE.onSubscribe) {
             return COMPLETE;
         }
-        return new Completable(cos, true);
+        return new Completable(cos, false);
     }
     
     /**
@@ -742,7 +742,7 @@ public class Completable {
         if (cos == NEVER.onSubscribe) {
             return NEVER;
         }
-        return new Completable(cos, true);
+        return new Completable(cos, false);
     }
     
     /**
