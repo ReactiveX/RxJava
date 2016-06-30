@@ -16,8 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.subscriptions.*;
 
 public final class FlowableElementAt<T> extends Flowable<T> {
     final Publisher<T> source;
@@ -34,8 +33,10 @@ public final class FlowableElementAt<T> extends Flowable<T> {
         source.subscribe(new ElementAtSubscriber<T>(s, index, defaultValue));
     }
     
-    static final class ElementAtSubscriber<T> implements Subscriber<T>, Subscription {
-        final Subscriber<? super T> actual;
+    static final class ElementAtSubscriber<T> extends DeferredScalarSubscription<T> implements Subscriber<T> {
+        /** */
+        private static final long serialVersionUID = 4066607327284737757L;
+        
         final long index;
         final T defaultValue;
         
@@ -46,20 +47,18 @@ public final class FlowableElementAt<T> extends Flowable<T> {
         boolean done;
         
         public ElementAtSubscriber(Subscriber<? super T> actual, long index, T defaultValue) {
-            this.actual = actual;
+            super(actual);
             this.index = index;
             this.defaultValue = defaultValue;
         }
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
-                return;
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
+                s.request(Long.MAX_VALUE);
             }
-            this.s = s;
-            actual.onSubscribe(this);
         }
         
         @Override
@@ -71,8 +70,7 @@ public final class FlowableElementAt<T> extends Flowable<T> {
             if (c == index) {
                 done = true;
                 s.cancel();
-                actual.onNext(t);
-                actual.onComplete();
+                complete(t);
                 return;
             }
             count = c + 1;
@@ -95,21 +93,14 @@ public final class FlowableElementAt<T> extends Flowable<T> {
                 if (v == null) {
                     actual.onError(new IndexOutOfBoundsException());
                 } else {
-                    actual.onNext(v);
-                    actual.onComplete();
+                    complete(v);
                 }
             }
         }
         
         @Override
-        public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
-                s.request(Long.MAX_VALUE);
-            }
-        }
-        
-        @Override
         public void cancel() {
+            super.cancel();
             s.cancel();
         }
     }

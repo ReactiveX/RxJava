@@ -20,7 +20,6 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
-import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableTake<T> extends Flowable<T> {
     final Publisher<T> source;
@@ -50,11 +49,7 @@ public final class FlowableTake<T> extends Flowable<T> {
         }
         @Override
         public void onSubscribe(Subscription s) {
-            Subscription s0 = subscription;
-            if (s0 != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set"));
-            } else {
+            if (SubscriptionHelper.validateSubscription(this.subscription, s)) {
                 subscription = s;
                 actual.onSubscribe(this);
             }

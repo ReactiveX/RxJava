@@ -19,9 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Supplier;
-import io.reactivex.internal.subscriptions.EmptySubscription;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.subscriptions.*;
 
 public final class FlowableToList<T, U extends Collection<? super T>> extends Flowable<U>
 implements Supplier<U> {
@@ -58,56 +56,47 @@ implements Supplier<U> {
     }
     
     
-    static final class ToListSubscriber<T, U extends Collection<? super T>> implements Subscriber<T>, Subscription {
-        U collection;
-        final Subscriber<? super U> actual;
+    static final class ToListSubscriber<T, U extends Collection<? super T>>
+    extends DeferredScalarSubscription<U>
+    implements Subscriber<T>, Subscription {
         
+        /** */
+        private static final long serialVersionUID = -8134157938864266736L;
         Subscription s;
         
         public ToListSubscriber(Subscriber<? super U> actual, U collection) {
-            this.actual = actual;
-            this.collection = collection;
+            super(actual);
+            this.value = collection;
         }
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
-                return;
-            }
-            this.s = s;
-            actual.onSubscribe(this);
-        }
-        
-        @Override
-        public void onNext(T t) {
-            collection.add(t);
-        }
-        
-        @Override
-        public void onError(Throwable t) {
-            collection = null;
-            actual.onError(t);
-        }
-        
-        @Override
-        public void onComplete() {
-            U c = collection;
-            collection = null;
-            actual.onNext(c);
-            actual.onComplete();
-        }
-        
-        @Override
-        public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
         
         @Override
+        public void onNext(T t) {
+            value.add(t);
+        }
+        
+        @Override
+        public void onError(Throwable t) {
+            value = null;
+            actual.onError(t);
+        }
+        
+        @Override
+        public void onComplete() {
+            complete(value);
+        }
+        
+        @Override
         public void cancel() {
+            super.cancel();
             s.cancel();
         }
     }

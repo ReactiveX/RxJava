@@ -29,7 +29,9 @@ public final class SingleFlatMap<T, R> extends Single<R> {
     
     @Override
     protected void subscribeActual(SingleSubscriber<? super R> subscriber) {
-        source.subscribe(new SingleFlatMapCallback<T, R>(subscriber, mapper));
+        SingleFlatMapCallback<T, R> parent = new SingleFlatMapCallback<T, R>(subscriber, mapper);
+        subscriber.onSubscribe(parent.sd);
+        source.subscribe(parent);
     }
     
     static final class SingleFlatMapCallback<T, R> implements SingleSubscriber<T> {

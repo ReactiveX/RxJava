@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -45,6 +46,9 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
     
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
+        if (ScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
+            return;
+        }
         source.subscribe(new MergeSubscriber<T, U>(s, mapper, delayErrors, maxConcurrency, bufferSize));
     }
     
@@ -111,6 +115,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
             }
         }
         
+        @SuppressWarnings("unchecked")
         @Override
         public void onNext(T t) {
             // safeguard against misbehaving sources
@@ -121,11 +126,30 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
             try {
                 p = mapper.apply(t);
             } catch (Throwable e) {
+                s.cancel();
                 onError(e);
                 return;
             }
-            if (p instanceof FlowableJust) {
-                tryEmitScalar(((FlowableJust<? extends U>)p).value());
+            if (p instanceof Callable) {
+                U u;
+                
+                try {
+                    u  = ((Callable<U>)p).call();
+                } catch (Throwable ex) {
+                    s.cancel();
+                    onError(ex);
+                    return;
+                }
+                
+                if (u != null) {
+                    tryEmitScalar(u);
+                } else {
+                    if (maxConcurrency != Integer.MAX_VALUE && !cancelled
+                            && ++scalarEmitted == scalarLimit) {
+                        scalarEmitted = 0;
+                        s.request(scalarLimit);
+                    }
+                }
             } else {
                 InnerSubscriber<T, U> inner = new InnerSubscriber<T, U>(this, uniqueId++);
                 addInner(inner);

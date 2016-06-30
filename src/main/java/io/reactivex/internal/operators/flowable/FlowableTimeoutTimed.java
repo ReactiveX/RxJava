@@ -223,7 +223,7 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
                 scheduleTimeout(0L);
             }
         }

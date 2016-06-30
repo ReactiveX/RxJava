@@ -18,7 +18,7 @@ import java.util.ArrayDeque;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableSkipLast<T> extends Flowable<T> {
     final Publisher<T> source;
@@ -34,7 +34,7 @@ public final class FlowableSkipLast<T> extends Flowable<T> {
         source.subscribe(new SkipLastSubscriber<T>(s, skip));
     }
     
-    static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements Subscriber<T> {
+    static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = -3807491841935125653L;
         final Subscriber<? super T> actual;
@@ -50,13 +50,10 @@ public final class FlowableSkipLast<T> extends Flowable<T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
-                return;
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
             }
-            this.s = s;
-            actual.onSubscribe(s);
         }
         
         @Override
@@ -77,6 +74,16 @@ public final class FlowableSkipLast<T> extends Flowable<T> {
         @Override
         public void onComplete() {
             actual.onComplete();
+        }
+
+        @Override
+        public void request(long n) {
+            s.request(n);
+        }
+        
+        @Override
+        public void cancel() {
+            s.cancel();
         }
     }
 }

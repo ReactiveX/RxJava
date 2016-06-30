@@ -51,6 +51,7 @@ public final class FlowableScanSeed<T, R> extends Flowable<R> {
         source.subscribe(new ScanSeedSubscriber<T, R>(s, accumulator, r));
     }
     
+    // FIXME update to a fresh Rsc algorithm
     static final class ScanSeedSubscriber<T, R> extends QueueDrainSubscriber<T, R, R> implements Subscription {
         final BiFunction<R, ? super T, R> accumulator;
         

@@ -34,6 +34,7 @@ public final class FlowableMaterialize<T> extends Flowable<Try<Optional<T>>> {
         source.subscribe(new MaterializeSubscriber<T>(s));
     }
     
+    // FIXME needs post-complete drain management
     static final class MaterializeSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = -3740826063558713822L;

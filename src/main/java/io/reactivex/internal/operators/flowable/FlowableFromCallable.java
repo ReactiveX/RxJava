@@ -18,32 +18,34 @@ import java.util.concurrent.Callable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
-import io.reactivex.internal.subscriptions.ScalarAsyncSubscription;
+import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
+import io.reactivex.internal.util.Exceptions;
 
-public final class FlowableFromCallable<T> extends Flowable<T> {
+public final class FlowableFromCallable<T> extends Flowable<T> implements Callable<T> {
     final Callable<? extends T> callable;
     public FlowableFromCallable(Callable<? extends T> callable) {
         this.callable = callable;
     }
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
-        ScalarAsyncSubscription<T> sub = new ScalarAsyncSubscription<T>(s);
-        s.onSubscribe(sub);
-        if (sub.isComplete()) {
-            return;
-        }
-        T value;
+        DeferredScalarSubscription<T> deferred = new DeferredScalarSubscription<T>(s);
+        s.onSubscribe(deferred);
+        
+        T t;
         try {
-            value = callable.call();
-        } catch (Throwable e) {
-            if (!sub.isComplete()) {
-                s.onError(e);
-            }
+            t = Objects.requireNonNull(callable.call(), "The callable returned a null value");
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            s.onError(ex);
             return;
         }
-        if (sub.isComplete()) {
-            return;
-        }
-        sub.setValue(value);
+        
+        deferred.complete(t);
+    }
+    
+    @Override
+    public T call() throws Exception {
+        return Objects.requireNonNull(callable.call(), "The callable returned a null value");
     }
 }

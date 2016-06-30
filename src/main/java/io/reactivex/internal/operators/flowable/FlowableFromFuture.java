@@ -18,7 +18,7 @@ import java.util.concurrent.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
-import io.reactivex.internal.subscriptions.ScalarAsyncSubscription;
+import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
 
 public final class FlowableFromFuture<T> extends Flowable<T> {
     final Future<? extends T> future;
@@ -33,25 +33,24 @@ public final class FlowableFromFuture<T> extends Flowable<T> {
     
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
-        ScalarAsyncSubscription<T> sas = new ScalarAsyncSubscription<T>(s);
-        s.onSubscribe(sas);
-        if (!sas.isComplete()) {
-            T v;
-            try {
-                v = unit != null ? future.get(timeout, unit) : future.get();
-            } catch (Throwable ex) {
-                if (!sas.isComplete()) {
-                    s.onError(ex);
-                }
-                return;
-            } finally {
-                future.cancel(true); // TODO ?? not sure about this
+        DeferredScalarSubscription<T> deferred = new DeferredScalarSubscription<T>(s);
+        s.onSubscribe(deferred);
+        
+        T v;
+        try {
+            v = unit != null ? future.get(timeout, unit) : future.get();
+        } catch (Throwable ex) {
+            if (!deferred.isCancelled()) {
+                s.onError(ex);
             }
-            if (v == null) {
-                s.onError(new NullPointerException("The future returned null"));
-            } else {
-                sas.setValue(v);
-            }
+            return;
+        } finally {
+            future.cancel(true); // TODO ?? not sure about this
+        }
+        if (v == null) {
+            s.onError(new NullPointerException("The future returned null"));
+        } else {
+            deferred.complete(v);
         }
     }
 }

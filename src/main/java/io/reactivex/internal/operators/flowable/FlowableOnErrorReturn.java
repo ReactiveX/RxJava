@@ -36,6 +36,7 @@ public final class FlowableOnErrorReturn<T> extends Flowable<T> {
         source.subscribe(new OnErrorReturnSubscriber<T>(s, valueSupplier));
     }
     
+    // FIXME requires post-complete drain management
     static final class OnErrorReturnSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = -3740826063558713822L;

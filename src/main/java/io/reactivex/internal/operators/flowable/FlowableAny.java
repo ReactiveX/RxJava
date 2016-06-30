@@ -12,13 +12,11 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Predicate;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.subscriptions.*;
 
 public final class FlowableAny<T> extends Flowable<Boolean> {
     final Publisher<T> source;
@@ -33,24 +31,18 @@ public final class FlowableAny<T> extends Flowable<Boolean> {
         source.subscribe(new AnySubscriber<T>(s, predicate));
     }
     
-    static final class AnySubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
+    static final class AnySubscriber<T> extends DeferredScalarSubscription<Boolean> implements Subscriber<T> {
         /** */
         private static final long serialVersionUID = -2311252482644620661L;
         
-        final Subscriber<? super Boolean> actual;
         final Predicate<? super T> predicate;
         
         Subscription s;
         
         boolean done;
 
-        static final int NO_REQUEST_NO_VALUE = 0;
-        static final int NO_REQUEST_HAS_VALUE = 1;
-        static final int HAS_REQUEST_NO_VALUE = 2;
-        static final int HAS_REQUEST_HAS_VALUE = 3;
-
         public AnySubscriber(Subscriber<? super Boolean> actual, Predicate<? super T> predicate) {
-            this.actual = actual;
+            super(actual);
             this.predicate = predicate;
         }
         @Override
@@ -58,6 +50,7 @@ public final class FlowableAny<T> extends Flowable<Boolean> {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 this.s = s;
                 actual.onSubscribe(this);
+                s.request(Long.MAX_VALUE);
             }
         }
         
@@ -70,18 +63,15 @@ public final class FlowableAny<T> extends Flowable<Boolean> {
             try {
                 b = predicate.test(t);
             } catch (Throwable e) {
-                lazySet(HAS_REQUEST_HAS_VALUE);
                 done = true;
                 s.cancel();
                 actual.onError(e);
                 return;
             }
             if (b) {
-                lazySet(HAS_REQUEST_HAS_VALUE);
                 done = true;
                 s.cancel();
-                actual.onNext(true);
-                actual.onComplete();
+                complete(true);
             }
         }
         
@@ -97,53 +87,13 @@ public final class FlowableAny<T> extends Flowable<Boolean> {
         public void onComplete() {
             if (!done) {
                 done = true;
-                for (;;) {
-                    int state = get();
-                    if (state == NO_REQUEST_HAS_VALUE || state == HAS_REQUEST_HAS_VALUE) {
-                        break;
-                    }
-                    if (state == HAS_REQUEST_NO_VALUE) {
-                        if (compareAndSet(HAS_REQUEST_NO_VALUE, HAS_REQUEST_HAS_VALUE)) {
-                            actual.onNext(false);
-                            actual.onComplete();
-                        }
-                        break;
-                    }
-                    if (compareAndSet(NO_REQUEST_NO_VALUE, NO_REQUEST_HAS_VALUE)) {
-                        break;
-                    }
-                }
-            }
-        }
-        
-        @Override
-        public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
-                return;
-            }
-            
-            for (;;) {
-                int state = get();
-                if (state == HAS_REQUEST_NO_VALUE || state == HAS_REQUEST_HAS_VALUE) {
-                    break;
-                }
-                if (state == NO_REQUEST_HAS_VALUE) {
-                    if (compareAndSet(state, HAS_REQUEST_HAS_VALUE)) {
-                        actual.onNext(false);
-                        actual.onComplete();
-                    }
-                    break;
-                }
-                if (compareAndSet(NO_REQUEST_NO_VALUE, HAS_REQUEST_NO_VALUE)) {
-                    s.request(Long.MAX_VALUE);
-                    break;
-                }
+                complete(false);
             }
         }
         
         @Override
         public void cancel() {
-            lazySet(HAS_REQUEST_HAS_VALUE);
+            super.cancel();
             s.cancel();
         }
     }

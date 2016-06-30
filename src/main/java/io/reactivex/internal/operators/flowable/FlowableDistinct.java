@@ -58,19 +58,19 @@ public final class FlowableDistinct<T, K> extends Flowable<T> {
     
     public static <T> FlowableDistinct<T, T> untilChanged(Publisher<T> source) {
         Supplier<? extends Predicate<? super T>> p = new Supplier<Predicate<T>>() {
+            Object last;
             @Override
             public Predicate<T> get() {
-                final Object[] last = { null };
                 
                 return new Predicate<T>() {
                     @Override
                     public boolean test(T t) {
                         if (t == null) {
-                            last[0] = null;
+                            last = null;
                             return true;
                         }
-                        Object o = last[0];
-                        last[0] = t;
+                        Object o = last;
+                        last = t;
                         return !Objects.equals(o, t);
                     }
                 };
@@ -81,19 +81,19 @@ public final class FlowableDistinct<T, K> extends Flowable<T> {
 
     public static <T, K> FlowableDistinct<T, K> untilChanged(Publisher<T> source, Function<? super T, K> keySelector) {
         Supplier<? extends Predicate<? super K>> p = new Supplier<Predicate<K>>() {
+            Object last;
             @Override
             public Predicate<K> get() {
-                final Object[] last = { null };
                 
                 return new Predicate<K>() {
                     @Override
                     public boolean test(K t) {
                         if (t == null) {
-                            last[0] = null;
+                            last = null;
                             return true;
                         }
-                        Object o = last[0];
-                        last[0] = t;
+                        Object o = last;
+                        last = t;
                         return !Objects.equals(o, t);
                     }
                 };
@@ -120,7 +120,7 @@ public final class FlowableDistinct<T, K> extends Flowable<T> {
         source.subscribe(new DistinctSubscriber<T, K>(s, keySelector, coll));
     }
     
-    static final class DistinctSubscriber<T, K> implements Subscriber<T> {
+    static final class DistinctSubscriber<T, K> implements Subscriber<T>, Subscription {
         final Subscriber<? super T> actual;
         final Predicate<? super K> predicate;
         final Function<? super T, K> keySelector;
@@ -137,7 +137,7 @@ public final class FlowableDistinct<T, K> extends Flowable<T> {
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
         
@@ -196,6 +196,17 @@ public final class FlowableDistinct<T, K> extends Flowable<T> {
                 return;
             }
             actual.onComplete();
+        }
+        
+        
+        @Override
+        public void request(long n) {
+            s.request(n);
+        }
+        
+        @Override
+        public void cancel() {
+            s.cancel();
         }
     }
 }

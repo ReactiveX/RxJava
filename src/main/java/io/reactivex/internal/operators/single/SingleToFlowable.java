@@ -16,7 +16,8 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
 
 /**
  * Wraps a Single and exposes it as a Flowable.
@@ -33,27 +34,44 @@ public final class SingleToFlowable<T> extends Flowable<T> {
     
     @Override
     public void subscribeActual(final Subscriber<? super T> s) {
-        final ScalarAsyncSubscription<T> sas = new ScalarAsyncSubscription<T>(s);
-        final AsyncSubscription as = new AsyncSubscription();
-        as.setSubscription(sas);
-        s.onSubscribe(as);
+        source.subscribe(new SingleToFlowableSubscriber<T>(s));
+    }
+    
+    static final class SingleToFlowableSubscriber<T> extends DeferredScalarSubscription<T> 
+    implements SingleSubscriber<T> {
+
+        /** */
+        private static final long serialVersionUID = 187782011903685568L;
         
-        source.subscribe(new SingleSubscriber<T>() {
-            @Override
-            public void onError(Throwable e) {
-                s.onError(e);
-            }
+        Disposable d;
+        
+        public SingleToFlowableSubscriber(Subscriber<? super T> actual) {
+            super(actual);
+        }
 
-            @Override
-            public void onSubscribe(Disposable d) {
-                as.setResource(d);
+        @Override
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.d, d)) {
+                this.d = d;
+                
+                actual.onSubscribe(this);
             }
+        }
 
-            @Override
-            public void onSuccess(T value) {
-                sas.setValue(value);
-            }
-            
-        });
+        @Override
+        public void onSuccess(T value) {
+            complete(value);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            actual.onError(e);
+        }
+
+        @Override
+        public void cancel() {
+            super.cancel();
+            d.dispose();
+        }
     }
 }

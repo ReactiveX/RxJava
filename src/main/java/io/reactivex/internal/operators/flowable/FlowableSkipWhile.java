@@ -17,7 +17,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Predicate;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableSkipWhile<T> extends Flowable<T> {
     final Publisher<T> source;
@@ -32,7 +32,7 @@ public final class FlowableSkipWhile<T> extends Flowable<T> {
         source.subscribe(new SkipWhileSubscriber<T>(s, predicate));
     }
     
-    static final class SkipWhileSubscriber<T> implements Subscriber<T> {
+    static final class SkipWhileSubscriber<T> implements Subscriber<T>, Subscription {
         final Subscriber<? super T> actual;
         final Predicate<? super T> predicate;
         Subscription s;
@@ -44,13 +44,10 @@ public final class FlowableSkipWhile<T> extends Flowable<T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
-                return;
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
             }
-            this.s = s;
-            actual.onSubscribe(s);
         }
         
         @Override
@@ -84,5 +81,16 @@ public final class FlowableSkipWhile<T> extends Flowable<T> {
         public void onComplete() {
             actual.onComplete();
         }
+        
+        @Override
+        public void request(long n) {
+            s.request(n);
+        }
+        
+        @Override
+        public void cancel() {
+            s.cancel();
+        }
+
     }
 }

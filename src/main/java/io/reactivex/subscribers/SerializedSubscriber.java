@@ -15,6 +15,7 @@ package io.reactivex.subscribers;
 import org.reactivestreams.*;
 
 import io.reactivex.functions.Predicate;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -28,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * 
  * @param <T> the value type
  */
-public final class SerializedSubscriber<T> implements Subscriber<T> {
+public final class SerializedSubscriber<T> implements Subscriber<T>, Subscription {
     final Subscriber<? super T> actual;
     final boolean delayError;
     
@@ -51,14 +52,10 @@ public final class SerializedSubscriber<T> implements Subscriber<T> {
     }
     @Override
     public void onSubscribe(Subscription s) {
-        if (subscription != null) {
-            s.cancel();
-            onError(new IllegalStateException("Subscription already set!"));
-            return;
+        if (SubscriptionHelper.validateSubscription(this.subscription, s)) {
+            this.subscription = s;
+            actual.onSubscribe(this);
         }
-        this.subscription = s;
-        
-        actual.onSubscribe(s);
     }
     
     @Override
@@ -184,5 +181,15 @@ public final class SerializedSubscriber<T> implements Subscriber<T> {
     
     boolean accept(Object value) {
         return NotificationLite.accept(value, actual);
+    }
+    
+    @Override
+    public void request(long n) {
+        subscription.request(n);
+    }
+    
+    @Override
+    public void cancel() {
+        subscription.cancel();
     }
 }

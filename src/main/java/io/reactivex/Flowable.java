@@ -25,6 +25,7 @@ import io.reactivex.flowables.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.fuseable.ScalarCallable;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
@@ -1455,6 +1456,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
+        if (this instanceof ScalarCallable) {
+            @SuppressWarnings("unchecked")
+            T v = ((ScalarCallable<T>)this).call();
+            if (v == null) {
+                return empty();
+            }
+            return ScalarXMap.scalarXMap(v, mapper);
+        }
         if (prefetch <= 0) {
             throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
         }
@@ -1926,14 +1935,18 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, 
             boolean delayErrors, int maxConcurrency, int bufferSize) {
         Objects.requireNonNull(mapper, "mapper is null");
+        if (this instanceof ScalarCallable) {
+            @SuppressWarnings("unchecked")
+            T v = ((ScalarCallable<T>)this).call();
+            if (v == null) {
+                return empty();
+            }
+            return ScalarXMap.scalarXMap(v, mapper);
+        }
         if (maxConcurrency <= 0) {
             throw new IllegalArgumentException("maxConcurrency > 0 required but it was " + maxConcurrency);
         }
         validateBufferSize(bufferSize);
-        if (this instanceof FlowableJust) {
-            FlowableJust<T> scalar = (FlowableJust<T>) this;
-            return create(scalar.scalarFlatMap(mapper));
-        }
         return new FlowableFlatMap<T, R>(this, mapper, delayErrors, maxConcurrency, bufferSize);
     }
 
@@ -2996,6 +3009,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> switchMap(Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize) {
         Objects.requireNonNull(mapper, "mapper is null");
+        if (this instanceof ScalarCallable) {
+            @SuppressWarnings("unchecked")
+            T v = ((ScalarCallable<T>)this).call();
+            if (v == null) {
+                return empty();
+            }
+            return ScalarXMap.scalarXMap(v, mapper);
+        }
         validateBufferSize(bufferSize);
         return new FlowableSwitchMap<T, R>(this, mapper, bufferSize);
     }
