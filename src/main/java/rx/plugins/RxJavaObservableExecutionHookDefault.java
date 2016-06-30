@@ -18,10 +18,15 @@ package rx.plugins;
 /**
  * Default no-op implementation of {@link RxJavaObservableExecutionHook}
  */
-/* package */class RxJavaObservableExecutionHookDefault extends RxJavaObservableExecutionHook {
+/* package */final class RxJavaObservableExecutionHookDefault extends RxJavaObservableExecutionHook {
 
-    private static RxJavaObservableExecutionHookDefault INSTANCE = new RxJavaObservableExecutionHookDefault();
+    private static final RxJavaObservableExecutionHookDefault INSTANCE = new RxJavaObservableExecutionHookDefault();
 
+    /** Utility class. */
+    private RxJavaObservableExecutionHookDefault() {
+        
+    }
+    
     public static RxJavaObservableExecutionHook getInstance() {
         return INSTANCE;
     }

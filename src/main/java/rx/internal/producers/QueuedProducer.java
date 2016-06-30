@@ -76,7 +76,7 @@ public final class QueuedProducer<T> extends AtomicLong implements Producer, Obs
     }
     
     /**
-     * Offers a value to this producer and tries to emit any queud values
+     * Offers a value to this producer and tries to emit any queued values
      * if the child requests allow it.
      * @param value the value to enqueue and attempt to drain
      * @return true if the queue accepted the offer, false otherwise
@@ -169,9 +169,7 @@ public final class QueuedProducer<T> extends AtomicLong implements Producer, Obs
                             c.onNext(t);
                         }
                     } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        Throwable ex1 = OnErrorThrowable.addValueAsLastCause(ex, v != NULL_SENTINEL ? v : null);
-                        c.onError(ex1);
+                        Exceptions.throwOrReport(ex, c, v != NULL_SENTINEL ? v : null);
                         return;
                     }
                     r--;

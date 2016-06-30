@@ -36,7 +36,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -594,7 +594,7 @@ public class OperatorZipTest {
     }
 
     private Func2<Integer, Integer, Integer> getDivideZipr() {
-        Func2<Integer, Integer, Integer> zipr = new Func2<Integer, Integer, Integer>() {
+        return new Func2<Integer, Integer, Integer>() {
 
             @Override
             public Integer call(Integer i1, Integer i2) {
@@ -602,11 +602,10 @@ public class OperatorZipTest {
             }
 
         };
-        return zipr;
     }
 
     private Func3<String, String, String, String> getConcat3StringsZipr() {
-        Func3<String, String, String, String> zipr = new Func3<String, String, String, String>() {
+        return new Func3<String, String, String, String>() {
 
             @Override
             public String call(String a1, String a2, String a3) {
@@ -623,11 +622,10 @@ public class OperatorZipTest {
             }
 
         };
-        return zipr;
     }
 
     private Func2<String, Integer, String> getConcatStringIntegerZipr() {
-        Func2<String, Integer, String> zipr = new Func2<String, Integer, String>() {
+        return new Func2<String, Integer, String>() {
 
             @Override
             public String call(String s, Integer i) {
@@ -635,11 +633,10 @@ public class OperatorZipTest {
             }
 
         };
-        return zipr;
     }
 
     private Func3<String, Integer, int[], String> getConcatStringIntegerIntArrayZipr() {
-        Func3<String, Integer, int[], String> zipr = new Func3<String, Integer, int[], String>() {
+        return new Func3<String, Integer, int[], String>() {
 
             @Override
             public String call(String s, Integer i, int[] iArray) {
@@ -647,7 +644,6 @@ public class OperatorZipTest {
             }
 
         };
-        return zipr;
     }
 
     private static String getStringValue(Object o) {
@@ -1002,6 +998,71 @@ public class OperatorZipTest {
         ts.assertReceivedOnNext(Collections.emptyList());
     }
 
+    @Test
+    public void testZipEmptyArray() {
+        @SuppressWarnings("unchecked")
+        Observable<Integer>[] ws = new Observable[0];
+        Observable<Integer> o = Observable.zip(ws, new FuncN<Integer>() {
+            @Override
+            public Integer call(Object... args) {
+                assertEquals("No argument should have been passed", 0, args.length);
+                return 0;
+            }
+        });
+
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        o.subscribe(ts);
+        ts.awaitTerminalEvent(200, TimeUnit.MILLISECONDS);
+        ts.assertReceivedOnNext(Collections.emptyList());
+    }
+
+    @Test
+    public void testZipArraySingleItem() {
+        final Integer expected = 0;
+        @SuppressWarnings("unchecked")
+        Observable<Integer>[] ws = new Observable[]{ Observable.just(expected) };
+
+        Observable<Integer> o = Observable.zip(ws, new FuncN<Integer>() {
+            @Override
+            public Integer call(Object... args) {
+                assertEquals("One argument should have been passed", 1, args.length);
+                return expected;
+            }
+        });
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        o.subscribe(ts);
+        ts.awaitTerminalEvent(200, TimeUnit.MILLISECONDS);
+        ts.assertReceivedOnNext(Collections.singletonList(expected));
+    }
+
+    @Test
+    public void testZipBigArray() {
+        final int size = 20;
+        Integer expected = 0;
+        @SuppressWarnings("unchecked")
+        Observable<Integer>[] ws = new Observable[size];
+
+        for (int i = 0, wsLength = ws.length; i < wsLength; i++) {
+            ws[i] = Observable.just(i);
+            expected += i;
+        }
+
+        final Integer finalExpected = expected;
+        Observable<Integer> o = Observable.zip(ws, new FuncN<Integer>() {
+            @Override
+            public Integer call(Object... args) {
+                assertEquals(size + " arguments should have been passed", size, args.length);
+                return finalExpected;
+            }
+        });
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        o.subscribe(ts);
+        ts.awaitTerminalEvent(200, TimeUnit.MILLISECONDS);
+        ts.assertReceivedOnNext(Collections.singletonList(expected));
+    }
+
     /**
      * Expect NoSuchElementException instead of blocking forever as zip should emit onCompleted and no onNext
      * and last() expects at least a single response.
@@ -1147,7 +1208,7 @@ public class OperatorZipTest {
     }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
-        Observable<Integer> observable = Observable.from(new Iterable<Integer>() {
+        return Observable.from(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
@@ -1168,7 +1229,6 @@ public class OperatorZipTest {
                 };
             }
         });
-        return observable;
     }
 
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
@@ -1246,7 +1306,7 @@ public class OperatorZipTest {
         assertEquals(expected, zip2.toList().toBlocking().single());
     }
     @Test
-    public void testUnboundedDownstreamOverrequesting() {
+    public void testUnboundedDownstreamOverRequesting() {
         Observable<Integer> source = Observable.range(1, 2).zipWith(Observable.range(1, 2), new Func2<Integer, Integer, Integer>() {
             @Override
             public Integer call(Integer t1, Integer t2) {
@@ -1312,5 +1372,33 @@ public class OperatorZipTest {
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(11));
+    }
+    
+    @SuppressWarnings("cast")
+    @Test
+    public void testZipObservableObservableBackpressure() {
+        @SuppressWarnings("unchecked")
+        Observable<Integer>[] osArray = new Observable[] { 
+                Observable.range(0, 10), 
+                Observable.range(0, 10) 
+        };
+        
+        Observable<Observable<Integer>> os = (Observable<Observable<Integer>>) Observable.from(osArray);
+        Observable<Integer> o1 = Observable.zip(os, new FuncN<Integer>() {
+            @Override
+            public Integer call(Object... a) {
+                return 0;
+            }
+        });
+        
+        TestSubscriber<Integer> sub1 = TestSubscriber.create(5);
+        
+        o1.subscribe(sub1);
+
+        sub1.requestMore(5);
+
+        sub1.assertValueCount(10);
+        sub1.assertNoErrors();
+        sub1.assertCompleted();
     }
 }

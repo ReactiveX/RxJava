@@ -15,19 +15,19 @@
  */
 package rx.internal.operators;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Scheduler;
-import rx.Subscriber;
 import rx.schedulers.Timestamped;
 
 /**
  * Wraps each item emitted by a source {@code Observable} in a {@link Timestamped} object.
  * <p>
  * <img width="640" height="310" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.png" alt="">
+ * @param <T> the value type
  */
 public final class OperatorTimestamp<T> implements Operator<Timestamped<T>, T> {
 
-    private final Scheduler scheduler;
+    final Scheduler scheduler;
 
     public OperatorTimestamp(Scheduler scheduler) {
         this.scheduler = scheduler;

@@ -15,16 +15,19 @@
  */
 package rx.internal.operators;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Subscriber;
-import rx.exceptions.OnErrorThrowable;
+import rx.exceptions.*;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Converts the elements of an observable sequence to the specified type.
+ * @param <T> the input value type
+ * @param <R> the output value type
  */
 public class OperatorCast<T, R> implements Operator<R, T> {
 
-    private final Class<R> castClass;
+    final Class<R> castClass;
 
     public OperatorCast(Class<R> castClass) {
         this.castClass = castClass;
@@ -32,26 +35,63 @@ public class OperatorCast<T, R> implements Operator<R, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super R> o) {
-        return new Subscriber<T>(o) {
+        CastSubscriber<T, R> parent = new CastSubscriber<T, R>(o, castClass);
+        o.add(parent);
+        return parent;
+    }
+    
+    static final class CastSubscriber<T, R> extends Subscriber<T> {
+        
+        final Subscriber<? super R> actual;
+        
+        final Class<R> castClass;
 
-            @Override
-            public void onCompleted() {
-                o.onCompleted();
+        boolean done;
+        
+        public CastSubscriber(Subscriber<? super R> actual, Class<R> castClass) {
+            this.actual = actual;
+            this.castClass = castClass;
+        }
+        
+        @Override
+        public void onNext(T t) {
+            R result;
+            
+            try {
+                result = castClass.cast(t);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                unsubscribe();
+                onError(OnErrorThrowable.addValueAsLastCause(ex, t));
+                return;
             }
-
-            @Override
-            public void onError(Throwable e) {
-                o.onError(e);
+            
+            actual.onNext(result);
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            if (done) {
+                RxJavaHooks.onError(e);
+                return;
             }
-
-            @Override
-            public void onNext(T t) {
-                try {
-                    o.onNext(castClass.cast(t));
-                } catch (Throwable e) {
-                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
-                }
+            done = true;
+            
+            actual.onError(e);
+        }
+        
+        
+        @Override
+        public void onCompleted() {
+            if (done) {
+                return;
             }
-        };
+            actual.onCompleted();
+        }
+        
+        @Override
+        public void setProducer(Producer p) {
+            actual.setProducer(p);
+        }
     }
 }

@@ -70,7 +70,7 @@ abstract class BaseLinkedAtomicQueue<E> extends AbstractQueue<E> {
         // must chase the nodes all the way to the producer node, but there's no need to chase a moving target.
         while (chaserNode != producerNode && size < Integer.MAX_VALUE) {
             LinkedQueueNode<E> next;
-            while((next = chaserNode.lvNext()) == null);
+            while((next = chaserNode.lvNext()) == null); // NOPMD 
             chaserNode = next;
             size++;
         }
@@ -83,8 +83,6 @@ abstract class BaseLinkedAtomicQueue<E> extends AbstractQueue<E> {
      * Queue is empty when producerNode is the same as consumerNode. An alternative implementation would be to observe
      * the producerNode.value is null, which also means an empty queue because only the consumerNode.value is allowed to
      * be null.
-     * 
-     * @see MessagePassingQueue#isEmpty()
      */
     @Override
     public final boolean isEmpty() {

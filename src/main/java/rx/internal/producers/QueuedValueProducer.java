@@ -73,7 +73,7 @@ public final class QueuedValueProducer<T> extends AtomicLong implements Producer
     }
     
     /**
-     * Offers a value to this producer and tries to emit any queud values
+     * Offers a value to this producer and tries to emit any queued values
      * if the child requests allow it.
      * @param value the value to enqueue and attempt to drain
      * @return true if the queue accepted the offer, false otherwise
@@ -117,9 +117,7 @@ public final class QueuedValueProducer<T> extends AtomicLong implements Producer
                             c.onNext(t);
                         }
                     } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        Throwable ex1 = OnErrorThrowable.addValueAsLastCause(ex, v != NULL_SENTINEL ? v : null);
-                        c.onError(ex1);
+                        Exceptions.throwOrReport(ex, c, v != NULL_SENTINEL ? v : null);
                         return;
                     }
                     if (c.isUnsubscribed()) {

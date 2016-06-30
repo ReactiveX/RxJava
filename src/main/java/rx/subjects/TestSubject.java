@@ -34,6 +34,9 @@ import java.util.concurrent.TimeUnit;
  *          the type of item observed by and emitted by the subject
  */
 public final class TestSubject<T> extends Subject<T, T> {
+    private final SubjectSubscriptionManager<T> state;
+    private final Scheduler.Worker innerScheduler;
+
 
     /**
      * Creates and returns a new {@code TestSubject}.
@@ -49,7 +52,7 @@ public final class TestSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(SubjectObserver<T> o) {
-                o.emitFirst(state.get(), state.nl);
+                o.emitFirst(state.getLatest(), state.nl);
             }
             
         };
@@ -57,9 +60,6 @@ public final class TestSubject<T> extends Subject<T, T> {
 
         return new TestSubject<T>(state, state, scheduler);
     }
-
-    private final SubjectSubscriptionManager<T> state;
-    private final Scheduler.Worker innerScheduler;
 
     protected TestSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state, TestScheduler scheduler) {
         super(onSubscribe);
@@ -75,7 +75,7 @@ public final class TestSubject<T> extends Subject<T, T> {
         onCompleted(0);
     }
 
-    private void _onCompleted() {
+    void internalOnCompleted() {
         if (state.active) {
             for (SubjectObserver<T> bo : state.terminate(NotificationLite.instance().completed())) {
                 bo.onCompleted();
@@ -94,7 +94,7 @@ public final class TestSubject<T> extends Subject<T, T> {
 
             @Override
             public void call() {
-                _onCompleted();
+                internalOnCompleted();
             }
 
         }, delayTime, TimeUnit.MILLISECONDS);
@@ -108,7 +108,7 @@ public final class TestSubject<T> extends Subject<T, T> {
         onError(e, 0);
     }
 
-    private void _onError(final Throwable e) {
+    void internalOnError(final Throwable e) {
         if (state.active) {
             for (SubjectObserver<T> bo : state.terminate(NotificationLite.instance().error(e))) {
                 bo.onError(e);
@@ -121,18 +121,18 @@ public final class TestSubject<T> extends Subject<T, T> {
      *
      * @param e
      *         the {@code Throwable} to pass to the {@code onError} method
-     * @param dalayTime
+     * @param delayTime
      *         the number of milliseconds in the future relative to "now()" at which to call {@code onError}
      */
-    public void onError(final Throwable e, long dalayTime) {
+    public void onError(final Throwable e, long delayTime) {
         innerScheduler.schedule(new Action0() {
 
             @Override
             public void call() {
-                _onError(e);
+                internalOnError(e);
             }
 
-        }, dalayTime, TimeUnit.MILLISECONDS);
+        }, delayTime, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -143,7 +143,7 @@ public final class TestSubject<T> extends Subject<T, T> {
         onNext(v, 0);
     }
 
-    private void _onNext(T v) {
+    void internalOnNext(T v) {
         for (Observer<? super T> o : state.observers()) {
             o.onNext(v);
         }
@@ -162,7 +162,7 @@ public final class TestSubject<T> extends Subject<T, T> {
 
             @Override
             public void call() {
-                _onNext(v);
+                internalOnNext(v);
             }
 
         }, delayTime, TimeUnit.MILLISECONDS);

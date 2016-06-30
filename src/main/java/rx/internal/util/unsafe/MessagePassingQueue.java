@@ -29,7 +29,7 @@ import java.util.Queue;
  * 
  * @param <M> the event/message type
  */
-interface MessagePassingQueue<M> {
+public interface MessagePassingQueue<M> {
     
     /**
      * Called from a producer thread subject to the restrictions appropriate to the implementation and according to the

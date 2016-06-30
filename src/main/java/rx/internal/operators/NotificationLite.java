@@ -31,19 +31,20 @@ import rx.Observer;
  * <p>
  * It's implemented as a singleton to maintain some semblance of type safety that is completely non-existent.
  * 
- * @param <T>
- * @warn type param undescribed
+ * @param <T> the element type
  */
 public final class NotificationLite<T> {
-    private NotificationLite() {
-    }
-
     @SuppressWarnings("rawtypes")
     private static final NotificationLite INSTANCE = new NotificationLite();
+
+    private NotificationLite() {
+        // singleton
+    }
 
     /**
      * Gets the {@code NotificationLite} singleton.
      *
+     * @param <T> the value type
      * @return the sole {@code NotificationLite} object
      */
     @SuppressWarnings("unchecked")
@@ -69,9 +70,9 @@ public final class NotificationLite<T> {
         }
     };
 
-    private static class OnErrorSentinel implements Serializable {
+    static final class OnErrorSentinel implements Serializable {
         private static final long serialVersionUID = 3;
-        private final Throwable e;
+        final Throwable e;
 
         public OnErrorSentinel(Throwable e) {
             this.e = e;
@@ -92,10 +93,11 @@ public final class NotificationLite<T> {
      * @return the item, or a null token representing the item if the item is {@code null}
      */
     public Object next(T t) {
-        if (t == null)
+        if (t == null) {
             return ON_NEXT_NULL_SENTINEL;
-        else
+        } else {
             return t;
+        }
     }
 
     /**
@@ -206,15 +208,16 @@ public final class NotificationLite<T> {
      *         {@code Kind.OnError}, or {@code Kind.OnNext}
      */
     public Kind kind(Object n) {
-        if (n == null)
+        if (n == null) {
             throw new IllegalArgumentException("The lite notification can not be null");
-        else if (n == ON_COMPLETED_SENTINEL)
+        } else if (n == ON_COMPLETED_SENTINEL) {
             return Kind.OnCompleted;
-        else if (n instanceof OnErrorSentinel)
+        } else if (n instanceof OnErrorSentinel) {
             return Kind.OnError;
-        else
+        } else {
             // value or ON_NEXT_NULL_SENTINEL but either way it's an OnNext
             return Kind.OnNext;
+        }
     }
 
     /**

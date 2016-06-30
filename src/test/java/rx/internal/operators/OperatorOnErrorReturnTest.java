@@ -30,9 +30,11 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
+import rx.exceptions.TestException;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class OperatorOnErrorReturnTest {
 
@@ -217,6 +219,33 @@ public class OperatorOnErrorReturnTest {
         }
     }
     
-    
-    
+    @Test
+    public void normalBackpressure() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        ps.onErrorReturn(new Func1<Throwable, Integer>() {
+            @Override
+            public Integer call(Throwable e) {
+                return 3;
+            }
+        }).subscribe(ts);
+        
+        ts.requestMore(2);
+        
+        ps.onNext(1);
+        ps.onNext(2);
+        ps.onError(new TestException("Forced failure"));
+
+        ts.assertValues(1, 2);
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+
+        ts.requestMore(2);
+        
+        ts.assertValues(1, 2, 3);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
 }

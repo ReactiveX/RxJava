@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Scheduler;
+import rx.Scheduler.Worker;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -101,7 +102,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
             @Override
             public String call(Integer t) {
-                assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+                assertTrue(Thread.currentThread().getName().startsWith("RxComputationScheduler"));
                 return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
             }
         });
@@ -128,7 +129,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             @Override
             public String call(Integer t) {
                 assertFalse(Thread.currentThread().getName().equals(currentThreadName));
-                assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+                assertTrue(Thread.currentThread().getName().startsWith("RxComputationScheduler"));
                 return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
             }
         });
@@ -150,5 +151,21 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     @Test
     public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
         SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
+    }
+    
+    @Test(timeout = 60000)
+    public void testCancelledTaskRetention() throws InterruptedException {
+        Worker w = Schedulers.computation().createWorker();
+        try {
+            SchedulerTests.testCancelledRetention(w, false);
+        } finally {
+            w.unsubscribe();
+        }
+        w = Schedulers.computation().createWorker();
+        try {
+            SchedulerTests.testCancelledRetention(w, true);
+        } finally {
+            w.unsubscribe();
+        }
     }
 }

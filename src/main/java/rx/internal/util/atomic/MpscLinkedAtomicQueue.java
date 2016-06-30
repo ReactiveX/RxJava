@@ -52,13 +52,12 @@ public final class MpscLinkedAtomicQueue<E> extends BaseLinkedAtomicQueue<E> {
      * This works because each producer is guaranteed to 'plant' a new node and link the old node. No 2 producers can
      * get the same producer node as part of XCHG guarantee.
      * 
-     * @see MessagePassingQueue#offer(Object)
      * @see java.util.Queue#offer(java.lang.Object)
      */
     @Override
-    public final boolean offer(final E nextValue) {
+    public boolean offer(final E nextValue) {
         if (nextValue == null) {
-            throw new IllegalArgumentException("null elements not allowed");
+            throw new NullPointerException("null elements not allowed");
         }
         final LinkedQueueNode<E> nextNode = new LinkedQueueNode<E>(nextValue);
         final LinkedQueueNode<E> prevProducerNode = xchgProducerNode(nextNode);
@@ -81,11 +80,10 @@ public final class MpscLinkedAtomicQueue<E> extends BaseLinkedAtomicQueue<E> {
      * This means the consumerNode.value is always null, which is also the starting point for the queue. Because null
      * values are not allowed to be offered this is the only node with it's value set to null at any one time.
      * 
-     * @see MessagePassingQueue#poll()
      * @see java.util.Queue#poll()
      */
     @Override
-    public final E poll() {
+    public E poll() {
         LinkedQueueNode<E> currConsumerNode = lpConsumerNode(); // don't load twice, it's alright
         LinkedQueueNode<E> nextNode = currConsumerNode.lvNext();
         if (nextNode != null) {
@@ -96,7 +94,7 @@ public final class MpscLinkedAtomicQueue<E> extends BaseLinkedAtomicQueue<E> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null);
+            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD 
             // got the next node...
             
             // we have to null out the value because we are going to hang on to the node
@@ -108,7 +106,7 @@ public final class MpscLinkedAtomicQueue<E> extends BaseLinkedAtomicQueue<E> {
     }
 
     @Override
-    public final E peek() {
+    public E peek() {
         LinkedQueueNode<E> currConsumerNode = lpConsumerNode(); // don't load twice, it's alright
         LinkedQueueNode<E> nextNode = currConsumerNode.lvNext();
         if (nextNode != null) {
@@ -116,7 +114,7 @@ public final class MpscLinkedAtomicQueue<E> extends BaseLinkedAtomicQueue<E> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null);
+            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD 
             // got the next node...
             return nextNode.lpValue();
         }

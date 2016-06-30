@@ -15,6 +15,17 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -27,18 +38,8 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.exceptions.CompositeException;
 import rx.exceptions.TestException;
+import rx.functions.Action1;
 import rx.observers.TestSubscriber;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.*;
 
 public class OperatorMergeDelayErrorTest {
 
@@ -66,7 +67,9 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, times(1)).onNext("four");
         verify(stringObserver, times(0)).onNext("five");
         // despite not expecting it ... we don't do anything to prevent it if the source Observable keeps sending after onError
-        verify(stringObserver, times(1)).onNext("six");
+        // inner observable errors are considered terminal for that source
+//        verify(stringObserver, times(1)).onNext("six");
+        // inner observable errors are considered terminal for that source
     }
 
     @Test
@@ -87,7 +90,8 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, times(1)).onNext("four");
         verify(stringObserver, times(0)).onNext("five");
         // despite not expecting it ... we don't do anything to prevent it if the source Observable keeps sending after onError
-        verify(stringObserver, times(1)).onNext("six");
+        // inner observable errors are considered terminal for that source
+//        verify(stringObserver, times(1)).onNext("six");
         verify(stringObserver, times(1)).onNext("seven");
         verify(stringObserver, times(1)).onNext("eight");
         verify(stringObserver, times(1)).onNext("nine");
@@ -188,7 +192,8 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, times(1)).onNext("four");
         verify(stringObserver, times(0)).onNext("five");
         // despite not expecting it ... we don't do anything to prevent it if the source Observable keeps sending after onError
-        verify(stringObserver, times(1)).onNext("six");
+        // inner observable errors are considered terminal for that source
+//        verify(stringObserver, times(1)).onNext("six");
     }
 
     @Test
@@ -267,6 +272,23 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, times(2)).onNext("hello");
     }
 
+    // This is pretty much a clone of testMergeList but with the overloaded MergeDelayError for Iterables
+    @Test     
+    public void mergeIterable() {
+        final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
+        final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
+        List<Observable<String>> listOfObservables = new ArrayList<Observable<String>>();
+        listOfObservables.add(o1);
+        listOfObservables.add(o2);
+
+        Observable<String> m = Observable.mergeDelayError(listOfObservables);
+        m.subscribe(stringObserver);
+
+        verify(stringObserver, never()).onError(any(Throwable.class));
+        verify(stringObserver, times(1)).onCompleted();
+        verify(stringObserver, times(2)).onNext("hello");	
+    }
+
     @Test
     public void testMergeArrayWithThreading() {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
@@ -287,7 +309,7 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, times(1)).onCompleted();
     }
 
-    @Test(timeout=1000L)
+    @Test(timeout = 1000L)
     public void testSynchronousError() {
         final Observable<Observable<String>> o1 = Observable.error(new RuntimeException("unit test"));
 
@@ -472,6 +494,10 @@ public class OperatorMergeDelayErrorTest {
             
         });
         
+        /*
+         * If the child onNext throws, why would we keep accepting values from
+         * other sources?
+         */
         inOrder.verify(o).onNext(2);
         inOrder.verify(o, never()).onNext(0);
         inOrder.verify(o, never()).onNext(1);
@@ -545,5 +571,27 @@ public class OperatorMergeDelayErrorTest {
             });
             t.start();
         }
+    }
+    @Test
+    public void testDelayErrorMaxConcurrent() {
+        final List<Long> requests = new ArrayList<Long>();
+        Observable<Integer> source = Observable.mergeDelayError(Observable.just(
+                Observable.just(1).asObservable(), 
+                Observable.<Integer>error(new TestException())).doOnRequest(new Action1<Long>() {
+                    @Override
+                    public void call(Long t1) {
+                        requests.add(t1);
+                    }
+                }), 1);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.subscribe(ts);
+        
+        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertTerminalEvent();
+        assertEquals(1, ts.getOnErrorEvents().size());
+        assertTrue(ts.getOnErrorEvents().get(0) instanceof TestException);
+        assertEquals(Arrays.asList(1L, 1L, 1L), requests);
     }
 }

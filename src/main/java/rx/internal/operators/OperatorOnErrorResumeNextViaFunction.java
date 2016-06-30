@@ -20,7 +20,7 @@ import rx.Observable.Operator;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.internal.producers.ProducerArbiter;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.SerialSubscription;
 
 /**
@@ -40,10 +40,41 @@ import rx.subscriptions.SerialSubscription;
  * <p>
  * You can use this to prevent errors from propagating or to supply fallback data should errors be
  * encountered.
+ * @param <T> the value type
  */
 public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T, T> {
 
-    private final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction;
+    final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction;
+
+    public static <T> OperatorOnErrorResumeNextViaFunction<T> withSingle(final Func1<Throwable, ? extends T> resumeFunction) {
+        return new OperatorOnErrorResumeNextViaFunction<T>(new Func1<Throwable, Observable<? extends T>>() {
+            @Override
+            public Observable<? extends T> call(Throwable t) {
+                return Observable.just(resumeFunction.call(t));
+            }
+        });
+    }
+
+    public static <T> OperatorOnErrorResumeNextViaFunction<T> withOther(final Observable<? extends T> other) {
+        return new OperatorOnErrorResumeNextViaFunction<T>(new Func1<Throwable, Observable<? extends T>>() {
+            @Override
+            public Observable<? extends T> call(Throwable t) {
+                return other;
+            }
+        });
+    }
+
+    public static <T> OperatorOnErrorResumeNextViaFunction<T> withException(final Observable<? extends T> other) {
+        return new OperatorOnErrorResumeNextViaFunction<T>(new Func1<Throwable, Observable<? extends T>>() {
+            @Override
+            public Observable<? extends T> call(Throwable t) {
+                if (t instanceof Exception) {
+                    return other;
+                }
+                return Observable.error(t);
+            }
+        });
+    }
 
     public OperatorOnErrorResumeNextViaFunction(Func1<Throwable, ? extends Observable<? extends T>> f) {
         this.resumeFunction = f;
@@ -52,10 +83,14 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         final ProducerArbiter pa = new ProducerArbiter();
+        
         final SerialSubscription ssub = new SerialSubscription();
+        
         Subscriber<T> parent = new Subscriber<T>() {
 
-            private boolean done = false;
+            private boolean done;
+        
+            long produced;
             
             @Override
             public void onCompleted() {
@@ -70,12 +105,13 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
             public void onError(Throwable e) {
                 if (done) {
                     Exceptions.throwIfFatal(e);
+                    RxJavaHooks.onError(e);
                     return;
                 }
                 done = true;
                 try {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     unsubscribe();
+
                     Subscriber<T> next = new Subscriber<T>() {
                         @Override
                         public void onNext(T t) {
@@ -96,10 +132,16 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
                     };
                     ssub.set(next);
                     
+                    long p = produced;
+                    if (p != 0L) {
+                        pa.produced(p);
+                    }
+                    
                     Observable<? extends T> resume = resumeFunction.call(e);
+                    
                     resume.unsafeSubscribe(next);
                 } catch (Throwable e2) {
-                    child.onError(e2);
+                    Exceptions.throwOrReport(e2, child);
                 }
             }
 
@@ -108,6 +150,7 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
                 if (done) {
                     return;
                 }
+                produced++;
                 child.onNext(t);
             }
             
@@ -117,9 +160,11 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
             }
 
         };
-        child.add(ssub);
         ssub.set(parent);
+
+        child.add(ssub);
         child.setProducer(pa);
+        
         return parent;
     }
 

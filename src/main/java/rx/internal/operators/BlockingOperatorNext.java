@@ -15,15 +15,12 @@
  */
 package rx.internal.operators;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.Notification;
+import rx.*;
 import rx.Observable;
-import rx.Subscriber;
 import rx.exceptions.Exceptions;
 
 /**
@@ -40,6 +37,7 @@ public final class BlockingOperatorNext {
      * Returns an {@code Iterable} that blocks until the {@code Observable} emits another item, then returns
      * that item.
      *
+     * @param <T> the value type
      * @param items
      *            the {@code Observable} to observe
      * @return an {@code Iterable} that behaves like a blocking version of {@code items}
@@ -63,10 +61,10 @@ public final class BlockingOperatorNext {
         private T next;
         private boolean hasNext = true;
         private boolean isNextConsumed = true;
-        private Throwable error = null;
-        private boolean started = false;
+        private Throwable error;
+        private boolean started;
 
-        private NextIterator(Observable<? extends T> items, NextObserver<T> observer) {
+        NextIterator(Observable<? extends T> items, NextObserver<T> observer) {
             this.items = items;
             this.observer = observer;
         }
@@ -79,24 +77,25 @@ public final class BlockingOperatorNext {
             }
             // Since an iterator should not be used in different thread,
             // so we do not need any synchronization.
-            if (hasNext == false) {
+            if (!hasNext) {
                 // the iterator has reached the end.
                 return false;
             }
-            if (isNextConsumed == false) {
+            if (!isNextConsumed) {
                 // next has not been used yet.
                 return true;
             }
             return moveToNext();
         }
 
+        @SuppressWarnings("unchecked")
         private boolean moveToNext() {
             try {
                 if (!started) {
                     started = true;
                     // if not started, start now
                     observer.setWaiting(1);
-                    items.materialize().subscribe(observer);
+                    ((Observable<T>)items).materialize().subscribe(observer);
                 }
                 
                 Notification<? extends T> nextNotification = observer.takeNext();
@@ -120,7 +119,7 @@ public final class BlockingOperatorNext {
                 observer.unsubscribe();
                 Thread.currentThread().interrupt();
                 error = e;
-                throw Exceptions.propagate(error);
+                throw Exceptions.propagate(e);
             }
         }
 
@@ -145,13 +144,9 @@ public final class BlockingOperatorNext {
         }
     }
 
-    private static class NextObserver<T> extends Subscriber<Notification<? extends T>> {
+    static final class NextObserver<T> extends Subscriber<Notification<? extends T>> {
         private final BlockingQueue<Notification<? extends T>> buf = new ArrayBlockingQueue<Notification<? extends T>>(1);
-        @SuppressWarnings("unused")
-        volatile int waiting;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<NextObserver> WAITING_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(NextObserver.class, "waiting");
+        final AtomicInteger waiting = new AtomicInteger();
 
         @Override
         public void onCompleted() {
@@ -166,7 +161,7 @@ public final class BlockingOperatorNext {
         @Override
         public void onNext(Notification<? extends T> args) {
 
-            if (WAITING_UPDATER.getAndSet(this, 0) == 1 || !args.isOnNext()) {
+            if (waiting.getAndSet(0) == 1 || !args.isOnNext()) {
                 Notification<? extends T> toOffer = args;
                 while (!buf.offer(toOffer)) {
                     Notification<? extends T> concurrentItem = buf.poll();
@@ -185,7 +180,7 @@ public final class BlockingOperatorNext {
             return buf.take();
         }
         void setWaiting(int value) {
-            waiting = value;
+            waiting.set(value);
         }
     }
 }

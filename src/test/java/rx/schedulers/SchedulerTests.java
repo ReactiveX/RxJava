@@ -1,16 +1,39 @@
+/**
+ * Copyright 2016 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package rx.schedulers;
 
+import rx.CapturingUncaughtExceptionHandler;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
+import rx.functions.Action0;
+import rx.functions.Actions;
+import rx.internal.schedulers.NewThreadWorker;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-final class SchedulerTests {
+public final class SchedulerTests {
     private SchedulerTests() {
         // No instances.
     }
@@ -21,8 +44,11 @@ final class SchedulerTests {
      * <p>
      * Schedulers which execute on a separate thread from their calling thread should exhibit this behavior. Schedulers
      * which execute on their calling thread may not.
+     * 
+     * @param scheduler the scheduler to test
+     * @throws InterruptedException if some wait is interrupted
      */
-    static void testUnhandledErrorIsDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
+    public static void testUnhandledErrorIsDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
         Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
         try {
             CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
@@ -55,8 +81,10 @@ final class SchedulerTests {
      * <p>
      * This is a companion test to {@link #testUnhandledErrorIsDeliveredToThreadHandler}, and is needed only for the
      * same Schedulers.
+     * @param scheduler the scheduler to test
+     * @throws InterruptedException if some wait is interrupted
      */
-    static void testHandledErrorIsNotDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
+    public static void testHandledErrorIsNotDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
         Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
         try {
             CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
@@ -87,16 +115,69 @@ final class SchedulerTests {
         }
     }
 
-    private static final class CapturingUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
-        int count = 0;
-        Throwable caught;
-        CountDownLatch completed = new CountDownLatch(1);
+    public static void testCancelledRetention(Scheduler.Worker w, boolean periodic) throws InterruptedException {
+        System.out.println("Wait before GC");
+        Thread.sleep(1000);
 
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            count++;
-            caught = e;
-            completed.countDown();
+        System.out.println("GC");
+        System.gc();
+
+        Thread.sleep(1000);
+
+
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage memHeap = memoryMXBean.getHeapMemoryUsage();
+        long initial = memHeap.getUsed();
+
+        System.out.printf("Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
+
+        int n = 500 * 1000;
+        if (periodic) {
+            final CountDownLatch cdl = new CountDownLatch(n);
+            final Action0 action = new Action0() {
+                @Override
+                public void call() {
+                    cdl.countDown();
+                }
+            };
+            for (int i = 0; i < n; i++) {
+                if (i % 50000 == 0) {
+                    System.out.println("  -> still scheduling: " + i);
+                }
+                w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
+            }
+
+            System.out.println("Waiting for the first round to finish...");
+            cdl.await();
+        } else {
+            for (int i = 0; i < n; i++) {
+                if (i % 50000 == 0) {
+                    System.out.println("  -> still scheduling: " + i);
+                }
+                w.schedule(Actions.empty(), 1, TimeUnit.DAYS);
+            }
+        }
+
+        memHeap = memoryMXBean.getHeapMemoryUsage();
+        long after = memHeap.getUsed();
+        System.out.printf("Peak: %.3f MB%n", after / 1024.0 / 1024.0);
+
+        w.unsubscribe();
+
+        System.out.println("Wait before second GC");
+        Thread.sleep(NewThreadWorker.PURGE_FREQUENCY + 2000);
+
+        System.out.println("Second GC");
+        System.gc();
+
+        Thread.sleep(1000);
+
+        memHeap = memoryMXBean.getHeapMemoryUsage();
+        long finish = memHeap.getUsed();
+        System.out.printf("After: %.3f MB%n", finish / 1024.0 / 1024.0);
+
+        if (finish > initial * 5) {
+            fail(String.format("Tasks retained: %.3f -> %.3f -> %.3f", initial / 1024 / 1024.0, after / 1024 / 1024.0, finish / 1024 / 1024d));
         }
     }
 

@@ -39,18 +39,20 @@ import rx.functions.Func1;
  * worker threads.
  * 
  */
-public abstract class RxJavaObservableExecutionHook {
+public abstract class RxJavaObservableExecutionHook { // NOPMD 
     /**
      * Invoked during the construction by {@link Observable#create(OnSubscribe)}
      * <p>
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
-     * logging, metrics and other such things and pass-thru the function.
+     * logging, metrics and other such things and pass through the function.
      * 
+     * @param <T> the value type
      * @param f
      *            original {@link OnSubscribe}<{@code T}> to be executed
      * @return {@link OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
-     *         returned as a pass-thru
+     *         returned as a pass through
      */
+    @Deprecated
     public <T> OnSubscribe<T> onCreate(OnSubscribe<T> f) {
         return f;
     }
@@ -59,15 +61,18 @@ public abstract class RxJavaObservableExecutionHook {
      * Invoked before {@link Observable#subscribe(rx.Subscriber)} is about to be executed.
      * <p>
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
-     * logging, metrics and other such things and pass-thru the function.
+     * logging, metrics and other such things and pass through the function.
      * 
+     * @param <T> the value type
+     * @param observableInstance the parent observable instance
      * @param onSubscribe
      *            original {@link OnSubscribe}<{@code T}> to be executed
      * @return {@link OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
-     *         returned as a pass-thru
+     *         returned as a pass through
      */
+    @Deprecated
     public <T> OnSubscribe<T> onSubscribeStart(Observable<? extends T> observableInstance, final OnSubscribe<T> onSubscribe) {
-        // pass-thru by default
+        // pass through by default
         return onSubscribe;
     }
 
@@ -76,15 +81,17 @@ public abstract class RxJavaObservableExecutionHook {
      * {@link Subscription}.
      * <p>
      * This can be used to decorate or replace the {@link Subscription} instance or just perform extra logging,
-     * metrics and other such things and pass-thru the subscription.
+     * metrics and other such things and pass through the subscription.
      * 
+     * @param <T> the value type
      * @param subscription
      *            original {@link Subscription}
      * @return {@link Subscription} subscription that can be modified, decorated, replaced or just returned as a
-     *         pass-thru
+     *         pass through
      */
+    @Deprecated
     public <T> Subscription onSubscribeReturn(Subscription subscription) {
-        // pass-thru by default
+        // pass through by default
         return subscription;
     }
 
@@ -94,12 +101,14 @@ public abstract class RxJavaObservableExecutionHook {
      * This is <em>not</em> errors emitted via {@link Subscriber#onError(Throwable)} but exceptions thrown when
      * attempting to subscribe to a {@link Func1}<{@link Subscriber}{@code <T>}, {@link Subscription}>.
      * 
+     * @param <T> the value type
      * @param e
      *            Throwable thrown by {@link Observable#subscribe(Subscriber)}
-     * @return Throwable that can be decorated, replaced or just returned as a pass-thru
+     * @return Throwable that can be decorated, replaced or just returned as a pass through
      */
+    @Deprecated
     public <T> Throwable onSubscribeError(Throwable e) {
-        // pass-thru by default
+        // pass through by default
         return e;
     }
 
@@ -108,13 +117,16 @@ public abstract class RxJavaObservableExecutionHook {
      * {@link Observable} and the return value is used as the lifted function
      * <p>
      * This can be used to decorate or replace the {@link Operator} instance or just perform extra
-     * logging, metrics and other such things and pass-thru the onSubscribe.
+     * logging, metrics and other such things and pass through the onSubscribe.
      * 
+     * @param <T> the upstream's value type (input)
+     * @param <R> the downstream's value type (output)
      * @param lift
      *            original {@link Operator}{@code <R, T>}
      * @return {@link Operator}{@code <R, T>} function that can be modified, decorated, replaced or just
-     *         returned as a pass-thru
+     *         returned as a pass through
      */
+    @Deprecated
     public <T, R> Operator<? extends R, ? super T> onLift(final Operator<? extends R, ? super T> lift) {
         return lift;
     }

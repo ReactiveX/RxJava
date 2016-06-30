@@ -15,35 +15,22 @@
  */
 package rx.observers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
+import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.exceptions.TestException;
 import rx.schedulers.Schedulers;
 
 public class SerializedObserverTest {
@@ -270,74 +257,62 @@ public class SerializedObserverTest {
      * 
      * @throws InterruptedException
      */
-    @Ignore
-    // this is non-deterministic ... haven't figured out what's wrong with the test yet (benjchristensen: July 2014)
     @Test
     public void testNotificationDelay() throws InterruptedException {
-        ExecutorService tp1 = Executors.newFixedThreadPool(1);
-        ExecutorService tp2 = Executors.newFixedThreadPool(1);
+        final ExecutorService tp1 = Executors.newFixedThreadPool(1);
         try {
-            int n = 10;
+            int n = 10000;
             for (int i = 0; i < n; i++) {
-                final CountDownLatch firstOnNext = new CountDownLatch(1);
-                final CountDownLatch onNextCount = new CountDownLatch(2);
-                final CountDownLatch latch = new CountDownLatch(1);
-                final CountDownLatch running = new CountDownLatch(2);
-
-                TestSubscriber<String> to = new TestSubscriber<String>(new Observer<String>() {
-
+                
+                @SuppressWarnings("unchecked")
+                final Observer<Integer>[] os = new Observer[1];
+                
+                final List<Thread> threads = new ArrayList<Thread>();
+                
+                final Observer<Integer> o = new SerializedObserver<Integer>(new Observer<Integer>() {
+                    boolean first;
                     @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(String t) {
-                        firstOnNext.countDown();
-                        // force it to take time when delivering so the second one is enqueued
-                        try {
-                            latch.await();
-                        } catch (InterruptedException e) {
+                    public void onNext(Integer t) {
+                        threads.add(Thread.currentThread());
+                        if (!first) {
+                            first = true;
+                            try {
+                                tp1.submit(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        os[0].onNext(2);
+                                    }
+                                }).get();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
-
+                    
+                    @Override
+                    public void onError(Throwable e) { 
+                        e.printStackTrace();
+                    }
+                    
+                    @Override
+                    public void onCompleted() { 
+                        
+                    }
                 });
-                Observer<String> o = serializedObserver(to);
-
-                Future<?> f1 = tp1.submit(new OnNextThread(o, 1, onNextCount, running));
-                Future<?> f2 = tp2.submit(new OnNextThread(o, 1, onNextCount, running));
-
-                running.await(); // let one of the OnNextThread actually run before proceeding
                 
-                firstOnNext.await();
-
-                Thread t1 = to.getLastSeenThread();
-                System.out.println("first onNext on thread: " + t1);
-
-                latch.countDown();
-
-                waitOnThreads(f1, f2);
-                // not completed yet
-
-                assertEquals(2, to.getOnNextEvents().size());
-
-                Thread t2 = to.getLastSeenThread();
-                System.out.println("second onNext on thread: " + t2);
-
-                assertSame(t1, t2);
-
-                System.out.println(to.getOnNextEvents());
-                o.onCompleted();
-                System.out.println(to.getOnNextEvents());
+                os[0] = o;
+                
+                o.onNext(1);
+                
+                System.out.println(threads);
+                assertEquals(2, threads.size());
+                
+                assertSame(threads.get(0), threads.get(1));
             }
         } finally {
             tp1.shutdown();
-            tp2.shutdown();
         }
     }
 
@@ -361,7 +336,7 @@ public class SerializedObserverTest {
      * 
      * @throws InterruptedException
      */
-    @Ignore
+    @Ignore("Demonstrates thread starvation problem. Read JavaDoc")
     @Test
     public void testThreadStarvation() throws InterruptedException {
 
@@ -515,7 +490,7 @@ public class SerializedObserverTest {
         }
     }
 
-    private static enum TestConcurrencyObserverEvent {
+    private enum TestConcurrencyObserverEvent {
         onCompleted, onError, onNext
     }
 
@@ -812,5 +787,165 @@ public class SerializedObserverTest {
             }
         }
 
+    }
+    
+    @Test
+    public void testSerializeNull() {
+        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                if (t != null && t == 0) {
+                    serial.get().onNext(null);
+                }
+                super.onNext(t);
+            }
+        };
+        
+        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+        serial.set(sobs);
+        
+        sobs.onNext(0);
+        
+        to.assertReceivedOnNext(Arrays.asList(0, null));
+    }
+    
+    @Test
+    public void testSerializeAllowsOnError() {
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                throw new TestException();
+            }
+        };
+        
+        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+        
+        try {
+            sobs.onNext(0);
+        } catch (TestException ex) {
+            sobs.onError(ex);
+        }
+        
+        assertEquals(1, to.getOnErrorEvents().size());
+        assertTrue(to.getOnErrorEvents().get(0) instanceof TestException);
+    }
+    
+    @Test
+    public void testSerializeReentrantNullAndComplete() {
+        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                serial.get().onCompleted();
+                throw new TestException();
+            }
+        };
+        
+        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+        serial.set(sobs);
+        
+        try {
+            sobs.onNext(0);
+        } catch (TestException ex) {
+            sobs.onError(ex);
+        }
+        
+        assertEquals(1, to.getOnErrorEvents().size());
+        assertTrue(to.getOnErrorEvents().get(0) instanceof TestException);
+        assertEquals(0, to.getCompletions());
+    }
+    
+    @Test
+    public void testSerializeReentrantNullAndError() {
+        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                serial.get().onError(new RuntimeException());
+                throw new TestException();
+            }
+        };
+        
+        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+        serial.set(sobs);
+        
+        try {
+            sobs.onNext(0);
+        } catch (TestException ex) {
+            sobs.onError(ex);
+        }
+        
+        assertEquals(1, to.getOnErrorEvents().size());
+        assertTrue(to.getOnErrorEvents().get(0) instanceof TestException);
+        assertEquals(0, to.getCompletions());
+    }
+    
+    @Test
+    public void testSerializeDrainPhaseThrows() {
+        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                if (t != null && t == 0) {
+                    serial.get().onNext(null);
+                } else
+                if (t == null) {
+                    throw new TestException();
+                }
+                super.onNext(t);
+            }
+        };
+        
+        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+        serial.set(sobs);
+        
+        sobs.onNext(0);
+        
+        to.assertReceivedOnNext(Arrays.asList(0));
+        assertEquals(1, to.getOnErrorEvents().size());
+        assertTrue(to.getOnErrorEvents().get(0) instanceof TestException);
+    }
+    
+    @Test
+    public void testErrorReentry() {
+        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
+       
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer v) {
+                serial.get().onError(new TestException());
+                serial.get().onError(new TestException());
+                super.onNext(v);
+            }
+        };
+        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(ts);
+        serial.set(sobs);
+        
+        sobs.onNext(1);
+        
+        ts.assertValue(1);
+        ts.assertError(TestException.class);
+    }
+    @Test
+    public void testCompleteReentry() {
+        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
+       
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer v) {
+                serial.get().onCompleted();
+                serial.get().onCompleted();
+                super.onNext(v);
+            }
+        };
+        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(ts);
+        serial.set(sobs);
+        
+        sobs.onNext(1);
+        
+        ts.assertValue(1);
+        ts.assertCompleted();
+        ts.assertNoErrors();
     }
 }

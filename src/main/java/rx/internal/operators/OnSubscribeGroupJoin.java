@@ -15,27 +15,20 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.observers.SerializedObserver;
-import rx.observers.SerializedSubscriber;
-import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
-import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.RefCountSubscription;
+import rx.exceptions.Exceptions;
+import rx.functions.*;
+import rx.observers.*;
+import rx.subjects.*;
+import rx.subscriptions.*;
 
 /**
- * Corrrelates two sequences when they overlap and groups the results.
+ * Correlates two sequences when they overlap and groups the results.
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/hh244235.aspx">MSDN: Observable.GroupJoin</a>
  * @param <T1> the left value type
@@ -45,11 +38,11 @@ import rx.subscriptions.RefCountSubscription;
  * @param <R> the result value type
  */
 public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscribe<R> {
-    protected final Observable<T1> left;
-    protected final Observable<T2> right;
-    protected final Func1<? super T1, ? extends Observable<D1>> leftDuration;
-    protected final Func1<? super T2, ? extends Observable<D2>> rightDuration;
-    protected final Func2<? super T1, ? super Observable<T2>, ? extends R> resultSelector;
+    final Observable<T1> left;
+    final Observable<T2> right;
+    final Func1<? super T1, ? extends Observable<D1>> leftDuration;
+    final Func1<? super T2, ? extends Observable<D2>> rightDuration;
+    final Func2<? super T1, ? super Observable<T2>, ? extends R> resultSelector;
 
     public OnSubscribeGroupJoin(
             Observable<T1> left,
@@ -82,9 +75,9 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
         /** Guarded by guard. */
         int rightIds;
         /** Guarded by guard. */
-        final Map<Integer, Observer<T2>> leftMap = new HashMap<Integer, Observer<T2>>();
+        final Map<Integer, Observer<T2>> leftMap = new HashMap<Integer, Observer<T2>>(); // NOPMD 
         /** Guarded by guard. */
-        final Map<Integer, T2> rightMap = new HashMap<Integer, T2>();
+        final Map<Integer, T2> rightMap = new HashMap<Integer, T2>(); // NOPMD 
         /** Guarded by guard. */
         boolean leftDone;
         /** Guarded by guard. */
@@ -192,7 +185,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
                     
                     
                 } catch (Throwable t) {
-                    onError(t);
+                    Exceptions.throwOrReport(t, this);
                 }
             }
 
@@ -242,7 +235,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
                         o.onNext(args);
                     }
                 } catch (Throwable t) {
-                    onError(t);
+                    Exceptions.throwOrReport(t, this);
                 }
             }
 

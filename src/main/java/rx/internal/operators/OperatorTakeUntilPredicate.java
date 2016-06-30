@@ -15,26 +15,44 @@
  */
 package rx.internal.operators;
 
-import rx.Observable.Operator;
 import rx.*;
-import rx.annotations.Experimental;
+import rx.Observable.Operator;
 import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 
 /**
  * Returns an Observable that emits items emitted by the source Observable until
  * the provided predicate returns false
  * <p>
+ * @param <T> the value type
  */
-@Experimental
 public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
-    /** Subscriber returned to the upstream. */
-    private final class ParentSubscriber extends Subscriber<T> {
-        private final Subscriber<? super T> child;
-        private boolean done = false;
+    final Func1<? super T, Boolean> stopPredicate;
 
-        private ParentSubscriber(Subscriber<? super T> child) {
+    public OperatorTakeUntilPredicate(final Func1<? super T, Boolean> stopPredicate) {
+        this.stopPredicate = stopPredicate;
+    }
+
+    @Override
+    public Subscriber<? super T> call(final Subscriber<? super T> child) {
+        final ParentSubscriber parent = new ParentSubscriber(child);
+        child.add(parent); // don't unsubscribe downstream
+        child.setProducer(new Producer() {
+            @Override
+            public void request(long n) {
+                parent.downstreamRequest(n);
+            }
+        });
+        
+        return parent;
+    }
+
+    /** Subscriber returned to the upstream. */
+    final class ParentSubscriber extends Subscriber<T> {
+        private final Subscriber<? super T> child;
+        private boolean done;
+
+        ParentSubscriber(Subscriber<? super T> child) {
             this.child = child;
         }
 
@@ -47,8 +65,7 @@ public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
                 stop = stopPredicate.call(t);
             } catch (Throwable e) {
                 done = true;
-                Exceptions.throwIfFatal(e);
-                child.onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                Exceptions.throwOrReport(e, child, t);
                 unsubscribe();
                 return;
             }
@@ -76,25 +93,4 @@ public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
             request(n);
         }
     }
-
-    private final Func1<? super T, Boolean> stopPredicate;
-
-    public OperatorTakeUntilPredicate(final Func1<? super T, Boolean> stopPredicate) {
-        this.stopPredicate = stopPredicate;
-    }
-
-    @Override
-    public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        final ParentSubscriber parent = new ParentSubscriber(child);
-        child.add(parent); // don't unsubscribe downstream
-        child.setProducer(new Producer() {
-            @Override
-            public void request(long n) {
-                parent.downstreamRequest(n);
-            }
-        });
-        
-        return parent;
-    }
-
 }

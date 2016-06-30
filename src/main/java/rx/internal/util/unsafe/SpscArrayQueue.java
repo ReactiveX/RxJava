@@ -18,6 +18,8 @@ package rx.internal.util.unsafe;
 
 import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
+import rx.internal.util.SuppressAnimalSniffer;
+
 abstract class SpscArrayQueueColdField<E> extends ConcurrentCircularArrayQueue<E> {
     private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
     protected final int lookAheadStep;
@@ -35,16 +37,9 @@ abstract class SpscArrayQueueL1Pad<E> extends SpscArrayQueueColdField<E> {
     }
 }
 
+@SuppressAnimalSniffer
 abstract class SpscArrayQueueProducerFields<E> extends SpscArrayQueueL1Pad<E> {
-    protected final static long P_INDEX_OFFSET;
-    static {
-        try {
-            P_INDEX_OFFSET =
-                UNSAFE.objectFieldOffset(SpscArrayQueueProducerFields.class.getDeclaredField("producerIndex"));
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    protected final static long P_INDEX_OFFSET = UnsafeAccess.addressOf(SpscArrayQueueProducerFields.class, "producerIndex");
     protected long producerIndex;
     protected long producerLookAhead;
 
@@ -62,17 +57,10 @@ abstract class SpscArrayQueueL2Pad<E> extends SpscArrayQueueProducerFields<E> {
     }
 }
 
+@SuppressAnimalSniffer
 abstract class SpscArrayQueueConsumerField<E> extends SpscArrayQueueL2Pad<E> {
     protected long consumerIndex;
-    protected final static long C_INDEX_OFFSET;
-    static {
-        try {
-            C_INDEX_OFFSET =
-                UNSAFE.objectFieldOffset(SpscArrayQueueConsumerField.class.getDeclaredField("consumerIndex"));
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    protected final static long C_INDEX_OFFSET = UnsafeAccess.addressOf(SpscArrayQueueConsumerField.class, "consumerIndex");
     public SpscArrayQueueConsumerField(int capacity) {
         super(capacity);
     }
@@ -103,6 +91,7 @@ abstract class SpscArrayQueueL3Pad<E> extends SpscArrayQueueConsumerField<E> {
  * 
  * @param <E>
  */
+@SuppressAnimalSniffer
 public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
 
     public SpscArrayQueue(final int capacity) {
@@ -116,6 +105,9 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
      */
     @Override
     public boolean offer(final E e) {
+        if (e == null) {
+            throw new NullPointerException("null elements not allowed");
+        }
         // local load of field to avoid repeated loads after volatile reads
         final E[] lElementBuffer = buffer;
         final long index = producerIndex;
@@ -123,8 +115,8 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
         if (null != lvElement(lElementBuffer, offset)){
             return false;
         }
-        soProducerIndex(index + 1); // ordered store -> atomic and ordered for size()
         soElement(lElementBuffer, offset, e); // StoreStore
+        soProducerIndex(index + 1); // ordered store -> atomic and ordered for size()
         return true;
     }
     
@@ -143,8 +135,8 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
         if (null == e) {
             return null;
         }
-        soConsumerIndex(index + 1); // ordered store -> atomic and ordered for size()
         soElement(lElementBuffer, offset, null);// StoreStore
+        soConsumerIndex(index + 1); // ordered store -> atomic and ordered for size()
         return e;
     }
 
@@ -174,6 +166,11 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
                 return (int) (currentProducerIndex - after);
             }
         }
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        return lvProducerIndex() == lvConsumerIndex();
     }
 
     private void soProducerIndex(long v) {

@@ -199,7 +199,7 @@ public class OperatorPublishTest {
                         sourceUnsubscribed.set(true);
                     }
                 }).share();
-        ;
+
         
         final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
         final AtomicBoolean child2Unsubscribed = new AtomicBoolean();
@@ -299,7 +299,7 @@ public class OperatorPublishTest {
 
         ts1.assertReceivedOnNext(Arrays.<Integer>asList());
         ts1.assertNoErrors();
-        assertTrue(ts1.getOnCompletedEvents().isEmpty());
+        assertEquals(0, ts1.getCompletions());
         
         source.connect();
 
@@ -351,13 +351,13 @@ public class OperatorPublishTest {
         
         ts.assertReceivedOnNext(Arrays.<Integer>asList());
         ts.assertNoErrors();
-        assertTrue(ts.getOnCompletedEvents().isEmpty());
+        assertEquals(0, ts.getCompletions());
         
         source.connect();
 
         ts.assertReceivedOnNext(Arrays.<Integer>asList());
         ts.assertNoErrors();
-        assertTrue(ts.getOnCompletedEvents().isEmpty());
+        assertEquals(0, ts.getCompletions());
         
         ts.requestMore(5);
         

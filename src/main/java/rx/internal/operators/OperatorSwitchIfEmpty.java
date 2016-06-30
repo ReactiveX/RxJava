@@ -22,8 +22,9 @@ import rx.subscriptions.SerialSubscription;
 
 /**
  * If the Observable completes without emitting any items, subscribe to an alternate Observable. Allows for similar
- * functionality to {@link rx.internal.operators.OperatorDefaultIfEmpty} except instead of one item being emitted when
+ * functionality to {@link rx.Observable#defaultIfEmpty(Object)} except instead of one item being emitted when
  * empty, the results of the given Observable will be emitted.
+ * @param <T> the value type
  */
 public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T> {
     private final Observable<? extends T> alternate;
@@ -43,7 +44,7 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
         return parent;
     }
 
-    private static final class ParentSubscriber<T> extends Subscriber<T> {
+    static final class ParentSubscriber<T> extends Subscriber<T> {
 
         private boolean empty = true;
         private final Subscriber<? super T> child;
@@ -91,7 +92,7 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
         }
     }
     
-    private static final class AlternateSubscriber<T> extends Subscriber<T> {
+    static final class AlternateSubscriber<T> extends Subscriber<T> {
         
         private final ProducerArbiter arbiter;
         private final Subscriber<? super T> child;

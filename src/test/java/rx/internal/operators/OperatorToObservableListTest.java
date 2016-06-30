@@ -121,19 +121,19 @@ public class OperatorToObservableListTest {
         
         assertTrue(ts.getOnNextEvents().isEmpty());
         assertTrue(ts.getOnErrorEvents().isEmpty());
-        assertTrue(ts.getOnCompletedEvents().isEmpty());
+        assertEquals(0, ts.getCompletions());
         
         ts.requestMore(1);
         
         ts.assertReceivedOnNext(Collections.singletonList(Arrays.asList(1, 2, 3, 4, 5)));
         assertTrue(ts.getOnErrorEvents().isEmpty());
-        assertEquals(1, ts.getOnCompletedEvents().size());
+        assertEquals(1, ts.getCompletions());
 
         ts.requestMore(1);
 
         ts.assertReceivedOnNext(Collections.singletonList(Arrays.asList(1, 2, 3, 4, 5)));
         assertTrue(ts.getOnErrorEvents().isEmpty());
-        assertEquals(1, ts.getOnCompletedEvents().size());
+        assertEquals(1, ts.getCompletions());
     }
     @Test(timeout = 2000)
     public void testAsyncRequested() {

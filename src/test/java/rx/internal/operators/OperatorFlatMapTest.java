@@ -17,6 +17,7 @@ package rx.internal.operators;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +29,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.exceptions.TestException;
 import rx.functions.*;
+import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -323,7 +325,7 @@ public class OperatorFlatMapTest {
             @Override
             public void call() {
                 if (subscriptionCount.decrementAndGet() < 0) {
-                    Assert.fail("Too many unsubscriptionss! " + subscriptionCount.get());
+                    Assert.fail("Too many unsubscriptions! " + subscriptionCount.get());
                 }
             }
         });
@@ -384,6 +386,17 @@ public class OperatorFlatMapTest {
         System.out.println("--> testFlatMapSelectorMaxConcurrent: " + ts.getOnNextEvents());
         Assert.assertTrue(expected.containsAll(ts.getOnNextEvents()));
     }
+    
+    @Test
+    public void testFlatMapTransformsMaxConcurrentNormalLoop() {
+        for (int i = 0; i < 1000; i++) {
+            if (i % 100 == 0) {
+                System.out.println("testFlatMapTransformsMaxConcurrentNormalLoop => " + i);
+            }
+            testFlatMapTransformsMaxConcurrentNormal();
+        }
+    }
+    
     @Test
     public void testFlatMapTransformsMaxConcurrentNormal() {
         final int m = 2;
@@ -416,4 +429,225 @@ public class OperatorFlatMapTest {
         verify(o, never()).onNext(5);
         verify(o, never()).onError(any(Throwable.class));
     }
+    
+    @Ignore("Don't care for any reordering")
+    @Test(timeout = 10000)
+    public void flatMapRangeAsyncLoop() {
+        for (int i = 0; i < 2000; i++) {
+            if (i % 10 == 0) {
+                System.out.println("flatMapRangeAsyncLoop > " + i);
+            }
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            Observable.range(0, 1000)
+            .flatMap(new Func1<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> call(Integer t) {
+                    return Observable.just(t);
+                }
+            })
+            .observeOn(Schedulers.computation())
+            .subscribe(ts);
+
+            ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            if (ts.getCompletions() == 0) {
+                System.out.println(ts.getOnNextEvents().size());
+            }
+            ts.assertTerminalEvent();
+            ts.assertNoErrors();
+            List<Integer> list = ts.getOnNextEvents();
+            assertEquals(1000, list.size());
+            boolean f = false;
+            for (int j = 0; j < list.size(); j++) {
+                if (list.get(j) != j) {
+                    System.out.println(j + " " + list.get(j));
+                    f = true;
+                }
+            }
+            if (f) {
+                Assert.fail("Results are out of order!");
+            }
+        }
+    }
+    @Test(timeout = 30000)
+    public void flatMapRangeMixedAsyncLoop() {
+        for (int i = 0; i < 2000; i++) {
+            if (i % 10 == 0) {
+                System.out.println("flatMapRangeAsyncLoop > " + i);
+            }
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            Observable.range(0, 1000)
+            .flatMap(new Func1<Integer, Observable<Integer>>() {
+                final Random rnd = new Random();
+                @Override
+                public Observable<Integer> call(Integer t) {
+                    Observable<Integer> r = Observable.just(t);
+                    if (rnd.nextBoolean()) {
+                        r = r.asObservable();
+                    }
+                    return r;
+                }
+            })
+            .observeOn(Schedulers.computation())
+            .subscribe(ts);
+
+            ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            if (ts.getCompletions() == 0) {
+                System.out.println(ts.getOnNextEvents().size());
+            }
+            ts.assertTerminalEvent();
+            ts.assertNoErrors();
+            List<Integer> list = ts.getOnNextEvents();
+            if (list.size() < 1000) {
+                Set<Integer> set = new HashSet<Integer>(list);
+                for (int j = 0; j < 1000; j++) {
+                    if (!set.contains(j)) {
+                        System.out.println(j + " missing");
+                    }
+                }
+            }
+            assertEquals(1000, list.size());
+        }
+    }
+    
+    @Test
+    public void flatMapIntPassthruAsync() {
+        for (int i = 0;i < 1000; i++) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            
+            Observable.range(1, 1000).flatMap(new Func1<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> call(Integer t) {
+                    return Observable.just(1).subscribeOn(Schedulers.computation());
+                }
+            }).subscribe(ts);
+            
+            ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+            ts.assertValueCount(1000);
+        }
+    }
+    @Test
+    public void flatMapTwoNestedSync() {
+        for (final int n : new int[] { 1, 1000, 1000000 }) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+    
+            Observable.just(1, 2).flatMap(new Func1<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> call(Integer t) {
+                    return Observable.range(1, n);
+                }
+            }).subscribe(ts);
+            
+            System.out.println("flatMapTwoNestedSync >> @ " + n);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+            ts.assertValueCount(n * 2);
+        }
+    }
+    
+    @Test
+    public void justEmptyMixture() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(0, 4 * RxRingBuffer.SIZE)
+        .flatMap(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return (v & 1) == 0 ? Observable.<Integer>empty() : Observable.just(v);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValueCount(2 * RxRingBuffer.SIZE);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        
+        int j = 1;
+        for (Integer v : ts.getOnNextEvents()) {
+            Assert.assertEquals(j, v.intValue());
+            
+            j += 2;
+        }
+    }
+
+    @Test
+    public void rangeEmptyMixture() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(0, 4 * RxRingBuffer.SIZE)
+        .flatMap(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return (v & 1) == 0 ? Observable.<Integer>empty() : Observable.range(v, 2);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValueCount(4 * RxRingBuffer.SIZE);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        
+        int j = 1;
+        List<Integer> list = ts.getOnNextEvents();
+        for (int i = 0; i < list.size(); i += 2) {
+            Assert.assertEquals(j, list.get(i).intValue());
+            Assert.assertEquals(j + 1, list.get(i + 1).intValue());
+            
+            j += 2;
+        }
+    }
+
+    @Test
+    public void justEmptyMixtureMaxConcurrent() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(0, 4 * RxRingBuffer.SIZE)
+        .flatMap(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return (v & 1) == 0 ? Observable.<Integer>empty() : Observable.just(v);
+            }
+        }, 16)
+        .subscribe(ts);
+        
+        ts.assertValueCount(2 * RxRingBuffer.SIZE);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        
+        int j = 1;
+        for (Integer v : ts.getOnNextEvents()) {
+            Assert.assertEquals(j, v.intValue());
+            
+            j += 2;
+        }
+    }
+
+    @Test
+    public void rangeEmptyMixtureMaxConcurrent() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(0, 4 * RxRingBuffer.SIZE)
+        .flatMap(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer v) {
+                return (v & 1) == 0 ? Observable.<Integer>empty() : Observable.range(v, 2);
+            }
+        }, 16)
+        .subscribe(ts);
+        
+        ts.assertValueCount(4 * RxRingBuffer.SIZE);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        
+        int j = 1;
+        List<Integer> list = ts.getOnNextEvents();
+        for (int i = 0; i < list.size(); i += 2) {
+            Assert.assertEquals(j, list.get(i).intValue());
+            Assert.assertEquals(j + 1, list.get(i + 1).intValue());
+            
+            j += 2;
+        }
+    }
+
 }

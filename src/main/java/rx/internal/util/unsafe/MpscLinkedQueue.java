@@ -17,6 +17,8 @@
 package rx.internal.util.unsafe;
 
 import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
+
+import rx.internal.util.SuppressAnimalSniffer;
 import rx.internal.util.atomic.LinkedQueueNode;
 /**
  * This is a direct Java port of the MPSC algorithm as presented <a
@@ -34,6 +36,7 @@ import rx.internal.util.atomic.LinkedQueueNode;
  * 
  * @param <E>
  */
+@SuppressAnimalSniffer
 public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
     
     public MpscLinkedQueue() {
@@ -42,7 +45,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
     }
     
     @SuppressWarnings("unchecked")
-    protected final LinkedQueueNode<E> xchgProducerNode(LinkedQueueNode<E> newVal) {
+    protected LinkedQueueNode<E> xchgProducerNode(LinkedQueueNode<E> newVal) {
         Object oldVal;
         do {
             oldVal = producerNode;
@@ -67,9 +70,9 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
      * @see java.util.Queue#offer(java.lang.Object)
      */
     @Override
-    public final boolean offer(final E nextValue) {
+    public boolean offer(final E nextValue) {
         if (nextValue == null) {
-            throw new IllegalArgumentException("null elements not allowed");
+            throw new NullPointerException("null elements not allowed");
         }
         final LinkedQueueNode<E> nextNode = new LinkedQueueNode<E>(nextValue);
         final LinkedQueueNode<E> prevProducerNode = xchgProducerNode(nextNode);
@@ -96,7 +99,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
      * @see java.util.Queue#poll()
      */
     @Override
-    public final E poll() {
+    public E poll() {
         LinkedQueueNode<E> currConsumerNode = lpConsumerNode(); // don't load twice, it's alright
         LinkedQueueNode<E> nextNode = currConsumerNode.lvNext();
         if (nextNode != null) {
@@ -107,7 +110,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null);
+            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD 
             // got the next node...
             
             // we have to null out the value because we are going to hang on to the node
@@ -119,7 +122,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
     }
 
     @Override
-    public final E peek() {
+    public E peek() {
         LinkedQueueNode<E> currConsumerNode = consumerNode; // don't load twice, it's alright
         LinkedQueueNode<E> nextNode = currConsumerNode.lvNext();
         if (nextNode != null) {
@@ -127,7 +130,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null);
+            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD 
             // got the next node...
             return nextNode.lpValue();
         }

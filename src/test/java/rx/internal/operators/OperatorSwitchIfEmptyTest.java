@@ -27,7 +27,6 @@ import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;

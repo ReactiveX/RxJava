@@ -15,16 +15,14 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import rx.*;
 import rx.Observable;
 import rx.Observable.Operator;
-import rx.Scheduler;
 import rx.Scheduler.Worker;
-import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Action0;
 import rx.observers.SerializedSubscriber;
 
@@ -89,7 +87,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
         bsub.scheduleChunk();
         return bsub;
     }
-    /** Subscriber when the buffer chunking time and lenght differ. */
+    /** Subscriber when the buffer chunking time and length differ. */
     final class InexactSubscriber extends Subscriber<T> {
         final Subscriber<? super List<T>> child;
         final Worker inner;
@@ -159,7 +157,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
                     child.onNext(chunk);
                 }
             } catch (Throwable t) {
-                child.onError(t);
+                Exceptions.throwOrReport(t, child);
                 return;
             }
             child.onCompleted();
@@ -208,7 +206,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
                 try {
                     child.onNext(chunkToEmit);
                 } catch (Throwable t) {
-                    onError(t);
+                    Exceptions.throwOrReport(t, this);
                 }
             }
         }
@@ -273,7 +271,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
                 }
                 child.onNext(toEmit);
             } catch (Throwable t) {
-                child.onError(t);
+                Exceptions.throwOrReport(t, child);
                 return;
             }
             child.onCompleted();
@@ -299,7 +297,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
             try {
                 child.onNext(toEmit);
             } catch (Throwable t) {
-                onError(t);
+                Exceptions.throwOrReport(t, this);
             }
         }
     }

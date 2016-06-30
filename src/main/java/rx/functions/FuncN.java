@@ -17,6 +17,7 @@ package rx.functions;
 
 /**
  * Represents a vector-argument function.
+ * @param <R> the result type
  */
 public interface FuncN<R> extends Function {
     R call(Object... args);

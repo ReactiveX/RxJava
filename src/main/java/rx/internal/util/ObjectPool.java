@@ -18,23 +18,23 @@
 package rx.internal.util;
 
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Scheduler;
-import rx.functions.Action0;
-import rx.internal.util.unsafe.MpmcArrayQueue;
-import rx.internal.util.unsafe.UnsafeAccess;
-import rx.schedulers.Schedulers;
+import rx.internal.schedulers.*;
+import rx.internal.util.unsafe.*;
+import rx.plugins.RxJavaHooks;
 
-public abstract class ObjectPool<T> {
-    private Queue<T> pool;
-    private final int maxSize;
+public abstract class ObjectPool<T> implements SchedulerLifecycle {
+    Queue<T> pool;
+    final int minSize;
+    final int maxSize;
+    private final long validationInterval;
 
-    private Scheduler.Worker schedulerWorker;
+    private final AtomicReference<Future<?>> periodicTask;
 
     public ObjectPool() {
-        this(0, 0, 67);
+        this(0, 0, 67); // NOPMD 
     }
 
     /**
@@ -50,31 +50,14 @@ public abstract class ObjectPool<T> {
      *            When the number of objects is greater than maxIdle, too many instances will be removed.
      */
     private ObjectPool(final int min, final int max, final long validationInterval) {
+        this.minSize = min;
         this.maxSize = max;
+        this.validationInterval = validationInterval;
+        this.periodicTask = new AtomicReference<Future<?>>();
         // initialize pool
         initialize(min);
 
-        schedulerWorker = Schedulers.computation().createWorker();
-        schedulerWorker.schedulePeriodically(new Action0() {
-
-            @Override
-            public void call() {
-                int size = pool.size();
-                if (size < min) {
-                    int sizeToBeAdded = max - size;
-                    for (int i = 0; i < sizeToBeAdded; i++) {
-                        pool.add(createObject());
-                    }
-                } else if (size > max) {
-                    int sizeToBeRemoved = size - max;
-                    for (int i = 0; i < sizeToBeRemoved; i++) {
-                        //                        pool.pollLast();
-                        pool.poll();
-                    }
-                }
-            }
-
-        }, validationInterval, validationInterval, TimeUnit.SECONDS);
+        start();
     }
 
     /**
@@ -109,10 +92,56 @@ public abstract class ObjectPool<T> {
     /**
      * Shutdown this pool.
      */
+    @Override
     public void shutdown() {
-        schedulerWorker.unsubscribe();
+        Future<?> f = periodicTask.getAndSet(null);
+        if (f != null) {
+            f.cancel(false);
+        }
     }
 
+    @Override
+    public void start() {
+        for (;;) {
+            if (periodicTask.get() != null) {
+                return;
+            }
+            ScheduledExecutorService w = GenericScheduledExecutorService.getInstance();
+            
+            Future<?> f;
+            try {
+                f = w.scheduleAtFixedRate(new Runnable() {
+        
+                    @Override
+                    public void run() {
+                        int size = pool.size();
+                        if (size < minSize) {
+                            int sizeToBeAdded = maxSize - size;
+                            for (int i = 0; i < sizeToBeAdded; i++) {
+                                pool.add(createObject());
+                            }
+                        } else if (size > maxSize) {
+                            int sizeToBeRemoved = size - maxSize;
+                            for (int i = 0; i < sizeToBeRemoved; i++) {
+                                //                        pool.pollLast();
+                                pool.poll();
+                            }
+                        }
+                    }
+        
+                }, validationInterval, validationInterval, TimeUnit.SECONDS);
+            } catch (RejectedExecutionException ex) {
+                RxJavaHooks.onError(ex);
+                break;
+            }
+            if (!periodicTask.compareAndSet(null, f)) {
+                f.cancel(false);
+            } else {
+                break;
+            }
+        }
+    }
+    
     /**
      * Creates a new object.
      *

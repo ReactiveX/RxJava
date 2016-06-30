@@ -23,11 +23,12 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.*;
 
 import rx.Subscription;
 import rx.exceptions.CompositeException;
 import rx.internal.util.SubscriptionList;
+import rx.subscriptions.Subscriptions;
 
 public class SubscriptionListTest {
 
@@ -282,4 +283,54 @@ public class SubscriptionListTest {
         // we should have only unsubscribed once
         assertEquals(1, counter.get());
     }
+    
+    @Test
+    public void removeWhenEmpty() {
+        SubscriptionList slist = new SubscriptionList();
+        Subscription s = Subscriptions.empty();
+        
+        slist.remove(s);
+        
+        Assert.assertFalse(s.isUnsubscribed());
+    }
+
+    @Test
+    public void removeNotIn() {
+        SubscriptionList slist = new SubscriptionList();
+        Subscription s0 = Subscriptions.empty();
+        slist.add(s0);
+        
+        Assert.assertTrue(slist.hasSubscriptions());
+        
+        Subscription s = Subscriptions.empty();
+        
+        slist.remove(s);
+        
+        Assert.assertFalse(s.isUnsubscribed());
+        
+        slist.clear();
+        
+        Assert.assertTrue(s0.isUnsubscribed());
+
+        Assert.assertFalse(slist.hasSubscriptions());
+    }
+
+    @Test
+    public void unsubscribeClear() {
+        SubscriptionList slist = new SubscriptionList();
+        
+        Assert.assertFalse(slist.hasSubscriptions());
+        
+        Subscription s0 = Subscriptions.empty();
+        slist.add(s0);
+        
+        slist.unsubscribe();
+        
+        Assert.assertTrue(s0.isUnsubscribed());
+
+        Assert.assertFalse(slist.hasSubscriptions());
+
+        slist.clear();
+    }
+
 }

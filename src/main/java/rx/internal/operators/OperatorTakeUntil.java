@@ -15,9 +15,8 @@
  */
 package rx.internal.operators;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.Operator;
-import rx.Subscriber;
 import rx.observers.SerializedSubscriber;
 
 /**
@@ -25,6 +24,8 @@ import rx.observers.SerializedSubscriber;
  * emits an item.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/takeUntil.png" alt="">
+ * @param <T> the value type of the 'main' source
+ * @param <E> the value type of the 'until' sequence
  */
 public final class OperatorTakeUntil<T, E> implements Operator<T, T> {
 

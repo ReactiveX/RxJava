@@ -15,12 +15,7 @@
  */
 package rx.subjects;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -36,7 +31,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
@@ -140,11 +134,10 @@ public class ReplaySubjectTest {
         inOrderD.verify(observerD).onNext(4711);
         inOrderD.verify(observerD).onCompleted();
 
-        Mockito.verifyNoMoreInteractions(observerA);
-        Mockito.verifyNoMoreInteractions(observerB);
-        Mockito.verifyNoMoreInteractions(observerC);
-        Mockito.verifyNoMoreInteractions(observerD);
-
+        verifyNoMoreInteractions(observerA);
+        verifyNoMoreInteractions(observerB);
+        verifyNoMoreInteractions(observerC);
+        verifyNoMoreInteractions(observerD);
     }
 
     @Test
@@ -172,7 +165,7 @@ public class ReplaySubjectTest {
         inOrder.verify(observer, times(1)).onNext("one");
         inOrder.verify(observer, times(1)).onNext("two");
         inOrder.verify(observer, times(1)).onNext("three");
-        inOrder.verify(observer, Mockito.never()).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
@@ -206,7 +199,7 @@ public class ReplaySubjectTest {
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
         verify(observer, times(1)).onError(testException);
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onCompleted();
     }
 
     @SuppressWarnings("unchecked")
@@ -261,9 +254,9 @@ public class ReplaySubjectTest {
     private void assertObservedUntilTwo(Observer<String> observer) {
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
     }
 
     @Test(timeout = 2000)
@@ -375,7 +368,7 @@ public class ReplaySubjectTest {
         
         assertEquals(0, replaySubject.subscriberCount());
     }
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void testUnsubscriptionCase() {
         ReplaySubject<String> src = ReplaySubject.create();
         
@@ -450,52 +443,6 @@ public class ReplaySubjectTest {
         verify(o, never()).onError(any(Throwable.class));
     }
     @Test
-    public void testNodeListSimpleAddRemove() {
-        ReplaySubject.NodeList<Integer> list = new ReplaySubject.NodeList<Integer>();
-        
-        assertEquals(0, list.size());
-        
-        // add and remove one
-        
-        list.addLast(1);
-
-        assertEquals(1, list.size());
-        
-        assertEquals((Integer)1, list.removeFirst());
-
-        assertEquals(0, list.size());
-
-        // add and remove one again
-        
-        list.addLast(1);
-
-        assertEquals(1, list.size());
-        
-        assertEquals((Integer)1, list.removeFirst());
-
-        // add and remove two items
-        
-        list.addLast(1);
-        list.addLast(2);
-
-        assertEquals(2, list.size());
-
-        assertEquals((Integer)1, list.removeFirst());
-        assertEquals((Integer)2, list.removeFirst());
-
-        assertEquals(0, list.size());
-        // clear two items
-        
-        list.addLast(1);
-        list.addLast(2);
-
-        assertEquals(2, list.size());
-        
-        list.clear();
-
-        assertEquals(0, list.size());
-    }
-    @Test
     public void testReplay1AfterTermination() {
         ReplaySubject<Integer> source = ReplaySubject.createWithSize(1);
         
@@ -562,7 +509,7 @@ public class ReplaySubjectTest {
         
         verify(o, never()).onNext(1);
         verify(o, never()).onNext(2);
-        verify(o).onNext(3);
+        verify(o, never()).onNext(3); // late subscribers no longer replay stale data
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
@@ -851,9 +798,12 @@ public class ReplaySubjectTest {
         
         for (int i = 0; i < 1000; i++) {
             rs.onNext(i);
-            ts.advanceTimeBy(2, TimeUnit.SECONDS);
+            ts.advanceTimeBy(500, TimeUnit.MILLISECONDS);
             assertEquals(1, rs.size());
             assertTrue(rs.hasAnyValue());
+            ts.advanceTimeBy(1500, TimeUnit.MILLISECONDS);
+            assertEquals(0, rs.size()); // stale data no longer peekable
+            assertFalse(rs.hasAnyValue());
         }
         
         rs.onCompleted();
@@ -889,4 +839,306 @@ public class ReplaySubjectTest {
         assertArrayEquals(expected, rs.getValues());
         
     }
+    
+    @Test
+    public void testReplaySubjectValueRelay() {
+        ReplaySubject<Integer> async = ReplaySubject.create();
+        async.onNext(1);
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectValueRelayIncomplete() {
+        ReplaySubject<Integer> async = ReplaySubject.create();
+        async.onNext(1);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectValueRelayBounded() {
+        ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
+        async.onNext(0);
+        async.onNext(1);
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectValueRelayBoundedIncomplete() {
+        ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
+        async.onNext(0);
+        async.onNext(1);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectValueRelayBoundedEmptyIncomplete() {
+        ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectValueRelayEmptyIncomplete() {
+        ReplaySubject<Integer> async = ReplaySubject.create();
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    
+    @Test
+    public void testReplaySubjectEmpty() {
+        ReplaySubject<Integer> async = ReplaySubject.create();
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectError() {
+        ReplaySubject<Integer> async = ReplaySubject.create();
+        TestException te = new TestException();
+        async.onError(te);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertTrue(async.hasThrowable());
+        assertSame(te, async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    
+    @Test
+    public void testReplaySubjectBoundedEmpty() {
+        ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    @Test
+    public void testReplaySubjectBoundedError() {
+        ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
+        TestException te = new TestException();
+        async.onError(te);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertTrue(async.hasThrowable());
+        assertSame(te, async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
+    }
+    
+    void backpressureLive(ReplaySubject<Integer> rs) {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        rs.subscribe(ts);
+        
+        for (int i = 1; i <= 5; i++) {
+            rs.onNext(i);
+        }
+        
+        ts.assertNoValues();
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(1, 2);
+        
+        ts.requestMore(6);
+
+        ts.assertValues(1, 2, 3, 4, 5);
+        
+        for (int i = 6; i <= 10; i++) {
+            rs.onNext(i);
+        }
+
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8);
+        
+        rs.onCompleted();
+        
+        ts.assertNotCompleted();
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    void backpressureOffline(ReplaySubject<Integer> rs) {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        for (int i = 1; i <= 10; i++) {
+            rs.onNext(i);
+        }
+        rs.onCompleted();
+
+        rs.subscribe(ts);
+
+        ts.assertNoValues();
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(1, 2);
+        
+        ts.requestMore(6);
+        
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8);
+        
+        ts.assertNotCompleted();
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    void backpressureOffline5(ReplaySubject<Integer> rs) {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        for (int i = 1; i <= 10; i++) {
+            rs.onNext(i);
+        }
+        rs.onCompleted();
+
+        rs.subscribe(ts);
+
+        ts.assertNoValues();
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(6, 7);
+        
+        ts.requestMore(2);
+        
+        ts.assertValues(6, 7, 8, 9);
+        
+        ts.assertNotCompleted();
+        
+        ts.requestMore(1);
+        
+        ts.assertValues(6, 7, 8, 9, 10);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void backpressureUnboundedLive() {
+        backpressureLive(ReplaySubject.<Integer>create());
+    }
+
+    @Test
+    public void backpressureSizeBoundLive() {
+        backpressureLive(ReplaySubject.<Integer>createWithSize(1));
+        backpressureLive(ReplaySubject.<Integer>createWithSize(5));
+        backpressureLive(ReplaySubject.<Integer>createWithSize(10));
+        backpressureLive(ReplaySubject.<Integer>createWithSize(100));
+    }
+
+    @Test
+    public void backpressureSizeAndTimeLive() {
+        backpressureLive(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 1, Schedulers.immediate()));
+        backpressureLive(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 5, Schedulers.immediate()));
+        backpressureLive(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 10, Schedulers.immediate()));
+        backpressureLive(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 100, Schedulers.immediate()));
+    }
+
+    @Test
+    public void backpressureUnboundedOffline() {
+        backpressureOffline(ReplaySubject.<Integer>create());
+    }
+
+    @Test
+    public void backpressureSizeBoundOffline() {
+        backpressureOffline5(ReplaySubject.<Integer>createWithSize(5));
+        backpressureOffline(ReplaySubject.<Integer>createWithSize(10));
+        backpressureOffline(ReplaySubject.<Integer>createWithSize(100));
+    }
+
+    @Test
+    public void backpressureSizeAndTimeOffline() {
+        backpressureOffline5(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 5, Schedulers.immediate()));
+        backpressureOffline(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 10, Schedulers.immediate()));
+        backpressureOffline(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 100, Schedulers.immediate()));
+    }
+
 }

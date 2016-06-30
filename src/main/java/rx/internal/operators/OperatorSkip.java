@@ -15,11 +15,7 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import rx.Observable;
-import rx.Producer;
-import rx.Subscriber;
+import rx.*;
 
 /**
  * Returns an Observable that skips the first <code>num</code> items emitted by the source
@@ -29,12 +25,16 @@ import rx.Subscriber;
  * <p>
  * You can ignore the first <code>num</code> items emitted by an Observable and attend only to
  * those items that come after, by modifying the Observable with the {@code skip} operator.
+ * @param <T> the value type
  */
 public final class OperatorSkip<T> implements Observable.Operator<T, T> {
 
     final int toSkip;
 
     public OperatorSkip(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("n >= 0 required but it was " + n);
+        }
         this.toSkip = n;
     }
 
@@ -42,7 +42,7 @@ public final class OperatorSkip<T> implements Observable.Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         return new Subscriber<T>(child) {
 
-            int skipped = 0;
+            int skipped;
 
             @Override
             public void onCompleted() {

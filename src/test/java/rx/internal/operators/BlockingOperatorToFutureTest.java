@@ -15,26 +15,24 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static rx.internal.operators.BlockingOperatorToFuture.toFuture;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 import org.junit.Test;
 
+import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Subscriber;
 import rx.exceptions.TestException;
 
 public class BlockingOperatorToFutureTest {
+    @Test
+    public void constructorShouldBePrivate() {
+        TestUtil.checkUtilityClass(BlockingOperatorToFuture.class);
+    }
 
     @Test
     public void testToFuture() throws InterruptedException, ExecutionException {

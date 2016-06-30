@@ -17,18 +17,27 @@ package rx.internal.util.unsafe;
 
 import java.lang.reflect.Field;
 
+import rx.internal.util.SuppressAnimalSniffer;
 import sun.misc.Unsafe;
 
 /**
  * All use of this class MUST first check that UnsafeAccess.isUnsafeAvailable() == true
  * otherwise NPEs will happen in environments without "suc.misc.Unsafe" such as Android.
+ * <p>
+ * Note that you can force RxJava to not use Unsafe API by setting any value to System Property
+ * {@code rx.unsafe-disable}.
  */
+@SuppressAnimalSniffer
 public final class UnsafeAccess {
+
+    public static final Unsafe UNSAFE;
+
+    private static final boolean DISABLED_BY_USER = System.getProperty("rx.unsafe-disable") != null;
+
     private UnsafeAccess() {
         throw new IllegalStateException("No instances!");
     }
 
-    public static final Unsafe UNSAFE;
     static {
         Unsafe u = null;
         try {
@@ -41,14 +50,14 @@ public final class UnsafeAccess {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
             u = (Unsafe) field.get(null);
-        } catch (Throwable e) {
+        } catch (Throwable e) { // NOPMD 
             // do nothing, hasUnsafe() will return false
         }
         UNSAFE = u;
     }
 
-    public static final boolean isUnsafeAvailable() {
-        return UNSAFE != null;
+    public static boolean isUnsafeAvailable() {
+        return UNSAFE != null && !DISABLED_BY_USER;
     }
 
     /*
@@ -59,8 +68,9 @@ public final class UnsafeAccess {
         for (;;) {
             int current = UNSAFE.getIntVolatile(obj, offset);
             int next = current + 1;
-            if (UNSAFE.compareAndSwapInt(obj, offset, current, next))
+            if (UNSAFE.compareAndSwapInt(obj, offset, current, next)) {
                 return current;
+            }
         }
     }
 
@@ -68,16 +78,18 @@ public final class UnsafeAccess {
         for (;;) {
             int current = UNSAFE.getIntVolatile(obj, offset);
             int next = current + n;
-            if (UNSAFE.compareAndSwapInt(obj, offset, current, next))
+            if (UNSAFE.compareAndSwapInt(obj, offset, current, next)) {
                 return current;
+            }
         }
     }
 
     public static int getAndSetInt(Object obj, long offset, int newValue) {
         for (;;) {
             int current = UNSAFE.getIntVolatile(obj, offset);
-            if (UNSAFE.compareAndSwapInt(obj, offset, current, newValue))
+            if (UNSAFE.compareAndSwapInt(obj, offset, current, newValue)) {
                 return current;
+            }
         }
     }
 

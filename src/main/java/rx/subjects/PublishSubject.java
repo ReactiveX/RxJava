@@ -18,7 +18,7 @@ package rx.subjects;
 import java.util.*;
 
 import rx.Observer;
-import rx.annotations.Experimental;
+import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.internal.operators.NotificationLite;
@@ -50,6 +50,8 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  *          the type of items observed and emitted by the Subject
  */
 public final class PublishSubject<T> extends Subject<T, T> {
+    final SubjectSubscriptionManager<T> state;
+    private final NotificationLite<T> nl = NotificationLite.instance();
 
     /**
      * Creates and returns a new {@code PublishSubject}.
@@ -63,16 +65,13 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(SubjectObserver<T> o) {
-                o.emitFirst(state.get(), state.nl);
+                o.emitFirst(state.getLatest(), state.nl);
             }
             
         };
         return new PublishSubject<T>(state, state);
     }
 
-    final SubjectSubscriptionManager<T> state;
-    private final NotificationLite<T> nl = NotificationLite.instance();
-    
     protected PublishSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state) {
         super(onSubscribe);
         this.state = state;
@@ -124,20 +123,18 @@ public final class PublishSubject<T> extends Subject<T, T> {
      * Check if the Subject has terminated with an exception.
      * @return true if the subject has received a throwable through {@code onError}.
      */
-    @Experimental
-    @Override
+    @Beta
     public boolean hasThrowable() {
-        Object o = state.get();
+        Object o = state.getLatest();
         return nl.isError(o);
     }
     /**
      * Check if the Subject has terminated normally.
      * @return true if the subject completed normally via {@code onCompleted}
      */
-    @Experimental
-    @Override
+    @Beta
     public boolean hasCompleted() {
-        Object o = state.get();
+        Object o = state.getLatest();
         return o != null && !nl.isError(o);
     }
     /**
@@ -145,37 +142,12 @@ public final class PublishSubject<T> extends Subject<T, T> {
      * @return the Throwable that terminated the Subject or {@code null} if the
      * subject hasn't terminated yet or it terminated normally.
      */
-    @Experimental
-    @Override
+    @Beta
     public Throwable getThrowable() {
-        Object o = state.get();
+        Object o = state.getLatest();
         if (nl.isError(o)) {
             return nl.getError(o);
         }
         return null;
-    }
-    
-    @Override
-    @Experimental
-    public boolean hasValue() {
-        return false;
-    }
-    @Override
-    @Experimental
-    public T getValue() {
-        return null;
-    }
-    @Override
-    @Experimental
-    public Object[] getValues() {
-        return new Object[0];
-    }
-    @Override
-    @Experimental
-    public T[] getValues(T[] a) {
-        if (a.length > 0) {
-            a[0] = null;
-        }
-        return a;
     }
 }

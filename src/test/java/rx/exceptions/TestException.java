@@ -28,9 +28,19 @@ public final class TestException extends RuntimeException {
     }
     /**
      * Create the test exception with the provided message.
-     * @param message the mesage to use
+     * @param message the message to use
      */
     public TestException(String message) {
         super(message);
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        String thisMessage = getMessage();
+        String otherMessage = ((TestException)o).getMessage();
+        return thisMessage == otherMessage || (thisMessage != null && thisMessage.equals(otherMessage));
     }
 }

@@ -15,16 +15,14 @@
  */
 package rx.internal.operators;
 
-import rx.Observable;
-import rx.Single;
-import rx.SingleSubscriber;
-import rx.Subscriber;
-
 import java.util.NoSuchElementException;
+
+import rx.*;
 
 /**
  * Allows conversion of an Observable to a Single ensuring that exactly one item is emitted - no more and no less.
  * Also forwards errors as appropriate.
+ * @param <T> the value type
  */
 public class OnSubscribeSingle<T> implements Single.OnSubscribe<T> {
 
@@ -37,9 +35,9 @@ public class OnSubscribeSingle<T> implements Single.OnSubscribe<T> {
     @Override
     public void call(final SingleSubscriber<? super T> child) {
         Subscriber<T> parent = new Subscriber<T>() {
-            private boolean emittedTooMany = false;
-            private boolean itemEmitted = false;
-            private T emission = null;
+            private boolean emittedTooMany;
+            private boolean itemEmitted;
+            private T emission;
 
             @Override
             public void onStart() {
@@ -80,7 +78,7 @@ public class OnSubscribeSingle<T> implements Single.OnSubscribe<T> {
             }
         };
         child.add(parent);
-        observable.subscribe(parent);
+        observable.unsafeSubscribe(parent);
     }
 
     public static <T> OnSubscribeSingle<T> create(Observable<T> observable) {

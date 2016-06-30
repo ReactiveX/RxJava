@@ -17,15 +17,16 @@ package rx.internal.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.exceptions.Exceptions;
+import rx.functions.*;
 
 /**
  * Skips any emitted source items as long as the specified condition holds true. Emits all further source items
  * as soon as the condition becomes false.
+ * @param <T> the value type
  */
 public final class OperatorSkipWhile<T> implements Operator<T, T> {
-    private final Func2<? super T, Integer, Boolean> predicate;
+    final Func2<? super T, Integer, Boolean> predicate;
 
     public OperatorSkipWhile(Func2<? super T, Integer, Boolean> predicate) {
         this.predicate = predicate;
@@ -40,7 +41,14 @@ public final class OperatorSkipWhile<T> implements Operator<T, T> {
                 if (!skipping) {
                     child.onNext(t);
                 } else {
-                    if (!predicate.call(t, index++)) {
+                    boolean skip;
+                    try {
+                        skip = predicate.call(t,  index++);
+                    } catch (Throwable e) {
+                        Exceptions.throwOrReport(e, child, t);
+                        return;
+                    }
+                    if (!skip) {
                         skipping = false;
                         child.onNext(t);
                     } else {
@@ -60,7 +68,12 @@ public final class OperatorSkipWhile<T> implements Operator<T, T> {
             }
         };
     }
-    /** Convert to Func2 type predicate. */
+    /** 
+     * Convert to Func2 type predicate.
+     * @param <T> the input value type
+     * @param predicate the single argument predicate function
+     * @return The two argument function which ignores its second parameter  
+     */
     public static <T> Func2<T, Integer, Boolean> toPredicate2(final Func1<? super T, Boolean> predicate) {
         return new Func2<T, Integer, Boolean>() {
 

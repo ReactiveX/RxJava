@@ -17,9 +17,7 @@ package rx.internal.operators;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
-import rx.Scheduler;
-import rx.Subscription;
+import rx.*;
 import rx.functions.Action0;
 
 /**
@@ -28,6 +26,7 @@ import rx.functions.Action0;
  * received within the specified timeout duration starting from its predecessor,
  * the other observable sequence is used to produce future messages from that
  * point on.
+ * @param <T> the value type
  */
 public final class OperatorTimeout<T> extends OperatorTimeoutBase<T> {
 

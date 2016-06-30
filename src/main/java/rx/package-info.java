@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 /**
- * <p>Rx Observables</p>
+ * Base reactive classes: Observable, Single and Completable; base reactive consumers;
+ * other common base interfaces.
  * 
  * <p>A library that enables subscribing to and composing asynchronous events and
  * callbacks.</p>

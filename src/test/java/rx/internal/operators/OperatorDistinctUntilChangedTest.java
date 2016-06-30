@@ -15,39 +15,43 @@
  */
 package rx.internal.operators;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mock;
+import org.junit.*;
+import org.mockito.*;
 
-import rx.Observable;
-import rx.Observer;
-import rx.functions.Func1;
+import rx.*;
+import rx.exceptions.TestException;
+import rx.functions.*;
+import rx.observers.TestSubscriber;
 
 public class OperatorDistinctUntilChangedTest {
 
     @Mock
-    Observer<String> w;
+    private Observer<String> w;
     @Mock
-    Observer<String> w2;
+    private Observer<String> w2;
 
     // nulls lead to exceptions
-    final Func1<String, String> TO_UPPER_WITH_EXCEPTION = new Func1<String, String>() {
+    private final static Func1<String, String> TO_UPPER_WITH_EXCEPTION = new Func1<String, String>() {
         @Override
         public String call(String s) {
             if (s.equals("x")) {
                 return "xx";
             }
             return s.toUpperCase();
+        }
+    };
+    
+    private final static Func1<String, String> THROWS_NON_FATAL = new Func1<String, String>() {
+        @Override
+        public String call(String s) {
+            throw new RuntimeException();
         }
     };
 
@@ -138,4 +142,59 @@ public class OperatorDistinctUntilChangedTest {
         inOrder.verify(w, never()).onNext(anyString());
         inOrder.verify(w, never()).onCompleted();
     }
+    
+    @Test
+    public void testDistinctUntilChangedWhenNonFatalExceptionThrownByKeySelectorIsNotReportedByUpstream() {
+        Observable<String> src = Observable.just("a", "b", null, "c");
+        final AtomicBoolean errorOccurred = new AtomicBoolean(false);
+        src
+          .doOnError(new Action1<Throwable>() {
+                @Override
+                public void call(Throwable t) {
+                    errorOccurred.set(true);
+                }
+            })
+          .distinctUntilChanged(THROWS_NON_FATAL)
+          .subscribe(w);
+        assertFalse(errorOccurred.get());
+    }
+    
+    @Test
+    public void customComparator() {
+        Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
+        
+        TestSubscriber<String> ts = TestSubscriber.create();
+        
+        source.distinctUntilChanged(new Func2<String, String, Boolean>() {
+            @Override
+            public Boolean call(String a, String b) {
+                return a.compareToIgnoreCase(b) == 0;
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValues("a", "b", "A", "C");
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void customComparatorThrows() {
+        Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
+        
+        TestSubscriber<String> ts = TestSubscriber.create();
+        
+        source.distinctUntilChanged(new Func2<String, String, Boolean>() {
+            @Override
+            public Boolean call(String a, String b) {
+                throw new TestException();
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue("a");
+        ts.assertNotCompleted();
+        ts.assertError(TestException.class);
+    }
+
 }

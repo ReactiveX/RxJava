@@ -17,20 +17,23 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 
 public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
 
+    final Action1<? super T> onDrop;
+
     /** Lazy initialization via inner-class holder. */
-    private static final class Holder {
+    static final class Holder {
         /** A singleton instance. */
         static final OperatorOnBackpressureDrop<Object> INSTANCE = new OperatorOnBackpressureDrop<Object>();
     }
 
     /**
+     * @param <T> the value type
      * @return a singleton instance of this stateless operator.
      */
     @SuppressWarnings({ "unchecked" })
@@ -38,9 +41,7 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
         return (OperatorOnBackpressureDrop<T>)Holder.INSTANCE;
     }
 
-    private final Action1<? super T> onDrop;
-
-    private OperatorOnBackpressureDrop() {
+    OperatorOnBackpressureDrop() {
         this(null);
     }
 
@@ -84,7 +85,12 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
                 } else {
                     // item dropped
                     if(onDrop != null) {
-                        onDrop.call(t);
+                        try {
+                            onDrop.call(t);
+                        } catch (Throwable e) {
+                            Exceptions.throwOrReport(e, child, t);
+                            return;
+                        }
                     }
                 }
             }

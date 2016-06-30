@@ -16,28 +16,21 @@
 package rx.internal.operators;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
-import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.internal.operators.OperatorMap;
+import rx.exceptions.*;
+import rx.functions.*;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class OperatorMapTest {
 
@@ -64,14 +57,14 @@ public class OperatorMapTest {
         Map<String, String> m2 = getMap("Two");
         Observable<Map<String, String>> observable = Observable.just(m1, m2);
 
-        Observable<String> m = observable.lift(new OperatorMap<Map<String, String>, String>(new Func1<Map<String, String>, String>() {
+        Observable<String> m = observable.map(new Func1<Map<String, String>, String>() {
 
             @Override
             public String call(Map<String, String> map) {
                 return map.get("firstName");
             }
 
-        }));
+        });
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -91,7 +84,7 @@ public class OperatorMapTest {
             @Override
             public Observable<String> call(Integer id) {
                 /* simulate making a nested async call which creates another Observable */
-                Observable<Map<String, String>> subObservable = null;
+                Observable<Map<String, String>> subObservable;
                 if (id == 1) {
                     Map<String, String> m1 = getMap("One");
                     Map<String, String> m2 = getMap("Two");
@@ -162,7 +155,7 @@ public class OperatorMapTest {
     @Test
     public void testMapWithError() {
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
-        Observable<String> m = w.lift(new OperatorMap<String, String>(new Func1<String, String>() {
+        Observable<String> m = w.map(new Func1<String, String>() {
             @Override
             public String call(String s) {
                 if ("fail".equals(s)) {
@@ -170,7 +163,7 @@ public class OperatorMapTest {
                 }
                 return s;
             }
-        })).doOnError(new Action1<Throwable>() {
+        }).doOnError(new Action1<Throwable>() {
 
             @Override
             public void call(Throwable t1) {
@@ -338,5 +331,28 @@ public class OperatorMapTest {
                 System.out.println(s);
             }
         });
+    }
+    
+    @Test
+    public void functionCrashUnsubscribes() {
+        
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        ps.map(new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer v) { 
+                throw new TestException(); 
+            }
+        }).unsafeSubscribe(ts);
+        
+        Assert.assertTrue("Not subscribed?", ps.hasObservers());
+        
+        ps.onNext(1);
+        
+        Assert.assertFalse("Subscribed?", ps.hasObservers());
+        
+        ts.assertError(TestException.class);
     }
 }

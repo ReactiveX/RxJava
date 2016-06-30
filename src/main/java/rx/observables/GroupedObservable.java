@@ -40,7 +40,9 @@ public class GroupedObservable<K, T> extends Observable<T> {
 
     /**
      * Converts an {@link Observable} into a {@code GroupedObservable} with a particular key.
-     *
+     * 
+     * @param <K> the key type
+     * @param <T> the value type
      * @param key
      *            the key to identify the group of items emitted by this {@code GroupedObservable}
      * @param o
@@ -80,12 +82,13 @@ public class GroupedObservable<K, T> extends Observable<T> {
      *            the type of the key
      * @param <T>
      *            the type of the items that this Observable emits
+     * @param key the key value
      * @param f
      *            a function that accepts an {@code Subscriber<T>}, and invokes its {@code onNext}, {@code onError}, and {@code onCompleted} methods as appropriate
      * @return a GroupedObservable that, when a {@link Subscriber} subscribes to it, will execute the specified
      *         function
      */
-    public final static <K, T> GroupedObservable<K, T> create(K key, OnSubscribe<T> f) {
+    public static <K, T> GroupedObservable<K, T> create(K key, OnSubscribe<T> f) {
         return new GroupedObservable<K, T>(key, f);
     }
 
@@ -95,7 +98,7 @@ public class GroupedObservable<K, T> extends Observable<T> {
     }
 
     /**
-     * Returns the key that identifies the group of items emited by this {@code GroupedObservable}
+     * Returns the key that identifies the group of items emitted by this {@code GroupedObservable}
      * 
      * @return the key that the items emitted by this {@code GroupedObservable} were grouped by
      */

@@ -16,8 +16,15 @@
 
 package rx.plugins;
 
+import java.util.concurrent.ThreadFactory;
 import rx.Scheduler;
+import rx.annotations.Experimental;
 import rx.functions.Action0;
+import rx.internal.schedulers.CachedThreadScheduler;
+import rx.internal.schedulers.EventLoopsScheduler;
+import rx.internal.schedulers.NewThreadScheduler;
+import rx.internal.util.RxThreadFactory;
+import rx.schedulers.Schedulers;
 
 /**
  * This plugin class provides 2 ways to customize {@link Scheduler} functionality
@@ -35,17 +42,83 @@ import rx.functions.Action0;
  */
 public class RxJavaSchedulersHook {
 
-    protected RxJavaSchedulersHook() {
+    private final static RxJavaSchedulersHook DEFAULT_INSTANCE = new RxJavaSchedulersHook();
 
+    /**
+     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#computation()}.
+     * @return the created Scheduler instance
+     */
+    @Experimental
+    public static Scheduler createComputationScheduler() {
+        return createComputationScheduler(new RxThreadFactory("RxComputationScheduler-"));
     }
 
-    private final static RxJavaSchedulersHook DEFAULT_INSTANCE = new RxJavaSchedulersHook();
+    /**
+     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#computation()}
+     * except using {@code threadFactory} for thread creation.
+     * @param threadFactory the factory to use for each worker thread
+     * @return the created Scheduler instance
+     */
+    @Experimental
+    public static Scheduler createComputationScheduler(ThreadFactory threadFactory) {
+        if (threadFactory == null) {
+            throw new NullPointerException("threadFactory == null");
+        }
+        return new EventLoopsScheduler(threadFactory);
+    }
+
+    /**
+     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#io()}.
+     * @return the created Scheduler instance
+     */
+    @Experimental
+    public static Scheduler createIoScheduler() {
+        return createIoScheduler(new RxThreadFactory("RxIoScheduler-"));
+    }
+
+    /**
+     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#io()}
+     * except using {@code threadFactory} for thread creation.
+     * @param threadFactory the factory to use for each worker thread
+     * @return the created Scheduler instance
+     */
+    @Experimental
+    public static Scheduler createIoScheduler(ThreadFactory threadFactory) {
+        if (threadFactory == null) {
+            throw new NullPointerException("threadFactory == null");
+        }
+        return new CachedThreadScheduler(threadFactory);
+    }
+
+    /**
+     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#newThread()}.
+     * @return the created Scheduler instance
+     */
+    @Experimental
+    public static Scheduler createNewThreadScheduler() {
+        return createNewThreadScheduler(new RxThreadFactory("RxNewThreadScheduler-"));
+    }
+
+    /**
+     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#newThread()}
+     * except using {@code threadFactory} for thread creation.
+     * @param threadFactory the factory to use for each worker thread
+     * @return the created Scheduler instance
+     */
+    @Experimental
+    public static Scheduler createNewThreadScheduler(ThreadFactory threadFactory) {
+        if (threadFactory == null) {
+            throw new NullPointerException("threadFactory == null");
+        }
+        return new NewThreadScheduler(threadFactory);
+    }
 
     /**
      * Scheduler to return from {@link rx.schedulers.Schedulers#computation()} or null if default should be
      * used.
      *
      * This instance should be or behave like a stateless singleton;
+     * @return the current computation scheduler instance
      */
     public Scheduler getComputationScheduler() {
         return null;
@@ -55,6 +128,7 @@ public class RxJavaSchedulersHook {
      * Scheduler to return from {@link rx.schedulers.Schedulers#io()} or null if default should be used.
      *
      * This instance should be or behave like a stateless singleton;
+     * @return the created Scheduler instance
      */
     public Scheduler getIOScheduler() {
         return null;
@@ -64,6 +138,7 @@ public class RxJavaSchedulersHook {
      * Scheduler to return from {@link rx.schedulers.Schedulers#newThread()} or null if default should be used.
      *
      * This instance should be or behave like a stateless singleton;
+     * @return the current new thread scheduler instance
      */
     public Scheduler getNewThreadScheduler() {
         return null;
@@ -71,10 +146,11 @@ public class RxJavaSchedulersHook {
 
     /**
      * Invoked before the Action is handed over to the scheduler.  Can be used for wrapping/decorating/logging.
-     * The default is just a passthrough.
+     * The default is just a pass through.
      * @param action action to schedule
      * @return wrapped action to schedule
      */
+    @Deprecated
     public Action0 onSchedule(Action0 action) {
         return action;
     }

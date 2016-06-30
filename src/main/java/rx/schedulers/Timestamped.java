@@ -17,6 +17,7 @@ package rx.schedulers;
 
 /**
  * Composite class that takes a value and a timestamp and wraps them.
+ * @param <T> the value type held along with the timestamp
  */
 public final class Timestamped<T> {
     private final long timestampMillis;
@@ -72,7 +73,7 @@ public final class Timestamped<T> {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + (int) (timestampMillis ^ (timestampMillis >>> 32));
         result = prime * result + ((value == null) ? 0 : value.hashCode());

@@ -15,12 +15,10 @@
  */
 package rx.internal.operators;
 
-import static rx.Observable.concat;
-import static rx.Observable.just;
-import static rx.Observable.zip;
+import static rx.Observable.*;
+
 import rx.Observable;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
 import rx.internal.util.UtilityFunctions;
 
 /**
@@ -28,12 +26,14 @@ import rx.internal.util.UtilityFunctions;
  * {@code Observable}s emit sequences of items that are equivalent to each other.
  */
 public final class OperatorSequenceEqual {
+
+    /** NotificationLite doesn't work as zip uses it. */
+    static final Object LOCAL_ONCOMPLETED = new Object();
+
     private OperatorSequenceEqual() {
         throw new IllegalStateException("No instances!");
     }
 
-    /** NotificationLite doesn't work as zip uses it. */
-    private static final Object LOCAL_ONCOMPLETED = new Object();
     static <T> Observable<Object> materializeLite(Observable<T> source) {
         return concat(
                 source.map(new Func1<T, Object>() {
@@ -50,6 +50,7 @@ public final class OperatorSequenceEqual {
      * Tests whether two {@code Observable} sequences are identical, emitting {@code true} if both sequences
      * complete without differing, and {@code false} if the two sequences diverge at any point.
      *
+     * @param <T> the value type
      * @param first
      *      the first of the two {@code Observable}s to compare
      * @param second

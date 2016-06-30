@@ -16,7 +16,6 @@
 package rx.subjects;
 
 import rx.Subscriber;
-import rx.annotations.Experimental;
 import rx.observers.SerializedObserver;
 
 /**
@@ -24,14 +23,17 @@ import rx.observers.SerializedObserver;
  * <p>
  * When you use an ordinary {@link Subject} as a {@link Subscriber}, you must take care not to call its
  * {@link Subscriber#onNext} method (or its other {@code on} methods) from multiple threads, as this could lead
- * to non-serialized calls, which violates the Observable contract and creates an ambiguity in the resulting
- * Subject.
+ * to non-serialized calls, which violates <a href="http://reactivex.io/documentation/contract.html">the
+ * Observable contract</a> and creates an ambiguity in the resulting Subject.
  * <p>
  * To protect a {@code Subject} from this danger, you can convert it into a {@code SerializedSubject} with code
  * like the following:
  * <p><pre>{@code
  * mySafeSubject = new SerializedSubject( myUnsafeSubject );
  * }</pre>
+ * 
+ * @param <T> the input value type
+ * @param <R> the output value type
  */
 public class SerializedSubject<T, R> extends Subject<T, R> {
     private final SerializedObserver<T> observer;
@@ -68,40 +70,5 @@ public class SerializedSubject<T, R> extends Subject<T, R> {
     @Override
     public boolean hasObservers() {
         return actual.hasObservers();
-    }
-    @Override
-    @Experimental
-    public boolean hasCompleted() {
-        return actual.hasCompleted();
-    }
-    @Override
-    @Experimental
-    public boolean hasThrowable() {
-        return actual.hasThrowable();
-    }
-    @Override
-    @Experimental
-    public boolean hasValue() {
-        return actual.hasValue();
-    }
-    @Override
-    @Experimental
-    public Throwable getThrowable() {
-        return actual.getThrowable();
-    }
-    @Override
-    @Experimental
-    public T getValue() {
-        return actual.getValue();
-    }
-    @Override
-    @Experimental
-    public Object[] getValues() {
-        return actual.getValues();
-    }
-    @Override
-    @Experimental
-    public T[] getValues(T[] a) {
-        return actual.getValues(a);
     }
 }

@@ -15,94 +15,120 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.concurrent.atomic.AtomicLong;
 
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Producer;
-import rx.Subscriber;
 
 /**
  * Emit ints from start to end inclusive.
  */
 public final class OnSubscribeRange implements OnSubscribe<Integer> {
 
-    private final int start;
-    private final int end;
+    private final int startIndex;
+    private final int endIndex;
 
     public OnSubscribeRange(int start, int end) {
-        this.start = start;
-        this.end = end;
+        this.startIndex = start;
+        this.endIndex = end;
     }
 
     @Override
-    public void call(final Subscriber<? super Integer> o) {
-        o.setProducer(new RangeProducer(o, start, end));
+    public void call(final Subscriber<? super Integer> childSubscriber) {
+        childSubscriber.setProducer(new RangeProducer(childSubscriber, startIndex, endIndex));
     }
 
-    private static final class RangeProducer implements Producer {
-        private final Subscriber<? super Integer> o;
-        // accessed by REQUESTED_UPDATER
-        private volatile long requested;
-        private static final AtomicLongFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(RangeProducer.class, "requested");
-        private long index;
-        private final int end;
+    static final class RangeProducer extends AtomicLong implements Producer {
+        /** */
+        private static final long serialVersionUID = 4114392207069098388L;
+        
+        private final Subscriber<? super Integer> childSubscriber;
+        private final int endOfRange;
+        private long currentIndex;
 
-        private RangeProducer(Subscriber<? super Integer> o, int start, int end) {
-            this.o = o;
-            this.index = start;
-            this.end = end;
+        RangeProducer(Subscriber<? super Integer> childSubscriber, int startIndex, int endIndex) {
+            this.childSubscriber = childSubscriber;
+            this.currentIndex = startIndex;
+            this.endOfRange = endIndex;
         }
 
         @Override
-        public void request(long n) {
-            if (requested == Long.MAX_VALUE) {
+        public void request(long requestedAmount) {
+            if (get() == Long.MAX_VALUE) {
                 // already started with fast-path
                 return;
             }
-            if (n == Long.MAX_VALUE && REQUESTED_UPDATER.compareAndSet(this, 0, Long.MAX_VALUE)) {
+            if (requestedAmount == Long.MAX_VALUE && compareAndSet(0L, Long.MAX_VALUE)) {
                 // fast-path without backpressure
-                for (long i = index; i <= end; i++) {
-                    if (o.isUnsubscribed()) {
+                fastpath();
+            } else if (requestedAmount > 0L) {
+                long c = BackpressureUtils.getAndAddRequest(this, requestedAmount);
+                if (c == 0L) {
+                    // backpressure is requested
+                    slowpath(requestedAmount);
+                }
+            }
+        }
+
+        /**
+         * Emits as many values as requested or remaining from the range, whichever is smaller.
+         */
+        void slowpath(long requestedAmount) {
+            long emitted = 0L;
+            long endIndex = endOfRange + 1L;
+            long index = currentIndex;
+            
+            final Subscriber<? super Integer> childSubscriber = this.childSubscriber;
+            
+            for (;;) {
+                
+                while (emitted != requestedAmount && index != endIndex) {
+                    if (childSubscriber.isUnsubscribed()) {
                         return;
                     }
-                    o.onNext((int) i);
+                    
+                    childSubscriber.onNext((int)index);
+                    
+                    index++;
+                    emitted++;
                 }
-                if (!o.isUnsubscribed()) {
-                    o.onCompleted();
+                
+                if (childSubscriber.isUnsubscribed()) {
+                    return;
                 }
-            } else if (n > 0) {
-                // backpressure is requested
-                long _c = BackpressureUtils.getAndAddRequest(REQUESTED_UPDATER,this, n);
-                if (_c == 0) {
-                    while (true) {
-                        /*
-                         * This complicated logic is done to avoid touching the volatile `index` and `requested` values
-                         * during the loop itself. If they are touched during the loop the performance is impacted significantly.
-                         */
-                        long r = requested;
-                        long idx = index;
-                        long numLeft = end - idx + 1;
-                        long e = Math.min(numLeft, r);
-                        boolean completeOnFinish = numLeft <= r;
-                        long stopAt = e + idx;
-                        for (long i = idx; i < stopAt; i++) {
-                            if (o.isUnsubscribed()) {
-                                return;
-                            }
-                            o.onNext((int) i);
-                        }
-                        index = stopAt;
-                        
-                        if (completeOnFinish) {
-                            o.onCompleted();
-                            return;
-                        }
-                        if (REQUESTED_UPDATER.addAndGet(this, -e) == 0) {
-                            // we're done emitting the number requested so return
-                            return;
-                        }
+                
+                if (index == endIndex) {
+                    childSubscriber.onCompleted();
+                    return;
+                }
+                
+                requestedAmount = get();
+                
+                if (requestedAmount == emitted) {
+                    currentIndex = index;
+                    requestedAmount = addAndGet(-emitted);
+                    if (requestedAmount == 0L) {
+                        break;
                     }
+                    emitted = 0L;
                 }
+            }
+        }
+
+        /**
+         * Emits all remaining values without decrementing the requested amount.
+         */
+        void fastpath() {
+            final long endIndex = this.endOfRange + 1L;
+            final Subscriber<? super Integer> childSubscriber = this.childSubscriber;
+            for (long index = currentIndex; index != endIndex; index++) {
+                if (childSubscriber.isUnsubscribed()) {
+                    return;
+                }
+                childSubscriber.onNext((int) index);
+            }
+            if (!childSubscriber.isUnsubscribed()) {
+                childSubscriber.onCompleted();
             }
         }
     }

@@ -18,19 +18,18 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
 
-/**
+/**O
  * Returns an Observable that emits items emitted by the source Observable as long as a specified
  * condition is true.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/takeWhile.png" alt="">
+ * @param <T> the value type
  */
 public final class OperatorTakeWhile<T> implements Operator<T, T> {
 
-    private final Func2<? super T, ? super Integer, Boolean> predicate;
+    final Func2<? super T, ? super Integer, Boolean> predicate;
 
     public OperatorTakeWhile(final Func1<? super T, Boolean> underlying) {
         this(new Func2<T, Integer, Boolean>() {
@@ -49,9 +48,9 @@ public final class OperatorTakeWhile<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
         Subscriber<T> s = new Subscriber<T>(subscriber, false) {
 
-            private int counter = 0;
+            private int counter;
 
-            private boolean done = false;
+            private boolean done;
 
             @Override
             public void onNext(T t) {
@@ -60,8 +59,7 @@ public final class OperatorTakeWhile<T> implements Operator<T, T> {
                     isSelected = predicate.call(t, counter++);
                 } catch (Throwable e) {
                     done = true;
-                    Exceptions.throwIfFatal(e);
-                    subscriber.onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                    Exceptions.throwOrReport(e, subscriber, t);
                     unsubscribe();
                     return;
                 }

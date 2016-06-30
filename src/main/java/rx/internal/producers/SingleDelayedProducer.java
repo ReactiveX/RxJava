@@ -67,7 +67,7 @@ public final class SingleDelayedProducer<T> extends AtomicInteger implements Pro
                     emit(child, value);
                 }
             }
-            return;
+            return; // NOPMD 
         }
     }
      
@@ -85,7 +85,7 @@ public final class SingleDelayedProducer<T> extends AtomicInteger implements Pro
                     emit(child, value);
                 }
             }
-            return;
+            return; // NOPMD 
         }
     }
     /**
@@ -101,9 +101,7 @@ public final class SingleDelayedProducer<T> extends AtomicInteger implements Pro
         try {
             c.onNext(v);
         } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            Throwable e1 = OnErrorThrowable.addValueAsLastCause(e, v);
-            c.onError(e1);
+            Exceptions.throwOrReport(e, c, v);
             return;
         }
         if (c.isUnsubscribed()) {

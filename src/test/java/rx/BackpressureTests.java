@@ -96,7 +96,7 @@ public class BackpressureTests {
         assertEquals(NUM, ts.getOnNextEvents().size());
         // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
         // TODO is it possible to make this deterministic rather than one possibly starving the other?
-        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algoritms generally take a performance hit
+        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algorithms generally take a performance hit
         assertTrue(c1.get() < RxRingBuffer.SIZE * 5);
         assertTrue(c2.get() < RxRingBuffer.SIZE * 5);
     }
@@ -118,11 +118,35 @@ public class BackpressureTests {
         assertEquals(NUM, ts.getOnNextEvents().size());
         // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
         // TODO is it possible to make this deterministic rather than one possibly starving the other?
-        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algoritms generally take a performance hit
+        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algorithms generally take a performance hit
         assertTrue(c1.get() < RxRingBuffer.SIZE * 5);
         assertTrue(c2.get() < RxRingBuffer.SIZE * 5);
     }
 
+    @Test
+    public void testMergeAsyncThenObserveOnLoop() {
+        for (int i = 0; i < 500; i++) {
+            if (i % 10 == 0) {
+                System.out.println("testMergeAsyncThenObserveOnLoop >> " + i);
+            }
+            // Verify there is no MissingBackpressureException
+            int NUM = (int) (RxRingBuffer.SIZE * 4.1);
+            AtomicInteger c1 = new AtomicInteger();
+            AtomicInteger c2 = new AtomicInteger();
+            
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            Observable<Integer> merged = Observable.merge(
+                    incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
+                    incrementingIntegers(c2).subscribeOn(Schedulers.computation()));
+
+            merged.observeOn(Schedulers.io()).take(NUM).subscribe(ts);
+            ts.awaitTerminalEvent();
+            ts.assertNoErrors();
+            System.out.println("testMergeAsyncThenObserveOn => Received: " + ts.getOnNextEvents().size() + "  Emitted: " + c1.get() + " / " + c2.get());
+            assertEquals(NUM, ts.getOnNextEvents().size());
+        }
+    }
+    
     @Test
     public void testMergeAsyncThenObserveOn() {
         int NUM = (int) (RxRingBuffer.SIZE * 4.1);
@@ -140,7 +164,7 @@ public class BackpressureTests {
         assertEquals(NUM, ts.getOnNextEvents().size());
         // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
         // TODO is it possible to make this deterministic rather than one possibly starving the other?
-        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algoritms generally take a performance hit
+        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algorithms generally take a performance hit
         // akarnokd => run this in a loop over 10k times and never saw values get as high as 7*SIZE, but since observeOn delays the unsubscription non-deterministically, the test will remain unreliable
         assertTrue(c1.get() < RxRingBuffer.SIZE * 7);
         assertTrue(c2.get() < RxRingBuffer.SIZE * 7);
@@ -168,7 +192,7 @@ public class BackpressureTests {
     }
 
     @Test
-    @Ignore // the test is non-deterministic and can't be made deterministic
+    @Ignore("The test is non-deterministic and can't be made deterministic")
     public void testFlatMapAsync() {
         int NUM = (int) (RxRingBuffer.SIZE * 2.1);
         AtomicInteger c = new AtomicInteger();
@@ -419,7 +443,13 @@ public class BackpressureTests {
 
     @Test(timeout = 10000)
     public void testOnBackpressureDrop() {
+        long t = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {
+            // stop the test if we are getting close to the timeout because slow machines 
+            // may not get through 100 iterations
+            if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
+                break;
+            }
             int NUM = (int) (RxRingBuffer.SIZE * 1.1); // > 1 so that take doesn't prevent buffer overflow
             AtomicInteger c = new AtomicInteger();
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();

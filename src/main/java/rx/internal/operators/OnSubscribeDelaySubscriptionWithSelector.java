@@ -17,13 +17,16 @@ package rx.internal.operators;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.exceptions.Exceptions;
 import rx.functions.Func0;
+import rx.observers.Subscribers;
 
 /**
  * Delays the subscription until the Observable<U> emits an event.
  * 
  * @param <T>
  *            the value type
+ * @param <U> the value type of the Observable triggering the delayed subscription
  */
 public final class OnSubscribeDelaySubscriptionWithSelector<T, U> implements OnSubscribe<T> {
     final Observable<? extends T> source;
@@ -42,20 +45,7 @@ public final class OnSubscribeDelaySubscriptionWithSelector<T, U> implements OnS
                 @Override
                 public void onCompleted() {
                     // subscribe to actual source
-                    source.unsafeSubscribe(new Subscriber<T>(child) {
-                        @Override
-                        public void onNext(T t) {
-                            child.onNext(t);
-                        }
-                        @Override
-                        public void onError(Throwable e) {
-                            child.onError(e);
-                        }
-                        @Override
-                        public void onCompleted() {
-                            child.onCompleted();
-                        }
-                    });
+                    source.unsafeSubscribe(Subscribers.wrap(child));
                 }
 
                 @Override
@@ -70,7 +60,7 @@ public final class OnSubscribeDelaySubscriptionWithSelector<T, U> implements OnS
 
             });
         } catch (Throwable e) {
-            child.onError(e);
+            Exceptions.throwOrReport(e, child);
         }
     }
 

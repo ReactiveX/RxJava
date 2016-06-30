@@ -16,21 +16,20 @@
 package rx.internal.operators;
 
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.Operator;
-import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 import rx.internal.producers.SingleDelayedProducer;
 
 /**
  * Returns an {@link Observable} that emits <code>true</code> if any element of
  * an observable sequence satisfies a condition, otherwise <code>false</code>.
+ * @param <T> the input value type
  */
 public final class OperatorAny<T> implements Operator<Boolean, T> {
-    private final Func1<? super T, Boolean> predicate;
-    private final boolean returnOnEmpty;
+    final Func1<? super T, Boolean> predicate;
+    final boolean returnOnEmpty;
 
     public OperatorAny(Func1<? super T, Boolean> predicate, boolean returnOnEmpty) {
         this.predicate = predicate;
@@ -51,8 +50,7 @@ public final class OperatorAny<T> implements Operator<Boolean, T> {
                 try {
                     result = predicate.call(t);
                 } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                    Exceptions.throwOrReport(e, this, t);
                     return;
                 }
                 if (result && !done) {

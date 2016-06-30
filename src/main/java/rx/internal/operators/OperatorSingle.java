@@ -16,23 +16,24 @@
 package rx.internal.operators;
 
 import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable.Operator;
-import rx.Producer;
 import rx.Subscriber;
+import rx.internal.producers.SingleProducer;
+import rx.plugins.RxJavaHooks;
 
 /**
  * If the Observable completes after emitting a single item that matches a
  * predicate, return an Observable containing that item. If it emits more than
  * one such item or no item, throw an IllegalArgumentException.
+ * @param <T> the value type
  */
 public final class OperatorSingle<T> implements Operator<T, T> {
 
     private final boolean hasDefaultValue;
     private final T defaultValue;
 
-    private static class Holder {
+    static final class Holder {
         final static OperatorSingle<?> INSTANCE = new OperatorSingle<Object>();
     }
     
@@ -40,14 +41,15 @@ public final class OperatorSingle<T> implements Operator<T, T> {
      * Returns a singleton instance of OperatorSingle (if the stream is empty or has 
      * more than one element an error will be emitted) that is cast to the generic type.
      *  
+     * @param <T> the value type
      * @return a singleton instance of an Operator that will emit a single value only unless the stream has zero or more than one element in which case it will emit an error.
      */
     @SuppressWarnings("unchecked")
     public static <T> OperatorSingle<T> instance() {
         return (OperatorSingle<T>) Holder.INSTANCE;
     }
-    
-    private OperatorSingle() {
+
+    OperatorSingle() {
         this(false, null);
     }
 
@@ -65,31 +67,18 @@ public final class OperatorSingle<T> implements Operator<T, T> {
 
         final ParentSubscriber<T> parent = new ParentSubscriber<T>(child, hasDefaultValue,
                 defaultValue);
-
-        child.setProducer(new Producer() {
-
-            private final AtomicBoolean requestedTwo = new AtomicBoolean(false);
-
-            @Override
-            public void request(long n) {
-                if (n > 0 && requestedTwo.compareAndSet(false, true)) {
-                    parent.requestMore(2);
-                }
-            }
-
-        });
         child.add(parent);
         return parent;
     }
 
-    private static final class ParentSubscriber<T> extends Subscriber<T> {
+    static final class ParentSubscriber<T> extends Subscriber<T> {
         private final Subscriber<? super T> child;
         private final boolean hasDefaultValue;
         private final T defaultValue;
         
         private T value;
-        private boolean isNonEmpty = false;
-        private boolean hasTooManyElements = false;
+        private boolean isNonEmpty;
+        private boolean hasTooManyElements;
 
         
         ParentSubscriber(Subscriber<? super T> child, boolean hasDefaultValue,
@@ -97,14 +86,14 @@ public final class OperatorSingle<T> implements Operator<T, T> {
             this.child = child;
             this.hasDefaultValue = hasDefaultValue;
             this.defaultValue = defaultValue;
-        }
-
-        void requestMore(long n) {
-            request(n);
+            request(2); // could go unbounded, but test expect this
         }
 
         @Override
         public void onNext(T value) {
+            if (hasTooManyElements) {
+                return;
+            } else
             if (isNonEmpty) {
                 hasTooManyElements = true;
                 child.onError(new IllegalArgumentException("Sequence contains too many elements"));
@@ -121,12 +110,10 @@ public final class OperatorSingle<T> implements Operator<T, T> {
                 // We have already sent an onError message
             } else {
                 if (isNonEmpty) {
-                    child.onNext(value);
-                    child.onCompleted();
+                    child.setProducer(new SingleProducer<T>(child, value));
                 } else {
                     if (hasDefaultValue) {
-                        child.onNext(defaultValue);
-                        child.onCompleted();
+                        child.setProducer(new SingleProducer<T>(child, defaultValue));
                     } else {
                         child.onError(new NoSuchElementException("Sequence contains no elements"));
                     }
@@ -136,6 +123,11 @@ public final class OperatorSingle<T> implements Operator<T, T> {
 
         @Override
         public void onError(Throwable e) {
+            if (hasTooManyElements) {
+                RxJavaHooks.onError(e);
+                return;
+            }
+            
             child.onError(e);
         }
 

@@ -16,20 +16,19 @@
 package rx.internal.operators;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
-import rx.functions.Func1;
-import rx.internal.util.RxRingBuffer;
+import rx.*;
+import rx.exceptions.*;
+import rx.functions.*;
+import rx.internal.util.*;
 import rx.observers.TestSubscriber;
+import rx.subjects.PublishSubject;
 
 public class OperatorFilterTest {
 
@@ -56,6 +55,7 @@ public class OperatorFilterTest {
 
     /**
      * Make sure we are adjusting subscriber.request() for filtered items
+     * @throws InterruptedException on interrupt
      */
     @Test(timeout = 500)
     public void testWithBackpressure() throws InterruptedException {
@@ -69,7 +69,7 @@ public class OperatorFilterTest {
         });
 
         final CountDownLatch latch = new CountDownLatch(1);
-        TestSubscriber<String> ts = new TestSubscriber<String>() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0L) {
 
             @Override
             public void onCompleted() {
@@ -102,6 +102,7 @@ public class OperatorFilterTest {
 
     /**
      * Make sure we are adjusting subscriber.request() for filtered items
+     * @throws InterruptedException on interrupt
      */
     @Test(timeout = 500000)
     public void testWithBackpressure2() throws InterruptedException {
@@ -115,7 +116,7 @@ public class OperatorFilterTest {
         });
 
         final CountDownLatch latch = new CountDownLatch(1);
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L) {
             
             @Override
             public void onCompleted() {
@@ -143,5 +144,68 @@ public class OperatorFilterTest {
 
         // this will wait forever unless OperatorTake handles the request(n) on filtered items
         latch.await();
+    }
+    
+    @Test
+    public void testFatalError() {
+        try {
+            Observable.just(1)
+            .filter(new Func1<Integer, Boolean>() {
+                @Override
+                public Boolean call(Integer t) {
+                    return true;
+                }
+            })
+            .first()
+            .subscribe(new Action1<Integer>() {
+                @Override
+                public void call(Integer t) {
+                    throw new TestException();
+                }
+            });
+            Assert.fail("No exception was thrown");
+        } catch (OnErrorNotImplementedException ex) {
+            if (!(ex.getCause() instanceof TestException)) {
+                Assert.fail("Failed to report the original exception, instead: " + ex.getCause());
+            }
+        }
+    }
+
+    @Test
+    public void functionCrashUnsubscribes() {
+        
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        ps.filter(new Func1<Integer, Boolean>() {
+            @Override
+            public Boolean call(Integer v) { 
+                throw new TestException(); 
+            }
+        }).unsafeSubscribe(ts);
+        
+        Assert.assertTrue("Not subscribed?", ps.hasObservers());
+        
+        ps.onNext(1);
+        
+        Assert.assertFalse("Subscribed?", ps.hasObservers());
+        
+        ts.assertError(TestException.class);
+    }
+
+    @Test
+    public void doesntRequestOnItsOwn() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0L);
+        
+        Observable.range(1, 10).filter(UtilityFunctions.alwaysTrue()).unsafeSubscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.requestMore(10);
+        
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 }

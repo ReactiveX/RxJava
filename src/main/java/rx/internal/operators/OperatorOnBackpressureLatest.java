@@ -17,12 +17,13 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.*;
 
-import rx.Observable.Operator;
 import rx.*;
+import rx.Observable.Operator;
 
 /**
  * An operator which drops all but the last received value in case the downstream
  * doesn't request more.
+ * @param <T> the value type
  */
 public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
     /** Holds a singleton instance initialized on class-loading. */
@@ -32,6 +33,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
     
     /**
      * Returns a singleton instance of the OnBackpressureLatest operator since it is stateless.
+     * @param <T> the value type
      * @return the single instanceof OperatorOnBackpressureLatest
      */
     @SuppressWarnings("unchecked")
@@ -50,7 +52,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
         return parent;
     }
     /**
-     * A terminatable producer which emits the latest items on request.
+     * A terminable producer which emits the latest items on request.
      * @param <T>
      */
     static final class LatestEmitter<T> extends AtomicLong implements Producer, Subscription, Observer<T> {
@@ -194,7 +196,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
     static final class LatestSubscriber<T> extends Subscriber<T> {
         private final LatestEmitter<T> producer;
 
-        private LatestSubscriber(LatestEmitter<T> producer) {
+        LatestSubscriber(LatestEmitter<T> producer) {
             this.producer = producer;
         }
 

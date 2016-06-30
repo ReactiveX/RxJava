@@ -15,45 +15,29 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
-import rx.Notification;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
+
+import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.exceptions.TestException;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.internal.util.UtilityFunctions;
+import rx.functions.*;
+import rx.internal.util.*;
 import rx.observables.GroupedObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -976,7 +960,7 @@ public class OperatorGroupByTest {
 
     Observable<Event> ASYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
         return SYNC_INFINITE_OBSERVABLE_OF_EVENT(numGroups, subscribeCounter, sentEventCounter).subscribeOn(Schedulers.newThread());
-    };
+    }
 
     Observable<Event> SYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
         return Observable.create(new OnSubscribe<Event>() {
@@ -997,7 +981,7 @@ public class OperatorGroupByTest {
             }
 
         });
-    };
+    }
 
     @Test
     public void testGroupByOnAsynchronousSourceAcceptsMultipleSubscriptions() throws InterruptedException {
@@ -1264,7 +1248,7 @@ public class OperatorGroupByTest {
     }
 
     @Test
-    public void testgroupByBackpressure() throws InterruptedException {
+    public void testGroupByBackpressure2() throws InterruptedException {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Observable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Func1<GroupedObservable<Boolean, Integer>, Observable<String>>() {
@@ -1500,5 +1484,537 @@ public class OperatorGroupByTest {
                         request(Long.MAX_VALUE-1);
                     }});
         assertTrue(completed.get());
+    }
+    
+    /**
+     * Issue #3425.
+     * 
+     * The problem is that a request of 1 may create a new group, emit to the desired group
+     * or emit to a completely different group. In this test, the merge requests N which
+     * must be produced by the range, however it will create a bunch of groups before the actual
+     * group receives a value.
+     */
+    @Test
+    public void testBackpressureObserveOnOuter() {
+        for (int j = 0; j < 1000; j++) {
+            Observable.merge(
+                    Observable.range(0, 500)
+                    .groupBy(new Func1<Integer, Object>() {
+                        @Override
+                        public Object call(Integer i) {
+                            return i % (RxRingBuffer.SIZE + 2);
+                        }
+                    })
+                    .observeOn(Schedulers.computation())
+            ).toBlocking().last();
+        }
+    }
+    
+    /**
+     * Synchronous verification of issue #3425.
+     */
+    @Test
+    public void testBackpressureInnerDoesntOverflowOuter() {
+        TestSubscriber<Object> ts = TestSubscriber.create(0);
+        
+        Observable.just(1, 2)
+                .groupBy(new Func1<Integer, Object>() {
+                    @Override
+                    public Object call(Integer v) {
+                        return v;
+                    }
+                })
+                .doOnNext(new Action1<GroupedObservable<Object, Integer>>() {
+                    @Override
+                    public void call(GroupedObservable<Object, Integer> g) {
+                        // this will request Long.MAX_VALUE
+                        g.subscribe();
+                    }
+                })
+                // this won't request anything just yet
+                .subscribe(ts)
+                ;
+        ts.requestMore(1);
+        
+        ts.assertNotCompleted();
+        ts.assertNoErrors();
+        ts.assertValueCount(1);
+    }
+    
+    @Test
+    public void testOneGroupInnerRequestsTwiceBuffer() {
+        TestSubscriber<Object> ts1 = TestSubscriber.create(0);
+        final TestSubscriber<Object> ts2 = TestSubscriber.create(0);
+        
+        Observable.range(1, RxRingBuffer.SIZE * 2)
+        .groupBy(new Func1<Integer, Object>() {
+            @Override
+            public Object call(Integer v) {
+                return 1;
+            }
+        })
+        .doOnNext(new Action1<GroupedObservable<Object, Integer>>() {
+            @Override
+            public void call(GroupedObservable<Object, Integer> g) {
+                g.subscribe(ts2);
+            }
+        })
+        .subscribe(ts1);
+        
+        ts1.assertNoValues();
+        ts1.assertNoErrors();
+        ts1.assertNotCompleted();
+        
+        ts2.assertNoValues();
+        ts2.assertNoErrors();
+        ts2.assertNotCompleted();
+        
+        ts1.requestMore(1);
+        
+        ts1.assertValueCount(1);
+        ts1.assertNoErrors();
+        ts1.assertNotCompleted();
+        
+        ts2.assertNoValues();
+        ts2.assertNoErrors();
+        ts2.assertNotCompleted();
+        
+        ts2.requestMore(RxRingBuffer.SIZE * 2);
+        
+        ts2.assertValueCount(RxRingBuffer.SIZE * 2);
+        ts2.assertNoErrors();
+        ts2.assertNotCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testGroupedObservableCollection() {
+
+        final TestSubscriber<List<Integer>> inner1 = new TestSubscriber<List<Integer>>();
+        final TestSubscriber<List<Integer>> inner2 = new TestSubscriber<List<Integer>>();
+
+        TestSubscriber<List<Observable<List<Integer>>>> outer = new TestSubscriber<List<Observable<List<Integer>>>>(new Subscriber<List<Observable<List<Integer>>>>() {
+
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(List<Observable<List<Integer>>> o) {
+                o.get(0).subscribe(inner1);
+                o.get(1).subscribe(inner2);
+            }
+        });
+
+
+
+
+        Observable.range(0, 10)
+                .groupBy(new Func1<Integer, Boolean>() {
+                    @Override
+                    public Boolean call(Integer pair) {
+                        return pair % 2 == 1;
+                    }
+                })
+                .map(new Func1<GroupedObservable<Boolean, Integer>, Observable<List<Integer>>>() {
+                    @Override
+                    public Observable<List<Integer>> call(GroupedObservable<Boolean, Integer> oddOrEven) {
+                        return oddOrEven.toList();
+                    }
+                })
+                .toList()
+                .subscribe(outer);
+
+        inner1.assertNoErrors();
+        inner1.assertCompleted();
+        inner2.assertNoErrors();
+        inner2.assertCompleted();
+
+        inner1.assertReceivedOnNext(Arrays.asList(Arrays.asList(0,2,4,6,8)));
+        inner2.assertReceivedOnNext(Arrays.asList(Arrays.asList(1,3,5,7,9)));
+
+        outer.assertNoErrors();
+        outer.assertCompleted();
+        outer.assertValueCount(1);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCollectedGroups() {
+
+        final TestSubscriber<List<Integer>> inner1 = new TestSubscriber<List<Integer>>();
+        final TestSubscriber<List<Integer>> inner2 = new TestSubscriber<List<Integer>>();
+
+        final List<TestSubscriber<List<Integer>>> inners = Arrays.asList(inner1, inner2);
+
+        TestSubscriber<Observable<List<Integer>>> outer = new TestSubscriber<Observable<List<Integer>>>(new Subscriber<Observable<List<Integer>>>() {
+            int toInner;
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Observable<List<Integer>> o) {
+                o.subscribe(inners.get(toInner++));
+            }
+        });
+
+
+
+
+        Observable.range(0, 10)
+                  .groupBy(new Func1<Integer, Boolean>() {
+                      @Override
+                      public Boolean call(Integer pair) {
+                          return pair % 2 == 1;
+                      }
+                  })
+                  .map(new Func1<GroupedObservable<Boolean,Integer>, Observable<List<Integer>>>() {
+                      @Override
+                      public Observable<List<Integer>> call(GroupedObservable<Boolean, Integer> booleanIntegerGroupedObservable) {
+                          return booleanIntegerGroupedObservable.toList();
+                      }
+                  })
+                  .subscribe(outer);
+
+        inner1.assertNoErrors();
+        inner1.assertCompleted();
+
+        inner1.assertReceivedOnNext(Arrays.asList(Arrays.asList(0,2,4,6,8)));
+        inner2.assertReceivedOnNext(Arrays.asList(Arrays.asList(1,3,5,7,9)));
+
+        outer.assertNoErrors();
+        outer.assertCompleted();
+        outer.assertValueCount(2);
+
+    }
+
+    @Test
+    public void testMappedCollectedGroups() {
+        // This is a little contrived.
+        final TestSubscriber<Integer> inner1 = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> inner2 = new TestSubscriber<Integer>();
+
+        TestSubscriber<Map<Integer, Observable<Integer>>> outer = new TestSubscriber<Map<Integer, Observable<Integer>>>(new Subscriber<Map<Integer, Observable<Integer>>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Map<Integer, Observable<Integer>> integerObservableMap) {
+                integerObservableMap.get(0).subscribe(inner1);
+                integerObservableMap.get(1).subscribe(inner2);
+            }
+        });
+
+        Observable<Map<Integer, Observable<Integer>>> mapObservable =
+                Observable.range(0, 10)
+                        .groupBy(new Func1<Integer, Integer>() {
+                            @Override
+                            public Integer call(Integer pair) {
+                                return pair % 2;
+                            }
+                        })
+                        .toMap(new Func1<GroupedObservable<Integer, Integer>, Integer>() {
+                                   @Override
+                                   public Integer call(GroupedObservable<Integer, Integer> group) {
+                                       return group.getKey();
+                                   }
+                               },
+                                new Func1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
+                                    @Override
+                                    public Observable<Integer> call(GroupedObservable<Integer, Integer> integerGroup) {
+                                        return integerGroup.map(
+                                                new Func1<Integer, Integer>() {
+                                                    @Override
+                                                    public Integer call(Integer integer) {
+                                                        return integer * 10;
+                                                    }
+                                                });
+                                    }
+                                }
+                        );
+
+        mapObservable.subscribe(outer);
+
+        inner1.assertNoErrors();
+        inner1.assertCompleted();
+
+        inner1.assertReceivedOnNext(Arrays.asList(0, 20, 40, 60, 80));
+        inner2.assertReceivedOnNext(Arrays.asList(10, 30, 50, 70, 90));
+
+        outer.assertNoErrors();
+        outer.assertCompleted();
+        outer.assertValueCount(1);
+
+    }
+
+    @Test
+    public void testSkippedGroup() {
+
+        final TestSubscriber<Integer> inner1 = new TestSubscriber<Integer>();
+
+        TestSubscriber<GroupedObservable<Integer, Integer>> outer = new TestSubscriber<GroupedObservable<Integer, Integer>>(new Subscriber<GroupedObservable<Integer, Integer>>() {
+
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(GroupedObservable<Integer, Integer> o) {
+                if (o.getKey() == 1) {
+                    o.subscribe(inner1);
+                }
+            }
+        });
+
+
+
+
+        Observable.range(0, 10)
+                  .groupBy(new Func1<Integer, Integer>() {
+                      @Override
+                      public Integer call(Integer pair) {
+                          return pair % 2;
+                      }
+                  })
+                  .subscribe(outer);
+
+        inner1.assertNoErrors();
+        inner1.assertCompleted();
+
+        inner1.assertReceivedOnNext(Arrays.asList(1,3,5,7,9));
+
+        outer.assertNoErrors();
+        outer.assertCompleted();
+        outer.assertValueCount(2);
+
+    }
+    
+    @Test
+    public void mapFactoryEvictionWorks() {
+        Func1<Integer, Integer> keySelector = new Func1<Integer, Integer> (){
+            @Override
+            public Integer call(Integer t) {
+                return t /10;
+            }};
+        Func1<Integer, Integer> elementSelector = UtilityFunctions.identity();
+        final List<Integer> evictedKeys = new ArrayList<Integer>();
+        //normally would use Guava CacheBuilder or similar but for a bit more 
+        //control make something custom
+        Func1<Action1<Integer>, Map<Integer, Object>> mapFactory = new Func1<Action1<Integer>, Map<Integer, Object>>() {
+            @Override
+            public Map<Integer, Object> call(final Action1<Integer> evicted) {
+                // is a bit risky to override the put method because 
+                // of possible side-effects (e.g. remove could call put and we did not know it)
+                // to fix just need to use composition but needs a verbose implementation of Map
+                // interface
+                return new ConcurrentHashMap<Integer,Object>() {
+                    private static final long serialVersionUID = -7519109652858021153L;
+                    
+                    Integer lastKey = null;
+                    
+                    @Override
+                    public Object put(Integer key, Object value) {
+                        if (this.size() >= 5) {
+                            super.remove(lastKey);
+                            evicted.call(lastKey);
+                            evictedKeys.add(lastKey);
+                        }
+                        Object result = super.put(key, value);
+                        lastKey = key;
+                        return result;
+                    }};
+            }};
+        TestSubscriber<String> ts = TestSubscriber.create();
+        Observable
+            .range(1, 100)
+            .groupBy(keySelector,elementSelector, mapFactory)
+            .flatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<String>>() {
+                @Override
+                public Observable<String> call(final GroupedObservable<Integer, Integer> g) {
+                    return g.map(new Func1<Integer, String>() {
+                        @Override
+                        public String call(Integer x) {
+                            return g.getKey() + ":" + x;
+                        }
+                    });
+                }
+            })
+            .subscribe(ts);
+        assertEquals(Arrays.asList(4, 5, 6, 7, 8, 9), evictedKeys);
+        List<String> expected = Observable
+                .range(1, 100)
+                .map(new Func1<Integer, String>() {
+                        @Override
+                        public String call(Integer x) {
+                            return (x /10) + ":" + x;
+                        }
+                    })
+                .toList().toBlocking().single();
+        assertEquals(expected, ts.getOnNextEvents());
+    }
+    
+    private static final Func1<Integer, Integer> EVICTING_MAP_ELEMENT_SELECTOR = UtilityFunctions.identity();
+    
+    private static final Func1<Integer, Integer> EVICTING_MAP_KEY_SELECTOR = new Func1<Integer, Integer> (){
+        @Override
+        public Integer call(Integer t) {
+            return t /10;
+        }};
+    
+    @Test
+    public void testEvictingMapFactoryIfMapPutThrowsRuntimeExceptionThenErrorEmittedByStream() {
+        final RuntimeException exception = new RuntimeException("boo");
+        Func1<Action1<Integer>, Map<Integer, Object>> mapFactory = createMapFactoryThatThrowsOnPut(exception);
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        Observable
+            .range(1, 100)
+            .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, mapFactory)
+            .flatMap(UtilityFunctions.<Observable<Integer>>identity())
+            .subscribe(ts);
+        ts.assertError(exception);
+    }
+    
+    @Test(expected = OnErrorNotImplementedException.class)
+    public void testEvictingMapFactoryIfMapPutThrowsFatalErrorThenErrorThrownBySubscribe() {
+        final RuntimeException exception = new OnErrorNotImplementedException("boo", new RuntimeException());
+        Func1<Action1<Integer>, Map<Integer, Object>> mapFactory = createMapFactoryThatThrowsOnPut(exception);
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        Observable
+            .range(1, 100)
+            .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, mapFactory)
+            .flatMap(UtilityFunctions.<Observable<Integer>>identity())
+            .subscribe(ts);
+    }
+
+    private static Func1<Action1<Integer>, Map<Integer, Object>> createMapFactoryThatThrowsOnPut(
+            final RuntimeException exception) {
+        return new Func1<Action1<Integer>, Map<Integer, Object>>() {
+            @SuppressWarnings("serial")
+            @Override
+            public Map<Integer, Object> call(final Action1<Integer> evicted) {
+                // is a bit risky to override the put method because 
+                // of possible side-effects (e.g. remove could call put and we did not know it)
+                // to fix just need to use composition but needs a verbose implementation of Map
+                // interface
+                return new ConcurrentHashMap<Integer,Object>() {
+                    
+                    @Override
+                    public Object put(Integer key, Object value) {
+                        throw exception;
+                    }};
+            }};
+    }
+    
+    @Test
+    public void mapFactoryEvictionWorksWithGuavaCache() {
+        final List<Integer> evictedKeys = new ArrayList<Integer>();
+        Func1<Action1<Integer>, Map<Integer, Object>> mapFactory =
+            new Func1<Action1<Integer>, Map<Integer, Object>>() {
+                @Override
+                public Map<Integer, Object> call(final Action1<Integer> action) {
+                    return CacheBuilder.newBuilder()
+                        .maximumSize(5)
+                        .removalListener(new RemovalListener<Integer, Object>() {
+                            @Override
+                            public void onRemoval(RemovalNotification<Integer, Object> notification) {
+                                action.call(notification.getKey());
+                                evictedKeys.add(notification.getKey());                            
+                            }
+                        })
+                        .build().asMap();
+                }
+            };
+        TestSubscriber<String> ts = TestSubscriber.create();
+        Observable
+            .range(1, 100)
+            .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, mapFactory)
+            .flatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<String>>() {
+                @Override
+                public Observable<String> call(final GroupedObservable<Integer, Integer> g) {
+                    return g.map(new Func1<Integer, String>() {
+                        @Override
+                        public String call(Integer x) {
+                            return g.getKey() + ":" + x;
+                        }
+                    });
+                }
+            })
+            .subscribe(ts);
+        assertEquals(
+            new HashSet<Integer>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)),
+            new HashSet<Integer>(evictedKeys));
+        List<String> expected = Observable
+                .range(1, 100)
+                .map(new Func1<Integer, String>() {
+                        @Override
+                        public String call(Integer x) {
+                            return (x /10) + ":" + x;
+                        }
+                    })
+                .toList().toBlocking().single();
+        assertEquals(expected, ts.getOnNextEvents());
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void testGroupByThrowsNpeIfEvictingMapFactoryNull() {
+        Observable
+        .range(1, 100)
+        .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, null);
+    }
+    
+    @Test
+    public void testEvictingMapFactoryIfMapCreateThrowsRuntimeExceptionThenErrorEmittedByStream() {
+        final RuntimeException exception = new RuntimeException("boo");
+        Func1<Action1<Integer>, Map<Integer, Object>> mapFactory = createMapFactoryThatThrowsOnCreate(exception);
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        Observable
+            .range(1, 100)
+            .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, mapFactory)
+            .flatMap(UtilityFunctions.<Observable<Integer>>identity())
+            .subscribe(ts);
+        ts.assertError(exception);
+    }
+    
+    @Test(expected=OnErrorNotImplementedException.class)
+    public void testEvictingMapFactoryIfMapCreateThrowsFatalErrorThenSubscribeThrows() {
+        final OnErrorNotImplementedException exception = new OnErrorNotImplementedException("boo", new RuntimeException());
+        Func1<Action1<Integer>, Map<Integer, Object>> mapFactory = createMapFactoryThatThrowsOnCreate(exception);
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        Observable
+            .range(1, 100)
+            .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, mapFactory)
+            .flatMap(UtilityFunctions.<Observable<Integer>>identity())
+            .subscribe(ts);
+    }
+
+    private static Func1<Action1<Integer>, Map<Integer, Object>> createMapFactoryThatThrowsOnCreate(
+            final RuntimeException exception) {
+        return new Func1<Action1<Integer>, Map<Integer, Object>>() {
+
+            @Override
+            public Map<Integer, Object> call(Action1<Integer> t) {
+                throw exception;
+            }};
     }
 }

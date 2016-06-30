@@ -15,17 +15,15 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Func1;
-import rx.observers.SerializedObserver;
-import rx.observers.SerializedSubscriber;
+import rx.observers.*;
+import rx.subjects.UnicastSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -49,9 +47,12 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
     
     @Override
     public Subscriber<? super T> call(Subscriber<? super Observable<T>> child) {
-        final SourceSubscriber sub = new SourceSubscriber(child);
+        CompositeSubscription csub = new CompositeSubscription();
+        child.add(csub);
         
-        Subscriber<U> open = new Subscriber<U>(child) {
+        final SourceSubscriber sub = new SourceSubscriber(child, csub);
+        
+        Subscriber<U> open = new Subscriber<U>() {
 
             @Override
             public void onStart() {
@@ -73,7 +74,10 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
                 sub.onCompleted();
             }
         };
-           
+        
+        csub.add(sub);
+        csub.add(open);
+        
         windowOpenings.unsafeSubscribe(open);
         
         return sub;
@@ -97,13 +101,11 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
         final List<SerializedSubject<T>> chunks;
         /** Guarded by guard. */
         boolean done;
-        public SourceSubscriber(Subscriber<? super Observable<T>> child) {
-            super(child);
+        public SourceSubscriber(Subscriber<? super Observable<T>> child, CompositeSubscription csub) {
             this.child = new SerializedSubscriber<Observable<T>>(child);
             this.guard = new Object();
             this.chunks = new LinkedList<SerializedSubject<T>>();
-            this.csub = new CompositeSubscription();
-            child.add(csub);
+            this.csub = csub;
         }
         
         @Override
@@ -127,36 +129,44 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
 
         @Override
         public void onError(Throwable e) {
-            List<SerializedSubject<T>> list;
-            synchronized (guard) {
-                if (done) {
-                    return;
+            try {
+                List<SerializedSubject<T>> list;
+                synchronized (guard) {
+                    if (done) {
+                        return;
+                    }
+                    done = true;
+                    list = new ArrayList<SerializedSubject<T>>(chunks);
+                    chunks.clear();
                 }
-                done = true;
-                list = new ArrayList<SerializedSubject<T>>(chunks);
-                chunks.clear();
+                for (SerializedSubject<T> cs : list) {
+                    cs.consumer.onError(e);
+                }
+                child.onError(e);
+            } finally {
+                csub.unsubscribe();
             }
-            for (SerializedSubject<T> cs : list) {
-                cs.consumer.onError(e);
-            }
-            child.onError(e);
         }
 
         @Override
         public void onCompleted() {
-            List<SerializedSubject<T>> list;
-            synchronized (guard) {
-                if (done) {
-                    return;
+            try {
+                List<SerializedSubject<T>> list;
+                synchronized (guard) {
+                    if (done) {
+                        return;
+                    }
+                    done = true;
+                    list = new ArrayList<SerializedSubject<T>>(chunks);
+                    chunks.clear();
                 }
-                done = true;
-                list = new ArrayList<SerializedSubject<T>>(chunks);
-                chunks.clear();
+                for (SerializedSubject<T> cs : list) {
+                    cs.consumer.onCompleted();
+                }
+                child.onCompleted();
+            } finally {
+                csub.unsubscribe();
             }
-            for (SerializedSubject<T> cs : list) {
-                cs.consumer.onCompleted();
-            }
-            child.onCompleted();
         }
         
         void beginWindow(U token) {
@@ -186,7 +196,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
 
                 @Override
                 public void onError(Throwable e) {
-                    
+                    SourceSubscriber.this.onError(e);
                 }
 
                 @Override
@@ -224,7 +234,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
             }
         }
         SerializedSubject<T> createSerializedSubject() {
-            BufferUntilSubscriber<T> bus = BufferUntilSubscriber.create();
+            UnicastSubject<T> bus = UnicastSubject.create();
             return new SerializedSubject<T>(bus, bus);
         }
     }

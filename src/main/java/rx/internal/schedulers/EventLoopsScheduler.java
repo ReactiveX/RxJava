@@ -16,17 +16,15 @@
 package rx.internal.schedulers;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.*;
 import rx.functions.Action0;
 import rx.internal.util.*;
 import rx.subscriptions.*;
 
-public class EventLoopsScheduler extends Scheduler {
-    /** Manages a fixed number of workers. */
-    private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
-    private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
-    /** 
+public final class EventLoopsScheduler extends Scheduler implements SchedulerLifecycle {
+    /**
      * Key to setting the maximum number of computation scheduler threads.
      * Zero or less is interpreted as use available. Capped by available.
      */
@@ -44,40 +42,87 @@ public class EventLoopsScheduler extends Scheduler {
         }
         MAX_THREADS = max;
     }
+    
+    static final PoolWorker SHUTDOWN_WORKER;
+    static {
+        SHUTDOWN_WORKER = new PoolWorker(RxThreadFactory.NONE);
+        SHUTDOWN_WORKER.unsubscribe();
+    }
+
+    /** This will indicate no pool is active. */
+    static final FixedSchedulerPool NONE = new FixedSchedulerPool(null, 0);
+
+    final ThreadFactory threadFactory;
+    
+    final AtomicReference<FixedSchedulerPool> pool;
+
     static final class FixedSchedulerPool {
         final int cores;
 
         final PoolWorker[] eventLoops;
         long n;
 
-        FixedSchedulerPool() {
+        FixedSchedulerPool(ThreadFactory threadFactory, int maxThreads) {
             // initialize event loops
-            this.cores = MAX_THREADS;
-            this.eventLoops = new PoolWorker[cores];
-            for (int i = 0; i < cores; i++) {
-                this.eventLoops[i] = new PoolWorker(THREAD_FACTORY);
+            this.cores = maxThreads;
+            this.eventLoops = new PoolWorker[maxThreads];
+            for (int i = 0; i < maxThreads; i++) {
+                this.eventLoops[i] = new PoolWorker(threadFactory);
             }
         }
 
         public PoolWorker getEventLoop() {
+            int c = cores;
+            if (c == 0) {
+                return SHUTDOWN_WORKER;
+            }
             // simple round robin, improvements to come
-            return eventLoops[(int)(n++ % cores)];
+            return eventLoops[(int)(n++ % c)];
+        }
+        
+        public void shutdown() {
+            for (PoolWorker w : eventLoops) {
+                w.unsubscribe();
+            }
         }
     }
-
-    final FixedSchedulerPool pool;
     
     /**
      * Create a scheduler with pool size equal to the available processor
      * count and using least-recent worker selection policy.
+     * @param threadFactory the factory to use with the executors
      */
-    public EventLoopsScheduler() {
-        pool = new FixedSchedulerPool();
+    public EventLoopsScheduler(ThreadFactory threadFactory) {
+        this.threadFactory = threadFactory;
+        this.pool = new AtomicReference<FixedSchedulerPool>(NONE);
+        start();
     }
     
     @Override
     public Worker createWorker() {
-        return new EventLoopWorker(pool.getEventLoop());
+        return new EventLoopWorker(pool.get().getEventLoop());
+    }
+    
+    @Override
+    public void start() {
+        FixedSchedulerPool update = new FixedSchedulerPool(threadFactory, MAX_THREADS);
+        if (!pool.compareAndSet(NONE, update)) {
+            update.shutdown();
+        }
+    }
+    
+    @Override
+    public void shutdown() {
+        for (;;) {
+            FixedSchedulerPool curr = pool.get();
+            if (curr == NONE) {
+                return;
+            }
+            if (pool.compareAndSet(curr, NONE)) {
+                curr.shutdown();
+                return;
+            }
+        }
     }
     
     /**
@@ -87,11 +132,11 @@ public class EventLoopsScheduler extends Scheduler {
      * @return the subscription
      */
     public Subscription scheduleDirect(Action0 action) {
-       PoolWorker pw = pool.getEventLoop();
+       PoolWorker pw = pool.get().getEventLoop();
        return pw.scheduleActual(action, -1, TimeUnit.NANOSECONDS);
     }
 
-    private static class EventLoopWorker extends Scheduler.Worker {
+    static final class EventLoopWorker extends Scheduler.Worker {
         private final SubscriptionList serial = new SubscriptionList();
         private final CompositeSubscription timed = new CompositeSubscription();
         private final SubscriptionList both = new SubscriptionList(serial, timed);
@@ -113,26 +158,41 @@ public class EventLoopsScheduler extends Scheduler {
         }
 
         @Override
-        public Subscription schedule(Action0 action) {
+        public Subscription schedule(final Action0 action) {
             if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
-            ScheduledAction s = poolWorker.scheduleActual(action, 0, null, serial);
-            
-            return s;
+
+            return poolWorker.scheduleActual(new Action0() {
+                @Override
+                public void call() {
+                    if (isUnsubscribed()) {
+                        return;
+                    }
+                    action.call();
+                }
+            }, 0, null, serial);
         }
+
         @Override
-        public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
+        public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
             if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
-            ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit, timed);
-            
-            return s;
+
+            return poolWorker.scheduleActual(new Action0() {
+                @Override
+                public void call() {
+                    if (isUnsubscribed()) {
+                        return;
+                    }
+                    action.call();
+                }
+            }, delayTime, unit, timed);
         }
     }
-    
-    private static final class PoolWorker extends NewThreadWorker {
+
+    static final class PoolWorker extends NewThreadWorker {
         PoolWorker(ThreadFactory threadFactory) {
             super(threadFactory);
         }

@@ -15,14 +15,13 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.observers.SerializedSubscriber;
 import rx.subscriptions.CompositeSubscription;
@@ -44,6 +43,8 @@ import rx.subscriptions.CompositeSubscription;
  * </p>
  * 
  * @param <T> the buffered value type
+ * @param <TOpening> the value type of the Observable opening buffers
+ * @param <TClosing> the value type of the Observable closing buffers
  */
 
 public final class OperatorBufferWithStartEndObservable<T, TOpening, TClosing> implements Operator<List<T>, T> {
@@ -145,7 +146,7 @@ public final class OperatorBufferWithStartEndObservable<T, TOpening, TClosing> i
                     child.onNext(chunk);
                 }
             } catch (Throwable t) {
-                child.onError(t);
+                Exceptions.throwOrReport(t, child);
                 return;
             }
             child.onCompleted();
@@ -163,7 +164,7 @@ public final class OperatorBufferWithStartEndObservable<T, TOpening, TClosing> i
             try {
                 cobs = bufferClosing.call(v);
             } catch (Throwable t) {
-                onError(t);
+                Exceptions.throwOrReport(t, this);
                 return;
             }
             Subscriber<TClosing> closeSubscriber = new Subscriber<TClosing>() {

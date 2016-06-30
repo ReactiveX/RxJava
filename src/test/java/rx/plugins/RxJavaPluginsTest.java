@@ -15,27 +15,20 @@
  */
 package rx.plugins;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
+import rx.*;
 import rx.Observable;
-import rx.Subscriber;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 
+@SuppressWarnings("deprecation")
 public class RxJavaPluginsTest {
 
     @Before
@@ -114,6 +107,15 @@ public class RxJavaPluginsTest {
         p.registerObservableExecutionHook(new RxJavaObservableExecutionHookTestImpl());
         RxJavaObservableExecutionHook impl = p.getObservableExecutionHook();
         assertTrue(impl instanceof RxJavaObservableExecutionHookTestImpl);
+    }
+
+    @Test
+    public void testSingleExecutionHookViaRegisterMethod() {
+        RxJavaPlugins p = new RxJavaPlugins();
+        RxJavaSingleExecutionHook customHook = mock(RxJavaSingleExecutionHook.class);
+        p.registerSingleExecutionHook(customHook);
+        RxJavaSingleExecutionHook impl = p.getSingleExecutionHook();
+        assertSame(impl, customHook);
     }
 
     @Test
@@ -230,7 +232,7 @@ public class RxJavaPluginsTest {
                                                  throw new IllegalStateException("Trigger OnNextValue");
                                              }
                                          })
-                                         .timeout(500, TimeUnit.MILLISECONDS)
+                                         .timeout(5000, TimeUnit.MILLISECONDS)
                                          .toBlocking().first();
             fail("Did not expect onNext/onCompleted, got " + notExpected);
         } catch (IllegalStateException e) {
@@ -247,8 +249,99 @@ public class RxJavaPluginsTest {
         // just use defaults
     }
 
+    // inside test so it is stripped from Javadocs
+    public static class RxJavaSingleExecutionHookTestImpl extends RxJavaSingleExecutionHook {
+        // just use defaults
+    }
+
+    // inside test so it is stripped from Javadocs
+    public static class RxJavaCompletableExecutionHookTestImpl extends RxJavaCompletableExecutionHook {
+        // just use defaults
+    }
+
     private static String getFullClassNameForTestClass(Class<?> cls) {
         return RxJavaPlugins.class.getPackage()
                                   .getName() + "." + RxJavaPluginsTest.class.getSimpleName() + "$" + cls.getSimpleName();
+    }
+    
+    @Test
+    public void testShortPluginDiscovery() {
+        Properties props = new Properties();
+        
+        props.setProperty("rxjava.plugin.1.class", "Map");
+        props.setProperty("rxjava.plugin.1.impl", "java.util.HashMap");
+
+        props.setProperty("rxjava.plugin.xyz.class", "List");
+        props.setProperty("rxjava.plugin.xyz.impl", "java.util.ArrayList");
+
+        
+        Object o = RxJavaPlugins.getPluginImplementationViaProperty(Map.class, props);
+        
+        assertTrue("" + o, o instanceof HashMap);
+        
+        o = RxJavaPlugins.getPluginImplementationViaProperty(List.class, props);
+        
+        assertTrue("" + o, o instanceof ArrayList);
+    }
+    
+    @Test(expected = RuntimeException.class)
+    public void testShortPluginDiscoveryMissing() {
+        Properties props = new Properties();
+        
+        props.setProperty("rxjava.plugin.1.class", "Map");
+
+        RxJavaPlugins.getPluginImplementationViaProperty(Map.class, props);
+    }
+
+    @Test
+    public void testOnErrorWhenUsingCompletable() {
+        RxJavaErrorHandlerTestImpl errorHandler = new RxJavaErrorHandlerTestImpl();
+           RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+
+        RuntimeException re = new RuntimeException("test onError");
+        Completable.error(re).subscribe(new Subscriber<Object>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+        });
+        assertEquals(re, errorHandler.e);
+        assertEquals(1, errorHandler.count);
+    }
+
+    @Test
+    public void testOnErrorWhenUsingSingle() {
+        RxJavaErrorHandlerTestImpl errorHandler = new RxJavaErrorHandlerTestImpl();
+        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+
+        RuntimeException re = new RuntimeException("test onError");
+        Single.error(re).subscribe(new Subscriber<Object>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+        });
+        assertEquals(re, errorHandler.e);
+        assertEquals(1, errorHandler.count);
     }
 }

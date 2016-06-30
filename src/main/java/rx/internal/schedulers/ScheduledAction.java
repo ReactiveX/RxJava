@@ -22,7 +22,7 @@ import rx.Subscription;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.internal.util.SubscriptionList;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -53,20 +53,19 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
         try {
             lazySet(Thread.currentThread());
             action.call();
+        } catch (OnErrorNotImplementedException e) {
+            signalError(new IllegalStateException("Exception thrown on Scheduler.Worker thread. Add `onError` handling.", e));
         } catch (Throwable e) {
-            // nothing to do but print a System error as this is fatal and there is nowhere else to throw this
-            IllegalStateException ie = null;
-            if (e instanceof OnErrorNotImplementedException) {
-                ie = new IllegalStateException("Exception thrown on Scheduler.Worker thread. Add `onError` handling.", e);
-            } else {
-                ie = new IllegalStateException("Fatal Exception thrown on Scheduler.Worker thread.", e);
-            }
-            RxJavaPlugins.getInstance().getErrorHandler().handleError(ie);
-            Thread thread = Thread.currentThread();
-            thread.getUncaughtExceptionHandler().uncaughtException(thread, ie);
+            signalError(new IllegalStateException("Fatal Exception thrown on Scheduler.Worker thread.", e));
         } finally {
             unsubscribe();
         }
+    }
+    
+    void signalError(Throwable ie) {
+        RxJavaHooks.onError(ie);
+        Thread thread = Thread.currentThread();
+        thread.getUncaughtExceptionHandler().uncaughtException(thread, ie);
     }
 
     @Override
@@ -128,10 +127,10 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
      * prevent unnecessary self-interrupting if the unsubscription
      * happens from the same thread.
      */
-    private final class FutureCompleter implements Subscription {
+    final class FutureCompleter implements Subscription {
         private final Future<?> f;
 
-        private FutureCompleter(Future<?> f) {
+        FutureCompleter(Future<?> f) {
             this.f = f;
         }
 
@@ -150,7 +149,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
     }
 
     /** Remove a child subscription from a composite when unsubscribing. */
-    private static final class Remover extends AtomicBoolean implements Subscription {
+    static final class Remover extends AtomicBoolean implements Subscription {
         /** */
         private static final long serialVersionUID = 247232374289553518L;
         final ScheduledAction s;
@@ -175,7 +174,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
 
     }
     /** Remove a child subscription from a composite when unsubscribing. */
-    private static final class Remover2 extends AtomicBoolean implements Subscription {
+    static final class Remover2 extends AtomicBoolean implements Subscription {
         /** */
         private static final long serialVersionUID = 247232374289553518L;
         final ScheduledAction s;

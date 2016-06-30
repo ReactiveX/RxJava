@@ -15,18 +15,18 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.*;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
 
 /**
  * Bypasses a specified number of elements at the end of an observable sequence.
+ * @param <T> the value type
  */
 public class OperatorSkipLast<T> implements Operator<T, T> {
 
-    private final int count;
+    final int count;
 
     public OperatorSkipLast(int count) {
         if (count < 0) {

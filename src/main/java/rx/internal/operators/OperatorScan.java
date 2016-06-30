@@ -15,15 +15,15 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicLong;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
-import rx.functions.Func0;
-import rx.functions.Func2;
+import rx.functions.*;
+import rx.internal.util.atomic.SpscLinkedAtomicQueue;
+import rx.internal.util.unsafe.*;
 
 /**
  * Returns an Observable that applies a function to the first item emitted by a source Observable, then feeds
@@ -37,11 +37,14 @@ import rx.functions.Func2;
  * <p>
  * Note that when you pass a seed to {@code scan} the resulting Observable will emit that seed as its
  * first emitted item.
+ * 
+ * @param <R> the aggregate and output type
+ * @param <T> the input value type
  */
 public final class OperatorScan<R, T> implements Operator<R, T> {
 
     private final Func0<R> initialValueFactory;
-    private final Func2<R, ? super T, R> accumulator;
+    final Func2<R, ? super T, R> accumulator;
     // sentinel if we don't receive an initial value
     private static final Object NO_INITIAL_VALUE = new Object();
 
@@ -87,87 +90,257 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super R> child) {
-        return new Subscriber<T>(child) {
-            private final R initialValue = initialValueFactory.call();
+        final R initialValue = initialValueFactory.call();
+        
+        if (initialValue == NO_INITIAL_VALUE) {
+            return new Subscriber<T>(child) {
+                boolean once;
+                R value;
+                @SuppressWarnings("unchecked")
+                @Override
+                public void onNext(T t) {
+                    R v;
+                    if (!once) {
+                        once = true;
+                        v = (R)t;
+                    } else {
+                        v = value;
+                        try {
+                            v = accumulator.call(v, t);
+                        } catch (Throwable e) {
+                            Exceptions.throwOrReport(e, child, t);
+                            return;
+                        }
+                    }
+                    value = v;
+                    child.onNext(v);
+                }
+                @Override
+                public void onError(Throwable e) {
+                    child.onError(e);
+                }
+                @Override
+                public void onCompleted() {
+                    child.onCompleted();
+                }
+            };
+        }
+        
+        final InitialProducer<R> ip = new InitialProducer<R>(initialValue, child);
+        
+        Subscriber<T> parent = new Subscriber<T>() {
             private R value = initialValue;
-            boolean initialized = false;
 
-            @SuppressWarnings("unchecked")
             @Override
             public void onNext(T currentValue) {
-                emitInitialValueIfNeeded(child);
-
-                if (this.value == NO_INITIAL_VALUE) {
-                    // if there is NO_INITIAL_VALUE then we know it is type T for both so cast T to R
-                    this.value = (R) currentValue;
-                } else {
-                    try {
-                        this.value = accumulator.call(this.value, currentValue);
-                    } catch (Throwable e) {
-                        Exceptions.throwIfFatal(e);
-                        child.onError(OnErrorThrowable.addValueAsLastCause(e, currentValue));
-                        return;
-                    }
+                R v = value;
+                try {
+                    v = accumulator.call(v, currentValue);
+                } catch (Throwable e) {
+                    Exceptions.throwOrReport(e, this, currentValue);
+                    return;
                 }
-                child.onNext(this.value);
+                value = v;
+                ip.onNext(v);
             }
 
             @Override
             public void onError(Throwable e) {
-                child.onError(e);
+                ip.onError(e);
             }
 
             @Override
             public void onCompleted() {
-                emitInitialValueIfNeeded(child);
-                child.onCompleted();
+                ip.onCompleted();
             }
             
-            private void emitInitialValueIfNeeded(final Subscriber<? super R> child) {
-                if (!initialized) {
-                    initialized = true;
-                    // we emit first time through if we have an initial value
-                    if (initialValue != NO_INITIAL_VALUE) {
-                        child.onNext(initialValue);
-                    }
-                }
-            }
-            
-            /**
-             * We want to adjust the requested value by subtracting 1 if we have an initial value
-             */
             @Override
             public void setProducer(final Producer producer) {
-                child.setProducer(new Producer() {
-
-                    final AtomicBoolean once = new AtomicBoolean();
-
-                    final AtomicBoolean excessive = new AtomicBoolean();
-
-                    @Override
-                    public void request(long n) {
-                        if (once.compareAndSet(false, true)) {
-                            if (initialValue == NO_INITIAL_VALUE || n == Long.MAX_VALUE) {
-                                producer.request(n);
-                            } else if (n == 1) {
-                                excessive.set(true);
-                                producer.request(1); // request at least 1
-                            } else {
-                                // n != Long.MAX_VALUE && n != 1
-                                producer.request(n - 1);
-                            }
-                        } else {
-                            // pass-thru after first time
-                            if (n > 1 // avoid to request 0
-                                    && excessive.compareAndSet(true, false) && n != Long.MAX_VALUE) {
-                                producer.request(n - 1);
-                            } else {
-                                producer.request(n);
-                            }
-                        }
-                    }
-                });
+                ip.setProducer(producer);
             }
         };
+        
+        child.add(parent);
+        child.setProducer(ip);
+        return parent;
+    }
+    
+    static final class InitialProducer<R> implements Producer, Observer<R> {
+        final Subscriber<? super R> child;
+        final Queue<Object> queue;
+        
+        boolean emitting;
+        /** Missed a terminal event. */
+        boolean missed;
+        /** Missed a request. */
+        long missedRequested;
+        /** The current requested amount. */
+        final AtomicLong requested;
+        /** The current producer. */
+        volatile Producer producer;
+        
+        volatile boolean done;
+        Throwable error;
+        
+        public InitialProducer(R initialValue, Subscriber<? super R> child) {
+            this.child = child;
+            Queue<Object> q;
+            // TODO switch to the linked-array based queue once available
+            if (UnsafeAccess.isUnsafeAvailable()) {
+                q = new SpscLinkedQueue<Object>(); // new SpscUnboundedArrayQueue<R>(8);
+            } else {
+                q = new SpscLinkedAtomicQueue<Object>();  // new SpscUnboundedAtomicArrayQueue<R>(8);
+            }
+            this.queue = q;
+            q.offer(NotificationLite.instance().next(initialValue));
+            this.requested = new AtomicLong();
+        }
+        
+        @Override
+        public void onNext(R t) {
+            queue.offer(NotificationLite.instance().next(t));
+            emit();
+        }
+        
+        boolean checkTerminated(boolean d, boolean empty, Subscriber<? super R> child) {
+            if (child.isUnsubscribed()) {
+                return true;
+            }
+            if (d) {
+                Throwable err = error;
+                if (err != null) {
+                    child.onError(err);
+                    return true;
+                } else
+                if (empty) {
+                    child.onCompleted();
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            error = e;
+            done = true;
+            emit();
+        }
+        
+        @Override
+        public void onCompleted() {
+            done = true;
+            emit();
+        }
+        
+        @Override
+        public void request(long n) {
+            if (n < 0L) {
+                throw new IllegalArgumentException("n >= required but it was " + n);
+            } else
+            if (n != 0L) {
+                BackpressureUtils.getAndAddRequest(requested, n);
+                Producer p = producer;
+                if (p == null) {
+                    // not synchronizing on this to avoid clash with emit()
+                    synchronized (requested) {
+                        p = producer;
+                        if (p == null) {
+                            long mr = missedRequested;
+                            missedRequested = BackpressureUtils.addCap(mr, n);
+                        }
+                    }
+                }
+                if (p != null) {
+                    p.request(n);
+                }
+                emit();
+            }
+        }
+        
+        public void setProducer(Producer p) {
+            if (p == null) {
+                throw new NullPointerException();
+            }
+            long mr;
+            // not synchronizing on this to avoid clash with emit()
+            synchronized (requested) {
+                if (producer != null) {
+                    throw new IllegalStateException("Can't set more than one Producer!");
+                }
+                mr = missedRequested;
+                // request one less because of the initial value, this happens once
+                // and is performed only if the request is not at MAX_VALUE already
+                if (mr != Long.MAX_VALUE) {
+                    mr -= 1;
+                }
+                missedRequested = 0L;
+                producer = p;
+            }
+            
+            if (mr > 0L) {
+                p.request(mr);
+            }
+            emit();
+        }
+        
+        void emit() {
+            synchronized (this) {
+                if (emitting) {
+                    missed = true;
+                    return;
+                }
+                emitting = true;
+            }
+            emitLoop();
+        }
+        
+        void emitLoop() {
+            final Subscriber<? super R> child = this.child;
+            final Queue<Object> queue = this.queue;
+            final NotificationLite<R> nl = NotificationLite.instance();
+            AtomicLong requested = this.requested;
+            
+            long r = requested.get();
+            for (;;) {
+                boolean d = done;
+                boolean empty = queue.isEmpty();
+                if (checkTerminated(d, empty, child)) {
+                    return;
+                }
+                long e = 0L;
+                while (e != r) {
+                    d = done;
+                    Object o = queue.poll();
+                    empty = o == null;
+                    if (checkTerminated(d, empty, child)) {
+                        return;
+                    }
+                    if (empty) {
+                        break;
+                    }
+                    R v = nl.getValue(o);
+                    try {
+                        child.onNext(v);
+                    } catch (Throwable ex) {
+                        Exceptions.throwOrReport(ex, child, v);
+                        return;
+                    }
+                    e++;
+                }
+                
+                if (e != 0 && r != Long.MAX_VALUE) {
+                    r = BackpressureUtils.produced(requested, e);
+                }
+                
+                synchronized (this) {
+                    if (!missed) {
+                        emitting = false;
+                        return;
+                    }
+                    missed = false;
+                }
+            }
+        }
     }
 }

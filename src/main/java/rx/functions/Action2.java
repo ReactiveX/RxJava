@@ -17,6 +17,8 @@ package rx.functions;
 
 /**
  * A two-argument action.
+ * @param <T1> the first argument type
+ * @param <T2> the second argument type
  */
 public interface Action2<T1, T2> extends Action {
     void call(T1 t1, T2 t2);

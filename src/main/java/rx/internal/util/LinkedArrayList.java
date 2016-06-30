@@ -77,35 +77,35 @@ public class LinkedArrayList {
     }
     /**
      * Returns the head buffer segment or null if the list is empty.
-     * @return
+     * @return the head object array
      */
     public Object[] head() {
-        return head;
+        return head; // NOPMD 
     }
     /**
      * Returns the tail buffer segment or null if the list is empty.
-     * @return
+     * @return the tail object array
      */
     public Object[] tail() {
-        return tail;
+        return tail; // NOPMD 
     }
     /**
      * Returns the total size of the list.
-     * @return
+     * @return the total size of the list
      */
     public int size() {
         return size;
     }
     /**
      * Returns the index of the next slot in the tail buffer segment.
-     * @return
+     * @return the index of the next slot in the tail buffer segment
      */
     public int indexInTail() {
         return indexInTail;
     }
     /**
      * Returns the capacity hint that indicates the capacity of each buffer segment.
-     * @return
+     * @return the capacity hint that indicates the capacity of each buffer segment
      */
     public int capacityHint() {
         return capacityHint;

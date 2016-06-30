@@ -17,6 +17,7 @@ package rx;
 
 /**
  * An object representing a notification sent to an {@link Observable}.
+ * @param <T> the actual value type held by the Notification
  */
 public final class Notification<T> {
 
@@ -29,6 +30,7 @@ public final class Notification<T> {
     /**
      * Creates and returns a {@code Notification} of variety {@code Kind.OnNext}, and assigns it a value.
      *
+     * @param <T> the actual value type held by the Notification
      * @param t
      *          the item to assign to the notification as its value
      * @return an {@code OnNext} variety of {@code Notification}
@@ -40,6 +42,7 @@ public final class Notification<T> {
     /**
      * Creates and returns a {@code Notification} of variety {@code Kind.OnError}, and assigns it an exception.
      *
+     * @param <T> the actual value type held by the Notification
      * @param e
      *          the exception to assign to the notification
      * @return an {@code OnError} variety of {@code Notification}
@@ -51,6 +54,7 @@ public final class Notification<T> {
     /**
      * Creates and returns a {@code Notification} of variety {@code Kind.OnCompleted}.
      *
+     * @param <T> the actual value type held by the Notification
      * @return an {@code OnCompleted} variety of {@code Notification}
      */
     @SuppressWarnings("unchecked")
@@ -61,7 +65,7 @@ public final class Notification<T> {
     /**
      * Creates and returns a {@code Notification} of variety {@code Kind.OnCompleted}.
      *
-     * @warn param "type" undescribed
+     * @param <T> the actual value type held by the Notification
      * @param type
      * @return an {@code OnCompleted} variety of {@code Notification}
      */
@@ -151,57 +155,80 @@ public final class Notification<T> {
 
     /**
      * Forwards this notification on to a specified {@link Observer}.
+     * @param observer the target observer to call onXXX methods on based on the kind of this Notification instance
      */
     public void accept(Observer<? super T> observer) {
-        if (isOnNext()) {
+        switch (kind) {
+        case OnNext:
             observer.onNext(getValue());
-        } else if (isOnCompleted()) {
-            observer.onCompleted();
-        } else if (isOnError()) {
+            break;
+        case OnError:
             observer.onError(getThrowable());
+            break;
+        case OnCompleted:
+            observer.onCompleted();
+            break;
+        default:
+            throw new AssertionError("Uncovered case: " + kind);
         }
     }
 
-    public static enum Kind {
+    /**
+     * Specifies the kind of the notification: an element, an error or a completion notification.
+     */
+    public enum Kind {
         OnNext, OnError, OnCompleted
     }
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder("[").append(super.toString()).append(" ").append(getKind());
-        if (hasValue())
-            str.append(" ").append(getValue());
-        if (hasThrowable())
-            str.append(" ").append(getThrowable().getMessage());
-        str.append("]");
+        StringBuilder str = new StringBuilder(64).append('[').append(super.toString())
+                .append(' ').append(getKind());
+        if (hasValue()) {
+            str.append(' ').append(getValue());
+        }
+        if (hasThrowable()) {
+            str.append(' ').append(getThrowable().getMessage());
+        }
+        str.append(']');
         return str.toString();
     }
 
     @Override
     public int hashCode() {
         int hash = getKind().hashCode();
-        if (hasValue())
+        if (hasValue()) {
             hash = hash * 31 + getValue().hashCode();
-        if (hasThrowable())
+        }
+        if (hasThrowable()) {
             hash = hash * 31 + getThrowable().hashCode();
+        }
         return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
-        if (this == obj)
+        }
+
+        if (this == obj) {
             return true;
-        if (obj.getClass() != getClass())
+        }
+
+        if (obj.getClass() != getClass()) {
             return false;
+        }
+
         Notification<?> notification = (Notification<?>) obj;
-        if (notification.getKind() != getKind())
+        if (notification.getKind() != getKind()) {
             return false;
-        if (hasValue() && !getValue().equals(notification.getValue()))
+        }
+
+        if (!(value == notification.value || (value != null && value.equals(notification.value)))) {
             return false;
-        if (hasThrowable() && !getThrowable().equals(notification.getThrowable()))
-            return false;
-        return true;
+        }
+
+        return (throwable == notification.throwable || (throwable != null && throwable.equals(notification.throwable)));
     }
 }

@@ -17,6 +17,8 @@ package rx.functions;
 
 /**
  * Represents a function with one argument.
+ * @param <T> the first argument type
+ * @param <R> the result type
  */
 public interface Func1<T, R> extends Function {
     R call(T t);

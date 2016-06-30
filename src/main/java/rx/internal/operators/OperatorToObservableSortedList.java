@@ -18,7 +18,8 @@ package rx.internal.operators;
 import java.util.*;
 
 import rx.Observable.Operator;
-import rx.*;
+import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Func2;
 import rx.internal.producers.SingleDelayedProducer;
 
@@ -33,8 +34,11 @@ import rx.internal.producers.SingleDelayedProducer;
  *          the type of the items emitted by the source and the resulting {@code Observable}s
  */
 public final class OperatorToObservableSortedList<T> implements Operator<List<T>, T> {
-    private final Comparator<? super T> sortFunction;
-    private final int initialCapacity;
+    final Comparator<? super T> sortFunction;
+    final int initialCapacity;
+    // raw because we want to support Object for this default
+    @SuppressWarnings("rawtypes")
+    private static final Comparator DEFAULT_SORT_FUNCTION = new DefaultComparableFunction();
 
     @SuppressWarnings("unchecked")
     public OperatorToObservableSortedList(int initialCapacity) {
@@ -75,7 +79,7 @@ public final class OperatorToObservableSortedList<T> implements Operator<List<T>
                         // sort the list before delivery
                         Collections.sort(a, sortFunction);
                     } catch (Throwable e) {
-                        onError(e);
+                        Exceptions.throwOrReport(e, this);
                         return;
                     }
                     producer.setValue(a);
@@ -99,11 +103,8 @@ public final class OperatorToObservableSortedList<T> implements Operator<List<T>
         child.setProducer(producer);
         return result;
     }
-    // raw because we want to support Object for this default
-    @SuppressWarnings("rawtypes")
-    private static Comparator DEFAULT_SORT_FUNCTION = new DefaultComparableFunction();
 
-    private static class DefaultComparableFunction implements Comparator<Object> {
+    static final class DefaultComparableFunction implements Comparator<Object> {
 
         // unchecked because we want to support Object for this default
         @SuppressWarnings("unchecked")

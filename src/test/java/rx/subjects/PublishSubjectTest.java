@@ -15,24 +15,20 @@
  */
 package rx.subjects;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
@@ -68,7 +64,7 @@ public class PublishSubjectTest {
         subject.onError(new Throwable());
 
         assertCompletedObserver(observer);
-        // todo bug?            assertNeverObserver(anotherObserver);
+        assertNeverObserver(anotherObserver);
     }
 
     @Test
@@ -118,8 +114,20 @@ public class PublishSubjectTest {
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, never()).onNext("four");
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+        verifyNoMoreInteractions(observer);
+    }
+
+    private void assertNeverObserver(Observer<String> observer) {
+        verify(observer, never()).onNext("one");
+        verify(observer, never()).onNext("two");
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onNext("four");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -144,7 +152,7 @@ public class PublishSubjectTest {
         subject.onCompleted();
 
         assertErrorObserver(observer);
-        // todo bug?            assertNeverObserver(anotherObserver);
+        assertNeverErrorObserver(anotherObserver);
     }
 
     private void assertErrorObserver(Observer<String> observer) {
@@ -152,7 +160,18 @@ public class PublishSubjectTest {
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
         verify(observer, times(1)).onError(testException);
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
+    }
+
+    private void assertNeverErrorObserver(Observer<String> observer) {
+        verify(observer, never()).onNext("one");
+        verify(observer, never()).onNext("two");
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onNext("four");
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -180,10 +199,10 @@ public class PublishSubjectTest {
     }
 
     private void assertCompletedStartingWithThreeObserver(Observer<String> observer) {
-        verify(observer, Mockito.never()).onNext("one");
-        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, never()).onNext("one");
+        verify(observer, never()).onNext("two");
         verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -215,9 +234,9 @@ public class PublishSubjectTest {
     private void assertObservedUntilTwo(Observer<String> observer) {
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -313,7 +332,7 @@ public class PublishSubjectTest {
 
     private final Throwable testException = new Throwable();
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void testUnsubscriptionCase() {
         PublishSubject<String> src = PublishSubject.create();
 
@@ -447,5 +466,39 @@ public class PublishSubjectTest {
         assertTrue(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertTrue(as.getThrowable() instanceof TestException);
+    }
+    
+    @Test
+    public void testPublishSubjectValueRelay() {
+        PublishSubject<Integer> async = PublishSubject.create();
+        async.onNext(1);
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+    }
+    
+    @Test
+    public void testPublishSubjectValueEmpty() {
+        PublishSubject<Integer> async = PublishSubject.create();
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+    }
+    @Test
+    public void testPublishSubjectValueError() {
+        PublishSubject<Integer> async = PublishSubject.create();
+        TestException te = new TestException();
+        async.onError(te);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertTrue(async.hasThrowable());
+        assertSame(te, async.getThrowable());
     }
 }

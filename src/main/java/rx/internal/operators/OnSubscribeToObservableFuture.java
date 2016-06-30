@@ -15,12 +15,13 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Action0;
+import rx.internal.producers.SingleProducer;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -40,7 +41,7 @@ public final class OnSubscribeToObservableFuture {
     }
 
     /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribe<T> {
-        private final Future<? extends T> that;
+        final Future<? extends T> that;
         private final long time;
         private final TimeUnit unit;
 
@@ -71,8 +72,7 @@ public final class OnSubscribeToObservableFuture {
                     return;
                 }
                 T value = (unit == null) ? (T) that.get() : (T) that.get(time, unit);
-                subscriber.onNext(value);
-                subscriber.onCompleted();
+                subscriber.setProducer(new SingleProducer<T>(subscriber, value));
             } catch (Throwable e) {
                 // If this Observable is unsubscribed, we will receive an CancellationException.
                 // However, CancellationException will not be passed to the final Subscriber
@@ -83,7 +83,7 @@ public final class OnSubscribeToObservableFuture {
                     //refuse to emit onError if already unsubscribed
                     return;
                 }
-                subscriber.onError(e);
+                Exceptions.throwOrReport(e, subscriber);
             }
         }
     }

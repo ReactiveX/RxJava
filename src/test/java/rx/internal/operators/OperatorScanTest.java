@@ -15,33 +15,23 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.MockitoAnnotations;
 
+import rx.*;
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Producer;
-import rx.Subscriber;
-import rx.functions.Action2;
-import rx.functions.Func0;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
 import rx.observers.TestSubscriber;
+import rx.subjects.PublishSubject;
 
 public class OperatorScanTest {
 
@@ -359,5 +349,124 @@ public class OperatorScanTest {
 
         verify(producer.get(), never()).request(0);
         verify(producer.get(), times(2)).request(1);
+    }
+    
+    @Test
+    public void testInitialValueEmittedNoProducer() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        source.scan(0, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        ts.assertValue(0);
+    }
+    
+    @Test
+    public void testInitialValueEmittedWithProducer() {
+        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> t) {
+                t.setProducer(new Producer() {
+                    @Override
+                    public void request(long n) {
+                        // deliberately no op
+                    }
+                });
+            }
+        });
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        source.scan(0, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        ts.assertValue(0);
+    }
+    
+    @Test
+    public void testInitialValueNull() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(1, 10).scan(null, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                if (t1 == null) {
+                    return t2;
+                }
+                return t1 + t2;
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(null, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void testEverythingIsNull() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(1, 6).scan(null, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return null;
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(null, null, null, null, null, null, null);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test(timeout = 1000)
+    public void testUnboundedSource() {
+        Observable.range(0, Integer.MAX_VALUE)
+        .scan(0, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer a, Integer b) {
+                return 0;
+            }
+        })
+        .subscribe(new TestSubscriber<Integer>() {
+            int count;
+            @Override
+            public void onNext(Integer t) {
+                if (++count == 2) {
+                    unsubscribe();
+                }
+            }
+        });
+    }
+    
+    @Test
+    public void scanShouldPassUpstreamARequestForMaxValue() {
+        final List<Long> requests = new ArrayList<Long>();
+        Observable.just(1,2,3).doOnRequest(new Action1<Long>() {
+            @Override
+            public void call(Long n) {
+                requests.add(n);
+            }
+        })
+        .scan(new Func2<Integer,Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return 0;
+            }}).count().subscribe();
+        
+        assertEquals(Arrays.asList(Long.MAX_VALUE), requests);
     }
 }

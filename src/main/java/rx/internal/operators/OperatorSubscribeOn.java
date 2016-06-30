@@ -15,96 +15,84 @@
  */
 package rx.internal.operators;
 
-import rx.Observable;
-import rx.Observable.Operator;
-import rx.Producer;
-import rx.Scheduler;
+import rx.*;
+import rx.Observable.OnSubscribe;
 import rx.Scheduler.Worker;
-import rx.Subscriber;
 import rx.functions.Action0;
 
 /**
  * Subscribes Observers on the specified {@code Scheduler}.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/subscribeOn.png" alt="">
+ * 
+ * @param <T> the value type of the actual source
  */
-public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
+public final class OperatorSubscribeOn<T> implements OnSubscribe<T> {
 
-    private final Scheduler scheduler;
+    final Scheduler scheduler;
+    final Observable<T> source;
 
-    public OperatorSubscribeOn(Scheduler scheduler) {
+    public OperatorSubscribeOn(Observable<T> source, Scheduler scheduler) {
         this.scheduler = scheduler;
+        this.source = source;
     }
 
     @Override
-    public Subscriber<? super Observable<T>> call(final Subscriber<? super T> subscriber) {
+    public void call(final Subscriber<? super T> subscriber) {
         final Worker inner = scheduler.createWorker();
         subscriber.add(inner);
-        return new Subscriber<Observable<T>>(subscriber) {
-
+        
+        inner.schedule(new Action0() {
             @Override
-            public void onCompleted() {
-                // ignore because this is a nested Observable and we expect only 1 Observable<T> emitted to onNext
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                subscriber.onError(e);
-            }
-
-            @Override
-            public void onNext(final Observable<T> o) {
-                inner.schedule(new Action0() {
-
+            public void call() {
+                final Thread t = Thread.currentThread();
+                
+                Subscriber<T> s = new Subscriber<T>(subscriber) {
                     @Override
-                    public void call() {
-                        final Thread t = Thread.currentThread();
-                        o.unsafeSubscribe(new Subscriber<T>(subscriber) {
-
+                    public void onNext(T t) {
+                        subscriber.onNext(t);
+                    }
+                    
+                    @Override
+                    public void onError(Throwable e) {
+                        try {
+                            subscriber.onError(e);
+                        } finally {
+                            inner.unsubscribe();
+                        }
+                    }
+                    
+                    @Override
+                    public void onCompleted() {
+                        try {
+                            subscriber.onCompleted();
+                        } finally {
+                            inner.unsubscribe();
+                        }
+                    }
+                    
+                    @Override
+                    public void setProducer(final Producer p) {
+                        subscriber.setProducer(new Producer() {
                             @Override
-                            public void onCompleted() {
-                                subscriber.onCompleted();
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                subscriber.onError(e);
-                            }
-
-                            @Override
-                            public void onNext(T t) {
-                                subscriber.onNext(t);
-                            }
-
-                            @Override
-                            public void setProducer(final Producer producer) {
-                                subscriber.setProducer(new Producer() {
-
-                                    @Override
-                                    public void request(final long n) {
-                                        if (Thread.currentThread() == t) {
-                                            // don't schedule if we're already on the thread (primarily for first setProducer call)
-                                            // see unit test 'testSetProducerSynchronousRequest' for more context on this
-                                            producer.request(n);
-                                        } else {
-                                            inner.schedule(new Action0() {
-
-                                                @Override
-                                                public void call() {
-                                                    producer.request(n);
-                                                }
-                                            });
+                            public void request(final long n) {
+                                if (t == Thread.currentThread()) {
+                                    p.request(n);
+                                } else {
+                                    inner.schedule(new Action0() {
+                                        @Override
+                                        public void call() {
+                                            p.request(n);
                                         }
-                                    }
-
-                                });
+                                    });
+                                }
                             }
-
                         });
                     }
-                });
+                };
+                
+                source.unsafeSubscribe(s);
             }
-
-        };
+        });
     }
 }

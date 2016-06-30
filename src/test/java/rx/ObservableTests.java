@@ -15,49 +15,25 @@
  */
 package rx;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
-import rx.Observable.OnSubscribe;
-import rx.Observable.Transformer;
+import rx.Observable.*;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action1;
-import rx.functions.Action2;
-import rx.functions.Func0;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
-import rx.schedulers.TestScheduler;
-import rx.subjects.ReplaySubject;
-import rx.subjects.Subject;
+import rx.schedulers.*;
+import rx.subjects.*;
 import rx.subscriptions.BooleanSubscription;
 
 public class ObservableTests {
@@ -345,6 +321,7 @@ public class ObservableTests {
      * It is handled by the AtomicObserver that wraps the provided Observer.
      * 
      * Result: Passes (if AtomicObserver functionality exists)
+     * @throws InterruptedException on interrupt
      */
     @Test
     public void testCustomObservableWithErrorInObserverAsynchronous() throws InterruptedException {
@@ -521,21 +498,18 @@ public class ObservableTests {
         }).takeLast(1).publish();
 
         // subscribe once
-        final CountDownLatch latch = new CountDownLatch(1);
-        connectable.subscribe(new Action1<String>() {
+        final CountDownLatch latch = new CountDownLatch(2);
+        Action1<String> subscriptionAction = new Action1<String>() {
             @Override
             public void call(String value) {
                 assertEquals("last", value);
                 latch.countDown();
             }
-        });
+        };
+        connectable.subscribe(subscriptionAction);
 
         // subscribe twice
-        connectable.subscribe(new Action1<String>() {
-            @Override
-            public void call(String ignored) {
-            }
-        });
+        connectable.subscribe(subscriptionAction);
 
         Subscription subscription = connectable.connect();
         assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
@@ -663,7 +637,7 @@ public class ObservableTests {
                     }
                 }).start();
             }
-        }).cache(1);
+        }).cacheWithInitialCapacity(1);
 
         // we then expect the following 2 subscriptions to get that same value
         final CountDownLatch latch = new CountDownLatch(2);
@@ -1101,19 +1075,48 @@ public class ObservableTests {
     }
     
     @Test
-    public void testErrorThrownIssue1685() {
+    public void testErrorThrownIssue1685() throws Exception {
         Subject<Object, Object> subject = ReplaySubject.create();
 
-        Observable.error(new RuntimeException("oops"))
-            .materialize()
-            .delay(1, TimeUnit.SECONDS)
-            .dematerialize()
-            .subscribe(subject);
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        
+        try {
+            
+            final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
+            
+            Scheduler s = Schedulers.from(exec);
+            exec.submit(new Runnable() {
+                @Override
+                public void run() {
+                    Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+                        @Override
+                        public void uncaughtException(Thread t, Throwable e) {
+                            err.set(e);
+                        }
+                    });
+                }
+            }).get();
+            
+            subject.subscribe();
 
-        subject.subscribe();
-        subject.materialize().toBlocking().first();
+            Observable.error(new RuntimeException("oops"))
+                .materialize()
+                .delay(1, TimeUnit.SECONDS, s)
+                .dematerialize()
+                .subscribe(subject);
+    
+            subject.materialize().toBlocking().first();
 
-        System.out.println("Done");
+            for (int i = 0; i < 50 && err.get() == null; i++) {
+                Thread.sleep(100); // the uncaught exception comes after the terminal event reaches toBlocking
+            }
+            
+            assertNotNull("UncaughtExceptionHandler didn't get anything.", err.get());
+            
+            System.out.println("Done");
+        } finally {
+            exec.shutdownNow();
+        }
     }
 
     @Test
@@ -1137,5 +1140,38 @@ public class ObservableTests {
         subscription.unsubscribe();
 
         subscriber.assertUnsubscribed();
+    }
+
+    @Test(expected=OnErrorNotImplementedException.class)
+    public void testForEachWithError() {
+        Observable.error(new Exception("boo"))
+        //
+        .forEach(new Action1<Object>() {
+            @Override
+            public void call(Object t) {
+                //do nothing
+            }});
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testForEachWithNull() {
+        Observable.error(new Exception("boo"))
+        //
+        .forEach(null);
+    }
+    
+    @Test
+    public void testExtend() {
+        final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
+        final Object value = new Object();
+        Observable.just(value).extend(new Func1<OnSubscribe<Object>,Object>(){
+            @Override
+            public Object call(OnSubscribe<Object> onSubscribe) {
+                onSubscribe.call(subscriber);
+                subscriber.assertNoErrors();
+                subscriber.assertCompleted();
+                subscriber.assertValue(value);
+                return subscriber.getOnNextEvents().get(0);
+            }});
     }
 }

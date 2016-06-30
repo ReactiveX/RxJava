@@ -16,28 +16,19 @@
 package rx.schedulers;
 
 import rx.Scheduler;
-import rx.internal.schedulers.NewThreadWorker;
-import rx.internal.util.RxThreadFactory;
 
 /**
- * Schedules work on a new thread.
+ * @deprecated This type was never publicly instantiable. Use {@link Schedulers#newThread()}.
  */
-public final class NewThreadScheduler extends Scheduler {
-
-    private static final String THREAD_NAME_PREFIX = "RxNewThreadScheduler-";
-    private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
-    private static final NewThreadScheduler INSTANCE = new NewThreadScheduler();
-
-    /* package */static NewThreadScheduler instance() {
-        return INSTANCE;
-    }
-
+@Deprecated
+// Class was part of public API.
+public final class NewThreadScheduler extends Scheduler { // NOPMD 
     private NewThreadScheduler() {
-
+        throw new AssertionError();
     }
 
     @Override
     public Worker createWorker() {
-        return new NewThreadWorker(THREAD_FACTORY);
+        return null;
     }
 }

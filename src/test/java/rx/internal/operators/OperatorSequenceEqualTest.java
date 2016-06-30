@@ -16,19 +16,20 @@
 package rx.internal.operators;
 
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Func2;
 
 public class OperatorSequenceEqualTest {
+    @Test
+    public void constructorShouldBePrivate() {
+        TestUtil.checkUtilityClass(OperatorSequenceEqual.class);
+    }
 
     @Test
     public void test1() {

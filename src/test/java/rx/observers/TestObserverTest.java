@@ -15,22 +15,22 @@
  */
 package rx.observers;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
+import java.util.*;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 
+import rx.Notification;
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.subjects.PublishSubject;
 
+@Deprecated
 public class TestObserverTest {
 
     @Rule
@@ -54,7 +54,9 @@ public class TestObserverTest {
         oi.subscribe(o);
 
         thrown.expect(AssertionError.class);
-        thrown.expectMessage("Number of items does not match. Provided: 1  Actual: 2");
+        thrown.expectMessage("Number of items does not match. Provided: 1  Actual: 2.\n" +
+                "Provided values: [1]\n" +
+                "Actual values: [1, 2]");
 
         o.assertReceivedOnNext(Arrays.asList(1));
         assertEquals(2, o.getOnNextEvents().size());
@@ -124,5 +126,109 @@ public class TestObserverTest {
     public void testErrorSwallowed() {
         Observable.error(new RuntimeException()).subscribe(new TestObserver<Object>());
     }
+    
+    @Test
+    public void testGetEvents() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        to.onNext(1);
+        to.onNext(2);
+        
+        assertEquals(Arrays.<Object>asList(Arrays.asList(1, 2), 
+                Collections.emptyList(), 
+                Collections.emptyList()), to.getEvents());
+        
+        to.onCompleted();
+        
+        assertEquals(Arrays.<Object>asList(Arrays.asList(1, 2), Collections.emptyList(),
+                Collections.singletonList(Notification.createOnCompleted())), to.getEvents());
+        
+        TestException ex = new TestException();
+        TestObserver<Integer> to2 = new TestObserver<Integer>();
+        to2.onNext(1);
+        to2.onNext(2);
+        
+        assertEquals(Arrays.<Object>asList(Arrays.asList(1, 2), 
+                Collections.emptyList(), 
+                Collections.emptyList()), to2.getEvents());
+        
+        to2.onError(ex);
+        
+        assertEquals(Arrays.<Object>asList(
+                Arrays.asList(1, 2),
+                Collections.singletonList(ex),
+                Collections.emptyList()), 
+                    to2.getEvents());
+    }
 
+    @Test
+    public void testNullExpected() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        to.onNext(1);
+
+        try {
+            to.assertReceivedOnNext(Arrays.asList((Integer)null));
+        } catch (AssertionError ex) {
+            // this is expected
+            return;
+        }
+        fail("Null element check assertion didn't happen!");
+    }
+    
+    @Test
+    public void testNullActual() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        to.onNext(null);
+
+        try {
+            to.assertReceivedOnNext(Arrays.asList(1));
+        } catch (AssertionError ex) {
+            // this is expected
+            return;
+        }
+        fail("Null element check assertion didn't happen!");
+    }
+    
+    @Test
+    public void testTerminalErrorOnce() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        to.onError(new TestException());
+        to.onError(new TestException());
+        
+        try {
+            to.assertTerminalEvent();
+        } catch (AssertionError ex) {
+            // this is expected
+            return;
+        }
+        fail("Failed to report multiple onError terminal events!");
+    }
+    @Test
+    public void testTerminalCompletedOnce() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        to.onCompleted();
+        to.onCompleted();
+        
+        try {
+            to.assertTerminalEvent();
+        } catch (AssertionError ex) {
+            // this is expected
+            return;
+        }
+        fail("Failed to report multiple onError terminal events!");
+    }
+    
+    @Test
+    public void testTerminalOneKind() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        to.onError(new TestException());
+        to.onCompleted();
+        
+        try {
+            to.assertTerminalEvent();
+        } catch (AssertionError ex) {
+            // this is expected
+            return;
+        }
+        fail("Failed to report multiple kinds of events!");
+    }
 }

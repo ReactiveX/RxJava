@@ -15,20 +15,20 @@
  */
 package rx.internal.operators;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Subscriber;
 import rx.functions.Action1;
 
 /**
- * This operator modifies an {@link rx.Observable} so a given action is invoked when the {@link rx.Observable.Producer} receives a request.
+ * This operator modifies an {@link rx.Observable} so a given action is invoked when the 
+ * {@link rx.Producer} receives a request.
  * 
  * @param <T>
  *            The type of the elements in the {@link rx.Observable} that this operator modifies
  */
 public class OperatorDoOnRequest<T> implements Operator<T, T> {
 
-    private final Action1<Long> request;
+    final Action1<Long> request;
 
     public OperatorDoOnRequest(Action1<Long> request) {
         this.request = request;
@@ -52,11 +52,12 @@ public class OperatorDoOnRequest<T> implements Operator<T, T> {
         return parent;
     }
 
-    private static final class ParentSubscriber<T> extends Subscriber<T> {
+    static final class ParentSubscriber<T> extends Subscriber<T> {
         private final Subscriber<? super T> child;
 
-        private ParentSubscriber(Subscriber<? super T> child) {
+        ParentSubscriber(Subscriber<? super T> child) {
             this.child = child;
+            this.request(0);
         }
 
         private void requestMore(long n) {

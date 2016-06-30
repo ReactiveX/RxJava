@@ -15,18 +15,14 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.ReentrantLock;
 
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Action1;
+import rx.functions.*;
 import rx.observables.ConnectableObservable;
-import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
+import rx.subscriptions.*;
 
 /**
  * Returns an observable sequence that stays connected to the source as long as
@@ -38,13 +34,13 @@ import rx.subscriptions.Subscriptions;
 public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
 
     private final ConnectableObservable<? extends T> source;
-    private volatile CompositeSubscription baseSubscription = new CompositeSubscription();
-    private final AtomicInteger subscriptionCount = new AtomicInteger(0);
+    volatile CompositeSubscription baseSubscription = new CompositeSubscription();
+    final AtomicInteger subscriptionCount = new AtomicInteger(0);
 
     /**
      * Use this lock for every subscription and disconnect action.
      */
-    private final ReentrantLock lock = new ReentrantLock();
+    final ReentrantLock lock = new ReentrantLock();
 
     /**
      * Constructor.

@@ -17,8 +17,7 @@ package rx.observers;
 
 import rx.Observer;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action0;
-import rx.functions.Action1;
+import rx.functions.*;
 
 /**
  * Helper methods and utilities for creating and working with {@link Observer} objects.
@@ -51,7 +50,7 @@ public final class Observers {
      * Returns an inert {@link Observer} that does nothing in response to the emissions or notifications from
      * any {@code Observable} it subscribes to but will throw an exception if its
      * {@link Observer#onError onError} method is called.
-     *
+     * @param <T> the observed value type
      * @return an inert {@code Observer}
      */
     @SuppressWarnings("unchecked")
@@ -64,6 +63,7 @@ public final class Observers {
      * {@link Observer#onNext onNext} but ignores {@link Observer#onCompleted onCompleted} notifications; 
      * it will throw an {@link OnErrorNotImplementedException} if {@link Observer#onError onError} is invoked.
      *
+     * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
      * @throws IllegalArgumentException
@@ -71,7 +71,7 @@ public final class Observers {
      * @return an {@code Observer} that calls {@code onNext} for each emitted item from the {@code Observable}
      *         the {@code Observer} subscribes to
      */
-    public static final <T> Observer<T> create(final Action1<? super T> onNext) {
+    public static <T> Observer<T> create(final Action1<? super T> onNext) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -101,6 +101,7 @@ public final class Observers {
      * {@link Observer#onNext onNext} and handles any {@link Observer#onError onError} notification but ignores
      * an {@link Observer#onCompleted onCompleted} notification.
      * 
+     * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
      * @param onError
@@ -111,7 +112,7 @@ public final class Observers {
      *         the {@code Observer} subscribes to, and calls {@code onError} if the {@code Observable} notifies
      *         of an error
      */
-    public static final <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError) {
+    public static <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -144,6 +145,7 @@ public final class Observers {
      * {@link Observer#onNext onNext} and handles any {@link Observer#onError onError} or
      * {@link Observer#onCompleted onCompleted} notifications.
      * 
+     * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
      * @param onError
@@ -157,7 +159,7 @@ public final class Observers {
      *         of an error, and calls {@code onComplete} if the {@code Observable} notifies that the observable
      *         sequence is complete
      */
-    public static final <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
+    public static <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }

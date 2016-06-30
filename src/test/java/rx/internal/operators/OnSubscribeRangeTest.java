@@ -249,4 +249,23 @@ public class OnSubscribeRangeTest {
             }});
         assertTrue(completed.get());
     }
+    
+    @Test(timeout = 1000)
+    public void testNearMaxValueWithoutBackpressure() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable.range(Integer.MAX_VALUE - 1, 2).subscribe(ts);
+        
+        ts.assertCompleted();
+        ts.assertNoErrors();
+        ts.assertValues(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+    }
+    @Test(timeout = 1000)
+    public void testNearMaxValueWithBackpressure() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(3);
+        Observable.range(Integer.MAX_VALUE - 1, 2).subscribe(ts);
+        
+        ts.assertCompleted();
+        ts.assertNoErrors();
+        ts.assertValues(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+    }
 }

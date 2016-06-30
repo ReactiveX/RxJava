@@ -15,14 +15,15 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
+import static rx.BackpressureOverflow.ON_OVERFLOW_DEFAULT;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.*;
+
+import rx.*;
+import rx.BackpressureOverflow.Strategy;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Subscriber;
-import rx.exceptions.MissingBackpressureException;
+import rx.exceptions.*;
 import rx.functions.Action0;
 import rx.internal.util.BackpressureDrainManager;
 
@@ -30,31 +31,62 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
 
     private final Long capacity;
     private final Action0 onOverflow;
+    private final Strategy overflowStrategy;
 
-    private static class Holder {
+    static final class Holder {
         static final OperatorOnBackpressureBuffer<?> INSTANCE = new OperatorOnBackpressureBuffer<Object>();
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> OperatorOnBackpressureBuffer<T> instance() {
         return (OperatorOnBackpressureBuffer<T>) Holder.INSTANCE;
     }
-    
-    private OperatorOnBackpressureBuffer() {
+
+    OperatorOnBackpressureBuffer() {
         this.capacity = null;
         this.onOverflow = null;
+        this.overflowStrategy = ON_OVERFLOW_DEFAULT;
     }
 
+    /**
+     * Construct a new instance that will handle overflows with {@code ON_OVERFLOW_DEFAULT}, providing the
+     * following behavior config:
+     *
+     * @param capacity the max number of items to be admitted in the buffer, must be greater than 0.
+     */
     public OperatorOnBackpressureBuffer(long capacity) {
-        this(capacity, null);
+        this(capacity, null, ON_OVERFLOW_DEFAULT);
     }
 
+    /**
+     * Construct a new instance that will handle overflows with {@code ON_OVERFLOW_DEFAULT}, providing the
+     * following behavior config:
+     *
+     * @param capacity the max number of items to be admitted in the buffer, must be greater than 0.
+     * @param onOverflow the {@code Action0} to execute when the buffer overflows, may be null.
+     */
     public OperatorOnBackpressureBuffer(long capacity, Action0 onOverflow) {
+        this(capacity, onOverflow, ON_OVERFLOW_DEFAULT);
+    }
+
+    /**
+     * Construct a new instance feeding the following behavior config:
+     *
+     * @param capacity the max number of items to be admitted in the buffer, must be greater than 0.
+     * @param onOverflow the {@code Action0} to execute when the buffer overflows, may be null.
+     * @param overflowStrategy the {@code BackpressureOverflow.Strategy} to handle overflows, it must not be null.
+     */
+    public OperatorOnBackpressureBuffer(long capacity, Action0 onOverflow,
+                                        Strategy overflowStrategy) {
         if (capacity <= 0) {
             throw new IllegalArgumentException("Buffer capacity must be > 0");
         }
+        if (overflowStrategy == null) {
+            throw new NullPointerException("The BackpressureOverflow strategy must not be null");
+        }
         this.capacity = capacity;
         this.onOverflow = onOverflow;
+        this.overflowStrategy = overflowStrategy;
     }
 
     @Override
@@ -62,7 +94,8 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
 
         // don't pass through subscriber as we are async and doing queue draining
         // a parent being unsubscribed should not affect the children
-        BufferSubscriber<T> parent = new BufferSubscriber<T>(child, capacity, onOverflow);
+        BufferSubscriber<T> parent = new BufferSubscriber<T>(child, capacity, onOverflow,
+                                                             overflowStrategy);
 
         // if child unsubscribes it should unsubscribe the parent, but not the other way around
         child.add(parent);
@@ -70,24 +103,27 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
 
         return parent;
     }
-    private static final class BufferSubscriber<T> extends Subscriber<T> implements BackpressureDrainManager.BackpressureQueueCallback {
+
+    static final class BufferSubscriber<T> extends Subscriber<T> implements BackpressureDrainManager.BackpressureQueueCallback {
         // TODO get a different queue implementation
         private final ConcurrentLinkedQueue<Object> queue = new ConcurrentLinkedQueue<Object>();
-        private final Long baseCapacity;
         private final AtomicLong capacity;
         private final Subscriber<? super T> child;
         private final AtomicBoolean saturated = new AtomicBoolean(false);
         private final BackpressureDrainManager manager;
         private final NotificationLite<T> on = NotificationLite.instance();
         private final Action0 onOverflow;
+        private final Strategy overflowStrategy;
         
-        public BufferSubscriber(final Subscriber<? super T> child, Long capacity, Action0 onOverflow) {
+        public BufferSubscriber(final Subscriber<? super T> child, Long capacity, Action0 onOverflow,
+                                Strategy overflowStrategy) {
             this.child = child;
-            this.baseCapacity = capacity;
             this.capacity = capacity != null ? new AtomicLong(capacity) : null;
             this.onOverflow = onOverflow;
             this.manager = new BackpressureDrainManager(this);
+            this.overflowStrategy = overflowStrategy;
         }
+
         @Override
         public void onStart() {
             request(Long.MAX_VALUE);
@@ -140,7 +176,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
             }
             return value;
         }
-        
+
         private boolean assertCapacity() {
             if (capacity == null) {
                 return true;
@@ -150,16 +186,30 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
             do {
                 currCapacity = capacity.get();
                 if (currCapacity <= 0) {
-                    if (saturated.compareAndSet(false, true)) {
-                        unsubscribe();
-                        child.onError(new MissingBackpressureException(
-                                "Overflowed buffer of "
-                                        + baseCapacity));
-                        if (onOverflow != null) {
-                            onOverflow.call();
+                    boolean hasCapacity = false;
+                    try {
+                        // ok if we're allowed to drop, and there is indeed an item to discard
+                        hasCapacity = overflowStrategy.mayAttemptDrop() && poll() != null;
+                    } catch (MissingBackpressureException e) {
+                        if (saturated.compareAndSet(false, true)) {
+                            unsubscribe();
+                            child.onError(e);
                         }
                     }
-                    return false;
+                    if (onOverflow != null) {
+                        try {
+                            onOverflow.call();
+                        } catch (Throwable e) {
+                            Exceptions.throwIfFatal(e);
+                            manager.terminateAndDrain(e);
+                            // this line not strictly necessary but nice for clarity
+                            // and in case of future changes to code after this catch block
+                            return false;
+                        }
+                    }
+                    if (!hasCapacity) {
+                        return false;
+                    }
                 }
                 // ensure no other thread stole our slot, or retry
             } while (!capacity.compareAndSet(currCapacity, currCapacity - 1));

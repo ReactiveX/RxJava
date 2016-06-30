@@ -15,17 +15,10 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 
 /**
  * Returns a Future representing the single value emitted by an Observable.
@@ -54,7 +47,8 @@ public final class BlockingOperatorToFuture {
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
-        final Subscription s = that.single().subscribe(new Subscriber<T>() {
+        @SuppressWarnings("unchecked")
+        final Subscription s = ((Observable<T>)that).single().subscribe(new Subscriber<T>() {
 
             @Override
             public void onCompleted() {
@@ -76,7 +70,7 @@ public final class BlockingOperatorToFuture {
 
         return new Future<T>() {
 
-            private volatile boolean cancelled = false;
+            private volatile boolean cancelled;
 
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
@@ -118,8 +112,10 @@ public final class BlockingOperatorToFuture {
             }
 
             private T getValue() throws ExecutionException {
-                if (error.get() != null) {
-                    throw new ExecutionException("Observable onError", error.get());
+                final Throwable throwable = error.get();
+
+                if (throwable != null) {
+                    throw new ExecutionException("Observable onError", throwable);
                 } else if (cancelled) {
                     // Contract of Future.get() requires us to throw this:
                     throw new CancellationException("Subscription unsubscribed");

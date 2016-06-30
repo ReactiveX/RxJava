@@ -18,7 +18,8 @@ package rx.internal.operators;
 import java.util.*;
 
 import rx.Observable.Operator;
-import rx.*;
+import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.internal.producers.SingleDelayedProducer;
 
 /**
@@ -34,27 +35,32 @@ import rx.internal.producers.SingleDelayedProducer;
  * <p>
  * Be careful not to use this operator on {@code Observable}s that emit infinite or very large numbers of items,
  * as you do not have the option to unsubscribe.
+ * @param <T> the value type of the input and the output list's items
  */
 public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
     /** Lazy initialization via inner-class holder. */
-    private static final class Holder {
+    static final class Holder {
         /** A singleton instance. */
         static final OperatorToObservableList<Object> INSTANCE = new OperatorToObservableList<Object>();
     }
     /**
+     * @param <T> the value type of the input and the output list's items
      * @return a singleton instance of this stateless operator.
      */
     @SuppressWarnings({ "unchecked" })
     public static <T> OperatorToObservableList<T> instance() {
         return (OperatorToObservableList<T>)Holder.INSTANCE;
     }
-    private OperatorToObservableList() { }
+    OperatorToObservableList() { 
+        // singleton
+    }
+    
     @Override
     public Subscriber<? super T> call(final Subscriber<? super List<T>> o) {
         final SingleDelayedProducer<List<T>> producer = new SingleDelayedProducer<List<T>>(o);
         Subscriber<T> result =  new Subscriber<T>() {
 
-            boolean completed = false;
+            boolean completed;
             List<T> list = new LinkedList<T>();
 
             @Override
@@ -85,7 +91,7 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
                          */
                         result = new ArrayList<T>(list);
                     } catch (Throwable t) {
-                        onError(t);
+                        Exceptions.throwOrReport(t, this);
                         return;
                     }
                     list = null;

@@ -15,22 +15,21 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Scheduler;
-import rx.Subscriber;
 import rx.schedulers.Timestamped;
 
 /**
  * Skip delivering values in the time window before the values.
+ * @param <T> the value type
  */
 public class OperatorSkipLastTimed<T> implements Operator<T, T> {
 
-    private final long timeInMillis;
-    private final Scheduler scheduler;
+    final long timeInMillis;
+    final Scheduler scheduler;
 
     public OperatorSkipLastTimed(long time, TimeUnit unit, Scheduler scheduler) {
         this.timeInMillis = unit.toMillis(time);

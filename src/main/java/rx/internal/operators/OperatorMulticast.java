@@ -15,16 +15,12 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import rx.*;
 import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func0;
+import rx.functions.*;
 import rx.observables.ConnectableObservable;
 import rx.observers.Subscribers;
 import rx.subjects.Subject;
@@ -46,9 +42,9 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
     final List<Subscriber<? super R>> waitingForConnect;
 
     /** Guarded by guard. */
-    private Subscriber<T> subscription;
+    Subscriber<T> subscription;
     // wraps subscription above for unsubscription using guard
-    private Subscription guardedSubscription;
+    Subscription guardedSubscription;
 
     public OperatorMulticast(Observable<? extends T> source, final Func0<? extends Subject<? super T, ? extends R>> subjectFactory) {
         this(new Object(), new AtomicReference<Subject<? super T, ? extends R>>(), new ArrayList<Subscriber<? super R>>(), source, subjectFactory);
@@ -76,6 +72,7 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
         this.subjectFactory = subjectFactory;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void connect(Action1<? super Subscription> connection) {
         // each time we connect we create a new Subject and Subscription
@@ -103,8 +100,9 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                                 subscription = null;
                                 guardedSubscription = null;
                                 connectedSubject.set(null);
-                            } else 
+                            } else {
                                 return;
+                            }
                         }
                         if (s != null) {
                             s.unsubscribe();
@@ -148,7 +146,8 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
         synchronized (guard) {
             sub = subscription;
         }
-        if (sub != null)
-            source.subscribe(sub);
+        if (sub != null) {
+            ((Observable<T>)source).subscribe(sub);
+        }
     }
 }

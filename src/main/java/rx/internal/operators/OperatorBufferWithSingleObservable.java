@@ -15,16 +15,15 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Func0;
-import rx.observers.SerializedSubscriber;
-import rx.observers.Subscribers;
+import rx.observers.*;
 
 /**
  * This operation takes
@@ -40,6 +39,7 @@ import rx.observers.Subscribers;
  * </p>
  * 
  * @param <T> the buffered value type
+ * @param <TClosing> the value type of the Observable signaling the end of each buffer
  */
 
 public final class OperatorBufferWithSingleObservable<T, TClosing> implements Operator<List<T>, T> {
@@ -79,7 +79,7 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
         try {
             closing = bufferClosingSelector.call();
         } catch (Throwable t) {
-            child.onError(t);
+            Exceptions.throwOrReport(t, child);
             return Subscribers.empty();
         }
         final BufferingSubscriber bsub = new BufferingSubscriber(new SerializedSubscriber<List<T>>(child));
@@ -157,7 +157,7 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
                 }
                 child.onNext(toEmit);
             } catch (Throwable t) {
-                child.onError(t);
+                Exceptions.throwOrReport(t, child);
                 return;
             }
             child.onCompleted();
@@ -183,7 +183,7 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
                     }
                     done = true;
                 }
-                child.onError(t);
+                Exceptions.throwOrReport(t, child);
             }
         }
     }

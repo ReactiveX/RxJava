@@ -24,7 +24,9 @@ public final class LinkedQueueNode<E> extends AtomicReference<LinkedQueueNode<E>
     private E value;
     
     public LinkedQueueNode() {
+        // no initial value
     }
+    
     public LinkedQueueNode(E val) {
         spValue(val);
     }

@@ -15,20 +15,23 @@
  */
 package rx.internal.operators;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
+import org.junit.*;
 
 import rx.Observable;
+import rx.TestUtil;
 import rx.observables.BlockingObservable;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
 public class BlockingOperatorLatestTest {
+    @Test
+    public void constructorShouldBePrivate() {
+        TestUtil.checkUtilityClass(BlockingOperatorLatest.class);
+    }
+
     @Test(timeout = 1000)
     public void testSimple() {
         TestScheduler scheduler = new TestScheduler();

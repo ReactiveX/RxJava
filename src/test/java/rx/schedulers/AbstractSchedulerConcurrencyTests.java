@@ -20,6 +20,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,6 +51,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
 
     /**
      * Bug report: https://github.com/ReactiveX/RxJava/issues/431
+     * @throws InterruptedException if a wait is interrupted
      */
     @Test
     public final void testUnSubscribeForScheduler() throws InterruptedException {
@@ -423,4 +426,33 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         assertEquals(5, count.get());
     }
 
+    @Test
+    public void workerUnderConcurrentUnsubscribeShouldNotAllowLaterTasksToRunDueToUnsubscriptionRace() {
+        Scheduler scheduler = getScheduler();
+        for (int i = 0; i < 1000; i++) {
+            Worker worker = scheduler.createWorker();
+            final Queue<Integer> q = new ConcurrentLinkedQueue<Integer>();
+            Action0 action1 = new Action0() {
+
+                @Override
+                public void call() {
+                    q.add(1);
+                }
+            };
+            Action0 action2 = new Action0() {
+
+                @Override
+                public void call() {
+                    q.add(2);
+                }
+            };
+            worker.schedule(action1);
+            worker.schedule(action2);
+            worker.unsubscribe();
+            if (q.size() == 1 && q.poll() == 2) {
+                //expect a queue of 1,2 or 1. If queue is just 2 then we have a problem!
+                fail("wrong order on loop " + i);
+            }
+        }
+    }
 }

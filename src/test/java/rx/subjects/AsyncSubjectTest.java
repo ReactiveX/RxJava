@@ -15,11 +15,7 @@
  */
 package rx.subjects;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.inOrder;
@@ -33,7 +29,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 
 import rx.Observer;
 import rx.Subscription;
@@ -59,9 +54,9 @@ public class AsyncSubjectTest {
         subject.onNext("two");
         subject.onNext("three");
 
-        verify(observer, Mockito.never()).onNext(anyString());
-        verify(observer, Mockito.never()).onError(testException);
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onNext(anyString());
+        verify(observer, never()).onError(testException);
+        verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -78,7 +73,7 @@ public class AsyncSubjectTest {
         subject.onCompleted();
 
         verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -94,7 +89,7 @@ public class AsyncSubjectTest {
         subject.onCompleted();
 
         verify(observer, times(1)).onNext(null);
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -113,7 +108,7 @@ public class AsyncSubjectTest {
         subject.subscribe(observer);
 
         verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -134,8 +129,8 @@ public class AsyncSubjectTest {
         subject.subscribe(observer);
 
         verify(observer, times(1)).onError(re);
-        verify(observer, Mockito.never()).onNext(any(String.class));
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onNext(any(String.class));
+        verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -154,9 +149,9 @@ public class AsyncSubjectTest {
         subject.onError(new Throwable());
         subject.onCompleted();
 
-        verify(observer, Mockito.never()).onNext(anyString());
+        verify(observer, never()).onNext(anyString());
         verify(observer, times(1)).onError(testException);
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -172,16 +167,16 @@ public class AsyncSubjectTest {
 
         subscription.unsubscribe();
 
-        verify(observer, Mockito.never()).onNext(anyString());
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onNext(anyString());
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
 
         subject.onNext("three");
         subject.onCompleted();
 
-        verify(observer, Mockito.never()).onNext(anyString());
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, Mockito.never()).onCompleted();
+        verify(observer, never()).onNext(anyString());
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -395,5 +390,87 @@ public class AsyncSubjectTest {
         assertFalse(as.hasCompleted());
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
+    }
+    
+    @Test
+    public void testAsyncSubjectValueRelay() {
+        AsyncSubject<Integer> async = AsyncSubject.create();
+        async.onNext(1);
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+    }
+    @Test
+    public void testAsyncSubjectValueEmpty() {
+        AsyncSubject<Integer> async = AsyncSubject.create();
+        async.onCompleted();
+        
+        assertFalse(async.hasObservers());
+        assertTrue(async.hasCompleted());
+        assertFalse(async.hasThrowable());
+        assertNull(async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+    }
+    @Test
+    public void testAsyncSubjectValueError() {
+        AsyncSubject<Integer> async = AsyncSubject.create();
+        TestException te = new TestException();
+        async.onError(te);
+        
+        assertFalse(async.hasObservers());
+        assertFalse(async.hasCompleted());
+        assertTrue(async.hasThrowable());
+        assertSame(te, async.getThrowable());
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+    }
+    
+    @Test
+    public void backpressureOnline() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        AsyncSubject<Integer> subject = AsyncSubject.create();
+        
+        subject.subscribe(ts);
+        
+        subject.onNext(1);
+        subject.onCompleted();
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(1);
+        
+        ts.assertValue(1);
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void backpressureOffline() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        AsyncSubject<Integer> subject = AsyncSubject.create();
+        subject.onNext(1);
+        subject.onCompleted();
+        
+        subject.subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(1);
+        
+        ts.assertValue(1);
+        ts.assertCompleted();
+        ts.assertNoErrors();
     }
 }

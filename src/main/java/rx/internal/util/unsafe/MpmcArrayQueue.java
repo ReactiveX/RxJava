@@ -18,6 +18,8 @@ package rx.internal.util.unsafe;
 
 import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
+import rx.internal.util.SuppressAnimalSniffer;
+
 abstract class MpmcArrayQueueL1Pad<E> extends ConcurrentSequencedCircularArrayQueue<E> {
     long p10, p11, p12, p13, p14, p15, p16;
     long p30, p31, p32, p33, p34, p35, p36, p37;
@@ -27,16 +29,9 @@ abstract class MpmcArrayQueueL1Pad<E> extends ConcurrentSequencedCircularArrayQu
     }
 }
 
+@SuppressAnimalSniffer
 abstract class MpmcArrayQueueProducerField<E> extends MpmcArrayQueueL1Pad<E> {
-    private final static long P_INDEX_OFFSET;
-    static {
-        try {
-            P_INDEX_OFFSET = UNSAFE.objectFieldOffset(MpmcArrayQueueProducerField.class
-                    .getDeclaredField("producerIndex"));
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private final static long P_INDEX_OFFSET = UnsafeAccess.addressOf(MpmcArrayQueueProducerField.class, "producerIndex");
     private volatile long producerIndex;
 
     public MpmcArrayQueueProducerField(int capacity) {
@@ -61,16 +56,9 @@ abstract class MpmcArrayQueueL2Pad<E> extends MpmcArrayQueueProducerField<E> {
     }
 }
 
+@SuppressAnimalSniffer
 abstract class MpmcArrayQueueConsumerField<E> extends MpmcArrayQueueL2Pad<E> {
-    private final static long C_INDEX_OFFSET;
-    static {
-        try {
-            C_INDEX_OFFSET = UNSAFE.objectFieldOffset(MpmcArrayQueueConsumerField.class
-                    .getDeclaredField("consumerIndex"));
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private final static long C_INDEX_OFFSET = UnsafeAccess.addressOf(MpmcArrayQueueConsumerField.class, "consumerIndex");
     private volatile long consumerIndex;
 
     public MpmcArrayQueueConsumerField(int capacity) {
@@ -110,6 +98,7 @@ abstract class MpmcArrayQueueConsumerField<E> extends MpmcArrayQueueL2Pad<E> {
  * @param <E>
  *            type of the element stored in the {@link java.util.Queue}
  */
+@SuppressAnimalSniffer
 public class MpmcArrayQueue<E> extends MpmcArrayQueueConsumerField<E> {
     long p40, p41, p42, p43, p44, p45, p46;
     long p30, p31, p32, p33, p34, p35, p36, p37;

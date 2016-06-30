@@ -47,6 +47,10 @@ import rx.functions.Func1;
  * @param <E>
  */
 public final class IndexedRingBuffer<E> implements Subscription {
+    private final ElementSection<E> elements = new ElementSection<E>();
+    private final IndexSection removed = new IndexSection();
+    /* package for unit testing */final AtomicInteger index = new AtomicInteger();
+    /* package for unit testing */final AtomicInteger removedIndex = new AtomicInteger();
 
     private static final ObjectPool<IndexedRingBuffer<?>> POOL = new ObjectPool<IndexedRingBuffer<?>>() {
 
@@ -57,16 +61,10 @@ public final class IndexedRingBuffer<E> implements Subscription {
 
     };
 
-    @SuppressWarnings("unchecked")
-    public final static <T> IndexedRingBuffer<T> getInstance() {
-        return (IndexedRingBuffer<T>) POOL.borrowObject();
-    }
+    static int defaultSize = 256;
 
-    private final ElementSection<E> elements = new ElementSection<E>();
-    private final IndexSection removed = new IndexSection();
-    /* package for unit testing */final AtomicInteger index = new AtomicInteger();
-    /* package for unit testing */final AtomicInteger removedIndex = new AtomicInteger();
-    
+    /* package for unit testing */static final int SIZE;
+
     // default size of ring buffer
     /**
      * Set at 256 ... Android defaults far smaller which likely will never hit the use cases that require the higher buffers.
@@ -238,25 +236,29 @@ public final class IndexedRingBuffer<E> implements Subscription {
      * 
      * } </pre>
      */
-    static int _size = 256;
     static {
         // lower default for Android (https://github.com/ReactiveX/RxJava/issues/1820)
         if (PlatformDependent.isAndroid()) {
-            _size = 8;
+            defaultSize = 8;
         }
 
         // possible system property for overriding
         String sizeFromProperty = System.getProperty("rx.indexed-ring-buffer.size"); // also see RxRingBuffer
         if (sizeFromProperty != null) {
             try {
-                _size = Integer.parseInt(sizeFromProperty);
-            } catch (Exception e) {
-                System.err.println("Failed to set 'rx.indexed-ring-buffer.size' with value " + sizeFromProperty + " => " + e.getMessage());
+                defaultSize = Integer.parseInt(sizeFromProperty);
+            } catch (NumberFormatException e) {
+                System.err.println("Failed to set 'rx.indexed-ring-buffer.size' with value " + sizeFromProperty + " => " + e.getMessage()); // NOPMD 
             }
         }
+        
+        SIZE = defaultSize;
     }
     
-    /* package for unit testing */static final int SIZE = _size;
+    @SuppressWarnings("unchecked")
+    public static <T> IndexedRingBuffer<T> getInstance() {
+        return (IndexedRingBuffer<T>) POOL.borrowObject();
+    }
 
     /**
      * This resets the arrays, nulls out references and returns it to the pool.
@@ -290,14 +292,15 @@ public final class IndexedRingBuffer<E> implements Subscription {
         releaseToPool();
     }
 
-    private IndexedRingBuffer() {
+    IndexedRingBuffer() {
+        // nothing to do
     }
 
     /**
      * Add an element and return the index where it was added to allow removal.
      * 
-     * @param e
-     * @return
+     * @param e the element to add
+     * @return the index where the element was added
      */
     public int add(E e) {
         int i = getIndexForAdd();
@@ -355,7 +358,7 @@ public final class IndexedRingBuffer<E> implements Subscription {
         return a;
     }
 
-    private synchronized int getIndexForAdd() {
+    private synchronized int getIndexForAdd() { // NOPMD 
         /*
          * Synchronized as I haven't yet figured out a way to do this in an atomic way that doesn't involve object allocation
          */
@@ -384,7 +387,7 @@ public final class IndexedRingBuffer<E> implements Subscription {
      * 
      * @return
      */
-    private synchronized int getIndexFromPreviouslyRemoved() {
+    private synchronized int getIndexFromPreviouslyRemoved() { // NOPMD 
         /*
          * Synchronized as I haven't yet figured out a way to do this in an atomic way that doesn't involve object allocation
          */
@@ -404,7 +407,7 @@ public final class IndexedRingBuffer<E> implements Subscription {
         }
     }
 
-    private synchronized void pushRemovedIndex(int elementIndex) {
+    private synchronized void pushRemovedIndex(int elementIndex) { // NOPMD 
         /*
          * Synchronized as I haven't yet figured out a way to do this in an atomic way that doesn't involve object allocation
          */
@@ -429,9 +432,10 @@ public final class IndexedRingBuffer<E> implements Subscription {
     }
 
     /**
-     * 
+     * Loop through each element in the buffer and call a specific function.
      * @param action
      *            that processes each item and returns true if it wants to continue to the next
+     * @param startIndex at which index the loop should start
      * @return int of next index to process, or last index seen if it exited early
      */
     public int forEach(Func1<? super E, Boolean> action, int startIndex) {
@@ -482,9 +486,9 @@ public final class IndexedRingBuffer<E> implements Subscription {
         return realIndex;
     }
 
-    private static class ElementSection<E> {
-        private final AtomicReferenceArray<E> array = new AtomicReferenceArray<E>(SIZE);
-        private final AtomicReference<ElementSection<E>> next = new AtomicReference<ElementSection<E>>();
+    static final class ElementSection<E> {
+        final AtomicReferenceArray<E> array = new AtomicReferenceArray<E>(SIZE);
+        final AtomicReference<ElementSection<E>> next = new AtomicReference<ElementSection<E>>();
 
         ElementSection<E> getNext() {
             if (next.get() != null) {
@@ -502,9 +506,11 @@ public final class IndexedRingBuffer<E> implements Subscription {
         }
     }
 
-    private static class IndexSection {
+    static class IndexSection {
 
         private final AtomicIntegerArray unsafeArray = new AtomicIntegerArray(SIZE);
+
+        private final AtomicReference<IndexSection> _next = new AtomicReference<IndexSection>();
 
         public int getAndSet(int expected, int newValue) {
             return unsafeArray.getAndSet(expected, newValue);
@@ -513,8 +519,6 @@ public final class IndexedRingBuffer<E> implements Subscription {
         public void set(int i, int elementIndex) {
             unsafeArray.set(i, elementIndex);
         }
-
-        private final AtomicReference<IndexSection> _next = new AtomicReference<IndexSection>();
 
         IndexSection getNext() {
             if (_next.get() != null) {

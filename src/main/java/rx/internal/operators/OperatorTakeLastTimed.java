@@ -15,24 +15,26 @@
  */
 package rx.internal.operators;
 
-import rx.Observable.Operator;
-import rx.Scheduler;
-import rx.Subscriber;
-
 import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+
+import rx.*;
+import rx.Observable.Operator;
+import rx.functions.Func1;
 
 /**
  * Returns an Observable that emits the last <code>count</code> items emitted by the source Observable.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/last.png" alt="">
+ * 
+ * @param <T> the value type
  */
 public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
 
-    private final long ageMillis;
-    private final Scheduler scheduler;
-    private final int count;
+    final long ageMillis;
+    final Scheduler scheduler;
+    final int count;
 
     public OperatorTakeLastTimed(long time, TimeUnit unit, Scheduler scheduler) {
         this.ageMillis = unit.toMillis(time);
@@ -51,60 +53,92 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
-        final Deque<Object> buffer = new ArrayDeque<Object>();
-        final Deque<Long> timestampBuffer = new ArrayDeque<Long>();
-        final NotificationLite<T> notification = NotificationLite.instance();
-        final TakeLastQueueProducer<T> producer = new TakeLastQueueProducer<T>(notification, buffer, subscriber);
-        subscriber.setProducer(producer);
-        return new Subscriber<T>(subscriber) {
-
-            protected void runEvictionPolicy(long now) {
-                // trim size
-                while (count >= 0 && buffer.size() > count) {
-                    timestampBuffer.pollFirst();
-                    buffer.pollFirst();
-                }
-                // remove old entries
-                while (!buffer.isEmpty()) {
-                    long v = timestampBuffer.peekFirst();
-                    if (v < now - ageMillis) {
-                        timestampBuffer.pollFirst();
-                        buffer.pollFirst();
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            // no backpressure up as it wants to receive and discard all but the last
+        final TakeLastTimedSubscriber<T> parent = new TakeLastTimedSubscriber<T>(subscriber, count, ageMillis, scheduler);
+        
+        subscriber.add(parent);
+        subscriber.setProducer(new Producer() {
             @Override
-            public void onStart() {
-                // we do this to break the chain of the child subscriber being passed through
-                request(Long.MAX_VALUE);
+            public void request(long n) {
+                parent.requestMore(n);
             }
+        });
+        
+        return parent;
+    }
+    
+    static final class TakeLastTimedSubscriber<T> extends Subscriber<T> implements Func1<Object, T> {
+        final Subscriber<? super T> actual;
+        final long ageMillis;
+        final Scheduler scheduler;
+        final int count;
+        final AtomicLong requested;
+        final ArrayDeque<Object> queue;
+        final ArrayDeque<Long> queueTimes;
+        final NotificationLite<T> nl;
+
+        public TakeLastTimedSubscriber(Subscriber<? super T> actual, int count, long ageMillis, Scheduler scheduler) {
+            this.actual = actual;
+            this.count = count;
+            this.ageMillis = ageMillis;
+            this.scheduler = scheduler;
+            this.requested = new AtomicLong();
+            this.queue = new ArrayDeque<Object>();
+            this.queueTimes = new ArrayDeque<Long>();
+            this.nl = NotificationLite.instance();
+        }
+        
+        @Override
+        public void onNext(T t) {
+            if (count != 0) {
+                long now = scheduler.now();
+    
+                if (queue.size() == count) {
+                    queue.poll();
+                    queueTimes.poll();
+                }
+                
+                evictOld(now);
+                
+                queue.offer(nl.next(t));
+                queueTimes.offer(now);
+            }
+        }
+
+        protected void evictOld(long now) {
+            long minTime = now - ageMillis;
+            for (;;) {
+                Long time = queueTimes.peek();
+                if (time == null || time >= minTime) {
+                    break;
+                }
+                queue.poll();
+                queueTimes.poll();
+            }
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            queue.clear();
+            queueTimes.clear();
+            actual.onError(e);
+        }
+        
+        @Override
+        public void onCompleted() {
+            evictOld(scheduler.now());
             
-            @Override
-            public void onNext(T args) {
-                long t = scheduler.now();
-                timestampBuffer.add(t);
-                buffer.add(notification.next(args));
-                runEvictionPolicy(t);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                timestampBuffer.clear();
-                buffer.clear();
-                subscriber.onError(e);
-            }
-
-            @Override
-            public void onCompleted() {
-                runEvictionPolicy(scheduler.now());
-                timestampBuffer.clear();
-                buffer.offer(notification.completed());
-                producer.startEmitting();
-            }
-        };
+            queueTimes.clear();
+            
+            BackpressureUtils.postCompleteDone(requested, queue, actual, this);
+        }
+        
+        @Override
+        public T call(Object t) {
+            return nl.getValue(t);
+        }
+        
+        void requestMore(long n) {
+            BackpressureUtils.postCompleteRequest(requested, n, queue, actual, this);
+        }
     }
 }

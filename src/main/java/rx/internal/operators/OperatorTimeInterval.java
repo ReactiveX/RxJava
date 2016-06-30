@@ -15,17 +15,17 @@
  */
 package rx.internal.operators;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Scheduler;
-import rx.Subscriber;
 import rx.schedulers.TimeInterval;
 
 /**
  * Records the time interval between consecutive elements in an observable sequence.
+ * @param <T> the value type
  */
 public final class OperatorTimeInterval<T> implements Operator<TimeInterval<T>, T> {
 
-    private final Scheduler scheduler;
+    final Scheduler scheduler;
 
     public OperatorTimeInterval(Scheduler scheduler) {
         this.scheduler = scheduler;

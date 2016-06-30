@@ -15,8 +15,7 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -281,7 +280,7 @@ public class OperatorTakeUntilTest {
         
         ts.assertReceivedOnNext(Arrays.asList(1));
         ts.assertNoErrors();
-        assertTrue("TestSubscriber completed", ts.getOnCompletedEvents().isEmpty());
+        assertEquals("TestSubscriber completed", 0, ts.getCompletions());
         
         assertFalse("Until still has observers", until.hasObservers());
         assertFalse("TestSubscriber is unsubscribed", ts.isUnsubscribed());

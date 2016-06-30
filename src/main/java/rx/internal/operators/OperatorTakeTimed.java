@@ -16,15 +16,15 @@
 package rx.internal.operators;
 
 import java.util.concurrent.TimeUnit;
+
+import rx.*;
 import rx.Observable.Operator;
-import rx.Scheduler;
 import rx.Scheduler.Worker;
-import rx.Subscriber;
 import rx.functions.Action0;
 import rx.observers.SerializedSubscriber;
 
 /**
- * Takes values from the source until the specific time ellapses.
+ * Takes values from the source until the specific time elapses.
  * 
  * @param <T>
  *            the result value type

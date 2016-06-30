@@ -17,24 +17,18 @@ package rx.internal.operators;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.*;
+import org.mockito.*;
+
+import rx.*;
+import rx.exceptions.*;
+import rx.functions.*;
+import rx.observers.TestSubscriber;
 
 public class OperatorDoOnEachTest {
 
@@ -200,5 +194,29 @@ public class OperatorDoOnEachTest {
             assertEquals(e.getCause().getMessage(), "Test NPE");
             System.out.println("Received exception: " + e);
         }
+    }
+    
+    @Test
+    public void testOnErrorThrows() {
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        
+        Observable.error(new TestException())
+        .doOnError(new Action1<Throwable>() {
+            @Override
+            public void call(Throwable e) {
+                throw new TestException();
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+        ts.assertError(CompositeException.class);
+        
+        CompositeException ex = (CompositeException)ts.getOnErrorEvents().get(0);
+        
+        List<Throwable> exceptions = ex.getExceptions();
+        assertEquals(2, exceptions.size());
+        assertTrue(exceptions.get(0) instanceof TestException);
+        assertTrue(exceptions.get(1) instanceof TestException);
     }
 }

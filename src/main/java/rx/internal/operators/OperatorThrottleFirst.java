@@ -22,11 +22,12 @@ import rx.Observable.Operator;
 
 /**
  * Throttle by windowing a stream and returning the first value in each window.
+ * @param <T> the value type
  */
 public final class OperatorThrottleFirst<T> implements Operator<T, T> {
 
-    private final long timeInMilliseconds;
-    private final Scheduler scheduler;
+    final long timeInMilliseconds;
+    final Scheduler scheduler;
 
     public OperatorThrottleFirst(long windowDuration, TimeUnit unit, Scheduler scheduler) {
         this.timeInMilliseconds = unit.toMillis(windowDuration);
@@ -37,7 +38,7 @@ public final class OperatorThrottleFirst<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
         return new Subscriber<T>(subscriber) {
 
-            private long lastOnNext = 0;
+            private long lastOnNext;
 
             @Override
             public void onStart() {

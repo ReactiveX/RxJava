@@ -15,9 +15,8 @@
  */
 package rx.plugins;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.annotations.Experimental;
+import rx.*;
+import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 
 /**
@@ -32,7 +31,9 @@ import rx.exceptions.Exceptions;
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins: <a
  * href="https://github.com/ReactiveX/RxJava/wiki/Plugins">https://github.com/ReactiveX/RxJava/wiki/Plugins</a>.
  */
-public abstract class RxJavaErrorHandler {
+public abstract class RxJavaErrorHandler { // NOPMD 
+
+    protected static final String ERROR_IN_RENDERING_SUFFIX = ".errorRendering";
 
     /**
      * Receives all {@code Exception}s from an {@link Observable} passed to
@@ -44,11 +45,10 @@ public abstract class RxJavaErrorHandler {
      * @param e
      *            the {@code Exception}
      */
+    @Deprecated
     public void handleError(Throwable e) {
         // do nothing by default
     }
-
-    protected static final String ERROR_IN_RENDERING_SUFFIX = ".errorRendering";
 
     /**
      * Receives items causing {@code OnErrorThrowable.OnNextValue} and gives a chance to choose the String
@@ -58,7 +58,7 @@ public abstract class RxJavaErrorHandler {
      * Note that primitive types are always rendered as their {@code toString()} value.
      * <p>
      * If a {@code Throwable} is caught when rendering, this will fallback to the item's classname suffixed by
-     * {@value #ERROR_IN_RENDERING_SUFFIX}.
+     * {@code ERROR_IN_RENDERING_SUFFIX}.
      *
      * @param item the last emitted item, that caused the exception wrapped in
      *             {@code OnErrorThrowable.OnNextValue}
@@ -67,7 +67,7 @@ public abstract class RxJavaErrorHandler {
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the
      *        release number)
      */
-    @Experimental
+    @Beta
     public final String handleOnNextValueRendering(Object item) {
 
         try {
@@ -98,7 +98,7 @@ public abstract class RxJavaErrorHandler {
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the
      *        release number)
      */
-    @Experimental
+    @Beta
     protected String render (Object item) throws InterruptedException {
         //do nothing by default
         return null;

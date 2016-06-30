@@ -45,7 +45,7 @@ public final class TestObstructionDetection {
     }
     /**
      * Checks if tasks can be immediately executed on the computation scheduler.
-     * @throws ObstructionExceptio if the schedulers don't respond within 1 second
+     * @throws ObstructionException if the schedulers don't respond within 1 second
      */
     public static void checkObstruction() {
         final int ncpu = Runtime.getRuntime().availableProcessors();

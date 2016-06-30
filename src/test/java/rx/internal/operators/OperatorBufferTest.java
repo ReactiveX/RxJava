@@ -949,10 +949,11 @@ public class OperatorBufferTest {
 
                     @Override
                     public void request(long n) {
-                        requested.set(n);
-                        s.onNext(1);
-                        s.onNext(2);
-                        s.onNext(3);
+                        if (BackpressureUtils.getAndAddRequest(requested, n) == 0) {
+                            s.onNext(1);
+                            s.onNext(2);
+                            s.onNext(3);
+                        }
                     }
 
                 });
@@ -1014,5 +1015,81 @@ public class OperatorBufferTest {
         verify(o, never()).onError(any(Throwable.class));
         
         assertFalse(s.isUnsubscribed());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testPostCompleteBackpressure() {
+        Observable<List<Integer>> source = Observable.range(1, 10).buffer(3, 1);
+        
+        TestSubscriber<List<Integer>> ts = TestSubscriber.create(0L);
+        
+        source.subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+        ts.assertNoErrors();
+        
+        ts.requestMore(7);
+        
+        ts.assertValues(
+                Arrays.asList(1, 2, 3),
+                Arrays.asList(2, 3, 4),
+                Arrays.asList(3, 4, 5),
+                Arrays.asList(4, 5, 6),
+                Arrays.asList(5, 6, 7),
+                Arrays.asList(6, 7, 8),
+                Arrays.asList(7, 8, 9)
+        );
+        ts.assertNotCompleted();
+        ts.assertNoErrors();
+
+        ts.requestMore(1);
+
+        ts.assertValues(
+                Arrays.asList(1, 2, 3),
+                Arrays.asList(2, 3, 4),
+                Arrays.asList(3, 4, 5),
+                Arrays.asList(4, 5, 6),
+                Arrays.asList(5, 6, 7),
+                Arrays.asList(6, 7, 8),
+                Arrays.asList(7, 8, 9),
+                Arrays.asList(8, 9, 10)
+        );
+        ts.assertNotCompleted();
+        ts.assertNoErrors();
+        
+        ts.requestMore(1);
+
+        ts.assertValues(
+                Arrays.asList(1, 2, 3),
+                Arrays.asList(2, 3, 4),
+                Arrays.asList(3, 4, 5),
+                Arrays.asList(4, 5, 6),
+                Arrays.asList(5, 6, 7),
+                Arrays.asList(6, 7, 8),
+                Arrays.asList(7, 8, 9),
+                Arrays.asList(8, 9, 10),
+                Arrays.asList(9, 10)
+        );
+        ts.assertNotCompleted();
+        ts.assertNoErrors();
+        
+        ts.requestMore(1);
+
+        ts.assertValues(
+                Arrays.asList(1, 2, 3),
+                Arrays.asList(2, 3, 4),
+                Arrays.asList(3, 4, 5),
+                Arrays.asList(4, 5, 6),
+                Arrays.asList(5, 6, 7),
+                Arrays.asList(6, 7, 8),
+                Arrays.asList(7, 8, 9),
+                Arrays.asList(8, 9, 10),
+                Arrays.asList(9, 10),
+                Arrays.asList(10)
+        );
+        ts.assertCompleted();
+        ts.assertNoErrors();
     }
 }

@@ -23,9 +23,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
+
+import rx.exceptions.CompositeException.CompositeExceptionCausalChain;
 
 public class CompositeExceptionTest {
 
@@ -50,7 +53,7 @@ public class CompositeExceptionTest {
         Throwable e1 = new Throwable("1", rootCause);
         Throwable e2 = new Throwable("2", rootCause);
         Throwable e3 = new Throwable("3", rootCause);
-        CompositeException ce = new CompositeException("3 failures with same root cause", Arrays.asList(e1, e2, e3));
+        CompositeException ce = new CompositeException(Arrays.asList(e1, e2, e3));
 
         System.err.println("----------------------------- print composite stacktrace");
         ce.printStackTrace();
@@ -164,5 +167,113 @@ public class CompositeExceptionTest {
                 }
             }
         }
+    }
+    
+    @Test
+    public void testNullCollection() {
+        CompositeException composite = new CompositeException((List<Throwable>)null);
+        composite.getCause();
+        composite.printStackTrace();
+    }
+    @Test
+    public void testNullElement() {
+        CompositeException composite = new CompositeException(Collections.singletonList((Throwable) null));
+        composite.getCause();
+        composite.printStackTrace();
+    }
+
+    @Test(timeout = 1000)
+    public void testCompositeExceptionWithUnsupportedInitCause() {
+        Throwable t = new Throwable() {
+            /** */
+            private static final long serialVersionUID = -3282577447436848385L;
+
+            @Override
+            public synchronized Throwable initCause(Throwable cause) {
+                throw new UnsupportedOperationException();
+            }
+        };
+        CompositeException cex = new CompositeException(Arrays.asList(t, ex1));
+
+        System.err.println("----------------------------- print composite stacktrace");
+        cex.printStackTrace();
+        assertEquals(2, cex.getExceptions().size());
+
+        assertNoCircularReferences(cex);
+        assertNotNull(getRootCause(cex));
+
+        System.err.println("----------------------------- print cause stacktrace");
+        cex.getCause().printStackTrace();
+    }
+
+    @Test(timeout = 1000)
+    public void testCompositeExceptionWithNullInitCause() {
+        Throwable t = new Throwable("ThrowableWithNullInitCause") {
+            /** */
+            private static final long serialVersionUID = -7984762607894527888L;
+
+            @Override
+            public synchronized Throwable initCause(Throwable cause) {
+                return null;
+            }
+        };
+        CompositeException cex = new CompositeException(Arrays.asList(t, ex1));
+
+        System.err.println("----------------------------- print composite stacktrace");
+        cex.printStackTrace();
+        assertEquals(2, cex.getExceptions().size());
+
+        assertNoCircularReferences(cex);
+        assertNotNull(getRootCause(cex));
+
+        System.err.println("----------------------------- print cause stacktrace");
+        cex.getCause().printStackTrace();
+    }
+
+    @Test
+    public void messageCollection() {
+        CompositeException compositeException = new CompositeException(Arrays.asList(ex1, ex3));
+        assertEquals("2 exceptions occurred. ", compositeException.getMessage());
+    }
+
+    @Test
+    public void messageVarargs() {
+        CompositeException compositeException = new CompositeException(ex1, ex2, ex3);
+        assertEquals("3 exceptions occurred. ", compositeException.getMessage());
+    }
+
+    @Test
+    public void complexCauses() {
+        Throwable e1 = new Throwable("1");
+        Throwable e2 = new Throwable("2");
+        e1.initCause(e2);
+
+        Throwable e3 = new Throwable("3");
+        Throwable e4 = new Throwable("4");
+        e3.initCause(e4);
+
+        Throwable e5 = new Throwable("5");
+        Throwable e6 = new Throwable("6");
+        e5.initCause(e6);
+
+        CompositeException compositeException = new CompositeException(e1, e3, e5);
+        assert(compositeException.getCause() instanceof CompositeExceptionCausalChain);
+
+        List<Throwable> causeChain = new ArrayList<Throwable>();
+        Throwable cause = compositeException.getCause().getCause();
+        while (cause != null) {
+            causeChain.add(cause);
+            cause = cause.getCause();
+        }
+        // The original relations
+        //
+        // e1 -> e2
+        // e3 -> e4
+        // e5 -> e6
+        //
+        // will be set to
+        //
+        // e1 -> e2 -> e3 -> e4 -> e5 -> e6
+        assertEquals(Arrays.asList(e1, e2, e3, e4, e5, e6), causeChain);
     }
 }

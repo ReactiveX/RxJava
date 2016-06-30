@@ -16,10 +16,11 @@
 package rx.internal.operators;
 
 import java.util.concurrent.TimeUnit;
+
+import rx.*;
 import rx.Observable.Operator;
-import rx.Scheduler;
 import rx.Scheduler.Worker;
-import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Action0;
 import rx.observers.SerializedSubscriber;
 import rx.subscriptions.SerialSubscription;
@@ -109,7 +110,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
         /** Guarded by this. */
         boolean emitting;
         
-        public synchronized int next(T value) {
+        public synchronized int next(T value) { // NOPMD 
             this.value = value;
             this.hasValue = true;
             return ++index;
@@ -130,7 +131,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
             try {
                 onNextAndComplete.onNext(localValue);
             } catch (Throwable e) {
-                onError.onError(e);
+                Exceptions.throwOrReport(e, onError, localValue);
                 return;
             }
 
@@ -162,17 +163,17 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
                 emitting = true;
             }
 
-            if  (localHasValue) {
+            if (localHasValue) {
                 try {
                     onNextAndComplete.onNext(localValue);
                 } catch (Throwable e) {
-                    onError.onError(e);
+                    Exceptions.throwOrReport(e, onError, localValue);
                     return;
                 }
             }
             onNextAndComplete.onCompleted();
         }
-        public synchronized void clear() {
+        public synchronized void clear() { // NOPMD 
             ++index;
             value = null;
             hasValue = false;

@@ -1,14 +1,30 @@
+/**
+ * Copyright 2016 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Subscriber;
+import rx.exceptions.Exceptions;
 
 public class OperatorTakeLastOne<T> implements Operator<T, T> {
 
-    private static class Holder {
+    static final class Holder {
         static final OperatorTakeLastOne<Object> INSTANCE = new OperatorTakeLastOne<Object>();
     }
 
@@ -17,8 +33,8 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
         return (OperatorTakeLastOne<T>) Holder.INSTANCE;
     }
 
-    private OperatorTakeLastOne() {
-
+    OperatorTakeLastOne() {
+        // singleton
     }
 
     @Override
@@ -35,7 +51,7 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
         return parent;
     }
 
-    private static class ParentSubscriber<T> extends Subscriber<T> {
+    static final class ParentSubscriber<T> extends Subscriber<T> {
 
         private final static int NOT_REQUESTED_NOT_COMPLETED = 0;
         private final static int NOT_REQUESTED_COMPLETED = 1;
@@ -92,9 +108,10 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
                             emit();
                             return;
                         }
-                    } else
+                    } else {
                         // already requested so we exit
                         return;
+                    }
                 }
             }
         }
@@ -124,9 +141,10 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
                         emit();
                         return;
                     }
-                } else
+                } else {
                     // already completed so we exit
                     return;
+                }
             }
         }
 
@@ -150,12 +168,13 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
                 try {
                     child.onNext(t);
                 } catch (Throwable e) {
-                    child.onError(e);
+                    Exceptions.throwOrReport(e, child);
                     return;
                 }
             }
-            if (!isUnsubscribed())
+            if (!isUnsubscribed()) {
                 child.onCompleted();
+            }
         }
 
         @Override

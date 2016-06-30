@@ -426,7 +426,7 @@ public class OperatorTimeoutWithSelectorTest {
             latchTimeout.set(true);
         }
 
-        assertFalse("CoundDownLatch timeout", latchTimeout.get());
+        assertFalse("CountDownLatch timeout", latchTimeout.get());
 
         InOrder inOrder = inOrder(o);
         inOrder.verify(o).onNext(1);

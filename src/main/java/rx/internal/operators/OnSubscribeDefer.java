@@ -15,10 +15,11 @@
  */
 package rx.internal.operators;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Func0;
+import rx.observers.Subscribers;
 
 /**
  * Do not create the Observable until an Observer subscribes; create a fresh Observable on each
@@ -29,6 +30,7 @@ import rx.functions.Func0;
  * Pass defer an Observable factory function (a function that generates Observables), and defer will
  * return an Observable that will call this function to generate its Observable sequence afresh
  * each time a new Observer subscribes.
+ * @param <T> the value type
  */
 public final class OnSubscribeDefer<T> implements OnSubscribe<T> {
     final Func0<? extends Observable<? extends T>> observableFactory;
@@ -43,23 +45,10 @@ public final class OnSubscribeDefer<T> implements OnSubscribe<T> {
         try {
             o = observableFactory.call();
         } catch (Throwable t) {
-            s.onError(t);
+            Exceptions.throwOrReport(t, s);
             return;
         }
-        o.unsafeSubscribe(new Subscriber<T>(s) {
-            @Override
-            public void onNext(T t) {
-                s.onNext(t);
-            }
-            @Override
-            public void onError(Throwable e) {
-                s.onError(e);
-            }
-            @Override
-            public void onCompleted() {
-                s.onCompleted();
-            }
-        });
+        o.unsafeSubscribe(Subscribers.wrap(s));
     }
     
 }

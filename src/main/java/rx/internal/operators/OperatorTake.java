@@ -17,9 +17,8 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Subscriber;
 
 /**
  * An {@code Observable} that emits the first {@code num} items emitted by the source {@code Observable}.
@@ -30,12 +29,16 @@ import rx.Subscriber;
  * the {@code take} operator. This operator returns an {@code Observable} that will invoke a subscriber's
  * {@link Subscriber#onNext onNext} function a maximum of {@code num} times before invoking
  * {@link Subscriber#onCompleted onCompleted}.
+ * @param <T> the value type
  */
 public final class OperatorTake<T> implements Operator<T, T> {
 
     final int limit;
 
     public OperatorTake(int limit) {
+        if (limit < 0) {
+            throw new IllegalArgumentException("limit >= 0 required but it was " + limit);
+        }
         this.limit = limit;
     }
 
@@ -43,12 +46,13 @@ public final class OperatorTake<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         final Subscriber<T> parent = new Subscriber<T>() {
 
-            int count = 0;
-            boolean completed = false;
+            int count;
+            boolean completed;
 
             @Override
             public void onCompleted() {
                 if (!completed) {
+                    completed = true;
                     child.onCompleted();
                 }
             }
@@ -56,20 +60,27 @@ public final class OperatorTake<T> implements Operator<T, T> {
             @Override
             public void onError(Throwable e) {
                 if (!completed) {
-                    child.onError(e);
+                    completed = true;
+                    try {
+                        child.onError(e);
+                    } finally {
+                        unsubscribe();
+                    }
                 }
             }
 
             @Override
             public void onNext(T i) {
-                if (!isUnsubscribed()) {
-                    if (++count >= limit) {
-                        completed = true;
-                    }
+                if (!isUnsubscribed() && count++ < limit) {
+                    boolean stop = count == limit;
                     child.onNext(i);
-                    if (completed) {
-                        child.onCompleted();
-                        unsubscribe();
+                    if (stop && !completed) {
+                        completed = true;
+                        try {
+                            child.onCompleted();
+                        } finally {
+                            unsubscribe();
+                        }
                     }
                 }
             }
@@ -92,9 +103,9 @@ public final class OperatorTake<T> implements Operator<T, T> {
                             while (true) {
                                 long r = requested.get();
                                 long c = Math.min(n, limit - r);
-                                if (c == 0)
+                                if (c == 0) {
                                     break;
-                                else if (requested.compareAndSet(r, r + c)) {
+                                } else if (requested.compareAndSet(r, r + c)) {
                                     producer.request(c);
                                     break;
                                 }

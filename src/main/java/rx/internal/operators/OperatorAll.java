@@ -18,7 +18,6 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 import rx.internal.producers.SingleDelayedProducer;
 
@@ -27,9 +26,10 @@ import rx.internal.producers.SingleDelayedProducer;
  * Observable satisfy a condition.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/all.png" alt="">
+ * @param <T> the value type
  */
 public final class OperatorAll<T> implements Operator<Boolean, T> {
-    private final Func1<? super T, Boolean> predicate;
+    final Func1<? super T, Boolean> predicate;
 
     public OperatorAll(Func1<? super T, Boolean> predicate) {
         this.predicate = predicate;
@@ -47,8 +47,7 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
                 try {
                     result = predicate.call(t);
                 } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                    Exceptions.throwOrReport(e, this, t);
                     return;
                 }
                 if (!result && !done) {

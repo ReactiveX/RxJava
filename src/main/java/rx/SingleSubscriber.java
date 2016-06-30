@@ -15,7 +15,7 @@
  */
 package rx;
 
-import rx.annotations.Experimental;
+import rx.annotations.Beta;
 import rx.internal.util.SubscriptionList;
 
 /**
@@ -29,8 +29,9 @@ import rx.internal.util.SubscriptionList;
  * @see <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation: Observable</a>
  * @param <T>
  *          the type of item the SingleSubscriber expects to observe
+ * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
  */
-@Experimental
+@Beta
 public abstract class SingleSubscriber<T> implements Subscription {
 
     private final SubscriptionList cs = new SubscriptionList();

@@ -15,18 +15,23 @@
  */
 package rx.exceptions;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import rx.Observer;
+import rx.SingleSubscriber;
 import rx.annotations.Experimental;
 
 /**
- * @warn javadoc class description missing
+ * Utility class with methods to wrap checked exceptions and
+ * manage fatal and regular exception delivery.
  */
 public final class Exceptions {
-    private Exceptions() {
 
+    private static final int MAX_DEPTH = 25;
+
+    /** Utility class, no instances. */
+    private Exceptions() {
+        throw new IllegalStateException("No instances!");
     }
 
     /**
@@ -50,7 +55,7 @@ public final class Exceptions {
         } else if (t instanceof Error) {
             throw (Error) t;
         } else {
-            throw new RuntimeException(t);
+            throw new RuntimeException(t); // NOPMD 
         }
     }
     /**
@@ -59,6 +64,7 @@ public final class Exceptions {
      * <ul>
      * <li>{@link OnErrorNotImplementedException}</li>
      * <li>{@link OnErrorFailedException}</li>
+     * <li>{@link OnCompletedFailedException}</li>
      * <li>{@code StackOverflowError}</li>
      * <li>{@code VirtualMachineError}</li>
      * <li>{@code ThreadDeath}</li>
@@ -77,12 +83,9 @@ public final class Exceptions {
         if (t instanceof OnErrorNotImplementedException) {
             throw (OnErrorNotImplementedException) t;
         } else if (t instanceof OnErrorFailedException) {
-            Throwable cause = ((OnErrorFailedException) t).getCause();
-            if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
-            } else {
-                throw (OnErrorFailedException) t;
-            }
+            throw (OnErrorFailedException) t;
+        } else if (t instanceof OnCompletedFailedException) {
+            throw (OnCompletedFailedException) t;
         }
         // values here derived from https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495
         else if (t instanceof StackOverflowError) {
@@ -95,8 +98,6 @@ public final class Exceptions {
             throw (LinkageError) t;
         }
     }
-
-    private static final int MAX_DEPTH = 25;
 
     /**
      * Adds a {@code Throwable} to a causality-chain of Throwables, as an additional cause (if it does not
@@ -126,7 +127,7 @@ public final class Exceptions {
         // we now have 'e' as the last in the chain
         try {
             e.initCause(cause);
-        } catch (Throwable t) {
+        } catch (Throwable t) { // NOPMD 
             // ignore
             // the javadocs say that some Throwables (depending on how they're made) will never
             // let me call initCause without blowing up even if it returns null
@@ -158,8 +159,8 @@ public final class Exceptions {
      * @param exceptions the collection of exceptions. If null or empty, no exception is thrown.
      * If the collection contains a single exception, that exception is either thrown as-is or wrapped into a
      * CompositeException. Multiple exceptions are wrapped into a CompositeException.
+     * @since 1.1.0
      */
-    @Experimental
     public static void throwIfAny(List<? extends Throwable> exceptions) {
         if (exceptions != null && !exceptions.isEmpty()) {
             if (exceptions.size() == 1) {
@@ -171,11 +172,49 @@ public final class Exceptions {
                 } else if (t instanceof Error) {
                     throw (Error) t;
                 } else {
-                    throw new RuntimeException(t);
+                    throw new RuntimeException(t); // NOPMD 
                 }
             }
-            throw new CompositeException(
-                    "Multiple exceptions", exceptions);
+            throw new CompositeException(exceptions);
         }
+    }
+    
+    /**
+     * Forwards a fatal exception or reports it along with the value
+     * caused it to the given Observer.
+     * @param t the exception
+     * @param o the observer to report to
+     * @param value the value that caused the exception
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public static void throwOrReport(Throwable t, Observer<?> o, Object value) {
+        Exceptions.throwIfFatal(t);
+        o.onError(OnErrorThrowable.addValueAsLastCause(t, value));
+    }
+
+    /**
+     * Forwards a fatal exception or reports it to the given Observer.
+     * @param t the exception
+     * @param o the observer to report to
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public static void throwOrReport(Throwable t, Observer<?> o) {
+        Exceptions.throwIfFatal(t);
+        o.onError(t);
+    }
+
+    /**
+     * Forwards a fatal exception or reports it to the given Observer.
+     *
+     * @param throwable the exception.
+     * @param subscriber the subscriber to report to.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number).
+     */
+    @Experimental
+    public static void throwOrReport(Throwable throwable, SingleSubscriber<?> subscriber) {
+        Exceptions.throwIfFatal(throwable);
+        subscriber.onError(throwable);
     }
 }

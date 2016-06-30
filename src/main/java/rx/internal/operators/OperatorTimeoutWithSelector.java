@@ -15,13 +15,9 @@
  */
 package rx.internal.operators;
 
-import rx.Observable;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.Exceptions;
-import rx.functions.Func0;
-import rx.functions.Func1;
+import rx.functions.*;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
@@ -30,6 +26,9 @@ import rx.subscriptions.Subscriptions;
  * item emitted by the source Observable or any subsequent item don't arrive
  * within time windows defined by provided Observables, switch to the
  * <code>other</code> Observable if provided, or emit a TimeoutException .
+ * @param <T> the value type of the main Observable
+ * @param <U> the value type of the first timeout Observable
+ * @param <V> the value type of the subsequent timeout Observable
  */
 public class OperatorTimeoutWithSelector<T, U, V> extends
         OperatorTimeoutBase<T> {
@@ -49,8 +48,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
                     try {
                         o = firstTimeoutSelector.call();
                     } catch (Throwable t) {
-                        Exceptions.throwIfFatal(t);
-                        timeoutSubscriber.onError(t);
+                        Exceptions.throwOrReport(t, timeoutSubscriber);
                         return Subscriptions.unsubscribed();
                     }
                     return o.unsafeSubscribe(new Subscriber<U>() {
@@ -85,8 +83,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
                 try {
                     o = timeoutSelector.call(value);
                 } catch (Throwable t) {
-                    Exceptions.throwIfFatal(t);
-                    timeoutSubscriber.onError(t);
+                    Exceptions.throwOrReport(t, timeoutSubscriber);
                     return Subscriptions.unsubscribed();
                 }
                 return o.unsafeSubscribe(new Subscriber<V>() {

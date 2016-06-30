@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.*;
 import rx.Observable.Operator;
+import rx.exceptions.Exceptions;
 import rx.functions.Func2;
 import rx.observers.SerializedSubscriber;
 
@@ -58,8 +59,7 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T>  {
                         
                         s.onNext(result);
                     } catch (Throwable e) {
-                        onError(e);
-                        return;
+                        Exceptions.throwOrReport(e, this);
                     }
                 }
             }

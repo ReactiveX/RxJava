@@ -27,6 +27,7 @@ import org.mockito.*;
 import rx.*;
 import rx.Observable;
 import rx.Observer;
+import rx.internal.util.PlatformDependent;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -190,7 +191,7 @@ public class OperatorMergeMaxConcurrentTest {
             ts.assertReceivedOnNext(result);
         }
     }
-    @Test(timeout = 10000)
+    @Test(timeout = 20000)
     public void testSimpleAsyncLoop() {
         for (int i = 0; i < 200; i++) {
             testSimpleAsync();
@@ -218,13 +219,21 @@ public class OperatorMergeMaxConcurrentTest {
     }
     @Test(timeout = 10000)
     public void testSimpleOneLessAsyncLoop() {
-        for (int i = 0; i < 200; i++) {
+        int max = 200;
+        if (PlatformDependent.isAndroid()) {
+            max = 50;
+        }
+        for (int i = 0; i < max; i++) {
             testSimpleOneLessAsync();
         }
     }
     @Test(timeout = 10000)
     public void testSimpleOneLessAsync() {
+        long t = System.currentTimeMillis();
         for (int i = 2; i < 50; i++) {
+            if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
+                break;
+            }
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
             Set<Integer> expected = new HashSet<Integer>(i);
@@ -272,7 +281,7 @@ public class OperatorMergeMaxConcurrentTest {
         
         ts.assertNoErrors();
         assertEquals(5, ts.getOnNextEvents().size());
-        assertEquals(0, ts.getOnCompletedEvents().size());
+        assertEquals(0, ts.getCompletions());
         
         ts.unsubscribe();
     }

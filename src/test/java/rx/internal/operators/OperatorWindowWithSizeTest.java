@@ -291,6 +291,7 @@ public class OperatorWindowWithSizeTest {
         Assert.assertFalse(ts.getOnNextEvents().isEmpty());
     }
     
+    @Ignore("Requires #3678")
     @Test
     @SuppressWarnings("unchecked")
     public void testBackpressureOuterInexact() {
@@ -323,5 +324,72 @@ public class OperatorWindowWithSizeTest {
                 Arrays.asList(3, 4), Arrays.asList(4, 5), Arrays.asList(5));
         ts.assertNoErrors();
         ts.assertCompleted();
+    }
+    
+    @Test
+    public void testBackpressureOuterOverlap() {
+        Observable<Observable<Integer>> source = Observable.range(1, 10).window(3, 1);
+        
+        TestSubscriber<Observable<Integer>> ts = TestSubscriber.create(0L);
+        
+        source.subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(1);
+        
+        ts.assertValueCount(1);
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+
+        ts.requestMore(7);
+        
+        ts.assertValueCount(8);
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(3);
+
+        ts.assertValueCount(10);
+        ts.assertCompleted();
+        ts.assertNoErrors();
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testCountInvalid() {
+        Observable.range(1, 10).window(0, 1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSkipInvalid() {
+        Observable.range(1, 10).window(3, 0);
+    }
+    @Test
+    public void testTake1Overlapping() {
+        Observable<Observable<Integer>> source = Observable.range(1, 10).window(3, 1).take(1);
+        
+        TestSubscriber<Observable<Integer>> ts = TestSubscriber.create(0L);
+
+        source.subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(2);
+        
+        ts.assertValueCount(1);
+        ts.assertCompleted();
+        ts.assertNoErrors();
+
+        TestSubscriber<Integer> ts1 = TestSubscriber.create();
+        
+        ts.getOnNextEvents().get(0).subscribe(ts1);
+        
+        ts1.assertValues(1, 2, 3);
+        ts1.assertCompleted();
+        ts1.assertNoErrors();
     }
 }

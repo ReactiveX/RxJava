@@ -15,19 +15,19 @@
  */
 package rx.internal.operators;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Scheduler;
-import rx.Subscriber;
 import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
 
 /**
  * Unsubscribes on the specified Scheduler.
  * <p>
+ * @param <T> the value type
  */
 public class OperatorUnsubscribeOn<T> implements Operator<T, T> {
 
-    private final Scheduler scheduler;
+    final Scheduler scheduler;
 
     public OperatorUnsubscribeOn(Scheduler scheduler) {
         this.scheduler = scheduler;

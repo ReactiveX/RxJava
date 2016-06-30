@@ -15,19 +15,21 @@
  */
 package rx.subjects;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 import rx.Observer;
-import rx.annotations.Experimental;
+import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.internal.operators.NotificationLite;
+import rx.internal.producers.SingleProducer;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**
- * Subject that publishes only the last item observed to each {@link Observer} that has subscribed, when the
- * source {@code Observable} completes.
+ * Subject that publishes only the last item observed to each {@link Observer} once the source {@code Observable}
+ * has completed.  The item is cached and published to any {@code Observer}s which subscribe after the source
+ * has completed.  If the source emitted no items, {@code AsyncSubject} completes without emitting anything.
+ * If the source terminated in an error, current and future subscribers will receive only the error.
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.AsyncSubject.png" alt="">
  * <p>
@@ -56,6 +58,9 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  *          the type of item expected to be observed by the Subject
  */
 public final class AsyncSubject<T> extends Subject<T, T> {
+    final SubjectSubscriptionManager<T> state;
+    volatile Object lastValue;
+    private final NotificationLite<T> nl = NotificationLite.instance();
 
     /**
      * Creates and returns a new {@code AsyncSubject}.
@@ -67,20 +72,20 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         state.onTerminated = new Action1<SubjectObserver<T>>() {
             @Override
             public void call(SubjectObserver<T> o) {
-                Object v = state.get();
+                Object v = state.getLatest();
                 NotificationLite<T> nl = state.nl;
-                o.accept(v, nl);
-                if (v == null || (!nl.isCompleted(v) && !nl.isError(v))) {
+                if (v == null || nl.isCompleted(v)) {
                     o.onCompleted();
+                } else
+                if (nl.isError(v)) {
+                    o.onError(nl.getError(v));
+                } else {
+                    o.actual.setProducer(new SingleProducer<T>(o.actual, nl.getValue(v)));
                 }
             }
         };
         return new AsyncSubject<T>(state, state);
     }
-
-    final SubjectSubscriptionManager<T> state;
-    volatile Object lastValue;
-    private final NotificationLite<T> nl = NotificationLite.instance();
 
     protected AsyncSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state) {
         super(onSubscribe);
@@ -98,8 +103,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
                 if (last == nl.completed()) {
                     bo.onCompleted();
                 } else {
-                    bo.onNext(nl.getValue(last));
-                    bo.onCompleted();
+                    bo.actual.setProducer(new SingleProducer<T>(bo.actual, nl.getValue(last)));
                 }
             }
         }
@@ -141,31 +145,28 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * retrieved by {@code getValue()} may get outdated.
      * @return true if and only if the subject has some value but not an error
      */
-    @Experimental
-    @Override
+    @Beta
     public boolean hasValue() {
         Object v = lastValue;
-        Object o = state.get();
+        Object o = state.getLatest();
         return !nl.isError(o) && nl.isNext(v);
     }
     /**
      * Check if the Subject has terminated with an exception.
      * @return true if the subject has received a throwable through {@code onError}.
      */
-    @Experimental
-    @Override
+    @Beta
     public boolean hasThrowable() {
-        Object o = state.get();
+        Object o = state.getLatest();
         return nl.isError(o);
     }
     /**
      * Check if the Subject has terminated normally.
      * @return true if the subject completed normally via {@code onCompleted()}
      */
-    @Experimental
-    @Override
+    @Beta
     public boolean hasCompleted() {
-        Object o = state.get();
+        Object o = state.getLatest();
         return o != null && !nl.isError(o);
     }
     /**
@@ -177,11 +178,10 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * @return the current value or {@code null} if the Subject doesn't have a value,
      * has terminated with an exception or has an actual {@code null} as a value.
      */
-    @Experimental
-    @Override
+    @Beta
     public T getValue() {
         Object v = lastValue;
-        Object o = state.get();
+        Object o = state.getLatest();
         if (!nl.isError(o) && nl.isNext(v)) {
             return nl.getValue(v);
         }
@@ -192,34 +192,12 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * @return the Throwable that terminated the Subject or {@code null} if the
      * subject hasn't terminated yet or it terminated normally.
      */
-    @Experimental
-    @Override
+    @Beta
     public Throwable getThrowable() {
-        Object o = state.get();
+        Object o = state.getLatest();
         if (nl.isError(o)) {
             return nl.getError(o);
         }
         return null;
-    }
-    @Override
-    @Experimental
-    @SuppressWarnings("unchecked")
-    public T[] getValues(T[] a) {
-        Object v = lastValue;
-        Object o = state.get();
-        if (!nl.isError(o) && nl.isNext(v)) {
-            T val = nl.getValue(v);
-            if (a.length == 0) {
-                a = (T[])Array.newInstance(a.getClass().getComponentType(), 1);
-            }
-            a[0] = val;
-            if (a.length > 1) {
-                a[1] = null;
-            }
-        } else
-        if (a.length > 0) {
-            a[0] = null;
-        }
-        return a;
     }
 }

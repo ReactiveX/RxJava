@@ -16,6 +16,7 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -37,17 +38,12 @@ public class OperatorSkipTest {
 
     @Test
     public void testSkipNegativeElements() {
-
-        Observable<String> skip = Observable.just("one", "two", "three").lift(new OperatorSkip<String>(-99));
-
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        skip.subscribe(observer);
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
+        try {
+            Observable.just("one", "two", "three").skip(-99);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            assertEquals("n >= 0 required but it was -99", e.getMessage());
+        }
     }
 
     @Test

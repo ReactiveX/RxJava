@@ -15,27 +15,29 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
+import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Producer;
-import rx.Subscriber;
 import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
 
 /**
  * Given multiple {@link Observable}s, propagates the one that first emits an item.
+ * @param <T> the value type
  */
 public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
+    //give default access instead of private as a micro-optimization 
+    //for access from anonymous classes below
+    final Iterable<? extends Observable<? extends T>> sources;
 
     /**
      * Given two {@link Observable}s, propagates the one that first emits an item.
      *
+     * @param <T> the common value base type
      * @param o1
      *          the first {@code Observable}
      * @param o2
@@ -53,6 +55,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     /**
      * Given three {@link Observable}s, propagates the one that first emits an item.
      *
+     * @param <T> the common value base type
      * @param o1
      *          the first {@code Observable}
      * @param o2
@@ -73,6 +76,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     /**
      * Given four {@link Observable}s, propagates the one that first emits an item.
      *
+     * @param <T> the common value base type
      * @param o1
      *          the first {@code Observable}
      * @param o2
@@ -96,6 +100,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     /**
      * Given five {@link Observable}s, propagates the one that first emits an item.
      *
+     * @param <T> the common value base type
      * @param o1
      *          the first {@code Observable}
      * @param o2
@@ -122,6 +127,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     /**
      * Given six {@link Observable}s, propagates the one that first emits an item.
      *
+     * @param <T> the common value base type
      * @param o1
      *          the first {@code Observable}
      * @param o2
@@ -151,6 +157,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     /**
      * Given seven {@link Observable}s, propagates the one that first emits an item.
      *
+     * @param <T> the common value base type
      * @param o1
      *          the first {@code Observable}
      * @param o2
@@ -183,6 +190,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     /**
      * Given eight {@link Observable}s, propagates the one that first emits an item.
      *
+     * @param <T> the common value base type
      * @param o1
      *          the first {@code Observable}
      * @param o2
@@ -218,6 +226,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     /**
      * Given nine {@link Observable}s, propagates the one that first emits an item.
      *
+     * @param <T> the common value base type
      * @param o1
      *          the first {@code Observable}
      * @param o2
@@ -256,6 +265,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     /**
      * Given a set of {@link Observable}s, propagates the one that first emits an item.
      *
+     * @param <T> the common value base type
      * @param sources
      *          an {@code Iterable} of {@code Observable}s
      * @return an {@code Observable} that mirrors the one of the {@code Observable}s in {@code sources} that was
@@ -265,20 +275,20 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         return new OnSubscribeAmb<T>(sources);
     }
 
-    private static final class AmbSubscriber<T> extends Subscriber<T> {
+    static final class AmbSubscriber<T> extends Subscriber<T> {
 
         private final Subscriber<? super T> subscriber;
         private final Selection<T> selection;
         private boolean chosen;
 
-        private AmbSubscriber(long requested, Subscriber<? super T> subscriber, Selection<T> selection) {
+        AmbSubscriber(long requested, Subscriber<? super T> subscriber, Selection<T> selection) {
             this.subscriber = subscriber;
             this.selection = selection;
             // initial request
             request(requested);
         }
 
-        private final void requestMore(long n) {
+        private void requestMore(long n) {
             request(n);
         }
 
@@ -328,7 +338,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         }
     }
 
-    private static class Selection<T> {
+    static final class Selection<T> {
         final AtomicReference<AmbSubscriber<T>> choice = new AtomicReference<AmbSubscriber<T>>();
         final Collection<AmbSubscriber<T>> ambSubscribers = new ConcurrentLinkedQueue<AmbSubscriber<T>>();
 
@@ -350,18 +360,14 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
     }
     
-    //give default access instead of private as a micro-optimization 
-    //for access from anonymous classes below
-    final Iterable<? extends Observable<? extends T>> sources;
-    final Selection<T> selection = new Selection<T>();
-    final AtomicReference<AmbSubscriber<T>> choice = selection.choice;
-    
     private OnSubscribeAmb(Iterable<? extends Observable<? extends T>> sources) {
         this.sources = sources;
     }
 
     @Override
     public void call(final Subscriber<? super T> subscriber) {
+        final Selection<T> selection = new Selection<T>();
+        final AtomicReference<AmbSubscriber<T>> choice = selection.choice;
         
         //setup unsubscription of all the subscribers to the sources
         subscriber.add(Subscriptions.create(new Action0() {
@@ -409,7 +415,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
             @Override
             public void request(long n) {
-                final AmbSubscriber<T> c;
+                AmbSubscriber<T> c;
                 if ((c = choice.get()) != null) {
                     // propagate the request to that single Subscriber that won
                     c.requestMore(n);
@@ -434,7 +440,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         });
     }
 
-    private static <T> void unsubscribeAmbSubscribers(Collection<AmbSubscriber<T>> ambSubscribers) {
+    static <T> void unsubscribeAmbSubscribers(Collection<AmbSubscriber<T>> ambSubscribers) {
         if(!ambSubscribers.isEmpty()) {
             for (AmbSubscriber<T> other : ambSubscribers) {
                 other.unsubscribe();

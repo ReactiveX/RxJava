@@ -15,17 +15,18 @@
  */
 package rx.internal.operators;
 
+import java.util.Arrays;
+
+import rx.*;
 import rx.Observable.Operator;
-import rx.Observer;
-import rx.Subscriber;
-import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
+import rx.exceptions.*;
 
 /**
  * Converts the elements of an observable sequence to the specified type.
+ * @param <T> the value type
  */
 public class OperatorDoOnEach<T> implements Operator<T, T> {
-    private final Observer<? super T> doOnEachObserver;
+    final Observer<? super T> doOnEachObserver;
 
     public OperatorDoOnEach(Observer<? super T> doOnEachObserver) {
         this.doOnEachObserver = doOnEachObserver;
@@ -35,7 +36,7 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> observer) {
         return new Subscriber<T>(observer) {
 
-            private boolean done = false;
+            private boolean done;
 
             @Override
             public void onCompleted() {
@@ -45,7 +46,7 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                 try {
                     doOnEachObserver.onCompleted();
                 } catch (Throwable e) {
-                    onError(e);
+                    Exceptions.throwOrReport(e, this);
                     return;
                 }
                 // Set `done` here so that the error in `doOnEachObserver.onCompleted()` can be noticed by observer
@@ -64,7 +65,8 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                 try {
                     doOnEachObserver.onError(e);
                 } catch (Throwable e2) {
-                    observer.onError(e2);
+                    Exceptions.throwIfFatal(e2);
+                    observer.onError(new CompositeException(Arrays.asList(e, e2)));
                     return;
                 }
                 observer.onError(e);
@@ -78,7 +80,7 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                 try {
                     doOnEachObserver.onNext(value);
                 } catch (Throwable e) {
-                    onError(OnErrorThrowable.addValueAsLastCause(e, value));
+                    Exceptions.throwOrReport(e, this, value);
                     return;
                 }
                 observer.onNext(value);

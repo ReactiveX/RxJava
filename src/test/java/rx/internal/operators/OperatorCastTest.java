@@ -15,15 +15,13 @@
  */
 package rx.internal.operators;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
-import org.junit.Test;
+import org.junit.*;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
+import rx.observers.TestSubscriber;
+import rx.subjects.PublishSubject;
 
 public class OperatorCastTest {
 
@@ -52,5 +50,23 @@ public class OperatorCastTest {
         observable.subscribe(observer);
         verify(observer, times(1)).onError(
                 org.mockito.Matchers.any(ClassCastException.class));
+    }
+    
+    @Test
+    public void castCrashUnsubscribes() {
+        
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        TestSubscriber<String> ts = TestSubscriber.create();
+        
+        ps.cast(String.class).unsafeSubscribe(ts);
+        
+        Assert.assertTrue("Not subscribed?", ps.hasObservers());
+        
+        ps.onNext(1);
+        
+        Assert.assertFalse("Subscribed?", ps.hasObservers());
+        
+        ts.assertError(ClassCastException.class);
     }
 }

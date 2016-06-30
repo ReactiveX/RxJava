@@ -15,7 +15,6 @@
  */
 package rx.exceptions;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import rx.Observable;
@@ -37,7 +36,7 @@ import static org.junit.Assert.fail;
  *    this.value = value;
  * }
  * ```
- * I know this is probably a helpful error message in some cases but this can be a really costly operation when an objects toString is an expensive call or contains alot of output. I don't think we should be printing this in any case but if so it should be on demand (overload of getMessage()) rather than eagerly.
+ * I know this is probably a helpful error message in some cases but this can be a really costly operation when an objects toString is an expensive call or contains a lot of output. I don't think we should be printing this in any case but if so it should be on demand (overload of getMessage()) rather than eagerly.
  * <p/>
  * In my case it is causing a toString of a large context object that is normally only used for debugging purposes which makes the exception logs hard to use and they are rolling over the log files very quickly.
  * <p/>
