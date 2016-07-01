@@ -27,7 +27,8 @@ import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableConcatMap<T, R> extends FlowableSource<T, R> {
-final Function<? super T, ? extends Publisher<? extends R>> mapper;
+
+    final Function<? super T, ? extends Publisher<? extends R>> mapper;
     
     final int prefetch;
     
@@ -59,18 +60,14 @@ final Function<? super T, ? extends Publisher<? extends R>> mapper;
     
     public static <T, R> Subscriber<T> subscribe(Subscriber<? super R> s, Function<? super T, ? extends Publisher<? extends R>> mapper, 
             int prefetch, ErrorMode errorMode) {
-        Subscriber<T> parent = null;
         switch (errorMode) {
         case BOUNDARY:
-            parent = new ConcatMapDelayed<T, R>(s, mapper, prefetch, false);
-            break;
+            return new ConcatMapDelayed<T, R>(s, mapper, prefetch, false);
         case END:
-            parent = new ConcatMapDelayed<T, R>(s, mapper, prefetch, true);
-            break;
+            return new ConcatMapDelayed<T, R>(s, mapper, prefetch, true);
         default:
-            parent = new ConcatMapImmediate<T, R>(s, mapper, prefetch);
+            return new ConcatMapImmediate<T, R>(s, mapper, prefetch);
         }
-        return parent;
     }
     
     @Override

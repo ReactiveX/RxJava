@@ -197,8 +197,7 @@ final Scheduler scheduler;
         public final void run() {
             if (outputFused) {
                 runBackfused();
-            } else
-            if (sourceMode == SYNC) {
+            } else if (sourceMode == SYNC) {
                 runSync();
             } else {
                 runAsync();

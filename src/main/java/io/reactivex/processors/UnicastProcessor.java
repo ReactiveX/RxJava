@@ -118,10 +118,8 @@ public final class UnicastProcessor<T> extends FlowProcessor<T> {
                 e++;
             }
             
-            if (r == e) {
-                if (checkTerminated(done, q.isEmpty(), a, q)) {
-                    return;
-                }
+            if (r == e && checkTerminated(done, q.isEmpty(), a, q)) {
+                return;
             }
             
             if (e != 0 && r != Long.MAX_VALUE) {

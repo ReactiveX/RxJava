@@ -143,16 +143,16 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
                         actual.onSubscribe(this);
 
                         return;
-                    } else
-                        if (m == ASYNC) {
-                            fusionMode = m;
-                            this.queue = qs;
+                    }
+                    if (m == ASYNC) {
+                        fusionMode = m;
+                        this.queue = qs;
 
-                            actual.onSubscribe(this);
+                        actual.onSubscribe(this);
 
-                            s.request(prefetch);
-                            return;
-                        }
+                        s.request(prefetch);
+                        return;
+                    }
                 }
 
                 queue = new SpscArrayQueue<T>(prefetch);
@@ -165,11 +165,9 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
 
         @Override
         public void onNext(T t) {
-            if (fusionMode != ASYNC) {
-                if (!queue.offer(t)) {
-                    onError(new IllegalStateException("Queue is full?!"));
-                    return;
-                }
+            if (fusionMode != ASYNC && !queue.offer(t)) {
+                onError(new IllegalStateException("Queue is full?!"));
+                return;
             }
             drain();
         }
