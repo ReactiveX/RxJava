@@ -12,12 +12,10 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.subscriptions.*;
 
 public final class FlowableTakeLastOne<T> extends Flowable<T> {
 
@@ -32,21 +30,15 @@ public final class FlowableTakeLastOne<T> extends Flowable<T> {
         source.subscribe(new TakeLastOneSubscriber<T>(s));
     }
     
-    static final class TakeLastOneSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
+    static final class TakeLastOneSubscriber<T> extends DeferredScalarSubscription<T> 
+    implements Subscriber<T> {
         /** */
         private static final long serialVersionUID = -5467847744262967226L;
-        final Subscriber<? super T> actual;
+
         Subscription s;
         
-        T value;
-        
-        static final int NO_REQUEST_NO_VALUE = 0;
-        static final int NO_REQUEST_HAS_VALUE = 1;
-        static final int HAS_REQUEST_NO_VALUE = 2;
-        static final int HAS_REQUEST_HAS_VALUE = 3;
-
         public TakeLastOneSubscriber(Subscriber<? super T> actual) {
-            this.actual = actual;
+            super(actual);
         }
         
         @Override
@@ -66,65 +58,22 @@ public final class FlowableTakeLastOne<T> extends Flowable<T> {
         @Override
         public void onError(Throwable t) {
             value = null;
-            getAndSet(HAS_REQUEST_HAS_VALUE);
             actual.onError(t);
         }
         
         @Override
         public void onComplete() {
-            for (;;) {
-                int s = get();
-                if (s == HAS_REQUEST_NO_VALUE) {
-                    lazySet(HAS_REQUEST_HAS_VALUE); // this is okay since onComplete is called at most once
-                    emit();
-                    return;
-                }
-                if (s == HAS_REQUEST_HAS_VALUE || s == NO_REQUEST_HAS_VALUE) {
-                    return;
-                }
-                if (compareAndSet(NO_REQUEST_NO_VALUE, NO_REQUEST_HAS_VALUE)) {
-                    return;
-                }
-            }
-        }
-        
-        @Override
-        public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
-                return;
-            }
-            for (;;) {
-                int s = get();
-                if (s == NO_REQUEST_HAS_VALUE) {
-                    if (compareAndSet(NO_REQUEST_HAS_VALUE, HAS_REQUEST_HAS_VALUE)) {
-                        emit();
-                        return;
-                    }
-                } else
-                if (s == NO_REQUEST_NO_VALUE) {
-                    if (compareAndSet(NO_REQUEST_NO_VALUE, HAS_REQUEST_NO_VALUE)) {
-                        return;
-                    }
-                } else
-                if (s == HAS_REQUEST_HAS_VALUE || s == HAS_REQUEST_NO_VALUE) {
-                    return;
-                }
-            }
-        }
-        
-        void emit() {
             T v = value;
             if (v != null) {
-                value = null;
-                actual.onNext(v);
+                complete(v);
+            } else {
+                actual.onComplete();
             }
-            actual.onComplete();
         }
         
         @Override
         public void cancel() {
-            getAndSet(HAS_REQUEST_HAS_VALUE);
-            value = null;
+            super.cancel();
             s.cancel();
         }
     }

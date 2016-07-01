@@ -32,7 +32,7 @@ public final class FlowableTakeWhile<T> extends Flowable<T> {
         source.subscribe(new TakeWhileSubscriber<T>(s, predicate));
     }
     
-    static final class TakeWhileSubscriber<T> implements Subscriber<T> {
+    static final class TakeWhileSubscriber<T> implements Subscriber<T>, Subscription {
         final Subscriber<? super T> actual;
         final Predicate<? super T> predicate;
         
@@ -49,7 +49,7 @@ public final class FlowableTakeWhile<T> extends Flowable<T> {
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
         
@@ -94,6 +94,16 @@ public final class FlowableTakeWhile<T> extends Flowable<T> {
             }
             done = true;
             actual.onComplete();
+        }
+        
+        @Override
+        public void request(long n) {
+            s.request(n);
+        }
+        
+        @Override
+        public void cancel() {
+            s.cancel();
         }
     }
 }

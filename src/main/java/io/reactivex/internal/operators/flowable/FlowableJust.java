@@ -13,17 +13,17 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.subscriptions.ScalarSubscription;
 
 /**
  * Represents a constant scalar value.
  * @param <T> the value type
  */
-public final class FlowableJust<T> extends Flowable<T> {
+public final class FlowableJust<T> extends Flowable<T> implements ScalarCallable<T> {
     private final T value;
     public FlowableJust(final T value) {
         this.value = value;
@@ -34,27 +34,8 @@ public final class FlowableJust<T> extends Flowable<T> {
         s.onSubscribe(new ScalarSubscription<T>(s, value));
     }
     
-    public T value() {
+    @Override
+    public T call() {
         return value;
-    }
-    
-    public <U> Publisher<U> scalarFlatMap(final Function<? super T, ? extends Publisher<? extends U>> mapper) {
-        return new Publisher<U>() {
-            @Override
-            public void subscribe(Subscriber<? super U> s) {
-                Publisher<? extends U> other;
-                try {
-                    other = mapper.apply(value);
-                } catch (Throwable e) {
-                    EmptySubscription.error(e, s);
-                    return;
-                }
-                if (other == null) {
-                    EmptySubscription.error(new NullPointerException("The publisher returned by the function is null"), s);
-                    return;
-                }
-                other.subscribe(s);
-            }
-        };
     }
 }

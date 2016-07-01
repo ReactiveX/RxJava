@@ -151,7 +151,7 @@ public class FlowableSingleTest {
                     }
                 });
         // FIXME single now triggers fast-path
-        assertEquals(Arrays.asList(Long.MAX_VALUE, Long.MAX_VALUE), requests);
+        assertEquals(Arrays.asList(Long.MAX_VALUE), requests);
     }
     
     @Test

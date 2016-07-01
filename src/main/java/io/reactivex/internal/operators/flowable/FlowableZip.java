@@ -287,27 +287,10 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         }
         @Override
         public void onSubscribe(Subscription s) {
-            
-            for (;;) {
-                Subscription current = this.s.get();
-                if (current == SubscriptionHelper.CANCELLED) {
-                    s.cancel();
-                    return;
-                }
-                if (current != null) {
-                    s.cancel();
-                    RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
-                    return;
-                }
-                if (this.s.compareAndSet(null, s)) {
-                    lazySet(bufferSize);
-                    s.request(bufferSize);
-                    return;
-                } else {
-                    s.cancel();
-                }
+            if (SubscriptionHelper.setOnce(this.s, s)) {
+                lazySet(bufferSize);
+                s.request(bufferSize);
             }
-            
         }
         
         @Override

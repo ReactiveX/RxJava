@@ -110,11 +110,11 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
                 TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
                 
                 if (timeout.compareAndSet(null, tis)) {
-                    a.onSubscribe(s);
+                    a.onSubscribe(this);
                     p.subscribe(tis);
                 }
             } else {
-                a.onSubscribe(s);
+                a.onSubscribe(this);
             }
         }
         

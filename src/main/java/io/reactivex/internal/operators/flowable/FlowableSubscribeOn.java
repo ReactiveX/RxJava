@@ -34,9 +34,7 @@ public final class FlowableSubscribeOn<T> extends Flowable<T> {
     @Override
     public void subscribeActual(final Subscriber<? super T> s) {
         /*
-         * TODO can't use the returned disposable because to dispose it,
-         * one must set a Subscription on s on the current thread, but
-         * it is expected that onSubscribe is run on the target scheduler.
+         * FIXME call onSubscribe first
          */
         if (requestOn) {
             Scheduler.Worker w = scheduler.createWorker();

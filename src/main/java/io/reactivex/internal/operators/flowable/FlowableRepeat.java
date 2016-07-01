@@ -37,6 +37,7 @@ public final class FlowableRepeat<T> extends Flowable<T> {
         rs.subscribeNext();
     }
     
+    // FIXME update to a fresh Rsc algorithm
     static final class RepeatSubscriber<T> extends AtomicInteger implements Subscriber<T> {
         /** */
         private static final long serialVersionUID = -7098360935104053232L;

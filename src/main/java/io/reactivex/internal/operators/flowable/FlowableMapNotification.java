@@ -46,6 +46,7 @@ public final class FlowableMapNotification<T, R> extends Flowable<Publisher<? ex
         source.subscribe(new MapNotificationSubscriber<T, R>(s, onNextMapper, onErrorMapper, onCompleteSupplier));
     }
     
+    // FIXME needs post-complete drain management
     static final class MapNotificationSubscriber<T, R>
     extends AtomicLong
     implements Subscriber<T>, Subscription {

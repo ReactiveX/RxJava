@@ -18,8 +18,7 @@ import java.util.NoSuchElementException;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.subscriptions.*;
 
 public final class FlowableSingle<T> extends Flowable<T> {
     
@@ -37,30 +36,29 @@ public final class FlowableSingle<T> extends Flowable<T> {
         source.subscribe(new SingleElementSubscriber<T>(s, defaultValue));
     }
     
-    static final class SingleElementSubscriber<T> implements Subscriber<T>, Subscription {
-        final Subscriber<? super T> actual;
+    static final class SingleElementSubscriber<T> extends DeferredScalarSubscription<T> 
+    implements Subscriber<T> {
+        /** */
+        private static final long serialVersionUID = -5526049321428043809L;
+
         final T defaultValue;
         
         Subscription s;
         
-        T value;
-        
         boolean done;
         
         public SingleElementSubscriber(Subscriber<? super T> actual, T defaultValue) {
-            this.actual = actual;
+            super(actual);
             this.defaultValue = defaultValue;
         }
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
-                return;
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
+                s.request(Long.MAX_VALUE);
             }
-            this.s = s;
-            actual.onSubscribe(this);
         }
         
         @Override
@@ -100,20 +98,13 @@ public final class FlowableSingle<T> extends Flowable<T> {
             if (v == null) {
                 actual.onError(new NoSuchElementException());
             } else {
-                actual.onNext(v);
-                actual.onComplete();
-            }
-        }
-        
-        @Override
-        public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
-                s.request(Long.MAX_VALUE);
+                complete(v);
             }
         }
         
         @Override
         public void cancel() {
+            super.cancel();
             s.cancel();
         }
     }

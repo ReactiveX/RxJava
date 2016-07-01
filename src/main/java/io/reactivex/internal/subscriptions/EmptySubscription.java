@@ -13,12 +13,16 @@
 
 package io.reactivex.internal.subscriptions;
 
-import org.reactivestreams.*;
+import java.util.*;
+
+import org.reactivestreams.Subscriber;
+
+import io.reactivex.internal.fuseable.QueueSubscription;
 
 /**
  * An empty subscription that does nothing other than validates the request amount.
  */
-public enum EmptySubscription implements Subscription {
+public enum EmptySubscription implements QueueSubscription<Object> {
     /** A singleton, stateless instance. */
     INSTANCE;
     
@@ -63,5 +67,81 @@ public enum EmptySubscription implements Subscription {
     public static void complete(Subscriber<?> s) {
         s.onSubscribe(INSTANCE);
         s.onComplete();
+    }
+    @Override
+    public boolean add(Object e) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public boolean offer(Object e) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public Object remove() {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public Object poll() {
+        return null; // always empty
+    }
+    @Override
+    public Object element() {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public Object peek() {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public int size() {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public boolean isEmpty() {
+        return true;
+    }
+    @Override
+    public boolean contains(Object o) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public Iterator<Object> iterator() {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public Object[] toArray() {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public <T> T[] toArray(T[] a) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public boolean addAll(Collection<? extends Object> c) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+    @Override
+    public void clear() {
+        // nothing to do
+    }
+    @Override
+    public int requestFusion(int mode) {
+        return mode & ASYNC; // accept async mode: an onComplete or onError will be signalled after anyway
     }
 }

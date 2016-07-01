@@ -39,6 +39,9 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
     
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
+        if (ScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
+            return;
+        }
         source.subscribe(new SwitchMapSubscriber<T, R>(s, mapper, bufferSize));
     }
     

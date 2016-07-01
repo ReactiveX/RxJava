@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableSkip<T> extends Flowable<T> {
     final Publisher<T> source;
@@ -30,9 +31,12 @@ public final class FlowableSkip<T> extends Flowable<T> {
         source.subscribe(new SkipSubscriber<T>(s, n));
     }
     
-    static final class SkipSubscriber<T> implements Subscriber<T> {
+    static final class SkipSubscriber<T> implements Subscriber<T>, Subscription {
         final Subscriber<? super T> actual;
         long remaining;
+        
+        Subscription s;
+        
         public SkipSubscriber(Subscriber<? super T> actual, long n) {
             this.actual = actual;
             this.remaining = n;
@@ -40,9 +44,12 @@ public final class FlowableSkip<T> extends Flowable<T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            long n = remaining;
-            actual.onSubscribe(s);
-            s.request(n);
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+                long n = remaining;
+                this.s = s;
+                actual.onSubscribe(this);
+                s.request(n);
+            }
         }
         
         @Override
@@ -64,5 +71,14 @@ public final class FlowableSkip<T> extends Flowable<T> {
             actual.onComplete();
         }
         
+        @Override
+        public void request(long n) {
+            s.request(n);
+        }
+        
+        @Override
+        public void cancel() {
+            s.cancel();
+        }
     }
 }

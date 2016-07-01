@@ -44,7 +44,7 @@ public final class FlowableDoOnEach<T> extends Flowable<T> {
         source.subscribe(new DoOnEachSubscriber<T>(s, onNext, onError, onComplete, onAfterTerminate));
     }
     
-    static final class DoOnEachSubscriber<T> implements Subscriber<T> {
+    static final class DoOnEachSubscriber<T> implements Subscriber<T>, Subscription {
         final Subscriber<? super T> actual;
         final Consumer<? super T> onNext;
         final Consumer<? super Throwable> onError;
@@ -72,7 +72,7 @@ public final class FlowableDoOnEach<T> extends Flowable<T> {
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
         
@@ -138,5 +138,17 @@ public final class FlowableDoOnEach<T> extends Flowable<T> {
                 RxJavaPlugins.onError(e);
             }
         }
+        
+        
+        @Override
+        public void request(long n) {
+            s.request(n);
+        }
+        
+        @Override
+        public void cancel() {
+            s.cancel();
+        }
+
     }
 }

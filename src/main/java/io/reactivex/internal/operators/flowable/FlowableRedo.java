@@ -23,6 +23,7 @@ import io.reactivex.internal.subscribers.flowable.ToNotificationSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 import io.reactivex.processors.BehaviorProcessor;
 
+// FIXME split and update to the Rsc version
 public final class FlowableRedo<T> extends Flowable<T> {
     final Publisher<? extends T> source;
     final Function<? super Flowable<Try<Optional<Object>>>, ? extends Publisher<?>> manager;

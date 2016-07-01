@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.schedulers.Timed;
 
 public final class FlowableTimeInterval<T> extends Flowable<Timed<T>> {
@@ -37,10 +38,12 @@ public final class FlowableTimeInterval<T> extends Flowable<Timed<T>> {
         source.subscribe(new TimeIntervalSubscriber<T>(s, unit, scheduler));
     }
     
-    static final class TimeIntervalSubscriber<T> implements Subscriber<T> {
+    static final class TimeIntervalSubscriber<T> implements Subscriber<T>, Subscription {
         final Subscriber<? super Timed<T>> actual;
         final TimeUnit unit;
         final Scheduler scheduler;
+        
+        Subscription s;
         
         long lastTime;
         
@@ -52,8 +55,11 @@ public final class FlowableTimeInterval<T> extends Flowable<Timed<T>> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            lastTime = scheduler.now(unit);
-            actual.onSubscribe(s);
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+                lastTime = scheduler.now(unit);
+                this.s = s;
+                actual.onSubscribe(this);
+            }
         }
         
         @Override
@@ -73,6 +79,16 @@ public final class FlowableTimeInterval<T> extends Flowable<Timed<T>> {
         @Override
         public void onComplete() {
             actual.onComplete();
+        }
+        
+        @Override
+        public void request(long n) {
+            s.request(n);
+        }
+        
+        @Override
+        public void cancel() {
+            s.cancel();
         }
     }
 }

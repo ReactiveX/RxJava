@@ -20,7 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.*;
-import io.reactivex.internal.subscriptions.SubscriptionArbiter;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.Pow2;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.SerializedSubscriber;
@@ -37,6 +37,9 @@ public final class FlowableConcatMap<T, U> extends Flowable<U> {
     
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
+        if (ScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
+            return;
+        }
         SerializedSubscriber<U> ssub = new SerializedSubscriber<U>(s);
         SubscriptionArbiter sa = new SubscriptionArbiter();
         ssub.onSubscribe(sa);
@@ -76,13 +79,10 @@ public final class FlowableConcatMap<T, U> extends Flowable<U> {
         }
         @Override
         public void onSubscribe(Subscription s) {
-            if (this.s != null) {
-                s.cancel();
-                RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
-                return;
+            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+                this.s = s;
+                s.request(bufferSize);
             }
-            this.s = s;
-            s.request(bufferSize);
         }
         @Override
         public void onNext(T t) {

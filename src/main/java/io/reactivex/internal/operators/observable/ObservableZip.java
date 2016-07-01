@@ -13,16 +13,14 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableZip<T, R> extends Observable<R> {
     
@@ -254,25 +252,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
         }
         @Override
         public void onSubscribe(Disposable s) {
-            
-            for (;;) {
-                Disposable current = this.s.get();
-                if (current == DisposableHelper.DISPOSED) {
-                    s.dispose();
-                    return;
-                }
-                if (current != null) {
-                    s.dispose();
-                    RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
-                    return;
-                }
-                if (this.s.compareAndSet(null, s)) {
-                    return;
-                } else {
-                    s.dispose();
-                }
-            }
-            
+            DisposableHelper.setOnce(this.s, s);
         }
         
         @Override

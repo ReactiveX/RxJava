@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
@@ -188,7 +188,10 @@ public class SingleTest {
             }
         }
         ).subscribe(ts);
-        ts.awaitTerminalEvent();
+        if (!ts.awaitTerminalEvent(5, TimeUnit.SECONDS)) {
+            ts.cancel();
+            Assert.fail("TestSubscriber timed out.");
+        }
         ts.assertValueSequence(Arrays.asList("Hello World!"));
     }
 

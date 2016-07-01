@@ -68,7 +68,7 @@ public final class FlowableZipIterable<T, U, V> extends Flowable<V> {
         source.subscribe(new ZipIterableSubscriber<T, U, V>(t, it, zipper));
     }
     
-    static final class ZipIterableSubscriber<T, U, V> implements Subscriber<T> {
+    static final class ZipIterableSubscriber<T, U, V> implements Subscriber<T>, Subscription {
         final Subscriber<? super V> actual;
         final Iterator<U> iterator;
         final BiFunction<? super T, ? super U, ? extends V> zipper;
@@ -88,7 +88,7 @@ public final class FlowableZipIterable<T, U, V> extends Flowable<V> {
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validateSubscription(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
         
@@ -168,5 +168,15 @@ public final class FlowableZipIterable<T, U, V> extends Flowable<V> {
             actual.onComplete();
         }
         
+        @Override
+        public void request(long n) {
+            s.request(n);
+        }
+        
+        @Override
+        public void cancel() {
+            s.cancel();
+        }
+
     }
 }
