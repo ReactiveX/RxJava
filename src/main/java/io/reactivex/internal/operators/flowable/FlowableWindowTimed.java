@@ -106,12 +106,12 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (!SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (!SubscriptionHelper.validate(this.s, s)) {
                 return;
             }
             this.s = s;
             
-            window = UnicastProcessor.<T>create(bufferSize);
+            window = new UnicastProcessor<T>(bufferSize);
             
             Subscriber<? super Flowable<T>> a = actual;
             a.onSubscribe(this);
@@ -256,7 +256,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
                     if (o == NEXT) {
                         w.onComplete();
                         if (!term) {
-                            w = UnicastProcessor.create(bufferSize);
+                            w = new UnicastProcessor<T>(bufferSize);
                             window = w;
                             
                             long r = requested();
@@ -337,7 +337,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (!SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (!SubscriptionHelper.validate(this.s, s)) {
                 return;
             }
             
@@ -351,7 +351,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
                 return;
             }
             
-            UnicastProcessor<T> w = UnicastProcessor.create(bufferSize);
+            UnicastProcessor<T> w = new UnicastProcessor<T>(bufferSize);
             window = w;
             
             long r = requested();
@@ -405,7 +405,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
                     long r = requested();
                     
                     if (r != 0L) {
-                        w = UnicastProcessor.create(bufferSize);
+                        w = new UnicastProcessor<T>(bufferSize);
                         window = w;
                         actual.onNext(w);
                         if (r != Long.MAX_VALUE) {
@@ -537,7 +537,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
                     if (isHolder) {
                         ConsumerIndexHolder consumerIndexHolder = (ConsumerIndexHolder) o;
                         if (producerIndex == consumerIndexHolder.index) {
-                            w = UnicastProcessor.create(bufferSize);
+                            w = new UnicastProcessor<T>(bufferSize);
                             window = w;
                             
                             long r = requested();
@@ -570,7 +570,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
                         long r = requested();
                         
                         if (r != 0L) {
-                            w = UnicastProcessor.create(bufferSize);
+                            w = new UnicastProcessor<T>(bufferSize);
                             window = w;
                             actual.onNext(w);
                             if (r != Long.MAX_VALUE) {
@@ -664,7 +664,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (!SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (!SubscriptionHelper.validate(this.s, s)) {
                 return;
             }
             
@@ -678,7 +678,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
             
             long r = requested();
             if (r != 0L) {
-                final UnicastProcessor<T> w = UnicastProcessor.create(bufferSize);
+                final UnicastProcessor<T> w = new UnicastProcessor<T>(bufferSize);
                 windows.add(w);
                 
                 actual.onNext(w);
@@ -834,7 +834,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
                             
                             long r = requested();
                             if (r != 0L) {
-                                final UnicastProcessor<T> w = UnicastProcessor.create(bufferSize);
+                                final UnicastProcessor<T> w = new UnicastProcessor<T>(bufferSize);
                                 ws.add(w);
                                 a.onNext(w);
                                 if (r != Long.MAX_VALUE) {
@@ -876,7 +876,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         @Override
         public void run() {
 
-            UnicastProcessor<T> w = UnicastProcessor.create(bufferSize);
+            UnicastProcessor<T> w = new UnicastProcessor<T>(bufferSize);
             
             SubjectWork<T> sw = new SubjectWork<T>(w, true);
             if (!cancelled) {

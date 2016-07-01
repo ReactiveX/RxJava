@@ -59,7 +59,7 @@ public class DeferredScalarSubscription<T> extends BasicQueueSubscription<T> {
     
     @Override
     public void request(long n) {
-        if (SubscriptionHelper.validateRequest(n)) {
+        if (SubscriptionHelper.validate(n)) {
             for (;;) {
                 long state = get();
                 if (state == HAS_REQUEST_NO_VALUE || state == HAS_REQUEST_HAS_VALUE || state == CANCELLED) {
@@ -100,6 +100,7 @@ public class DeferredScalarSubscription<T> extends BasicQueueSubscription<T> {
             if (state == HAS_REQUEST_NO_VALUE) {
                 // no need to CAS in the terminal state because complete() is called at most once
                 if (fusionState == EMPTY) {
+                    value = v;
                     fusionState = HAS_VALUE;
                 }
                 actual.onNext(v);

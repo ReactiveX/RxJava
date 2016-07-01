@@ -30,11 +30,10 @@ import io.reactivex.Flowable.Transformer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
-import io.reactivex.subscribers.DefaultObserver;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableTests {
 
@@ -446,7 +445,7 @@ public class FlowableTests {
         ConnectableFlowable<String> connectable = Flowable.<String>create(new Publisher<String>() {
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 count.incrementAndGet();
                 new Thread(new Runnable() {
                     @Override
@@ -484,7 +483,7 @@ public class FlowableTests {
         ConnectableFlowable<String> o = Flowable.<String>create(new Publisher<String>() {
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
-                    observer.onSubscribe(EmptySubscription.INSTANCE);
+                    observer.onSubscribe(new BooleanSubscription());
                     new Thread(new Runnable() {
 
                         @Override
@@ -537,7 +536,7 @@ public class FlowableTests {
         Flowable<String> o = Flowable.<String>create(new Publisher<String>() {
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
-                    observer.onSubscribe(EmptySubscription.INSTANCE);
+                    observer.onSubscribe(new BooleanSubscription());
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -582,7 +581,7 @@ public class FlowableTests {
         Flowable<String> o = Flowable.<String>create(new Publisher<String>() {
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -661,7 +660,7 @@ public class FlowableTests {
         Flowable.create(new Publisher<Object>() {
             @Override
             public void subscribe(final Subscriber<? super Object> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

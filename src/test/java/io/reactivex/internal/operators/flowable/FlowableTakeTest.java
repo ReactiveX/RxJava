@@ -112,7 +112,7 @@ public class FlowableTakeTest {
         Flowable<String> source = Flowable.create(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 observer.onNext("one");
                 observer.onError(new Throwable("test failed"));
             }
@@ -240,7 +240,7 @@ public class FlowableTakeTest {
 
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

@@ -62,7 +62,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
 
     @Override
     public void request(long n) {
-        if (SubscriptionHelper.validateRequest(n)) {
+        if (SubscriptionHelper.validate(n)) {
             BackpressureHelper.add(missedRequested, n);
             queue.offer(REQUEST, REQUEST);
             drain();

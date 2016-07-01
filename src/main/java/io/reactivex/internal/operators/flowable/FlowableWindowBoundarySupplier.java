@@ -75,7 +75,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (!SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (!SubscriptionHelper.validate(this.s, s)) {
                 return;
             }
             this.s = s;
@@ -103,7 +103,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
                 return;
             }
             
-            UnicastProcessor<T> w = UnicastProcessor.create(bufferSize);
+            UnicastProcessor<T> w = new UnicastProcessor<T>(bufferSize);
             
             long r = requested();
             if (r != 0L) {
@@ -251,7 +251,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
                             return;
                         }
                         
-                        w = UnicastProcessor.create(bufferSize);
+                        w = new UnicastProcessor<T>(bufferSize);
                         
                         long r = requested();
                         if (r != 0L) {

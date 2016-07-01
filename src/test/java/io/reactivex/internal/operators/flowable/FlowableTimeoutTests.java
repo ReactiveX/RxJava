@@ -24,7 +24,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.TestSubscriber;
@@ -242,7 +242,7 @@ public class FlowableTimeoutTests {
 
                     @Override
                     public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(EmptySubscription.INSTANCE);
+                        subscriber.onSubscribe(new BooleanSubscription());
                         try {
                             timeoutSetuped.countDown();
                             exit.await();

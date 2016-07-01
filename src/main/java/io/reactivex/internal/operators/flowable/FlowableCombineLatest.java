@@ -128,7 +128,7 @@ public final class FlowableCombineLatest<T, R> extends Flowable<R> {
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validate(n)) {
                 BackpressureHelper.add(requested, n);
                 drain();
             }

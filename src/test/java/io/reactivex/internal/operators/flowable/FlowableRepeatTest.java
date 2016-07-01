@@ -27,7 +27,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -70,7 +70,7 @@ public class FlowableRepeatTest {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {
-                sub.onSubscribe(EmptySubscription.INSTANCE);
+                sub.onSubscribe(new BooleanSubscription());
                 counter.incrementAndGet();
                 sub.onNext(1);
                 sub.onNext(2);

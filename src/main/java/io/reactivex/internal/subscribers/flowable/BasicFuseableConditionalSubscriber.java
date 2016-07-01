@@ -57,7 +57,7 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
     @SuppressWarnings("unchecked")
     @Override
     public final void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validateSubscription(this.s, s)) {
+        if (SubscriptionHelper.validate(this.s, s)) {
             
             this.s = s;
             if (s instanceof QueueSubscription) {

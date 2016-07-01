@@ -41,7 +41,7 @@ public final class FlowableSkipUntil<T, U> extends Flowable<T> {
             Subscription s;
             @Override
             public void onSubscribe(Subscription s) {
-                if (SubscriptionHelper.validateSubscription(this.s, s)) {
+                if (SubscriptionHelper.validate(this.s, s)) {
                     this.s = s;
                     if (frc.setResource(1, s)) {
                         s.request(Long.MAX_VALUE);
@@ -94,7 +94,7 @@ public final class FlowableSkipUntil<T, U> extends Flowable<T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
                 if (frc.setResource(0, s)) {
                     if (compareAndSet(false, true)) {

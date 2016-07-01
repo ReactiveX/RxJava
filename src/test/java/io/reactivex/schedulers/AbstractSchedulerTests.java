@@ -368,7 +368,7 @@ public abstract class AbstractSchedulerTests {
 
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < count; i++) {
                     final int v = i;
                     new Thread(new Runnable() {
@@ -430,7 +430,7 @@ public abstract class AbstractSchedulerTests {
 
                             @Override
                             public void subscribe(Subscriber<? super String> observer) {
-                                observer.onSubscribe(EmptySubscription.INSTANCE);
+                                observer.onSubscribe(new BooleanSubscription());
                                 observer.onNext("value_after_map-" + v);
                                 observer.onComplete();
                             }

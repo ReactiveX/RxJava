@@ -65,7 +65,7 @@ public final class FlowableInterval extends Flowable<Long> {
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validate(n)) {
                 BackpressureHelper.add(this, n);
             }
         }

@@ -610,7 +610,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
         @Override
         public void request(long n) {
             // ignore negative requests
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validate(n)) {
                 return;
             }
             // In general, RxJava doesn't prevent concurrent requests (with each other or with

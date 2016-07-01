@@ -23,7 +23,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.DefaultObserver;
@@ -48,7 +48,7 @@ public class FlowableWindowWithStartEndObservableTest {
         Flowable<String> source = Flowable.create(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 push(observer, "one", 10);
                 push(observer, "two", 60);
                 push(observer, "three", 110);
@@ -61,7 +61,7 @@ public class FlowableWindowWithStartEndObservableTest {
         Flowable<Object> openings = Flowable.create(new Publisher<Object>() {
             @Override
             public void subscribe(Subscriber<? super Object> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 push(observer, new Object(), 50);
                 push(observer, new Object(), 200);
                 complete(observer, 250);
@@ -74,7 +74,7 @@ public class FlowableWindowWithStartEndObservableTest {
                 return Flowable.create(new Publisher<Object>() {
                     @Override
                     public void subscribe(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         push(observer, new Object(), 100);
                         complete(observer, 101);
                     }
@@ -99,7 +99,7 @@ public class FlowableWindowWithStartEndObservableTest {
         Flowable<String> source = Flowable.create(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 push(observer, "one", 10);
                 push(observer, "two", 60);
                 push(observer, "three", 110);
@@ -116,7 +116,7 @@ public class FlowableWindowWithStartEndObservableTest {
                 return Flowable.create(new Publisher<Object>() {
                     @Override
                     public void subscribe(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         int c = calls++;
                         if (c == 0) {
                             push(observer, new Object(), 100);

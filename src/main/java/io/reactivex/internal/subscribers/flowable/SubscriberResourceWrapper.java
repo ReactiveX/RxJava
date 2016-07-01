@@ -74,7 +74,7 @@ public final class SubscriberResourceWrapper<T> extends AtomicReference<Disposab
     
     @Override
     public void request(long n) {
-        if (SubscriptionHelper.validateRequest(n)) {
+        if (SubscriptionHelper.validate(n)) {
             subscription.get().request(n);
         }
     }

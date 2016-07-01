@@ -95,7 +95,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
         
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validate(n)) {
                 return;
             }
             
@@ -172,7 +172,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
             Subscription s = get();
             if (s != null) {
                 s.request(n);
-            } else if (SubscriptionHelper.validateRequest(n)) {
+            } else if (SubscriptionHelper.validate(n)) {
                 BackpressureHelper.add(missedRequested, n);
                 s = get();
                 if (s != null && s != SubscriptionHelper.CANCELLED) {

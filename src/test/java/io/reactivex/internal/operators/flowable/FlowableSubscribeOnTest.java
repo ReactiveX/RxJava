@@ -44,7 +44,7 @@ public class FlowableSubscribeOnTest {
             @Override
             public void subscribe(
                     final Subscriber<? super Integer> subscriber) {
-                subscriber.onSubscribe(EmptySubscription.INSTANCE);
+                subscriber.onSubscribe(new BooleanSubscription());
                 scheduled.countDown();
                 try {
                     try {
@@ -96,7 +96,7 @@ public class FlowableSubscribeOnTest {
 
             @Override
             public void subscribe(Subscriber<? super String> s) {
-                s.onSubscribe(EmptySubscription.INSTANCE);
+                s.onSubscribe(new BooleanSubscription());
                 s.onError(new RuntimeException("fail"));
             }
 

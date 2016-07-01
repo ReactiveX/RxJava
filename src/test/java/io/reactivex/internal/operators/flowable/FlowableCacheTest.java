@@ -26,7 +26,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -87,7 +87,7 @@ public class FlowableCacheTest {
 
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 new Thread(new Runnable() {
 
                     @Override
@@ -220,7 +220,7 @@ public class FlowableCacheTest {
         Flowable<Integer> firehose = Flowable.create(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> t) {
-                t.onSubscribe(EmptySubscription.INSTANCE);
+                t.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < m; i++) {
                     t.onNext(i);
                 }

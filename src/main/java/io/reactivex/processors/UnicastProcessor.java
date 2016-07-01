@@ -18,9 +18,12 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Subject that allows only a single Subscriber to subscribe to it during its lifetime.
@@ -38,156 +41,280 @@ import io.reactivex.internal.util.BackpressureHelper;
  */
 public final class UnicastProcessor<T> extends FlowProcessor<T> {
 
-    /** The subject state. */
-    final State<T> state;
+    final Queue<T> queue;
+    
+    final AtomicReference<Runnable> onTerminate;
+    
+    volatile boolean done;
+    Throwable error;
+    
+    final AtomicReference<Subscriber<? super T>> actual;
+    
+    volatile boolean cancelled;
+    
+    final AtomicBoolean once;
 
-    /**
-     * Creates an UnicastSubject with an internal buffer capacity hint 16.
-     * @param <T> the value type
-     * @return an UnicastSubject instance
-     */
-    public static <T> UnicastProcessor<T> create() {
-        return create(16);
+    final BasicIntQueueSubscription<T> wip;
+
+    final AtomicLong requested;
+    
+    boolean enableOperatorFusion;
+
+    public UnicastProcessor() {
+        this(bufferSize());
+    }
+
+    public UnicastProcessor(int capacityHint) {
+        this.queue = new SpscLinkedArrayQueue<T>(capacityHint);
+        this.onTerminate = new AtomicReference<Runnable>();
+        this.actual = new AtomicReference<Subscriber<? super T>>();
+        this.once = new AtomicBoolean();
+        this.wip = new UnicastQueueSubscription();
+        this.requested = new AtomicLong();
+    }
+
+    public UnicastProcessor(int capacityHint, Runnable onTerminate) {
+        this.queue = new SpscLinkedArrayQueue<T>(capacityHint);
+        this.onTerminate = new AtomicReference<Runnable>(Objects.requireNonNull(onTerminate, "onTerminate"));
+        this.actual = new AtomicReference<Subscriber<? super T>>();
+        this.once = new AtomicBoolean();
+        this.wip = new UnicastQueueSubscription();
+        this.requested = new AtomicLong();
     }
     
-    /**
-     * Creates an UnicastSubject with the given internal buffer capacity hint.
-     * @param <T> the value type
-     * @param capacityHint the hint to size the internal unbounded buffer
-     * @return an UnicastSubject instance
-     */
-    public static <T> UnicastProcessor<T> create(int capacityHint) {
-        return create(capacityHint, null);
-    }
-
-    /**
-     * Creates an UnicastSubject with the given internal buffer capacity hint and a callback for
-     * the case when the single Subscriber cancels its subscription.
-     * 
-     * <p>The callback, if not null, is called exactly once and
-     * non-overlapped with any active replay.
-     * 
-     * @param <T> the value type
-     * @param capacityHint the hint to size the internal unbounded buffer
-     * @param onCancelled the optional callback
-     * @return an UnicastSubject instance
-     */
-    public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled) {
-        State<T> state = new State<T>(capacityHint, onCancelled);
-        return new UnicastProcessor<T>(state);
-    }
-
-    /**
-     * Constructs the Observable base class.
-     * @param state the subject state
-     */
-    protected UnicastProcessor(State<T> state) {
-        this.state = state;
-    }
-
-    @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
-        state.subscribe(s);
-    }
-    
-    // TODO may need to have a direct WIP field to avoid clashing on the object header
-    /** Pads the WIP counter. */
-    static abstract class StatePad0 extends AtomicInteger {
-        /** */
-        private static final long serialVersionUID = 7779228232971173701L;
-        /** Cache line padding 1. */
-        volatile long p1a, p2a, p3a, p4a, p5a, p6a, p7a;
-        /** Cache line padding 2. */
-        volatile long p8a, p9a, p10a, p11a, p12a, p13a, p14a, p15a;
-    }
-    
-    /** Contains the requested counter. */
-    static abstract class StateRequested extends StatePad0 {
-        /** */
-        private static final long serialVersionUID = -2744070795149472578L;
-        /** Holds the current requested amount. */
-        final AtomicLong requested = new AtomicLong();
-    }
-    
-    /** Pads away the requested counter. */
-    static abstract class StatePad1 extends StateRequested {
-        /** */
-        private static final long serialVersionUID = -446575186947206398L;
-        /** Cache line padding 3. */
-        volatile long p1b, p2b, p3b, p4b, p5b, p6b, p7b;
-        /** Cache line padding 4. */
-        volatile long p8b, p9b, p10b, p11b, p12b, p13b, p14b, p15b;
-    }
-    
-    /** The state of the UnicastSubject. */
-    static final class State<T> extends StatePad1 implements Publisher<T>, Subscription, Subscriber<T> {
-        /** */
-        private static final long serialVersionUID = 5058617037583835632L;
-
-        /** The queue that buffers the source events. */
-        final Queue<T> queue;
-        
-        /** The single subscriber. */
-        final AtomicReference<Subscriber<? super T>> subscriber = new AtomicReference<Subscriber<? super T>>();
-        
-        /** Indicates the single subscriber has cancelled. */
-        volatile boolean cancelled;
-        
-        /** Indicates the source has terminated. */
-        volatile boolean done;
-        /** 
-         * The terminal error if not null. 
-         * Must be set before writing to done and read after done == true.
-         */
-        Throwable error;
-
-        /** Set to 1 atomically for the first and only Subscriber. */
-        final AtomicBoolean once = new AtomicBoolean();
-        
-        /** 
-         * Called when the Subscriber has called cancel.
-         * This allows early termination for those who emit into this
-         * subject so that they can stop immediately 
-         */
-        Runnable onCancelled;
-        
-        /**
-         * Constructs the state with the given capacity and optional cancellation callback.
-         * @param capacityHint the capacity hint for the internal buffer
-         * @param onCancelled the optional cancellation callback
-         */
-        public State(int capacityHint, Runnable onCancelled) {
-            this.onCancelled = onCancelled;
-            queue = new SpscLinkedArrayQueue<T>(capacityHint);
+    void doTerminate() {
+        Runnable r = onTerminate.get();
+        if (r != null && onTerminate.compareAndSet(r, null)) {
+            r.run();
         }
+    }
+    
+    void drainRegular(Subscriber<? super T> a) {
+        int missed = 1;
         
-        @Override
-        public void subscribe(Subscriber<? super T> s) {
-            if (!once.get() && once.compareAndSet(false, true)) {
-                s.onSubscribe(this);
-                subscriber.lazySet(s); // full barrier in drain
-                if (cancelled) {
-                    subscriber.lazySet(null);
+        final Queue<T> q = queue;
+        
+        for (;;) {
+
+            long r = requested.get();
+            long e = 0L;
+            
+            while (r != e) {
+                boolean d = done;
+                
+                T t = q.poll();
+                boolean empty = t == null;
+                
+                if (checkTerminated(d, empty, a, q)) {
                     return;
                 }
-                drain();
-            } else {
-                if (done) {
-                    Throwable e = error;
-                    if (e != null) {
-                        EmptySubscription.error(e, s);
-                    } else {
-                        EmptySubscription.complete(s);
-                    }
-                } else {
-                    EmptySubscription.error(new IllegalStateException("Only a single subscriber allowed."), s);
+                
+                if (empty) {
+                    break;
+                }
+                
+                a.onNext(t);
+                
+                e++;
+            }
+            
+            if (r == e) {
+                if (checkTerminated(done, q.isEmpty(), a, q)) {
+                    return;
                 }
             }
+            
+            if (e != 0 && r != Long.MAX_VALUE) {
+                requested.addAndGet(-e);
+            }
+            
+            missed = wip.addAndGet(-missed);
+            if (missed == 0) {
+                break;
+            }
+        }
+    }
+    
+    void drainFused(Subscriber<? super T> a) {
+        int missed = 1;
+        
+        final Queue<T> q = queue;
+        
+        for (;;) {
+            
+            if (cancelled) {
+                q.clear();
+                actual.lazySet(null);
+                return;
+            }
+            
+            boolean d = done;
+            
+            a.onNext(null);
+            
+            if (d) {
+                actual.lazySet(null);
+                
+                Throwable ex = error;
+                if (ex != null) {
+                    a.onError(ex);
+                } else {
+                    a.onComplete();
+                }
+                return;
+            }
+            
+            missed = wip.addAndGet(-missed);
+            if (missed == 0) {
+                break;
+            }
+        }
+    }
+    
+    void drain() {
+        if (wip.getAndIncrement() != 0) {
+            return;
+        }
+
+        int missed = 1;
+        
+        for (;;) {
+            Subscriber<? super T> a = actual.get();
+            if (a != null) {
+    
+                if (enableOperatorFusion) {
+                    drainFused(a);
+                } else {
+                    drainRegular(a);
+                }
+                return;
+            }
+            
+            missed = wip.addAndGet(-missed);
+            if (missed == 0) {
+                break;
+            }
+        }
+    }
+    
+    boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a, Queue<T> q) {
+        if (cancelled) {
+            q.clear();
+            actual.lazySet(null);
+            return true;
+        }
+        if (d && empty) {
+            Throwable e = error;
+            actual.lazySet(null);
+            if (e != null) {
+                a.onError(e);
+            } else {
+                a.onComplete();
+            }
+            return true;
+        }
+        
+        return false;
+    }
+    
+    @Override
+    public void onSubscribe(Subscription s) {
+        if (done || cancelled) {
+            s.cancel();
+        } else {
+            s.request(Long.MAX_VALUE);
+        }
+    }
+    
+    @Override
+    public void onNext(T t) {
+        if (done || cancelled) {
+            return;
+        }
+        
+        if (!queue.offer(t)) {
+            onError(new IllegalStateException("The queue is full"));
+            return;
+        }
+        drain();
+    }
+    
+    @Override
+    public void onError(Throwable t) {
+        if (done || cancelled) {
+            RxJavaPlugins.onError(t);
+            return;
+        }
+        
+        error = t;
+        done = true;
+
+        doTerminate();
+        
+        drain();
+    }
+    
+    @Override
+    public void onComplete() {
+        if (done || cancelled) {
+            return;
+        }
+        
+        done = true;
+
+        doTerminate();
+        
+        drain();
+    }
+    
+    @Override
+    protected void subscribeActual(Subscriber<? super T> s) {
+        if (!once.get() && once.compareAndSet(false, true)) {
+            
+            s.onSubscribe(wip);
+            actual.set(s);
+            if (cancelled) {
+                actual.lazySet(null);
+            } else {
+                drain();
+            }
+        } else {
+            EmptySubscription.error(new IllegalStateException("This processor allows only a single Subscriber"), s);
+        }
+    }
+
+    final class UnicastQueueSubscription extends BasicIntQueueSubscription<T> {
+
+        /** */
+        private static final long serialVersionUID = -4896760517184205454L;
+
+        @Override
+        public T poll() {
+            return queue.poll();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return queue.isEmpty();
+        }
+
+        @Override
+        public void clear() {
+            queue.clear();
+        }
+
+        @Override
+        public int requestFusion(int requestedMode) {
+            if ((requestedMode & QueueSubscription.ASYNC) != 0) {
+                enableOperatorFusion = true;
+                return QueueSubscription.ASYNC;
+            }
+            return QueueSubscription.NONE;
         }
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validate(n)) {
                 BackpressureHelper.add(requested, n);
                 drain();
             }
@@ -195,223 +322,42 @@ public final class UnicastProcessor<T> extends FlowProcessor<T> {
         
         @Override
         public void cancel() {
-            if (!cancelled) {
-                cancelled = true;
-                
-                if (getAndIncrement() == 0) {
-                    clear(queue);
-                }
-            }
-        }
-        
-        void notifyOnCancelled() {
-            Runnable r = onCancelled;
-            onCancelled = null;
-            if (r != null) {
-                r.run();
-            }
-        }
-        
-        /**
-         * Clears the subscriber and the queue.
-         * @param q the queue reference (avoid re-reading instance field).
-         */
-        void clear(Queue<?> q) {
-            subscriber.lazySet(null);
-            q.clear();
-            notifyOnCancelled();
-        }
-        
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (done || cancelled) {
-                s.cancel();
+            if (cancelled) {
                 return;
             }
-            s.request(Long.MAX_VALUE);
-        }
-        
-        @Override
-        public void onNext(T t) {
-            if (done || cancelled) {
-                return;
-            }
-            if (t == null) {
-                onError(new NullPointerException());
-                return;
-            }
-            queue.offer(t);
-            drain();
-        }
-        
-        @Override
-        public void onError(Throwable t) {
-            if (done || cancelled) {
-                return;
-            }
-            if (t == null) {
-                t = new NullPointerException();
-            }
-            error = t;
-            done = true;
-            drain();
-        }
-        
-        @Override
-        public void onComplete() {
-            if (done || cancelled) {
-                return;
-            }
-            done = true;
-            drain();
-        }
-        
-        void drain() {
-            if (getAndIncrement() != 0) {
-                return;
-            }
-            
-            final Queue<T> q = queue;
-            Subscriber<? super T> a = subscriber.get();
-            int missed = 1;
-            
-            for (;;) {
-                
-                if (cancelled) {
-                    clear(q);
-                    notifyOnCancelled();
-                    return;
-                }
-                
-                if (a != null) {
-                    
-                    boolean d = done;
-                    boolean empty = q.isEmpty();
-                    if (d && empty) {
-                        subscriber.lazySet(null);
-                        Throwable ex = error;
-                        if (ex != null) {
-                            a.onError(ex);
-                        } else {
-                            a.onComplete();
-                        }
-                        return;
-                    }
-                    
-                    long r = requested.get();
-                    long e = 0L;
-                    
-                    while (e != r) {
-                        
-                        if (cancelled) {
-                            clear(q);
-                            notifyOnCancelled();
-                            return;
-                        }
+            cancelled = true;
 
-                        d = done;
-                        T v = queue.poll();
-                        empty = v == null;
-                        
-                        if (d && empty) {
-                            subscriber.lazySet(null);
-                            Throwable ex = error;
-                            if (ex != null) {
-                                a.onError(ex);
-                            } else {
-                                a.onComplete();
-                            }
-                            return;
-                        }
-                        
-                        if (empty) {
-                            break;
-                        }
-                        
-                        a.onNext(v);
-                        
-                        e++;
-                    }
-                    
-                    if (e != 0 && r != Long.MAX_VALUE) {
-                        requested.getAndAdd(-e);
-                    }
-                    
-                }
-                
-                missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-                
-                if (a == null) {
-                    a = subscriber.get();
+            doTerminate();
+
+            if (!enableOperatorFusion) {
+                if (wip.getAndIncrement() == 0) {
+                    queue.clear();
+                    actual.lazySet(null);
                 }
             }
         }
-    }
-    
-    @Override
-    public void onSubscribe(Subscription s) {
-        state.onSubscribe(s);
-    }
-    
-    @Override
-    public void onNext(T t) {
-        state.onNext(t);
-    }
-    
-    @Override
-    public void onError(Throwable t) {
-        state.onError(t);
-    }
-    
-    @Override
-    public void onComplete() {
-        state.onComplete();
     }
     
     @Override
     public boolean hasSubscribers() {
-        return state.subscriber != null;
+        return actual.get() != null;
     }
     
     @Override
     public Throwable getThrowable() {
-        State<T> s = state;
-        if (s.done) {
-            return s.error;
+        if (done) {
+            return error;
         }
         return null;
-    }
-    
-    @Override
-    public boolean hasThrowable() {
-        State<T> s = state;
-        return s.done && s.error != null;
     }
     
     @Override
     public boolean hasComplete() {
-        State<T> s = state;
-        return s.done && s.error == null;
+        return done;
     }
     
     @Override
-    public boolean hasValue() {
-        return false;
-    }
-    
-    @Override
-    public T getValue() {
-        return null;
-    }
-    
-    @Override
-    public T[] getValues(T[] array) {
-        if (array.length != 0) {
-            array[0] = null;
-        }
-        return array;
+    public boolean hasThrowable() {
+        return done && error != null;
     }
 }

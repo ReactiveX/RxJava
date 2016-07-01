@@ -82,7 +82,7 @@ public final class FlowableRange extends Flowable<Integer> {
 
         @Override
         public final void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validate(n)) {
                 if (BackpressureHelper.add(this, n) == 0L) {
                     if (n == Long.MAX_VALUE) {
                         fastPath();

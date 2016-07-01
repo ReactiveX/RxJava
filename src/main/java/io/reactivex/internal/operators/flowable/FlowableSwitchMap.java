@@ -80,7 +80,7 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
                 actual.onSubscribe(this);
             }
@@ -147,7 +147,7 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
         
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validate(n)) {
                 return;
             }
             BackpressureHelper.add(requested, n);

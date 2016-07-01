@@ -21,7 +21,7 @@ import io.reactivex.internal.functions.Objects;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Utility methods to validate Subscriptions and Disposables in the various onSubscribe calls.
+ * Utility methods to validate Subscriptions in the various onSubscribe calls.
  */
 public enum SubscriptionHelper {
     ;
@@ -38,7 +38,7 @@ public enum SubscriptionHelper {
      * @param next the next Subscription, expected to be non-null
      * @return true if the validation succeeded
      */
-    public static boolean validateSubscription(Subscription current, Subscription next) {
+    public static boolean validate(Subscription current, Subscription next) {
         if (next == null) {
             RxJavaPlugins.onError(new NullPointerException("next is null"));
             return false;
@@ -63,7 +63,7 @@ public enum SubscriptionHelper {
      * @param n the request amount
      * @return false if n is non-positive.
      */
-    public static boolean validateRequest(long n) {
+    public static boolean validate(long n) {
         if (n <= 0) {
             RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
             return false;
@@ -71,6 +71,9 @@ public enum SubscriptionHelper {
         return true;
     }
     
+    public static void reportMoreProduced(long n) {
+        RxJavaPlugins.onError(new IllegalStateException("More produced than requested: " + n));
+    }
     /**
      * Check if the given subscription is the common cancelled subscription.
      * @param d the subscription to check

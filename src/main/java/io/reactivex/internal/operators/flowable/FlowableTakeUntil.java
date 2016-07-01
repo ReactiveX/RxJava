@@ -91,7 +91,7 @@ public final class FlowableTakeUntil<T, U> extends Flowable<T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
                 if (frc.setResource(0, s)) {
                     if (compareAndSet(false, true)) {

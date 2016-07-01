@@ -13,212 +13,647 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.queue.*;
+import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.Pow2;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableConcatMap<T, U> extends Flowable<U> {
-    final Publisher<T> source;
-    final Function<? super T, ? extends Publisher<? extends U>> mapper;
-    final int bufferSize;
-    public FlowableConcatMap(Publisher<T> source, Function<? super T, ? extends Publisher<? extends U>> mapper, int bufferSize) {
-        this.source = source;
-        this.mapper = mapper;
-        this.bufferSize = bufferSize;
+public final class FlowableConcatMap<T, R> extends FlowableSource<T, R> {
+final Function<? super T, ? extends Publisher<? extends R>> mapper;
+    
+    final int prefetch;
+    
+    final ErrorMode errorMode;
+    
+    /**
+     * Indicates when an error from the main source should be reported.
+     */
+    public enum ErrorMode {
+        /** Report the error immediately, cancelling the active inner source. */
+        IMMEDIATE,
+        /** Report error after an inner source terminated. */
+        BOUNDARY,
+        /** Report the error after all sources terminated. */
+        END
+    }
+
+    public FlowableConcatMap(Publisher<T> source,
+            Function<? super T, ? extends Publisher<? extends R>> mapper, 
+            int prefetch, ErrorMode errorMode) {
+        super(source);
+        if (prefetch <= 0) {
+            throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
+        }
+        this.mapper = Objects.requireNonNull(mapper, "mapper");
+        this.prefetch = prefetch;
+        this.errorMode = Objects.requireNonNull(errorMode, "errorMode");
+    }
+    
+    public static <T, R> Subscriber<T> subscribe(Subscriber<? super R> s, Function<? super T, ? extends Publisher<? extends R>> mapper, 
+            int prefetch, ErrorMode errorMode) {
+        Subscriber<T> parent = null;
+        switch (errorMode) {
+        case BOUNDARY:
+            parent = new ConcatMapDelayed<T, R>(s, mapper, prefetch, false);
+            break;
+        case END:
+            parent = new ConcatMapDelayed<T, R>(s, mapper, prefetch, true);
+            break;
+        default:
+            parent = new ConcatMapImmediate<T, R>(s, mapper, prefetch);
+        }
+        return parent;
     }
     
     @Override
-    protected void subscribeActual(Subscriber<? super U> s) {
+    public void subscribeActual(Subscriber<? super R> s) {
+        
         if (ScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
             return;
         }
-        SerializedSubscriber<U> ssub = new SerializedSubscriber<U>(s);
-        SubscriptionArbiter sa = new SubscriptionArbiter();
-        ssub.onSubscribe(sa);
-        source.subscribe(new SourceSubscriber<T, U>(ssub, sa, mapper, bufferSize));
+        
+        source.subscribe(subscribe(s, mapper, prefetch, errorMode));
     }
-    
-    static final class SourceSubscriber<T, U> extends AtomicInteger implements Subscriber<T> {
+
+    static abstract class BaseConcatMapSubscriber<T, R> 
+    extends AtomicInteger
+    implements Subscriber<T>, ConcatMapSupport<R>, Subscription {
+        
         /** */
-        private static final long serialVersionUID = 8828587559905699186L;
-        final Subscriber<? super U> actual;
-        final SubscriptionArbiter sa;
-        final Function<? super T, ? extends Publisher<? extends U>> mapper;
-        final Subscriber<U> inner;
-        final Queue<T> queue;
-        final int bufferSize;
+        private static final long serialVersionUID = -3511336836796789179L;
+
+        final ConcatMapInner<R> inner;
+        
+        final Function<? super T, ? extends Publisher<? extends R>> mapper;
+        
+        final int prefetch;
+
+        final int limit;
         
         Subscription s;
+
+        int consumed;
+        
+        Queue<T> queue;
         
         volatile boolean done;
         
-        volatile long index;
+        volatile boolean cancelled;
         
-        public SourceSubscriber(Subscriber<? super U> actual, SubscriptionArbiter sa,
-                Function<? super T, ? extends Publisher<? extends U>> mapper, int bufferSize) {
-            this.actual = actual;
-            this.sa = sa;
+        final AtomicReference<Throwable> error;
+        
+        volatile boolean active;
+        
+        int sourceMode;
+        
+        public BaseConcatMapSubscriber(
+                Function<? super T, ? extends Publisher<? extends R>> mapper,
+                int prefetch) {
             this.mapper = mapper;
-            this.bufferSize = bufferSize;
-            this.inner = new InnerSubscriber<U>(actual, sa, this);
-            Queue<T> q;
-            if (Pow2.isPowerOfTwo(bufferSize)) {
-                q = new SpscArrayQueue<T>(bufferSize);
-            } else {
-                q = new SpscExactArrayQueue<T>(bufferSize);
-            }
-            this.queue = q;
+            this.prefetch = prefetch;
+            this.limit = prefetch - (prefetch >> 2);
+            this.inner = new ConcatMapInner<R>(this);
+            this.error = new AtomicReference<Throwable>();
         }
+        
         @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+        public final void onSubscribe(Subscription s) {
+            if (SubscriptionHelper.validate(this.s, s))  {
                 this.s = s;
-                s.request(bufferSize);
-            }
-        }
-        @Override
-        public void onNext(T t) {
-            if (done) {
-                return;
-            }
-            if (!queue.offer(t)) {
-                cancel();
-                actual.onError(new IllegalStateException("More values received than requested!"));
-                return;
-            }
-            if (getAndIncrement() == 0) {
-                drain();
-            }
-        }
-        @Override
-        public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            done = true;
-            cancel();
-            actual.onError(t);
-        }
-        @Override
-        public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-            if (getAndIncrement() == 0) {
-                drain();
+
+                if (s instanceof QueueSubscription) {
+                    @SuppressWarnings("unchecked") QueueSubscription<T> f = (QueueSubscription<T>)s;
+                    int m = f.requestFusion(QueueSubscription.ANY);
+                    if (m == QueueSubscription.SYNC){
+                        sourceMode = m;
+                        queue = f;
+                        done = true;
+                        
+                        subscribeActual();
+                        
+                        drain();
+                        return;
+                    }
+                    if (m == QueueSubscription.ASYNC) {
+                        sourceMode = m;
+                        queue = f;
+                        
+                        subscribeActual();
+                        
+                        s.request(prefetch);
+                        return;
+                    }
+                }
+                
+                queue = new SpscArrayQueue<T>(prefetch);
+                
+                subscribeActual();
+                
+                s.request(prefetch);
             }
         }
         
-        void innerComplete() {
-            if (decrementAndGet() != 0) {
-                drain();
-            }
-            if (!done) {
-                s.request(1);
-            }
-        }
+        abstract void drain();
         
-        void cancel() {
-            sa.cancel();
-            s.cancel();
-        }
+        abstract void subscribeActual();
         
-        void drain() {
-            boolean d = done;
-            T o = queue.poll();
-            
-            if (o == null) {
-                if (d) {
-                    actual.onComplete();
+        @Override
+        public final void onNext(T t) {
+            if (sourceMode != QueueSubscription.ASYNC) {
+                if (!queue.offer(t)) {
+                    s.cancel();
+                    onError(new IllegalStateException("Queue full?!"));
                     return;
                 }
-                RxJavaPlugins.onError(new IllegalStateException("Queue is empty?!"));
-                return;
             }
-            Publisher<? extends U> p;
-            try {
-                p = mapper.apply(o);
-            } catch (Throwable e) {
-                cancel();
-                actual.onError(e);
-                return;
+            drain();
+        }
+
+        @Override
+        public final void onComplete() {
+            done = true;
+            drain();
+        }
+
+        @Override
+        public final void innerComplete() {
+            active = false;
+            drain();
+        }
+
+    }
+    
+    
+    static final class ConcatMapImmediate<T, R> 
+    extends BaseConcatMapSubscriber<T, R> {
+
+        /** */
+        private static final long serialVersionUID = 7898995095634264146L;
+
+        final Subscriber<? super R> actual;
+        
+        final AtomicInteger wip;
+        
+        public ConcatMapImmediate(Subscriber<? super R> actual,
+                Function<? super T, ? extends Publisher<? extends R>> mapper,
+                int prefetch) {
+            super(mapper, prefetch);
+            this.actual = actual;
+            this.wip = new AtomicInteger();
+        }
+
+        @Override
+        void subscribeActual() {
+            actual.onSubscribe(this);
+        }
+        
+        @Override
+        public void onError(Throwable t) {
+            if (Exceptions.addThrowable(error, t)) {
+                inner.cancel();
+                
+                if (getAndIncrement() == 0) {
+                    t = Exceptions.terminate(error);
+                    if (t != Exceptions.TERMINATED) {
+                        actual.onError(t);
+                    }
+                }
+            } else {
+                RxJavaPlugins.onError(t);
             }
-            
-            if (p == null) {
-                cancel();
-                actual.onError(new NullPointerException("The publisher returned is null"));
-                return;
+        }
+        
+        @Override
+        public void innerNext(R value) {
+            if (get() == 0 && compareAndSet(0, 1)) {
+                actual.onNext(value);
+                if (compareAndSet(1, 0)) {
+                    return;
+                }
+                Throwable e = Exceptions.terminate(error);
+                if (e != Exceptions.TERMINATED) {
+                    actual.onError(e);
+                }
             }
-            
-            index++;
-            // this is not RS but since our Subscriber doesn't hold state by itself,
-            // subscribing it to each source is safe and saves allocation
-            p.subscribe(inner);
+        }
+        
+        @Override
+        public void innerError(Throwable e) {
+            if (Exceptions.addThrowable(error, e)) {
+                s.cancel();
+                
+                if (getAndIncrement() == 0) {
+                    e = Exceptions.terminate(error);
+                    if (e != Exceptions.TERMINATED) {
+                        actual.onError(e);
+                    }
+                }
+            } else {
+                RxJavaPlugins.onError(e);
+            }
+        }
+        
+        @Override
+        public void request(long n) {
+            inner.request(n);
+        }
+        
+        @Override
+        public void cancel() {
+            if (!cancelled) {
+                cancelled = true;
+                
+                inner.cancel();
+                s.cancel();
+            }
+        }
+        
+        @Override
+        void drain() {
+            if (wip.getAndIncrement() == 0) {
+                for (;;) {
+                    if (cancelled) {
+                        return;
+                    }
+                    
+                    if (!active) {
+                        boolean d = done;
+                        
+                        T v;
+                        
+                        try {
+                            v = queue.poll();
+                        } catch (Throwable e) {
+                            Exceptions.throwIfFatal(e);
+                            s.cancel();
+                            actual.onError(e);
+                            return;
+                        }
+                        
+                        boolean empty = v == null;
+                        
+                        if (d && empty) {
+                            actual.onComplete();
+                            return;
+                        }
+                        
+                        if (!empty) {
+                            Publisher<? extends R> p;
+                            
+                            try {
+                                p = mapper.apply(v);
+                            } catch (Throwable e) {
+                                Exceptions.throwIfFatal(e);
+                                
+                                s.cancel();
+                                actual.onError(e);
+                                return;
+                            }
+                            
+                            if (p == null) {
+                                s.cancel();
+                                actual.onError(new NullPointerException("The mapper returned a null Publisher"));
+                                return;
+                            }
+                            
+                            if (sourceMode != QueueSubscription.SYNC) {
+                                int c = consumed + 1;
+                                if (c == limit) {
+                                    consumed = 0;
+                                    s.request(c);
+                                } else {
+                                    consumed = c;
+                                }
+                            }
+
+
+                            if (p instanceof Callable) {
+                                @SuppressWarnings("unchecked")
+                                Callable<R> callable = (Callable<R>) p;
+                                
+                                R vr;
+                                
+                                try {
+                                    vr = callable.call();
+                                } catch (Throwable e) {
+                                    Exceptions.throwIfFatal(e);
+                                    s.cancel();
+                                    actual.onError(e);
+                                    return;
+                                }
+                                
+                                
+                                if (vr == null) {
+                                    continue;
+                                }
+                                
+                                if (inner.isUnbounded()) {
+                                    if (get() == 0 && compareAndSet(0, 1)) {
+                                        actual.onNext(vr);
+                                        if (!compareAndSet(1, 0)) {
+                                            Throwable e = Exceptions.terminate(error);
+                                            if (e != Exceptions.TERMINATED) {
+                                                actual.onError(e);
+                                            }
+                                            return;
+                                        }
+                                    }
+                                    continue;
+                                } else {
+                                    active = true;
+                                    inner.setSubscription(new WeakScalarSubscription<R>(vr, inner));
+                                }
+                                
+                            } else {
+                                active = true;
+                                p.subscribe(inner);
+                            }
+                        }
+                    }
+                    if (wip.decrementAndGet() == 0) {
+                        break;
+                    }
+                }
+            }
         }
     }
     
-    static final class InnerSubscriber<U> implements Subscriber<U> {
-        final Subscriber<? super U> actual;
-        final SubscriptionArbiter sa;
-        final SourceSubscriber<?, ?> parent;
+    static final class WeakScalarSubscription<T> implements Subscription {
+        final Subscriber<? super T> actual;
+        final T value;
+        boolean once;
 
-        /*
-         * FIXME this is a workaround for now, but doesn't work 
-         * for async non-conforming sources.
-         * Such sources require individual instances of InnerSubscriber and a
-         * done field.
-         */
-         
-        long index;
-        
-        public InnerSubscriber(Subscriber<? super U> actual, 
-                SubscriptionArbiter sa, SourceSubscriber<?, ?> parent) {
+        public WeakScalarSubscription(T value, Subscriber<? super T> actual) {
+            this.value = value;
             this.actual = actual;
-            this.sa = sa;
-            this.parent = parent;
-            this.index = 1;
         }
         
         @Override
-        public void onSubscribe(Subscription s) {
-            if (index == parent.index) {
-                sa.setSubscription(s);
+        public void request(long n) {
+            if (n > 0 && !once) {
+                once = true;
+                Subscriber<? super T> a = actual;
+                a.onNext(value);
+                a.onComplete();
             }
         }
         
         @Override
-        public void onNext(U t) {
-            if (index == parent.index) {
-                actual.onNext(t);
-                sa.produced(1L);
-            }
+        public void cancel() {
+            
         }
+    }
+
+    static final class ConcatMapDelayed<T, R> 
+    extends BaseConcatMapSubscriber<T, R> {
+
+        /** */
+        private static final long serialVersionUID = -2945777694260521066L;
+
+        final Subscriber<? super R> actual;
+        
+        final boolean veryEnd;
+        
+        public ConcatMapDelayed(Subscriber<? super R> actual,
+                Function<? super T, ? extends Publisher<? extends R>> mapper,
+                int prefetch, boolean veryEnd) {
+            super(mapper, prefetch);
+            this.actual = actual;
+            this.veryEnd = veryEnd;
+        }
+
+        @Override
+        void subscribeActual() {
+            actual.onSubscribe(this);
+        }
+        
         @Override
         public void onError(Throwable t) {
-            if (index == parent.index) {
-                index++;
-                parent.cancel();
-                actual.onError(t);
+            if (Exceptions.addThrowable(error, t)) {
+                done = true;
+                drain();
             } else {
                 RxJavaPlugins.onError(t);
             }
         }
+        
+        @Override
+        public void innerNext(R value) {
+            actual.onNext(value);
+        }
+        
+        
+        @Override
+        public void innerError(Throwable e) {
+            if (Exceptions.addThrowable(error, e)) {
+                if (!veryEnd) {
+                    s.cancel();
+                    done = true;
+                }
+                active = false;
+                drain();
+            } else {
+                RxJavaPlugins.onError(e);
+            }
+        }
+        
+        @Override
+        public void request(long n) {
+            inner.request(n);
+        }
+        
+        @Override
+        public void cancel() {
+            if (!cancelled) {
+                cancelled = true;
+                
+                inner.cancel();
+                s.cancel();
+            }
+        }
+        
+        @Override
+        void drain() {
+            if (getAndIncrement() == 0) {
+                
+                for (;;) {
+                    if (cancelled) {
+                        return;
+                    }
+                    
+                    if (!active) {
+                        
+                        boolean d = done;
+                        
+                        if (d && !veryEnd) {
+                            Throwable ex = error.get();
+                            if (ex != null) {
+                                ex = Exceptions.terminate(error);
+                                if (ex != Exceptions.TERMINATED) {
+                                    actual.onError(ex);
+                                }
+                                return;
+                            }
+                        }
+                        
+                        T v;
+                        
+                        try {
+                            v = queue.poll();
+                        } catch (Throwable e) {
+                            Exceptions.throwIfFatal(e);
+                            s.cancel();
+                            actual.onError(e);
+                            return;
+                        }
+                        
+                        boolean empty = v == null;
+                        
+                        if (d && empty) {
+                            Throwable ex = Exceptions.terminate(error);
+                            if (ex != null && ex != Exceptions.TERMINATED) {
+                                actual.onError(ex);
+                            } else {
+                                actual.onComplete();
+                            }
+                            return;
+                        }
+                        
+                        if (!empty) {
+                            Publisher<? extends R> p;
+                            
+                            try {
+                                p = mapper.apply(v);
+                            } catch (Throwable e) {
+                                Exceptions.throwIfFatal(e);
+                                
+                                s.cancel();
+                                actual.onError(e);
+                                return;
+                            }
+                            
+                            if (p == null) {
+                                s.cancel();
+                                actual.onError(new NullPointerException("The mapper returned a null Publisher"));
+                                return;
+                            }
+                            
+                            if (sourceMode != QueueSubscription.SYNC) {
+                                int c = consumed + 1;
+                                if (c == limit) {
+                                    consumed = 0;
+                                    s.request(c);
+                                } else {
+                                    consumed = c;
+                                }
+                            }
+                            
+                            if (p instanceof Callable) {
+                                @SuppressWarnings("unchecked")
+                                Callable<R> supplier = (Callable<R>) p;
+                                
+                                R vr;
+                                
+                                try {
+                                    vr = supplier.call();
+                                } catch (Throwable e) {
+                                    Exceptions.throwIfFatal(e);
+                                    s.cancel();
+                                    actual.onError(e);
+                                    return;
+                                }
+                                
+                                if (vr == null) {
+                                    continue;
+                                }
+                                
+                                if (inner.isUnbounded()) {
+                                    actual.onNext(vr);
+                                    continue;
+                                } else {
+                                    active = true;
+                                    inner.setSubscription(new WeakScalarSubscription<R>(vr, inner));
+                                }
+                            } else {
+                                active = true;
+                                p.subscribe(inner);
+                            }
+                        }
+                    }
+                    if (decrementAndGet() == 0) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    interface ConcatMapSupport<T> {
+        
+        void innerNext(T value);
+        
+        void innerComplete();
+        
+        void innerError(Throwable e);
+    }
+    
+    static final class ConcatMapInner<R>
+    extends SubscriptionArbiter
+    implements Subscriber<R> {
+        
+        /** */
+        private static final long serialVersionUID = 897683679971470653L;
+
+        final ConcatMapSupport<R> parent;
+        
+        long produced;
+        
+        public ConcatMapInner(ConcatMapSupport<R> parent) {
+            this.parent = parent;
+        }
+        
+        @Override
+        public void onSubscribe(Subscription s) {
+            setSubscription(s);
+        }
+        
+        @Override
+        public void onNext(R t) {
+            produced++;
+            
+            parent.innerNext(t);
+        }
+        
+        @Override
+        public void onError(Throwable t) {
+            long p = produced;
+            
+            if (p != 0L) {
+                produced = 0L;
+                produced(p);
+            }
+
+            parent.innerError(t);
+        }
+        
         @Override
         public void onComplete() {
-            if (index == parent.index) {
-                index++;
-                parent.innerComplete();
+            long p = produced;
+            
+            if (p != 0L) {
+                produced = 0L;
+                produced(p);
             }
+
+            parent.innerComplete();
         }
     }
 }

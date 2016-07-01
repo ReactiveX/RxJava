@@ -241,7 +241,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     @Override
     public final void request(long n) {
-        if (!SubscriptionHelper.validateRequest(n)) {
+        if (!SubscriptionHelper.validate(n)) {
             return;
         }
         Subscription s = subscription.get();
@@ -391,10 +391,20 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * will capture those potential errors and report it along with the original failure.
      * 
      * @param message the message to use
-     * @param errors the sequence of errors to add as suppressed exception
      */
-    private void fail(String prefix, String message, Iterable<? extends Throwable> errors) {
-        AssertionError ae = new AssertionError(prefix + message);
+    private void fail(String message) {
+        StringBuilder b = new StringBuilder(64 + message.length());
+        b.append(message);
+        
+        b.append(" (")
+        .append("latch = ").append(done.getCount()).append(", ")
+        .append("values = ").append(values.size()).append(", ")
+        .append("errors = ").append(errors.size()).append(", ")
+        .append("completions = ").append(completions)
+        .append(')')
+        ;
+        
+        AssertionError ae = new AssertionError(b.toString());
         CompositeException ce = new CompositeException();
         for (Throwable e : errors) {
             if (e == null) {
@@ -414,20 +424,12 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertComplete() {
-        String prefix = "";
-        /*
-         * This creates a happens-before relation with the possible completion of the TestSubscriber.
-         * Don't move it after the instance reads or into fail()!
-         */
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         long c = completions;
         if (c == 0) {
-            fail(prefix, "Not completed", errors);
+            fail("Not completed");
         } else
         if (c > 1) {
-            fail(prefix, "Multiple completions: " + c, errors);
+            fail("Multiple completions: " + c);
         }
         return this;
     }
@@ -437,16 +439,12 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertNotComplete() {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         long c = completions;
         if (c == 1) {
-            fail(prefix, "Completed!", errors);
+            fail("Completed!");
         } else 
         if (c > 1) {
-            fail(prefix, "Multiple completions: " + c, errors);
+            fail("Multiple completions: " + c);
         }
         return this;
     }
@@ -456,13 +454,9 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertNoErrors() {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         int s = errors.size();
         if (s != 0) {
-            fail(prefix, "Error(s) present: " + errors, errors);
+            fail("Error(s) present: " + errors);
         }
         return this;
     }
@@ -478,20 +472,16 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @see #assertError(Class)
      */
     public final TestSubscriber<T> assertError(Throwable error) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         int s = errors.size();
         if (s == 0) {
-            fail(prefix, "No errors", Collections.<Throwable>emptyList());
+            fail("No errors");
         }
         if (errors.contains(error)) {
             if (s != 1) {
-                fail(prefix, "Error present but other errors as well", errors);
+                fail("Error present but other errors as well");
             }
         } else {
-            fail(prefix, "Error not present", errors);
+            fail("Error not present");
         }
         return this;
     }
@@ -503,13 +493,9 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertError(Class<? extends Throwable> errorClass) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         int s = errors.size();
         if (s == 0) {
-            fail(prefix, "No errors", Collections.<Throwable>emptyList());
+            fail("No errors");
         }
         
         boolean found = false;
@@ -523,10 +509,10 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         
         if (found) {
             if (s != 1) {
-                fail(prefix, "Error present but other errors as well", errors);
+                fail("Error present but other errors as well");
             }
         } else {
-            fail(prefix, "Error not present", errors);
+            fail("Error not present");
         }
         return this;
     }
@@ -538,17 +524,13 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertValue(T value) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         int s = values.size();
         if (s != 1) {
-            fail(prefix, "Expected: " + valueAndClass(value) + ", Actual: " + values, errors);
+            fail("Expected: " + valueAndClass(value) + ", Actual: " + values);
         }
         T v = values.get(0);
         if (!Objects.equals(value, v)) {
-            fail(prefix, "Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v), errors);
+            fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
         }
         return this;
     }
@@ -567,13 +549,9 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertValueCount(int count) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         int s = values.size();
         if (s != count) {
-            fail(prefix, "Value counts differ; Expected: " + count + ", Actual: " + s, errors);
+            fail("Value counts differ; Expected: " + count + ", Actual: " + s);
         }
         return this;
     }
@@ -593,20 +571,16 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @see #assertValueSet(Collection)
      */
     public final TestSubscriber<T> assertValues(T... values) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         int s = this.values.size();
         if (s != values.length) {
-            fail(prefix, "Value count differs; Expected: " + values.length + " " + Arrays.toString(values)
-            + ", Actual: " + s + " " + this.values, errors);
+            fail("Value count differs; Expected: " + values.length + " " + Arrays.toString(values)
+            + ", Actual: " + s + " " + this.values);
         }
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             T u = values[i];
             if (!Objects.equals(u, v)) {
-                fail(prefix, "Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v), errors);
+                fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
         }
         return this;
@@ -621,20 +595,16 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertValueSet(Collection<? extends T> values) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         int s = this.values.size();
         if (s != values.size()) {
-            fail(prefix, "Value count differs; Expected: " + values.size() + " " + values
-            + ", Actual: " + s + " " + this.values, errors);
+            fail("Value count differs; Expected: " + values.size() + " " + values
+            + ", Actual: " + s + " " + this.values);
         }
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             
             if (!values.contains(v)) {
-                fail(prefix, "Value not in the expected collection: " + valueAndClass(v), errors);
+                fail("Value not in the expected collection: " + valueAndClass(v));
             }
         }
         return this;
@@ -646,10 +616,6 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertValueSequence(Iterable<? extends T> sequence) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         int i = 0;
         Iterator<T> vit = values.iterator();
         Iterator<? extends T> it = sequence.iterator();
@@ -660,16 +626,16 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
             T u = vit.next();
             
             if (!Objects.equals(u, v)) {
-                fail(prefix, "Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v), errors);
+                fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
             i++;
         }
         
         if (itNext && !vitNext) {
-            fail(prefix, "More values received than expected (" + i + ")", errors);
+            fail("More values received than expected (" + i + ")");
         }
         if (!itNext && !vitNext) {
-            fail(prefix, "Fever values received than expected (" + i + ")", errors);
+            fail("Fever values received than expected (" + i + ")");
         }
         return this;
     }
@@ -680,19 +646,19 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      */
     public final TestSubscriber<T> assertTerminated() {
         if (done.getCount() != 0) {
-            fail("", "Subscriber still running!", errors);
+            fail("Subscriber still running!");
         }
         long c = completions;
         if (c > 1) {
-            fail("", "Terminated with multiple completions: " + c, errors);
+            fail("Terminated with multiple completions: " + c);
         }
         int s = errors.size();
         if (s > 1) {
-            fail("", "Terminated with multiple errors: " + s, errors);
+            fail("Terminated with multiple errors: " + s);
         }
         
         if (c != 0 && s != 0) {
-            fail("", "Terminated with multiple completions and errors: " + c, errors);
+            fail("Terminated with multiple completions and errors: " + c);
         }
         return this;
     }
@@ -703,7 +669,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      */
     public final TestSubscriber<T> assertNotTerminated() {
         if (done.getCount() == 0) {
-            fail("", "Subscriber terminated!", errors);
+            fail("Subscriber terminated!");
         }
         return this;
     }
@@ -713,12 +679,8 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertSubscribed() {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         if (subscription.get() == null) {
-            fail(prefix, "Not subscribed!", errors);
+            fail("Not subscribed!");
         }
         return this;
     }
@@ -728,15 +690,11 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertNotSubscribed() {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         if (subscription.get() != null) {
-            fail(prefix, "Subscribed!", errors);
+            fail("Subscribed!");
         } else
         if (!errors.isEmpty()) {
-            fail(prefix, "Not subscribed but errors found", errors);
+            fail("Not subscribed but errors found");
         }
         return this;
     }
@@ -778,25 +736,21 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertErrorMessage(String message) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
         int s = errors.size();
         if (s == 0) {
-            fail(prefix, "No errors", Collections.<Throwable>emptyList());
+            fail("No errors");
         } else
         if (s == 1) {
             Throwable e = errors.get(0);
             if (e == null) {
-                fail(prefix, "Error is null", Collections.<Throwable>emptyList());
+                fail("Error is null");
             }
             String errorMessage = e.getMessage();
             if (!Objects.equals(message, errorMessage)) {
-                fail(prefix, "Error message differs; Expected: " + message + ", Actual: " + errorMessage, Collections.singletonList(e));
+                fail("Error message differs; Expected: " + message + ", Actual: " + errorMessage);
             }
         } else {
-            fail(prefix, "Multiple errors", errors);
+            fail("Multiple errors");
         }
         return this;
     }

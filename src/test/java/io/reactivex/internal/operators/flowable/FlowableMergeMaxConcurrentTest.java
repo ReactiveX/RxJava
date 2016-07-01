@@ -24,7 +24,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.internal.schedulers.IoScheduler;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -97,7 +97,7 @@ public class FlowableMergeMaxConcurrentTest {
 
         @Override
         public void subscribe(final Subscriber<? super String> t1) {
-            t1.onSubscribe(EmptySubscription.INSTANCE);
+            t1.onSubscribe(new BooleanSubscription());
             new Thread(new Runnable() {
 
                 @Override

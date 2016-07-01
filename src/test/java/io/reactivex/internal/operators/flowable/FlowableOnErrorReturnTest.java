@@ -25,7 +25,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
@@ -188,7 +188,7 @@ public class FlowableOnErrorReturnTest {
 
         @Override
         public void subscribe(final Subscriber<? super String> subscriber) {
-            subscriber.onSubscribe(EmptySubscription.INSTANCE);
+            subscriber.onSubscribe(new BooleanSubscription());
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

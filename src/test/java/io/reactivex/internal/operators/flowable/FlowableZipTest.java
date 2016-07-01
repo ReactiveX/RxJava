@@ -623,7 +623,7 @@ public class FlowableZipTest {
         public void subscribe(Subscriber<? super String> observer) {
             // just store the variable where it can be accessed so we can manually trigger it
             this.observer = observer;
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
         }
 
     }

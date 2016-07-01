@@ -24,7 +24,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 
@@ -46,7 +46,7 @@ public class FlowableThrottleFirstTest {
         Flowable<String> source = Flowable.create(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 publishNext(observer, 100, "one");    // publish as it's first
                 publishNext(observer, 300, "two");    // skip as it's last within the first 400
                 publishNext(observer, 900, "three");   // publish
@@ -74,7 +74,7 @@ public class FlowableThrottleFirstTest {
         Flowable<String> source = Flowable.create(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 Exception error = new TestException();
                 publishNext(observer, 100, "one");    // Should be published since it is first
                 publishNext(observer, 200, "two");    // Should be skipped since onError will arrive before the timeout expires

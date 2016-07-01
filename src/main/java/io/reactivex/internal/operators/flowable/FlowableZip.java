@@ -13,39 +13,39 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.queue.*;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.queue.SpscArrayQueue;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableZip<T, R> extends Flowable<R> {
-    
+
     final Publisher<? extends T>[] sources;
     final Iterable<? extends Publisher<? extends T>> sourcesIterable;
     final Function<? super Object[], ? extends R> zipper;
     final int bufferSize;
     final boolean delayError;
-    
+
     public FlowableZip(Publisher<? extends T>[] sources,
             Iterable<? extends Publisher<? extends T>> sourcesIterable,
-            Function<? super Object[], ? extends R> zipper,
-            int bufferSize,
-            boolean delayError) {
+                    Function<? super Object[], ? extends R> zipper,
+                    int bufferSize,
+                    boolean delayError) {
         this.sources = sources;
         this.sourcesIterable = sourcesIterable;
         this.zipper = zipper;
         this.bufferSize = bufferSize;
         this.delayError = delayError;
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public void subscribeActual(Subscriber<? super R> s) {
@@ -64,285 +64,376 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         } else {
             count = sources.length;
         }
-        
+
         if (count == 0) {
             EmptySubscription.complete(s);
             return;
         }
-        
-        ZipCoordinator<T, R> zc = new ZipCoordinator<T, R>(s, zipper, count, delayError);
-        zc.subscribe(sources, bufferSize);
+
+        ZipCoordinator<T, R> coordinator = new ZipCoordinator<T, R>(s, zipper, count, bufferSize);
+
+        s.onSubscribe(coordinator);
+
+        coordinator.subscribe(sources, count);
     }
-    
-    static final class ZipCoordinator<T, R> extends AtomicInteger implements Subscription {
+
+    static final class ZipCoordinator<T, R> 
+    extends AtomicInteger
+    implements Subscription {
+
         /** */
-        private static final long serialVersionUID = 2983708048395377667L;
+        private static final long serialVersionUID = -2434867452883857743L;
+
         final Subscriber<? super R> actual;
-        final Function<? super Object[], ? extends R> zipper;
+
         final ZipSubscriber<T, R>[] subscribers;
-        final Object[] row;
-        final boolean delayError;
-        
-        final AtomicLong requested = new AtomicLong();
+
+        final Function<? super Object[], ? extends R> zipper;
+
+        final AtomicLong requested;
+
+        final AtomicReference<Throwable> error;
+
+        volatile boolean done;
 
         volatile boolean cancelled;
-        
-        @SuppressWarnings("unchecked")
+
+        final Object[] current;
+
         public ZipCoordinator(Subscriber<? super R> actual, 
-                Function<? super Object[], ? extends R> zipper, 
-                int count, boolean delayError) {
+                Function<? super Object[], ? extends R> zipper, int n, int prefetch) {
             this.actual = actual;
             this.zipper = zipper;
-            this.subscribers = new ZipSubscriber[count];
-            this.row = new Object[count];
-            this.delayError = delayError;
-        }
-        
-        public void subscribe(Publisher<? extends T>[] sources, int bufferSize) {
-            ZipSubscriber<T, R>[] s = subscribers;
-            int len = s.length;
-            for (int i = 0; i < len; i++) {
-                s[i] = new ZipSubscriber<T, R>(this, bufferSize);
+            @SuppressWarnings("unchecked")
+            ZipSubscriber<T, R>[] a = new ZipSubscriber[n];
+            for (int i = 0; i < n; i++) {
+                a[i] = new ZipSubscriber<T, R>(this, prefetch, i); 
             }
-            // this makes sure the contents of the subscribers array is visible
-            requested.lazySet(0);
-            actual.onSubscribe(this);
-            for (int i = 0; i < len; i++) {
-                if (cancelled) {
+            this.current = new Object[n];
+            this.subscribers = a;
+            this.requested = new AtomicLong();
+            this.error = new AtomicReference<Throwable>();
+        }
+
+        void subscribe(Publisher<? extends T>[] sources, int n) {
+            ZipSubscriber<T, R>[] a = subscribers;
+            for (int i = 0; i < n; i++) {
+                if (done || cancelled || error.get() != null) {
                     return;
                 }
-                sources[i].subscribe(s[i]);
+                sources[i].subscribe(a[i]);
             }
         }
-        
+
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validate(n)) {
                 BackpressureHelper.add(requested, n);
                 drain();
             }
         }
-        
+
         @Override
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
-                if (getAndIncrement() == 0) {
-                    clear();
-                }
+
+                cancelAll();
             }
         }
-        
-        void clear() {
-            for (ZipSubscriber<?, ?> zs : subscribers) {
-                zs.cancel();
-                zs.queue.clear();
+
+        void error(Throwable e, int index) {
+            if (Exceptions.addThrowable(error, e)) {
+                drain();
+            } else {
+                RxJavaPlugins.onError(e);
             }
         }
-        
-        public void drain() {
+
+        void cancelAll() {
+            for (ZipSubscriber<T, R> s : subscribers) {
+                s.cancel();
+            }
+        }
+
+        void drain() {
+
             if (getAndIncrement() != 0) {
                 return;
             }
-            
-            int missing = 1;
-            
-            final ZipSubscriber<T, R>[] zs = subscribers;
+
             final Subscriber<? super R> a = actual;
-            final Object[] os = row;
-            final boolean delayError = this.delayError;
-            
+            final ZipSubscriber<T, R>[] qs = subscribers;
+            final int n = qs.length;
+            Object[] values = current;
+
+            int missed = 1;
+
             for (;;) {
 
                 long r = requested.get();
-                long e = 0;
-                
-                while (e != r) {
-                    int i = 0;
-                    int emptyCount = 0;
-                    for (ZipSubscriber<T, R> z : zs) {
-                        boolean d = z.done;
-                        T v = z.queue.peek();
-                        boolean empty = v == null;
-                        
-                        if (checkTerminated(d, empty, a, delayError, z)) {
-                            return;
-                        }
-                        
-                        if (empty) {
-                            emptyCount++;
-                            continue;
-                        }
-                        
-                        os[i] = v;
-                        i++;
+                long e = 0L;
+
+                while (r != e) {
+
+                    if (cancelled) {
+                        return;
                     }
-                    
-                    if (emptyCount != 0) {
+
+                    if (error.get() != null) {
+                        cancelAll();
+
+                        Throwable ex = Exceptions.terminate(error);
+
+                        a.onError(ex);
+
+                        return;
+                    }
+
+                    boolean empty = false;
+
+                    for (int j = 0; j < n; j++) {
+                        ZipSubscriber<T, R> inner = qs[j];
+                        if (values[j] == null) {
+                            try {
+                                boolean d = inner.done;
+                                Queue<T> q = inner.queue;
+
+                                T v = q != null ? q.poll() : null;
+
+                                boolean sourceEmpty = v == null;
+                                if (d && sourceEmpty) {
+                                    cancelAll();
+
+                                    a.onComplete();
+                                    return;
+                                }
+                                if (!sourceEmpty) {
+                                    values[j] = v;
+                                } else {
+                                    empty = true;
+                                }
+                            } catch (Throwable ex) {
+                                Exceptions.throwIfFatal(ex);
+
+                                cancelAll();
+
+                                Exceptions.addThrowable(error, ex);
+                                ex = Exceptions.terminate(error);
+
+                                a.onError(ex);
+
+                                return;
+                            }
+                        }
+                    }
+
+                    if (empty) {
                         break;
-                    }
-                    // consume the row
-                    for (ZipSubscriber<T, R> z : zs) {
-                        z.queue.poll();
                     }
 
                     R v;
+
                     try {
-                        v = zipper.apply(os.clone());
+                        v = zipper.apply(values.clone());
                     } catch (Throwable ex) {
-                        clear();
+                        Exceptions.throwIfFatal(ex);
+
+                        cancelAll();
+
+                        Exceptions.addThrowable(error, ex);
+                        ex = Exceptions.terminate(error);
+
                         a.onError(ex);
+
                         return;
                     }
-                    
+
                     if (v == null) {
-                        clear();
-                        a.onError(new NullPointerException("The zipper returned null"));
+                        cancelAll();
+
+                        Throwable ex = new NullPointerException("The zipper returned a null value");
+
+                        Exceptions.addThrowable(error, ex);
+                        ex = Exceptions.terminate(error);
+
+                        a.onError(ex);
+
                         return;
                     }
-                    
+
                     a.onNext(v);
-                    
+
                     e++;
+
+                    Arrays.fill(values, null);
                 }
-                
-                if (e != 0) {
+
+                if (r == e) {
+                    if (cancelled) {
+                        return;
+                    }
+
+                    if (error.get() != null) {
+                        cancelAll();
+
+                        Throwable ex = Exceptions.terminate(error);
+
+                        a.onError(ex);
+
+                        return;
+                    }
+
+                    for (int j = 0; j < n; j++) {
+                        ZipSubscriber<T, R> inner = qs[j];
+                        if (values[j] == null) {
+                            try {
+                                boolean d = inner.done;
+                                Queue<T> q = inner.queue;
+                                T v = q != null ? q.poll() : null;
+
+                                boolean empty = v == null;
+                                if (d && empty) {
+                                    cancelAll();
+
+                                    a.onComplete();
+                                    return;
+                                }
+                                if (!empty) {
+                                    values[j] = v;
+                                }
+                            } catch (Throwable ex) {
+                                Exceptions.throwIfFatal(ex);
+
+                                cancelAll();
+
+                                Exceptions.addThrowable(error, ex);
+                                ex = Exceptions.terminate(error);
+
+                                a.onError(ex);
+
+                                return;
+                            }
+                        }
+                    }
+
+                }
+
+                if (e != 0L) {
+
+                    for (int j = 0; j < n; j++) {
+                        ZipSubscriber<T, R> inner = qs[j];
+                        inner.request(e);
+                    }
+
                     if (r != Long.MAX_VALUE) {
                         requested.addAndGet(-e);
                     }
-                    for (ZipSubscriber<T, R> z : zs) {
-                        z.request(e);
+                }
+
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
+                }
+            }
+        }
+    }
+
+
+    static final class ZipSubscriber<T, R> extends AtomicReference<Subscription> implements Subscriber<T>, Subscription {
+        /** */
+        private static final long serialVersionUID = -4627193790118206028L;
+
+        final ZipCoordinator<T, R> parent;
+
+        final int prefetch;
+
+        final int limit;
+
+        final int index;
+
+        Queue<T> queue;
+
+        long produced;
+
+        volatile boolean done;
+
+        int sourceMode;
+
+        public ZipSubscriber(ZipCoordinator<T, R> parent, int prefetch, int index) {
+            this.parent = parent;
+            this.prefetch = prefetch;
+            this.index = index;
+            this.limit = prefetch - (prefetch >> 2);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void onSubscribe(Subscription s) {
+            if (SubscriptionHelper.setOnce(this, s)) {
+                if (s instanceof QueueSubscription) {
+                    QueueSubscription<T> f = (QueueSubscription<T>) s;
+
+                    int m = f.requestFusion(QueueSubscription.ANY);
+
+                    if (m == QueueSubscription.SYNC) {
+                        sourceMode = m;
+                        queue = f;
+                        done = true;
+                        parent.drain();
+                        return;
+                    }
+                    if (m == QueueSubscription.ASYNC) {
+                        sourceMode = m;
+                        queue = f;
+                        s.request(prefetch);
+                        return;
                     }
                 }
                 
-                missing = addAndGet(-missing);
-                if (missing == 0) {
-                    return;
-                }
-            }
-        }
-        
-        boolean checkTerminated(boolean d, boolean empty, Subscriber<? super R> a, boolean delayError, ZipSubscriber<?, ?> source) {
-            if (cancelled) {
-                clear();
-                return true;
-            }
-            
-            if (d) {
-                if (delayError) {
-                    if (empty) {
-                        Throwable e = source.error;
-                        clear();
-                        if (e != null) {
-                            a.onError(e);
-                        } else {
-                            a.onComplete();
-                        }
-                        return true;
-                    }
-                } else {
-                    Throwable e = source.error;
-                    if (e != null) {
-                        clear();
-                        a.onError(e);
-                        return true;
-                    } else
-                    if (empty) {
-                        clear();
-                        a.onComplete();
-                        return true;
-                    }
-                }
-            }
-            
-            return false;
-        }
-    }
-    
-    static final class ZipSubscriber<T, R> extends AtomicLong implements Subscriber<T>, Subscription {
-        /** */
-        private static final long serialVersionUID = -4627193790118206028L;
-        
-        final ZipCoordinator<T, R> parent;
-        final int bufferSize;
-        final Queue<T> queue;
-        
-        volatile boolean done;
-        Throwable error;
-        
-        final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
-        
-        Subscription cachedS;
+                queue = new SpscArrayQueue<T>(prefetch);
 
-        public ZipSubscriber(ZipCoordinator<T, R> parent, int bufferSize) {
-            this.parent = parent;
-            this.bufferSize = bufferSize;
-            Queue<T> q;
-            if (Pow2.isPowerOfTwo(bufferSize)) {
-                q = new SpscArrayQueue<T>(bufferSize);
-            } else {
-                q = new SpscExactArrayQueue<T>(bufferSize);
-            }
-            this.queue = q;
-        }
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this.s, s)) {
-                lazySet(bufferSize);
-                s.request(bufferSize);
+                s.request(prefetch);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
-            if (t == null) {
-                s.get().cancel();
-                onError(new NullPointerException());
-                return;
-            }
-            if (!queue.offer(t)) {
-                s.get().cancel();
-                onError(new IllegalStateException("Queue full?!"));
-                return;
+            if (sourceMode != QueueSubscription.ASYNC) {
+                queue.offer(t);
             }
             parent.drain();
         }
-        
+
         @Override
         public void onError(Throwable t) {
-            error = t;
-            done = true;
-            parent.drain();
+            if (sourceMode != QueueSubscription.ASYNC) {
+                parent.error(t, index);
+            }
         }
-        
+
         @Override
         public void onComplete() {
             done = true;
             parent.drain();
         }
-        
-        @Override
-        public void request(long n) {
-            lazySet(BackpressureHelper.addCap(get(), n));
-            // this method is only called if s is no longer null;
-            if (cachedS == null) {
-                cachedS = s.get();
-            }
-            cachedS.request(n);
-        }
-        
+
         @Override
         public void cancel() {
-            SubscriptionHelper.dispose(s);
+            SubscriptionHelper.dispose(this);
         }
-        
-        public void produced(long n) {
-            long v = get() - n;
-            if (v < 0L) {
-                RxJavaPlugins.onError(new IllegalArgumentException("More produced than requested: " + v));
-                v = 0;
+
+        @Override
+        public void request(long n) {
+            if (sourceMode != QueueSubscription.SYNC) {
+                long p = produced + n;
+                if (p >= limit) {
+                    produced = 0L;
+                    get().request(p);
+                } else {
+                    produced = p;
+                }
             }
-            lazySet(v);
         }
     }
 }

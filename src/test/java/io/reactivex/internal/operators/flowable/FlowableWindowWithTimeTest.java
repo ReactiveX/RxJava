@@ -24,7 +24,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.DefaultObserver;
 import io.reactivex.subscribers.TestSubscriber;
@@ -49,7 +49,7 @@ public class FlowableWindowWithTimeTest {
         Flowable<String> source = Flowable.create(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 push(observer, "one", 10);
                 push(observer, "two", 90);
                 push(observer, "three", 110);
@@ -83,7 +83,7 @@ public class FlowableWindowWithTimeTest {
         Flowable<String> source = Flowable.create(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 push(observer, "one", 98);
                 push(observer, "two", 99);
                 push(observer, "three", 99); // FIXME happens after the window is open
