@@ -795,14 +795,25 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertFusionMode(int mode) {
-        if (establishedFusionMode != mode) {
+        int m = establishedFusionMode;
+        if (m != mode) {
             if (qs != null) {
-                throw new AssertionError("Fusion mode different. Expected: " + mode + ", actual: " + establishedFusionMode);
+                throw new AssertionError("Fusion mode different. Expected: " + fusionModeToString(mode)
+                + ", actual: " + fusionModeToString(m));
             } else {
                 throw new AssertionError("Upstream is not fuseable");
             }
         }
         return this;
+    }
+    
+    private String fusionModeToString(int mode) {
+        switch (mode) {
+        case QueueSubscription.NONE : return "NONE";
+        case QueueSubscription.SYNC : return "SYNC";
+        case QueueSubscription.ASYNC : return "ASYNC";
+        default: return "Unknown(" + mode + ")";
+        }
     }
     
     /**

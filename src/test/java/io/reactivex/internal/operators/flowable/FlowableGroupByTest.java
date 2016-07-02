@@ -30,6 +30,7 @@ import io.reactivex.Optional;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.DefaultObserver;
@@ -1592,6 +1593,46 @@ public class FlowableGroupByTest {
         
         ts2.assertValueCount(Flowable.bufferSize() * 2);
         ts2.assertNoErrors();
-        ts2.assertNotComplete();
+        ts2.assertComplete();
+    }
+    
+    @Test
+    public void outerInnerFusion() {
+        final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        ts1.setInitialFusionMode(QueueSubscription.ANY);
+
+        final TestSubscriber<GroupedFlowable<Integer, Integer>> ts2 = new TestSubscriber<GroupedFlowable<Integer, Integer>>();
+        ts2.setInitialFusionMode(QueueSubscription.ANY);
+
+        Flowable.range(1, 10).groupBy(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) {
+                return 1;
+            }
+        }, new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) {
+                return v + 1;
+            }
+        })
+        .doOnNext(new Consumer<GroupedFlowable<Integer, Integer>>() {
+            @Override
+            public void accept(GroupedFlowable<Integer, Integer> g) { 
+                g.subscribe(ts1); 
+            } 
+        })
+        .subscribe(ts2);
+        
+        ts1
+        .assertFusionMode(QueueSubscription.ASYNC)
+        .assertValues(2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+        .assertNoErrors()
+        .assertComplete();
+
+        ts2
+        .assertFusionMode(QueueSubscription.ASYNC)
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertComplete();
     }
 }

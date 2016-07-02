@@ -54,6 +54,13 @@ public final class FlowableFilter<T> extends FlowableSource<T, T> {
         
         @Override
         public boolean tryOnNext(T t) {
+            if (done) {
+                return false;
+            }
+            if (sourceMode != NONE) {
+                actual.onNext(null);
+                return true;
+            }
             boolean b;
             try {
                 b = filter.test(t);
@@ -117,10 +124,10 @@ public final class FlowableFilter<T> extends FlowableSource<T, T> {
                 return false;
             }
 
-            if (sourceMode == ASYNC) {
-                actual.onNext(null);
-                return true;
+            if (sourceMode != NONE) {
+                return actual.tryOnNext(null);
             }
+            
             boolean b;
             try {
                 b = filter.test(t);
