@@ -22,7 +22,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 
 public class FlowableDoOnSubscribeTest {
 
@@ -71,7 +71,7 @@ public class FlowableDoOnSubscribeTest {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(EmptySubscription.INSTANCE);
+                s.onSubscribe(new BooleanSubscription());
                 onSubscribed.incrementAndGet();
                 sref.set(s);
             }

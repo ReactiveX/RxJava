@@ -27,7 +27,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.LongConsumer;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.subscribers.DefaultObserver;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -224,7 +224,7 @@ public class FlowableMergeDelayErrorTest {
 
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 // simulate what would happen in an observable
                 observer.onNext(o1);
                 observer.onNext(o2);
@@ -322,7 +322,7 @@ public class FlowableMergeDelayErrorTest {
 
         @Override
         public void subscribe(Subscriber<? super String> observer) {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             observer.onNext("hello");
             observer.onComplete();
         }
@@ -333,7 +333,7 @@ public class FlowableMergeDelayErrorTest {
 
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -357,7 +357,7 @@ public class FlowableMergeDelayErrorTest {
 
         @Override
         public void subscribe(Subscriber<? super String> observer) {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             boolean errorThrown = false;
             for (String s : valuesToReturn) {
                 if (s == null) {
@@ -388,7 +388,7 @@ public class FlowableMergeDelayErrorTest {
 
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -441,7 +441,7 @@ public class FlowableMergeDelayErrorTest {
         Flowable<Integer> source = Flowable.create(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
-                t1.onSubscribe(EmptySubscription.INSTANCE);
+                t1.onSubscribe(new BooleanSubscription());
                 try {
                     t1.onNext(0);
                 } catch (Throwable swallow) {
@@ -513,7 +513,7 @@ public class FlowableMergeDelayErrorTest {
             Flowable<Flowable<String>> parentObservable = Flowable.create(new Publisher<Flowable<String>>() {
                 @Override
                 public void subscribe(Subscriber<? super Flowable<String>> op) {
-                    op.onSubscribe(EmptySubscription.INSTANCE);
+                    op.onSubscribe(new BooleanSubscription());
                     op.onNext(Flowable.create(o1));
                     op.onNext(Flowable.create(o2));
                     op.onError(new NullPointerException("throwing exception in parent"));
@@ -540,7 +540,7 @@ public class FlowableMergeDelayErrorTest {
 
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             t = new Thread(new Runnable() {
 
                 @Override

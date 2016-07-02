@@ -49,7 +49,7 @@ public final class FlowableTake<T> extends Flowable<T> {
         }
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.subscription, s)) {
+            if (SubscriptionHelper.validate(this.subscription, s)) {
                 subscription = s;
                 actual.onSubscribe(this);
             }
@@ -60,6 +60,7 @@ public final class FlowableTake<T> extends Flowable<T> {
                 boolean stop = remaining == 0;
                 actual.onNext(t);
                 if (stop) {
+                    subscription.cancel();
                     onComplete();
                 }
             }
@@ -76,13 +77,12 @@ public final class FlowableTake<T> extends Flowable<T> {
         public void onComplete() {
             if (!done) {
                 done = true;
-                subscription.cancel();
                 actual.onComplete();
             }
         }
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validate(n)) {
                 return;
             }
             for (;;) {

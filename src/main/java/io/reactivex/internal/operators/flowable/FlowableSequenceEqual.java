@@ -85,7 +85,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validate(n)) {
                 return;
             }
             if (once.compareAndSet(false, true)) {

@@ -263,7 +263,11 @@ public class ObservableMergeTest {
         // to make sure after o1.onNextBeingSent and o2.onNextBeingSent are hit that the following
         // onNext is invoked.
 
-        Thread.sleep(300);
+        int timeout = 10;
+        
+        while (timeout-- > 0 && concurrentCounter.get() != 1) {
+            Thread.sleep(100);
+        }
 
         try { // in try/finally so threads are released via latch countDown even if assertion fails
             assertEquals(1, concurrentCounter.get());

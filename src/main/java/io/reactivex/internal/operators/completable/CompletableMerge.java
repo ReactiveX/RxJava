@@ -82,7 +82,7 @@ public final class CompletableMerge extends Completable {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
                 set.add(Disposables.from(s));
                 actual.onSubscribe(this);

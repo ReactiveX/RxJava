@@ -294,13 +294,15 @@ public class FlowableWindowWithSizeTest {
     public void testBackpressureOuterInexact() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>((Long)null);
         
-        Flowable.range(1, 5).window(2, 1)
+        Flowable.range(1, 5)
+        .window(2, 1)
         .map(new Function<Flowable<Integer>, Flowable<List<Integer>>>() {
             @Override
             public Flowable<List<Integer>> apply(Flowable<Integer> t) {
                 return t.toList();
             }
-        }).concatMap(new Function<Flowable<List<Integer>>, Publisher<List<Integer>>>() {
+        })
+        .concatMap(new Function<Flowable<List<Integer>>, Publisher<List<Integer>>>() {
             @Override
             public Publisher<List<Integer>> apply(Flowable<List<Integer>> v) {
                 return v;

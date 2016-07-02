@@ -50,7 +50,7 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
         Subscription s = actual.get();
         if (s != null) {
             s.request(n);
-        } else if (SubscriptionHelper.validateRequest(n)) {
+        } else if (SubscriptionHelper.validate(n)) {
             BackpressureHelper.add(this, n);
             s = actual.get();
             if (s != null) {

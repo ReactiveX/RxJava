@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.util;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.exceptions.*;
 
 public enum Exceptions {
@@ -83,4 +85,40 @@ public enum Exceptions {
         }
     }
 
+    /**
+     * A singleton instance of a Throwable indicating a terminal state for exceptions,
+     * don't leak this!
+     */
+    public static final Throwable TERMINATED = new Throwable("No further exceptions");
+    
+    public static <T> boolean addThrowable(AtomicReference<Throwable> field, Throwable exception) {
+        for (;;) {
+            Throwable current = field.get();
+            
+            if (current == TERMINATED) {
+                return false;
+            }
+            
+            Throwable update;
+            if (current == null) {
+                update = exception;
+            } else {
+                update = new Throwable("Multiple exceptions");
+                update.addSuppressed(current);
+                update.addSuppressed(exception);
+            }
+            
+            if (field.compareAndSet(current, update)) {
+                return true;
+            }
+        }
+    }
+    
+    public static <T> Throwable terminate(AtomicReference<Throwable> field) {
+        Throwable current = field.get();
+        if (current != TERMINATED) {
+            current = field.getAndSet(TERMINATED);
+        }
+        return current;
+    }
 }

@@ -28,7 +28,7 @@ public enum EmptySubscription implements QueueSubscription<Object> {
     
     @Override
     public void request(long n) {
-        SubscriptionHelper.validateRequest(n);
+        SubscriptionHelper.validate(n);
     }
     @Override
     public void cancel() {

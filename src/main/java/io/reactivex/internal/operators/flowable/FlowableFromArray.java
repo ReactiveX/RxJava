@@ -83,7 +83,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
 
         @Override
         public final void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validate(n)) {
                 if (BackpressureHelper.add(this, n) == 0L) {
                     if (n == Long.MAX_VALUE) {
                         fastPath();

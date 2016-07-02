@@ -106,7 +106,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (!SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (!SubscriptionHelper.validate(this.s, s)) {
                 return;
             }
             this.s = s;
@@ -283,7 +283,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
     
         @Override
         public void onSubscribe(Subscription s) {
-            if (!SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (!SubscriptionHelper.validate(this.s, s)) {
                 return;
             }
             this.s = s;
@@ -459,7 +459,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (!SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (!SubscriptionHelper.validate(this.s, s)) {
                 return;
             }
             this.s = s;

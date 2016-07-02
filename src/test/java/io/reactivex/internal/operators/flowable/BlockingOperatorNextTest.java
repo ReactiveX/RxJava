@@ -26,7 +26,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.BlockingFlowable;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
 
@@ -237,7 +237,7 @@ public class BlockingOperatorNextTest {
 
             @Override
             public void subscribe(final Subscriber<? super Integer> o) {
-                o.onSubscribe(EmptySubscription.INSTANCE);
+                o.onSubscribe(new BooleanSubscription());
                 new Thread(new Runnable() {
 
                     @Override

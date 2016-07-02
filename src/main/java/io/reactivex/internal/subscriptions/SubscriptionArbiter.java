@@ -25,230 +25,295 @@ package io.reactivex.internal.subscriptions;
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscription;
 
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.util.BackpressureHelper;
-import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Arbitrates requests and cancellation between Subscriptions.
  */
-public final class SubscriptionArbiter extends AtomicInteger implements Subscription {
+public class SubscriptionArbiter extends AtomicInteger implements Subscription {
     /** */
     private static final long serialVersionUID = -2189523197179400958L;
     
-    final Queue<Subscription> missedSubscription = new MpscLinkedQueue<Subscription>();
-    
+    /**
+     * The current subscription which may null if no Subscriptions have been set.
+     */
     Subscription actual;
+
+    /**
+     * The current outstanding request amount.
+     */
     long requested;
-    
+
+    final AtomicReference<Subscription> missedSubscription;
+
+    final AtomicLong missedRequested;
+
+    final AtomicLong missedProduced;
+
     volatile boolean cancelled;
 
-    final AtomicLong missedRequested = new AtomicLong();
+    protected boolean unbounded;
     
-    final AtomicLong missedProduced = new AtomicLong();
-
-    private long addRequested(long n) {
-        long r = requested;
-        long u = BackpressureHelper.addCap(r, n);
-        requested = u;
-        return r;
+    public SubscriptionArbiter() {
+        missedSubscription = new AtomicReference<Subscription>();
+        missedRequested = new AtomicLong();
+        missedProduced = new AtomicLong();
     }
     
-    @Override
-    public void request(final long n) {
-        if (!SubscriptionHelper.validateRequest(n)) {
-            return;
-        }
-        if (cancelled) {
-            return;
-        }
-        
-        if (get() == 0 && compareAndSet(0, 1)) {
-            addRequested(n);
-            Subscription s = actual;
-            if (s != null) {
-                s.request(n);
-            }
-            if (decrementAndGet() == 0) {
-                return;
-            }
-        } else {
-            BackpressureHelper.add(missedRequested, n);
-            if (getAndIncrement() != 0) {
-                return;
-            }
-        }
-        int missed = 1;
-        for (;;) {
-            SubscriptionArbiter.this.drain();
-            
-            missed = addAndGet(-missed);
-            if (missed == 0) {
-                return;
-            }
-        }
-    }
-
-    public void produced(final long n) {
-        if (n <= 0) {
-            RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
-            return;
-        }
-        
-        if (get() == 0 && compareAndSet(0, 1)) {
-            long r = requested;
-            if (r != Long.MAX_VALUE) {
-                long u = r - n;
-                if (u < 0L) {
-                    RxJavaPlugins.onError(new IllegalArgumentException("More produced than requested: " + u));
-                    u = 0;
-                }
-                requested = u;
-            }
-            if (decrementAndGet() == 0) {
-                return;
-            }
-        } else {
-            BackpressureHelper.add(missedProduced, n);
-            if (getAndIncrement() != 0) {
-                return;
-            }
-        }
-        int missed = 1;
-        for (;;) {
-            SubscriptionArbiter.this.drain();
-            
-            missed = addAndGet(-missed);
-            if (missed == 0) {
-                return;
-            }
-        }
+    /**
+     * When setting a new subscription via set(), should
+     * the previous subscription be cancelled?
+     * @return true if cancellation is needed
+     */
+    protected boolean shouldCancelCurrent() {
+        return true;
     }
     
-    public void setSubscription(final Subscription s) {
-        Objects.requireNonNull(s, "s is null");
+    /**
+     * Atomically sets a new subscription.
+     * @param s the subscription to set, not null (verified)
+     */
+    public final void setSubscription(Subscription s) {
         if (cancelled) {
             s.cancel();
             return;
         }
+
+        Objects.requireNonNull(s, "s is null");
         
         if (get() == 0 && compareAndSet(0, 1)) {
             Subscription a = actual;
-            if (a != null) {
+            
+            if (a != null && shouldCancelCurrent()) {
                 a.cancel();
             }
+            
             actual = s;
+            
             long r = requested;
             if (r != 0L) {
                 s.request(r);
             }
+            
             if (decrementAndGet() == 0) {
                 return;
             }
-        } else {
-            missedSubscription.offer(s);
-            if (getAndIncrement() != 0) {
-                return;
-            }
-        }
-        int missed = 1;
-        for (;;) {
-            SubscriptionArbiter.this.drain();
-            
-            missed = addAndGet(-missed);
-            if (missed == 0) {
-                return;
-            }
-        }
-    }
-    
-    @Override
-    public void cancel() {
-        if (cancelled) {
+
+            drainLoop();
+
             return;
         }
-        cancelled = true;
-        
-        if (get() == 0 && compareAndSet(0, 1)) {
-            Subscription a = actual;
-            if (a != null) {
-                actual = null;
-                a.cancel();
+
+        Subscription a = missedSubscription.getAndSet(s);
+        if (a != null && shouldCancelCurrent()) {
+            a.cancel();
+        }
+        drain();
+    }
+
+    @Override
+    public final void request(long n) {
+        if (SubscriptionHelper.validate(n)) {
+            if (unbounded) {
+                return;
             }
+            if (get() == 0 && compareAndSet(0, 1)) {
+                long r = requested;
+
+                if (r != Long.MAX_VALUE) {
+                    r = BackpressureHelper.addCap(r, n);
+                    requested = r;
+                    if (r == Long.MAX_VALUE) {
+                        unbounded = true;
+                    }
+                }
+                Subscription a = actual;
+                if (a != null) {
+                    a.request(n);
+                }
+
+                if (decrementAndGet() == 0) {
+                    return;
+                }
+
+                drainLoop();
+
+                return;
+            }
+
+            BackpressureHelper.add(missedRequested, n);
+
+            drain();
+        }
+    }
+
+    public final void producedOne() {
+        if (unbounded) {
+            return;
+        }
+        if (get() == 0 && compareAndSet(0, 1)) {
+            long r = requested;
+
+            if (r != Long.MAX_VALUE) {
+                r--;
+                if (r < 0L) {
+                    SubscriptionHelper.reportMoreProduced(r);
+                    r = 0;
+                }
+                requested = r;
+            } else {
+                unbounded = true;
+            }
+
             if (decrementAndGet() == 0) {
                 return;
             }
-        } else {
-            if (getAndIncrement() != 0) {
+
+            drainLoop();
+
+            return;
+        }
+
+        BackpressureHelper.add(missedProduced, 1L);
+
+        drain();
+    }
+
+    public final void produced(long n) {
+        if (unbounded) {
+            return;
+        }
+        if (get() == 0 && compareAndSet(0, 1)) {
+            long r = requested;
+
+            if (r != Long.MAX_VALUE) {
+                long u = r - n;
+                if (u < 0L) {
+                    SubscriptionHelper.reportMoreProduced(u);
+                    u = 0;
+                }
+                requested = u;
+            } else {
+                unbounded = true;
+            }
+
+            if (decrementAndGet() == 0) {
                 return;
             }
+
+            drainLoop();
+
+            return;
         }
+
+        BackpressureHelper.add(missedProduced, n);
+
+        drain();
+    }
+
+    @Override
+    public void cancel() {
+        if (!cancelled) {
+            cancelled = true;
+
+            drain();
+        }
+    }
+
+    final void drain() {
+        if (getAndIncrement() != 0) {
+            return;
+        }
+        drainLoop();
+    }
+
+    final void drainLoop() {
         int missed = 1;
-        for (;;) {
-            SubscriptionArbiter.this.drain();
-            
+
+        for (; ; ) {
+
+            Subscription ms = missedSubscription.get();
+
+            if (ms != null) {
+                ms = missedSubscription.getAndSet(null);
+            }
+
+            long mr = missedRequested.get();
+            if (mr != 0L) {
+                mr = missedRequested.getAndSet(0L);
+            }
+
+            long mp = missedProduced.get();
+            if (mp != 0L) {
+                mp = missedProduced.getAndSet(0L);
+            }
+
+            Subscription a = actual;
+
+            if (cancelled) {
+                if (a != null) {
+                    a.cancel();
+                    actual = null;
+                }
+                if (ms != null) {
+                    ms.cancel();
+                }
+            } else {
+                long r = requested;
+                if (r != Long.MAX_VALUE) {
+                    long u = BackpressureHelper.addCap(r, mr);
+
+                    if (u != Long.MAX_VALUE) {
+                        long v = u - mp;
+                        if (v < 0L) {
+                            SubscriptionHelper.reportMoreProduced(v);
+                            v = 0;
+                        }
+                        r = v;
+                    } else {
+                        r = u;
+                    }
+                    requested = r;
+                }
+
+                if (ms != null) {
+                    if (a != null && shouldCancelCurrent()) {
+                        a.cancel();
+                    }
+                    actual = ms;
+                    if (r != 0L) {
+                        ms.request(r);
+                    }
+                } else if (mr != 0L && a != null) {
+                    a.request(mr);
+                }
+            }
+
             missed = addAndGet(-missed);
             if (missed == 0) {
                 return;
             }
         }
     }
-    
-    public boolean isCancelled() {
-        return cancelled;
+
+    /**
+     * Returns true if the arbiter runs in unbounded mode.
+     * @return true if the arbiter runs in unbounded mode
+     */
+    public final boolean isUnbounded() {
+        return unbounded;
     }
     
-    void drain() {
-        long mr = missedRequested.getAndSet(0L);
-        long mp = missedProduced.getAndSet(0L);
-        Subscription ms = missedSubscription.poll();
-        boolean c = cancelled;
-        
-        long r = requested;
-        if (r != Long.MAX_VALUE && !c) {
-            long u = r + mr;
-            if (u < 0L) {
-                r = Long.MAX_VALUE;
-                requested = Long.MAX_VALUE;
-            } else {
-                long v = u - mp;
-                if (v < 0L) {
-                    RxJavaPlugins.onError(new IllegalStateException("More produced than requested: " + v));
-                    v = 0L;
-                }
-                r = v;
-                requested = v;
-            }
-        }
-
-        Subscription a = actual;
-        if (c && a != null) {
-            actual = null;
-            a.cancel();
-        }
-        
-        if (ms == null) {
-            if (a != null && mr != 0L) {
-                a.request(mr);
-            }
-        } else {
-            if (c) {
-                ms.cancel();
-            } else {
-                if (a != null) {
-                    a.cancel();
-                }
-                actual = ms;
-                if (r != 0L) {
-                    ms.request(r);
-                }
-            }
-        }
+    /**
+     * Returns true if the arbiter has been cancelled.
+     * @return true if the arbiter has been cancelled
+     */
+    public final boolean isCancelled() {
+        return cancelled;
     }
 }

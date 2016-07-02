@@ -46,7 +46,7 @@ public final class ScalarSubscription<T> extends AtomicInteger implements QueueS
     
     @Override
     public void request(long n) {
-        if (!SubscriptionHelper.validateRequest(n)) {
+        if (!SubscriptionHelper.validate(n)) {
             return;
         }
         if (compareAndSet(NO_REQUEST, REQUESTED)) {

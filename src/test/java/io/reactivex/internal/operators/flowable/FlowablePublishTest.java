@@ -26,7 +26,7 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -39,7 +39,7 @@ public class FlowablePublishTest {
 
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 new Thread(new Runnable() {
 
                     @Override
@@ -370,7 +370,7 @@ public class FlowablePublishTest {
         Flowable<Integer> source = Flowable.create(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> t) {
-                t.onSubscribe(EmptySubscription.INSTANCE);
+                t.onSubscribe(new BooleanSubscription());
                 calls.getAndIncrement();
             }
         });

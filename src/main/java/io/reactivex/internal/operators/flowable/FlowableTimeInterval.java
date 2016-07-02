@@ -55,7 +55,7 @@ public final class FlowableTimeInterval<T> extends Flowable<Timed<T>> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (SubscriptionHelper.validate(this.s, s)) {
                 lastTime = scheduler.now(unit);
                 this.s = s;
                 actual.onSubscribe(this);

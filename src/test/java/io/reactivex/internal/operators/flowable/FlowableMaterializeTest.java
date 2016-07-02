@@ -24,10 +24,9 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Optional;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableMaterializeTest {
 
@@ -232,7 +231,7 @@ public class FlowableMaterializeTest {
 
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             t = new Thread(new Runnable() {
 
                 @Override

@@ -48,7 +48,7 @@ public class FlowableRetryTest {
 
             @Override
             public void subscribe(Subscriber<? super String> t1) {
-                t1.onSubscribe(EmptySubscription.INSTANCE);
+                t1.onSubscribe(new BooleanSubscription());
                 System.out.println(count.get() + " @ " + String.valueOf(last - System.currentTimeMillis()));
                 last = System.currentTimeMillis();
                 if (count.getAndDecrement() == 0) {
@@ -243,7 +243,7 @@ public class FlowableRetryTest {
         Publisher<Integer> onSubscribe = new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> subscriber) {
-                subscriber.onSubscribe(EmptySubscription.INSTANCE);
+                subscriber.onSubscribe(new BooleanSubscription());
                 final int emit = inc.incrementAndGet();
                 subscriber.onNext(emit);
                 subscriber.onComplete();
@@ -531,7 +531,7 @@ public class FlowableRetryTest {
         Publisher<String> onSubscribe = new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> s) {
-                s.onSubscribe(EmptySubscription.INSTANCE);
+                s.onSubscribe(new BooleanSubscription());
                 subsCount.incrementAndGet();
                 s.onError(new RuntimeException("failed"));
             }
@@ -550,7 +550,7 @@ public class FlowableRetryTest {
         Publisher<String> onSubscribe = new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> s) {
-                s.onSubscribe(EmptySubscription.INSTANCE);
+                s.onSubscribe(new BooleanSubscription());
                 subsCount.incrementAndGet();
                 s.onError(new RuntimeException("failed"));
             }
@@ -881,7 +881,7 @@ public class FlowableRetryTest {
 
             @Override
             public void subscribe(Subscriber<? super String> o) {
-                o.onSubscribe(EmptySubscription.INSTANCE);
+                o.onSubscribe(new BooleanSubscription());
                 for(int i=0; i<NUM_MSG; i++) {
                     o.onNext("msg:" + count.incrementAndGet());
                 }   

@@ -33,7 +33,7 @@ public final class FullArbiterSubscriber<T> implements Subscriber<T> {
 
     @Override
     public void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validateSubscription(this.s, s)) {
+        if (SubscriptionHelper.validate(this.s, s)) {
             this.s = s;
             arbiter.setSubscription(s);
         }

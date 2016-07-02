@@ -57,7 +57,7 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
     @SuppressWarnings("unchecked")
     @Override
     public final void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validateSubscription(this.s, s)) {
+        if (SubscriptionHelper.validate(this.s, s)) {
             
             this.s = s;
             if (s instanceof QueueSubscription) {

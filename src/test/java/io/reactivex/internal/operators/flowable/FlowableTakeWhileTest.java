@@ -23,7 +23,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Predicate;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.*;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -103,7 +103,7 @@ public class FlowableTakeWhileTest {
         Flowable<String> source = Flowable.create(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 observer.onNext("one");
                 observer.onError(new Throwable("test failed"));
             }

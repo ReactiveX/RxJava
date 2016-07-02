@@ -23,7 +23,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 
@@ -47,7 +47,7 @@ public class FlowableSampleTest {
         Flowable<Long> source = Flowable.create(new Publisher<Long>() {
             @Override
             public void subscribe(final Subscriber<? super Long> observer1) {
-                observer1.onSubscribe(EmptySubscription.INSTANCE);
+                observer1.onSubscribe(new BooleanSubscription());
                 innerScheduler.schedule(new Runnable() {
                     @Override
                     public void run() {

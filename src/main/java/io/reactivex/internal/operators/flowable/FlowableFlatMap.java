@@ -23,6 +23,7 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
@@ -102,7 +103,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
                 actual.onSubscribe(this);
                 if (!cancelled) {
@@ -326,7 +327,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validate(n)) {
                 BackpressureHelper.add(requested, n);
                 drain();
             }
@@ -453,7 +454,18 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
                                 if (q == null) {
                                     break;
                                 }
-                                o = q.poll();
+                                
+                                try {
+                                    o = q.poll();
+                                } catch (Throwable ex) {
+                                    Exceptions.throwIfFatal(ex);
+                                    
+                                    s.cancel();
+                                    unsubscribe();
+                                    
+                                    child.onError(ex);
+                                    return;
+                                }
                                 if (o == null) {
                                     break;
                                 }
@@ -592,7 +604,8 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         
         volatile boolean done;
         volatile Queue<U> queue;
-        int outstanding;
+        long produced;
+        int fusionMode;
 
         public InnerSubscriber(MergeSubscriber<T, U> parent, long id) {
             this.id = id;
@@ -603,13 +616,35 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.setOnce(this, s)) {
-                outstanding = bufferSize;
-                s.request(outstanding);
+                
+                if (s instanceof QueueSubscription) {
+                    @SuppressWarnings("unchecked")
+                    QueueSubscription<U> qs = (QueueSubscription<U>) s;
+                    int m = qs.requestFusion(QueueSubscription.ANY);
+                    if (m == QueueSubscription.SYNC) {
+                        fusionMode = m;
+                        queue = qs;
+                        done = true;
+                        parent.drain();
+                        return;
+                    } 
+                    if (m == QueueSubscription.ASYNC) {
+                        fusionMode = m;
+                        queue = qs;
+                    }
+                    
+                }
+                
+                s.request(bufferSize);
             }
         }
         @Override
         public void onNext(U t) {
-            parent.tryEmit(t, this);
+            if (fusionMode != QueueSubscription.ASYNC) {
+                parent.tryEmit(t, this);
+            } else {
+                parent.drain();
+            }
         }
         @Override
         public void onError(Throwable t) {
@@ -624,15 +659,14 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         }
         
         void requestMore(long n) {
-            int r = outstanding - (int)n;
-            if (r > limit) {
-                outstanding = r;
-                return;
-            }
-            outstanding = bufferSize;
-            int k = bufferSize - r;
-            if (k > 0) {
-                get().request(k);
+            if (fusionMode != QueueSubscription.SYNC) {
+                long p = produced + n;
+                if (p >= limit) {
+                    produced = 0;
+                    get().request(p);
+                } else {
+                    produced = p;
+                }
             }
         }
         
@@ -641,7 +675,8 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
             SubscriptionHelper.dispose(this);
         }
 
-        @Override public boolean isDisposed() {
+        @Override 
+        public boolean isDisposed() {
             return get() == SubscriptionHelper.CANCELLED;
         }
     }

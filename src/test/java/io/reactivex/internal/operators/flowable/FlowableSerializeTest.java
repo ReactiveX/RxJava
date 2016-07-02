@@ -24,7 +24,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.subscribers.DefaultObserver;
 
 public class FlowableSerializeTest {
@@ -220,7 +220,7 @@ public class FlowableSerializeTest {
 
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -271,7 +271,7 @@ public class FlowableSerializeTest {
 
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             System.out.println("TestMultiThreadedObservable subscribed to ...");
             final NullPointerException npe = new NullPointerException();
             t = new Thread(new Runnable() {

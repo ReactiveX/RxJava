@@ -29,7 +29,7 @@ import io.reactivex.*;
 import io.reactivex.Optional;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.DefaultObserver;
@@ -541,7 +541,7 @@ public class FlowableObserveOnTest {
 
             @Override
             public void subscribe(Subscriber<? super Integer> o) {
-                o.onSubscribe(EmptySubscription.INSTANCE);
+                o.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < Flowable.bufferSize() + 10; i++) {
                     o.onNext(i);
                 }

@@ -48,7 +48,7 @@ public final class SubscriptionLambdaSubscriber<T> implements Subscriber<T>, Sub
             EmptySubscription.error(e, actual);
             return;
         }
-        if (SubscriptionHelper.validateSubscription(this.s, s)) {
+        if (SubscriptionHelper.validate(this.s, s)) {
             this.s = s;
             actual.onSubscribe(this);
         }

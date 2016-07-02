@@ -52,11 +52,11 @@ public class FlowableSwitchTest {
         Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 publishNext(observer, 50, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 70, "one");
                         publishNext(observer, 100, "two");
                         publishCompleted(observer, 200);
@@ -81,11 +81,11 @@ public class FlowableSwitchTest {
         Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 publishNext(observer, 10, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 0, "one");
                         publishNext(observer, 10, "two");
                         publishCompleted(observer, 20);
@@ -95,7 +95,7 @@ public class FlowableSwitchTest {
                 publishNext(observer, 100, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 0, "three");
                         publishNext(observer, 10, "four");
                         publishCompleted(observer, 20);
@@ -127,11 +127,11 @@ public class FlowableSwitchTest {
         Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 publishNext(observer, 50, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(final Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 60, "one");
                         publishNext(observer, 100, "two");
                     }
@@ -140,7 +140,7 @@ public class FlowableSwitchTest {
                 publishNext(observer, 200, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(final Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 0, "three");
                         publishNext(observer, 100, "four");
                     }
@@ -186,11 +186,11 @@ public class FlowableSwitchTest {
         Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 publishNext(observer, 50, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(final Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 50, "one");
                         publishNext(observer, 100, "two");
                     }
@@ -199,7 +199,7 @@ public class FlowableSwitchTest {
                 publishNext(observer, 200, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 0, "three");
                         publishNext(observer, 100, "four");
                     }
@@ -245,11 +245,11 @@ public class FlowableSwitchTest {
         Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 publishNext(observer, 50, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 50, "one");
                         publishNext(observer, 100, "two");
                     }
@@ -258,7 +258,7 @@ public class FlowableSwitchTest {
                 publishNext(observer, 130, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishCompleted(observer, 0);
                     }
                 }));
@@ -266,7 +266,7 @@ public class FlowableSwitchTest {
                 publishNext(observer, 150, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 50, "three");
                     }
                 }));
@@ -299,11 +299,11 @@ public class FlowableSwitchTest {
         Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 publishNext(observer, 50, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 50, "one");
                         publishNext(observer, 100, "two");
                     }
@@ -312,7 +312,7 @@ public class FlowableSwitchTest {
                 publishNext(observer, 130, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishError(observer, 0, new TestException());
                     }
                 }));
@@ -320,7 +320,7 @@ public class FlowableSwitchTest {
                 publishNext(observer, 150, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 50, "three");
                     }
                 }));
@@ -382,11 +382,11 @@ public class FlowableSwitchTest {
         Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 publishNext(observer, 0, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 10, "1-one");
                         publishNext(observer, 20, "1-two");
                         // The following events will be ignored
@@ -397,7 +397,7 @@ public class FlowableSwitchTest {
                 publishNext(observer, 25, Flowable.create(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(EmptySubscription.INSTANCE);
+                        observer.onSubscribe(new BooleanSubscription());
                         publishNext(observer, 10, "2-one");
                         publishNext(observer, 20, "2-two");
                         publishNext(observer, 30, "2-three");
@@ -457,7 +457,7 @@ public class FlowableSwitchTest {
             public void onStart() {
                 requested = 3;
                 request(3);
-                testSubscriber.onSubscribe(EmptySubscription.INSTANCE);
+                testSubscriber.onSubscribe(new BooleanSubscription());
             }
 
             @Override

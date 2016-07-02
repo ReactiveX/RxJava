@@ -49,7 +49,7 @@ public final class FlowableUnsubscribeOn<T> extends Flowable<T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
                 actual.onSubscribe(this);
             }

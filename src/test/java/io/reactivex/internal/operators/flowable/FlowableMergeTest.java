@@ -77,7 +77,7 @@ public class FlowableMergeTest {
 
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 // simulate what would happen in an observable
                 observer.onNext(o1);
                 observer.onNext(o2);
@@ -270,7 +270,11 @@ public class FlowableMergeTest {
         // to make sure after o1.onNextBeingSent and o2.onNextBeingSent are hit that the following
         // onNext is invoked.
 
-        Thread.sleep(300);
+        int timeout = 10;
+        
+        while (timeout-- > 0 && concurrentCounter.get() != 1) {
+            Thread.sleep(100);
+        }
 
         try { // in try/finally so threads are released via latch countDown even if assertion fails
             assertEquals(1, concurrentCounter.get());
@@ -362,7 +366,7 @@ public class FlowableMergeTest {
 
         @Override
         public void subscribe(Subscriber<? super String> observer) {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             observer.onNext("hello");
             observer.onComplete();
         }
@@ -374,7 +378,7 @@ public class FlowableMergeTest {
 
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -405,7 +409,7 @@ public class FlowableMergeTest {
 
         @Override
         public void subscribe(Subscriber<? super String> observer) {
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             for (String s : valuesToReturn) {
                 if (s == null) {
                     System.out.println("throwing exception");
@@ -570,7 +574,7 @@ public class FlowableMergeTest {
             public void subscribe(final Subscriber<? super Integer> s) {
                 Worker inner = Schedulers.newThread().createWorker();
                 final AsyncSubscription as = new AsyncSubscription();
-                as.setSubscription(EmptySubscription.INSTANCE);
+                as.setSubscription(new BooleanSubscription());
                 as.setResource(inner);
                 
                 s.onSubscribe(as);
@@ -620,7 +624,7 @@ public class FlowableMergeTest {
             public void subscribe(final Subscriber<? super Integer> s) {
                 Worker inner = Schedulers.newThread().createWorker();
                 final AsyncSubscription as = new AsyncSubscription();
-                as.setSubscription(EmptySubscription.INSTANCE);
+                as.setSubscription(new BooleanSubscription());
                 as.setResource(inner);
                 
                 s.onSubscribe(as);
@@ -1070,7 +1074,7 @@ public class FlowableMergeTest {
 
                     @Override
                     public void subscribe(Subscriber<? super Integer> s) {
-                        s.onSubscribe(EmptySubscription.INSTANCE);
+                        s.onSubscribe(new BooleanSubscription());
                         if (i < 500) {
                             try {
                                 Thread.sleep(1);

@@ -26,7 +26,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Flowable.Operator;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
@@ -39,7 +39,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
 
             @Override
             public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 observer.onNext("one");
                 observer.onError(new Throwable("injected failure"));
                 observer.onNext("two");
@@ -285,7 +285,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
-            observer.onSubscribe(EmptySubscription.INSTANCE);
+            observer.onSubscribe(new BooleanSubscription());
             t = new Thread(new Runnable() {
 
                 @Override

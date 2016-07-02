@@ -27,6 +27,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.ScalarCallable;
 import io.reactivex.internal.operators.flowable.*;
+import io.reactivex.internal.operators.flowable.FlowableConcatMap.ErrorMode;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -1467,7 +1468,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (prefetch <= 0) {
             throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
         }
-        return new FlowableConcatMap<T, R>(this, mapper, prefetch);
+        return new FlowableConcatMap<T, R>(this, mapper, prefetch, ErrorMode.IMMEDIATE);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1480,12 +1481,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> concatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return concatMap(new Function<T, Publisher<U>>() {
-            @Override
-            public Publisher<U> apply(T v) {
-                return new FlowableFromIterable<U>(mapper.apply(v));
-            }
-        }, prefetch);
+        return new FlowableFlattenIterable<T, U>(this, mapper, prefetch);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2029,13 +2025,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return flatMap(new Function<T, Publisher<U>>() {
-            @Override
-            public Publisher<U> apply(T v) {
-                return new FlowableFromIterable<U>(mapper.apply(v));
-            }
-        });
+        return flatMapIterable(mapper, bufferSize());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2054,12 +2044,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int bufferSize) {
-        return flatMap(new Function<T, Publisher<U>>() {
-            @Override
-            public Publisher<U> apply(T v) {
-                return new FlowableFromIterable<U>(mapper.apply(v));
-            }
-        }, false, bufferSize);
+        return new FlowableFlattenIterable<T, U>(this, mapper, bufferSize);
     }
 
     @BackpressureSupport(BackpressureKind.NONE)

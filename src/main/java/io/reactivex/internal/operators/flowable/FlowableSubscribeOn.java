@@ -70,7 +70,7 @@ public final class FlowableSubscribeOn<T> extends Flowable<T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
                 lazySet(Thread.currentThread());
                 actual.onSubscribe(this);
@@ -102,7 +102,7 @@ public final class FlowableSubscribeOn<T> extends Flowable<T> {
         
         @Override
         public void request(final long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validate(n)) {
                 return;
             }
             if (Thread.currentThread() == get()) {

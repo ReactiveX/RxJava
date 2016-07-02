@@ -25,7 +25,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.TestSubscriber;
@@ -48,7 +48,7 @@ public class FlowableDebounceTest {
         Flowable<String> source = Flowable.create(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 publishNext(observer, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
                 publishNext(observer, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
                 publishNext(observer, 900, "three");   // Should be skipped since onCompleted will arrive before the timeout expires.
@@ -74,7 +74,7 @@ public class FlowableDebounceTest {
         Flowable<String> source = Flowable.create(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 // all should be skipped since they are happening faster than the 200ms timeout
                 publishNext(observer, 100, "a");    // Should be skipped
                 publishNext(observer, 200, "b");    // Should be skipped
@@ -104,7 +104,7 @@ public class FlowableDebounceTest {
         Flowable<String> source = Flowable.create(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 Exception error = new TestException();
                 publishNext(observer, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
                 publishNext(observer, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.

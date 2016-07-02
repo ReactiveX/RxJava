@@ -21,7 +21,7 @@ public abstract class DefaultObserver<T> implements Subscriber<T> {
     private Subscription s;
     @Override
     public final void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validateSubscription(this.s, s)) {
+        if (SubscriptionHelper.validate(this.s, s)) {
             this.s = s;
             onStart();
         }

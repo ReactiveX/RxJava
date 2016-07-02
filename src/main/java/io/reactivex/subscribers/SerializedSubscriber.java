@@ -52,7 +52,7 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
     }
     @Override
     public void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validateSubscription(this.subscription, s)) {
+        if (SubscriptionHelper.validate(this.subscription, s)) {
             this.subscription = s;
             actual.onSubscribe(this);
         }

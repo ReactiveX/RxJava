@@ -96,7 +96,7 @@ public final class FlowableBuffer<T, U extends Collection<? super T>> extends Fl
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
                 actual.onSubscribe(this);
             }
@@ -137,7 +137,7 @@ public final class FlowableBuffer<T, U extends Collection<? super T>> extends Fl
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validate(n)) {
                 long m = BackpressureHelper.multiplyCap(n, count);
                 s.request(m);
             }
@@ -173,7 +173,7 @@ public final class FlowableBuffer<T, U extends Collection<? super T>> extends Fl
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
                 actual.onSubscribe(this);
             }
@@ -231,7 +231,7 @@ public final class FlowableBuffer<T, U extends Collection<? super T>> extends Fl
         
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validate(n)) {
                 return;
             }
             // requesting the first set of buffers must happen only once

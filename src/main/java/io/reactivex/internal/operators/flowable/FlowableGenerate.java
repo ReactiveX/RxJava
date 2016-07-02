@@ -76,7 +76,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
         
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validate(n)) {
                 return;
             }
             if (BackpressureHelper.add(this, n) != 0L) {

@@ -68,7 +68,7 @@ public final class FlowableSampleTimed<T> extends Flowable<T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
                 actual.onSubscribe(this);
                 if (timer.get() == null) {
@@ -105,7 +105,7 @@ public final class FlowableSampleTimed<T> extends Flowable<T> {
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validate(n)) {
                 BackpressureHelper.add(requested, n);
             }
         }

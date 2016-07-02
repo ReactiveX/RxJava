@@ -28,7 +28,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.DefaultObserver;
@@ -84,7 +84,7 @@ public class FlowableConcatTest {
 
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 // simulate what would happen in an observable
                 observer.onNext(odds);
                 observer.onNext(even);
@@ -356,7 +356,7 @@ public class FlowableConcatTest {
 
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 // simulate what would happen in an observable
                 observer.onNext(Flowable.create(w1));
                 observer.onNext(Flowable.create(w2));
@@ -704,7 +704,7 @@ public class FlowableConcatTest {
 
             @Override
             public void subscribe(Subscriber<? super String> s) {
-                s.onSubscribe(EmptySubscription.INSTANCE);
+                s.onSubscribe(new BooleanSubscription());
                 s.onNext("hello");
                 s.onComplete();
                 s.onComplete();
@@ -731,7 +731,7 @@ public class FlowableConcatTest {
                 Flowable<Integer> observable = Flowable.just(t)
                         .subscribeOn(sch)
                 ;
-                FlowProcessor<Integer> subject = UnicastProcessor.create();
+                FlowProcessor<Integer> subject = new UnicastProcessor<Integer>();
                 observable.subscribe(subject);
                 return subject;
             }

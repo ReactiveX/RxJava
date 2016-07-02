@@ -327,7 +327,7 @@ public final class AsyncProcessor<T> extends FlowProcessor<T> {
         
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validateRequest(n)) {
+            if (!SubscriptionHelper.validate(n)) {
                 return;
             }
             for (;;) {

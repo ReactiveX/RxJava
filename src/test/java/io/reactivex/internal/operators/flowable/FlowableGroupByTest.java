@@ -186,7 +186,7 @@ public class FlowableGroupByTest {
 
             @Override
             public void subscribe(final Subscriber<? super Event> observer) {
-                observer.onSubscribe(EmptySubscription.INSTANCE);
+                observer.onSubscribe(new BooleanSubscription());
                 System.out.println("*** Subscribing to EventStream ***");
                 subscribeCounter.incrementAndGet();
                 new Thread(new Runnable() {
@@ -598,7 +598,7 @@ public class FlowableGroupByTest {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {
-                sub.onSubscribe(EmptySubscription.INSTANCE);
+                sub.onSubscribe(new BooleanSubscription());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -677,7 +677,7 @@ public class FlowableGroupByTest {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {
-                sub.onSubscribe(EmptySubscription.INSTANCE);
+                sub.onSubscribe(new BooleanSubscription());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -769,7 +769,7 @@ public class FlowableGroupByTest {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {
-                sub.onSubscribe(EmptySubscription.INSTANCE);
+                sub.onSubscribe(new BooleanSubscription());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -846,7 +846,7 @@ public class FlowableGroupByTest {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {
-                sub.onSubscribe(EmptySubscription.INSTANCE);
+                sub.onSubscribe(new BooleanSubscription());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -903,7 +903,7 @@ public class FlowableGroupByTest {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {
-                sub.onSubscribe(EmptySubscription.INSTANCE);
+                sub.onSubscribe(new BooleanSubscription());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -1433,7 +1433,7 @@ public class FlowableGroupByTest {
                 new Publisher<Integer>() {
                     @Override
                     public void subscribe(Subscriber<? super Integer> subscriber) {
-                        subscriber.onSubscribe(EmptySubscription.INSTANCE);
+                        subscriber.onSubscribe(new BooleanSubscription());
                         subscriber.onNext(0);
                         subscriber.onNext(1);
                         subscriber.onError(e);

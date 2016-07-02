@@ -26,6 +26,7 @@ import io.reactivex.internal.util.*;
 public final class FlowableFromIterable<T> extends Flowable<T> {
     
     final Iterable<? extends T> source;
+    
     public FlowableFromIterable(Iterable<? extends T> source) {
         this.source = source;
     }
@@ -33,10 +34,20 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         Iterator<? extends T> it;
-        boolean hasNext;
         try {
             it = source.iterator();
+        } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
+            EmptySubscription.error(e, s);
+            return;
+        }
 
+        subscribe(s, it);
+    }
+    
+    public static <T> void subscribe(Subscriber<? super T> s, Iterator<? extends T> it) {
+        boolean hasNext;
+        try {
             hasNext = it.hasNext();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
@@ -55,7 +66,6 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
         } else {
             s.onSubscribe(new IteratorSubscription<T>(s, it));
         }
-        
     }
     
     static abstract class BaseRangeSubscription<T> extends BasicQueueSubscription<T> {
@@ -102,7 +112,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
         @Override
         public final void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
+            if (SubscriptionHelper.validate(n)) {
                 if (BackpressureHelper.add(this, n) == 0L) {
                     if (n == Long.MAX_VALUE) {
                         fastPath();

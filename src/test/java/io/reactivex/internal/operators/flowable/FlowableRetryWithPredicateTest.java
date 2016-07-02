@@ -30,10 +30,9 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.DefaultObserver;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableRetryWithPredicateTest {
     BiPredicate<Integer, Throwable> retryTwice = new BiPredicate<Integer, Throwable>() {
@@ -75,7 +74,7 @@ public class FlowableRetryWithPredicateTest {
             int count;
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
-                t1.onSubscribe(EmptySubscription.INSTANCE);
+                t1.onSubscribe(new BooleanSubscription());
                 count++;
                 t1.onNext(0);
                 t1.onNext(1);
@@ -110,7 +109,7 @@ public class FlowableRetryWithPredicateTest {
         Flowable<Integer> source = Flowable.create(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
-                t1.onSubscribe(EmptySubscription.INSTANCE);
+                t1.onSubscribe(new BooleanSubscription());
                 t1.onNext(0);
                 t1.onNext(1);
                 t1.onError(new TestException());
@@ -139,7 +138,7 @@ public class FlowableRetryWithPredicateTest {
             int count;
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
-                t1.onSubscribe(EmptySubscription.INSTANCE);
+                t1.onSubscribe(new BooleanSubscription());
                 count++;
                 t1.onNext(0);
                 t1.onNext(1);
@@ -176,7 +175,7 @@ public class FlowableRetryWithPredicateTest {
             int count;
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
-                t1.onSubscribe(EmptySubscription.INSTANCE);
+                t1.onSubscribe(new BooleanSubscription());
                 count++;
                 t1.onNext(0);
                 t1.onNext(1);

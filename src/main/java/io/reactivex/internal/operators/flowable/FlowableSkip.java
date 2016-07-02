@@ -44,7 +44,7 @@ public final class FlowableSkip<T> extends Flowable<T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            if (SubscriptionHelper.validate(this.s, s)) {
                 long n = remaining;
                 this.s = s;
                 actual.onSubscribe(this);
