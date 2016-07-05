@@ -19,7 +19,8 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.functions.*;
+import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.queue.SpscArrayQueue;
@@ -166,7 +167,7 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
         @Override
         public void onNext(T t) {
             if (fusionMode != ASYNC && !queue.offer(t)) {
-                onError(new IllegalStateException("Queue is full?!"));
+                onError(new MissingBackpressureException("Queue is full?!"));
                 return;
             }
             drain();
@@ -363,13 +364,14 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
                 return true;
             }
             if (d) {
-                if (error != null) {
-                    Throwable e = Exceptions.terminate(error);
+                Throwable ex = error.get();
+                if (ex != null) {
+                    ex = Exceptions.terminate(error);
 
                     current = null;
                     q.clear();
 
-                    a.onError(e);
+                    a.onError(ex);
                     return true;
                 } else
                     if (empty) {
