@@ -52,7 +52,7 @@ public final class FlowableMap<T, U> extends Flowable<U> {
                 return;
             }
             
-            if (sourceMode == ASYNC) {
+            if (sourceMode != NONE) {
                 actual.onNext(null);
                 return;
             }
@@ -94,7 +94,7 @@ public final class FlowableMap<T, U> extends Flowable<U> {
                 return;
             }
             
-            if (sourceMode == ASYNC) {
+            if (sourceMode != NONE) {
                 actual.onNext(null);
                 return;
             }
@@ -116,15 +116,14 @@ public final class FlowableMap<T, U> extends Flowable<U> {
                 return false;
             }
             
-            if (sourceMode == ASYNC) {
-                actual.onNext(null);
-                return true;
+            if (sourceMode != NONE) {
+                return actual.tryOnNext(null);
             }
             
             U v;
             
             try {
-                v = mapper.apply(t);
+                v = nullCheck(mapper.apply(t), "The mapper function returned a null value.");
             } catch (Throwable ex) {
                 fail(ex);
                 return true;

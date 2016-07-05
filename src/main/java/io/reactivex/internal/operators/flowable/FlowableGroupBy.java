@@ -24,7 +24,7 @@ import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, V>> {
@@ -48,8 +48,8 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
     }
     
     public static final class GroupBySubscriber<T, K, V> 
-    extends AtomicInteger
-    implements Subscriber<T>, Subscription {
+    extends BasicIntQueueSubscription<GroupedFlowable<K, V>>
+    implements Subscriber<T> {
         /** */
         private static final long serialVersionUID = -3688291656102519502L;
         
@@ -73,6 +73,8 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         
         Throwable error;
         volatile boolean done;
+        
+        boolean outputFused;
         
         public GroupBySubscriber(Subscriber<? super GroupedFlowable<K, V>> actual, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
             this.actual = actual;
@@ -100,56 +102,50 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
             }
 
             final Queue<GroupedFlowable<K, V>> q = this.queue;
-            final Subscriber<? super GroupedFlowable<K, V>> a = this.actual;
 
             K key;
             try {
                 key = keySelector.apply(t);
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 s.cancel();
-                errorAll(a, q, ex);
+                onError(ex);
                 return;
             }
             
-            boolean notNew = true;
+            boolean newGroup = false;
             Object mapKey = key != null ? key : NULL_KEY;
             GroupedUnicast<K, V> group = groups.get(mapKey);
             if (group == null) {
                 // if the main has been cancelled, stop creating groups
                 // and skip this value
-                if (!cancelled.get()) {
-                    group = GroupedUnicast.createWith(key, bufferSize, this, delayError);
-                    groups.put(mapKey, group);
-                    
-                    groupCount.getAndIncrement();
-                    
-                    notNew = false;
-                    q.offer(group);
-                    drain();
-                } else {
+                if (cancelled.get()) {
                     return;
                 }
+                
+                group = GroupedUnicast.createWith(key, bufferSize, this, delayError);
+                groups.put(mapKey, group);
+                
+                groupCount.getAndIncrement();
+                
+                newGroup = true;
             }
             
             V v;
             try {
-                v = valueSelector.apply(t);
+                v = Objects.requireNonNull(valueSelector.apply(t), "The valueSelector returned null");
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 s.cancel();
-                errorAll(a, q, ex);
+                onError(ex);
                 return;
             }
             
-            if (v == null) {
-                s.cancel();
-                errorAll(a, q, new NullPointerException("The valueSelector returned null"));
-                return;
-            }
-
             group.onNext(v);
 
-            if (notNew) {
-                s.request(1);
+            if (newGroup) {
+                q.offer(group);
+                drain();
             }
         }
         
@@ -159,9 +155,13 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
                 RxJavaPlugins.onError(t);
                 return;
             }
+            for (GroupedUnicast<K, V> g : groups.values()) {
+                g.onError(t);
+            }
+            groups.clear();
+            
             error = t;
             done = true;
-            groupCount.decrementAndGet();
             drain();
         }
         
@@ -170,8 +170,11 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
             if (done) {
                 return;
             }
+            for (GroupedUnicast<K, V> g : groups.values()) {
+                g.onComplete();
+            }
+            groups.clear();
             done = true;
-            groupCount.decrementAndGet();
             drain();
         }
 
@@ -199,6 +202,10 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
             groups.remove(mapKey);
             if (groupCount.decrementAndGet() == 0) {
                 s.cancel();
+                
+                if (getAndIncrement() == 0) {
+                    queue.clear();
+                }
             }
         }
         
@@ -206,17 +213,63 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
             if (getAndIncrement() != 0) {
                 return;
             }
-            
+
+            if (outputFused) {
+                drainFused();
+            } else {
+                drainNormal();
+            }
+        }
+        
+        void drainFused() {
             int missed = 1;
             
             final Queue<GroupedFlowable<K, V>> q = this.queue;
             final Subscriber<? super GroupedFlowable<K, V>> a = this.actual;
             
             for (;;) {
-                
-                if (checkTerminated(done, q.isEmpty(), a, q)) {
+                if (cancelled.get()) {
+                    q.clear();
                     return;
                 }
+                
+                boolean d = done;
+                
+                if (d && !delayError) {
+                    Throwable ex = error;
+                    if (ex != null) {
+                        q.clear();
+                        a.onError(ex);
+                        return;
+                    }
+                }
+                
+                a.onNext(null);
+                
+                if (d) {
+                    Throwable ex = error;
+                    if (ex != null) {
+                        a.onError(ex);
+                    } else {
+                        a.onComplete();
+                    }
+                    return;
+                }
+                
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    return;
+                }
+            }
+        }
+        
+        void drainNormal() {
+            int missed = 1;
+            
+            final Queue<GroupedFlowable<K, V>> q = this.queue;
+            final Subscriber<? super GroupedFlowable<K, V>> a = this.actual;
+            
+            for (;;) {
                 
                 long r = requested.get();
                 long e = 0L;
@@ -241,6 +294,10 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
                     e++;
                 }
                 
+                if (e == r && checkTerminated(done, q.isEmpty(), a, q)) {
+                    return;
+                }
+                
                 if (e != 0L) {
                     if (r != Long.MAX_VALUE) {
                         requested.addAndGet(-e);
@@ -255,39 +312,61 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
             }
         }
         
-        void errorAll(Subscriber<? super GroupedFlowable<K, V>> a, Queue<?> q, Throwable ex) {
-            q.clear();
-            List<GroupedUnicast<K, V>> list = new ArrayList<GroupedUnicast<K, V>>(groups.values());
-            groups.clear();
-            
-            for (GroupedUnicast<K, V> e : list) {
-                e.onError(ex);
+        boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, Queue<?> q) {
+            if (cancelled.get()) {
+                q.clear();
+                return true;
             }
             
-            a.onError(ex);
-        }
-        
-        boolean checkTerminated(boolean d, boolean empty, 
-                Subscriber<? super GroupedFlowable<K, V>> a, Queue<?> q) {
-            if (d) {
-                Throwable err = error;
-                if (err != null) {
-                    errorAll(a, q, err);
-                    return true;
-                } else
-                if (empty) {
-                    List<GroupedUnicast<K, V>> list = new ArrayList<GroupedUnicast<K, V>>(groups.values());
-                    groups.clear();
-                    
-                    for (GroupedUnicast<K, V> e : list) {
-                        e.onComplete();
+            if (delayError) {
+                if (d && empty) {
+                    Throwable ex = error;
+                    if (ex != null) {
+                        a.onError(ex);
+                    } else {
+                        a.onComplete();
                     }
-                    
-                    actual.onComplete();
                     return true;
                 }
+            } else {
+                if (d) {
+                    Throwable ex = error;
+                    if (ex != null) {
+                        q.clear();
+                        a.onError(ex);
+                        return true;
+                    } else if (empty) {
+                        a.onComplete();
+                        return true;
+                    }
+                }
             }
+            
             return false;
+        }
+        
+        @Override
+        public int requestFusion(int mode) {
+            if ((mode & ASYNC) != 0) {
+                outputFused = true;
+                return ASYNC;
+            }
+            return NONE;
+        }
+        
+        @Override
+        public GroupedFlowable<K, V> poll() {
+            return queue.poll();
+        }
+        
+        @Override
+        public void clear() {
+            queue.clear();
+        }
+        
+        @Override
+        public boolean isEmpty() {
+            return queue.isEmpty();
         }
     }
     
@@ -323,7 +402,7 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         }
     }
     
-    static final class State<T, K> extends AtomicInteger implements Subscription, Publisher<T> {
+    static final class State<T, K> extends BasicIntQueueSubscription<T> implements Publisher<T> {
         /** */
         private static final long serialVersionUID = -3852313036005250360L;
 
@@ -342,6 +421,10 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         final AtomicReference<Subscriber<? super T>> actual = new AtomicReference<Subscriber<? super T>>();
 
         final AtomicBoolean once = new AtomicBoolean();
+        
+        boolean outputFused;
+        
+        int produced;
 
         public State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) {
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
@@ -362,9 +445,7 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         @Override
         public void cancel() {
             if (cancelled.compareAndSet(false, true)) {
-                if (getAndIncrement() == 0) {
-                    parent.cancel(key);
-                }
+                parent.cancel(key);
             }
         }
         
@@ -404,6 +485,62 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
             if (getAndIncrement() != 0) {
                 return;
             }
+            if (outputFused) {
+                drainFused();
+            } else {
+                drainNormal();
+            }
+        }
+        
+        void drainFused() {
+            int missed = 1;
+            
+            final Queue<T> q = this.queue;
+            Subscriber<? super T> a = this.actual.get();
+            
+            for (;;) {
+                if (a != null) {
+                    if (cancelled.get()) {
+                        q.clear();
+                        return;
+                    }
+                    
+                    boolean d = done;
+                    
+                    if (d && !delayError) {
+                        Throwable ex = error;
+                        if (ex != null) {
+                            q.clear();
+                            a.onError(ex);
+                            return;
+                        }
+                    }
+                    
+                    a.onNext(null);
+                    
+                    if (d) {
+                        Throwable ex = error;
+                        if (ex != null) {
+                            a.onError(ex);
+                        } else {
+                            a.onComplete();
+                        }
+                        return;
+                    }
+                }
+                
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    return;
+                }
+                
+                if (a == null) {
+                    a = this.actual.get();
+                }
+            }
+        }
+        
+        void drainNormal() {
             int missed = 1;
             
             final Queue<T> q = queue;
@@ -411,10 +548,6 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
             Subscriber<? super T> a = actual.get();
             for (;;) {
                 if (a != null) {
-                    if (checkTerminated(done, q.isEmpty(), a, delayError)) {
-                        return;
-                    }
-                    
                     long r = requested.get();
                     long e = 0;
                     
@@ -434,6 +567,10 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
                         a.onNext(v);
                         
                         e++;
+                    }
+                    
+                    if (e == r && checkTerminated(done, q.isEmpty(), a, delayError)) {
+                        return;
                     }
                     
                     if (e != 0L) {
@@ -457,7 +594,6 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a, boolean delayError) {
             if (cancelled.get()) {
                 queue.clear();
-                parent.cancel(key);
                 return true;
             }
             
@@ -487,6 +623,40 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
             }
             
             return false;
+        }
+
+        @Override
+        public int requestFusion(int mode) {
+            if ((mode & ASYNC) != 0) {
+                outputFused = true;
+                return ASYNC;
+            }
+            return NONE;
+        }
+
+        @Override
+        public T poll() {
+            T v = queue.poll();
+            if (v != null) {
+                produced++;
+                return v;
+            }
+            int p = produced;
+            if (p != 0) {
+                produced = 0;
+                parent.s.request(p);
+            }
+            return null;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return queue.isEmpty();
+        }
+
+        @Override
+        public void clear() {
+            queue.clear();
         }
     }
 }
