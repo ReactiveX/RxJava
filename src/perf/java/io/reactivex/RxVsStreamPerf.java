@@ -85,32 +85,32 @@ public class RxVsStreamPerf {
     
     @Benchmark
     public void range(Blackhole bh) {
-        range.subscribe(new LatchedObserver<Integer>(bh));
+        range.subscribe(new PerfSubscriber(bh));
     }
 
     @Benchmark
     public void rangeNbp(Blackhole bh) {
-        rangeNbp.subscribe(new LatchedNbpObserver<Integer>(bh));
+        rangeNbp.subscribe(new PerfObserver(bh));
     }
 
     @Benchmark
     public void rangeFlatMap(Blackhole bh) {
-        rangeFlatMap.subscribe(new LatchedObserver<Integer>(bh));
+        rangeFlatMap.subscribe(new PerfSubscriber(bh));
     }
 
     @Benchmark
     public void rangeNbpFlatMap(Blackhole bh) {
-        rangeNbpFlatMap.subscribe(new LatchedNbpObserver<Integer>(bh));
+        rangeNbpFlatMap.subscribe(new PerfObserver(bh));
     }
     
     @Benchmark
     public void rangeFlatMapJust(Blackhole bh) {
-        rangeFlatMapJust.subscribe(new LatchedObserver<Integer>(bh));
+        rangeFlatMapJust.subscribe(new PerfSubscriber(bh));
     }
 
     @Benchmark
     public void rangeNbpFlatMapJust(Blackhole bh) {
-        rangeNbpFlatMapJust.subscribe(new LatchedNbpObserver<Integer>(bh));
+        rangeNbpFlatMapJust.subscribe(new PerfObserver(bh));
     }
 
 }
