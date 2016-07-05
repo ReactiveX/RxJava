@@ -52,7 +52,7 @@ public class OperatorFlatMapPerf {
 
     @Benchmark
     public void flatMapIntPassthruAsync(Input input) throws InterruptedException {
-        LatchedObserver<Integer> latchedObserver = input.newLatchedObserver();
+        PerfSubscriber latchedObserver = input.newLatchedObserver();
         input.observable.flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer i) {

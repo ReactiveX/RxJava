@@ -16,18 +16,22 @@ package io.reactivex;
 import java.util.concurrent.CountDownLatch;
 
 import org.openjdk.jmh.infra.Blackhole;
+import org.reactivestreams.*;
 
-import io.reactivex.subscribers.DefaultObserver;
-
-public class LatchedObserver<T> extends DefaultObserver<T> {
+public class PerfSubscriber implements Subscriber<Object> {
 
     public CountDownLatch latch = new CountDownLatch(1);
     private final Blackhole bh;
 
-    public LatchedObserver(Blackhole bh) {
+    public PerfSubscriber(Blackhole bh) {
         this.bh = bh;
     }
 
+    @Override
+    public void onSubscribe(Subscription s) {
+        s.request(Long.MAX_VALUE);
+    }
+    
     @Override
     public void onComplete() {
         latch.countDown();
@@ -39,7 +43,7 @@ public class LatchedObserver<T> extends DefaultObserver<T> {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(Object t) {
         bh.consume(t);
     }
 

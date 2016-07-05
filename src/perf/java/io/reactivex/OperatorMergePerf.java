@@ -37,7 +37,7 @@ public class OperatorMergePerf {
                         return Flowable.just(v);
                     }
                 });
-        LatchedObserver<Integer> o = input.newLatchedObserver();
+        PerfSubscriber o = input.newLatchedObserver();
         Flowable.merge(os).subscribe(o);
 
         if (input.size == 1) {
@@ -56,7 +56,7 @@ public class OperatorMergePerf {
                     return Flowable.range(0, input.size);
             }
         });
-        LatchedObserver<Integer> o = input.newLatchedObserver();
+        PerfSubscriber o = input.newLatchedObserver();
         Flowable.merge(os).subscribe(o);
         
         if (input.size == 1) {
@@ -74,7 +74,7 @@ public class OperatorMergePerf {
                     return Flowable.range(0, input.size);
             }
         });
-        LatchedObserver<Integer> o = input.newLatchedObserver();
+        PerfSubscriber o = input.newLatchedObserver();
         Flowable.merge(os).subscribe(o);
         if (input.size == 1) {
             while (o.latch.getCount() != 0);
@@ -91,7 +91,7 @@ public class OperatorMergePerf {
                     return Flowable.range(0, input.size).subscribeOn(Schedulers.computation());
             }
         });
-        LatchedObserver<Integer> o = input.newLatchedObserver();
+        PerfSubscriber o = input.newLatchedObserver();
         Flowable.merge(os).subscribe(o);
         if (input.size == 1) {
             while (o.latch.getCount() != 0);
@@ -102,7 +102,7 @@ public class OperatorMergePerf {
 
     @Benchmark
     public void mergeTwoAsyncStreamsOfN(final InputThousand input) throws InterruptedException {
-        LatchedObserver<Integer> o = input.newLatchedObserver();
+        PerfSubscriber o = input.newLatchedObserver();
         Flowable<Integer> ob = Flowable.range(0, input.size).subscribeOn(Schedulers.computation());
         Flowable.merge(ob, ob).subscribe(o);
         if (input.size == 1) {
@@ -114,7 +114,7 @@ public class OperatorMergePerf {
 
     @Benchmark
     public void mergeNSyncStreamsOf1(final InputForMergeN input) throws InterruptedException {
-        LatchedObserver<Integer> o = input.newLatchedObserver();
+        PerfSubscriber o = input.newLatchedObserver();
         Flowable.merge(input.observables).subscribe(o);
         if (input.size == 1) {
             while (o.latch.getCount() != 0);
@@ -141,8 +141,8 @@ public class OperatorMergePerf {
             }
         }
 
-        public LatchedObserver<Integer> newLatchedObserver() {
-            return new LatchedObserver<Integer>(bh);
+        public PerfSubscriber newLatchedObserver() {
+            return new PerfSubscriber(bh);
         }
     }
 

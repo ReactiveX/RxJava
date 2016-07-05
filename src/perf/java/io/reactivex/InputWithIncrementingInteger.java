@@ -78,8 +78,8 @@ public abstract class InputWithIncrementingInteger {
 
     }
 
-    public LatchedObserver<Integer> newLatchedObserver() {
-        return new LatchedObserver<Integer>(bh);
+    public PerfSubscriber newLatchedObserver() {
+        return new PerfSubscriber(bh);
     }
 
     public Subscriber<Integer> newSubscriber() {

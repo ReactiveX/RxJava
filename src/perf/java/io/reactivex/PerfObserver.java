@@ -19,10 +19,10 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import io.reactivex.disposables.Disposable;
 
-public final class LatchedNbpObserver<T> implements Observer<T> {
+public final class PerfObserver implements Observer<Object> {
     final CountDownLatch cdl;
     final Blackhole bh;
-    public LatchedNbpObserver(Blackhole bh) {
+    public PerfObserver(Blackhole bh) {
         this.bh = bh;
         this.cdl = new CountDownLatch(1);
     }
@@ -31,7 +31,7 @@ public final class LatchedNbpObserver<T> implements Observer<T> {
         
     }
     @Override
-    public void onNext(T value) {
+    public void onNext(Object value) {
         bh.consume(value);
     }
     @Override
