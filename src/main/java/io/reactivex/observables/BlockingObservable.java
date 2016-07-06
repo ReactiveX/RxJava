@@ -163,152 +163,67 @@ public final class BlockingObservable<T> implements Iterable<T> {
     }
 
     public Optional<T> firstOption() {
-        return firstOption(o);
-    }
-    
-    static <T> Optional<T> firstOption(Observable<? extends T> o) {
-        final AtomicReference<T> value = new AtomicReference<T>();
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        final CountDownLatch cdl = new CountDownLatch(1);
-        final SerialDisposable sd = new SerialDisposable();
-        
-        o.subscribe(new Observer<T>() {
-            Disposable s;
-            @Override
-            public void onSubscribe(Disposable s) {
-                this.s = s;
-                sd.replace(s);
-            }
-            
-            @Override
-            public void onNext(T t) {
-                s.dispose();
-                value.lazySet(t);
-                cdl.countDown();
-            }
-            
-            @Override
-            public void onError(Throwable t) {
-                error.lazySet(t);
-                cdl.countDown();
-            }
-            
-            @Override
-            public void onComplete() {
-                cdl.countDown();
-            }
-        });
-        
-        try {
-            cdl.await();
-        } catch (InterruptedException ex) {
-            sd.dispose();
-            Exceptions.propagate(ex);
-        }
-        
-        Throwable e = error.get();
-        if (e != null) {
-            Exceptions.propagate(e);
-        }
-        T v = value.get();
+        T v = first(o);
         return v != null ? Optional.of(v) : Optional.<T>empty();
     }
     
+    static <T> T first(Observable<? extends T> o) {
+        BlockingFirstObserver<T> s = new BlockingFirstObserver<T>();
+        o.subscribe(s);
+        return s.blockingGet();
+    }
+    
     public T first() {
-        Optional<T> o = firstOption();
-        if (o.isPresent()) {
-            return o.get();
+        T v = first(o);
+        if (v != null) {
+            return v;
         }
         throw new NoSuchElementException();
     }
     
     public T first(T defaultValue) {
-        Optional<T> o = firstOption();
-        if (o.isPresent()) {
-            return o.get();
+        T v = first(o);
+        if (v != null) {
+            return v;
         }
         return defaultValue;
     }
     
     public Optional<T> lastOption() {
-        return lastOption(o);
-    }
-    
-    static <T> Optional<T> lastOption(Observable<? extends T> o) {
-        final AtomicReference<T> value = new AtomicReference<T>();
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        final CountDownLatch cdl = new CountDownLatch(1);
-        final SerialDisposable sd = new SerialDisposable();
-        
-        o.subscribe(new Observer<T>() {
-            @Override
-            public void onSubscribe(Disposable s) {
-                sd.replace(s);
-            }
-            
-            @Override
-            public void onNext(T t) {
-                value.lazySet(t);
-            }
-            
-            @Override
-            public void onError(Throwable t) {
-                error.lazySet(t);
-                cdl.countDown();
-            }
-            
-            @Override
-            public void onComplete() {
-                cdl.countDown();
-            }
-        });
-        
-        try {
-            cdl.await();
-        } catch (InterruptedException ex) {
-            sd.dispose();
-            Exceptions.propagate(ex);
-        }
-        
-        Throwable e = error.get();
-        if (e != null) {
-            Exceptions.propagate(e);
-        }
-        T v = value.get();
+        T v = last(o);
         return v != null ? Optional.of(v) : Optional.<T>empty();
     }
     
+    static <T> T last(Observable<? extends T> o) {
+        BlockingLastObserver<T> s = new BlockingLastObserver<T>();
+        o.subscribe(s);
+        return s.blockingGet();
+    }
+    
     public T last() {
-        Optional<T> o = lastOption();
-        if (o.isPresent()) {
-            return o.get();
+        T v = last(o);
+        if (v != null) {
+            return v;
         }
         throw new NoSuchElementException();
     }
     
     public T last(T defaultValue) {
-        Optional<T> o = lastOption();
-        if (o.isPresent()) {
-            return o.get();
+        T v = last(o);
+        if (v != null) {
+            return v;
         }
         return defaultValue;
     }
     
+    @SuppressWarnings("unchecked")
     public T single() {
-        Optional<T> o = firstOption(this.o.single());
-        if (o.isPresent()) {
-            return o.get();
-        }
-        throw new NoSuchElementException();
+        return first(new ObservableSingle<T>((Observable<T>)this.o, null));
     }
     
+    @SuppressWarnings("unchecked")
     public T single(T defaultValue) {
-        @SuppressWarnings("unchecked")
-        Optional<T> o = firstOption(((Observable<T>)this.o).single(defaultValue));
-        if (o.isPresent()) {
-            return o.get();
-        }
-        return defaultValue;
+        return first(new ObservableSingle<T>((Observable<T>)this.o, defaultValue));
     }
     
     public Iterable<T> mostRecent(T initialValue) {
