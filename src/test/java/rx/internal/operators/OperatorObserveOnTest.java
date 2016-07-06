@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -188,8 +189,8 @@ public class OperatorObserveOnTest {
         o1.subscribe(observer1);
         o2.subscribe(observer2);
 
-        scheduler1.advanceTimeBy(1, TimeUnit.SECONDS);
-        scheduler2.advanceTimeBy(1, TimeUnit.SECONDS);
+        scheduler1.advanceTimeBy(1, SECONDS);
+        scheduler2.advanceTimeBy(1, SECONDS);
 
         inOrder1.verify(observer1, times(1)).onNext(1);
         inOrder1.verify(observer1, times(1)).onNext(2);
@@ -368,7 +369,7 @@ public class OperatorObserveOnTest {
 
         inOrder.verify(o, never()).onError(any(TestException.class));
 
-        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        testScheduler.advanceTimeBy(1, SECONDS);
 
         inOrder.verify(o).onError(any(TestException.class));
         inOrder.verify(o, never()).onNext(anyInt());
@@ -384,7 +385,7 @@ public class OperatorObserveOnTest {
                 .observeOn(testScheduler)
                 .subscribe(observer);
         subscription.unsubscribe();
-        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        testScheduler.advanceTimeBy(1, SECONDS);
 
         final InOrder inOrder = inOrder(observer);
 
@@ -599,7 +600,7 @@ public class OperatorObserveOnTest {
             }
             ps.onCompleted();
             
-            test.advanceTimeBy(1, TimeUnit.SECONDS);
+            test.advanceTimeBy(1, SECONDS);
             
             ts.assertNoValues();
             ts.assertError(MissingBackpressureException.class);
@@ -768,7 +769,7 @@ public class OperatorObserveOnTest {
                         }
                     }
                 });
-        assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertTrue(latch.await(10, SECONDS));
         assertEquals(100, count.get());
 
     }
@@ -807,7 +808,7 @@ public class OperatorObserveOnTest {
                         latch.countDown();
                     }
                 });
-        assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertTrue(latch.await(10, SECONDS));
         assertEquals(1, requests.size());
     }
 
@@ -826,21 +827,21 @@ public class OperatorObserveOnTest {
         ts.assertNoErrors();
         ts.assertNotCompleted();
         
-        s.advanceTimeBy(1, TimeUnit.SECONDS);
+        s.advanceTimeBy(1, SECONDS);
 
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotCompleted();
 
         ts.requestMore(1);
-        s.advanceTimeBy(1, TimeUnit.SECONDS);
+        s.advanceTimeBy(1, SECONDS);
         
         ts.assertValues(1);
         ts.assertNoErrors();
         ts.assertNotCompleted();
         
         ts.requestMore(3); // requesting 2 doesn't switch to the error() source for some reason in concat.
-        s.advanceTimeBy(1, TimeUnit.SECONDS);
+        s.advanceTimeBy(1, SECONDS);
         
         ts.assertValues(1, 2, 3);
         ts.assertError(TestException.class);
@@ -856,7 +857,7 @@ public class OperatorObserveOnTest {
 
         source.observeOn(Schedulers.computation(), true).subscribe(ts);
         
-        ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
+        ts.awaitTerminalEvent(2, SECONDS);
         ts.assertValues(1, 2, 3);
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
@@ -870,7 +871,7 @@ public class OperatorObserveOnTest {
 
         Observable.range(1, 10).observeOn(test).subscribe(ts);
 
-        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        test.advanceTimeBy(1, SECONDS);
 
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -878,7 +879,7 @@ public class OperatorObserveOnTest {
         
         ts.requestMore(10);
 
-        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        test.advanceTimeBy(1, SECONDS);
         
         ts.assertValueCount(10);
         ts.assertNoErrors();
@@ -902,15 +903,15 @@ public class OperatorObserveOnTest {
         })
         .observeOn(test, 16).subscribe(ts);
         
-        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        test.advanceTimeBy(1, SECONDS);
         ts.requestMore(20);
-        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        test.advanceTimeBy(1, SECONDS);
         ts.requestMore(10);
-        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        test.advanceTimeBy(1, SECONDS);
         ts.requestMore(50);
-        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        test.advanceTimeBy(1, SECONDS);
         ts.requestMore(35);
-        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        test.advanceTimeBy(1, SECONDS);
         
         ts.assertValueCount(100);
         ts.assertCompleted();
@@ -965,5 +966,54 @@ public class OperatorObserveOnTest {
         } catch (IllegalArgumentException ex) {
             assertEquals("n > 0 required but it was -99", ex.getMessage());
         }
+    }
+
+    @Test
+    public void concurrentObserveOn() throws InterruptedException {
+        final int numberOfThreads = 100000;
+        final PublishSubject<Integer> publishSubject = PublishSubject.create();
+
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+
+        publishSubject
+            .observeOn(Schedulers.computation())
+            .subscribe(new Observer<Integer>() {
+                @Override public void onCompleted() {
+                    // no-op.
+                }
+
+                @Override public void onError(Throwable e) {
+                    if (!error.compareAndSet(null, e)) {
+                        error.set(new AssertionError("Two or more errors occurred during test"));
+                    }
+                }
+
+                @Override public void onNext(Integer integer) {
+                    // no-op.
+                }
+            });
+
+        final CountDownLatch latch = new CountDownLatch(numberOfThreads);
+        final List<Thread> threads = new ArrayList<Thread>(numberOfThreads);
+        for (int i = 0; i < numberOfThreads; i++) {
+            final int iCopy = i;
+            threads.add(new Thread(new Runnable() {
+                @Override public void run() {
+                    publishSubject.onNext(iCopy);
+                    latch.countDown();
+                }
+            }));
+        }
+
+        for (Thread thread : threads) {
+            thread.start();
+        }
+
+        if (!latch.await(60, SECONDS)) {
+            throw new AssertionError("Timeout");
+        }
+
+        assertTrue("Expected IllegalStateException but was " + error.get(), error.get() instanceof IllegalStateException);
+        assertEquals("observeOn received events from multiple threads, serialize data emission!", error.get().getMessage());
     }
 }

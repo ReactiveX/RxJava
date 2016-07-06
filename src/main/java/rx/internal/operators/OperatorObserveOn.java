@@ -97,6 +97,8 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         final Queue<Object> queue;
         /** The emission threshold that should trigger a replenishing request. */
         final int limit;
+
+        final int calculatedSize;
         
         // the status of the current stream
         volatile boolean finished;
@@ -121,7 +123,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             this.recursiveScheduler = scheduler.createWorker();
             this.delayError = delayError;
             this.on = NotificationLite.instance();
-            int calculatedSize = (bufferSize > 0) ? bufferSize : RxRingBuffer.SIZE;
+            calculatedSize = (bufferSize > 0) ? bufferSize : RxRingBuffer.SIZE;
             // this formula calculates the 75% of the bufferSize, rounded up to the next integer
             this.limit = calculatedSize - (calculatedSize >> 2);
             if (UnsafeAccess.isUnsafeAvailable()) {
@@ -159,7 +161,15 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                 return;
             }
             if (!queue.offer(on.next(t))) {
-                onError(new MissingBackpressureException());
+                // False if:
+                //   1: capacity exceeded -> MissingBackpressureException.
+                //   2: concurrent write to queue occurred -> IllegalStateException.
+
+                if (queue.size() >= calculatedSize - 1) { // For some reason queue can return size - 1 even though real size is +1.
+                    onError(new MissingBackpressureException());
+                } else {
+                    onError(new IllegalStateException("observeOn received events from multiple threads, serialize data emission!"));
+                }
                 return;
             }
             schedule();
