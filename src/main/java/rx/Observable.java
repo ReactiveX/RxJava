@@ -4737,15 +4737,13 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      */
     public final <R> Observable<R> collect(Func0<R> stateFactory, final Action2<R, ? super T> collector) {
-        Func2<R, T, R> accumulator = InternalObservableUtils.createCollectorCaller(collector);
-        
         /*
          * Discussion and confirmation of implementation at
          * https://github.com/ReactiveX/RxJava/issues/423#issuecomment-27642532
          * 
          * It should use last() not takeLast(1) since it needs to emit an error if the sequence is empty.
          */
-        return lift(new OperatorScan<R, T>(stateFactory, accumulator)).last();
+        return create(new OnSubscribeCollect<T, R>(this, stateFactory, collector));
     }
 
     /**
@@ -7899,7 +7897,7 @@ public class Observable<T> {
          * 
          * It should use last() not takeLast(1) since it needs to emit an error if the sequence is empty.
          */
-        return scan(accumulator).last();
+        return create(new OnSubscribeReduce<T>(this, accumulator));
     }
 
     /**
@@ -7947,7 +7945,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public final <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
-        return scan(initialValue, accumulator).takeLast(1);
+        return create(new OnSubscribeReduceSeed<T, R>(this, initialValue, accumulator));
     }
     
     /**
@@ -10154,7 +10152,7 @@ public class Observable<T> {
         if (count == 0) {
             return ignoreElements();
         } else if (count == 1) {
-            return lift(OperatorTakeLastOne.<T>instance());
+            return create(new OnSubscribeTakeLastOne<T>(this));
         } else {
             return lift(new OperatorTakeLast<T>(count));
         }

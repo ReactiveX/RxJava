@@ -83,17 +83,17 @@ public class DeferredScalarPerf {
         } );
     }
     
-//    @Benchmark
+    @Benchmark
     public void reduce(Blackhole bh) {
         reduce.subscribe(new LatchedObserver<Integer>(bh));
     }
 
-//    @Benchmark
+    @Benchmark
     public void reduceSeed(Blackhole bh) {
         reduceSeed.subscribe(new LatchedObserver<Integer>(bh));
     }
 
-//    @Benchmark
+    @Benchmark
     public void last(Blackhole bh) {
         last.subscribe(new LatchedObserver<Integer>(bh));
     }
