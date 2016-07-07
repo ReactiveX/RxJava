@@ -16,6 +16,8 @@
 
 package rx.internal.operators;
 
+import java.util.NoSuchElementException;
+
 import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.Exceptions;
@@ -91,8 +93,10 @@ public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
             Object o = value;
             if (o != EMPTY) {
                 actual.onNext((T)o);
+                actual.onCompleted();
+            } else {
+                actual.onError(new NoSuchElementException());
             }
-            actual.onCompleted();
         }
         
         void downstreamRequest(long n) {
