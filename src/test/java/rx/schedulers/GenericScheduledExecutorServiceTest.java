@@ -26,7 +26,6 @@ public class GenericScheduledExecutorServiceTest {
             });
             
             Schedulers.shutdown();
-            // start() is package private so had to move this test here
             Schedulers.start();
             
             Assert.assertSame(exec, GenericScheduledExecutorService.getInstance());
