@@ -60,8 +60,8 @@ public class Observable<T> {
     }
 
     /**
-     * <b>This method requires advanced knowledge about building operators and data sources; please consider
-     * other standard methods first;</b> 
+     * <strong>This method requires advanced knowledge about building operators and data sources; please consider
+     * other standard methods first;</strong> 
      * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
      * it.
      * <p>
@@ -208,7 +208,7 @@ public class Observable<T> {
      * (enabling chaining). 
      * 
      * @param <R> the output type of the conversion function
-     * @param conversion a function that converts from this {@code Observable<T>} to an {@code R}
+     * @param conversion a function that converts from the source {@code Observable<T>} to an {@code R}
      * @return an instance of R created by the provided conversion function
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
@@ -234,8 +234,8 @@ public class Observable<T> {
     }
     
     /**
-     * <b>This method requires advanced knowledge about building operators; please consider
-     * other standard composition methods first;</b>
+     * <strong>This method requires advanced knowledge about building operators; please consider
+     * other standard composition methods first;</strong>
      * Lifts a function to the current Observable and returns a new Observable that when subscribed to will pass
      * the values of the current Observable through the Operator function.
      * <p>
@@ -317,7 +317,7 @@ public class Observable<T> {
      * <img width="640" height="295" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toSingle.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator ignores backpressure on this {@code Observable} and the returned {@code Single} 
+     *  <dd>The operator ignores backpressure on the source {@code Observable} and the returned {@code Single} 
      *  does not have a notion of backpressure.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -346,7 +346,7 @@ public class Observable<T> {
      * alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator ignores backpressure on this {@code Observable} and the returned {@code Completable} 
+     *  <dd>The operator ignores backpressure on the source {@code Observable} and the returned {@code Completable} 
      *  does not have a notion of backpressure.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1111,7 +1111,7 @@ public class Observable<T> {
      *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}
      *  sources are expected to honor backpressure as well. If the outer violates this, a 
      *  {@code MissingBackpressureException} is signalled. If any of the inner {@code Observable}s violates
-     *  this, it <i>may</i> lead to {@code IllegalStateException} being throw when an inner {@code Observable} completes.</dd>
+     *  this, it <em>may</em> throw an {@code IllegalStateException} when an inner {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1137,8 +1137,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1165,8 +1165,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1195,8 +1195,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1227,8 +1227,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1261,8 +1261,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1297,8 +1297,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1335,8 +1335,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1375,8 +1375,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1438,7 +1438,7 @@ public class Observable<T> {
      *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}
      *  sources are expected to honor backpressure as well. If the outer violates this, a 
      *  {@code MissingBackpressureException} is signalled. If any of the inner {@code Observable}s violates
-     *  this, it <i>may</i> lead to {@code IllegalStateException} being throw when an inner {@code Observable} completes.</dd>
+     *  this, it <em>may</em> throw an {@code IllegalStateException} when an inner {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2162,7 +2162,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2189,7 +2189,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2221,7 +2221,7 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Observable} is consumed
      *  in unbounded mode (i.e., no backpressure is applied to it). The inner {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2253,7 +2253,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2288,7 +2288,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2316,7 +2316,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2346,7 +2346,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2378,7 +2378,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2412,7 +2412,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2448,7 +2448,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2486,7 +2486,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2526,7 +2526,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2568,7 +2568,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2594,7 +2594,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2629,7 +2629,7 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Observable} is consumed
      *  in unbounded mode (i.e., no backpressure is applied to it). The inner {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2662,7 +2662,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2759,7 +2759,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2793,7 +2793,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2829,7 +2829,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2867,7 +2867,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2907,7 +2907,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2950,7 +2950,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2994,7 +2994,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3040,7 +3040,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3245,7 +3245,7 @@ public class Observable<T> {
      *  <dd>The operator honors backpressure from downstream. The outer {@code Observable} is consumed in an
      *  unbounded manner (i.e., without backpressure) and the inner {@code Observable}s are expected to honor
      *  backpressure but it is not enforced; the operator won't signal a {@code MissingBackpressureException}
-     *  but the violation <i>may</i> lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
+     *  but the violation <em>may</em> lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3280,7 +3280,7 @@ public class Observable<T> {
      *  <dd>The operator honors backpressure from downstream. The outer {@code Observable} is consumed in an
      *  unbounded manner (i.e., without backpressure) and the inner {@code Observable}s are expected to honor
      *  backpressure but it is not enforced; the operator won't signal a {@code MissingBackpressureException}
-     *  but the violation <i>may</i> lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
+     *  but the violation <em>may</em> lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -4140,7 +4140,7 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/all.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an unbounded
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded
      *  manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code all} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4214,7 +4214,7 @@ public class Observable<T> {
      * @param <TClosing> the value type of the boundary-providing Observable
      * @param bufferClosingSelector
      *            a {@link Func0} that produces an Observable that governs the boundary between buffers.
-     *            Whenever this {@code Observable} emits an item, {@code buffer} emits the current buffer and
+     *            Whenever the source {@code Observable} emits an item, {@code buffer} emits the current buffer and
      *            begins to fill a new one
      * @return an Observable that emits a connected, non-overlapping buffer of items from the source Observable
      *         each time the Observable created with the {@code bufferClosingSelector} argument emits an item
@@ -4233,8 +4233,8 @@ public class Observable<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and expects this {@code Observable} to honor it as
-     *  well, although not enforced; violation <i>may</i> lead to {@code MissingBackpressureException} somewhere
+     *  <dd>The operator honors backpressure from downstream and expects the source {@code Observable} to honor it as
+     *  well, although not enforced; violation <em>may</em> lead to {@code MissingBackpressureException} somewhere
      *  downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4259,8 +4259,8 @@ public class Observable<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer4.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and expects this {@code Observable} to honor it as
-     *  well, although not enforced; violation <i>may</i> lead to {@code MissingBackpressureException} somewhere
+     *  <dd>The operator honors backpressure from downstream and expects the source {@code Observable} to honor it as
+     *  well, although not enforced; violation <em>may</em> lead to {@code MissingBackpressureException} somewhere
      *  downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4693,7 +4693,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cast.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code cast} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4757,9 +4757,9 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both this and the inner {@code Observable}s are
-     *  expected to honor backpressure as well. If this {@code Observable} violates the rule, the operator will
+     *  expected to honor backpressure as well. If the source {@code Observable} violates the rule, the operator will
      *  signal a {@code MissingBackpressureException}. If any of the inner {@code Observable}s doesn't honor
-     *  backpressure, that <i>may</i> lead to a {@code IllegalStateException} being thrown when that 
+     *  backpressure, that <em>may</em> throw an {@code IllegalStateException} when that 
      *  {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4790,9 +4790,9 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both this and the inner {@code Observable}s are
-     *  expected to honor backpressure as well. If this {@code Observable} violates the rule, the operator will
+     *  expected to honor backpressure as well. If the source {@code Observable} violates the rule, the operator will
      *  signal a {@code MissingBackpressureException}. If any of the inner {@code Observable}s doesn't honor
-     *  backpressure, that <i>may</i> lead to a {@code IllegalStateException} being thrown when that 
+     *  backpressure, that <em>may</em> throw an {@code IllegalStateException} when that 
      *  {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4818,8 +4818,8 @@ public class Observable<T> {
      * 
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}s is
-     *  expected to honor backpressure as well. If this {@code Observable} violates the rule, the operator will
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s is
+     *  expected to honor backpressure as well. If the source {@code Observable} violates the rule, the operator will
      *  signal a {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4846,8 +4846,8 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both this and the {@code other} {@code Observable}s
-     *  are expected to honor backpressure as well. If any of then violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  are expected to honor backpressure as well. If any of then violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -4869,7 +4869,7 @@ public class Observable<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/contains.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code contains} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4891,7 +4891,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/count.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code count} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4912,7 +4912,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code countLong} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5041,9 +5041,9 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defaultIfEmpty.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>If this {@code Observable} is empty, this operator is guaranteed to honor backpressure from downstream.
-     *  If this {@code Observable} is non-empty, it is expected to honor backpressure as well; violation of this rule
-     *  <i>may</i> lead to {@code MissingBackpressureException} being signalled somewhere downstream. 
+     *  <dd>If the source {@code Observable} is empty, this operator is guaranteed to honor backpressure from downstream.
+     *  If the source {@code Observable} is non-empty, it is expected to honor backpressure as well; if the rule is violated,
+     *  a {@code MissingBackpressureException} <em>may</em> get signalled somewhere downstream. 
      *  </dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code defaultIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5066,9 +5066,9 @@ public class Observable<T> {
      * <p/>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>If this {@code Observable} is empty, the alternate {@code Observable} is expected to honor backpressure.
-     *  If this {@code Observable} is non-empty, it is expected to honor backpressure as instead.
-     *  In either case, a violation <i>may</i> lead to {@code MissingBackpressureException} being 
+     *  <dd>If the source {@code Observable} is empty, the alternate {@code Observable} is expected to honor backpressure.
+     *  If the source {@code Observable} is non-empty, it is expected to honor backpressure as instead.
+     *  In either case, if violated, a {@code MissingBackpressureException} <em>may</em> get 
      *  signalled somewhere downstream.
      *  </dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -5095,9 +5095,9 @@ public class Observable<T> {
      * from the source Observable.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by this {@code Observable}. 
+     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the source {@code Observable}. 
      *  All of the other {@code Observable}s supplied by the functions are consumed
-     *  in an unbounded manner (i.e., no backpressue applied to them).</dd>
+     *  in an unbounded manner (i.e., no backpressure applied to them).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delay} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -5133,9 +5133,9 @@ public class Observable<T> {
      * from the source Observable.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by this {@code Observable}. 
+     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the source {@code Observable}. 
      *  All of the other {@code Observable}s supplied by the function are consumed
-     *  in an unbounded manner (i.e., no backpressue applied to them).</dd>
+     *  in an unbounded manner (i.e., no backpressure applied to them).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delay} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -5161,7 +5161,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by this {@code Observable}.</dd>
+     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the source {@code Observable}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -5184,7 +5184,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by this {@code Observable}.</dd>
+     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the source {@code Observable}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -5208,7 +5208,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by this {@code Observable}.</dd>
+     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the source {@code Observable}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -5231,7 +5231,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by this {@code Observable}.</dd>
+     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the source {@code Observable}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -5257,9 +5257,9 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.o.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by this {@code Observable}. 
+     *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the source {@code Observable}. 
      *  The other {@code Observable}s supplied by the function is consumed in an unbounded manner 
-     *  (i.e., no backpressue applied to it).</dd>
+     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -5310,7 +5310,7 @@ public class Observable<T> {
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/dematerialize.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code dematerialize} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5334,7 +5334,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code distinct} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5355,7 +5355,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.key.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code distinct} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5379,7 +5379,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5400,7 +5400,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.key.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5425,7 +5425,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5450,7 +5450,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnCompleted.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnCompleted} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5475,7 +5475,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5503,7 +5503,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.o.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5528,7 +5528,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5553,7 +5553,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5580,7 +5580,7 @@ public class Observable<T> {
      * patterns and generally intended for debugging use.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnRequest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5609,14 +5609,14 @@ public class Observable<T> {
      * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnSubscribe.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param subscribe
-     *            the action that gets called when an observer subscribes to this {@code Observable}
+     *            the action that gets called when an observer subscribes to the source {@code Observable}
      * @return the source {@code Observable} modified so as to call this Action when appropriate
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
@@ -5634,7 +5634,7 @@ public class Observable<T> {
      * {@code onError} notification.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s
      *  backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5676,7 +5676,7 @@ public class Observable<T> {
      * </dl>
      *
      * @param unsubscribe
-     *            the action that gets called when this {@code Observable} is unsubscribed
+     *            the action that gets called when the source {@code Observable} is unsubscribed
      * @return the source {@code Observable} modified so as to call this Action when appropriate
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
@@ -6134,8 +6134,8 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an unbounded manner
-     *  (i.e., no backkpressure applied to it).
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backkpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code elementAt} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6161,8 +6161,8 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an unbounded manner
-     *  (i.e., no backkpressure applied to it).
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backkpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code elementAtOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6192,8 +6192,8 @@ public class Observable<T> {
      * idioms.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an unbounded manner
-     *  (i.e., no backkpressure applied to it).
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backkpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code exists} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6214,7 +6214,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6238,7 +6238,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code finallyDo} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6264,7 +6264,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6288,7 +6288,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6309,7 +6309,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstN.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6332,7 +6332,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrDefault.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code firstOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6355,7 +6355,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrDefaultN.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code firstOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6384,7 +6384,7 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Observable} is consumed
      *  in unbounded mode (i.e., no backpressure is applied to it). The inner {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6415,7 +6415,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6449,7 +6449,7 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Observable} is consumed
      *  in unbounded mode (i.e., no backpressure is applied to it). The inner {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6483,7 +6483,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6521,7 +6521,7 @@ public class Observable<T> {
      * <dl>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Observable} is consumed
      *  in unbounded mode (i.e., no backpressure is applied to it). The inner {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6552,7 +6552,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6586,8 +6586,8 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMapIterable.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}s is
-     *  expected to honor backpressure as well. If this {@code Observable} violates the rule, the operator will
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s is
+     *  expected to honor backpressure as well. If the source {@code Observable} violates the rule, the operator will
      *  signal a {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6614,8 +6614,8 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMapIterable.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}s is
-     *  expected to honor backpressure as well. If this {@code Observable} violates the rule, the operator will
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s is
+     *  expected to honor backpressure as well. If the source {@code Observable} violates the rule, the operator will
      *  signal a {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6647,7 +6647,7 @@ public class Observable<T> {
      * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMapIterable.r.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and this {@code Observable}s is
+     *  <dd>The operator honors backpressure from downstream and the source {@code Observable}s is
      *  consumed in an unbounded manner (i.e., no backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6681,8 +6681,8 @@ public class Observable<T> {
      * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMapIterable.r.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}s is
-     *  expected to honor backpressure as well. If this {@code Observable} violates the rule, the operator will
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s is
+     *  expected to honor backpressure as well. If the source {@code Observable} violates the rule, the operator will
      *  signal a {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6720,7 +6720,7 @@ public class Observable<T> {
      * Alias to {@link #subscribe(Action1)}
      * <dl>
      *  <dd><b>Backpressure:</b><dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner (i.e., no
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code forEach} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6744,7 +6744,7 @@ public class Observable<T> {
      * Alias to {@link #subscribe(Action1, Action1)}
      * <dl>
      *  <dd><b>Backpressure:</b><dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner (i.e., no
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code forEach} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6771,7 +6771,7 @@ public class Observable<T> {
      * Alias to {@link #subscribe(Action1, Action1, Action0)}
      * <dl>
      *  <dd><b>Backpressure:</b><dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner (i.e., no
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code forEach} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6810,10 +6810,10 @@ public class Observable<T> {
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Both the returned and its inner {@code Observable}s honor backpressure and this {@code Observable}
+     *  <dd>Both the returned and its inner {@code Observable}s honor backpressure and the source {@code Observable}
      *  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
      *  downstream consumption). Note that both the returned and its inner {@code Observable}s use
-     *  unbounded internal buffers and if this {@code Observable} doesn't honor backpressure, that <i>may</i>
+     *  unbounded internal buffers and if the source {@code Observable} doesn't honor backpressure, that <em>may</em>
      *  lead to {@code OutOfMemoryError}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6851,10 +6851,10 @@ public class Observable<T> {
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Both the returned and its inner {@code Observable}s honor backpressure and this {@code Observable}
+     *  <dd>Both the returned and its inner {@code Observable}s honor backpressure and the source {@code Observable}
      *  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
      *  downstream consumption). Note that both the returned and its inner {@code Observable}s use
-     *  unbounded internal buffers and if this {@code Observable} doesn't honor backpressure, that <i>may</i>
+     *  unbounded internal buffers and if the source {@code Observable} doesn't honor backpressure, that <em>may</em>
      *  lead to {@code OutOfMemoryError}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6916,10 +6916,10 @@ public class Observable<T> {
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Both the returned and its inner {@code Observable}s honor backpressure and this {@code Observable}
+     *  <dd>Both the returned and its inner {@code Observable}s honor backpressure and the source {@code Observable}
      *  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
      *  downstream consumption). Note that both the returned and its inner {@code Observable}s use
-     *  unbounded internal buffers and if this {@code Observable} doesn't honor backpressure, that <i>may</i>
+     *  unbounded internal buffers and if the source {@code Observable} doesn't honor backpressure, that <em>may</em>
      *  lead to {@code OutOfMemoryError}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6984,8 +6984,8 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElements.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator ignores backpressure as it doesn't emit any elements and consumes this {@code Observable}
-     *  in an unbounded manner (i.e., no backpressure is applied to it).
+     *  <dd>This operator ignores backpressure as it doesn't emit any elements and consumes the source {@code Observable}
+     *  in an unbounded manner (i.e., no backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ignoreElements} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -7007,7 +7007,7 @@ public class Observable<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/isEmpty.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code isEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7067,7 +7067,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/last.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code last} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7088,7 +7088,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/last.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code last} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7113,7 +7113,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastOrDefault.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code lastOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7136,7 +7136,7 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastOrDefault.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code lastOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7167,8 +7167,8 @@ public class Observable<T> {
      * {@link Observer#onCompleted onCompleted}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
-     *  behavior in case the first request is smaller than the {@code count}. Otherwise, this {@code Observable}
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
+     *  behavior in case the first request is smaller than the {@code count}. Otherwise, the source {@code Observable}
      *  is consumed in an unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code limit} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7191,7 +7191,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/map.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7219,8 +7219,8 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and expects it from this {@code Observable}; violating this
-     *  expectation will lead to {@code IllegalStateException} being thrown.</dd>
+     *  <dd>The operator honors backpressure from downstream and expects it from the source {@code Observable}.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code materialize} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -7243,7 +7243,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. This and the other {@code Observable}s are expected to honor
-     *  backpressure; if violated, the operator <i>may</i> signal {@code MissingBackpressureException}.</dd>
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -7267,11 +7267,11 @@ public class Observable<T> {
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator honors backpressure from downstream and expects it from this {@code Observable}. Violating this
+     *  <dd>This operator honors backpressure from downstream and expects it from the source {@code Observable}. Violating this
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure, 
      *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} opertors <b>before</b> applying {@code observeOn} itself.
+     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -7301,11 +7301,11 @@ public class Observable<T> {
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator honors backpressure from downstream and expects it from this {@code Observable}. Violating this
+     *  <dd>This operator honors backpressure from downstream and expects it from the source {@code Observable}. Violating this
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure, 
      *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} opertors <b>before</b> applying {@code observeOn} itself.
+     *  of the {@code onBackpressureXXX} opertors <strong>before</strong> applying {@code observeOn} itself.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -7332,11 +7332,11 @@ public class Observable<T> {
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator honors backpressure from downstream and expects it from this {@code Observable}. Violating this
+     *  <dd>This operator honors backpressure from downstream and expects it from the source {@code Observable}. Violating this
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure, 
      *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} opertors <b>before</b> applying {@code observeOn} itself.
+     *  of the {@code onBackpressureXXX} opertors <strong>before</strong> applying {@code observeOn} itself.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -7367,11 +7367,11 @@ public class Observable<T> {
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator honors backpressure from downstream and expects it from this {@code Observable}. Violating this
+     *  <dd>This operator honors backpressure from downstream and expects it from the source {@code Observable}. Violating this
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure, 
      *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} opertors <b>before</b> applying {@code observeOn} itself.
+     *  of the {@code onBackpressureXXX} opertors <strong>before</strong> applying {@code observeOn} itself.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -7405,7 +7405,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ofClass.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ofType} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7428,7 +7428,7 @@ public class Observable<T> {
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an unbounded
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded
      *  manner (i.e., not applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7450,7 +7450,7 @@ public class Observable<T> {
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an unbounded
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded
      *  manner (i.e., not applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7474,7 +7474,7 @@ public class Observable<T> {
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an unbounded
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded
      *  manner (i.e., not applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7510,7 +7510,7 @@ public class Observable<T> {
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an unbounded
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded
      *  manner (i.e., not applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7538,7 +7538,7 @@ public class Observable<T> {
      * the observer invokes {@code request(n)} again to increase the request count.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an unbounded
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded
      *  manner (i.e., not applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureDrop} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7564,7 +7564,7 @@ public class Observable<T> {
      * the observer invokes {@code request(n)} again to increase the request count.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an unbounded
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded
      *  manner (i.e., not applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureDrop} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7594,7 +7594,7 @@ public class Observable<T> {
      * <p>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an unbounded
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded
      *  manner (i.e., not applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7629,9 +7629,9 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. This and the resuming {@code Observable}s
      *  are expected to honor backpressure as well. 
-     *  If any of them violate this expectation, that <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes or
-     *  {@code MissingBackpressureException} being signalled by somewhere downstream.</dd>
+     *  If any of them violate this expectation, the operator <em>may</em> throw an 
+     *  {@code IllegalStateException} when the source {@code Observable} completes or
+     *  a {@code MissingBackpressureException} is signalled somewhere downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -7668,9 +7668,9 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. This and the resuming {@code Observable}s
      *  are expected to honor backpressure as well. 
-     *  If any of them violate this expectation, that <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes or
-     *  {@code MissingBackpressureException} being signalled somewhere downstream.</dd>
+     *  If any of them violate this expectation, the operator <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes or
+     *  {@code MissingBackpressureException} is signalled somewhere downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -7703,10 +7703,10 @@ public class Observable<T> {
      * encountered.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}s is expected to honor 
-     *  backpressure as well. If it this expectation, that <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes or
-     *  {@code MissingBackpressureException} being signalled somewhere downstream.</dd>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}s is expected to honor 
+     *  backpressure as well. If it this expectation is violated, the operator <em>may</em> throw 
+     *  {@code IllegalStateException} when the source {@code Observable} completes or
+     *  {@code MissingBackpressureException} is signalled somewhere downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -7747,9 +7747,9 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. This and the resuming {@code Observable}s
      *  are expected to honor backpressure as well. 
-     *  If any of them violate this expectation, that <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes or
-     *  {@code MissingBackpressureException} being signalled somewhere downstream.</dd>
+     *  If any of them violate this expectation, the operator <em>may</em> throw an 
+     *  {@code IllegalStateException} when the source {@code Observable} completes or
+     *  {@code MissingBackpressureException} is signalled somewhere downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onExceptionResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -7771,7 +7771,7 @@ public class Observable<T> {
      * the sequence is terminated or downstream unsubscribes.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7794,7 +7794,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The returned {@code ConnectableObservable} honors backpressure for each of its {@code Subscriber}s
-     *  and expects this {@code Observable} to honor backpressure as well. If this expectation is violated,
+     *  and expects the source {@code Observable} to honor backpressure as well. If this expectation is violated,
      *  the operator will signal a {@code MissingBackpressureException} to its {@code Subscriber}s and disconnect.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7815,11 +7815,11 @@ public class Observable<T> {
      * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.f.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator expects this {@code Observable} to honor backpressure and if this expectation is
+     *  <dd>The operator expects the source {@code Observable} to honor backpressure and if this expectation is
      *  violated, the operator will signal a {@code MissingBackpressureException} through the {@code Observable}
      *  provided to the function. Since the {@code Observable} returned by the {@code selector} may be
      *  independent from the provided {@code Observable} to the function, the output's backpressure behavior
-     *  is derermined by this returned {@code Observable}.</dd>
+     *  is determined by this returned {@code Observable}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -7956,8 +7956,8 @@ public class Observable<T> {
      * <img width="640" height="309" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.o.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code IllegalStateException} being thrown.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code repeat} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
      * </dl>
@@ -7976,8 +7976,8 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.os.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code IllegalStateException} being thrown.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -7998,8 +7998,8 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.on.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code IllegalStateException} being thrown.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code repeat} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
      * </dl>
@@ -8024,8 +8024,8 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.ons.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code IllegalStateException} being thrown.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -8054,8 +8054,8 @@ public class Observable<T> {
      * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code IllegalStateException} being thrown.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -8082,8 +8082,8 @@ public class Observable<T> {
      * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code IllegalStateException} being thrown.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code repeatWhen} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
      * </dl>
@@ -8617,8 +8617,8 @@ public class Observable<T> {
      * of emissions and notifications would be {@code [1, 2, 1, 2, 3, 4, 5, onCompleted]}.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code IllegalStateException} being thrown.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
      * </dl>
@@ -8646,8 +8646,8 @@ public class Observable<T> {
      * of emissions and notifications would be {@code [1, 2, 1, 2, 3, 4, 5, onCompleted]}.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code IllegalStateException} being thrown.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
      * </dl>
@@ -8668,8 +8668,8 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code IllegalStateException} being thrown.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
      * </dl>
@@ -8724,8 +8724,8 @@ public class Observable<T> {
      * } </pre>
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code IllegalStateException} being thrown.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retryWhen} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
      * </dl>
@@ -8752,8 +8752,8 @@ public class Observable<T> {
      * <p>
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code IllegalStateException} being thrown.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -8861,8 +8861,8 @@ public class Observable<T> {
      * This sort of function is sometimes called an accumulator.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code MissingBackpressureException} being signalled somewhere downstream.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  Violating this expectation, a {@code MissingBackpressureException} <em>may</em> get signalled somewhere downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code scan} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8906,8 +8906,8 @@ public class Observable<T> {
      * </code></pre>
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The operator honors downstream backpressure and expects this {@code Observable} to honor backpressure as well.
-     *  Violating this expectation <i>may</i> lead to {@code MissingBackpressureException} being signalled somewhere downstream.</dd>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Observable} to honor backpressure as well.
+     *  Violating this expectation, a {@code MissingBackpressureException} <em>may</em> get signalled somewhere downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code scan} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8940,7 +8940,7 @@ public class Observable<T> {
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/synchronize.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code serialize} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8964,7 +8964,7 @@ public class Observable<T> {
      * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishRefCount.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure and and expects this {@code Observable} to honor backpressure as well. 
+     *  <dd>The operator honors backpressure and and expects the source {@code Observable} to honor backpressure as well. 
      *  If this expectation is violated, the operator will signal a {@code MissingBackpressureException} to 
      *  its {@code Subscriber}s.</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -8987,7 +8987,7 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code single} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9013,7 +9013,7 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code single} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9041,7 +9041,7 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrDefault.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code singleOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9068,7 +9068,7 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrDefault.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code singleOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9095,7 +9095,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code skip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9119,7 +9119,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't support backpressure as it uses time to skip arbitrary number of elements and
-     *  thus has to consume this {@code Observable} in an unbounded manner (i.e., no backpressure applied to it).</dd>
+     *  thus has to consume the source {@code Observable} in an unbounded manner (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code skip} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -9144,7 +9144,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't support backpressure as it uses time to skip arbitrary number of elements and
-     *  thus has to consume this {@code Observable} in an unbounded manner (i.e., no backpressure applied to it).</dd>
+     *  thus has to consume the source {@code Observable} in an unbounded manner (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -9174,7 +9174,7 @@ public class Observable<T> {
      * such items to be delayed.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code skipLast} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9202,7 +9202,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't support backpressure as it uses time to skip arbitrary number of elements and
-     *  thus has to consume this {@code Observable} in an unbounded manner (i.e., no backpressure applied to it).</dd>
+     *  thus has to consume the source {@code Observable} in an unbounded manner (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code skipLast} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -9229,7 +9229,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't support backpressure as it uses time to skip arbitrary number of elements and
-     *  thus has to consume this {@code Observable} in an unbounded manner (i.e., no backpressure applied to it).</dd>
+     *  thus has to consume the source {@code Observable} in an unbounded manner (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -9255,7 +9255,7 @@ public class Observable<T> {
      * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipUntil.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code skipUntil} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9280,7 +9280,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipWhile.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code skipWhile} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9304,8 +9304,8 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both this and the {@code other} {@code Observable}s
-     *  are expected to honor backpressure as well. If any of then violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  are expected to honor backpressure as well. If any of then violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9327,9 +9327,9 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}
-     *  is expected to honor backpressure as well. If it violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}
+     *  is expected to honor backpressure as well. If it violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9351,9 +9351,9 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}
-     *  is expected to honor backpressure as well. If it violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}
+     *  is expected to honor backpressure as well. If it violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9375,9 +9375,9 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}
-     *  is expected to honor backpressure as well. If it violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}
+     *  is expected to honor backpressure as well. If it violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9401,9 +9401,9 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}
-     *  is expected to honor backpressure as well. If it violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}
+     *  is expected to honor backpressure as well. If it violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9429,9 +9429,9 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}
-     *  is expected to honor backpressure as well. If it violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}
+     *  is expected to honor backpressure as well. If it violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9459,9 +9459,9 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}
-     *  is expected to honor backpressure as well. If it violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}
+     *  is expected to honor backpressure as well. If it violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9491,9 +9491,9 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}
-     *  is expected to honor backpressure as well. If it violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}
+     *  is expected to honor backpressure as well. If it violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9525,9 +9525,9 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}
-     *  is expected to honor backpressure as well. If it violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}
+     *  is expected to honor backpressure as well. If it violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9561,9 +9561,9 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}
-     *  is expected to honor backpressure as well. If it violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}
+     *  is expected to honor backpressure as well. If it violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9599,9 +9599,9 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. This {@code Observable}
-     *  is expected to honor backpressure as well. If it violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when this {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Observable}
+     *  is expected to honor backpressure as well. If it violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9637,7 +9637,7 @@ public class Observable<T> {
      * {@link OnErrorNotImplementedException} is thrown. 
      * <dl>
      *  <dd><b>Backpressure:</b><dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner (i.e., no
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9660,7 +9660,7 @@ public class Observable<T> {
      * Subscribes to an Observable and provides a callback to handle the items it emits.
      * <dl>
      *  <dd><b>Backpressure:</b><dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner (i.e., no
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9691,7 +9691,7 @@ public class Observable<T> {
      * notification it issues.
      * <dl>
      *  <dd><b>Backpressure:</b><dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner (i.e., no
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9726,7 +9726,7 @@ public class Observable<T> {
      * completion notification it issues.
      * <dl>
      *  <dd><b>Backpressure:</b><dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner (i.e., no
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9767,7 +9767,7 @@ public class Observable<T> {
      * Observable emits and any error or completion notification it issues.
      * <dl>
      *  <dd><b>Backpressure:</b><dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner (i.e., no
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9796,7 +9796,7 @@ public class Observable<T> {
      * functionality.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code unsafeSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9854,7 +9854,7 @@ public class Observable<T> {
      * <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation</a>.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9941,7 +9941,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
@@ -9976,7 +9976,7 @@ public class Observable<T> {
      *  <dd>The operator honors backpressure from downstream. The outer {@code Observable} is consumed in an
      *  unbounded manner (i.e., without backpressure) and the inner {@code Observable}s are expected to honor
      *  backpressure but it is not enforced; the operator won't signal a {@code MissingBackpressureException}
-     *  but the violation <i>may</i> lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
+     *  but the violation <em>may</em> lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -10007,7 +10007,7 @@ public class Observable<T> {
      *  <dd>The operator honors backpressure from downstream. The outer {@code Observable} is consumed in an
      *  unbounded manner (i.e., without backpressure) and the inner {@code Observable}s are expected to honor
      *  backpressure but it is not enforced; the operator won't signal a {@code MissingBackpressureException}
-     *  but the violation <i>may</i> lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
+     *  but the violation <em>may</em> lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -10037,8 +10037,8 @@ public class Observable<T> {
      * {@link Observer#onCompleted onCompleted}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
-     *  behavior in case the first request is smaller than the {@code count}. Otherwise, this {@code Observable}
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
+     *  behavior in case the first request is smaller than the {@code count}. Otherwise, the source {@code Observable}
      *  is consumed in an unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code take} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10061,7 +10061,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.t.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code take} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -10085,7 +10085,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.ts.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
@@ -10112,7 +10112,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeFirstN.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code takeFirst} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10167,7 +10167,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., no backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code takeLast} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -10195,9 +10195,8 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tns.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., no backpressure is applied to it).</dd>
-     *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -10228,8 +10227,8 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.t.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
-     *  unbounded manner (i.e., no backpressure is applied to it) but note that this <i>may</i>
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
+     *  unbounded manner (i.e., no backpressure is applied to it) but note that this <em>may</em>
      *  lead to {@code OutOfMemoryError} due to internal buffer bloat. 
      *  Consider using {@link #takeLast(int, long, TimeUnit)} in this case.</dd>
      *  behavior.</dd>
@@ -10257,8 +10256,8 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
-     *  unbounded manner (i.e., no backpressure is applied to it) but note that this <i>may</i>
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
+     *  unbounded manner (i.e., no backpressure is applied to it) but note that this <em>may</em>
      *  lead to {@code OutOfMemoryError} due to internal buffer bloat. 
      *  Consider using {@link #takeLast(int, long, TimeUnit, Scheduler)} in this case.</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -10287,7 +10286,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLastBuffer.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code takeLastBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10310,7 +10309,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLastBuffer.tn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code takeLastBuffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -10339,7 +10338,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLastBuffer.tns.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
@@ -10369,7 +10368,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLastBuffer.t.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code takeLastBuffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -10395,7 +10394,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLastBuffer.ts.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
@@ -10423,7 +10422,7 @@ public class Observable<T> {
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code takeUntil} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10448,7 +10447,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeWhile.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code takeWhile} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10699,7 +10698,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeInterval} operates by default on the {@code immediate} {@link Scheduler}.</dd>
@@ -10719,7 +10718,7 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
@@ -10743,8 +10742,8 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both this and the returned {@code Observable}s
-     *  are expected to honor backpressure as well. If any of then violates this rule, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the {@code Observable} completes.</dd>
+     *  are expected to honor backpressure as well. If any of then violates this rule, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.</dd>
      * </dl>
@@ -10779,8 +10778,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.</dd>
      * </dl>
@@ -10825,8 +10824,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.</dd>
      * </dl>
@@ -10858,8 +10857,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.</dd>
      * </dl>
@@ -10888,7 +10887,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -10916,8 +10915,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -10945,8 +10944,8 @@ public class Observable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Observable}
      *  sources are expected to honor backpressure as well. 
-     *  If any of the source {@code Observable}s violate this, it <i>may</i> lead to 
-     *  {@code IllegalStateException} being throw when the source {@code Observable} completes.</dd>
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -10976,7 +10975,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
@@ -11003,7 +11002,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timestamp} operates by default on the {@code immediate} {@link Scheduler}.</dd>
@@ -11023,7 +11022,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
@@ -11043,7 +11042,7 @@ public class Observable<T> {
      * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking operators).
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toBlocking} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11072,7 +11071,7 @@ public class Observable<T> {
      * you do not have the option to unsubscribe.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toList} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11095,7 +11094,7 @@ public class Observable<T> {
      * If more than one source item maps to the same key, the HashMap will contain the latest of those items.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11122,7 +11121,7 @@ public class Observable<T> {
      * corresponds to the latest of those items.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11149,7 +11148,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11202,7 +11201,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11230,7 +11229,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11260,7 +11259,7 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11292,7 +11291,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11316,7 +11315,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11341,7 +11340,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11369,7 +11368,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes this {@code Observable} in an
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
      *  unbounded manner (i.e., without applying backpressure to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11395,7 +11394,7 @@ public class Observable<T> {
      * {@link Scheduler}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by this {@code Observable}'s backpressure
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
@@ -11456,7 +11455,7 @@ public class Observable<T> {
      * 
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator is a pass-through for backpressure behavior between this {@code Observable}
+     *  <dd>This operator is a pass-through for backpressure behavior between the source {@code Observable}
      *  and the downstream Subscriber. The other {@code Observable}s are consumed in an unbounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11488,7 +11487,7 @@ public class Observable<T> {
      * 
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator is a pass-through for backpressure behavior between this {@code Observable}
+     *  <dd>This operator is a pass-through for backpressure behavior between the source {@code Observable}
      *  and the downstream Subscriber. The other {@code Observable}s are consumed in an unbounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11526,7 +11525,7 @@ public class Observable<T> {
      * 
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator is a pass-through for backpressure behavior between this {@code Observable}
+     *  <dd>This operator is a pass-through for backpressure behavior between the source {@code Observable}
      *  and the downstream Subscriber. The other {@code Observable}s are consumed in an unbounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11565,7 +11564,7 @@ public class Observable<T> {
      * 
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator is a pass-through for backpressure behavior between this {@code Observable}
+     *  <dd>This operator is a pass-through for backpressure behavior between the source {@code Observable}
      *  and the downstream Subscriber. The other {@code Observable}s are consumed in an unbounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11608,7 +11607,7 @@ public class Observable<T> {
      * 
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator is a pass-through for backpressure behavior between this {@code Observable}
+     *  <dd>This operator is a pass-through for backpressure behavior between the source {@code Observable}
      *  and the downstream Subscriber. The other {@code Observable}s are consumed in an unbounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11653,7 +11652,7 @@ public class Observable<T> {
      * 
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator is a pass-through for backpressure behavior between this {@code Observable}
+     *  <dd>This operator is a pass-through for backpressure behavior between the source {@code Observable}
      *  and the downstream Subscriber. The other {@code Observable}s are consumed in an unbounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11701,7 +11700,7 @@ public class Observable<T> {
      * 
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator is a pass-through for backpressure behavior between this {@code Observable}
+     *  <dd>This operator is a pass-through for backpressure behavior between the source {@code Observable}
      *  and the downstream Subscriber. The other {@code Observable}s are consumed in an unbounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11751,7 +11750,7 @@ public class Observable<T> {
      * 
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator is a pass-through for backpressure behavior between this {@code Observable}
+     *  <dd>This operator is a pass-through for backpressure behavior between the source {@code Observable}
      *  and the downstream Subscriber. The other {@code Observable}s are consumed in an unbounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11780,7 +11779,7 @@ public class Observable<T> {
      * 
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator is a pass-through for backpressure behavior between this {@code Observable}
+     *  <dd>This operator is a pass-through for backpressure behavior between the source {@code Observable}
      *  and the downstream Subscriber. The other {@code Observable}s are consumed in an unbounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11806,10 +11805,10 @@ public class Observable<T> {
      * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window1.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner. 
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner. 
      *  The returned {@code Observable} doesn't support backpressure as it uses 
      *  the {@code closingSelector} to control the creation of windows. The returned inner {@code Observable}s honor
-     *  backpressure but have an unbounded inner buffer that <i>may</i> lead to {@code OutOfMemoryError}
+     *  backpressure but have an unbounded inner buffer that <em>may</em> lead to {@code OutOfMemoryError}
      *  if left unconsumed.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11818,7 +11817,7 @@ public class Observable<T> {
      * @param <TClosing> the element type of the boundary Observable
      * @param closingSelector
      *            a {@link Func0} that returns an {@code Observable} that governs the boundary between windows.
-     *            When this {@code Observable} emits an item, {@code window} emits the current window and begins
+     *            When the source {@code Observable} emits an item, {@code window} emits the current window and begins
      *            a new one.
      * @return an Observable that emits connected, non-overlapping windows of items from the source Observable
      *         whenever {@code closingSelector} emits an item
@@ -11899,10 +11898,10 @@ public class Observable<T> {
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner. 
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner. 
      *  The returned {@code Observable} doesn't support backpressure as it uses 
      *  time to control the creation of windows. The returned inner {@code Observable}s honor
-     *  backpressure but have an unbounded inner buffer that <i>may</i> lead to {@code OutOfMemoryError}
+     *  backpressure but have an unbounded inner buffer that <em>may</em> lead to {@code OutOfMemoryError}
      *  if left unconsumed.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -11931,10 +11930,10 @@ public class Observable<T> {
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner. 
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner. 
      *  The returned {@code Observable} doesn't support backpressure as it uses 
      *  time to control the creation of windows. The returned inner {@code Observable}s honor
-     *  backpressure but have an unbounded inner buffer that <i>may</i> lead to {@code OutOfMemoryError}
+     *  backpressure but have an unbounded inner buffer that <em>may</em> lead to {@code OutOfMemoryError}
      *  if left unconsumed.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
@@ -11966,7 +11965,7 @@ public class Observable<T> {
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner. 
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner. 
      *  The returned {@code Observable} doesn't support backpressure as it uses 
      *  time to control the creation of windows. The returned inner {@code Observable}s honor
      *  backpressure and may hold up to {@code count} elements at most.</dd>
@@ -12000,7 +11999,7 @@ public class Observable<T> {
      * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner. 
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner. 
      *  The returned {@code Observable} doesn't support backpressure as it uses 
      *  time to control the creation of windows. The returned inner {@code Observable}s honor
      *  backpressure and may hold up to {@code count} elements at most.</dd>
@@ -12031,7 +12030,7 @@ public class Observable<T> {
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner. 
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner. 
      *  The returned {@code Observable} doesn't support backpressure as it uses 
      *  time to control the creation of windows. The returned inner {@code Observable}s honor
      *  backpressure and may hold up to {@code count} elements at most.</dd>
@@ -12065,7 +12064,7 @@ public class Observable<T> {
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner. 
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner. 
      *  The returned {@code Observable} doesn't support backpressure as it uses 
      *  time to control the creation of windows. The returned inner {@code Observable}s honor
      *  backpressure and may hold up to {@code count} elements at most.</dd>
@@ -12100,10 +12099,10 @@ public class Observable<T> {
      * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes this {@code Observable} in an unbounded manner. 
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner. 
      *  The returned {@code Observable} doesn't support backpressure as it uses 
      *  time to control the creation of windows. The returned inner {@code Observable}s honor
-     *  backpressure but have an unbounded inner buffer that <i>may</i> lead to {@code OutOfMemoryError}
+     *  backpressure but have an unbounded inner buffer that <em>may</em> lead to {@code OutOfMemoryError}
      *  if left unconsumed.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
