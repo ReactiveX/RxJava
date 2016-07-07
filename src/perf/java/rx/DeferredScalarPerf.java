@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import rx.functions.Func2;
+import rx.functions.*;
 import rx.jmh.LatchedObserver;
 
 /**
@@ -45,6 +45,8 @@ public class DeferredScalarPerf {
     Observable<Integer> reduce;
 
     Observable<Integer> reduceSeed;
+    
+    Observable<int[]> collect;
 
     @Setup
     public void setup() {
@@ -67,21 +69,38 @@ public class DeferredScalarPerf {
         });
         
         last = source.takeLast(1);
+        
+        collect = source.collect(new Func0<int[]>() {
+            @Override
+            public int[] call() {
+                return new int[1];
+            }
+        }, new Action2<int[], Integer>() {
+            @Override
+            public void call(int[] a, Integer b) { 
+                a[0] = b.intValue(); 
+            }
+        } );
     }
     
-    @Benchmark
+//    @Benchmark
     public void reduce(Blackhole bh) {
         reduce.subscribe(new LatchedObserver<Integer>(bh));
     }
 
-    @Benchmark
+//    @Benchmark
     public void reduceSeed(Blackhole bh) {
         reduceSeed.subscribe(new LatchedObserver<Integer>(bh));
     }
 
-    @Benchmark
+//    @Benchmark
     public void last(Blackhole bh) {
         last.subscribe(new LatchedObserver<Integer>(bh));
+    }
+
+    @Benchmark
+    public void collect(Blackhole bh) {
+        collect.subscribe(new LatchedObserver<int[]>(bh));
     }
 
 }
