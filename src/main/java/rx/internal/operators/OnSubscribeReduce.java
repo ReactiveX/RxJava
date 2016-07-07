@@ -16,8 +16,6 @@
 
 package rx.internal.operators;
 
-import java.util.NoSuchElementException;
-
 import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.Exceptions;
@@ -36,26 +34,44 @@ public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
     
     @Override
     public void call(Subscriber<? super T> t) {
-        new ReduceSubscriber<T>(t, reducer).subscribeTo(source);
+        final ReduceSubscriber<T> parent = new ReduceSubscriber<T>(t, reducer);
+        t.add(parent);
+        t.setProducer(new Producer() {
+            @Override
+            public void request(long n) {
+                parent.downstreamRequest(n);
+            }
+        });
+        source.unsafeSubscribe(parent);
     }
     
-    static final class ReduceSubscriber<T> extends DeferredScalarSubscriber<T, T> {
+    static final class ReduceSubscriber<T> extends Subscriber<T> {
 
+        final Subscriber<? super T> actual;
+        
         final Func2<T, T, T> reducer;
 
+        T value;
+        
+        static final Object EMPTY = new Object();
+        
+        @SuppressWarnings("unchecked")
         public ReduceSubscriber(Subscriber<? super T> actual, Func2<T, T, T> reducer) {
-            super(actual);
+            this.actual = actual;
             this.reducer = reducer;
+            this.value = (T)EMPTY;
+            this.request(0);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void onNext(T t) {
-            if (!hasValue) {
-                hasValue = true;
+            Object o = value;
+            if (o == EMPTY) {
                 value = t;
             } else {
                 try {
-                    value = reducer.call(value, t);
+                    value = reducer.call((T)o, t);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     unsubscribe();
@@ -65,13 +81,27 @@ public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
         }
         
         @Override
-        public void onCompleted() {
-            if (hasValue) {
-                complete(value);
-            } else {
-                actual.onError(new NoSuchElementException());
-            }
+        public void onError(Throwable e) {
+            actual.onError(e);
         }
         
+        @SuppressWarnings("unchecked")
+        @Override
+        public void onCompleted() {
+            Object o = value;
+            if (o != EMPTY) {
+                actual.onNext((T)o);
+            }
+            actual.onCompleted();
+        }
+        
+        void downstreamRequest(long n) {
+            if (n < 0L) {
+                throw new IllegalArgumentException("n >= 0 required but it was " + n);
+            }
+            if (n != 0L) {
+                request(Long.MAX_VALUE);
+            }
+        }
     }
 }

@@ -34,17 +34,28 @@ public final class OnSubscribeTakeLastOne<T> implements OnSubscribe<T> {
     
     static final class TakeLastOneSubscriber<T> extends DeferredScalarSubscriber<T, T> {
 
+        static final Object EMPTY = new Object();
+        
+        @SuppressWarnings("unchecked")
         public TakeLastOneSubscriber(Subscriber<? super T> actual) {
             super(actual);
+            this.value = (T)EMPTY;
         }
 
         @Override
         public void onNext(T t) {
-            if (!hasValue) {
-                hasValue = true;
-            }
             value = t;
         }
-        
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void onCompleted() {
+            Object o = value;
+            if (o == EMPTY) {
+                complete();
+            } else {
+                complete((T)o);
+            }
+        }
     }
 }

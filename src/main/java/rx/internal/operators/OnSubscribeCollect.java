@@ -47,14 +47,14 @@ public final class OnSubscribeCollect<T, R> implements OnSubscribe<R> {
             return;
         }
         
-        new ReduceSubscriber<T, R>(t, initialValue, collector).subscribeTo(source);
+        new CollectSubscriber<T, R>(t, initialValue, collector).subscribeTo(source);
     }
     
-    static final class ReduceSubscriber<T, R> extends DeferredScalarSubscriber<T, R> {
+    static final class CollectSubscriber<T, R> extends DeferredScalarSubscriber<T, R> {
 
         final Action2<R, ? super T> collector;
 
-        public ReduceSubscriber(Subscriber<? super R> actual, R initialValue, Action2<R, ? super T> collector) {
+        public CollectSubscriber(Subscriber<? super R> actual, R initialValue, Action2<R, ? super T> collector) {
             super(actual);
             this.value = initialValue;
             this.hasValue = true;

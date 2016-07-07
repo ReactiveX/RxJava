@@ -37,14 +37,14 @@ public final class OnSubscribeReduceSeed<T, R> implements OnSubscribe<R> {
     
     @Override
     public void call(Subscriber<? super R> t) {
-        new ReduceSubscriber<T, R>(t, initialValue, reducer).subscribeTo(source);
+        new ReduceSeedSubscriber<T, R>(t, initialValue, reducer).subscribeTo(source);
     }
     
-    static final class ReduceSubscriber<T, R> extends DeferredScalarSubscriber<T, R> {
+    static final class ReduceSeedSubscriber<T, R> extends DeferredScalarSubscriber<T, R> {
 
         final Func2<R, ? super T, R> reducer;
 
-        public ReduceSubscriber(Subscriber<? super R> actual, R initialValue, Func2<R, ? super T, R> reducer) {
+        public ReduceSeedSubscriber(Subscriber<? super R> actual, R initialValue, Func2<R, ? super T, R> reducer) {
             super(actual);
             this.value = initialValue;
             this.hasValue = true;
