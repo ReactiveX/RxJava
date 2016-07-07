@@ -173,6 +173,12 @@ public class RxJavaHooksTest {
         try {
             assertTrue(RxJavaHooks.isLockdown());
             Action1 a1 = Actions.empty();
+            Func0 f0 = new Func0() {
+                @Override
+                public Object call() {
+                    return null;
+                }
+            };
             Func1 f1 = UtilityFunctions.identity();
             Func2 f2 = new Func2() {
                 @Override
@@ -188,6 +194,9 @@ public class RxJavaHooksTest {
                     
                     Object before = getter.invoke(null);
                     
+                    if (m.getParameterTypes()[0].isAssignableFrom(Func0.class)) {
+                        m.invoke(null, f0);
+                    } else
                     if (m.getParameterTypes()[0].isAssignableFrom(Func1.class)) {
                         m.invoke(null, f1);
                     } else
