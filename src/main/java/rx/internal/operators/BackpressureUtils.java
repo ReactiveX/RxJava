@@ -69,14 +69,14 @@ public final class BackpressureUtils {
     }
 
     /**
-     * Adds {@code n} to {@code requested} and returns the value prior to addition once the
+     * Adds {@code n} (not validated) to {@code requested} and returns the value prior to addition once the
      * addition is successful (uses CAS semantics). If overflows then sets
      * {@code requested} field to {@code Long.MAX_VALUE}.
      * 
      * @param requested
      *            atomic long that should be updated
      * @param n
-     *            the number of requests to add to the requested count
+     *            the number of requests to add to the requested count, positive (not validated)
      * @return requested value just prior to successful addition
      */
     public static long getAndAddRequest(AtomicLong requested, long n) {
@@ -412,5 +412,18 @@ public final class BackpressureUtils {
                 return next;
             }
         }
+    }
+    
+    /**
+     * Validates the requested amount and returns true if it is positive.
+     * @param n the requested amount
+     * @return true if n is positive
+     * @throws IllegalArgumentException if n is negative
+     */
+    public static boolean validate(long n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("n >= 0 required but it was " + n);
+        }
+        return n != 0L;
     }
 }
