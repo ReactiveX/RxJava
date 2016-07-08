@@ -10702,7 +10702,8 @@ public class Observable<T> {
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code timeInterval} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     *  <dd>{@code timeInterval} does not operate on any particular scheduler but uses the current time
+     *  from the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      * 
      * @return an Observable that emits time interval information items
@@ -10722,7 +10723,8 @@ public class Observable<T> {
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>The operator does not operate on any particular scheduler but uses the current time
+     *  from the specified {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param scheduler
@@ -11006,7 +11008,8 @@ public class Observable<T> {
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code timestamp} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     *  <dd>{@code timestamp} does not operate on any particular scheduler but uses the current time
+     *  from the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      * 
      * @return an Observable that emits timestamped items from the source Observable
@@ -11026,7 +11029,8 @@ public class Observable<T> {
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>The operator does not operate on any particular scheduler but uses the current time
+     *  from the specified {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param scheduler

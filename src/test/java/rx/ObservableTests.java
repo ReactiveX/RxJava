@@ -1255,9 +1255,7 @@ public class ObservableTests {
             }
         });
 
-        if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
-            fail("subscriptions did not receive values");
-        }
+        assertTrue("subscriptions did not receive values", latch.await(1000, TimeUnit.MILLISECONDS));
         assertEquals(1, counter.get());
     }
     
@@ -1387,7 +1385,7 @@ public class ObservableTests {
         Subscriber<Object> ts = new SafeSubscriber<Object>(new TestSubscriber<Object>()) {
             @Override
             public void onError(Throwable e) {
-                throw new TestException();
+                throw new TestException("Forced failure");
             }
         };
         
@@ -1396,6 +1394,8 @@ public class ObservableTests {
             fail("Should have thrown OnErrorFailedException");
         } catch (OnErrorFailedException ex) {
             // expected
+            assertTrue(ex.getCause().toString(), ex.getCause() instanceof TestException);
+            assertEquals("Forced failure", ex.getCause().getMessage());
         }
     }
     
@@ -1404,7 +1404,7 @@ public class ObservableTests {
         Subscriber<Object> ts = new TestSubscriber<Object>() {
             @Override
             public void onError(Throwable e) {
-                throw new TestException();
+                throw new TestException("Forced failure");
             }
         };
         
@@ -1413,6 +1413,8 @@ public class ObservableTests {
             fail("Should have thrown OnErrorFailedException");
         } catch (OnErrorFailedException ex) {
             // expected
+            assertTrue(ex.getCause().toString(), ex.getCause() instanceof TestException);
+            assertEquals("Forced failure", ex.getCause().getMessage());
         }
     }
     
