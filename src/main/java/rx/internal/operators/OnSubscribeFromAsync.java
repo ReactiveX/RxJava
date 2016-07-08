@@ -176,7 +176,7 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
         }
 
         @Override
-        public final void setCancellation(rx.AsyncEmitter.Cancellable c) {
+        public final void setCancellation(AsyncEmitter.Cancellable c) {
             setSubscription(new CancellableSubscription(c));
         }
 
