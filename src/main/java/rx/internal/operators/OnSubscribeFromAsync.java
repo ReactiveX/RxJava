@@ -104,16 +104,18 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
         }
     }
     
-    static abstract class BaseAsyncEmitter<T> implements AsyncEmitter<T>, Producer, Subscription {
+    static abstract class BaseAsyncEmitter<T> 
+    extends AtomicLong
+    implements AsyncEmitter<T>, Producer, Subscription {
+        /** */
+        private static final long serialVersionUID = 7326289992464377023L;
+
         final Subscriber<? super T> actual;
-        
-        final AtomicLong requested;
         
         final SerialSubscription serial;
 
         public BaseAsyncEmitter(Subscriber<? super T> actual) {
             this.actual = actual;
-            this.requested = new AtomicLong();
             this.serial = new SerialSubscription();
         }
 
@@ -159,7 +161,7 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
         @Override
         public final void request(long n) {
             if (BackpressureUtils.validate(n)) {
-                BackpressureUtils.getAndAddRequest(requested, n);
+                BackpressureUtils.getAndAddRequest(this, n);
                 onRequested();
             }
         }
@@ -180,11 +182,14 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
 
         @Override
         public final long requested() {
-            return requested.get();
+            return get();
         }
     }
     
     static final class NoneAsyncEmitter<T> extends BaseAsyncEmitter<T> {
+
+        /** */
+        private static final long serialVersionUID = 3776720187248809713L;
 
         public NoneAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
@@ -199,8 +204,8 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
             actual.onNext(t);
             
             for (;;) {
-                long r = requested.get();
-                if (r == 0L || requested.compareAndSet(r, r - 1)) {
+                long r = get();
+                if (r == 0L || compareAndSet(r, r - 1)) {
                     return;
                 }
             }
@@ -209,6 +214,9 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
     }
     
     static abstract class NoOverflowBaseAsyncEmitter<T> extends BaseAsyncEmitter<T> {
+
+        /** */
+        private static final long serialVersionUID = 4127754106204442833L;
 
         public NoOverflowBaseAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
@@ -220,9 +228,9 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
                 return;
             }
 
-            if (requested.get() != 0) {
+            if (get() != 0) {
                 actual.onNext(t);
-                BackpressureUtils.produced(requested, 1);
+                BackpressureUtils.produced(this, 1);
             } else {
                 onOverflow();
             }
@@ -232,6 +240,9 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
     }
     
     static final class DropAsyncEmitter<T> extends NoOverflowBaseAsyncEmitter<T> {
+
+        /** */
+        private static final long serialVersionUID = 8360058422307496563L;
 
         public DropAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
@@ -246,6 +257,9 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
 
     static final class ErrorAsyncEmitter<T> extends NoOverflowBaseAsyncEmitter<T> {
 
+        /** */
+        private static final long serialVersionUID = 338953216916120960L;
+
         public ErrorAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
         }
@@ -258,6 +272,9 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
     }
     
     static final class BufferAsyncEmitter<T> extends BaseAsyncEmitter<T> {
+
+        /** */
+        private static final long serialVersionUID = 2427151001689639875L;
 
         final Queue<Object> queue;
         
@@ -318,7 +335,7 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
             final Queue<Object> q = queue;
             
             for (;;) {
-                long r = requested.get();
+                long r = get();
                 long e = 0L;
                 
                 while (e != r) {
@@ -374,7 +391,7 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
                 }
                 
                 if (e != 0) {
-                    BackpressureUtils.getAndAddRequest(requested, -e);
+                    BackpressureUtils.produced(this, e);
                 }
                 
                 missed = wip.addAndGet(-missed);
@@ -386,6 +403,9 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
     }
 
     static final class LatestAsyncEmitter<T> extends BaseAsyncEmitter<T> {
+
+        /** */
+        private static final long serialVersionUID = 4023437720691792495L;
 
         final AtomicReference<Object> queue;
 
@@ -444,7 +464,7 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
             final AtomicReference<Object> q = queue;
             
             for (;;) {
-                long r = requested.get();
+                long r = get();
                 long e = 0L;
                 
                 while (e != r) {
@@ -500,7 +520,7 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
                 }
                 
                 if (e != 0) {
-                    BackpressureUtils.getAndAddRequest(requested, -e);
+                    BackpressureUtils.produced(this, e);
                 }
                 
                 missed = wip.addAndGet(-missed);
