@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -33,9 +34,10 @@ import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Scheduler.Worker;
 import rx.functions.*;
-import rx.internal.util.RxRingBuffer;
+import rx.internal.util.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.*;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
 public class OperatorMergeTest {
@@ -1370,6 +1372,129 @@ public class OperatorMergeTest {
         
         ts.requestMore(2);
         ts.assertValues(null, null);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void mergeConcurrentJustJust() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.merge(Observable.just(Observable.just(1)), 5).subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void mergeConcurrentJustRange() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.merge(Observable.just(Observable.range(1, 5)), 5).subscribe(ts);
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeMany() throws Exception {
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] clazz = new Class[i];
+            Arrays.fill(clazz, Observable.class);
+            
+            Observable<Integer>[] obs = new Observable[i];
+            Arrays.fill(obs, Observable.just(1));
+            
+            Integer[] expected = new Integer[i];
+            Arrays.fill(expected, 1);
+            
+            Method m = Observable.class.getMethod("merge", clazz);
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            ((Observable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
+            
+            ts.assertValues(expected);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeArrayMaxConcurrent() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+        
+        Observable.merge(new Observable[] { ps1, ps2 }, 1).subscribe(ts);
+        
+        assertTrue("ps1 has no subscribers?!", ps1.hasObservers());
+        assertFalse("ps2 has subscribers?!", ps2.hasObservers());
+        
+        ps1.onNext(1);
+        ps1.onCompleted();
+        
+        assertFalse("ps1 has subscribers?!", ps1.hasObservers());
+        assertTrue("ps2 has no subscribers?!", ps2.hasObservers());
+
+        ps2.onNext(2);
+        ps2.onCompleted();
+
+        ts.assertValues(1, 2);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void flatMapJustJust() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(Observable.just(1)).flatMap((Func1)UtilityFunctions.identity()).subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void flatMapJustRange() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(Observable.range(1, 5)).flatMap((Func1)UtilityFunctions.identity()).subscribe(ts);
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void flatMapMaxConcurrentJustJust() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(Observable.just(1)).flatMap((Func1)UtilityFunctions.identity(), 5).subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void flatMapMaxConcurrentJustRange() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(Observable.range(1, 5)).flatMap((Func1)UtilityFunctions.identity(), 5).subscribe(ts);
+        
+        ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNoErrors();
         ts.assertCompleted();
     }

@@ -18,6 +18,7 @@ package rx;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
 
 import java.util.*;
 
@@ -31,42 +32,42 @@ public class NotificationTest {
     public void testOnNextIntegerNotificationDoesNotEqualNullNotification(){
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> nullNotification = Notification.createOnNext(null);
-        Assert.assertFalse(integerNotification.equals(nullNotification));
+        assertFalse(integerNotification.equals(nullNotification));
     }
 
     @Test
     public void testOnNextNullNotificationDoesNotEqualIntegerNotification(){
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> nullNotification = Notification.createOnNext(null);
-        Assert.assertFalse(nullNotification.equals(integerNotification));
+        assertFalse(nullNotification.equals(integerNotification));
     }
 
     @Test
     public void testOnNextIntegerNotificationsWhenEqual(){
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> integerNotification2 = Notification.createOnNext(1);
-        Assert.assertTrue(integerNotification.equals(integerNotification2));
+        assertTrue(integerNotification.equals(integerNotification2));
     }
 
     @Test
     public void testOnNextIntegerNotificationsWhenNotEqual(){
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> integerNotification2 = Notification.createOnNext(2);
-        Assert.assertFalse(integerNotification.equals(integerNotification2));
+        assertFalse(integerNotification.equals(integerNotification2));
     }
 
     @Test
     public void testOnErrorIntegerNotificationDoesNotEqualNullNotification(){
         final Notification<Integer> integerNotification = Notification.createOnError(new Exception());
         final Notification<Integer> nullNotification = Notification.createOnError(null);
-        Assert.assertFalse(integerNotification.equals(nullNotification));
+        assertFalse(integerNotification.equals(nullNotification));
     }
 
     @Test
     public void testOnErrorNullNotificationDoesNotEqualIntegerNotification(){
         final Notification<Integer> integerNotification = Notification.createOnError(new Exception());
         final Notification<Integer> nullNotification = Notification.createOnError(null);
-        Assert.assertFalse(nullNotification.equals(integerNotification));
+        assertFalse(nullNotification.equals(integerNotification));
     }
 
     @Test
@@ -74,22 +75,22 @@ public class NotificationTest {
         final Exception exception = new Exception();
         final Notification<Integer> onErrorNotification = Notification.createOnError(exception);
         final Notification<Integer> onErrorNotification2 = Notification.createOnError(exception);
-        Assert.assertTrue(onErrorNotification.equals(onErrorNotification2));
+        assertTrue(onErrorNotification.equals(onErrorNotification2));
     }
 
     @Test
     public void testOnErrorIntegerNotificationWhenNotEqual(){
         final Notification<Integer> onErrorNotification = Notification.createOnError(new Exception());
         final Notification<Integer> onErrorNotification2 = Notification.createOnError(new Exception());
-        Assert.assertFalse(onErrorNotification.equals(onErrorNotification2));
+        assertFalse(onErrorNotification.equals(onErrorNotification2));
     }
 
     @Test
     public void createWithClass() {
         Notification<Integer> n = Notification.createOnCompleted(Integer.class);
-        Assert.assertTrue(n.isOnCompleted());
-        Assert.assertFalse(n.hasThrowable());
-        Assert.assertFalse(n.hasValue());
+        assertTrue(n.isOnCompleted());
+        assertFalse(n.hasThrowable());
+        assertFalse(n.hasValue());
     }
 
     @Test
@@ -121,9 +122,9 @@ public class NotificationTest {
 
     @Test
     public void toStringVariants() {
-        Assert.assertEquals("[rx.Notification OnNext 1]", stripAt(Notification.createOnNext(1).toString()));
-        Assert.assertEquals("[rx.Notification OnError Forced failure]", stripAt(Notification.createOnError(new TestException("Forced failure")).toString()));
-        Assert.assertEquals("[rx.Notification OnCompleted]", stripAt(Notification.createOnCompleted().toString()));
+        assertEquals("[rx.Notification OnNext 1]", stripAt(Notification.createOnNext(1).toString()));
+        assertEquals("[rx.Notification OnError Forced failure]", stripAt(Notification.createOnError(new TestException("Forced failure")).toString()));
+        assertEquals("[rx.Notification OnCompleted]", stripAt(Notification.createOnCompleted().toString()));
     }
 
     @Test
@@ -134,7 +135,7 @@ public class NotificationTest {
         Notification<Integer> e1 = Notification.createOnError(new TestException());
         Notification<Integer> c1 = Notification.createOnCompleted();
 
-        Assert.assertEquals(n1.hashCode(), n1a.hashCode());
+        assertEquals(n1.hashCode(), n1a.hashCode());
 
         Set<Notification<Integer>> set = new HashSet<Notification<Integer>>();
 
@@ -143,11 +144,11 @@ public class NotificationTest {
         set.add(e1);
         set.add(c1);
 
-        Assert.assertTrue(set.contains(n1));
-        Assert.assertTrue(set.contains(n1a));
-        Assert.assertTrue(set.contains(n2));
-        Assert.assertTrue(set.contains(e1));
-        Assert.assertTrue(set.contains(c1));
+        assertTrue(set.contains(n1));
+        assertTrue(set.contains(n1a));
+        assertTrue(set.contains(n2));
+        assertTrue(set.contains(e1));
+        assertTrue(set.contains(c1));
     }
 
     @Test
@@ -164,27 +165,27 @@ public class NotificationTest {
         Notification<Integer> c1 = Notification.createOnCompleted();
         Notification<Integer> c2 = Notification.createOnCompleted();
 
-        Assert.assertEquals(n1, n1a);
-        Assert.assertNotEquals(n1, n2);
-        Assert.assertNotEquals(n2, n1);
+        assertEquals(n1, n1a);
+        assertNotEquals(n1, n2);
+        assertNotEquals(n2, n1);
 
-        Assert.assertNotEquals(n1, e1);
-        Assert.assertNotEquals(e1, n1);
-        Assert.assertNotEquals(e1, c1);
-        Assert.assertNotEquals(n1, c1);
-        Assert.assertNotEquals(c1, n1);
-        Assert.assertNotEquals(c1, e1);
+        assertNotEquals(n1, e1);
+        assertNotEquals(e1, n1);
+        assertNotEquals(e1, c1);
+        assertNotEquals(n1, c1);
+        assertNotEquals(c1, n1);
+        assertNotEquals(c1, e1);
 
-        Assert.assertEquals(e1, e1);
-        Assert.assertEquals(e1, e2);
+        assertEquals(e1, e1);
+        assertNotEquals(e1, e2);
 
-        Assert.assertEquals(c1, c2);
+        assertEquals(c1, c2);
 
-        Assert.assertFalse(n1.equals(null));
-        Assert.assertFalse(n1.equals(1));
+        assertFalse(n1.equals(null));
+        assertFalse(n1.equals(1));
         
-        Assert.assertEquals(z1a, z1);
-        Assert.assertEquals(z1, z1a);
+        assertEquals(z1a, z1);
+        assertEquals(z1, z1a);
     }
     
     @Test
@@ -195,25 +196,64 @@ public class NotificationTest {
         Notification<Integer> e2 = Notification.createOnError(null);
         Notification<Integer> c1 = Notification.createOnCompleted();
 
-        Assert.assertFalse(z1.hasValue());
-        Assert.assertFalse(z1.hasThrowable());
-        Assert.assertFalse(z1.isOnCompleted());
+        assertFalse(z1.hasValue());
+        assertFalse(z1.hasThrowable());
+        assertFalse(z1.isOnCompleted());
         
-        Assert.assertTrue(n1.hasValue());
-        Assert.assertFalse(n1.hasThrowable());
-        Assert.assertFalse(n1.isOnCompleted());
+        assertTrue(n1.hasValue());
+        assertFalse(n1.hasThrowable());
+        assertFalse(n1.isOnCompleted());
         
-        Assert.assertFalse(e1.hasValue());
-        Assert.assertTrue(e1.hasThrowable());
-        Assert.assertFalse(e1.isOnCompleted());
+        assertFalse(e1.hasValue());
+        assertTrue(e1.hasThrowable());
+        assertFalse(e1.isOnCompleted());
 
-        Assert.assertFalse(e2.hasValue());
-        Assert.assertFalse(e2.hasThrowable());
-        Assert.assertFalse(e2.isOnCompleted());
+        assertFalse(e2.hasValue());
+        assertFalse(e2.hasThrowable());
+        assertFalse(e2.isOnCompleted());
 
-        Assert.assertFalse(c1.hasValue());
-        Assert.assertFalse(c1.hasThrowable());
-        Assert.assertTrue(c1.isOnCompleted());
+        assertFalse(c1.hasValue());
+        assertFalse(c1.hasThrowable());
+        assertTrue(c1.isOnCompleted());
 
+    }
+    
+    @Test
+    public void exceptionEquality() {
+        EqualException ex1 = new EqualException("1");
+        EqualException ex2 = new EqualException("1");
+        EqualException ex3 = new EqualException("3");
+        
+        Notification<Integer> e1 = Notification.createOnError(ex1);
+        Notification<Integer> e2 = Notification.createOnError(ex2);
+        Notification<Integer> e3 = Notification.createOnError(ex3);
+
+        assertEquals(e1, e1);
+        assertEquals(e1, e2);
+        assertEquals(e2, e1);
+        assertEquals(e2, e2);
+        
+        assertNotEquals(e1, e3);
+        assertNotEquals(e2, e3);
+        assertNotEquals(e3, e1);
+        assertNotEquals(e3, e2);
+    }
+    
+    static final class EqualException extends RuntimeException {
+        
+        /** */
+        private static final long serialVersionUID = 446310455393317050L;
+
+        public EqualException(String message) {
+            super(message);
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof EqualException) {
+                return getMessage().equals(((EqualException)o).getMessage());
+            }
+            return false;
+        }
     }
 }

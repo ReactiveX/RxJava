@@ -31,7 +31,7 @@ package rx.internal.operators;
  * limitations under the License.
  */
 
-import static rx.Observable.create;
+import static rx.Observable.create; // NOPMD
 
 import java.util.concurrent.atomic.*;
 

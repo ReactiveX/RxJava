@@ -37,6 +37,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.TestException;
 import rx.observables.ConnectableObservable;
+import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 
 public class OnSubscribeTimerTest {
@@ -291,5 +292,45 @@ public class OnSubscribeTimerTest {
         inOrder.verify(observer).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(observer, never()).onCompleted();
+    }
+
+    @Test
+    public void timerInterval() {
+        @SuppressWarnings("deprecation")
+        Observable<Long> w = Observable.timer(1, 1, TimeUnit.SECONDS, scheduler);
+        Subscription sub = w.subscribe(observer);
+
+        verify(observer, never()).onNext(0L);
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+
+        scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(0L);
+        inOrder.verify(observer, times(1)).onNext(1L);
+        inOrder.verify(observer, never()).onNext(2L);
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+
+        sub.unsubscribe();
+        scheduler.advanceTimeTo(4, TimeUnit.SECONDS);
+        verify(observer, never()).onNext(2L);
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void timerIntervalDefaultScheduler() {
+        @SuppressWarnings("deprecation")
+        Observable<Long> source = Observable.timer(1, 1, TimeUnit.MILLISECONDS).take(100);
+        
+        TestSubscriber<Long> ts = TestSubscriber.create();
+        source.subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValueCount(100);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 }

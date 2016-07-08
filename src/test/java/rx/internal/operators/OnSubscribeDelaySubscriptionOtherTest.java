@@ -308,4 +308,8 @@ public class OnSubscribeDelaySubscriptionOtherTest {
         Assert.assertFalse(subscribed.get());
     }
 
+    @Test(expected = NullPointerException.class)
+    public void otherNull() {
+        Observable.just(1).delaySubscription((Observable<Integer>)null);
+    }
 }

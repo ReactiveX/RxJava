@@ -94,4 +94,12 @@ public class OperatorDoAfterTerminateTest {
         // Not only IllegalStateException was swallowed
         // But finallyAction was called twice!
     }
+    
+    @SuppressWarnings("deprecation")
+    @Test
+    public void finallyDo() {
+        Observable.empty().finallyDo(aAction0).subscribe();
+        
+        verify(aAction0).call();
+    }
 }

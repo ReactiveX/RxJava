@@ -16,41 +16,28 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.notNull;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 
+import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Scheduler;
 import rx.Scheduler.Worker;
-import rx.Subscriber;
-import rx.Subscription;
 import rx.exceptions.TestException;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.internal.operators.OperatorReplay.BoundedReplayBuffer;
-import rx.internal.operators.OperatorReplay.Node;
-import rx.internal.operators.OperatorReplay.SizeAndTimeBoundReplayBuffer;
+import rx.functions.*;
+import rx.internal.operators.OperatorReplay.*;
 import rx.internal.util.PlatformDependent;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
-import rx.schedulers.TestScheduler;
+import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 
 public class OperatorReplayTest {
@@ -1296,5 +1283,139 @@ public class OperatorReplayTest {
         co.subscribe(ts);
         
         ts.assertValue(3);
+    }
+    
+    @Test
+    public void invalidBufferSize() {
+        try {
+            Observable.just(1).replay(-1, 1, TimeUnit.MILLISECONDS);
+        } catch (IllegalArgumentException ex) {
+            assertEquals("bufferSize < 0", ex.getMessage());
+        }
+    }
+    
+    @Test
+    public void bufferScheduled() {
+        
+        TestScheduler test = new TestScheduler();
+        
+        
+        ConnectableObservable<Integer> co = Observable.range(1, 5).replay(2, test);
+        
+        TestSubscriber<Integer> ts1 = TestSubscriber.create();
+        
+        co.subscribe(ts1);
+        
+        co.connect();
+        
+        ts1.assertNoValues();
+        ts1.assertNotCompleted();
+        
+        test.triggerActions();
+        
+        ts1.assertValues(1, 2, 3, 4, 5);
+        ts1.assertNoErrors();
+        ts1.assertCompleted();
+        
+        TestSubscriber<Integer> ts2 = TestSubscriber.create();
+        
+        co.subscribe(ts2);
+        
+        ts2.assertNoValues();
+        ts2.assertNotCompleted();
+        
+        test.triggerActions();
+        
+        ts2.assertValues(4, 5);
+        ts2.assertNoErrors();
+        ts2.assertCompleted();
+    }
+    
+    @Test
+    public void allScheduled() {
+        
+        TestScheduler test = new TestScheduler();
+        
+        
+        ConnectableObservable<Integer> co = Observable.range(1, 5).replay(test);
+        
+        TestSubscriber<Integer> ts1 = TestSubscriber.create();
+        
+        co.subscribe(ts1);
+        
+        co.connect();
+        
+        ts1.assertNoValues();
+        ts1.assertNotCompleted();
+        
+        test.triggerActions();
+        
+        ts1.assertValues(1, 2, 3, 4, 5);
+        ts1.assertNoErrors();
+        ts1.assertCompleted();
+        
+        TestSubscriber<Integer> ts2 = TestSubscriber.create();
+        
+        co.subscribe(ts2);
+        
+        ts2.assertNoValues();
+        ts2.assertNotCompleted();
+        
+        test.triggerActions();
+        
+        ts2.assertValues(1, 2, 3, 4, 5);
+        ts2.assertNoErrors();
+        ts2.assertCompleted();
+    }
+
+    @Test
+    public void replayTimedDefaultScheduler() {
+        ConnectableObservable<Integer> co = Observable.range(1, 5).replay(2, TimeUnit.SECONDS);
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        co.subscribe(ts);
+        
+        co.connect();
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void bufferTimedSelectorScheduler() {
+        Observable<Integer> co = Observable.range(1, 5)
+                .replay(new Func1<Observable<Integer>, Observable<Integer>>() { 
+                    @Override
+                    public Observable<Integer> call(Observable<Integer> t) {
+                        return t;
+                    }
+                }, 2, 2, TimeUnit.SECONDS, Schedulers.computation());
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        co.subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void bufferTimedSelectorSchedulerBadBuffer() {
+        try {
+            Observable.range(1, 5)
+                    .replay(new Func1<Observable<Integer>, Observable<Integer>>() { 
+                        @Override
+                        public Observable<Integer> call(Observable<Integer> t) {
+                            return t;
+                        }
+                    }, -99, 2, TimeUnit.SECONDS, Schedulers.computation());
+        } catch (IllegalArgumentException ex) {
+            assertEquals("bufferSize < 0", ex.getMessage());
+        }
     }
 }

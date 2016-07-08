@@ -156,4 +156,63 @@ public class OnSubscribeToObservableFutureTest {
         ts.assertNoErrors();
         ts.assertCompleted();
     }
+    
+    @Test
+    public void withTimeoutNoTimeout() {
+        FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
+            @Override
+            public void run() {
+                
+            }
+        }, 1);
+        
+        task.run();
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.from(task, 1, TimeUnit.SECONDS).subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void withTimeoutTimeout() {
+        FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
+            @Override
+            public void run() {
+                
+            }
+        }, 1);
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.from(task, 10, TimeUnit.MILLISECONDS).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TimeoutException.class);
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void withTimeoutNoTimeoutScheduler() {
+        FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
+            @Override
+            public void run() {
+                
+            }
+        }, 1);
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.from(task, Schedulers.computation()).subscribe(ts);
+
+        task.run();
+
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
 }

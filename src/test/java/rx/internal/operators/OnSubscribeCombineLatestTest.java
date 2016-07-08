@@ -1058,4 +1058,23 @@ public class OnSubscribeCombineLatestTest {
         ts.assertNotCompleted();
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void combineLatestIterable() {
+        Observable<Integer> source = Observable.just(1);
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.combineLatest((Iterable<Observable<Integer>>)Arrays.asList(source, source), new FuncN<Integer>() {
+            @Override
+            public Integer call(Object... args) {
+                return (Integer)args[0] + (Integer)args[1];
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(2);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
 }

@@ -15,33 +15,26 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable.OnSubscribe;
 import rx.*;
-import rx.functions.Func1;
-import rx.internal.util.RxRingBuffer;
+import rx.Observable;
+import rx.Observable.OnSubscribe;
+import rx.Observer;
+import rx.functions.*;
+import rx.internal.util.*;
 import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
-import rx.schedulers.TestScheduler;
+import rx.schedulers.*;
 import rx.subjects.*;
 import rx.subscriptions.BooleanSubscription;
 
@@ -909,6 +902,79 @@ public class OperatorConcatTest {
         ts.assertValue(1);
         ts.assertCompleted();
         ts.assertNoErrors();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatMany() throws Exception {
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] clazz = new Class[i];
+            Arrays.fill(clazz, Observable.class);
+            
+            Observable<Integer>[] obs = new Observable[i];
+            Arrays.fill(obs, Observable.just(1));
+            
+            Integer[] expected = new Integer[i];
+            Arrays.fill(expected, 1);
+            
+            Method m = Observable.class.getMethod("concat", clazz);
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            ((Observable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
+            
+            ts.assertValues(expected);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        }
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void concatMapJustJust() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(Observable.just(1)).concatMap((Func1)UtilityFunctions.identity()).subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void concatMapJustRange() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(Observable.range(1, 5)).concatMap((Func1)UtilityFunctions.identity()).subscribe(ts);
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void concatMapDelayErrorJustJust() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(Observable.just(1)).concatMapDelayError((Func1)UtilityFunctions.identity()).subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void concatMapDelayErrorJustRange() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(Observable.range(1, 5)).concatMapDelayError((Func1)UtilityFunctions.identity()).subscribe(ts);
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 
 }

@@ -85,7 +85,7 @@ public abstract class DeferredScalarSubscriber<T, R> extends Subscriber<T> {
     
     /**
      * Atomically switches to the terminal state and emits the value if
-     * there is a request for it or stores it for retrieval by {@link #downstreamRequest(long)}.
+     * there is a request for it or stores it for retrieval by {@code downstreamRequest(long)}.
      * @param value the value to complete with
      */
     protected final void complete(R value) {

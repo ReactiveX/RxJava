@@ -158,18 +158,12 @@ public final class Notification<T> {
      * @param observer the target observer to call onXXX methods on based on the kind of this Notification instance
      */
     public void accept(Observer<? super T> observer) {
-        switch (kind) {
-        case OnNext:
+        if (kind == Kind.OnNext) {
             observer.onNext(getValue());
-            break;
-        case OnError:
-            observer.onError(getThrowable());
-            break;
-        case OnCompleted:
+        } else if (kind == Kind.OnCompleted) {
             observer.onCompleted();
-            break;
-        default:
-            throw new AssertionError("Uncovered case: " + kind);
+        } else {
+            observer.onError(getThrowable());
         }
     }
 

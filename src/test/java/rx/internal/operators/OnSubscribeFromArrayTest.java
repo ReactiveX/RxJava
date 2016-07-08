@@ -16,9 +16,10 @@
 
 package rx.internal.operators;
 
-import org.junit.Test;
+import org.junit.*;
 
 import rx.Observable;
+import rx.internal.util.ScalarSynchronousObservable;
 import rx.observers.TestSubscriber;
 
 public class OnSubscribeFromArrayTest {
@@ -62,6 +63,17 @@ public class OnSubscribeFromArrayTest {
         ts.assertNoErrors();
         ts.assertValueCount(1000);
         ts.assertCompleted();
+    }
+
+    @Test
+    public void empty() {
+        Assert.assertSame(Observable.empty(), Observable.from(new Object[0]));
+    }
+
+    @Test
+    public void just() {
+        Observable<Integer> source = Observable.from(new Integer[] { 1 });
+        Assert.assertTrue(source.getClass().toString(), source instanceof ScalarSynchronousObservable);
     }
 
 }

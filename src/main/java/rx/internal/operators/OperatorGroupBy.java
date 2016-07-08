@@ -73,7 +73,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
     
     @Override
     public Subscriber<? super T> call(Subscriber<? super GroupedObservable<K, V>> child) {
-        final GroupBySubscriber<T, K, V> parent;
+        final GroupBySubscriber<T, K, V> parent; // NOPMD
         try {
             parent = new GroupBySubscriber<T, K, V>(child, keySelector, valueSelector, bufferSize, delayError, mapFactory);
         } catch (Throwable ex) {

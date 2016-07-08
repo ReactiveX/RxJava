@@ -9781,6 +9781,9 @@ public class Observable<T> {
         if (observer instanceof Subscriber) {
             return subscribe((Subscriber<? super T>)observer);
         }
+        if (observer == null) {
+            throw new NullPointerException("observer is null");
+        }
         return subscribe(new ObserverSubscriber<T>(observer));
     }
 
