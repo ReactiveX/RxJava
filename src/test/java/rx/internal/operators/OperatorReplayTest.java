@@ -1418,4 +1418,81 @@ public class OperatorReplayTest {
             assertEquals("bufferSize < 0", ex.getMessage());
         }
     }
+    
+    @Test
+    public void selectorSizeTimeDefaultScheduler() {
+        Observable<Integer> co = Observable.range(1, 5)
+                .replay(new Func1<Observable<Integer>, Observable<Integer>>() { 
+                    @Override
+                    public Observable<Integer> call(Observable<Integer> t) {
+                        return t;
+                    }
+                }, 2, 2, TimeUnit.SECONDS);
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        co.subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void selectorSizeScheduler() {
+        Observable<Integer> co = Observable.range(1, 5)
+                .replay(new Func1<Observable<Integer>, Observable<Integer>>() { 
+                    @Override
+                    public Observable<Integer> call(Observable<Integer> t) {
+                        return t;
+                    }
+                }, 2, Schedulers.computation());
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        co.subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void selectorScheduler() {
+        Observable<Integer> co = Observable.range(1, 5)
+                .replay(new Func1<Observable<Integer>, Observable<Integer>>() { 
+                    @Override
+                    public Observable<Integer> call(Observable<Integer> t) {
+                        return t;
+                    }
+                }, Schedulers.computation());
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        co.subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void timeSizeDefaultScheduler() {
+        ConnectableObservable<Integer> co = Observable.range(1, 5)
+                .replay(2, 2, TimeUnit.SECONDS);
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        co.subscribe(ts);
+        
+        co.connect();
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
 }

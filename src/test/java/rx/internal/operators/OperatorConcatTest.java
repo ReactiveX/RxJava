@@ -976,5 +976,30 @@ public class OperatorConcatTest {
         ts.assertNoErrors();
         ts.assertCompleted();
     }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void startWith() throws Exception {
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] clazz = new Class[i];
+            Arrays.fill(clazz, Object.class);
+            
+            Object[] obs = new Object[i];
+            Arrays.fill(obs, 1);
+            
+            Integer[] expected = new Integer[i];
+            Arrays.fill(expected, 1);
+            
+            Method m = Observable.class.getMethod("startWith", clazz);
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            ((Observable<Integer>)m.invoke(Observable.empty(), obs)).subscribe(ts);
+            
+            ts.assertValues(expected);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        }
+    }
 
 }

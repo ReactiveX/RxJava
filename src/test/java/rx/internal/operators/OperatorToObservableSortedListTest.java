@@ -148,4 +148,53 @@ public class OperatorToObservableSortedListTest {
             ex.printStackTrace();
         }
     }
+    
+    @Test
+    public void testSortedListCapacity() {
+        Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
+        Observable<List<Integer>> observable = w.toSortedList(4);
+
+        @SuppressWarnings("unchecked")
+        Observer<List<Integer>> observer = mock(Observer.class);
+        observable.subscribe(observer);
+        verify(observer, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+    }
+    
+    @Test
+    public void testSortedCustomComparer() {
+        Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
+        Observable<List<Integer>> observable = w.toSortedList(new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t2.compareTo(t1);
+            }
+        });
+
+        @SuppressWarnings("unchecked")
+        Observer<List<Integer>> observer = mock(Observer.class);
+        observable.subscribe(observer);
+        verify(observer, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+    }
+    
+    @Test
+    public void testSortedCustomComparerHinted() {
+        Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
+        Observable<List<Integer>> observable = w.toSortedList(new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t2.compareTo(t1);
+            }
+        }, 4);
+
+        @SuppressWarnings("unchecked")
+        Observer<List<Integer>> observer = mock(Observer.class);
+        observable.subscribe(observer);
+        verify(observer, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+    }
 }

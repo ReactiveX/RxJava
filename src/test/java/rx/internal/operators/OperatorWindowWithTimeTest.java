@@ -192,5 +192,42 @@ public class OperatorWindowWithTimeTest {
         ts.assertCompleted();
         Assert.assertFalse(ts.getOnNextEvents().isEmpty());
     }
+
+    @Test
+    public void timeCountDefaultScheduler() {
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(1, 10).window(5, TimeUnit.SECONDS, 5)
+        .flatMap(new Func1<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Observable<Integer> w) {
+                return w;
+            }
+        }).subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValueCount(10);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
     
+    @Test
+    public void spanSkipDefaultScheduler() {
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(1, 10).window(5, 5, TimeUnit.SECONDS)
+        .flatMap(new Func1<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Observable<Integer> w) {
+                return w;
+            }
+        }).subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValueCount(10);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
 }

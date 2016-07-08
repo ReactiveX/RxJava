@@ -391,4 +391,63 @@ public class OperatorTakeLastTest {
         ts.assertNoErrors();
     }
 
+    @Test
+    public void takeLastBuffer() {
+        TestSubscriber<List<Integer>> ts = TestSubscriber.create();
+        
+        Observable.range(1, 5).takeLastBuffer(1).subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(5));
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void takeLastBufferTimed() {
+        TestSubscriber<List<Integer>> ts = TestSubscriber.create();
+        
+        Observable.range(1, 5).takeLastBuffer(5, TimeUnit.SECONDS).subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValue(Arrays.asList(1, 2, 3, 4, 5));
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void takeLastBufferTimedSized() {
+        TestSubscriber<List<Integer>> ts = TestSubscriber.create();
+        
+        Observable.range(1, 5).takeLastBuffer(1, 5, TimeUnit.SECONDS).subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValue(Arrays.asList(5));
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void takeLastBufferTimedIO() {
+        TestSubscriber<List<Integer>> ts = TestSubscriber.create();
+        
+        Observable.range(1, 5).takeLastBuffer(5, TimeUnit.SECONDS, Schedulers.io()).subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValue(Arrays.asList(1, 2, 3, 4, 5));
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void takeLastBufferTimedSizedIO() {
+        TestSubscriber<List<Integer>> ts = TestSubscriber.create();
+        
+        Observable.range(1, 5).takeLastBuffer(1, 5, TimeUnit.SECONDS, Schedulers.io()).subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValue(Arrays.asList(5));
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
 }

@@ -29,10 +29,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
-import rx.functions.Action1;
+import rx.*;
+import rx.functions.*;
 import rx.observers.TestSubscriber;
+import rx.plugins.RxJavaHooks;
+import rx.schedulers.TestScheduler;
+import rx.subjects.PublishSubject;
 
 public class OperatorSkipTest {
 
@@ -177,5 +179,37 @@ public class OperatorSkipTest {
         ts.assertNoErrors();
         assertEquals(Arrays.asList(6,7,8,9,10), ts.getOnNextEvents());
     }
-    
+
+    @Test
+    public void skipDefaultScheduler() {
+        final TestScheduler scheduler = new TestScheduler();
+
+        RxJavaHooks.setOnComputationScheduler(new Func1<Scheduler, Scheduler>() {
+            @Override
+            public Scheduler call(Scheduler t) {
+                return scheduler;
+            }
+        });
+        
+        try {
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            PublishSubject<Integer> ps = PublishSubject.create();
+            
+            ps.skip(1, TimeUnit.SECONDS).subscribe(ts);
+            
+            ps.onNext(1);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            
+            ps.onNext(2);
+            ps.onCompleted();
+            
+            ts.assertValue(2);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
 }

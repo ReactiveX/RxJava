@@ -1399,6 +1399,23 @@ public class ObservableTests {
         }
     }
     
+    @Test
+    public void observableThrowsWhileOnErrorFailsUnsafe() {
+        Subscriber<Object> ts = new TestSubscriber<Object>() {
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException();
+            }
+        };
+        
+        try {
+            new FailingObservable().unsafeSubscribe(ts);
+            fail("Should have thrown OnErrorFailedException");
+        } catch (OnErrorFailedException ex) {
+            // expected
+        }
+    }
+    
     static final class FailingObservable extends Observable<Object> {
 
         protected FailingObservable() {
@@ -1410,5 +1427,52 @@ public class ObservableTests {
             });
         }
         
+    }
+    
+    @Test
+    public void forEachWithError() {
+        Action1<Throwable> onError = Actions.empty();
+
+        final List<Object> list = new ArrayList<Object>();
+        Observable.just(1).forEach(new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                list.add(t);
+            }
+        }, onError);
+        
+        Observable.<Integer>error(new TestException()).forEach(new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                list.add(t);
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable t) {
+                list.add(t);
+            }
+        });
+        
+        Observable.<Integer>empty().forEach(new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                list.add(t);
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable t) {
+                list.add(t);
+            }
+        }, new Action0() {
+            @Override
+            public void call() {
+                list.add(100);
+            }
+        });
+
+        assertEquals(3, list.size());
+        assertEquals(1, list.get(0));
+        assertTrue(list.get(1).toString(), list.get(1) instanceof TestException);
+        assertEquals(100, list.get(2));
     }
 }

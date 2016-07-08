@@ -27,9 +27,10 @@ import org.junit.Test;
 import org.mockito.*;
 
 import rx.*;
-import rx.Observable.OnSubscribe;
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observables.GroupedObservable;
@@ -904,4 +905,42 @@ public class OperatorRetryTest {
         inOrder.verifyNoMoreInteractions();
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void retryWhenDefaultScheduler() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(1)
+        .concatWith(Observable.<Integer>error(new TestException()))
+        .retryWhen((Func1)new Func1<Observable, Observable>() {
+            @Override
+            public Observable call(Observable o) {
+                return o.take(2);
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(1, 1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void retryWhenTrampolineScheduler() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(1)
+        .concatWith(Observable.<Integer>error(new TestException()))
+        .retryWhen((Func1)new Func1<Observable, Observable>() {
+            @Override
+            public Observable call(Observable o) {
+                return o.take(2);
+            }
+        }, Schedulers.trampoline()).subscribe(ts);
+        
+        ts.assertValues(1, 1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
 }
