@@ -341,8 +341,8 @@ public class DeferredScalarSubscriberTest {
     
     @Test
     public void emissionRequestRace2() {
-        Worker w = Schedulers.computation().createWorker();
-        Worker w2 = Schedulers.computation().createWorker();
+        Worker w = Schedulers.io().createWorker();
+        Worker w2 = Schedulers.io().createWorker();
         try {
             for (int i = 0; i < 10000; i++) {
     

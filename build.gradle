@@ -61,7 +61,7 @@ if (project.hasProperty('release.useLastTag')) {
 }
 
 test{
-     maxHeapSize = "3g"
+     maxHeapSize = "1500m"
 }
 
 license {
