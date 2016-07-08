@@ -16,6 +16,10 @@
 
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+
 import org.junit.Test;
 
 import rx.Observable;
@@ -208,6 +212,69 @@ public class OnSubscribeConcatDelayErrorTest {
         ts.assertValues(1, 2, 2, 3, 3, 4);
         ts.assertNoErrors();
         ts.assertCompleted();
+    }
+
+    static <T> Observable<T> withError(Observable<T> source) {
+        return source.concatWith(Observable.<T>error(new TestException()));
+    }
+    
+
+    @Test
+    public void concatDelayErrorObservable() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.concatDelayError(
+                Observable.just(Observable.just(1), Observable.just(2)))
+        .subscribe(ts);
+        
+        ts.assertValues(1, 2);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void concatDelayErrorObservableError() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.concatDelayError(
+                withError(Observable.just(withError(Observable.just(1)), withError(Observable.just(2)))))
+        .subscribe(ts);
+        
+        ts.assertValues(1, 2);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+        
+        assertEquals(3, ((CompositeException)ts.getOnErrorEvents().get(0)).getExceptions().size());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayErrorIterable() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.concatDelayError(
+                Arrays.asList(Observable.just(1), Observable.just(2)))
+        .subscribe(ts);
+        
+        ts.assertValues(1, 2);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayErrorIterableError() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.concatDelayError(
+                Arrays.asList(withError(Observable.just(1)), withError(Observable.just(2))))
+        .subscribe(ts);
+        
+        ts.assertValues(1, 2);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+        
+        assertEquals(2, ((CompositeException)ts.getOnErrorEvents().get(0)).getExceptions().size());
     }
 
 }

@@ -26,9 +26,11 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.exceptions.TestException;
+import rx.functions.Func1;
+import rx.observers.TestSubscriber;
+import rx.plugins.RxJavaHooks;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -130,5 +132,43 @@ public class OperatorTakeTimedTest {
 
         verify(o, never()).onNext(4);
         verify(o, never()).onError(any(TestException.class));
+    }
+    
+    @Test
+    public void takeDefaultScheduler() {
+        final TestScheduler scheduler = new TestScheduler();
+
+        RxJavaHooks.setOnComputationScheduler(new Func1<Scheduler, Scheduler>() {
+            @Override
+            public Scheduler call(Scheduler t) {
+                return scheduler;
+            }
+        });
+        
+        try {
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            PublishSubject<Integer> ps = PublishSubject.create();
+            
+            ps.take(1, TimeUnit.SECONDS).subscribe(ts);
+            
+            ps.onNext(1);
+            ps.onNext(2);
+            ps.onNext(3);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            
+            ps.onNext(4);
+            ps.onNext(5);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            ps.onCompleted();
+            
+            ts.assertValues(1, 2, 3);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        } finally {
+            RxJavaHooks.reset();
+        }
     }
 }

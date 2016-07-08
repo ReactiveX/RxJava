@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -58,5 +59,18 @@ public class ThrottleWithTimeoutTests {
         inOrder.verify(observer).onNext(7);
         inOrder.verify(observer).onCompleted();
         inOrder.verifyNoMoreInteractions();
+    }
+    
+    @Test
+    public void timed() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(1, 2).throttleWithTimeout(1, TimeUnit.SECONDS).subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValue(2);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+
     }
 }

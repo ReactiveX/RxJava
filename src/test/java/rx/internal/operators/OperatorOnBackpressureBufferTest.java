@@ -264,4 +264,14 @@ public class OperatorOnBackpressureBufferTest {
          assertFalse(errorOccurred.get());
     }
 
+    @Test
+    public void maxSize() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        Observable.range(1, 10).onBackpressureBuffer(1).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(MissingBackpressureException.class);
+        ts.assertNotCompleted();
+    }
 }

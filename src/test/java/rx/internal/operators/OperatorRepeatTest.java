@@ -15,8 +15,7 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -198,5 +197,53 @@ public class OperatorRepeatTest {
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
         
         assertEquals(Arrays.asList(1, 2, 1, 2, 1, 2, 1, 2, 1, 2), concatBase);
+    }
+    
+    @Test
+    public void repeatScheduled() {
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(1).repeat(5, Schedulers.computation()).subscribe(ts);
+        
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+        ts.assertValues(1, 1, 1, 1, 1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void repeatWhenDefaultScheduler() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(1).repeatWhen((Func1)new Func1<Observable, Observable>() {
+            @Override
+            public Observable call(Observable o) {
+                return o.take(2);
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(1, 1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void repeatWhenTrampolineScheduler() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.just(1).repeatWhen((Func1)new Func1<Observable, Observable>() {
+            @Override
+            public Observable call(Observable o) {
+                return o.take(2);
+            }
+        }, Schedulers.trampoline()).subscribe(ts);
+        
+        ts.assertValues(1, 1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 }

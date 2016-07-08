@@ -15,22 +15,13 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 
 import rx.Observable;
 import rx.Observer;
@@ -267,5 +258,15 @@ public class OnSubscribeRangeTest {
         ts.assertCompleted();
         ts.assertNoErrors();
         ts.assertValues(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+    }
+    
+    @Test
+    public void negativeCount() {
+        try {
+            Observable.range(1, -1);
+            Assert.fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            Assert.assertEquals("Count can not be negative", ex.getMessage());
+        }
     }
 }

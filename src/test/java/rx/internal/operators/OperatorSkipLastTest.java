@@ -24,15 +24,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
+import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
+import rx.plugins.RxJavaHooks;
+import rx.schedulers.*;
+import rx.subjects.PublishSubject;
 
 public class OperatorSkipLastTest {
 
@@ -119,4 +122,41 @@ public class OperatorSkipLastTest {
         Observable.just("one").skipLast(-1);
     }
 
+    @Test
+    public void skipLastDefaultScheduler() {
+        final TestScheduler scheduler = new TestScheduler();
+
+        RxJavaHooks.setOnComputationScheduler(new Func1<Scheduler, Scheduler>() {
+            @Override
+            public Scheduler call(Scheduler t) {
+                return scheduler;
+            }
+        });
+        
+        try {
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            PublishSubject<Integer> ps = PublishSubject.create();
+            
+            ps.skipLast(1, TimeUnit.SECONDS).subscribe(ts);
+            
+            ps.onNext(1);
+            ps.onNext(2);
+            ps.onNext(3);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            
+            ps.onNext(4);
+            ps.onNext(5);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            ps.onCompleted();
+            
+            ts.assertValues(1, 2, 3);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
 }

@@ -33,14 +33,4 @@ public final class TestException extends RuntimeException {
     public TestException(String message) {
         super(message);
     }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        String thisMessage = getMessage();
-        String otherMessage = ((TestException)o).getMessage();
-        return thisMessage == otherMessage || (thisMessage != null && thisMessage.equals(otherMessage));
-    }
 }

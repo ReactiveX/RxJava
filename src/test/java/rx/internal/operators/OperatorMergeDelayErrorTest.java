@@ -20,6 +20,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,6 +41,7 @@ import rx.exceptions.CompositeException;
 import rx.exceptions.TestException;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
+import rx.subjects.PublishSubject;
 
 public class OperatorMergeDelayErrorTest {
 
@@ -593,5 +595,123 @@ public class OperatorMergeDelayErrorTest {
         assertEquals(1, ts.getOnErrorEvents().size());
         assertTrue(ts.getOnErrorEvents().get(0) instanceof TestException);
         assertEquals(Arrays.asList(1L, 1L, 1L), requests);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void iterableMaxConcurrent() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+        
+        Observable.mergeDelayError(Arrays.asList(ps1, ps2), 1).subscribe(ts);
+        
+        assertTrue("ps1 has no subscribers?!", ps1.hasObservers());
+        assertFalse("ps2 has subscribers?!", ps2.hasObservers());
+        
+        ps1.onNext(1);
+        ps1.onCompleted();
+        
+        assertFalse("ps1 has subscribers?!", ps1.hasObservers());
+        assertTrue("ps2 has no subscribers?!", ps2.hasObservers());
+
+        ps2.onNext(2);
+        ps2.onCompleted();
+
+        ts.assertValues(1, 2);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void iterableMaxConcurrentError() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+        
+        Observable.mergeDelayError(Arrays.asList(ps1, ps2), 1).subscribe(ts);
+        
+        assertTrue("ps1 has no subscribers?!", ps1.hasObservers());
+        assertFalse("ps2 has subscribers?!", ps2.hasObservers());
+        
+        ps1.onNext(1);
+        ps1.onError(new TestException());
+        
+        assertFalse("ps1 has subscribers?!", ps1.hasObservers());
+        assertTrue("ps2 has no subscribers?!", ps2.hasObservers());
+
+        ps2.onNext(2);
+        ps2.onError(new TestException());
+
+        ts.assertValues(1, 2);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+        
+        CompositeException ce = (CompositeException)ts.getOnErrorEvents().get(0);
+        
+        assertEquals(2, ce.getExceptions().size());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeMany() throws Exception {
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] clazz = new Class[i];
+            Arrays.fill(clazz, Observable.class);
+            
+            Observable<Integer>[] obs = new Observable[i];
+            Arrays.fill(obs, Observable.just(1));
+            
+            Integer[] expected = new Integer[i];
+            Arrays.fill(expected, 1);
+            
+            Method m = Observable.class.getMethod("mergeDelayError", clazz);
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            ((Observable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
+            
+            ts.assertValues(expected);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        }
+    }
+
+    static <T> Observable<T> withError(Observable<T> source) {
+        return source.concatWith(Observable.<T>error(new TestException()));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeManyError() throws Exception {
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] clazz = new Class[i];
+            Arrays.fill(clazz, Observable.class);
+            
+            Observable<Integer>[] obs = new Observable[i];
+            for (int j = 0; j < i; j++) {
+                obs[j] = withError(Observable.just(1));
+            }
+            
+            Integer[] expected = new Integer[i];
+            Arrays.fill(expected, 1);
+            
+            Method m = Observable.class.getMethod("mergeDelayError", clazz);
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            ((Observable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
+            
+            ts.assertValues(expected);
+            ts.assertError(CompositeException.class);
+            ts.assertNotCompleted();
+            
+            CompositeException ce = (CompositeException)ts.getOnErrorEvents().get(0);
+            
+            assertEquals(i, ce.getExceptions().size());
+        }
     }
 }

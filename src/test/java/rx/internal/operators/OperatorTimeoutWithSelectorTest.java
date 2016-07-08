@@ -15,19 +15,12 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
@@ -35,13 +28,10 @@ import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
 import rx.exceptions.TestException;
-import rx.functions.Func0;
-import rx.functions.Func1;
+import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -434,5 +424,19 @@ public class OperatorTimeoutWithSelectorTest {
         inOrder.verify(o, never()).onNext(3);
         inOrder.verify(o).onCompleted();
         inOrder.verifyNoMoreInteractions();
+    }
+    
+    @Test
+    public void selectorNull() {
+        try {
+            Observable.never().timeout(new Func0<Observable<Object>>() {
+                @Override
+                public Observable<Object> call() {
+                    return Observable.never();
+                }
+            }, null, Observable.empty());
+        } catch (NullPointerException ex) {
+            assertEquals("timeoutSelector is null", ex.getMessage());
+        }
     }
 }

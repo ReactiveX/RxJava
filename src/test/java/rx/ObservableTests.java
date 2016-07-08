@@ -28,10 +28,11 @@ import org.junit.*;
 import org.mockito.*;
 
 import rx.Observable.*;
-import rx.exceptions.OnErrorNotImplementedException;
+import rx.exceptions.*;
 import rx.functions.*;
 import rx.observables.ConnectableObservable;
-import rx.observers.TestSubscriber;
+import rx.observers.*;
+import rx.plugins.RxJavaHooks;
 import rx.schedulers.*;
 import rx.subjects.*;
 import rx.subscriptions.BooleanSubscription;
@@ -1173,5 +1174,307 @@ public class ObservableTests {
                 subscriber.assertValue(value);
                 return subscriber.getOnNextEvents().get(0);
             }});
+    }
+    
+    @Test
+    public void nullOnSubscribe() {
+        Observable<Integer> source = Observable.create((OnSubscribe<Integer>)null);
+        
+        try {
+            source.subscribe();
+            fail("Should have thrown IllegalStateException");
+        } catch (IllegalStateException ex) {
+            // expected
+        }
+    }
+    
+    @Test
+    public void nullObserver() {
+        Observable<Integer> source = Observable.just(1);
+        
+        try {
+            source.subscribe((Observer<Integer>)null);
+            fail("Should have thrown IllegalStateException");
+        } catch (NullPointerException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void nullSubscriber() {
+        Observable<Integer> source = Observable.just(1);
+        
+        try {
+            source.subscribe((Subscriber<Integer>)null);
+            fail("Should have thrown IllegalStateException");
+        } catch (IllegalArgumentException ex) {
+            // expected
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void testCacheHint() throws InterruptedException {
+        final AtomicInteger counter = new AtomicInteger();
+        Observable<String> o = Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(final Subscriber<? super String> observer) {
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        counter.incrementAndGet();
+                        observer.onNext("one");
+                        observer.onCompleted();
+                    }
+                }).start();
+            }
+        }).cache(1);
+
+        // we then expect the following 2 subscriptions to get that same value
+        final CountDownLatch latch = new CountDownLatch(2);
+
+        // subscribe once
+        o.subscribe(new Action1<String>() {
+
+            @Override
+            public void call(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
+        });
+
+        // subscribe again
+        o.subscribe(new Action1<String>() {
+
+            @Override
+            public void call(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
+        });
+
+        assertTrue("subscriptions did not receive values", latch.await(1000, TimeUnit.MILLISECONDS));
+        assertEquals(1, counter.get());
+    }
+    
+    @Test
+    public void subscribeWithNull() {
+        Action1<Integer> onNext = Actions.empty();
+        Action1<Throwable> onError = Actions.empty();
+        Action0 onCompleted = Actions.empty();
+        try {
+            Observable.just(1).subscribe((Action1<Integer>)null);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("onNext can not be null", ex.getMessage());
+        }
+
+        try {
+            Observable.just(1).subscribe(null, onError);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("onNext can not be null", ex.getMessage());
+        }
+
+        try {
+            Observable.just(1).subscribe(null, onError, onCompleted);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("onNext can not be null", ex.getMessage());
+        }
+        
+        try {
+            Observable.just(1).subscribe(onNext, null);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("onError can not be null", ex.getMessage());
+        }
+
+        try {
+            Observable.just(1).subscribe(onNext, null, onCompleted);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("onError can not be null", ex.getMessage());
+        }
+        
+        try {
+            Observable.just(1).subscribe(onNext, onError, null);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("onComplete can not be null", ex.getMessage());
+        }
+    }
+    
+    @Test
+    public void forEachWithNull() {
+        Action1<Integer> onNext = Actions.empty();
+        Action1<Throwable> onError = Actions.empty();
+        Action0 onCompleted = Actions.empty();
+        try {
+            Observable.just(1).forEach((Action1<Integer>)null);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("onNext can not be null", ex.getMessage());
+        }
+
+        try {
+            Observable.just(1).forEach(null, onError);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("onNext can not be null", ex.getMessage());
+        }
+
+        try {
+            Observable.just(1).forEach(null, onError, onCompleted);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("onNext can not be null", ex.getMessage());
+        }
+        
+        try {
+            Observable.just(1).forEach(onNext, null);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("onError can not be null", ex.getMessage());
+        }
+
+        try {
+            Observable.just(1).forEach(onNext, null, onCompleted);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("onError can not be null", ex.getMessage());
+        }
+        
+        try {
+            Observable.just(1).forEach(onNext, onError, null);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("onComplete can not be null", ex.getMessage());
+        }
+    }
+    
+    @Test
+    public void observableThrowsWhileSubscriberIsUnsubscribed() {
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        ts.unsubscribe();
+        
+        final List<Throwable> list = new ArrayList<Throwable>();
+        
+        RxJavaHooks.setOnError(new Action1<Throwable>() {
+            @Override
+            public void call(Throwable t) {
+                list.add(t);
+            }
+        });
+        
+        try {
+            new FailingObservable().subscribe(ts);
+            
+            assertEquals(1, list.size());
+            
+            assertEquals("Forced failure", list.get(0).getMessage());
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+    
+    @Test
+    public void observableThrowsWhileOnErrorFails() {
+        Subscriber<Object> ts = new SafeSubscriber<Object>(new TestSubscriber<Object>()) {
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException("Forced failure");
+            }
+        };
+        
+        try {
+            new FailingObservable().subscribe(ts);
+            fail("Should have thrown OnErrorFailedException");
+        } catch (OnErrorFailedException ex) {
+            // expected
+            assertTrue(ex.getCause().toString(), ex.getCause() instanceof TestException);
+            assertEquals("Forced failure", ex.getCause().getMessage());
+        }
+    }
+    
+    @Test
+    public void observableThrowsWhileOnErrorFailsUnsafe() {
+        Subscriber<Object> ts = new TestSubscriber<Object>() {
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException("Forced failure");
+            }
+        };
+        
+        try {
+            new FailingObservable().unsafeSubscribe(ts);
+            fail("Should have thrown OnErrorFailedException");
+        } catch (OnErrorFailedException ex) {
+            // expected
+            assertTrue(ex.getCause().toString(), ex.getCause() instanceof TestException);
+            assertEquals("Forced failure", ex.getCause().getMessage());
+        }
+    }
+    
+    static final class FailingObservable extends Observable<Object> {
+
+        protected FailingObservable() {
+            super(new OnSubscribe<Object>() {
+                @Override
+                public void call(Subscriber<? super Object> t) {
+                    throw new TestException("Forced failure");
+                }
+            });
+        }
+        
+    }
+    
+    @Test
+    public void forEachWithError() {
+        Action1<Throwable> onError = Actions.empty();
+
+        final List<Object> list = new ArrayList<Object>();
+        Observable.just(1).forEach(new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                list.add(t);
+            }
+        }, onError);
+        
+        Observable.<Integer>error(new TestException()).forEach(new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                list.add(t);
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable t) {
+                list.add(t);
+            }
+        });
+        
+        Observable.<Integer>empty().forEach(new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                list.add(t);
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable t) {
+                list.add(t);
+            }
+        }, new Action0() {
+            @Override
+            public void call() {
+                list.add(100);
+            }
+        });
+
+        assertEquals(3, list.size());
+        assertEquals(1, list.get(0));
+        assertTrue(list.get(1).toString(), list.get(1) instanceof TestException);
+        assertEquals(100, list.get(2));
     }
 }

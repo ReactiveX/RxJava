@@ -16,23 +16,17 @@
 package rx.internal.operators;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
-import rx.Observable;
-import rx.Observer;
-import rx.schedulers.TestScheduler;
-import rx.schedulers.Timestamped;
+import rx.*;
+import rx.functions.Func1;
+import rx.plugins.RxJavaHooks;
+import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 
 public class OperatorTimestampTest {
@@ -90,5 +84,40 @@ public class OperatorTimestampTest {
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onCompleted();
+    }
+    
+    @Test
+    public void withDefaultScheduler() {
+        final TestScheduler scheduler = new TestScheduler();
+
+        RxJavaHooks.setOnComputationScheduler(new Func1<Scheduler, Scheduler>() {
+            @Override
+            public Scheduler call(Scheduler t) {
+                return scheduler;
+            }
+        });
+        
+        try {
+            PublishSubject<Integer> source = PublishSubject.create();
+            Observable<Timestamped<Integer>> m = source.timestamp();
+            m.subscribe(observer);
+    
+            source.onNext(1);
+            scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+            source.onNext(2);
+            scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+            source.onNext(3);
+    
+            InOrder inOrder = inOrder(observer);
+    
+            inOrder.verify(observer, times(1)).onNext(new Timestamped<Integer>(0, 1));
+            inOrder.verify(observer, times(1)).onNext(new Timestamped<Integer>(100, 2));
+            inOrder.verify(observer, times(1)).onNext(new Timestamped<Integer>(200, 3));
+    
+            verify(observer, never()).onError(any(Throwable.class));
+            verify(observer, never()).onCompleted();
+        } finally {
+            RxJavaHooks.reset();
+        }
     }
 }

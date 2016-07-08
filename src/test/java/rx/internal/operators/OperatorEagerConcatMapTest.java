@@ -16,8 +16,8 @@
 
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
@@ -25,10 +25,12 @@ import org.junit.*;
 import rx.Observable;
 import rx.exceptions.TestException;
 import rx.functions.*;
-import rx.internal.util.RxRingBuffer;
+import rx.internal.util.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
+
+import static org.junit.Assert.*;
 
 public class OperatorEagerConcatMapTest {
     TestSubscriber<Object> ts;
@@ -438,4 +440,91 @@ public class OperatorEagerConcatMapTest {
         Assert.assertEquals(1, (long) requests.get(4));
         Assert.assertEquals(1, (long) requests.get(5));
     }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void many() throws Exception {
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] clazz = new Class[i];
+            Arrays.fill(clazz, Observable.class);
+            
+            Observable<Integer>[] obs = new Observable[i];
+            Arrays.fill(obs, Observable.just(1));
+            
+            Integer[] expected = new Integer[i];
+            Arrays.fill(expected, 1);
+            
+            Method m = Observable.class.getMethod("concatEager", clazz);
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            ((Observable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
+            
+            ts.assertValues(expected);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void capacityHint() {
+        Observable<Integer> source = Observable.just(1);
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        Observable.concatEager(Arrays.asList(source, source, source), 1).subscribe(ts);
+        
+        ts.assertValues(1, 1, 1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void observable() {
+        Observable<Integer> source = Observable.just(1);
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        Observable.concatEager(Observable.just(source, source, source)).subscribe(ts);
+        
+        ts.assertValues(1, 1, 1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void observableCapacityHint() {
+        Observable<Integer> source = Observable.just(1);
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        Observable.concatEager(Observable.just(source, source, source), 1).subscribe(ts);
+        
+        ts.assertValues(1, 1, 1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void badCapacityHint() throws Exception {
+        Observable<Integer> source = Observable.just(1);
+        try {
+            Observable.concatEager(Arrays.asList(source, source, source), -99);
+        } catch (IllegalArgumentException ex) {
+            assertEquals("capacityHint > 0 required but it was -99", ex.getMessage());
+        }
+        
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void mappingBadCapacityHint() throws Exception {
+        Observable<Integer> source = Observable.just(1);
+        try {
+            Observable.just(source, source, source).concatMapEager((Func1)UtilityFunctions.identity(), -99, 10);
+        } catch (IllegalArgumentException ex) {
+            assertEquals("capacityHint > 0 required but it was -99", ex.getMessage());
+        }
+        
+    }
+
 }

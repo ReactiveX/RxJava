@@ -23,7 +23,7 @@ import org.junit.*;
 
 import rx.Observable;
 import rx.exceptions.TestException;
-import rx.functions.Func1;
+import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
@@ -48,6 +48,18 @@ public class OnSubscribeFlattenIterableTest {
         ts.assertCompleted();
     }
 
+    @Test
+    public void normalViaFlatMap() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        Observable.range(1, 5).flatMapIterable(mapper)
+        .subscribe(ts);
+        
+        ts.assertValues(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
     @Test
     public void normalBackpressured() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
@@ -473,5 +485,40 @@ public class OnSubscribeFlattenIterableTest {
         
         Assert.assertFalse("PublishSubject has Observers?!", ps.hasObservers());
         Assert.assertEquals(1, counter.get());
+    }
+    
+    @Test
+    public void normalPrefetchViaFlatMap() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        Observable.range(1, 5).flatMapIterable(mapper, 2)
+        .subscribe(ts);
+        
+        ts.assertValues(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+    
+    @Test
+    public void withResultSelectorMaxConcurrent() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Observable.range(1, 5).flatMapIterable(new Func1<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> call(Integer v) {
+                return Collections.singletonList(1);
+            }
+        }, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer a, Integer b) {
+                return a * 10 + b;
+            }
+        }, 2)
+        .subscribe(ts)
+        ;
+        
+        ts.assertValues(11, 21, 31, 41, 51);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 }

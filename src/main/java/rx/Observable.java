@@ -9781,6 +9781,9 @@ public class Observable<T> {
         if (observer instanceof Subscriber) {
             return subscribe((Subscriber<? super T>)observer);
         }
+        if (observer == null) {
+            throw new NullPointerException("observer is null");
+        }
         return subscribe(new ObserverSubscriber<T>(observer));
     }
 
@@ -9822,7 +9825,7 @@ public class Observable<T> {
                 Exceptions.throwIfFatal(e2);
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
-                RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
+                RuntimeException r = new OnErrorFailedException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
                 // TODO could the hook be the cause of the error in the on error handling.
                 RxJavaHooks.onObservableError(r);
                 // TODO why aren't we throwing the hook's return value.
@@ -10699,14 +10702,15 @@ public class Observable<T> {
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code timeInterval} operates by default on the {@code immediate} {@link Scheduler}.</dd>
+     *  <dd>{@code timeInterval} does not operate on any particular scheduler but uses the current time
+     *  from the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      * 
      * @return an Observable that emits time interval information items
      * @see <a href="http://reactivex.io/documentation/operators/timeinterval.html">ReactiveX operators documentation: TimeInterval</a>
      */
     public final Observable<TimeInterval<T>> timeInterval() {
-        return timeInterval(Schedulers.immediate());
+        return timeInterval(Schedulers.computation());
     }
 
     /**
@@ -10719,7 +10723,8 @@ public class Observable<T> {
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>The operator does not operate on any particular scheduler but uses the current time
+     *  from the specified {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param scheduler
@@ -11003,14 +11008,15 @@ public class Observable<T> {
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code timestamp} operates by default on the {@code immediate} {@link Scheduler}.</dd>
+     *  <dd>{@code timestamp} does not operate on any particular scheduler but uses the current time
+     *  from the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      * 
      * @return an Observable that emits timestamped items from the source Observable
      * @see <a href="http://reactivex.io/documentation/operators/timestamp.html">ReactiveX operators documentation: Timestamp</a>
      */
     public final Observable<Timestamped<T>> timestamp() {
-        return timestamp(Schedulers.immediate());
+        return timestamp(Schedulers.computation());
     }
 
     /**
@@ -11023,7 +11029,8 @@ public class Observable<T> {
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>The operator does not operate on any particular scheduler but uses the current time
+     *  from the specified {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param scheduler

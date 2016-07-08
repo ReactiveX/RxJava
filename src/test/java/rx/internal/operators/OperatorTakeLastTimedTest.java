@@ -29,12 +29,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.*;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.Scheduler.Worker;
 import rx.exceptions.TestException;
-import rx.functions.Action0;
+import rx.functions.*;
 import rx.observers.TestSubscriber;
+import rx.plugins.RxJavaHooks;
 import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 
@@ -283,5 +283,41 @@ public class OperatorTakeLastTimedTest {
         ts.assertValues(1, null, 2);
         ts.assertCompleted();
         ts.assertNoErrors();
+    }
+    
+    @Test
+    public void takeLastDefaultScheduler() {
+        final TestScheduler scheduler = new TestScheduler();
+
+        RxJavaHooks.setOnComputationScheduler(new Func1<Scheduler, Scheduler>() {
+            @Override
+            public Scheduler call(Scheduler t) {
+                return scheduler;
+            }
+        });
+        
+        try {
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            PublishSubject<Integer> ps = PublishSubject.create();
+            
+            ps.takeLast(1, TimeUnit.SECONDS).subscribe(ts);
+            
+            ps.onNext(1);
+            ps.onNext(2);
+            ps.onNext(3);
+            
+            scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+            
+            ps.onNext(4);
+            ps.onNext(5);
+            ps.onCompleted();
+            
+            ts.assertValues(4, 5);
+            ts.assertNoErrors();
+            ts.assertCompleted();
+        } finally {
+            RxJavaHooks.reset();
+        }
     }
 }

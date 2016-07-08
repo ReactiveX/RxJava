@@ -117,12 +117,12 @@ public final class SchedulerTests {
 
     public static void testCancelledRetention(Scheduler.Worker w, boolean periodic) throws InterruptedException {
         System.out.println("Wait before GC");
-        Thread.sleep(1000);
+        Thread.sleep(500);
 
         System.out.println("GC");
         System.gc();
 
-        Thread.sleep(1000);
+        Thread.sleep(500);
 
 
         MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
@@ -131,7 +131,7 @@ public final class SchedulerTests {
 
         System.out.printf("Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
 
-        int n = 500 * 1000;
+        int n = 100 * 1000;
         if (periodic) {
             final CountDownLatch cdl = new CountDownLatch(n);
             final Action0 action = new Action0() {
@@ -165,12 +165,12 @@ public final class SchedulerTests {
         w.unsubscribe();
 
         System.out.println("Wait before second GC");
-        Thread.sleep(NewThreadWorker.PURGE_FREQUENCY + 2000);
+        Thread.sleep(NewThreadWorker.PURGE_FREQUENCY + 1000);
 
         System.out.println("Second GC");
         System.gc();
 
-        Thread.sleep(1000);
+        Thread.sleep(500);
 
         memHeap = memoryMXBean.getHeapMemoryUsage();
         long finish = memHeap.getUsed();

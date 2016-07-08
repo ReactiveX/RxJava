@@ -60,7 +60,7 @@ public class AsyncOnSubscribeTest {
     @Test
     public void testSerializesConcurrentObservables() throws InterruptedException {
         final TestScheduler scheduler = new TestScheduler();
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+        AsyncOnSubscribe<Integer, Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
             @Override
             public Integer call() {
                 return 1;
