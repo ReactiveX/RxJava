@@ -1,5 +1,73 @@
 # RxJava Releases #
 
+### Version 1.1.7 - July 10, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.7%7C))
+
+This release has several documentation fixes (`AsyncSubject`, `doOnEach`, `cache`, `scan`, `reduce`, backpressure descriptions) and internal cleanups based on tool feedback (code-coverage and PMD).
+
+**Warning: behavior change in the time-bound `replay()` operator**: the aging of the values continues after the termination of the source and thus late subscribers no longer get old data. For example, a given `just(1).replay(1, TimeUnit.MINUTE)` a subscriber subscribing after 2 minutes won't get `1` but only `onCompleted`.
+
+**Warning: behavior change in `timestamp()` and `timeInterval()` (no arguments) operators**: they now take timing information from the `computation` scheduler instead of the `immediate` scheduler. This change now allows hooking these operators' time source.
+
+**Warning**: the parameter order of `Completable.subscribe(onError, onComplete)` has been changed to `Completable.subscribe(onComplete, onError)` to better match the callback order in the other base reactive classes, namely the most significant signal comes first (`Observer.onNext`, `SingleSubscriber.onSuccess`, and now `CompletableSubscriber.onCompleted`).
+
+#### The new RxJavaHooks API
+
+PR #4007 introduced a new way of hooking into the lifecycle of the base reactive types (`Observable`, `Single`, `Completable`) and the `Scheduler`s. The original `RxJavaPlugins`' design was too much focused on class-initialization time hooking and didn't properly allow hooking up different behavior after that. There is a `reset()` available on it but sometimes that doesn't work as expected.
+
+The new class `rx.plugins.RxJavaHooks` allows changing the hooks at runtime, allowing tests to temporarily hook onto an internal behavior and then un-hook once the test completed.
+
+```java
+RxJavaHooks.setOnObservableCreate(s -> {
+   System.out.println("Observable created");
+   return s;
+});
+
+Observable.just(1).subscribe(System.out::println);
+
+RxJavaHooks.reset();
+// or
+RxJavaHooks.setOnObservableCreate(null);
+```
+
+It is now also possible to override what `Scheduler`s the `Schedulers.computation()`, `.io()` and `.newThread()` returns without the need to fiddle with `Schedulers`' own reset behavior:
+
+```java
+RxJavaHooks.setOnComputationScheduler(current -> Schedulers.immediate());
+
+Observable.just(1).subscribeOn(Schedulers.computation())
+.subscribe(v -> System.out.println(Thread.currentThread()));
+``` 
+
+By default, all `RxJavaHooks` delegate to the original `RxJavaPlugins` callbacks so if you have hooks the old way, they still work. `RxJavaHooks.reset()` resets to this delegation and `RxJavaHooks.clear()` clears all hooks (i.e., everything becomes a pass-through hook).
+
+#### API enhancements
+
+  - [Pull 3966](https://github.com/ReactiveX/RxJava/pull/3966): Add multi-other `withLatestFrom` operators.
+  - [Pull 3720](https://github.com/ReactiveX/RxJava/pull/3720): Add vararg of `Subscription`s to composite subscription.
+  - [Pull 4034](https://github.com/ReactiveX/RxJava/pull/4034): `distinctUntilChanged` with direct value comparator - alternative.
+  - [Pull 4036](https://github.com/ReactiveX/RxJava/pull/4036): Added zip function with Observable array.
+  - [Pull 4020](https://github.com/ReactiveX/RxJava/pull/4020): Add `AsyncCompletableSubscriber` that exposes `unsubscribe()`.
+  - [Pull 4011](https://github.com/ReactiveX/RxJava/pull/4011): Deprecate `TestObserver`, enhance `TestSubscriber` a bit.
+  - [Pull 4007](https://github.com/ReactiveX/RxJava/pull/4007): new hook management proposal
+  - [Pull 3931](https://github.com/ReactiveX/RxJava/pull/3931): add `groupBy` overload with `evictingMapFactory`
+  - [Pull 4140](https://github.com/ReactiveX/RxJava/pull/4140):  Change `Completable.subscribe(onError, onComplete)` to `(onComplete, onError)`
+  - [Pull 4154](https://github.com/ReactiveX/RxJava/pull/4154):  Ability to create custom schedulers with behavior based on composing operators.
+
+#### API deprecations
+
+  - [Pull 4011](https://github.com/ReactiveX/RxJava/pull/4011): Deprecate `TestObserver`, enhance `TestSubscriber` a bit.
+  - [Pull 4007](https://github.com/ReactiveX/RxJava/pull/4007): new hook management proposal (deprecates some `RxJavaPlugins` methods).
+
+#### Performance enhancements
+
+  - [Pull 4097](https://github.com/ReactiveX/RxJava/pull/4097): update `map()` and `filter()` to implement `OnSubscribe` directly.
+  - [Pull 4176](https://github.com/ReactiveX/RxJava/pull/4176): Optimize collect, reduce and takeLast(1)
+
+#### Bugfixes
+
+  - [Pull 4027](https://github.com/ReactiveX/RxJava/pull/4027): fix `Completable.onErrorComplete(Func1)` not relaying function crash.
+  - [Pull 4051](https://github.com/ReactiveX/RxJava/pull/4051): fix `ReplaySubject` anomaly around caughtUp by disabling that optimization.
+
 ### Version 1.1.6 - June 15, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.6%7C))
 
 #### API enhancements
