@@ -649,7 +649,9 @@ public class RxJavaHooksTest {
         }
 
         for (Method m : RxJavaHooks.class.getMethods()) {
-            if (m.getName().startsWith("getOn") && !m.getName().endsWith("Scheduler")) {
+            if (m.getName().startsWith("getOn") 
+                    && !m.getName().endsWith("Scheduler")
+                    && !m.getName().contains("GenericScheduledExecutorService")) {
                 assertNotNull(m.toString(), m.invoke(null));
             }
         }
