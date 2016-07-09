@@ -4,6 +4,9 @@ jdk:
 sudo: false
 # as per http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
 
+# prevent travis running gradle assemble; let the build script do it anyway
+install: true
+
 # script for build and release via Travis to Bintray
 script: gradle/buildViaTravis.sh
 
