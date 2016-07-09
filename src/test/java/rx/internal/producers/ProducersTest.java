@@ -15,6 +15,7 @@
  */
 package rx.internal.producers;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -25,8 +26,10 @@ import org.junit.*;
 import rx.*;
 import rx.Observable;
 import rx.Observable.*;
+import rx.exceptions.MissingBackpressureException;
 import rx.Observer;
 import rx.functions.*;
+import rx.internal.util.unsafe.SpscArrayQueue;
 import rx.observers.TestSubscriber;
 import rx.schedulers.*;
 import rx.subscriptions.SerialSubscription;
@@ -426,4 +429,95 @@ public class ProducersTest {
             }
         });
     }
+    
+    @Test
+    public void queuedProducerRequestNegative() {
+        QueuedProducer<Integer> qp = new QueuedProducer<Integer>(new TestSubscriber<Integer>());
+        try {
+            qp.request(-99);
+        } catch (IllegalArgumentException ex) {
+            assertEquals("n >= 0 required", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void queuedProducerOfferNull() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        QueuedProducer<Integer> qp = new QueuedProducer<Integer>(ts);
+        qp.offer(null);
+        
+        qp.request(1);
+        
+        ts.assertValue(null);
+    }
+
+    @Test
+    public void queuedProducerFull() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        QueuedProducer<Integer> qp = new QueuedProducer<Integer>(ts, new SpscArrayQueue<Object>(1));
+        assertTrue(qp.offer(1));
+        assertFalse(qp.offer(2));
+        
+        qp.request(1);
+        
+        ts.assertValue(1);
+    }
+
+    @Test
+    public void queuedProducerOnNextFull() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        QueuedProducer<Integer> qp = new QueuedProducer<Integer>(ts, new SpscArrayQueue<Object>(1));
+
+        qp.onNext(1);
+        qp.onNext(2);
+        
+        qp.request(1);
+        
+        ts.assertError(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void queuedProducerOnNextFullWithNull() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        QueuedProducer<Integer> qp = new QueuedProducer<Integer>(ts, new SpscArrayQueue<Object>(1));
+
+        qp.onNext(1);
+        qp.onNext(null);
+        
+        qp.request(1);
+        
+        ts.assertError(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void queuedProducerRequestCompletes() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        QueuedProducer<Integer> qp = new QueuedProducer<Integer>(ts, new SpscArrayQueue<Object>(1));
+
+        qp.onNext(1);
+        qp.onCompleted();
+        
+        qp.request(2);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @Test
+    public void queuedProducerUnsubscribed() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        ts.unsubscribe();
+        QueuedProducer<Integer> qp = new QueuedProducer<Integer>(ts, new SpscArrayQueue<Object>(1));
+
+        qp.onNext(1);
+        qp.onCompleted();
+        
+        qp.request(2);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+    }
+
 }

@@ -16,6 +16,7 @@
 package rx.internal.producers;
 
 import org.junit.*;
+import static org.junit.Assert.*;
 
 import rx.*;
 import rx.exceptions.TestException;
@@ -38,6 +39,7 @@ public class ProducerObserverArbiterTest {
     public void nullProducerAccepted() {
         ProducerObserverArbiter<Integer> pa = new ProducerObserverArbiter<Integer>(Subscribers.empty());
         pa.setProducer(null);
+        pa.request(5);
     }
 
     public void failedRequestUnlocksEmitting() {
@@ -158,6 +160,80 @@ public class ProducerObserverArbiterTest {
         } catch (TestException ex) {
             // expected
         }
+    }
+
+    @Test
+    public void onNextRequests() {
+        @SuppressWarnings("rawtypes")
+        final ProducerObserverArbiter[] o = { null };
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                o[0].request(1);
+            }
+        };
+        ProducerObserverArbiter<Integer> poa = new ProducerObserverArbiter<Integer>(ts);
+        poa.request(1);
+        o[0] = poa;
+        try {
+            poa.onNext(1);
+        } catch (TestException ex) {
+            // expected
+        }
+        assertEquals(1, poa.requested);
+    }
+    
+    @Test
+    public void requestIsCapped() {
+        ProducerObserverArbiter<Integer> poa = new ProducerObserverArbiter<Integer>(new TestSubscriber<Integer>());
+    
+        poa.request(Long.MAX_VALUE - 1);
+        poa.request(2);
+        
+        assertEquals(Long.MAX_VALUE, Long.MAX_VALUE);
+    }
+
+    @Test
+    public void onNextChangesProducerNull() {
+        @SuppressWarnings("rawtypes")
+        final ProducerObserverArbiter[] o = { null };
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                o[0].setProducer(null);
+            }
+        };
+        ProducerObserverArbiter<Integer> poa = new ProducerObserverArbiter<Integer>(ts);
+        poa.request(1);
+        o[0] = poa;
+        try {
+            poa.onNext(1);
+        } catch (TestException ex) {
+            // expected
+        }
+        assertNull(poa.currentProducer);
+    }
+
+    @Test
+    public void onNextChangesProducerNotNull() {
+        @SuppressWarnings("rawtypes")
+        final ProducerObserverArbiter[] o = { null };
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public void onNext(Integer t) {
+                o[0].setProducer(new SingleProducer<Integer>(o[0].child, 2));
+            }
+        };
+        ProducerObserverArbiter<Integer> poa = new ProducerObserverArbiter<Integer>(ts);
+        poa.request(1);
+        o[0] = poa;
+        try {
+            poa.onNext(1);
+        } catch (TestException ex) {
+            // expected
+        }
+        assertNotNull(poa.currentProducer);
     }
 
 }

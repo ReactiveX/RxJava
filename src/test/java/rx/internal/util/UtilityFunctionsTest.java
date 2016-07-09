@@ -16,6 +16,7 @@
 package rx.internal.util;
 
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import rx.TestUtil;
 
@@ -24,4 +25,19 @@ public class UtilityFunctionsTest {
     public void constructorShouldBePrivate() {
         TestUtil.checkUtilityClass(UtilityFunctions.class);
     }
+    
+    @Test
+    public void alwaysFalse() {
+        assertEquals(1, UtilityFunctions.AlwaysFalse.values().length);
+        assertNotNull(UtilityFunctions.AlwaysFalse.valueOf("INSTANCE"));
+        assertFalse(UtilityFunctions.alwaysFalse().call(1));
+    }
+
+    @Test
+    public void alwaysTrue() {
+        assertEquals(1, UtilityFunctions.AlwaysTrue.values().length);
+        assertNotNull(UtilityFunctions.AlwaysTrue.valueOf("INSTANCE"));
+        assertTrue(UtilityFunctions.alwaysTrue().call(1));
+    }
+
 }

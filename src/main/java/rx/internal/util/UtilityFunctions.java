@@ -59,7 +59,7 @@ public final class UtilityFunctions {
         };
     }
 
-    private enum AlwaysTrue implements Func1<Object, Boolean> {
+    enum AlwaysTrue implements Func1<Object, Boolean> {
         INSTANCE;
 
         @Override
@@ -68,7 +68,7 @@ public final class UtilityFunctions {
         }
     }
 
-    private enum AlwaysFalse implements Func1<Object, Boolean> {
+    enum AlwaysFalse implements Func1<Object, Boolean> {
         INSTANCE;
 
         @Override

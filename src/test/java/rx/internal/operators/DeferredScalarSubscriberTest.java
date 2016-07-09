@@ -343,8 +343,12 @@ public class DeferredScalarSubscriberTest {
     public void emissionRequestRace2() {
         Worker w = Schedulers.io().createWorker();
         Worker w2 = Schedulers.io().createWorker();
+        int m = 10000;
+        if (Runtime.getRuntime().availableProcessors() < 3) {
+            m = 1000;
+        }
         try {
-            for (int i = 0; i < 10000; i++) {
+            for (int i = 0; i < m; i++) {
     
                 final TestSubscriber<Integer> ts = TestSubscriber.create(0L);
                 TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);

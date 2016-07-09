@@ -61,14 +61,7 @@ public final class Timestamped<T> {
         if (timestampMillis != other.timestampMillis) {
             return false;
         }
-        if (value == null) {
-            if (other.value != null) {
-                return false;
-            }
-        } else if (!value.equals(other.value)) {
-            return false;
-        }
-        return true;
+        return (value == other.value) || (value != null && value.equals(other.value));
     }
 
     @Override
