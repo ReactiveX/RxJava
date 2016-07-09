@@ -20,10 +20,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import rx.*;
+import rx.internal.util.SuppressAnimalSniffer;
 import rx.internal.util.unsafe.UnsafeAccess;
 
 @SuppressWarnings("deprecation")
-public class DeprecatedSchedulers {
+@SuppressAnimalSniffer
+public class DeprecatedSchedulersTest {
 
     @Test
     public void immediate() {
