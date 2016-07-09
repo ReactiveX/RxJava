@@ -11,7 +11,7 @@ buildscript {
 description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
 
 apply plugin: 'java'
-apply plugin: 'pmd'
+//apply plugin: 'pmd'
 apply plugin: 'findbugs'
 apply plugin: 'jacoco'
 apply plugin: 'ru.vyarus.animalsniffer'
@@ -81,40 +81,40 @@ jacocoTestReport {
 
 build.dependsOn jacocoTestReport
 
-pmd {
-    toolVersion = '5.4.2'
-    ignoreFailures = true
-    sourceSets = [sourceSets.main]
-    ruleSets = []
-    ruleSetFiles = files('pmd.xml')
 
-}
+//pmd {
+//    toolVersion = '5.4.2'
+//    ignoreFailures = true
+//    sourceSets = [sourceSets.main]
+//    ruleSets = []
+//    ruleSetFiles = files('pmd.xml')
+//}
 
-pmdMain {
-    reports {
-        html.enabled = true
-        xml.enabled = true
-    }
-}
+//pmdMain {
+//    reports {
+//        html.enabled = true
+//        xml.enabled = true
+//    }
+//}
 
-task pmdPrint(dependsOn: 'pmdMain') << {
-    File file = new File('build/reports/pmd/main.xml')
-    if (file.exists()) {
+//task pmdPrint(dependsOn: 'pmdMain') << {
+//    File file = new File('build/reports/pmd/main.xml')
+//    if (file.exists()) {
+//
+//        println("Listing first 100 PMD violations")
+//
+//        file.eachLine { line, count ->
+//            if (count <= 100) {
+//               println(line)
+//            }
+//        }
+//
+//    } else {
+//        println("PMD file not found.")
+//    }
+//}
 
-        println("Listing first 100 PMD violations")
-
-        file.eachLine { line, count ->
-            if (count <= 100) {
-               println(line)
-            }
-        }
-
-    } else {
-        println("PMD file not found.")
-    }
-}
-
-build.dependsOn pmdPrint
+//build.dependsOn pmdPrint
 
 animalsniffer {
     annotation = 'rx.internal.util.SuppressAnimalSniffer'
