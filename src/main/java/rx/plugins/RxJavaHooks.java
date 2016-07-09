@@ -18,7 +18,7 @@ package rx.plugins;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import rx.*;
-import rx.Completable.CompletableOnSubscribe;
+import rx.Completable.*;
 import rx.Observable.*;
 import rx.annotations.Experimental;
 import rx.functions.*;
@@ -68,6 +68,20 @@ public final class RxJavaHooks {
 
     static volatile Func1<Subscription, Subscription> onSingleReturn;
 
+    static volatile Func1<Throwable, Throwable> onObservableSubscribeError;
+
+    static volatile Func1<Throwable, Throwable> onSingleSubscribeError;
+
+    static volatile Func1<Throwable, Throwable> onCompletableSubscribeError;
+
+    @SuppressWarnings("rawtypes")
+    static volatile Func1<Operator, Operator> onObservableLift;
+
+    @SuppressWarnings("rawtypes")
+    static volatile Func1<Operator, Operator> onSingleLift;
+
+    static volatile Func1<CompletableOperator, CompletableOperator> onCompletableLift;
+
     /** Initialize with the default delegation to the original RxJavaPlugins. */
     static {
         init();
@@ -91,15 +105,6 @@ public final class RxJavaHooks {
             }
         };
         
-        RxJavaPlugins.getInstance().getObservableExecutionHook();
-        
-        onObservableCreate = new Func1<OnSubscribe, OnSubscribe>() {
-            @Override
-            public OnSubscribe call(OnSubscribe f) {
-                return RxJavaPlugins.getInstance().getObservableExecutionHook().onCreate(f);
-            }
-        };
-        
         onObservableStart = new Func2<Observable, OnSubscribe, OnSubscribe>() {
             @Override
             public OnSubscribe call(Observable t1, OnSubscribe t2) {
@@ -111,15 +116,6 @@ public final class RxJavaHooks {
             @Override
             public Subscription call(Subscription f) {
                 return RxJavaPlugins.getInstance().getObservableExecutionHook().onSubscribeReturn(f);
-            }
-        };
-        
-        RxJavaPlugins.getInstance().getSingleExecutionHook();
-
-        onSingleCreate = new Func1<rx.Single.OnSubscribe, rx.Single.OnSubscribe>() {
-            @Override
-            public rx.Single.OnSubscribe call(rx.Single.OnSubscribe f) {
-                return RxJavaPlugins.getInstance().getSingleExecutionHook().onCreate(f);
             }
         };
         
@@ -137,15 +133,6 @@ public final class RxJavaHooks {
             }
         };
         
-        RxJavaPlugins.getInstance().getCompletableExecutionHook();
-
-        onCompletableCreate = new Func1<CompletableOnSubscribe, CompletableOnSubscribe>() {
-            @Override
-            public CompletableOnSubscribe call(CompletableOnSubscribe f) {
-                return RxJavaPlugins.getInstance().getCompletableExecutionHook().onCreate(f);
-            }
-        };
-        
         onCompletableStart = new Func2<Completable, Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe>() {
             @Override
             public Completable.CompletableOnSubscribe call(Completable t1, Completable.CompletableOnSubscribe t2) {
@@ -157,6 +144,74 @@ public final class RxJavaHooks {
             @Override
             public Action0 call(Action0 a) {
                 return RxJavaPlugins.getInstance().getSchedulersHook().onSchedule(a);
+            }
+        };
+        
+        onObservableSubscribeError = new Func1<Throwable, Throwable>() {
+            @Override
+            public Throwable call(Throwable t) {
+                return RxJavaPlugins.getInstance().getObservableExecutionHook().onSubscribeError(t);
+            }
+        };
+        
+        onObservableLift = new Func1<Operator, Operator>() {
+            @Override
+            public Operator call(Operator t) {
+                return RxJavaPlugins.getInstance().getObservableExecutionHook().onLift(t);
+            }
+        };
+
+        onSingleSubscribeError = new Func1<Throwable, Throwable>() {
+            @Override
+            public Throwable call(Throwable t) {
+                return RxJavaPlugins.getInstance().getSingleExecutionHook().onSubscribeError(t);
+            }
+        };
+        
+        onSingleLift = new Func1<Operator, Operator>() {
+            @Override
+            public Operator call(Operator t) {
+                return RxJavaPlugins.getInstance().getSingleExecutionHook().onLift(t);
+            }
+        };
+
+        onCompletableSubscribeError = new Func1<Throwable, Throwable>() {
+            @Override
+            public Throwable call(Throwable t) {
+                return RxJavaPlugins.getInstance().getCompletableExecutionHook().onSubscribeError(t);
+            }
+        };
+        
+        onCompletableLift = new Func1<CompletableOperator, CompletableOperator>() {
+            @Override
+            public CompletableOperator call(CompletableOperator t) {
+                return RxJavaPlugins.getInstance().getCompletableExecutionHook().onLift(t);
+            }
+        };
+
+        initCreate();
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
+    static void initCreate() {
+        onObservableCreate = new Func1<OnSubscribe, OnSubscribe>() {
+            @Override
+            public OnSubscribe call(OnSubscribe f) {
+                return RxJavaPlugins.getInstance().getObservableExecutionHook().onCreate(f);
+            }
+        };
+
+        onSingleCreate = new Func1<rx.Single.OnSubscribe, rx.Single.OnSubscribe>() {
+            @Override
+            public rx.Single.OnSubscribe call(rx.Single.OnSubscribe f) {
+                return RxJavaPlugins.getInstance().getSingleExecutionHook().onCreate(f);
+            }
+        };
+
+        onCompletableCreate = new Func1<CompletableOnSubscribe, CompletableOnSubscribe>() {
+            @Override
+            public CompletableOnSubscribe call(CompletableOnSubscribe f) {
+                return RxJavaPlugins.getInstance().getCompletableExecutionHook().onCreate(f);
             }
         };
     }
@@ -193,17 +248,25 @@ public final class RxJavaHooks {
         onObservableCreate = null;
         onObservableStart = null;
         onObservableReturn = null;
+        onObservableSubscribeError = null;
+        onObservableLift = null;
         
         onSingleCreate = null;
         onSingleStart = null;
         onSingleReturn = null;
+        onSingleSubscribeError = null;
+        onSingleLift = null;
         
         onCompletableCreate = null;
         onCompletableStart = null;
+        onCompletableSubscribeError = null;
+        onCompletableLift = null;
         
         onComputationScheduler = null;
         onIOScheduler = null;
         onNewThreadScheduler = null;
+        
+        onScheduleAction = null;
     }
 
     /**
@@ -236,12 +299,19 @@ public final class RxJavaHooks {
                  * Since the plugin should never throw this is a safety net
                  * and will complain loudly to System.err so it gets fixed.
                  */
-                System.err.println("RxJavaErrorHandler threw an Exception. It shouldn't. => " + pluginException.getMessage()); // NOPMD 
-                pluginException.printStackTrace(); // NOPMD 
+                System.err.println("The onError handler threw an Exception. It shouldn't. => " + pluginException.getMessage()); // NOPMD 
+                pluginException.printStackTrace(); // NOPMD
+                
+                signalUncaught(pluginException);
             }
         }
+        signalUncaught(ex);
+    }
+    
+    static void signalUncaught(Throwable ex) {
         Thread current = Thread.currentThread();
-        current.getUncaughtExceptionHandler().uncaughtException(current, ex);
+        UncaughtExceptionHandler handler = current.getUncaughtExceptionHandler();
+        handler.uncaughtException(current, ex);
     }
     
     /**
@@ -375,7 +445,10 @@ public final class RxJavaHooks {
      * @return the original error or alternative Throwable to be thrown
      */
     public static Throwable onObservableError(Throwable error) {
-        // TODO add hook
+        Func1<Throwable, Throwable> f = onObservableSubscribeError;
+        if (f != null) {
+            return f.call(error);
+        }
         return error;
     }
 
@@ -386,8 +459,12 @@ public final class RxJavaHooks {
      * @param operator the original operator
      * @return the original or alternative operator that will be subscribed to
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T, R> Operator<R, T> onObservableLift(Operator<R, T> operator) {
-        // TODO add hook
+        Func1<Operator, Operator> f = onObservableLift;
+        if (f != null) {
+            return f.call(operator);
+        }
         return operator;
     }
 
@@ -426,7 +503,10 @@ public final class RxJavaHooks {
      * @return the original error or alternative Throwable to be thrown
      */
     public static Throwable onSingleError(Throwable error) {
-        // TODO add hook
+        Func1<Throwable, Throwable> f = onSingleSubscribeError;
+        if (f != null) {
+            return f.call(error);
+        }
         return error;
     }
 
@@ -437,8 +517,12 @@ public final class RxJavaHooks {
      * @param operator the original operator
      * @return the original or alternative operator that will be subscribed to
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T, R> Operator<R, T> onSingleLift(Operator<R, T> operator) {
-        // TODO add hook
+        Func1<Operator, Operator> f = onSingleLift;
+        if (f != null) {
+            return f.call(operator);
+        }
         return operator;
     }
 
@@ -463,7 +547,10 @@ public final class RxJavaHooks {
      * @return the original error or alternative Throwable to be thrown
      */
     public static Throwable onCompletableError(Throwable error) {
-        // TODO add hook
+        Func1<Throwable, Throwable> f = onCompletableSubscribeError;
+        if (f != null) {
+            return f.call(error);
+        }
         return error;
     }
 
@@ -475,7 +562,10 @@ public final class RxJavaHooks {
      * @return the original or alternative operator that will be subscribed to
      */
     public static <T, R> Completable.CompletableOperator onCompletableLift(Completable.CompletableOperator operator) {
-        // TODO add hook
+        Func1<CompletableOperator, CompletableOperator> f = onCompletableLift;
+        if (f != null) {
+            return f.call(operator);
+        }
         return operator;
     }
 
@@ -721,7 +811,185 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onSingleReturn = onSingleReturn;
     }
+
+    /**
+     * Sets a hook function that is called when the Single.subscribe() call
+     * fails with an exception.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onSingleSubscribeError the function that is called with the crash exception and should return
+     * an exception.
+     */
+    public static void setOnSingleSubscribeError(Func1<Throwable, Throwable> onSingleSubscribeError) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onSingleSubscribeError = onSingleSubscribeError;
+    }
+
+    /**
+     * Returns the current Single onSubscribeError hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    public static Func1<Throwable, Throwable> getOnSingleSubscribeError() {
+        return onSingleSubscribeError;
+    }
     
+    /**
+     * Sets a hook function that is called when the Completable.subscribe() call
+     * fails with an exception.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onCompletableSubscribeError the function that is called with the crash exception and should return
+     * an exception.
+     */
+    public static void setOnCompletableSubscribeError(Func1<Throwable, Throwable> onCompletableSubscribeError) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onCompletableSubscribeError = onCompletableSubscribeError;
+    }
+
+    /**
+     * Returns the current Completable onSubscribeError hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    public static Func1<Throwable, Throwable> getOnCompletableSubscribeError() {
+        return onCompletableSubscribeError;
+    }
+    
+    /**
+     * Sets a hook function that is called when the Observable.subscribe() call
+     * fails with an exception.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onObservableSubscribeError the function that is called with the crash exception and should return
+     * an exception.
+     */
+    public static void setOnObservableSubscribeError(Func1<Throwable, Throwable> onObservableSubscribeError) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onObservableSubscribeError = onObservableSubscribeError;
+    }
+
+    /**
+     * Returns the current Observable onSubscribeError hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    public static Func1<Throwable, Throwable> getOnObservableSubscribeError() {
+        return onObservableSubscribeError;
+    }
+    
+    /**
+     * Sets a hook function that is called with an operator when an Observable operator built with
+     * lift() gets subscribed to.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onObservableLift the function that is called with original Operator and should
+     * return an Operator instance.
+     */
+    @SuppressWarnings("rawtypes")
+    public static void setOnObservableLift(Func1<Operator, Operator> onObservableLift) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onObservableLift = onObservableLift;
+    }
+    
+    /**
+     * Returns the current Observable onLift hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    @SuppressWarnings("rawtypes")
+    public static Func1<Operator, Operator> getOnObservableLift() {
+        return onObservableLift;
+    }
+
+    /**
+     * Sets a hook function that is called with an operator when an Single operator built with
+     * lift() gets subscribed to.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onSingleLift the function that is called with original Operator and should
+     * return an Operator instance.
+     */
+    @SuppressWarnings("rawtypes")
+    public static void setOnSingleLift(Func1<Operator, Operator> onSingleLift) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onSingleLift = onSingleLift;
+    }
+    
+    /**
+     * Returns the current Single onLift hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    @SuppressWarnings("rawtypes")
+    public static Func1<Operator, Operator> getOnSingleLift() {
+        return onSingleLift;
+    }
+
+    /**
+     * Sets a hook function that is called with an operator when an Completable operator built with
+     * lift() gets subscribed to.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * the hook returns the same object.
+     * @param onObservableLift the function that is called with original Operator and should
+     * return an Operator instance.
+     */
+    public static void setOnCompletableLift(Func1<CompletableOperator, CompletableOperator> onCompletableLift) {
+        if (lockdown) {
+            return;
+        }
+        RxJavaHooks.onCompletableLift = onCompletableLift;
+    }
+    
+    /**
+     * Returns the current Completable onLift hook function or null if it is
+     * set to the default pass-through.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current hook function
+     */
+    public static Func1<CompletableOperator, CompletableOperator> getOnCompletableLift() {
+        return onCompletableLift;
+    }
+
     /**
      * Returns the current computation scheduler hook function or null if it is
      * set to the default pass-through.
@@ -874,47 +1142,18 @@ public final class RxJavaHooks {
      * Resets the assembly tracking hooks to their default delegates to
      * RxJavaPlugins.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
     public static void resetAssemblyTracking() {
         if (lockdown) {
             return;
         }
 
-        RxJavaPlugins plugin = RxJavaPlugins.getInstance();
-        
-        final RxJavaObservableExecutionHook observableExecutionHook = plugin.getObservableExecutionHook();
-        
-        onObservableCreate = new Func1<OnSubscribe, OnSubscribe>() {
-            @Override
-            public OnSubscribe call(OnSubscribe f) {
-                return observableExecutionHook.onCreate(f);
-            }
-        };
-        
-        final RxJavaSingleExecutionHook singleExecutionHook = plugin.getSingleExecutionHook();
-
-        onSingleCreate = new Func1<rx.Single.OnSubscribe, rx.Single.OnSubscribe>() {
-            @Override
-            public rx.Single.OnSubscribe call(rx.Single.OnSubscribe f) {
-                return singleExecutionHook.onCreate(f);
-            }
-        };
-        
-        final RxJavaCompletableExecutionHook completableExecutionHook = plugin.getCompletableExecutionHook();
-
-        onCompletableCreate = new Func1<CompletableOnSubscribe, CompletableOnSubscribe>() {
-            @Override
-            public CompletableOnSubscribe call(CompletableOnSubscribe f) {
-                return completableExecutionHook.onCreate(f);
-            }
-        };
-
+        initCreate();
     }
 
     /**
      * Clears the assembly tracking hooks to their default pass-through behavior.
      */
-    public static void crearAssemblyTracking() {
+    public static void clearAssemblyTracking() {
         if (lockdown) {
             return;
         }

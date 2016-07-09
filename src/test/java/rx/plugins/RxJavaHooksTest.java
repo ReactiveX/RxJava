@@ -15,7 +15,11 @@
  */
 package rx.plugins;
 
+import static org.junit.Assert.*;
+
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Method;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -23,7 +27,8 @@ import org.junit.Test;
 
 import rx.*;
 import rx.Completable.*;
-import rx.Observable.OnSubscribe;
+import rx.Observable;
+import rx.Observable.*;
 import rx.Scheduler.Worker;
 import rx.exceptions.*;
 import rx.functions.*;
@@ -33,7 +38,6 @@ import rx.internal.util.UtilityFunctions;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
-import static org.junit.Assert.*;
 
 
 public class RxJavaHooksTest {
@@ -69,6 +73,14 @@ public class RxJavaHooksTest {
             assertTrue("" + ex, ex instanceof AssemblyStackTraceException);
             
             assertTrue(ex.getMessage(), ex.getMessage().contains("createObservable"));
+            
+            RxJavaHooks.clearAssemblyTracking();
+
+            ts = TestSubscriber.create();
+            
+            createObservable().subscribe(ts);
+
+            ts.assertError(TestException.class);
         } finally {
             RxJavaHooks.resetAssemblyTracking();
         }
@@ -100,6 +112,14 @@ public class RxJavaHooksTest {
             assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
 
             assertTrue(ex.getMessage(), ex.getMessage().contains("createSingle"));
+
+            RxJavaHooks.clearAssemblyTracking();
+
+            ts = TestSubscriber.create();
+            
+            createSingle().subscribe(ts);
+
+            ts.assertError(TestException.class);
         } finally {
             RxJavaHooks.resetAssemblyTracking();
         }
@@ -131,6 +151,15 @@ public class RxJavaHooksTest {
             assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
 
             assertTrue(ex.getMessage(), ex.getMessage().contains("createCompletable"));
+
+            RxJavaHooks.clearAssemblyTracking();
+
+            ts = TestSubscriber.create();
+            
+            createCompletable().subscribe(ts);
+
+            ts.assertError(TestException.class);
+
         } finally {
             RxJavaHooks.resetAssemblyTracking();
         }
@@ -142,6 +171,7 @@ public class RxJavaHooksTest {
         RxJavaHooks.reset();
         RxJavaHooks.lockdown();
         try {
+            assertTrue(RxJavaHooks.isLockdown());
             Action1 a1 = Actions.empty();
             Func1 f1 = UtilityFunctions.identity();
             Func2 f2 = new Func2() {
@@ -170,12 +200,33 @@ public class RxJavaHooksTest {
                     Object after = getter.invoke(null);
                     
                     assertSame(m.toString(), before, after);
+                    
+                    if (before != null) {
+                        RxJavaHooks.clear();
+                        RxJavaHooks.reset();
+                        assertSame(m.toString(), before, getter.invoke(null));
+                    }
                 }
             }
+            
+            
+            Object o1 = RxJavaHooks.getOnObservableCreate();
+            Object o2 = RxJavaHooks.getOnSingleCreate();
+            Object o3 = RxJavaHooks.getOnCompletableCreate();
+            
+            RxJavaHooks.enableAssemblyTracking();
+            RxJavaHooks.clearAssemblyTracking();
+            RxJavaHooks.resetAssemblyTracking();
+
+            
+            assertSame(o1, RxJavaHooks.getOnObservableCreate());
+            assertSame(o2, RxJavaHooks.getOnSingleCreate());
+            assertSame(o3, RxJavaHooks.getOnCompletableCreate());
             
         } finally {
             RxJavaHooks.lockdown = false;
             RxJavaHooks.reset();
+            assertFalse(RxJavaHooks.isLockdown());
         }
     }
     
@@ -550,6 +601,460 @@ public class RxJavaHooksTest {
     @Test
     public void onScheduleNewThread() throws InterruptedException {
         onSchedule(Schedulers.newThread().createWorker());
+    }
+
+    @Test
+    public void onError() {
+        try {
+            final List<Throwable> list = new ArrayList<Throwable>();
+            
+            RxJavaHooks.setOnError(new Action1<Throwable>() {
+                @Override
+                public void call(Throwable t) {
+                    list.add(t);
+                }
+            });
+            
+            RxJavaHooks.onError(new TestException("Forced failure"));
+            
+            assertEquals(1, list.size());
+            assertTestException(list, 0, "Forced failure");
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+    
+    @Test
+    public void clear() throws Exception {
+        RxJavaHooks.reset();
+        try {
+            RxJavaHooks.clear();
+            for (Method m : RxJavaHooks.class.getMethods()) {
+                if (m.getName().startsWith("getOn")) {
+                    assertNull(m.toString(), m.invoke(null));
+                }
+            }
+
+        } finally {
+            RxJavaHooks.reset();
+        }
+
+        for (Method m : RxJavaHooks.class.getMethods()) {
+            if (m.getName().startsWith("getOn") && !m.getName().endsWith("Scheduler")) {
+                assertNotNull(m.toString(), m.invoke(null));
+            }
+        }
+
+    }
+
+    @Test
+    public void onErrorNoHandler() {
+        try {
+            final List<Throwable> list = new ArrayList<Throwable>();
+            
+            RxJavaHooks.setOnError(null);
+            
+            Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+                
+                @Override
+                public void uncaughtException(Thread t, Throwable e) {
+                    list.add(e);
+                    
+                }
+            });
+            
+            RxJavaHooks.onError(new TestException("Forced failure"));
+
+            Thread.currentThread().setUncaughtExceptionHandler(null);
+
+            // this will be printed on the console and should not crash
+            RxJavaHooks.onError(new TestException("Forced failure 3"));
+
+            assertEquals(1, list.size());
+            assertTestException(list, 0, "Forced failure");
+        } finally {
+            RxJavaHooks.reset();
+            Thread.currentThread().setUncaughtExceptionHandler(null);
+        }
+    }
+
+    @Test
+    public void onErrorCrashes() {
+        try {
+            final List<Throwable> list = new ArrayList<Throwable>();
+            
+            RxJavaHooks.setOnError(new Action1<Throwable>() {
+                @Override
+                public void call(Throwable t) {
+                    throw new TestException("Forced failure 2");
+                }
+            });
+
+            Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+                
+                @Override
+                public void uncaughtException(Thread t, Throwable e) {
+                    list.add(e);
+                    
+                }
+            });
+
+            RxJavaHooks.onError(new TestException("Forced failure"));
+            
+            assertEquals(2, list.size());
+            assertTestException(list, 0, "Forced failure 2");
+            assertTestException(list, 1, "Forced failure");
+
+            Thread.currentThread().setUncaughtExceptionHandler(null);
+            
+        } finally {
+            RxJavaHooks.reset();
+            Thread.currentThread().setUncaughtExceptionHandler(null);
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void clearIsPassthrough() {
+        try {
+            RxJavaHooks.clear();
+            
+            assertNull(RxJavaHooks.onCreate((Observable.OnSubscribe)null));
+
+            Observable.OnSubscribe oos = new Observable.OnSubscribe() {
+                @Override
+                public void call(Object t) {
+                    
+                }
+            };
+
+            assertSame(oos, RxJavaHooks.onCreate(oos));
+            
+            assertNull(RxJavaHooks.onCreate((Single.OnSubscribe)null));
+
+            Single.OnSubscribe sos = new Single.OnSubscribe() {
+                @Override
+                public void call(Object t) {
+                    
+                }
+            };
+
+            assertSame(sos, RxJavaHooks.onCreate(sos));
+            
+            assertNull(RxJavaHooks.onCreate((Single.OnSubscribe)null));
+
+            Completable.CompletableOnSubscribe cos = new Completable.CompletableOnSubscribe() {
+                @Override
+                public void call(CompletableSubscriber t) {
+                    
+                }
+            };
+
+            assertSame(cos, RxJavaHooks.onCreate(cos));
+            
+            assertNull(RxJavaHooks.onScheduledAction(null));
+            
+            Action0 action = Actions.empty();
+            
+            assertSame(action, RxJavaHooks.onScheduledAction(action));
+            
+            
+            assertNull(RxJavaHooks.onObservableStart(Observable.never(), null));
+            
+            assertSame(oos, RxJavaHooks.onObservableStart(Observable.never(), oos));
+
+            assertNull(RxJavaHooks.onSingleStart(Single.just(1), null));
+            
+            assertSame(oos, RxJavaHooks.onSingleStart(Single.just(1), oos));
+
+            assertNull(RxJavaHooks.onCompletableStart(Completable.never(), null));
+            
+            assertSame(cos, RxJavaHooks.onCompletableStart(Completable.never(), cos));
+            
+            Subscription subscription = Subscriptions.empty();
+            
+            assertNull(RxJavaHooks.onObservableReturn(null));
+            
+            assertSame(subscription, RxJavaHooks.onObservableReturn(subscription));
+
+            assertNull(RxJavaHooks.onSingleReturn(null));
+            
+            assertSame(subscription, RxJavaHooks.onSingleReturn(subscription));
+
+            TestException ex = new TestException();
+            
+            assertNull(RxJavaHooks.onObservableError(null));
+            
+            assertSame(ex, RxJavaHooks.onObservableError(ex));
+
+            assertNull(RxJavaHooks.onSingleError(null));
+            
+            assertSame(ex, RxJavaHooks.onSingleError(ex));
+
+            assertNull(RxJavaHooks.onCompletableError(null));
+            
+            assertSame(ex, RxJavaHooks.onCompletableError(ex));
+
+            Observable.Operator oop = new Observable.Operator() {
+                @Override
+                public Object call(Object t) {
+                    return t;
+                }
+            };
+            
+            assertNull(RxJavaHooks.onObservableLift(null));
+            
+            assertSame(oop, RxJavaHooks.onObservableLift(oop));
+            
+            assertNull(RxJavaHooks.onSingleLift(null));
+            
+            assertSame(oop, RxJavaHooks.onSingleLift(oop));
+            
+            Completable.CompletableOperator cop = new Completable.CompletableOperator() {
+                @Override
+                public CompletableSubscriber call(CompletableSubscriber t) {
+                    return t;
+                }
+            };
+            
+            assertNull(RxJavaHooks.onCompletableLift(null));
+            
+            assertSame(cop, RxJavaHooks.onCompletableLift(cop));
+            
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+    
+    static void assertTestException(List<Throwable> list, int index, String message) {
+        assertTrue(list.get(index).toString(), list.get(index) instanceof TestException);
+        assertEquals(message, list.get(index).getMessage());
+    }
+    
+    @Test
+    public void onXError() {
+        try {
+            final List<Throwable> list = new ArrayList<Throwable>();
+            
+            final TestException ex = new TestException();
+            
+            Func1<Throwable, Throwable> errorHandler = new Func1<Throwable, Throwable>() {
+                @Override
+                public Throwable call(Throwable t) {
+                    list.add(t);
+                    return ex;
+                }
+            };
+            
+            RxJavaHooks.setOnObservableSubscribeError(errorHandler);
+
+            RxJavaHooks.setOnSingleSubscribeError(errorHandler);
+
+            RxJavaHooks.setOnCompletableSubscribeError(errorHandler);
+
+            assertSame(ex, RxJavaHooks.onObservableError(new TestException("Forced failure 1")));
+
+            assertSame(ex, RxJavaHooks.onSingleError(new TestException("Forced failure 2")));
+            
+            assertSame(ex, RxJavaHooks.onCompletableError(new TestException("Forced failure 3")));
+            
+            assertTestException(list, 0, "Forced failure 1");
+            
+            assertTestException(list, 1, "Forced failure 2");
+
+            assertTestException(list, 2, "Forced failure 3");
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void onPluginsXError() {
+        try {
+            RxJavaPlugins.getInstance().reset();
+            RxJavaHooks.reset();
+            
+            final List<Throwable> list = new ArrayList<Throwable>();
+            
+            final TestException ex = new TestException();
+            
+            final Func1<Throwable, Throwable> errorHandler = new Func1<Throwable, Throwable>() {
+                @Override
+                public Throwable call(Throwable t) {
+                    list.add(t);
+                    return ex;
+                }
+            };
+
+            RxJavaPlugins.getInstance().registerObservableExecutionHook(new RxJavaObservableExecutionHook() {
+                @Override
+                public <T> Throwable onSubscribeError(Throwable e) {
+                    return errorHandler.call(e);
+                }
+            });
+
+            RxJavaPlugins.getInstance().registerSingleExecutionHook(new RxJavaSingleExecutionHook() {
+                @Override
+                public <T> Throwable onSubscribeError(Throwable e) {
+                    return errorHandler.call(e);
+                }
+            });
+
+            RxJavaPlugins.getInstance().registerCompletableExecutionHook(new RxJavaCompletableExecutionHook() {
+                @Override
+                public Throwable onSubscribeError(Throwable e) {
+                    return errorHandler.call(e);
+                }
+            });
+
+            assertSame(ex, RxJavaHooks.onObservableError(new TestException("Forced failure 1")));
+
+            assertSame(ex, RxJavaHooks.onSingleError(new TestException("Forced failure 2")));
+            
+            assertSame(ex, RxJavaHooks.onCompletableError(new TestException("Forced failure 3")));
+            
+            assertTestException(list, 0, "Forced failure 1");
+            
+            assertTestException(list, 1, "Forced failure 2");
+
+            assertTestException(list, 2, "Forced failure 3");
+        } finally {
+            RxJavaPlugins.getInstance().reset();
+            RxJavaHooks.reset();
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void onXLift() {
+        try {
+            Completable.CompletableOperator cop = new Completable.CompletableOperator() {
+                @Override
+                public CompletableSubscriber call(CompletableSubscriber t) {
+                    return t;
+                }
+            };
+            
+            Observable.Operator oop = new Observable.Operator() {
+                @Override
+                public Object call(Object t) {
+                    return t;
+                }
+            };
+
+            final int[] counter = { 0 };
+
+            RxJavaHooks.setOnObservableLift(new Func1<Operator, Operator>() {
+                @Override
+                public Operator call(Operator t) {
+                    counter[0]++;
+                    return t;
+                }
+            });
+
+            RxJavaHooks.setOnSingleLift(new Func1<Operator, Operator>() {
+                @Override
+                public Operator call(Operator t) {
+                    counter[0]++;
+                    return t;
+                }
+            });
+
+            RxJavaHooks.setOnCompletableLift(new Func1<CompletableOperator, CompletableOperator>() {
+                @Override
+                public CompletableOperator call(CompletableOperator t) {
+                    counter[0]++;
+                    return t;
+                }
+            });
+            
+            assertSame(oop, RxJavaHooks.onObservableLift(oop));
+
+            assertSame(oop, RxJavaHooks.onSingleLift(oop));
+
+            assertSame(cop, RxJavaHooks.onCompletableLift(cop));
+            
+            assertEquals(3, counter[0]);
+
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
+    @Test
+    public void onPluginsXLift() {
+        try {
+            
+            RxJavaPlugins.getInstance().reset();
+            RxJavaHooks.reset();
+
+            Completable.CompletableOperator cop = new Completable.CompletableOperator() {
+                @Override
+                public CompletableSubscriber call(CompletableSubscriber t) {
+                    return t;
+                }
+            };
+            
+            Observable.Operator oop = new Observable.Operator() {
+                @Override
+                public Object call(Object t) {
+                    return t;
+                }
+            };
+
+            final int[] counter = { 0 };
+
+            final Func1<Operator, Operator> onObservableLift = new Func1<Operator, Operator>() {
+                @Override
+                public Operator call(Operator t) {
+                    counter[0]++;
+                    return t;
+                }
+            };
+
+            final Func1<CompletableOperator, CompletableOperator> onCompletableLift = new Func1<CompletableOperator, CompletableOperator>() {
+                @Override
+                public CompletableOperator call(CompletableOperator t) {
+                    counter[0]++;
+                    return t;
+                }
+            };
+            
+            RxJavaPlugins.getInstance().registerObservableExecutionHook(new RxJavaObservableExecutionHook() {
+                @Override
+                public <T, R> Operator<? extends R, ? super T> onLift(Operator<? extends R, ? super T> lift) {
+                    return onObservableLift.call(lift);
+                }
+            });
+            
+            RxJavaPlugins.getInstance().registerSingleExecutionHook(new RxJavaSingleExecutionHook() {
+                @Override
+                public <T, R> Operator<? extends R, ? super T> onLift(Operator<? extends R, ? super T> lift) {
+                    return onObservableLift.call(lift);
+                }
+            });
+            
+            RxJavaPlugins.getInstance().registerCompletableExecutionHook(new RxJavaCompletableExecutionHook() {
+                @Override
+                public CompletableOperator onLift(CompletableOperator lift) {
+                    return onCompletableLift.call(lift);
+                }
+            });
+            
+            assertSame(oop, RxJavaHooks.onObservableLift(oop));
+
+            assertSame(oop, RxJavaHooks.onSingleLift(oop));
+
+            assertSame(cop, RxJavaHooks.onCompletableLift(cop));
+            
+            assertEquals(3, counter[0]);
+
+        } finally {
+            RxJavaPlugins.getInstance().reset();
+            RxJavaHooks.reset();
+        }
     }
 
 }

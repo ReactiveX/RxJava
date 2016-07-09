@@ -91,6 +91,7 @@ public class RxJavaPlugins {
         INSTANCE.errorHandler.set(null);
         INSTANCE.observableExecutionHook.set(null);
         INSTANCE.singleExecutionHook.set(null);
+        INSTANCE.completableExecutionHook.set(null);
         INSTANCE.schedulersHook.set(null);
     }
 
