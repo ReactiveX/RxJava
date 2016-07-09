@@ -132,7 +132,7 @@ public class JCToolsQueueTests {
         testOfferPoll(q);
     }
     
-    @Test(timeout = 2000)
+    @Test(timeout = 20000)
     public void testMpscLinkedAtomicQueuePipelined() throws InterruptedException {
         final MpscLinkedAtomicQueue<Integer> q = new MpscLinkedAtomicQueue<Integer>();
         
@@ -202,7 +202,7 @@ public class JCToolsQueueTests {
         
         testOfferPoll(q);
     }
-    @Test(timeout = 2000)
+    @Test(timeout = 20000)
     public void testMpscLinkedQueuePipelined() throws InterruptedException {
         if (!UnsafeAccess.isUnsafeAvailable()) {
             return;
@@ -356,7 +356,7 @@ public class JCToolsQueueTests {
         testOfferPoll(q);
     }
     
-    @Test(timeout = 2000)
+    @Test(timeout = 20000)
     public void testSpscLinkedAtomicQueuePipelined() throws InterruptedException {
         final SpscLinkedAtomicQueue<Integer> q = new SpscLinkedAtomicQueue<Integer>();
         final AtomicInteger count = new AtomicInteger();
@@ -411,7 +411,7 @@ public class JCToolsQueueTests {
         testOfferPoll(q);
     }
     
-    @Test(timeout = 2000)
+    @Test(timeout = 20000)
     public void testSpscLinkedQueuePipelined() throws InterruptedException {
         if (!UnsafeAccess.isUnsafeAvailable()) {
             return;
