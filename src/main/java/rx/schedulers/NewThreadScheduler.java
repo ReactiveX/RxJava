@@ -24,7 +24,7 @@ import rx.Scheduler;
 // Class was part of public API.
 public final class NewThreadScheduler extends Scheduler { // NOPMD 
     private NewThreadScheduler() {
-        throw new AssertionError();
+        throw new IllegalStateException("No instances!");
     }
 
     @Override

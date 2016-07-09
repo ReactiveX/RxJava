@@ -24,7 +24,7 @@ import rx.Scheduler;
 // Class was part of public API.
 public final class TrampolineScheduler extends Scheduler { // NOPMD 
     private TrampolineScheduler() {
-        throw new AssertionError();
+        throw new IllegalStateException("No instances!");
     }
 
     @Override

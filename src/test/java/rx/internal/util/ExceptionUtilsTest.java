@@ -15,6 +15,8 @@
  */
 package rx.internal.util;
 
+import static org.junit.Assert.*;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
@@ -50,5 +52,16 @@ public class ExceptionUtilsTest {
         
         Assert.assertTrue(ExceptionsUtils.isTerminated(error));
         Assert.assertTrue(ExceptionsUtils.isTerminated(error.get()));
+    }
+    
+    @Test
+    public void utilityEnum() {
+        assertEquals(0, ExceptionsUtils.values().length);
+        try {
+            ExceptionsUtils.valueOf("INSTANCE");
+            fail("Failed to throw IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            // expected
+        }
     }
 }
