@@ -256,6 +256,7 @@ public abstract class Scheduler {
 	 * @param combine
 	 * @return
 	 */
+    @SuppressWarnings("unchecked")
     @Experimental
 	public <S extends Scheduler & Subscription> S when(Func1<Observable<Observable<Completable>>, Completable> combine) {
 		return (S) new SchedulerWhen(combine, this);
