@@ -1681,6 +1681,50 @@ public class Observable<T> {
     }
 
     /**
+     * Provides an API (via a cold Observable) that bridges the reactive world with the callback-style,
+     * generally non-backpressured world.
+     * <p>
+     * Example:
+     * <pre><code>
+     * Observable.&lt;Event&gt;fromAsync(emitter -&gt; {
+     *     Callback listener = new Callback() {
+     *         &#64;Override
+     *         public void onEvent(Event e) {
+     *             emitter.onNext(e);
+     *             if (e.isLast()) {
+     *                 emitter.onCompleted();
+     *             }
+     *         }
+     *         
+     *         &#64;Override
+     *         public void onFailure(Exception e) {
+     *             emitter.onError(e);
+     *         }
+     *     };
+     *     
+     *     AutoCloseable c = api.someMethod(listener);
+     *     
+     *     emitter.setCancellable(c::close);
+     *     
+     * }, BackpressureMode.BUFFER);
+     * </code></pre>
+     * <p>
+     * You should call the AsyncEmitter's onNext, onError and onCompleted methods in a serialized fashion. The
+     * rest of its methods are threadsafe.
+     * 
+     * @param asyncEmitter the emitter that is called when a Subscriber subscribes to the returned {@code Observable}
+     * @param backpressure the backpressure mode to apply if the downstream Subscriber doesn't request (fast) enough
+     * @return the new Observable instance
+     * @see AsyncEmitter
+     * @see AsyncEmitter.BackpressureMode
+     * @see AsyncEmitter.Cancellable
+     */
+    @Experimental
+    public static <T> Observable<T> fromAsync(Action1<AsyncEmitter<T>> asyncEmitter, AsyncEmitter.BackpressureMode backpressure) {
+        return create(new OnSubscribeFromAsync<T>(asyncEmitter, backpressure));
+    }
+    
+    /**
      * Returns an Observable that, when an observer subscribes to it, invokes a function you specify and then
      * emits the value returned from that function.
      * <p>
