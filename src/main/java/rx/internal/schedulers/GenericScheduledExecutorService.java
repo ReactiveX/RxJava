@@ -19,7 +19,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Scheduler;
-import rx.internal.util.RxThreadFactory;
 
 /**
  * A default {@link ScheduledExecutorService} that can be used for scheduling actions when a {@link Scheduler} implementation doesn't have that ability.
@@ -31,9 +30,6 @@ import rx.internal.util.RxThreadFactory;
  * along with {@link TrampolineScheduler} or {@link ImmediateScheduler}.
  */
 public final class GenericScheduledExecutorService implements SchedulerLifecycle {
-
-    private static final String THREAD_NAME_PREFIX = "RxScheduledExecutorPool-";
-    private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
 
     private static final ScheduledExecutorService[] NONE = new ScheduledExecutorService[0];
 
@@ -72,7 +68,7 @@ public final class GenericScheduledExecutorService implements SchedulerLifecycle
         
         ScheduledExecutorService[] execs = new ScheduledExecutorService[count];
         for (int i = 0; i < count; i++) {
-            execs[i] = Executors.newScheduledThreadPool(1, THREAD_FACTORY);
+            execs[i] = GenericScheduledExecutorServiceFactory.create();
         }
         if (executor.compareAndSet(NONE, execs)) {
             for (ScheduledExecutorService exec : execs) {

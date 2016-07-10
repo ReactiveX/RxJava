@@ -16,6 +16,7 @@
 package rx.plugins;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.concurrent.ScheduledExecutorService;
 
 import rx.*;
 import rx.Completable.*;
@@ -67,6 +68,8 @@ public final class RxJavaHooks {
     static volatile Func1<Subscription, Subscription> onObservableReturn;
 
     static volatile Func1<Subscription, Subscription> onSingleReturn;
+    
+    static volatile Func0<? extends ScheduledExecutorService> onGenericScheduledExecutorService;
 
     static volatile Func1<Throwable, Throwable> onObservableSubscribeError;
 
@@ -230,6 +233,7 @@ public final class RxJavaHooks {
         onComputationScheduler = null;
         onIOScheduler = null;
         onNewThreadScheduler = null;
+        onGenericScheduledExecutorService = null;
     }
 
     /**
@@ -265,8 +269,9 @@ public final class RxJavaHooks {
         onComputationScheduler = null;
         onIOScheduler = null;
         onNewThreadScheduler = null;
-        
+
         onScheduleAction = null;
+        onGenericScheduledExecutorService = null;
     }
 
     /**
@@ -1194,5 +1199,35 @@ public final class RxJavaHooks {
             }
         };
 
+    }
+    /**
+     * Sets the hook function for returning a ScheduledExecutorService used
+     * by the GenericScheduledExecutorService for background tasks.
+     * <p>
+     * This operation is threadsafe.
+     * <p>
+     * Calling with a {@code null} parameter restores the default behavior:
+     * create the default with {@link java.util.concurrent.Executors#newScheduledThreadPool(int, java.util.concurrent.ThreadFactory)}.
+     * <p>
+     * For the changes to take effect, the Schedulers has to be restarted.
+     * @param factory the supplier that is called when the GenericScheduledExecutorService
+     * is (re)started
+     */
+    public static void setOnGenericScheduledExecutorService(Func0<? extends ScheduledExecutorService> factory) {
+        if (lockdown) {
+            return;
+        }
+        onGenericScheduledExecutorService = factory;
+    }
+    
+    /**
+     * Returns the current factory for creating ScheduledExecutorServices in
+     * GenericScheduledExecutorService utility.
+     * <p>
+     * This operation is threadsafe.
+     * @return the current factory function
+     */
+    public static Func0<? extends ScheduledExecutorService> getOnGenericScheduledExecutorService() {
+        return onGenericScheduledExecutorService;
     }
 }
