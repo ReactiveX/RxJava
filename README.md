@@ -1,5 +1,9 @@
 # RxJava: Reactive Extensions for the JVM
 
+<a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=1.x'></a>
+[![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=1.x)](http://codecov.io/github/ReactiveX/RxJava?branch=1.x)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.reactivex/rxjava/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.reactivex/rxjava)
+
 RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io): a library for composing asynchronous and event-based programs by using observable sequences.
 
 It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern) to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.
@@ -14,12 +18,6 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 - Virtual time and schedulers for parameterized concurrency
 
 Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
-
-## Master Build Status
-
-<a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=1.x'></a>
-[![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=1.x)](http://codecov.io/github/ReactiveX/RxJava?branch=1.x)
-
 
 ## Communication
 
