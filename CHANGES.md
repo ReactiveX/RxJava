@@ -49,10 +49,12 @@ By default, all `RxJavaHooks` delegate to the original `RxJavaPlugins` callbacks
   - [Pull 4020](https://github.com/ReactiveX/RxJava/pull/4020): Add `AsyncCompletableSubscriber` that exposes `unsubscribe()`.
   - [Pull 4011](https://github.com/ReactiveX/RxJava/pull/4011): Deprecate `TestObserver`, enhance `TestSubscriber` a bit.
   - [Pull 4007](https://github.com/ReactiveX/RxJava/pull/4007): new hook management proposal
+  - [Pull 4173](https://github.com/ReactiveX/RxJava/pull/4173): allow customizing GenericScheduledExecutorService via RxJavaHooks
   - [Pull 3931](https://github.com/ReactiveX/RxJava/pull/3931): add `groupBy` overload with `evictingMapFactory`
-  - [Pull 4140](https://github.com/ReactiveX/RxJava/pull/4140):  Change `Completable.subscribe(onError, onComplete)` to `(onComplete, onError)`
-  - [Pull 4154](https://github.com/ReactiveX/RxJava/pull/4154):  Ability to create custom schedulers with behavior based on composing operators.
-
+  - [Pull 4140](https://github.com/ReactiveX/RxJava/pull/4140): Change `Completable.subscribe(onError, onComplete)` to `(onComplete, onError)`
+  - [Pull 4154](https://github.com/ReactiveX/RxJava/pull/4154): Ability to create custom schedulers with behavior based on composing operators via `Scheduler.when`.
+  - [Pull 4179](https://github.com/ReactiveX/RxJava/pull/4179): New `fromAsync` to bridge the callback world with the reactive.
+  
 #### API deprecations
 
   - [Pull 4011](https://github.com/ReactiveX/RxJava/pull/4011): Deprecate `TestObserver`, enhance `TestSubscriber` a bit.
