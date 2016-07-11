@@ -820,7 +820,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * Assert that the upstream is a fuseable source.
      * @return this
      */
-    public TestSubscriber<T> assertFuseable() {
+    public final TestSubscriber<T> assertFuseable() {
         if (qs == null) {
             throw new AssertionError("Upstream is not fuseable.");
         }
@@ -831,11 +831,55 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * Assert that the upstream is not a fuseable source.
      * @return this
      */
-    public TestSubscriber<T> assertNotFuseable() {
+    public final TestSubscriber<T> assertNotFuseable() {
         if (qs != null) {
             throw new AssertionError("Upstream is fuseable.");
         }
         return this;
+    }
+
+    /**
+     * Assert that the upstream signalled the specified values in order and
+     * completed normally.
+     * @param values the expected values, asserted in order
+     * @return this
+     * @see #assertFailure(Class, Object...)
+     * @see #assertFailureAndMessage(Class, String, Object...)
+     */
+    public final TestSubscriber<T> assertResult(T... values) {
+        return assertValues(values)
+                .assertNoErrors()
+                .assertComplete();
+    }
+
+    /**
+     * Assert that the upstream signalled the specified values in order
+     * and then failed with a specific class or subclass of Throwable.
+     * @param error the expected exception (parent) class
+     * @param values the expected values, asserted in order
+     * @return this
+     */
+    public final TestSubscriber<T> assertFailure(Class<Throwable> error, T... values) {
+        return assertValues(values)
+                .assertError(error)
+                .assertNotComplete();
+    }
+
+    /**
+     * Assert that the upstream signalled the specified values in order,
+     * then failed with a specific class or subclass of Throwable
+     * and with the given exact error message.
+     * @param error the expected exception (parent) class
+     * @param message the expected failure message
+     * @param values the expected values, asserted in order
+     * @return this
+     */
+    public final TestSubscriber<T> assertFailureAndMessage(Class<? extends Throwable> error, 
+            String message, T... values) {
+        return assertValues(values)
+                .assertError(error)
+                .assertErrorMessage(message)
+                .assertNotComplete();
     }
 
     /**
