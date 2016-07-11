@@ -127,13 +127,13 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
             
             InnerQueuedSubscriber<R> inner = new InnerQueuedSubscriber<R>(this, prefetch);
             
-            if (!cancelled) {
+            if (cancelled) {
                 return;
             }
 
             subscribers.offer(inner);
             
-            if (!cancelled) {
+            if (cancelled) {
                 return;
             }
             
@@ -141,7 +141,6 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
             
             if (cancelled) {
                 inner.cancel();
-            } else {
                 drainAndCancel();
             }
         }
