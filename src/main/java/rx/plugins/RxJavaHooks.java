@@ -275,7 +275,7 @@ public final class RxJavaHooks {
     }
 
     /**
-     * Prevents changing a hooks.
+     * Prevents changing the hooks.
      */
     public static void lockdown() {
         lockdown = true;
