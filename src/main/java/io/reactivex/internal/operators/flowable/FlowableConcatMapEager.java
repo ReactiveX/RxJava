@@ -131,6 +131,9 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
                 subscribers.offer(inner);
                 if (!cancelled) {
                     p.subscribe(inner);
+                    if (cancelled) {
+                        inner.cancel();
+                    }
                 } else {
                     drainAndCancel();
                 }
