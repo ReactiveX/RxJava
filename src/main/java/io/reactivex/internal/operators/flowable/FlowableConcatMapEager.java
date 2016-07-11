@@ -128,15 +128,21 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
             InnerQueuedSubscriber<R> inner = new InnerQueuedSubscriber<R>(this, prefetch);
             
             if (!cancelled) {
-                subscribers.offer(inner);
-                if (!cancelled) {
-                    p.subscribe(inner);
-                    if (cancelled) {
-                        inner.cancel();
-                    }
-                } else {
-                    drainAndCancel();
-                }
+                return;
+            }
+
+            subscribers.offer(inner);
+            
+            if (!cancelled) {
+                return;
+            }
+            
+            p.subscribe(inner);
+            
+            if (cancelled) {
+                inner.cancel();
+            } else {
+                drainAndCancel();
             }
         }
         
@@ -193,11 +199,11 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
         
         @Override
         public void innerNext(InnerQueuedSubscriber<R> inner, R value) {
-            if (!inner.queue().offer(value)) {
+            if (inner.queue().offer(value)) {
+                drain();
+            } else {
                 inner.cancel();
                 innerError(inner, new MissingBackpressureException());
-            } else {
-                drain();
             }
         }
         
