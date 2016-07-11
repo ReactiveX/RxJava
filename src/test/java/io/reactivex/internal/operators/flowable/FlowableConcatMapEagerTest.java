@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.reactivestreams.Publisher;
 import static org.junit.Assert.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
@@ -229,5 +229,21 @@ public class FlowableConcatMapEagerTest {
         inner.onComplete();
         
         ts.assertFailureAndMessage(TestException.class, "Forced failure", 2);
+    }
+    
+    @Test
+    public void longEager() {
+        
+        Flowable.range(1, 2 * Flowable.bufferSize())
+        .concatMapEager(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer v) {
+                return Flowable.just(1);
+            }
+        })
+        .test()
+        .assertValueCount(2 * Flowable.bufferSize())
+        .assertNoErrors()
+        .assertComplete();
     }
 }

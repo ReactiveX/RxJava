@@ -70,7 +70,7 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
         final int maxConcurrency;
         
         final int prefetch;
-
+        
         final ErrorMode errorMode;
 
         final AtomicReference<Throwable> error;
@@ -296,6 +296,7 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
                             inner = null;
                             subscribers.poll();
                             current = null;
+                            s.request(1);
                             continue outer;
                         }
                         
@@ -334,6 +335,7 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
                             inner = null;
                             subscribers.poll();
                             current = null;
+                            s.request(1);
                             continue outer;
                         }
                     }
