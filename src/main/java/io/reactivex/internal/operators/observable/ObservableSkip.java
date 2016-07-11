@@ -28,9 +28,12 @@ public final class ObservableSkip<T> extends ObservableSource<T, T> {
         source.subscribe(new SkipSubscriber<T>(s, n));
     }
     
-    static final class SkipSubscriber<T> implements Observer<T> {
+    static final class SkipSubscriber<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         long remaining;
+        
+        Disposable d;
+        
         public SkipSubscriber(Observer<? super T> actual, long n) {
             this.actual = actual;
             this.remaining = n;
@@ -38,7 +41,8 @@ public final class ObservableSkip<T> extends ObservableSource<T, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            actual.onSubscribe(s);
+            this.d = s;
+            actual.onSubscribe(this);
         }
         
         @Override
@@ -60,5 +64,14 @@ public final class ObservableSkip<T> extends ObservableSource<T, T> {
             actual.onComplete();
         }
         
+        @Override
+        public void dispose() {
+            d.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return d.isDisposed();
+        }
     }
 }

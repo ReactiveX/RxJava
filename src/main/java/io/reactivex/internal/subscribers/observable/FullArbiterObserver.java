@@ -15,42 +15,42 @@ package io.reactivex.internal.subscribers.observable;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.disposables.*;
 
 /**
- * A subscriber that ignores all events (onError is forwarded to RxJavaPlugins though).
+ * Subscriber that communicates with a FullArbiter.
+ *
+ * @param <T> the value type
  */
-public enum NbpEmptySubscriber implements Observer<Object> {
-    /** Empty instance that reports error to the plugins. */
-    INSTANCE(false),
-    /** Empty instance that disposes disposables. */
-    DISPOSED(true);
-    
-    private final boolean disposeDisposable;
-    
-    NbpEmptySubscriber(boolean disposeDisposable) {
-        this.disposeDisposable = disposeDisposable;
+public final class FullArbiterObserver<T> implements Observer<T> {
+    final NbpFullArbiter<T> arbiter;
+
+    Disposable s;
+
+    public FullArbiterObserver(NbpFullArbiter<T> arbiter) {
+        this.arbiter = arbiter;
     }
-    
+
     @Override
-    public void onSubscribe(Disposable d) {
-        if (disposeDisposable) {
-            d.dispose();
+    public void onSubscribe(Disposable s) {
+        if (DisposableHelper.validate(this.s, s)) {
+            this.s = s;
+            arbiter.setSubscription(s);
         }
     }
-    
+
     @Override
-    public void onNext(Object t) {
-        
+    public void onNext(T t) {
+        arbiter.onNext(t, s);
     }
-    
+
     @Override
     public void onError(Throwable t) {
-        RxJavaPlugins.onError(t);
+        arbiter.onError(t, s);
     }
-    
+
     @Override
     public void onComplete() {
-        
+        arbiter.onComplete(s);
     }
 }

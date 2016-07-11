@@ -29,13 +29,13 @@ import io.reactivex.plugins.RxJavaPlugins;
  * 
  * @param <T> the value type
  */
-public final class SerializedObserver<T> implements Observer<T> {
+public final class SerializedObserver<T> implements Observer<T>, Disposable {
     final Observer<? super T> actual;
     final boolean delayError;
     
     static final int QUEUE_LINK_SIZE = 4;
     
-    Disposable subscription;
+    Disposable s;
     
     boolean emitting;
     AppendOnlyLinkedArrayList<Object> queue;
@@ -52,12 +52,24 @@ public final class SerializedObserver<T> implements Observer<T> {
     }
     @Override
     public void onSubscribe(Disposable s) {
-        if (DisposableHelper.validate(this.subscription, s)) {
-            this.subscription = s;
+        if (DisposableHelper.validate(this.s, s)) {
+            this.s = s;
             
-            actual.onSubscribe(s);
+            actual.onSubscribe(this);
         }
     }
+    
+
+    @Override
+    public void dispose() {
+        s.dispose();
+    }
+    
+    @Override
+    public boolean isDisposed() {
+        return s.isDisposed();
+    }
+
     
     @Override
     public void onNext(T t) {
@@ -65,7 +77,7 @@ public final class SerializedObserver<T> implements Observer<T> {
             return;
         }
         if (t == null) {
-            subscription.dispose();
+            s.dispose();
             onError(new NullPointerException());
             return;
         }

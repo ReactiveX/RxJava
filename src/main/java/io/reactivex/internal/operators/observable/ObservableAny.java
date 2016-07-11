@@ -30,7 +30,7 @@ public final class ObservableAny<T> extends Observable<Boolean> {
         source.subscribe(new AnySubscriber<T>(t, predicate));
     }
     
-    static final class AnySubscriber<T> implements Observer<T> {
+    static final class AnySubscriber<T> implements Observer<T>, Disposable {
         
         final Observer<? super Boolean> actual;
         final Predicate<? super T> predicate;
@@ -47,7 +47,7 @@ public final class ObservableAny<T> extends Observable<Boolean> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
         
@@ -88,6 +88,16 @@ public final class ObservableAny<T> extends Observable<Boolean> {
                 actual.onNext(false);
                 actual.onComplete();
             }
+        }
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
         }
     }
 }

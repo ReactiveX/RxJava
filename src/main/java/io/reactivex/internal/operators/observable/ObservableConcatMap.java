@@ -19,7 +19,10 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -34,40 +37,71 @@ public final class ObservableConcatMap<T, U> extends ObservableSource<T, U> {
     @Override
     public void subscribeActual(Observer<? super U> s) {
         SerializedObserver<U> ssub = new SerializedObserver<U>(s);
-        SerialDisposable sa = new SerialDisposable();
-        ssub.onSubscribe(sa);
-        source.subscribe(new SourceSubscriber<T, U>(ssub, sa, mapper, bufferSize));
+        source.subscribe(new SourceSubscriber<T, U>(ssub, mapper, bufferSize));
     }
     
-    static final class SourceSubscriber<T, U> extends AtomicInteger implements Observer<T> {
+    static final class SourceSubscriber<T, U> extends AtomicInteger implements Observer<T>, Disposable {
         /** */
         private static final long serialVersionUID = 8828587559905699186L;
         final Observer<? super U> actual;
         final SerialDisposable sa;
         final Function<? super T, ? extends ObservableConsumable<? extends U>> mapper;
         final Observer<U> inner;
-        final Queue<T> queue;
         final int bufferSize;
-        
+
+        Queue<T> queue;
+
         Disposable s;
+        
+        volatile boolean active;
+        
+        volatile boolean disposed;
         
         volatile boolean done;
         
-        volatile long index;
+        int fusionMode;
         
-        public SourceSubscriber(Observer<? super U> actual, SerialDisposable sa,
+        public SourceSubscriber(Observer<? super U> actual,
                 Function<? super T, ? extends ObservableConsumable<? extends U>> mapper, int bufferSize) {
             this.actual = actual;
-            this.sa = sa;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
-            this.inner = new InnerSubscriber<U>(actual, sa, this);
-            this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
+            this.inner = new InnerSubscriber<U>(actual, this);
+            this.sa = new SerialDisposable();
         }
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
+                if (s instanceof QueueDisposable) {
+                    @SuppressWarnings("unchecked")
+                    QueueDisposable<T> qd = (QueueDisposable<T>) s;
+                    
+                    int m = qd.requestFusion(QueueDisposable.ANY);
+                    if (m == QueueDisposable.SYNC) {
+                        fusionMode = m;
+                        queue = qd;
+                        done = true;
+                        
+                        actual.onSubscribe(this);
+                        
+                        drain();
+                        return;
+                    }
+                    
+                    if (m == QueueDisposable.ASYNC) {
+                        fusionMode = m;
+                        queue = qd;
+
+                        actual.onSubscribe(this);
+
+                        return;
+                    }
+                }
+                
+                queue = new SpscLinkedArrayQueue<T>(bufferSize);
+                
+                actual.onSubscribe(this);
             }
         }
         @Override
@@ -75,14 +109,12 @@ public final class ObservableConcatMap<T, U> extends ObservableSource<T, U> {
             if (done) {
                 return;
             }
-            if (!queue.offer(t)) {
-                cancel();
+            if (fusionMode == QueueDisposable.NONE && !queue.offer(t)) {
+                dispose();
                 actual.onError(new IllegalStateException("More values received than requested!"));
                 return;
             }
-            if (getAndIncrement() == 0) {
-                drain();
-            }
+            drain();
         }
         @Override
         public void onError(Throwable t) {
@@ -91,7 +123,7 @@ public final class ObservableConcatMap<T, U> extends ObservableSource<T, U> {
                 return;
             }
             done = true;
-            cancel();
+            dispose();
             actual.onError(t);
         }
         @Override
@@ -100,107 +132,118 @@ public final class ObservableConcatMap<T, U> extends ObservableSource<T, U> {
                 return;
             }
             done = true;
-            if (getAndIncrement() == 0) {
-                drain();
-            }
+            drain();
         }
         
         void innerComplete() {
-            if (decrementAndGet() != 0) {
-                drain();
+            active = false;
+            drain();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
+        
+        @Override
+        public void dispose() {
+            disposed = true;
+            sa.dispose();
+            s.dispose();
+            
+            if (getAndIncrement() == 0) {
+                queue.clear();
             }
         }
         
-        void cancel() {
-            sa.dispose();
-            s.dispose();
+        void innerSubscribe(Disposable s) {
+            sa.set(s);
         }
         
         void drain() {
-            boolean d = done;
-            T o = queue.poll();
+            if (getAndIncrement() != 0) {
+                return;
+            }
             
-            if (o == null) {
-                if (d) {
-                    actual.onComplete();
+            for (;;) {
+                if (disposed) {
+                    queue.clear();
                     return;
                 }
-                RxJavaPlugins.onError(new IllegalStateException("Queue is empty?!"));
-                return;
-            }
-            ObservableConsumable<? extends U> p;
-            try {
-                p = mapper.apply(o);
-            } catch (Throwable e) {
-                cancel();
-                actual.onError(e);
-                return;
-            }
-            
-            if (p == null) {
-                cancel();
-                actual.onError(new NullPointerException("The NbpObservable returned is null"));
-                return;
-            }
-            
-            index++;
-            // this is not RS but since our Subscriber doesn't hold state by itself,
-            // subscribing it to each source is safe and saves allocation
-            p.subscribe(inner);
+                if (!active) {
+                    
+                    boolean d = done;
+                    
+                    T t;
+                    
+                    try {
+                        t = queue.poll();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        dispose();
+                        queue.clear();
+                        actual.onError(ex);
+                        return;
+                    }
+                    
+                    boolean empty = t == null;
+                    
+                    if (d && empty) {
+                        actual.onComplete();
+                        return;
+                    }
+                    
+                    if (!empty) {
+                        ObservableConsumable<? extends U> o;
+                        
+                        try {
+                            o = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableConsumable");
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            dispose();
+                            queue.clear();
+                            actual.onError(ex);
+                            return;
+                        }
+                        
+                        active = true;
+                        o.subscribe(inner);
+                    }
+                }
+                
+                if (decrementAndGet() == 0) {
+                    break;
+                }
+            };
         }
     }
     
     static final class InnerSubscriber<U> implements Observer<U> {
         final Observer<? super U> actual;
-        final SerialDisposable sa;
         final SourceSubscriber<?, ?> parent;
 
-        /*
-         * FIXME this is a workaround for now, but doesn't work 
-         * for async non-conforming sources.
-         * Such sources require individual instances of InnerSubscriber and a
-         * done field.
-         */
-         
-        long index;
-        
-        public InnerSubscriber(Observer<? super U> actual, 
-                SerialDisposable sa, SourceSubscriber<?, ?> parent) {
+        public InnerSubscriber(Observer<? super U> actual, SourceSubscriber<?, ?> parent) {
             this.actual = actual;
-            this.sa = sa;
             this.parent = parent;
-            this.index = 1;
         }
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (index == parent.index) {
-                sa.set(s);
-            }
+            parent.innerSubscribe(s);
         }
         
         @Override
         public void onNext(U t) {
-            if (index == parent.index) {
-                actual.onNext(t);
-            }
+            actual.onNext(t);
         }
         @Override
         public void onError(Throwable t) {
-            if (index == parent.index) {
-                index++;
-                parent.cancel();
-                actual.onError(t);
-            } else {
-                RxJavaPlugins.onError(t);
-            }
+            parent.dispose();
+            actual.onError(t);
         }
         @Override
         public void onComplete() {
-            if (index == parent.index) {
-                index++;
-                parent.innerComplete();
-            }
+            parent.innerComplete();
         }
     }
 }

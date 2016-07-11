@@ -14,7 +14,8 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.subscribers.observable.BaseQueueDisposable;
 
 public final class ObservableFromArray<T> extends Observable<T> {
     final T[] array;
@@ -26,23 +27,89 @@ public final class ObservableFromArray<T> extends Observable<T> {
     }
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        Disposable d = Disposables.empty();
+        FromArrayDisposable<T> d = new FromArrayDisposable<T>(s, array);
         
         s.onSubscribe(d);
         
-        T[] a = array;
-        int n = a.length;
-        
-        for (int i = 0; i < n && !d.isDisposed(); i++) {
-            T value = a[i];
-            if (value == null) {
-                s.onError(new NullPointerException("The " + i + "th element is null"));
-                return;
-            }
-            s.onNext(value);
+        if (d.fusionMode) {
+            return;
         }
-        if (!d.isDisposed()) {
-            s.onComplete();
+        
+        d.run();
+    }
+    
+    static final class FromArrayDisposable<T> extends BaseQueueDisposable<T> {
+
+        final Observer<? super T> actual;
+        
+        final T[] array;
+        
+        int index;
+        
+        boolean fusionMode;
+        
+        volatile boolean disposed;
+
+        public FromArrayDisposable(Observer<? super T> actual, T[] array) {
+            this.actual = actual;
+            this.array = array;
+        }
+
+        @Override
+        public int requestFusion(int mode) {
+            if ((mode & SYNC) != 0) {
+                fusionMode = true;
+                return SYNC;
+            }
+            return NONE;
+        }
+
+        @Override
+        public T poll() {
+            int i = index;
+            T[] a = array;
+            if (i != a.length) {
+                index = i + 1;
+                return Objects.requireNonNull(a[i], "The array element is null");
+            }
+            return null;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return index == array.length;
+        }
+
+        @Override
+        public void clear() {
+            index = array.length;
+        }
+
+        @Override
+        public void dispose() {
+            disposed = true;
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
+        
+        void run() {
+            T[] a = array;
+            int n = a.length;
+            
+            for (int i = 0; i < n && !isDisposed(); i++) {
+                T value = a[i];
+                if (value == null) {
+                    actual.onError(new NullPointerException("The " + i + "th element is null"));
+                    return;
+                }
+                actual.onNext(value);
+            }
+            if (!isDisposed()) {
+                actual.onComplete();
+            }
         }
     }
 }

@@ -67,7 +67,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
         source.subscribe(new ZipIterableSubscriber<T, U, V>(t, it, zipper));
     }
     
-    static final class ZipIterableSubscriber<T, U, V> implements Observer<T> {
+    static final class ZipIterableSubscriber<T, U, V> implements Observer<T>, Disposable {
         final Observer<? super V> actual;
         final Iterator<U> iterator;
         final BiFunction<? super T, ? super U, ? extends V> zipper;
@@ -87,9 +87,21 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
+        
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         
         @Override
         public void onNext(T t) {

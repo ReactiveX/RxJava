@@ -20,7 +20,7 @@ import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.subscribers.observable.NbpFullArbiterSubscriber;
+import io.reactivex.internal.subscribers.observable.FullArbiterObserver;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -147,7 +147,7 @@ public final class ObservableTimeoutTimed<T> extends ObservableSource<T, T> {
         }
         
         void subscribeNext() {
-            other.subscribe(new NbpFullArbiterSubscriber<T>(arbiter));
+            other.subscribe(new FullArbiterObserver<T>(arbiter));
         }
         
         @Override
@@ -220,7 +220,7 @@ public final class ObservableTimeoutTimed<T> extends ObservableSource<T, T> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
                 scheduleTimeout(0L);
             }
             

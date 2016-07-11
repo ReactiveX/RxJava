@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.schedulers.Timed;
 
 public final class ObservableTimeInterval<T> extends ObservableSource<T, Timed<T>> {
@@ -34,12 +35,14 @@ public final class ObservableTimeInterval<T> extends ObservableSource<T, Timed<T
         source.subscribe(new TimeIntervalSubscriber<T>(t, unit, scheduler));
     }
     
-    static final class TimeIntervalSubscriber<T> implements Observer<T> {
+    static final class TimeIntervalSubscriber<T> implements Observer<T>, Disposable {
         final Observer<? super Timed<T>> actual;
         final TimeUnit unit;
         final Scheduler scheduler;
         
         long lastTime;
+        
+        Disposable s;
         
         public TimeIntervalSubscriber(Observer<? super Timed<T>> actual, TimeUnit unit, Scheduler scheduler) {
             this.actual = actual;
@@ -49,9 +52,22 @@ public final class ObservableTimeInterval<T> extends ObservableSource<T, Timed<T
         
         @Override
         public void onSubscribe(Disposable s) {
-            lastTime = scheduler.now(unit);
-            actual.onSubscribe(s);
+            if (DisposableHelper.validate(this.s, s)) {
+                lastTime = scheduler.now(unit);
+                actual.onSubscribe(this);
+            }
         }
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         
         @Override
         public void onNext(T t) {

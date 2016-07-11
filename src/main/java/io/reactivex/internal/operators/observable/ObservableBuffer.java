@@ -48,7 +48,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         }
     }
     
-    static final class BufferExactSubscriber<T, U extends Collection<? super T>> implements Observer<T> {
+    static final class BufferExactSubscriber<T, U extends Collection<? super T>> implements Observer<T>, Disposable {
         final Observer<? super U> actual;
         final int count;
         final Supplier<U> bufferSupplier;
@@ -98,10 +98,20 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
         
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         @Override
         public void onNext(T t) {
             U b = buffer;
@@ -137,7 +147,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
     }
     
     static final class BufferSkipSubscriber<T, U extends Collection<? super T>> 
-    extends AtomicBoolean implements Observer<T> {
+    extends AtomicBoolean implements Observer<T>, Disposable {
         /** */
         private static final long serialVersionUID = -8223395059921494546L;
         final Observer<? super U> actual;
@@ -163,8 +173,19 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
+        }
+
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
         }
 
         @Override

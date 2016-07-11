@@ -28,7 +28,7 @@ import io.reactivex.internal.util.*;
  * @param <U> the value type in the queue
  * @param <V> the value type the child subscriber accepts
  */
-public abstract class NbpQueueDrainSubscriber<T, U, V> extends QueueDrainSubscriberPad2 implements Observer<T>, NbpQueueDrain<U, V> {
+public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPad2 implements Observer<T>, NbpQueueDrain<U, V> {
     protected final Observer<? super V> actual;
     protected final Queue<U> queue;
     
@@ -37,7 +37,7 @@ public abstract class NbpQueueDrainSubscriber<T, U, V> extends QueueDrainSubscri
     protected volatile boolean done;
     protected Throwable error;
     
-    public NbpQueueDrainSubscriber(Observer<? super V> actual, Queue<U> queue) {
+    public QueueDrainObserver(Observer<? super V> actual, Queue<U> queue) {
         this.actual = actual;
         this.queue = queue;
     }

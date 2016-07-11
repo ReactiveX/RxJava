@@ -25,7 +25,7 @@ import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.subscribers.observable.NbpQueueDrainSubscriber;
+import io.reactivex.internal.subscribers.observable.QueueDrainObserver;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.subjects.UnicastSubject;
@@ -75,7 +75,7 @@ public final class ObservableWindowTimed<T> extends ObservableSource<T, Observab
     }
     
     static final class WindowExactUnboundedSubscriber<T> 
-            extends NbpQueueDrainSubscriber<T, Object, Observable<T>> 
+            extends QueueDrainObserver<T, Object, Observable<T>> 
             implements Observer<T>, Disposable, Runnable {
         final long timespan;
         final TimeUnit unit;
@@ -264,7 +264,7 @@ public final class ObservableWindowTimed<T> extends ObservableSource<T, Observab
     }
     
     static final class WindowExactBoundedSubscriber<T>
-    extends NbpQueueDrainSubscriber<T, Object, Observable<T>>
+    extends QueueDrainObserver<T, Object, Observable<T>>
     implements Disposable {
         final long timespan;
         final TimeUnit unit;
@@ -542,7 +542,7 @@ public final class ObservableWindowTimed<T> extends ObservableSource<T, Observab
     }
     
     static final class WindowSkipSubscriber<T>
-    extends NbpQueueDrainSubscriber<T, Object, Observable<T>>
+    extends QueueDrainObserver<T, Object, Observable<T>>
     implements Disposable, Runnable {
         final long timespan;
         final long timeskip;

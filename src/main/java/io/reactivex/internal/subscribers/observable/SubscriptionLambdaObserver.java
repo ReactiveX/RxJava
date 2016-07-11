@@ -19,14 +19,14 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpSubscriptionLambdaSubscriber<T> implements Observer<T>, Disposable {
+public final class SubscriptionLambdaObserver<T> implements Observer<T>, Disposable {
     final Observer<? super T> actual;
     final Consumer<? super Disposable> onSubscribe;
     final Runnable onCancel;
     
     Disposable s;
     
-    public NbpSubscriptionLambdaSubscriber(Observer<? super T> actual, 
+    public SubscriptionLambdaObserver(Observer<? super T> actual, 
             Consumer<? super Disposable> onSubscribe,
             Runnable onCancel) {
         this.actual = actual;

@@ -17,6 +17,7 @@ import java.util.ArrayDeque;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class ObservableSkipLast<T> extends ObservableSource<T, T> {
     final int skip;
@@ -31,11 +32,13 @@ public final class ObservableSkipLast<T> extends ObservableSource<T, T> {
         source.subscribe(new SkipLastSubscriber<T>(s, skip));
     }
     
-    static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements Observer<T> {
+    static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements Observer<T>, Disposable {
         /** */
         private static final long serialVersionUID = -3807491841935125653L;
         final Observer<? super T> actual;
         final int skip;
+        
+        Disposable s;
         
         public SkipLastSubscriber(Observer<? super T> actual, int skip) {
             super(skip);
@@ -45,9 +48,23 @@ public final class ObservableSkipLast<T> extends ObservableSource<T, T> {
 
         @Override
         public void onSubscribe(Disposable s) {
-            actual.onSubscribe(s);
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
+            }
         }
         
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         @Override
         public void onNext(T t) {
             if (skip == size()) {

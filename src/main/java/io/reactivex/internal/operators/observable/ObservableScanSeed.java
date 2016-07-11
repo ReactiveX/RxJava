@@ -47,7 +47,7 @@ public final class ObservableScanSeed<T, R> extends ObservableSource<T, R> {
         source.subscribe(new ScanSeedSubscriber<T, R>(t, accumulator, r));
     }
     
-    static final class ScanSeedSubscriber<T, R> implements Observer<T> {
+    static final class ScanSeedSubscriber<T, R> implements Observer<T>, Disposable {
         final Observer<? super R> actual;
         final BiFunction<R, ? super T, R> accumulator;
         
@@ -67,11 +67,24 @@ public final class ObservableScanSeed<T, R> extends ObservableSource<T, R> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                
+                actual.onSubscribe(this);
+                
                 actual.onNext(value);
             }
         }
         
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         @Override
         public void onNext(T t) {
             R v = value;

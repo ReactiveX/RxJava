@@ -58,7 +58,7 @@ extends ObservableSource<T, U> implements Supplier<List<T>>{
         source.subscribe(new ToListSubscriber<T, U>(t, coll));
     }
     
-    static final class ToListSubscriber<T, U extends Collection<? super T>> implements Observer<T> {
+    static final class ToListSubscriber<T, U extends Collection<? super T>> implements Observer<T>, Disposable {
         U collection;
         final Observer<? super U> actual;
         
@@ -73,9 +73,21 @@ extends ObservableSource<T, U> implements Supplier<List<T>>{
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
+        
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         
         @Override
         public void onNext(T t) {

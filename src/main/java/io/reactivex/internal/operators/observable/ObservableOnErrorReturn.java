@@ -31,7 +31,7 @@ public final class ObservableOnErrorReturn<T> extends ObservableSource<T, T> {
         source.subscribe(new OnErrorReturnSubscriber<T>(t, valueSupplier));
     }
     
-    static final class OnErrorReturnSubscriber<T> implements Observer<T> {
+    static final class OnErrorReturnSubscriber<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final Function<? super Throwable, ? extends T> valueSupplier;
         
@@ -48,10 +48,21 @@ public final class ObservableOnErrorReturn<T> extends ObservableSource<T, T> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
         
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         @Override
         public void onNext(T t) {
             actual.onNext(t);

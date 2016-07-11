@@ -119,7 +119,7 @@ public final class ObservableDistinct<T, K> extends ObservableSource<T, T> {
         source.subscribe(new DistinctSubscriber<T, K>(t, keySelector, coll));
     }
     
-    static final class DistinctSubscriber<T, K> implements Observer<T> {
+    static final class DistinctSubscriber<T, K> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final Predicate<? super K> predicate;
         final Function<? super T, K> keySelector;
@@ -136,10 +136,21 @@ public final class ObservableDistinct<T, K> extends ObservableSource<T, T> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
         
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         @Override
         public void onNext(T t) {
             K key;

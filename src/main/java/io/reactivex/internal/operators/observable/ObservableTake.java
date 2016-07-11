@@ -29,7 +29,7 @@ public final class ObservableTake<T> extends ObservableSource<T, T> {
         source.subscribe(new TakeSubscriber<T>(observer, limit));
     }
     
-    static final class TakeSubscriber<T> implements Observer<T> {
+    static final class TakeSubscriber<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
 
         boolean done;
@@ -45,7 +45,7 @@ public final class ObservableTake<T> extends ObservableSource<T, T> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.subscription, s)) {
                 subscription = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
         @Override
@@ -73,6 +73,16 @@ public final class ObservableTake<T> extends ObservableSource<T, T> {
                 subscription.dispose();
                 actual.onComplete();
             }
+        }
+        
+        @Override
+        public void dispose() {
+            subscription.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return subscription.isDisposed();
         }
     }
 }

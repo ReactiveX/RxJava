@@ -61,7 +61,7 @@ public final class BlockingObservable<T> implements Iterable<T> {
     static <T> BlockingIterator<T> iterate(Observable<? extends T> p) {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
 
-        NbpLambdaSubscriber<T> ls = new NbpLambdaSubscriber<T>(
+        LambdaObserver<T> ls = new LambdaObserver<T>(
             new Consumer<T>() {
                 @Override
                 public void accept(T v) {
@@ -345,7 +345,7 @@ public final class BlockingObservable<T> implements Iterable<T> {
     public void run() {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] error = { null };
-        NbpLambdaSubscriber<T> ls = new NbpLambdaSubscriber<T>(
+        LambdaObserver<T> ls = new LambdaObserver<T>(
             Functions.emptyConsumer(), 
             new Consumer<Throwable>() {
                 @Override
@@ -378,7 +378,7 @@ public final class BlockingObservable<T> implements Iterable<T> {
     public void subscribe(Observer<? super T> subscriber) {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
         
-        NbpBlockingSubscriber<T> bs = new NbpBlockingSubscriber<T>(queue);
+        BlockingObserver<T> bs = new BlockingObserver<T>(queue);
         
         o.subscribe(bs);
         

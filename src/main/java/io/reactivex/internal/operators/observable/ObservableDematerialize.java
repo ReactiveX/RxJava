@@ -29,7 +29,7 @@ public final class ObservableDematerialize<T> extends ObservableSource<Try<Optio
         source.subscribe(new DematerializeSubscriber<T>(t));
     }
     
-    static final class DematerializeSubscriber<T> implements Observer<Try<Optional<T>>> {
+    static final class DematerializeSubscriber<T> implements Observer<Try<Optional<T>>>, Disposable {
         final Observer<? super T> actual;
         
         boolean done;
@@ -45,9 +45,21 @@ public final class ObservableDematerialize<T> extends ObservableSource<Try<Optio
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
                 
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
+        
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         
         @Override
         public void onNext(Try<Optional<T>> t) {

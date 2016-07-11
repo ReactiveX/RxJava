@@ -23,9 +23,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.*;
 
 public class ObservableFromIterableTest {
@@ -226,5 +227,21 @@ public class ObservableFromIterableTest {
         });
         assertFalse(called.get());
     }
-    
+ 
+    @Test
+    public void fusionWithConcatMap() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        
+        Observable.fromIterable(Arrays.asList(1, 2, 3, 4)).concatMap(
+        new Function<Integer, ObservableConsumable<Integer>>() {
+            @Override
+            public ObservableConsumable<Integer> apply(Integer v) {
+                return Observable.range(v, 2);
+            }
+        }).subscribe(to);
+        
+        to.assertValues(1, 2, 2, 3, 3, 4, 4, 5);
+        to.assertNoErrors();
+        to.assertComplete();
+    }
 }

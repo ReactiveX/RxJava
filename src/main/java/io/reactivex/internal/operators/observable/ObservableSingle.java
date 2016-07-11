@@ -32,7 +32,7 @@ public final class ObservableSingle<T> extends ObservableSource<T, T> {
         source.subscribe(new SingleElementSubscriber<T>(t, defaultValue));
     }
     
-    static final class SingleElementSubscriber<T> implements Observer<T> {
+    static final class SingleElementSubscriber<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final T defaultValue;
         
@@ -51,9 +51,21 @@ public final class ObservableSingle<T> extends ObservableSource<T, T> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
+        
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         
         @Override
         public void onNext(T t) {

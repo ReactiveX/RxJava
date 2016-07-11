@@ -1659,7 +1659,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         return lift(new NbpOperator<T, T>() {
             @Override
             public Observer<? super T> apply(Observer<? super T> s) {
-                return new NbpSubscriptionLambdaSubscriber<T>(s, onSubscribe, onCancel);
+                return new SubscriptionLambdaObserver<T>(s, onSubscribe, onCancel);
             }
         });
     }
@@ -2626,7 +2626,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(onComplete, "onComplete is null");
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
 
-        NbpLambdaSubscriber<T> ls = new NbpLambdaSubscriber<T>(onNext, onError, onComplete, onSubscribe);
+        LambdaObserver<T> ls = new LambdaObserver<T>(onNext, onError, onComplete, onSubscribe);
 
         unsafeSubscribe(ls);
 

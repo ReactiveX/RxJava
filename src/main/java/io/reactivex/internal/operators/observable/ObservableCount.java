@@ -27,7 +27,7 @@ public final class ObservableCount<T> extends ObservableSource<T, Long> {
         source.subscribe(new CountSubscriber(t));
     }
     
-    static final class CountSubscriber implements Observer<Object> {
+    static final class CountSubscriber implements Observer<Object>, Disposable {
         final Observer<? super Long> actual;
         
         Disposable s;
@@ -42,10 +42,21 @@ public final class ObservableCount<T> extends ObservableSource<T, Long> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
         
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         @Override
         public void onNext(Object t) {
             count++;

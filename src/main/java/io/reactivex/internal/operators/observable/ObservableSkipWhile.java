@@ -30,7 +30,7 @@ public final class ObservableSkipWhile<T> extends ObservableSource<T, T> {
         source.subscribe(new SkipWhileSubscriber<T>(s, predicate));
     }
     
-    static final class SkipWhileSubscriber<T> implements Observer<T> {
+    static final class SkipWhileSubscriber<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final Predicate<? super T> predicate;
         Disposable s;
@@ -44,9 +44,21 @@ public final class ObservableSkipWhile<T> extends ObservableSource<T, T> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
+        
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         
         @Override
         public void onNext(T t) {

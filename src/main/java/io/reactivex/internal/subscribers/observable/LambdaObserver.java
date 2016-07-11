@@ -21,7 +21,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class NbpLambdaSubscriber<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
+public final class LambdaObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
     /** */
     private static final long serialVersionUID = -7251123623727029452L;
     final Consumer<? super T> onNext;
@@ -29,7 +29,7 @@ public final class NbpLambdaSubscriber<T> extends AtomicReference<Disposable> im
     final Runnable onComplete;
     final Consumer<? super Disposable> onSubscribe;
     
-    public NbpLambdaSubscriber(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
+    public LambdaObserver(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
             Runnable onComplete,
             Consumer<? super Disposable> onSubscribe) {
         super();

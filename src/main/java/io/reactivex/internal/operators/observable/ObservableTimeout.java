@@ -100,11 +100,11 @@ public final class ObservableTimeout<T, U, V> extends ObservableSource<T, T> {
                     TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
                     
                     if (compareAndSet(null, tis)) {
-                        a.onSubscribe(s);
+                        a.onSubscribe(this);
                         p.subscribe(tis);
                     }
                 } else {
-                    a.onSubscribe(s);
+                    a.onSubscribe(this);
                 }
             }
         }
@@ -360,7 +360,7 @@ public final class ObservableTimeout<T, U, V> extends ObservableSource<T, T> {
         public void timeout(long idx) {
             if (idx == index) {
                 dispose();
-                other.subscribe(new NbpFullArbiterSubscriber<T>(arbiter));
+                other.subscribe(new FullArbiterObserver<T>(arbiter));
             }
         }
     }

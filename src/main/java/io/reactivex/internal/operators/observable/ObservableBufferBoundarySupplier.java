@@ -44,7 +44,7 @@ extends Observable<U> {
     }
     
     static final class BufferBondarySupplierSubscriber<T, U extends Collection<? super T>, B>
-    extends NbpQueueDrainSubscriber<T, U, U> implements Observer<T>, Disposable {
+    extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
         /** */
         final Supplier<U> bufferSupplier;
         final Supplier<? extends ObservableConsumable<B>> boundarySupplier;

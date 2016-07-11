@@ -16,8 +16,9 @@ package io.reactivex.internal.operators.observable;
 import java.util.Iterator;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.subscribers.observable.BaseQueueDisposable;
 
 public final class ObservableFromIterable<T> extends Observable<T> {
     final Iterable<? extends T> source;
@@ -45,42 +46,112 @@ public final class ObservableFromIterable<T> extends Observable<T> {
             EmptyDisposable.complete(s);
             return;
         }
-        Disposable d = Disposables.empty();
+        
+        FromIterableDisposable<T> d = new FromIterableDisposable<T>(s, it);
         s.onSubscribe(d);
         
-        do {
-            if (d.isDisposed()) {
-                return;
-            }
-            T v;
-            
-            try {
-                v = it.next();
-            } catch (Throwable e) {
-                s.onError(e);
-                return;
-            }
-            
-            if (v == null) {
-                s.onError(new NullPointerException("The iterator returned a null value"));
-                return;
-            }
-            
-            s.onNext(v);
-            
-            if (d.isDisposed()) {
-                return;
-            }
-            try {
-                hasNext = it.hasNext();
-            } catch (Throwable e) {
-                s.onError(e);
-                return;
-            }
-        } while (hasNext);
+        if (!d.fusionMode) {
+            d.run();
+        }
+    }
+    
+    static final class FromIterableDisposable<T> extends BaseQueueDisposable<T> {
         
-        if (!d.isDisposed()) {
-            s.onComplete();
+        final Observer<? super T> actual;
+        
+        final Iterator<? extends T> it;
+        
+        volatile boolean disposed; 
+        
+        boolean fusionMode;
+        
+        boolean done;
+        
+        boolean checkNext;
+        
+        public FromIterableDisposable(Observer<? super T> actual, Iterator<? extends T> it) {
+            this.actual = actual;
+            this.it = it;
+        }
+
+        void run() {
+            boolean hasNext;
+            
+            do {
+                if (isDisposed()) {
+                    return;
+                }
+                T v;
+                
+                try {
+                    v = Objects.requireNonNull(it.next(), "The iterator returned a null value");
+                } catch (Throwable e) {
+                    actual.onError(e);
+                    return;
+                }
+                
+                actual.onNext(v);
+                
+                if (isDisposed()) {
+                    return;
+                }
+                try {
+                    hasNext = it.hasNext();
+                } catch (Throwable e) {
+                    actual.onError(e);
+                    return;
+                }
+            } while (hasNext);
+            
+            if (!isDisposed()) {
+                actual.onComplete();
+            }
+        }
+
+        @Override
+        public int requestFusion(int mode) {
+            if ((mode & SYNC) != 0) {
+                fusionMode = true;
+                return SYNC;
+            }
+            return NONE;
+        }
+
+        @Override
+        public T poll() {
+            if (done) {
+                return null;
+            }
+            if (checkNext) {
+                if (!it.hasNext()) {
+                    done = true;
+                    return null;
+                }
+            } else {
+                checkNext = true;
+            }
+            
+            return Objects.requireNonNull(it.next(), "The iterator returned a null value");
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return done;
+        }
+
+        @Override
+        public void clear() {
+            done = true;
+        }
+
+        @Override
+        public void dispose() {
+            disposed = true;
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return disposed;
         }
     }
 }

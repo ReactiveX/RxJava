@@ -45,7 +45,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends ObservableSour
     }
     
     static final class WindowBoundaryMainSubscriber<T, B> 
-    extends NbpQueueDrainSubscriber<T, Object, Observable<T>> 
+    extends QueueDrainObserver<T, Object, Observable<T>> 
     implements Disposable {
         
         final Supplier<? extends ObservableConsumable<B>> other;

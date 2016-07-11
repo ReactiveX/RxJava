@@ -41,7 +41,7 @@ public final class ObservableMapNotification<T, R> extends ObservableSource<T, O
     }
     
     static final class MapNotificationSubscriber<T, R>
-    implements Observer<T> {
+    implements Observer<T>, Disposable {
         final Observer<? super ObservableConsumable<? extends R>> actual;
         final Function<? super T, ? extends ObservableConsumable<? extends R>> onNextMapper;
         final Function<? super Throwable, ? extends ObservableConsumable<? extends R>> onErrorMapper;
@@ -67,9 +67,21 @@ public final class ObservableMapNotification<T, R> extends ObservableSource<T, O
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
+        
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         
         @Override
         public void onNext(T t) {

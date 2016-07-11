@@ -47,7 +47,7 @@ public final class ObservableCollect<T, U> extends ObservableSource<T, U> {
         
     }
     
-    static final class CollectSubscriber<T, U> implements Observer<T> {
+    static final class CollectSubscriber<T, U> implements Observer<T>, Disposable {
         final Observer<? super U> actual;
         final BiConsumer<? super U, ? super T> collector;
         final U u;
@@ -64,9 +64,21 @@ public final class ObservableCollect<T, U> extends ObservableSource<T, U> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
+        
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         
         @Override
         public void onNext(T t) {

@@ -22,6 +22,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.util.Pow2;
 
@@ -516,17 +517,41 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
         volatile boolean done;
         volatile Queue<U> queue;
         
+        int fusionMode;
+        
         public InnerSubscriber(MergeSubscriber<T, U> parent, long id) {
             this.id = id;
             this.parent = parent;
         }
         @Override
         public void onSubscribe(Disposable s) {
-            DisposableHelper.setOnce(this, s);
+            if (DisposableHelper.setOnce(this, s)) {
+                if (s instanceof QueueDisposable) {
+                    @SuppressWarnings("unchecked")
+                    QueueDisposable<U> qd = (QueueDisposable<U>) s;
+                    
+                    int m = qd.requestFusion(QueueDisposable.ANY);
+                    if (m == QueueDisposable.SYNC) {
+                        fusionMode = m;
+                        queue = qd;
+                        done = true;
+                        parent.drain();
+                        return;
+                    }
+                    if (m == QueueDisposable.ASYNC) {
+                        fusionMode = m;
+                        queue = qd;
+                    }
+                }
+            }
         }
         @Override
         public void onNext(U t) {
-            parent.tryEmit(t, this);
+            if (fusionMode == QueueDisposable.NONE) {
+                parent.tryEmit(t, this);
+            } else {
+                parent.drain();
+            }
         }
         @Override
         public void onError(Throwable t) {

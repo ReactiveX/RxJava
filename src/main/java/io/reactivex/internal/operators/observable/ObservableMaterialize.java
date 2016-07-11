@@ -29,7 +29,7 @@ public final class ObservableMaterialize<T> extends ObservableSource<T, Try<Opti
         source.subscribe(new MaterializeSubscriber<T>(t));
     }
     
-    static final class MaterializeSubscriber<T> implements Observer<T> {
+    static final class MaterializeSubscriber<T> implements Observer<T>, Disposable {
         final Observer<? super Try<Optional<T>>> actual;
         
         Disposable s;
@@ -44,10 +44,21 @@ public final class ObservableMaterialize<T> extends ObservableSource<T, Try<Opti
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
         
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         @Override
         public void onNext(T t) {
             actual.onNext(Notification.next(t));

@@ -15,7 +15,7 @@ package io.reactivex.observers;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -24,11 +24,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class SafeObserver<T> implements Observer<T> {
+public final class SafeObserver<T> implements Observer<T>, Disposable {
     /** The actual Subscriber. */
     final Observer<? super T> actual;
     /** The subscription. */
-    Disposable subscription;
+    Disposable s;
     /** Indicates a terminal state. */
     boolean done;
     
@@ -41,36 +41,34 @@ public final class SafeObserver<T> implements Observer<T> {
         if (done) {
             return;
         }
-        if (this.subscription != null) {
-            Throwable ise = new IllegalStateException("Disposable already set!");
+        if (DisposableHelper.validate(this.s, s)) {
+            this.s = s;
             try {
-                s.dispose();
+                actual.onSubscribe(this);
             } catch (Throwable e) {
-                ise = new CompositeException(e, ise);
+                done = true;
+                // can't call onError because the actual's state may be corrupt at this point
+                try {
+                    s.dispose();
+                } catch (Throwable e1) {
+                    RxJavaPlugins.onError(e1);
+                }
+                RxJavaPlugins.onError(e);
             }
-            onError(ise);
-            return;
-        }
-        if (s == null) {
-            subscription = EmptyDisposable.INSTANCE;
-            onError(new NullPointerException("Subscription is null!"));
-            return;
-        }
-        this.subscription = s;
-        try {
-            actual.onSubscribe(s);
-        } catch (Throwable e) {
-            done = true;
-            // can't call onError because the actual's state may be corrupt at this point
-            try {
-                s.dispose();
-            } catch (Throwable e1) {
-                RxJavaPlugins.onError(e1);
-            }
-            RxJavaPlugins.onError(e);
         }
     }
     
+
+    @Override
+    public void dispose() {
+        s.dispose();
+    }
+    
+    @Override
+    public boolean isDisposed() {
+        return s.isDisposed();
+    }
+
     @Override
     public void onNext(T t) {
         if (done) {
@@ -80,7 +78,7 @@ public final class SafeObserver<T> implements Observer<T> {
             onError(new NullPointerException());
             return;
         }
-        if (subscription == null) {
+        if (s == null) {
             onError(null); // null is okay here, onError checks for subscription == null first
             return;
         }
@@ -98,7 +96,7 @@ public final class SafeObserver<T> implements Observer<T> {
         }
         done = true;
         
-        if (subscription == null) {
+        if (s == null) {
             CompositeException t2 = new CompositeException(t, new NullPointerException("Subscription not set!"));
             
             try {
@@ -127,7 +125,7 @@ public final class SafeObserver<T> implements Observer<T> {
         }
 
         try {
-            subscription.dispose();
+            s.dispose();
         } catch (Throwable e) {
             t2 = new CompositeException(e, t);
         }
@@ -150,7 +148,7 @@ public final class SafeObserver<T> implements Observer<T> {
         if (done) {
             return;
         }
-        if (subscription == null) {
+        if (s == null) {
             onError(null); // null is okay here, onError checks for subscription == null first
             return;
         }
@@ -158,7 +156,7 @@ public final class SafeObserver<T> implements Observer<T> {
         done = true;
 
         try {
-            subscription.dispose();
+            s.dispose();
         } catch (Throwable e) {
             try {
                 actual.onError(e);

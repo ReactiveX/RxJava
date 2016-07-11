@@ -30,11 +30,11 @@ public final class ObservableFilter<T> extends ObservableSource<T, T> {
         source.subscribe(new FilterSubscriber<T>(s, predicate));
     }
     
-    static final class FilterSubscriber<T> implements Observer<T> {
+    static final class FilterSubscriber<T> implements Observer<T>, Disposable {
         final Predicate<? super T> filter;
         final Observer<? super T> actual;
         
-        Disposable subscription;
+        Disposable s;
         
         public FilterSubscriber(Observer<? super T> actual, Predicate<? super T> filter) {
             this.actual = actual;
@@ -43,11 +43,23 @@ public final class ObservableFilter<T> extends ObservableSource<T, T> {
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.subscription, s)) {
-                subscription = s;
-                actual.onSubscribe(s);
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
             }
         }
+        
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         
         @Override
         public void onNext(T t) {
@@ -55,7 +67,7 @@ public final class ObservableFilter<T> extends ObservableSource<T, T> {
             try {
                 b = filter.test(t);
             } catch (Throwable e) {
-                subscription.dispose();
+                s.dispose();
                 actual.onError(e);
                 return;
             }

@@ -25,7 +25,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.subscribers.observable.NbpQueueDrainSubscriber;
+import io.reactivex.internal.subscribers.observable.QueueDrainObserver;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.SerializedObserver;
 
@@ -80,7 +80,7 @@ extends Observable<U> {
     }
     
     static final class BufferExactUnboundedSubscriber<T, U extends Collection<? super T>>
-    extends NbpQueueDrainSubscriber<T, U, U> implements Runnable, Disposable {
+    extends QueueDrainObserver<T, U, U> implements Runnable, Disposable {
         final Supplier<U> bufferSupplier;
         final long timespan;
         final TimeUnit unit;
@@ -242,7 +242,7 @@ extends Observable<U> {
     }
     
     static final class BufferSkipBoundedSubscriber<T, U extends Collection<? super T>>
-    extends NbpQueueDrainSubscriber<T, U, U> implements Runnable, Disposable {
+    extends QueueDrainObserver<T, U, U> implements Runnable, Disposable {
         final Supplier<U> bufferSupplier;
         final long timespan;
         final long timeskip;
@@ -408,7 +408,7 @@ extends Observable<U> {
     }
     
     static final class BufferExactBoundedSubscriber<T, U extends Collection<? super T>>
-    extends NbpQueueDrainSubscriber<T, U, U> implements Runnable, Disposable {
+    extends QueueDrainObserver<T, U, U> implements Runnable, Disposable {
         final Supplier<U> bufferSupplier;
         final long timespan;
         final TimeUnit unit;

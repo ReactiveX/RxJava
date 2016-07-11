@@ -30,7 +30,7 @@ public final class ObservableTakeWhile<T> extends ObservableSource<T, T> {
         source.subscribe(new TakeWhileSubscriber<T>(t, predicate));
     }
     
-    static final class TakeWhileSubscriber<T> implements Observer<T> {
+    static final class TakeWhileSubscriber<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final Predicate<? super T> predicate;
         
@@ -47,9 +47,21 @@ public final class ObservableTakeWhile<T> extends ObservableSource<T, T> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
+        
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         
         @Override
         public void onNext(T t) {

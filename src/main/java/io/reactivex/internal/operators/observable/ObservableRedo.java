@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscribers.observable.NbpToNotificationSubscriber;
+import io.reactivex.internal.subscribers.observable.ToNotificationObserver;
 import io.reactivex.subjects.BehaviorSubject;
 
 public final class ObservableRedo<T> extends Observable<T> {
@@ -43,7 +43,7 @@ public final class ObservableRedo<T> extends Observable<T> {
 
         ObservableConsumable<?> action = manager.apply(subject);
         
-        action.subscribe(new NbpToNotificationSubscriber<Object>(new Consumer<Try<Optional<Object>>>() {
+        action.subscribe(new ToNotificationObserver<Object>(new Consumer<Try<Optional<Object>>>() {
             @Override
             public void accept(Try<Optional<Object>> o) {
                 parent.handle(o);

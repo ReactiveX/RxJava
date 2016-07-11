@@ -42,7 +42,7 @@ public final class ObservableDoOnEach<T> extends ObservableSource<T, T> {
         source.subscribe(new DoOnEachSubscriber<T>(t, onNext, onError, onComplete, onAfterTerminate));
     }
     
-    static final class DoOnEachSubscriber<T> implements Observer<T> {
+    static final class DoOnEachSubscriber<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final Consumer<? super T> onNext;
         final Consumer<? super Throwable> onError;
@@ -70,9 +70,21 @@ public final class ObservableDoOnEach<T> extends ObservableSource<T, T> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
+        
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         
         @Override
         public void onNext(T t) {

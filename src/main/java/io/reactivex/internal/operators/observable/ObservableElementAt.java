@@ -30,7 +30,7 @@ public final class ObservableElementAt<T> extends ObservableSource<T, T> {
         source.subscribe(new ElementAtSubscriber<T>(t, index, defaultValue));
     }
     
-    static final class ElementAtSubscriber<T> implements Observer<T> {
+    static final class ElementAtSubscriber<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final long index;
         final T defaultValue;
@@ -51,9 +51,21 @@ public final class ObservableElementAt<T> extends ObservableSource<T, T> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                actual.onSubscribe(s);
+                actual.onSubscribe(this);
             }
         }
+        
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
         
         @Override
         public void onNext(T t) {
