@@ -60,7 +60,7 @@ public class FlowableOnBackpressureLatestTest {
     @Test
     public void testSynchronousDrop() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         source.onBackpressureLatest().subscribe(ts);
 

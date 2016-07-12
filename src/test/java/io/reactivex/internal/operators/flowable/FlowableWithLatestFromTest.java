@@ -260,7 +260,7 @@ public class FlowableWithLatestFromTest {
         
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         result.subscribe(ts);
 

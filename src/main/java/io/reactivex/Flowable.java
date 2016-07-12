@@ -491,6 +491,12 @@ public abstract class Flowable<T> implements Publisher<T> {
             }
         return new FlowableFromArray<T>(values);
     }
+    
+    @BackpressureSupport(BackpressureKind.SPECIAL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> fromAsync(Consumer<AsyncEmitter<T>> asyncEmitter, AsyncEmitter.BackpressureMode mode) {
+        return new FlowableFromAsync<T>(asyncEmitter, mode);
+    }
 
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -785,6 +791,24 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(v9, "The ninth is null");
         
         return fromArray(v1, v2, v3, v4, v5, v6, v7, v8, v9);
+    }
+
+    @SuppressWarnings("unchecked")
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10) {
+        Objects.requireNonNull(v1, "The first value is null");
+        Objects.requireNonNull(v2, "The second value is null");
+        Objects.requireNonNull(v3, "The third value is null");
+        Objects.requireNonNull(v4, "The fourth value is null");
+        Objects.requireNonNull(v5, "The fifth value is null");
+        Objects.requireNonNull(v6, "The sixth value is null");
+        Objects.requireNonNull(v7, "The seventh value is null");
+        Objects.requireNonNull(v8, "The eigth value is null");
+        Objects.requireNonNull(v9, "The ninth is null");
+        Objects.requireNonNull(v10, "The tenth is null");
+        
+        return fromArray(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -1807,6 +1831,14 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(keySelector, "keySelector is null");
         return FlowableDistinct.untilChanged(this, keySelector);
     }
+    
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <K> Flowable<T> distinctUntilChanged(BiPredicate<? super T, ? super T> comparer) {
+        Objects.requireNonNull(comparer, "comparer is null");
+        return new FlowableDistinctUntilChanged<T>(this, comparer);
+    }
+    
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2869,7 +2901,14 @@ public abstract class Flowable<T> implements Publisher<T> {
         }
         return new FlowableSkip<T>(this, n);
     }
-    
+
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Flowable<T> skip(long time, TimeUnit unit) {
+        // TODO consider inlining this behavior
+        return skipUntil(timer(time, unit));
+    }
+
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> skip(long time, TimeUnit unit, Scheduler scheduler) {
@@ -3120,7 +3159,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.NONE)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Flowable<T> take(long time, TimeUnit unit) {
+        // TODO consider inlining this behavior
+        return takeUntil(timer(time, unit));
+    }
+
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> take(long time, TimeUnit unit, Scheduler scheduler) {
         // TODO consider inlining this behavior
         return takeUntil(timer(time, unit, scheduler));
@@ -3429,6 +3475,12 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final BlockingFlowable<T> toBlocking() {
         return BlockingFlowable.from(this);
+    }
+    
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable toCompletable() {
+        return Completable.fromFlowable(this);
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)

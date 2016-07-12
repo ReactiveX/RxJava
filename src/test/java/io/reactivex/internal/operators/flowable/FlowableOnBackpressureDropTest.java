@@ -30,7 +30,7 @@ public class FlowableOnBackpressureDropTest {
 
     @Test
     public void testNoBackpressureSupport() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         // this will be ignored
         ts.request(100);
         // we take 500 so it unsubscribes
@@ -71,7 +71,7 @@ public class FlowableOnBackpressureDropTest {
                 l2.countDown();
             }
 
-        }, null);
+        }, 0L);
         // this will be ignored
         ts.request(100);
         // we take 500 so it unsubscribes

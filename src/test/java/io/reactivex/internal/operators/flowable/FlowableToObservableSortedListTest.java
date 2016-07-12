@@ -70,7 +70,7 @@ public class FlowableToObservableSortedListTest {
     @Test
     public void testBackpressureHonored() {
         Flowable<List<Integer>> w = Flowable.just(1, 3, 2, 5, 4).toSortedList();
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>((Long)null);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
         
         w.subscribe(ts);
         
@@ -103,7 +103,7 @@ public class FlowableToObservableSortedListTest {
                 Flowable<List<Integer>> sorted = source.toSortedList();
 
                 final CyclicBarrier cb = new CyclicBarrier(2);
-                final TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>((Long)null);
+                final TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
                 sorted.subscribe(ts);
                 w.schedule(new Runnable() {
                     @Override

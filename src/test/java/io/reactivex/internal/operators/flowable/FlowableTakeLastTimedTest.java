@@ -206,7 +206,7 @@ public class FlowableTakeLastTimedTest {
     public void testContinuousDelivery() {
         TestScheduler scheduler = Schedulers.test();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         PublishProcessor<Integer> ps = PublishProcessor.create();
         

@@ -260,7 +260,7 @@ public class FlowableMergeMaxConcurrentTest {
         
         final CountDownLatch cdl = new CountDownLatch(5);
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null) {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L) {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

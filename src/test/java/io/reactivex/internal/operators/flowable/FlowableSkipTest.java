@@ -142,7 +142,7 @@ public class FlowableSkipTest {
     @Test
     public void testBackpressureMultipleSmallAsyncRequests() throws InterruptedException {
         final AtomicLong requests = new AtomicLong(0);
-        TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.interval(100, TimeUnit.MILLISECONDS)
                 .doOnRequest(new LongConsumer() {
                     @Override

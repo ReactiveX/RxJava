@@ -344,7 +344,7 @@ public class FlowablePublishTest {
     public void testZeroRequested() {
         ConnectableFlowable<Integer> source = Flowable.just(1).publish();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         source.subscribe(ts);
         

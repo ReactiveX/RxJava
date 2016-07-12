@@ -161,19 +161,19 @@ public class TestSubscriberTest {
 
     @Test(expected = NullPointerException.class)
     public void testNullDelegate1() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((DefaultObserver<Integer>)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(null);
         ts.onComplete();
     }
     
     @Test(expected = NullPointerException.class)
     public void testNullDelegate2() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Subscriber<Integer>)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(null);
         ts.onComplete();
     }
     
     @Test(expected = NullPointerException.class)
     public void testNullDelegate3() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Subscriber<Integer>)null, null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(null, 0L);
         ts.onComplete();
     }
     
@@ -200,7 +200,7 @@ public class TestSubscriberTest {
     @Test
     public void testDelegate3() {
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(ts1, null);
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(ts1, 0L);
         ts2.onComplete();
         ts1.assertComplete();
     }

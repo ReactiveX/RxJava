@@ -85,7 +85,7 @@ public class FlowableDefaultIfEmptyTest {
     
     @Test
     public void testBackpressureEmpty() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         Flowable.<Integer>empty().defaultIfEmpty(1).subscribe(ts);
         ts.assertNoValues();
         ts.assertNotTerminated();
@@ -97,7 +97,7 @@ public class FlowableDefaultIfEmptyTest {
     
     @Test
     public void testBackpressureNonEmpty() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         Flowable.just(1,2,3).defaultIfEmpty(1).subscribe(ts);
         ts.assertNoValues();
         ts.assertNotTerminated();

@@ -35,7 +35,7 @@ public class FlowableSubscriberTest {
      */
     @Test
     public void testRequestFromFinalSubscribeWithRequestValue() {
-        TestSubscriber<String> s = new TestSubscriber<String>((Long)null);
+        TestSubscriber<String> s = new TestSubscriber<String>(0L);
         s.request(10);
         final AtomicLong r = new AtomicLong();
         s.onSubscribe(new Subscription() {
@@ -132,7 +132,7 @@ public class FlowableSubscriberTest {
 
     @Test
     public void testRequestFromDecoupledOperator() {
-        TestSubscriber<String> s = new TestSubscriber<String>((Long)null);
+        TestSubscriber<String> s = new TestSubscriber<String>(0L);
         Operator<String, String> o = new Operator<String, String>() {
             @Override
             public Subscriber<? super String> apply(final Subscriber<? super String> s1) {
@@ -283,7 +283,7 @@ public class FlowableSubscriberTest {
 
     @Test
     public void testRequestThroughMap() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
         Flowable.<Integer>create(new Publisher<Integer>() {
@@ -308,7 +308,7 @@ public class FlowableSubscriberTest {
 
     @Test
     public void testRequestThroughTakeThatReducesRequest() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
         Flowable.<Integer>create(new Publisher<Integer>() {
@@ -336,7 +336,7 @@ public class FlowableSubscriberTest {
 
     @Test
     public void testRequestThroughTakeWhereRequestIsSmallerThanTake() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
         Flowable.<Integer>create(new Publisher<Integer>() {

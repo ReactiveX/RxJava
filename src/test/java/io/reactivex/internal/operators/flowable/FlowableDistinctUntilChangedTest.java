@@ -21,7 +21,8 @@ import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
+import io.reactivex.internal.fuseable.QueueSubscription;
 
 public class FlowableDistinctUntilChangedTest {
 
@@ -128,5 +129,71 @@ public class FlowableDistinctUntilChangedTest {
         verify(w, times(1)).onError(any(NullPointerException.class));
         inOrder.verify(w, never()).onNext(anyString());
         inOrder.verify(w, never()).onComplete();
+    }
+    
+    @Test
+    public void directComparer() {
+        Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
+        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+            @Override
+            public boolean test(Integer a, Integer b) {
+                return a.equals(b);
+            }
+        })
+        .test()
+        .assertResult(1, 2, 3, 2, 4, 1, 2);
+    }
+    
+    @Test
+    public void directComparerConditional() {
+        Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
+        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+            @Override
+            public boolean test(Integer a, Integer b) {
+                return a.equals(b);
+            }
+        })
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        })
+        .test()
+        .assertResult(1, 2, 3, 2, 4, 1, 2);
+    }
+    
+    @Test
+    public void directComparerFused() {
+        Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
+        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+            @Override
+            public boolean test(Integer a, Integer b) {
+                return a.equals(b);
+            }
+        })
+        .test(Long.MAX_VALUE, QueueSubscription.ANY, false)
+        .assertFusionMode(QueueSubscription.SYNC)
+        .assertResult(1, 2, 3, 2, 4, 1, 2);
+    }
+    
+    @Test
+    public void directComparerConditionalFused() {
+        Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
+        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+            @Override
+            public boolean test(Integer a, Integer b) {
+                return a.equals(b);
+            }
+        })
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        })
+        .test(Long.MAX_VALUE, QueueSubscription.ANY, false)
+        .assertFusionMode(QueueSubscription.SYNC)
+        .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
 }

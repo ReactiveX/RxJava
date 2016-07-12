@@ -829,7 +829,7 @@ public class ReplayProcessorTest {
         rs.onNext(3);
         rs.onComplete();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         rs.subscribe(ts);
         
@@ -858,7 +858,7 @@ public class ReplayProcessorTest {
         rs.onNext(3);
         rs.onComplete();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         rs.subscribe(ts);
         
@@ -887,7 +887,7 @@ public class ReplayProcessorTest {
         rs.onNext(3);
         rs.onComplete();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         rs.subscribe(ts);
         

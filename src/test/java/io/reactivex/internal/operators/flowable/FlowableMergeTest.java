@@ -1099,7 +1099,7 @@ public class FlowableMergeTest {
     @Test
     public void shouldCompleteAfterApplyingBackpressure_NormalPath() {
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(Flowable.range(1, 2)));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>(0L);
         source.subscribe(subscriber);
         subscriber.request(3); // 1, 2, <complete> - with request(2) we get the 1 and 2 but not the <complete>
         subscriber.assertValues(1, 2);
@@ -1109,7 +1109,7 @@ public class FlowableMergeTest {
     @Test
     public void shouldCompleteAfterApplyingBackpressure_FastPath() {
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(Flowable.just(1)));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>(0L);
         source.subscribe(subscriber);
         subscriber.request(2); // 1, <complete> - should work as per .._NormalPath above
         subscriber.assertValue(1);
@@ -1120,7 +1120,7 @@ public class FlowableMergeTest {
     public void shouldNotCompleteIfThereArePendingScalarSynchronousEmissionsWhenTheLastInnerSubscriberCompletes() {
         TestScheduler scheduler = Schedulers.test();
         Flowable<Long> source = Flowable.mergeDelayError(Flowable.just(1L), Flowable.timer(1, TimeUnit.SECONDS, scheduler).skip(1));
-        TestSubscriber<Long> subscriber = new TestSubscriber<Long>((Long)null);
+        TestSubscriber<Long> subscriber = new TestSubscriber<Long>(0L);
         source.subscribe(subscriber);
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
         subscriber.assertNoValues();
@@ -1137,7 +1137,7 @@ public class FlowableMergeTest {
     public void delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_NormalPath() {
         Throwable exception = new Throwable();
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.range(1, 2), Flowable.<Integer>error(exception));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>(0L);
         source.subscribe(subscriber);
         subscriber.request(3); // 1, 2, <error>
         subscriber.assertValues(1, 2);
@@ -1149,7 +1149,7 @@ public class FlowableMergeTest {
     public void delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_FastPath() {
         Throwable exception = new Throwable();
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(1), Flowable.<Integer>error(exception));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>(0L);
         source.subscribe(subscriber);
         subscriber.request(2); // 1, <error>
         subscriber.assertValue(1);
@@ -1171,7 +1171,7 @@ public class FlowableMergeTest {
     public void shouldNotReceivedDelayedErrorWhileThereAreStillScalarSynchronousEmissionsInTheQueue() {
         Throwable exception = new Throwable();
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(1), Flowable.just(2), Flowable.<Integer>error(exception));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>(0L);
         subscriber.request(1);
         source.subscribe(subscriber);
         subscriber.assertValue(1);
@@ -1185,7 +1185,7 @@ public class FlowableMergeTest {
     public void shouldNotReceivedDelayedErrorWhileThereAreStillNormalEmissionsInTheQueue() {
         Throwable exception = new Throwable();
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.range(1, 2), Flowable.range(3, 2), Flowable.<Integer>error(exception));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>(0L);
         subscriber.request(3);
         source.subscribe(subscriber);
         subscriber.assertValues(1, 2, 3);
@@ -1355,7 +1355,7 @@ public class FlowableMergeTest {
     @Test
     public void testSlowMergeFullScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>((long)req) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>(req) {
                 int remaining = req;
 
                 @Override
@@ -1373,7 +1373,7 @@ public class FlowableMergeTest {
     @Test
     public void testSlowMergeHiddenScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>((long)req) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>(req) {
                 int remaining = req;
                 @Override
                 public void onNext(Integer t) {
