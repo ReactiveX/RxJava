@@ -25,7 +25,7 @@ import io.reactivex.flowables.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.flowable.FlowableConcatMap.ErrorMode;
 import io.reactivex.internal.subscribers.flowable.*;
@@ -240,17 +240,17 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> concat(int prefetch, Iterable<? extends Publisher<? extends T>> sources) {
+    public static <T> Flowable<T> concat(Iterable<? extends Publisher<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
-        return fromIterable(sources).concatMap((Function)Functions.identity(), prefetch);
+        return fromIterable(sources).concatMap((Function)Functions.identity());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> concat(Iterable<? extends Publisher<? extends T>> sources) {
+    public static <T> Flowable<T> concat(Iterable<? extends Publisher<? extends T>> sources, int prefetch) {
         Objects.requireNonNull(sources, "sources is null");
-        return fromIterable(sources).concatMap((Function)Functions.identity());
+        return fromIterable(sources).concatMap((Function)Functions.identity(), prefetch);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -380,6 +380,62 @@ public abstract class Flowable<T> implements Publisher<T> {
         return fromArray(sources).concatMap((Function)Functions.identity());
     }
 
+    public static <T> Flowable<T> concatArrayEager(Publisher<? extends T>... sources) {
+        return concatArrayEager(bufferSize(), bufferSize(), sources);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Flowable<T> concatArrayEager(int maxConcurrency, int prefetch, Publisher<? extends T>... sources) {
+        return new FlowableConcatMapEager(new FlowableFromArray(sources), Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE);
+    }
+
+    public static <T> Flowable<T> concatEager(Publisher<? extends Publisher<? extends T>> sources) {
+        return concatEager(sources, bufferSize(), bufferSize());
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Flowable<T> concatEager(Publisher<? extends Publisher<? extends T>> sources, int maxConcurrency, int prefetch) {
+        return new FlowableConcatMapEager(sources, Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE);
+    }
+
+    public static <T> Flowable<T> concatEager(Iterable<? extends Publisher<? extends T>> sources) {
+        return concatEager(sources, bufferSize(), bufferSize());
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Flowable<T> concatEager(Iterable<? extends Publisher<? extends T>> sources, int maxConcurrency, int prefetch) {
+        return new FlowableConcatMapEager(new FlowableFromIterable(sources), Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE);
+    }
+
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatDelayError(Iterable<? extends Publisher<? extends T>> sources) {
+        Objects.requireNonNull(sources, "sources is null");
+        return concatDelayError(sources, bufferSize(), true);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatDelayError(Iterable<? extends Publisher<? extends T>> sources, int prefetch, boolean tillTheEnd) {
+        Objects.requireNonNull(sources, "sources is null");
+        return fromIterable(sources).concatMapDelayError((Function)Functions.identity(), prefetch, tillTheEnd);
+    }
+
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static final <T> Flowable<T> concatDelayError(Publisher<? extends Publisher<? extends T>> sources) {
+        return concatDelayError(sources, bufferSize(), true);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static final <T> Flowable<T> concatDelayError(Publisher<? extends Publisher<? extends T>> sources, int prefetch, boolean tillTheEnd) {
+        return fromPublisher(sources).concatMapDelayError((Function)Functions.identity(), prefetch, tillTheEnd);
+    }
+
+    
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> create(Publisher<T> onSubscribe) {
@@ -1469,6 +1525,49 @@ public abstract class Flowable<T> implements Publisher<T> {
             throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
         }
         return new FlowableConcatMap<T, R>(this, mapper, prefetch, ErrorMode.IMMEDIATE);
+    }
+
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Flowable<R> concatMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper) {
+        return concatMapDelayError(mapper, 2, true);
+    }
+
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Flowable<R> concatMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper, int prefetch, boolean tillTheEnd) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (this instanceof ScalarCallable) {
+            @SuppressWarnings("unchecked")
+            T v = ((ScalarCallable<T>)this).call();
+            if (v == null) {
+                return empty();
+            }
+            return ScalarXMap.scalarXMap(v, mapper);
+        }
+        if (prefetch <= 0) {
+            throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
+        }
+        return new FlowableConcatMap<T, R>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.IMMEDIATE);
+    }
+
+
+    public final <R> Flowable<R> concatMapEager(Function<? super T, ? extends Publisher<? extends R>> mapper) {
+        return concatMapEager(mapper, bufferSize(), bufferSize());
+    }
+
+    public final <R> Flowable<R> concatMapEager(Function<? super T, ? extends Publisher<? extends R>> mapper, 
+            int maxConcurrency, int prefetch) {
+        return new FlowableConcatMapEager<T, R>(this, mapper, maxConcurrency, prefetch, ErrorMode.IMMEDIATE);
+    }
+
+    public final <R> Flowable<R> concatMapEagerDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper, boolean tillTheEnd) {
+        return concatMapEagerDelayError(mapper, bufferSize(), bufferSize(), tillTheEnd);
+    }
+
+    public final <R> Flowable<R> concatMapEagerDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper, 
+            int maxConcurrency, int prefetch, boolean tillTheEnd) {
+        return new FlowableConcatMapEager<T, R>(this, mapper, maxConcurrency, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -3754,4 +3853,49 @@ public abstract class Flowable<T> implements Publisher<T> {
         return zip(this, other, zipper, delayError, bufferSize);
     }
 
+    // -------------------------------------------------------------------------
+    // Fluent test support, super handy and reduces test preparation boilerplate
+    // -------------------------------------------------------------------------
+    /**
+     * Creates a TestSubscriber that requests Long.MAX_VALUE and subscribes
+     * it to this Flowable.
+     * @return the new TestSubscriber instance
+     */
+    public final TestSubscriber<T> test() { // NoPMD
+        TestSubscriber<T> ts = new TestSubscriber<T>();
+        subscribe(ts);
+        return ts;
+    }
+    
+    /**
+     * Creates a TestSubscriber with the given initial request amount and subscribes
+     * it to this Flowable.
+     * @param initialRequest the initial request amount, positive
+     * @return the new TestSubscriber instance
+     */
+    public final TestSubscriber<T> test(long initialRequest) { // NoPMD
+        TestSubscriber<T> ts = new TestSubscriber<T>(initialRequest);
+        subscribe(ts);
+        return ts;
+    }
+
+    /**
+     * Creates a TestSubscriber with the given initial request amount, fusion mode
+     * and optionally in cancelled state, then subscribes it to this Flowable.
+     * @param initialRequest the initial request amount, positive
+     * @param fusionMode the requested fusion mode, see {@link QueueSubscription} constants.
+     * @param cancelled if true, the TestSubscriber will be cancelled before subscribing to this
+     * Flowable.
+     * @return the new TestSubscriber instance
+     */
+    public final TestSubscriber<T> test(long initialRequest, int fusionMode, boolean cancelled) { // NoPMD
+        TestSubscriber<T> ts = new TestSubscriber<T>(initialRequest);
+        ts.setInitialFusionMode(fusionMode);
+        if (cancelled) {
+            ts.cancel();
+        }
+        subscribe(ts);
+        return ts;
+    }
+    
 }

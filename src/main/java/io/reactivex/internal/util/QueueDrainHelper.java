@@ -15,11 +15,12 @@ package io.reactivex.internal.util;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BooleanSupplier;
+import io.reactivex.internal.queue.*;
 
 /**
  * Utility class to help with the queue-drain serialization idiom.
@@ -358,5 +359,30 @@ public enum QueueDrainHelper {
         }
         
         return false;
+    }
+    
+    /**
+     * Creates a queue: spsc-array if capacityHint is positive and 
+     * spsc-linked-array if capacityHint is negative; in both cases, the
+     * capacity is the absolute value of prefetch.
+     * @param <T> the value type of the queue
+     * @param capacityHint the capacity hint
+     * @return the queue instance
+     */
+    public static <T> Queue<T> createQueue(int capacityHint) {
+        if (capacityHint < 0) {
+            return new SpscLinkedArrayQueue<T>(-capacityHint); 
+        }
+        return new SpscArrayQueue<T>(capacityHint);
+    }
+    
+    /**
+     * Requests Long.MAX_VALUE if prefetch is negative or the exact
+     * amount if prefetch is positive.
+     * @param s the Subscription to request from
+     * @param prefetch the prefetch value
+     */
+    public static void request(Subscription s, int prefetch) {
+        s.request(prefetch < 0 ? Long.MAX_VALUE : prefetch);
     }
 }
