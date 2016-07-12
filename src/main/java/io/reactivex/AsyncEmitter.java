@@ -7,8 +7,8 @@ import io.reactivex.disposables.Disposable;
  * a resource with it and exposes the current number of downstream
  * requested amount.
  * <p>
- * The onNext, onError and onCompleted methods should be called 
- * in a sequential manner, just like the Observer's methods. The
+ * The onNext, onError and onComplete methods should be called 
+ * in a sequential manner, just like the Subscriber's methods. The
  * other methods are threadsafe.
  *
  * @param <T> the value type to emit

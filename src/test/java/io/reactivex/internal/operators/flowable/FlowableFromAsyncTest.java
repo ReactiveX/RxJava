@@ -52,6 +52,8 @@ public class FlowableFromAsyncTest {
         source.onNext(1);
 
         ts.request(1);
+        
+        ts.assertNoValues();
 
         source.onNext(2);
         source.onComplete();
@@ -69,6 +71,8 @@ public class FlowableFromAsyncTest {
 
         source.onNext(2);
         source.onComplete();
+
+        ts.assertNoValues();
 
         ts.request(1);
 
@@ -146,7 +150,9 @@ public class FlowableFromAsyncTest {
         source.onNext(1);
         source.onNext(2);
         source.onError(new TestException());
-        
+
+        ts.assertNoValues();
+
         ts.request(1);
         
         ts.assertValues(2);

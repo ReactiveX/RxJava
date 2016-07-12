@@ -72,24 +72,24 @@ public enum BackpressureHelper {
     }
     
     /**
-     * Atomically subtract the given number (positive, not validated) form the target field.
+     * Atomically subtract the given number (positive, not validated) from the target field.
      * @param requested the target field holding the current requested amount
      * @param n the produced element count, positive (not validated)
      * @return the new amount
      */
     public static long produced(AtomicLong requested, long n) {
         for (;;) {
-            long r = requested.get();
-            if (r == Long.MAX_VALUE) {
+            long current = requested.get();
+            if (current == Long.MAX_VALUE) {
                 return Long.MAX_VALUE;
             }
-            long u = r - n;
-            if (u < 0L) {
-                RxJavaPlugins.onError(new IllegalStateException("More produced than requested: " + u));
-                u = 0L;
+            long update = current - n;
+            if (update < 0L) {
+                RxJavaPlugins.onError(new IllegalStateException("More produced than requested: " + update));
+                update = 0L;
             }
-            if (requested.compareAndSet(r, u)) {
-                return r;
+            if (requested.compareAndSet(current, update)) {
+                return update;
             }
         }
     }
