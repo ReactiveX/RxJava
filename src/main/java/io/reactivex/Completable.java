@@ -600,12 +600,12 @@ public abstract class Completable implements CompletableConsumable {
     }
 
     /**
-     * Returns an Observable which will subscribe to this Completable and once that is completed then 
+     * Returns an Flowable which will subscribe to this Completable and once that is completed then 
      * will subscribe to the {@code next} Flowable. An error event from this Completable will be 
      * propagated to the downstream subscriber and will result in skipping the subscription of the 
      * Observable.  
      * 
-     * @param <T> the value type of the next Observable
+     * @param <T> the value type of the next Flowable
      * @param next the Observable to subscribe after this Completable is completed, not null
      * @return Flowable that composes this Completable and next
      * @throws NullPointerException if next is null
@@ -635,7 +635,7 @@ public abstract class Completable implements CompletableConsumable {
     }
 
     /**
-     * Returns a completable that first runs this Completable
+     * Returns a Completable that first runs this Completable
      * and then the other completable.
      * <p>
      * This is an alias for {@link #concatWith(CompletableConsumable)}.
