@@ -13,6 +13,9 @@
 
 package io.reactivex.completable;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -29,10 +32,12 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
+import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
 
 /**
@@ -1943,11 +1948,13 @@ public class CompletableTest {
         Assert.assertEquals(1, calls.get());
     }
     
+    @Ignore("deprecated behavior")
     @Test(timeout = 1000)
     public void finallyDoNormal() {
         final AtomicBoolean doneAfter = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
         
+        @SuppressWarnings("deprecation")
         Completable c = normal.completable.finallyDo(new Runnable() {
             @Override
             public void run() {
@@ -1978,10 +1985,12 @@ public class CompletableTest {
         Assert.assertTrue("Finally called before onComplete", doneAfter.get());
     }
     
+    @Ignore("deprecated behavior")
     @Test(timeout = 1000)
     public void finallyDoWithError() {
         final AtomicBoolean doneAfter = new AtomicBoolean();
         
+        @SuppressWarnings("deprecation")
         Completable c = error.completable.finallyDo(new Runnable() {
             @Override
             public void run() {
@@ -1999,6 +2008,7 @@ public class CompletableTest {
         Assert.assertFalse("FinallyDo called", doneAfter.get());
     }
     
+    @SuppressWarnings("deprecation")
     @Test(expected = NullPointerException.class)
     public void finallyDoNull() {
         normal.completable.finallyDo(null);
@@ -2562,15 +2572,15 @@ public class CompletableTest {
     public void subscribeTwoCallbacksNormal() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
         final AtomicBoolean complete = new AtomicBoolean();
-        normal.completable.subscribe(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                err.set(e);
-            }
-        }, new Runnable() {
+        normal.completable.subscribe(new Runnable() {
             @Override
             public void run() {
                 complete.set(true);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) {
+                err.set(e);
             }
         });
         
@@ -2582,15 +2592,15 @@ public class CompletableTest {
     public void subscribeTwoCallbacksError() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
         final AtomicBoolean complete = new AtomicBoolean();
-        error.completable.subscribe(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                err.set(e);
-            }
-        }, new Runnable() {
+        error.completable.subscribe(new Runnable() {
             @Override
             public void run() {
                 complete.set(true);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) {
+                err.set(e);
             }
         });
         
@@ -2600,31 +2610,31 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void subscribeTwoCallbacksFirstNull() {
-        normal.completable.subscribe(null, new Runnable() {
+        normal.completable.subscribe(new Runnable() {
             @Override
             public void run() { }
-        });
+        }, null);
     }
     
     @Test(expected = NullPointerException.class)
     public void subscribeTwoCallbacksSecondNull() {
-        normal.completable.subscribe(null, new Runnable() {
+        normal.completable.subscribe(new Runnable() {
             @Override
             public void run() { }
-        });
+        }, null);
     }
     
     @Test(timeout = 1000)
     public void subscribeTwoCallbacksCompleteThrows() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
-        normal.completable.subscribe(new Consumer<Throwable>() {
+        normal.completable.subscribe(new Runnable() {
+            @Override
+            public void run() { throw new TestException(); }
+        }, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable e) {
                 err.set(e);
             }
-        }, new Runnable() {
-            @Override
-            public void run() { throw new TestException(); }
         });
         
         Assert.assertTrue(String.valueOf(err.get()), err.get() instanceof TestException);
@@ -2632,12 +2642,12 @@ public class CompletableTest {
     
     @Test(timeout = 1000)
     public void subscribeTwoCallbacksOnErrorThrows() {
-        error.completable.subscribe(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) { throw new TestException(); }
-        }, new Runnable() {
+        error.completable.subscribe(new Runnable() {
             @Override
             public void run() { }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) { throw new TestException(); }
         });
     }
     
@@ -3036,12 +3046,12 @@ public class CompletableTest {
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
         
-        c.subscribe(new Consumer<Throwable>() {
+        c.subscribe(Functions.emptyRunnable(), new Consumer<Throwable>() {
             @Override
             public void accept(Throwable v) {
                 complete.set(v);
             }
-        }, Functions.emptyRunnable());
+        });
         
         Assert.assertTrue("First subject no subscribers", ps1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", ps2.hasSubscribers());
@@ -3098,12 +3108,12 @@ public class CompletableTest {
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
         
-        c.subscribe(new Consumer<Throwable>() {
+        c.subscribe(Functions.emptyRunnable(), new Consumer<Throwable>() {
             @Override
             public void accept(Throwable v) {
                 complete.set(v);
             }
-        }, Functions.emptyRunnable());
+        });
         
         Assert.assertTrue("First subject no subscribers", ps1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", ps2.hasSubscribers());
@@ -3261,12 +3271,12 @@ public class CompletableTest {
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
         
-        c.subscribe(new Consumer<Throwable>() {
+        c.subscribe(Functions.emptyRunnable(), new Consumer<Throwable>() {
             @Override
             public void accept(Throwable v) {
                 complete.set(v);
             }
-        }, Functions.emptyRunnable());
+        });
         
         Assert.assertTrue("First subject no subscribers", ps1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", ps2.hasSubscribers());
@@ -3323,12 +3333,12 @@ public class CompletableTest {
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
         
-        c.subscribe(new Consumer<Throwable>() {
+        c.subscribe(Functions.emptyRunnable(), new Consumer<Throwable>() {
             @Override
             public void accept(Throwable v) {
                 complete.set(v);
             }
-        }, Functions.emptyRunnable());
+        });
         
         Assert.assertTrue("First subject no subscribers", ps1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", ps2.hasSubscribers());
@@ -3591,5 +3601,1167 @@ public class CompletableTest {
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotComplete();
+    }
+    
+    @Test
+    public void andThen() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        Completable.complete().andThen(Flowable.just("foo")).subscribe(ts);
+        ts.request(1);
+        ts.assertValue("foo");
+        ts.assertComplete();
+        ts.assertNoErrors();
+        
+        TestObserver<String> to = new TestObserver<String>();
+        Completable.complete().andThen(Observable.just("foo")).subscribe(to);
+        to.assertValue("foo");
+        to.assertComplete();
+        to.assertNoErrors();
+    }
+    
+    private static void expectUncaughtTestException(Runnable action) {
+        Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
+        CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(handler);
+        try {
+            action.run();
+            assertEquals("Should have received exactly 1 exception", 1, handler.count);
+            Throwable caught = handler.caught;
+            while (caught != null) {
+                if (caught instanceof TestException) break;
+                if (caught == caught.getCause()) break;
+                caught = caught.getCause();
+            }
+            assertTrue("A TestException should have been delivered to the handler",
+                    caught instanceof TestException);
+        } finally {
+            Thread.setDefaultUncaughtExceptionHandler(originalHandler);
+        }
+    }
+    
+    @Test
+    public void subscribeOneActionThrowFromOnCompleted() {
+        expectUncaughtTestException(new Runnable() {
+            @Override
+            public void run() {
+                normal.completable.subscribe(new Runnable() {
+                    @Override
+                    public void run() {
+                        throw new TestException();
+                    }
+                });
+            }
+        });
+    }
+    
+    @Test
+    public void subscribeTwoActionsThrowFromOnError() {
+        expectUncaughtTestException(new Runnable() {
+            @Override
+            public void run() {
+                error.completable.subscribe(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                    }
+                },
+                new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) {
+                        throw new TestException();
+                    }
+                });
+            }
+        });
+    }
+    
+    @Test
+    public void propagateExceptionSubscribeOneAction() {
+        expectUncaughtTestException(new Runnable() {
+            @Override
+            public void run() {
+                error.completable.toSingleDefault(1).subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) {
+                    }
+                });
+            }
+        });
+    }
+    
+    @Test
+    public void usingFactoryReturnsNullAndDisposerThrows() {
+        Consumer<Integer> onDispose = new Consumer<Integer>() {
+            @Override
+            public void accept(Integer t) {
+                throw new TestException();
+            }
+        };
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        Completable.using(new Supplier<Integer>() {
+            @Override
+            public Integer get() {
+                return 1;
+            }
+        },
+        new Function<Integer, Completable>() {
+            @Override
+            public Completable apply(Integer t) {
+                return null;
+            }
+        }, onDispose).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(CompositeException.class);
+        
+        CompositeException ex = (CompositeException)ts.errors().get(0);
+        
+        List<Throwable> listEx = ex.getExceptions();
+        
+        assertEquals(2, listEx.size());
+        
+        assertTrue(listEx.get(0).toString(), listEx.get(0) instanceof NullPointerException);
+        assertTrue(listEx.get(1).toString(), listEx.get(1) instanceof TestException);
+    }
+    
+    @Test
+    public void subscribeReportsUnsubscribedOnError() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        Disposable completableSubscription = completable.subscribe();
+        
+        stringSubject.onError(new TestException());
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+    }
+    
+    @Test
+    public void subscribeActionReportsUnsubscribed() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        Disposable completableSubscription = completable.subscribe(new Runnable() {
+            @Override
+            public void run() {
+                
+            }
+        });
+        
+        stringSubject.onComplete();
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+    }
+    
+    @Test
+    public void subscribeActionReportsUnsubscribedAfter() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
+        Disposable completableSubscription = completable.subscribe(new Runnable() {
+            @Override
+            public void run() {
+                if (subscriptionRef.get().isDisposed()) {
+                    subscriptionRef.set(null);
+                }
+            }
+        });
+        subscriptionRef.set(completableSubscription);
+        
+        stringSubject.onComplete();
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+        assertNotNull("Unsubscribed before the call to onCompleted", subscriptionRef.get());
+    }
+    
+    @Test
+    public void subscribeActionReportsUnsubscribedOnError() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        Disposable completableSubscription = completable.subscribe(new Runnable() {
+            @Override
+            public void run() {
+            }
+        });
+        
+        stringSubject.onError(new TestException());
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+    }
+    
+    @Test
+    public void subscribeAction2ReportsUnsubscribed() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        Disposable completableSubscription = completable.subscribe(new Runnable() {
+            @Override
+            public void run() {
+                
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable t) {
+                
+            }
+        });
+        
+        stringSubject.onComplete();
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+    }
+    
+    @Test
+    public void subscribeAction2ReportsUnsubscribedOnError() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        Disposable completableSubscription = completable.subscribe(new Runnable() {
+            @Override
+            public void run() { }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) { }
+        });
+        
+        stringSubject.onError(new TestException());
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+    }
+    
+    @Test
+    public void andThenSubscribeOn() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestScheduler scheduler = new TestScheduler();
+        Completable.complete().andThen(Flowable.just("foo").delay(1, TimeUnit.SECONDS, scheduler)).subscribe(ts);
+        
+        ts.request(1);
+        ts.assertNoValues();
+        ts.assertNotTerminated();
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ts.assertValue("foo");
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void andThenSingleNever() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        Completable.never().andThen(Single.just("foo")).subscribe(ts);
+        ts.request(1);
+        ts.assertNoValues();
+        ts.assertNotTerminated();
+    }
+    
+    @Test
+    public void andThenSingleError() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        final AtomicBoolean hasRun = new AtomicBoolean(false);
+        final Exception e = new Exception();
+        Completable.error(e)
+            .andThen(Single.<String>create(new Single<String>() {
+                @Override
+                public void subscribeActual(SingleSubscriber<? super String> s) {
+                    hasRun.set(true);
+                    s.onSuccess("foo");
+                }
+            }))
+            .subscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(e);
+        Assert.assertFalse("Should not have subscribed to single when completable errors", hasRun.get());
+    }
+    
+    @Test
+    public void andThenSingleSubscribeOn() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestScheduler scheduler = new TestScheduler();
+        Completable.complete().andThen(Single.just("foo").delay(1, TimeUnit.SECONDS, scheduler)).subscribe(ts);
+        
+        ts.request(1);
+        ts.assertNoValues();
+        ts.assertNotTerminated();
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ts.assertValue("foo");
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void fromObservableNull() {
+        Completable.fromObservable(null);
+    }
+    
+    @Test(timeout = 5000)
+    public void fromObservableEmpty() {
+        Completable c = Completable.fromObservable(Observable.empty());
+        
+        c.await();
+    }
+    
+    @Test(timeout = 5000)
+    public void fromObservableSome() {
+        for (int n = 1; n < 10000; n *= 10) {
+            Completable c = Completable.fromObservable(Observable.range(1, n));
+            
+            c.await();
+        }
+    }
+    
+    @Test(timeout = 5000, expected = TestException.class)
+    public void fromObservableError() {
+        Completable c = Completable.fromObservable(Observable.error(new TestException()));
+        
+        c.await();
+    }
+
+    @Test(timeout = 5000, expected = TestException.class)
+    public void fromActionThrows() {
+        Completable c = Completable.fromRunnable(new Runnable() {
+            @Override
+            public void run() { throw new TestException(); }
+        });
+        
+        c.await();
+    }
+
+    private Function<Completable, Completable> onCreate;
+    
+    private BiFunction<Completable, CompletableSubscriber, CompletableSubscriber> onStart;
+
+    @Before
+    public void setUp() throws Exception {
+        onCreate = spy(new Function<Completable, Completable>() {
+            @Override
+            public Completable apply(Completable t) {
+                return t;
+            }
+        });
+        
+        RxJavaPlugins.setOnCompletableAssembly(onCreate);
+        
+        onStart = spy(new BiFunction<Completable, CompletableSubscriber, CompletableSubscriber>() {
+            @Override
+            public CompletableSubscriber apply(Completable t1, CompletableSubscriber t2) {
+                return t2;
+            }
+        });
+        
+        RxJavaPlugins.setOnCompletableSubscribe(onStart);
+    }
+    
+    @After
+    public void after() {
+        RxJavaPlugins.reset();
+    }
+    
+    @Test
+    public void testHookCreate() {
+        CompletableConsumable subscriber = mock(CompletableConsumable.class);
+        Completable create = Completable.create(subscriber);
+
+        verify(onCreate, times(1)).apply(create);
+    }
+    
+    @Test(timeout = 5000)
+    public void doOnCompletedNormal() {
+        final AtomicInteger calls = new AtomicInteger();
+        
+        Completable c = normal.completable.doOnComplete(new Runnable() {
+            @Override
+            public void run() {
+                calls.getAndIncrement();
+            }
+        });
+        
+        c.await();
+        
+        Assert.assertEquals(1, calls.get());
+    }
+    
+    @Test(timeout = 5000)
+    public void doOnCompletedError() {
+        final AtomicInteger calls = new AtomicInteger();
+        
+        Completable c = error.completable.doOnComplete(new Runnable() {
+            @Override
+            public void run() {
+                calls.getAndIncrement();
+            }
+        });
+        
+        try {
+            c.await();
+            Assert.fail("Failed to throw TestException");
+        } catch (TestException ex) {
+            // expected
+        }
+        
+        Assert.assertEquals(0, calls.get());
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void doOnCompletedNull() {
+        normal.completable.doOnComplete(null);
+    }
+    
+    @Test(timeout = 5000, expected = TestException.class)
+    public void doOnCompletedThrows() {
+        Completable c = normal.completable.doOnComplete(new Runnable() {
+            @Override
+            public void run() { throw new TestException(); }
+        });
+        
+        c.await();
+    }
+    
+    @Test(timeout = 5000)
+    public void doAfterTerminateNormal() {
+        final AtomicBoolean doneAfter = new AtomicBoolean();
+        final AtomicBoolean complete = new AtomicBoolean();
+        
+        Completable c = normal.completable.doAfterTerminate(new Runnable() {
+            @Override
+            public void run() {
+                doneAfter.set(complete.get());
+            }
+        });
+        
+        c.subscribe(new CompletableSubscriber() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                
+            }
+            
+            @Override
+            public void onComplete() {
+                complete.set(true);
+            }
+        });
+        
+        c.await();
+        
+        Assert.assertTrue("Not completed", complete.get());
+        Assert.assertTrue("Closure called before onComplete", doneAfter.get());
+    }
+    
+    @Test(timeout = 5000)
+    public void doAfterTerminateWithError() {
+        final AtomicBoolean doneAfter = new AtomicBoolean();
+        
+        Completable c = error.completable.doAfterTerminate(new Runnable() {
+            @Override
+            public void run() {
+                doneAfter.set(true);
+            }
+        });
+        
+        try {
+            c.await();
+            Assert.fail("Did not throw TestException");
+        } catch (TestException ex) {
+            // expected
+        }
+        
+        Assert.assertFalse("Closure called", doneAfter.get());
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void doAfterTerminateNull() {
+        normal.completable.doAfterTerminate(null);
+    }
+    
+    @Test(timeout = 5000)
+    public void subscribeActionNormal() {
+        final AtomicBoolean run = new AtomicBoolean();
+        
+        normal.completable.subscribe(new Runnable() {
+            @Override
+            public void run() {
+                run.set(true);
+            }
+        });
+        
+        Assert.assertTrue("Not completed", run.get());
+    }
+
+    @Test(timeout = 5000)
+    public void subscribeActionError() {
+        final AtomicBoolean run = new AtomicBoolean();
+        
+        error.completable.subscribe(new Runnable() {
+            @Override
+            public void run() {
+                run.set(true);
+            }
+        });
+        
+        Assert.assertFalse("Completed", run.get());
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void subscribeActionNull() {
+        normal.completable.subscribe((Runnable)null);
+    }
+    
+    @Test
+    public void subscribeEmptyOnError() {
+        expectUncaughtTestException(new Runnable() {
+            @Override public void run() {
+                error.completable.subscribe();
+            }
+        });
+    }
+
+    @Test
+    public void subscribeOneActionOnError() {
+        expectUncaughtTestException(new Runnable() {
+            @Override
+            public void run() {
+                error.completable.subscribe(new Runnable() {
+                    @Override
+                    public void run() {
+                    }
+                });
+            }
+        });
+    }
+    
+    @Test
+    public void propagateExceptionSubscribeEmpty() {
+        expectUncaughtTestException(new Runnable() {
+            @Override
+            public void run() {
+                error.completable.toSingleDefault(0).subscribe();
+            }
+        });
+    }
+    
+    @Test(timeout = 5000)
+    public void toObservableNormal() {
+        normal.completable.toObservable().toBlocking().forEach(new Consumer<Object>() {
+            @Override
+            public void accept(Object e) { }
+        });
+    }
+    
+    @Test(timeout = 5000, expected = TestException.class)
+    public void toObservableError() {
+        error.completable.toObservable().toBlocking().forEach(new Consumer<Object>() {
+            @Override
+            public void accept(Object e) { }
+        });
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void andThenCompletableNull() {
+        normal.completable.andThen((Completable)null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void andThenFlowableNull() {
+        normal.completable.andThen((Observable<Object>)null);
+    }
+    
+    @Test(timeout = 5000)
+    public void andThenCompletableNormal() {
+        final AtomicBoolean run = new AtomicBoolean();
+        Completable c = normal.completable
+                .andThen(Completable.fromCallable(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        run.set(normal.get() == 0);
+                        return null;
+                    }
+                }));
+        
+        c.await();
+        
+        Assert.assertFalse("Start with other", run.get());
+        normal.assertSubscriptions(1);
+    }
+    
+    @Test(timeout = 5000)
+    public void andThenCompletableError() {
+        Completable c = normal.completable.andThen(error.completable);
+        
+        try {
+            c.await();
+            Assert.fail("Did not throw TestException");
+        } catch (TestException ex) {
+            normal.assertSubscriptions(1);
+            error.assertSubscriptions(1);
+        }
+    }
+    
+    @Test(timeout = 5000)
+    public void andThenFlowableNormal() {
+        final AtomicBoolean run = new AtomicBoolean();
+        Flowable<Object> c = normal.completable
+                .andThen(Flowable.fromCallable(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        run.set(normal.get() == 0);
+                        return 1;
+                    }
+                }));
+        
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        
+        c.subscribe(ts);
+        
+        Assert.assertFalse("Start with other", run.get());
+        normal.assertSubscriptions(1);
+        
+        ts.assertValue(1);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test(timeout = 5000)
+    public void andThenFlowableError() {
+        Flowable<Object> c = normal.completable
+                .andThen(Flowable.error(new TestException()));
+        
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        
+        c.subscribe(ts);
+        
+        normal.assertSubscriptions(1);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+    
+    @Test
+    public void usingFactoryThrows() {
+        @SuppressWarnings("unchecked")
+        Consumer<Integer> onDispose = mock(Consumer.class);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        Completable.using(new Supplier<Integer>() {
+            @Override
+            public Integer get() {
+                return 1;
+            }
+        },
+        new Function<Integer, Completable>() {
+            @Override
+            public Completable apply(Integer t) {
+                throw new TestException();
+            }
+        }, onDispose).subscribe(ts);
+        
+        verify(onDispose).accept(1);
+        
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(TestException.class);
+    }
+
+    @Test
+    public void usingFactoryAndDisposerThrow() {
+        Consumer<Integer> onDispose = new Consumer<Integer>() {
+            @Override
+            public void accept(Integer t) {
+                throw new TestException();
+            }
+        };
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        Completable.using(new Supplier<Integer>() {
+            @Override
+            public Integer get() {
+                return 1;
+            }
+        },
+        new Function<Integer, Completable>() {
+            @Override
+            public Completable apply(Integer t) {
+                throw new TestException();
+            }
+        }, onDispose).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(CompositeException.class);
+        
+        CompositeException ex = (CompositeException)ts.errors().get(0);
+        
+        List<Throwable> listEx = ex.getExceptions();
+        
+        assertEquals(2, listEx.size());
+        
+        assertTrue(listEx.get(0).toString(), listEx.get(0) instanceof TestException);
+        assertTrue(listEx.get(1).toString(), listEx.get(1) instanceof TestException);
+    }
+
+    @Test
+    public void usingFactoryReturnsNull() {
+        @SuppressWarnings("unchecked")
+        Consumer<Integer> onDispose = mock(Consumer.class);
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Completable.using(new Supplier<Integer>() {
+            @Override
+            public Integer get() {
+                return 1;
+            }
+        },
+        new Function<Integer, Completable>() {
+            @Override
+            public Completable apply(Integer t) {
+                return null;
+            }
+        }, onDispose).subscribe(ts);
+        
+        verify(onDispose).accept(1);
+        
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(NullPointerException.class);
+    }
+    
+    @Test
+    public void subscribeReportsUnsubscribed() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        Disposable completableSubscription = completable.subscribe();
+        
+        stringSubject.onComplete();
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+    }
+    
+    @Ignore("onXXX methods are not allowed to throw")
+    @Test
+    public void safeOnCompleteThrows() {
+        /*
+        try {
+            normal.completable.subscribe(new CompletableSubscriber() {
+    
+                @Override
+                public void onCompleted() {
+                    throw new TestException("Forced failure");
+                }
+    
+                @Override
+                public void onError(Throwable e) {
+                    
+                }
+    
+                @Override
+                public void onSubscribe(Subscription d) {
+                    
+                }
+                
+            });
+            Assert.fail("Did not propagate exception!");
+        } catch (OnCompletedFailedException ex) {
+            Throwable c = ex.getCause();
+            Assert.assertNotNull(c);
+            
+            Assert.assertEquals("Forced failure", c.getMessage());
+        }
+        */
+    }
+    
+    @Ignore("onXXX methods are not allowed to throw")
+    @Test
+    public void safeOnErrorThrows() {
+        /*
+        try {
+            error.completable.subscribe(new CompletableSubscriber() {
+    
+                @Override
+                public void onCompleted() {
+                }
+    
+                @Override
+                public void onError(Throwable e) {
+                    throw new TestException("Forced failure");
+                }
+    
+                @Override
+                public void onSubscribe(Subscription d) {
+                    
+                }
+                
+            });
+            Assert.fail("Did not propagate exception!");
+        } catch (OnErrorFailedException ex) {
+            Throwable c = ex.getCause();
+            Assert.assertTrue("" + c, c instanceof CompositeException);
+            
+            CompositeException ce = (CompositeException)c;
+            
+            List<Throwable> list = ce.getExceptions();
+            
+            Assert.assertEquals(2, list.size());
+
+            Assert.assertTrue("" + list.get(0), list.get(0) instanceof TestException);
+            Assert.assertNull(list.get(0).getMessage());
+
+            Assert.assertTrue("" + list.get(1), list.get(1) instanceof TestException);
+            Assert.assertEquals("Forced failure", list.get(1).getMessage());
+        }
+        */
+    }
+    
+    @Test
+    public void testHookSubscribeStart() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Completable completable = Completable.create(new CompletableConsumable() {
+            @Override public void subscribe(CompletableSubscriber s) {
+                s.onComplete();
+            }
+        });
+        completable.subscribe(ts);
+
+        verify(onStart, times(1)).apply(eq(completable), any(CompletableSubscriber.class));
+    }
+
+    @Ignore("No unsafeSubscribe")
+    @Test
+    public void testHookUnsafeSubscribeStart() {
+        /*
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Completable completable = Completable.create(new CompletableOnSubscribe() {
+            @Override public void call(CompletableSubscriber s) {
+                s.onCompleted();
+            }
+        });
+        completable.unsafeSubscribe(ts);
+
+        verify(onStart, times(1)).call(eq(completable), any(Completable.CompletableOnSubscribe.class));
+        */
+    }
+    
+    @Test
+    public void onStartCalledSafe() {
+        TestSubscriber<Object> ts = new TestSubscriber<Object>() {
+            @Override
+            public void onStart() {
+                onNext(1);
+            }
+        };
+        
+        normal.completable.subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
+    @Ignore("No unsafeSubscribe")
+    @Test
+    public void onStartCalledUnsafeSafe() {
+        /*
+        TestSubscriber<Object> ts = new TestSubscriber<Object>() {
+            @Override
+            public void onStart() {
+                onNext(1);
+            }
+        };
+        
+        normal.completable.unsafeSubscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        */
+    }
+    
+    @Test
+    public void onErrorCompleteFunctionThrows() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        
+        error.completable.onErrorComplete(new Predicate<Throwable>() {
+            @Override
+            public boolean test(Throwable t) {
+                throw new TestException("Forced inner failure");
+            }
+        }).subscribe(ts);
+
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(CompositeException.class);
+        
+        CompositeException composite = (CompositeException)ts.errors().get(0);
+        
+        List<Throwable> errors = composite.getExceptions();
+        Assert.assertEquals(2, errors.size());
+        
+        Assert.assertTrue(errors.get(0).toString(), errors.get(0) instanceof TestException);
+        Assert.assertEquals(errors.get(0).toString(), null, errors.get(0).getMessage());
+        Assert.assertTrue(errors.get(1).toString(), errors.get(1) instanceof TestException);
+        Assert.assertEquals(errors.get(1).toString(), "Forced inner failure", errors.get(1).getMessage());
+    }
+    
+    @Test
+    public void subscribeAction2ReportsUnsubscribedAfter() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
+        Disposable completableSubscription = completable.subscribe(new Runnable() {
+            @Override
+            public void run() {
+                if (subscriptionRef.get().isDisposed()) {
+                    subscriptionRef.set(null);
+                }
+            }
+        }, Functions.emptyConsumer());
+        subscriptionRef.set(completableSubscription);
+        
+        stringSubject.onComplete();
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+        assertNotNull("Unsubscribed before the call to onCompleted", subscriptionRef.get());
+    }
+
+    @Test
+    public void subscribeAction2ReportsUnsubscribedOnErrorAfter() {
+        PublishSubject<String> stringSubject = PublishSubject.create();
+        Completable completable = stringSubject.toCompletable();
+        
+        final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
+        Disposable completableSubscription = completable.subscribe(Functions.emptyRunnable(), 
+        new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) {
+                if (subscriptionRef.get().isDisposed()) {
+                    subscriptionRef.set(null);
+                }
+            }
+        });
+        subscriptionRef.set(completableSubscription);
+        
+        stringSubject.onError(new TestException());
+        
+        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+        assertNotNull("Unsubscribed before the call to onError", subscriptionRef.get());
+    }
+    
+    @Ignore("onXXX methods are not allowed to throw")
+    @Test
+    public void safeOnCompleteThrowsRegularSubscriber() {
+        /*
+        try {
+            normal.completable.subscribe(new Subscriber<Object>() {
+    
+                @Override
+                public void onComplete() {
+                    throw new TestException("Forced failure");
+                }
+    
+                @Override
+                public void onError(Throwable e) {
+                    
+                }
+    
+                @Override
+                public void onNext(Object t) {
+                    
+                }
+            });
+            Assert.fail("Did not propagate exception!");
+        } catch (OnCompletedFailedException ex) {
+            Throwable c = ex.getCause();
+            Assert.assertNotNull(c);
+            
+            Assert.assertEquals("Forced failure", c.getMessage());
+        }
+        */
+    }
+    
+    @Ignore("onXXX methods are not allowed to throw")
+    @Test
+    public void safeOnErrorThrowsRegularSubscriber() {
+        /*
+        try {
+            error.completable.subscribe(new Subscriber<Object>() {
+    
+                @Override
+                public void onCompleted() {
+
+                }
+    
+                @Override
+                public void onError(Throwable e) {
+                    throw new TestException("Forced failure");
+                }
+    
+                @Override
+                public void onNext(Object t) {
+                    
+                }
+            });
+            Assert.fail("Did not propagate exception!");
+        } catch (OnErrorFailedException ex) {
+            Throwable c = ex.getCause();
+            Assert.assertTrue("" + c, c instanceof CompositeException);
+            
+            CompositeException ce = (CompositeException)c;
+            
+            List<Throwable> list = ce.getExceptions();
+            
+            Assert.assertEquals(2, list.size());
+
+            Assert.assertTrue("" + list.get(0), list.get(0) instanceof TestException);
+            Assert.assertNull(list.get(0).getMessage());
+
+            Assert.assertTrue("" + list.get(1), list.get(1) instanceof TestException);
+            Assert.assertEquals("Forced failure", list.get(1).getMessage());
+        }
+        */
+    }
+    
+    @Test
+    public void propagateExceptionSubscribeOneActionThrowFromOnSuccess() {
+        expectUncaughtTestException(new Runnable() {
+            @Override
+            public void run() {
+                normal.completable.toSingleDefault(1).subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) {
+                        throw new TestException();
+                    }
+                });
+            }
+        });
+    }
+    
+    @Test
+    public void andThenNever() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        Completable.never().andThen(Flowable.just("foo")).subscribe(ts);
+        ts.request(1);
+        ts.assertNoValues();
+        ts.assertNotTerminated();
+    }
+    
+    @Test
+    public void andThenError() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        final AtomicBoolean hasRun = new AtomicBoolean(false);
+        final Exception e = new Exception();
+        Completable.create(new CompletableConsumable() {
+                @Override
+                public void subscribe(CompletableSubscriber cs) {
+                    cs.onError(e);
+                }
+            })
+            .andThen(Flowable.<String>create(new Publisher<String>() {
+                @Override
+                public void subscribe(Subscriber<? super String> s) {
+                    hasRun.set(true);
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext("foo");
+                    s.onComplete();
+                }
+            }))
+            .subscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(e);
+        Assert.assertFalse("Should not have subscribed to observable when completable errors", hasRun.get());
+    }
+    
+    @Test
+    public void andThenSingle() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        Completable.complete().andThen(Single.just("foo")).subscribe(ts);
+        ts.request(1);
+        ts.assertValue("foo");
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void fromFutureNull() {
+        Completable.fromFuture(null);
+    }
+    
+    @Test(timeout = 5000)
+    public void fromFutureNormal() {
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        
+        try {
+            Completable c = Completable.fromFuture(exec.submit(new Runnable() {
+                @Override
+                public void run() { 
+                    // no action
+                }
+            }));
+            
+            c.await();
+        } finally {
+            exec.shutdown();
+        }
+    }
+    
+    @Test(timeout = 5000)
+    public void fromFutureThrows() {
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        
+        Completable c = Completable.fromFuture(exec.submit(new Runnable() {
+            @Override
+            public void run() { 
+                throw new TestException();
+            }
+        }));
+        
+        try {
+            c.await();
+            Assert.fail("Failed to throw Exception");
+        } catch (RuntimeException ex) {
+            if (!((ex.getCause() instanceof ExecutionException) && (ex.getCause().getCause() instanceof TestException))) {
+                ex.printStackTrace();
+                Assert.fail("Wrong exception received");
+            }
+        } finally {
+            exec.shutdown();
+        }
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void fromActionNull() {
+        Completable.fromRunnable(null);
+    }
+    
+    @Test(timeout = 5000)
+    public void fromActionNormal() {
+        final AtomicInteger calls = new AtomicInteger();
+        
+        Completable c = Completable.fromRunnable(new Runnable() {
+            @Override
+            public void run() {
+                calls.getAndIncrement();
+            }
+        });
+        
+        c.await();
+        
+        Assert.assertEquals(1, calls.get());
     }
 }

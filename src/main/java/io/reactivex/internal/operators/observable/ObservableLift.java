@@ -64,12 +64,6 @@ public final class ObservableLift<R, T> extends Observable<R> {
                 throw new NullPointerException("Operator " + operator + " returned a null Subscriber");
             }
 
-            st = RxJavaPlugins.onSubscribe(st);
-
-            if (st == null) {
-                throw new NullPointerException("Plugin call for operator " + operator + " returned a null Subscriber");
-            }
-
             source.subscribe(st);
         } catch (NullPointerException e) { // NOPMD
             throw e;

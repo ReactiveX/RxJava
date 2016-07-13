@@ -17,8 +17,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.SingleSubscriber;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Exceptions;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ConsumerSingleSubscriber<T>
 extends AtomicReference<Disposable>
@@ -38,7 +41,12 @@ implements SingleSubscriber<T>, Disposable {
 
     @Override
     public void onError(Throwable e) {
-        onError.accept(e);
+        try {
+            onError.accept(e);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            RxJavaPlugins.onError(new CompositeException(e, ex));
+        }
     }
     
     @Override
@@ -48,7 +56,12 @@ implements SingleSubscriber<T>, Disposable {
     
     @Override
     public void onSuccess(T value) {
-        onSuccess.accept(value);
+        try {
+            onSuccess.accept(value);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            RxJavaPlugins.onError(ex);
+        }
     }
     
     @Override

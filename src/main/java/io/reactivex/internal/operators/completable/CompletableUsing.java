@@ -21,6 +21,8 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableUsing<R> extends Completable {
@@ -48,24 +50,24 @@ public final class CompletableUsing<R> extends Completable {
         try {
             resource = resourceSupplier.get();
         } catch (Throwable e) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(e);
+            Exceptions.throwIfFatal(e);
+            EmptyDisposable.error(e, s);
             return;
         }
         
         CompletableConsumable cs;
         
         try {
-            cs = completableFunction.apply(resource);
+            cs = Objects.requireNonNull(completableFunction.apply(resource), "The completableFunction returned a null Completable");
         } catch (Throwable e) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(e);
-            return;
-        }
-        
-        if (cs == null) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(new NullPointerException("The completable supplied is null"));
+            try {
+                disposer.accept(resource);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                e = new CompositeException(e, ex);
+            }
+            
+            EmptyDisposable.error(e, s);
             return;
         }
         
@@ -79,6 +81,7 @@ public final class CompletableUsing<R> extends Completable {
                     try {
                         disposer.accept(resource);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                     }
                 }
@@ -91,6 +94,7 @@ public final class CompletableUsing<R> extends Completable {
                         try {
                             disposer.accept(resource);
                         } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
                             s.onError(ex);
                             return;
                         }
@@ -111,6 +115,7 @@ public final class CompletableUsing<R> extends Completable {
                         try {
                             disposer.accept(resource);
                         } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
                             e = new CompositeException(ex, e);
                         }
                     }

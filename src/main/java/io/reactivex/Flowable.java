@@ -443,7 +443,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (onSubscribe instanceof Flowable) {
             throw new IllegalArgumentException("create(Flowable) should be upgraded");
         }
-        onSubscribe = RxJavaPlugins.onCreate(onSubscribe);
         return fromPublisher(onSubscribe);
     }
 
@@ -3079,7 +3078,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final void subscribe(Subscriber<? super T> s) {
         Objects.requireNonNull(s, "s is null");
         try {
-            s = RxJavaPlugins.onSubscribe(s);
+            s = RxJavaPlugins.onSubscribe(this, s);
 
             if (s == null) {
                 throw new NullPointerException("Plugin returned null Subscriber");

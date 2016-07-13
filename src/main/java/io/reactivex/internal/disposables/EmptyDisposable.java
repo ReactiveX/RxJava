@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.disposables;
 
-import io.reactivex.Observer;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 
 public enum EmptyDisposable implements Disposable {
@@ -39,4 +39,20 @@ public enum EmptyDisposable implements Disposable {
         s.onSubscribe(INSTANCE);
         s.onError(e);
     }
+
+    public static void complete(CompletableSubscriber s) {
+        s.onSubscribe(INSTANCE);
+        s.onComplete();
+    }
+    
+    public static void error(Throwable e, CompletableSubscriber s) {
+        s.onSubscribe(INSTANCE);
+        s.onError(e);
+    }
+
+    public static void error(Throwable e, SingleSubscriber<?> s) {
+        s.onSubscribe(INSTANCE);
+        s.onError(e);
+    }
+
 }

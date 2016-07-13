@@ -46,7 +46,7 @@ public final class CompletableOnErrorComplete extends Completable {
                 try {
                     b = predicate.test(e);
                 } catch (Throwable ex) {
-                    s.onError(new CompositeException(ex, e));
+                    s.onError(new CompositeException(e, ex));
                     return;
                 }
                 

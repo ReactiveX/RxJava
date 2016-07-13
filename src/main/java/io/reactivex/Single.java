@@ -639,7 +639,32 @@ public abstract class Single<T> implements SingleConsumable<T> {
         Objects.requireNonNull(scheduler, "scheduler is null");
         return new SingleDelay<T>(this, time, unit, scheduler);
     }
+
+    public final Single<T> delaySubscription(CompletableConsumable other) {
+        return new SingleDelayWithCompletable<T>(this, other);
+    }
+
+    public final <U> Single<T> delaySubscription(SingleConsumable<U> other) {
+        return new SingleDelayWithSingle<T, U>(this, other);
+    }
+
+    public final <U> Single<T> delaySubscription(ObservableConsumable<U> other) {
+        return new SingleDelayWithObservable<T, U>(this, other);
+    }
+
+    public final <U> Single<T> delaySubscription(Publisher<U> other) {
+        return new SingleDelayWithPublisher<T, U>(this, other);
+    }
     
+    public final <U> Single<T> delaySubscription(long time, TimeUnit unit) {
+        return delaySubscription(time, unit, Schedulers.computation());
+    }
+
+    public final <U> Single<T> delaySubscription(long time, TimeUnit unit, Scheduler scheduler) {
+        return delaySubscription(Observable.timer(time, unit, scheduler));
+    }
+
+
     public final Single<T> doOnSubscribe(final Consumer<? super Disposable> onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         return new SingleDoOnSubscribe<T>(this, onSubscribe);

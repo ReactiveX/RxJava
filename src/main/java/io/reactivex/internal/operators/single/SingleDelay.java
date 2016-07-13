@@ -38,7 +38,7 @@ public final class SingleDelay<T> extends Single<T> {
 
         final SerialDisposable sd = new SerialDisposable();
         s.onSubscribe(sd);
-        subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleSubscriber<T>() {
             @Override
             public void onSubscribe(Disposable d) {
                 sd.replace(d);

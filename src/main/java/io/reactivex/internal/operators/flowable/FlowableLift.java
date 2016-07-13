@@ -66,12 +66,6 @@ public final class FlowableLift<R, T> extends Flowable<R> {
                 throw new NullPointerException("Operator " + operator + " returned a null Subscriber");
             }
 
-            st = RxJavaPlugins.onSubscribe(st);
-
-            if (st == null) {
-                throw new NullPointerException("Plugin call for operator " + operator + " returned a null Subscriber");
-            }
-
             source.subscribe(st);
         } catch (NullPointerException e) { // NOPMD
             throw e;
