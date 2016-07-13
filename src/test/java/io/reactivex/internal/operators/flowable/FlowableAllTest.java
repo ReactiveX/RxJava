@@ -141,7 +141,7 @@ public class FlowableAllTest {
     
     @Test
     public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
-        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>((Long)null);
+        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(0L);
         Flowable.empty().all(new Predicate<Object>() {
             @Override
             public boolean test(Object t1) {

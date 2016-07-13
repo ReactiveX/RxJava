@@ -14,6 +14,8 @@ package io.reactivex.internal.util;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.plugins.RxJavaPlugins;
+
 /**
  * Utility class to help with backpressure-related operations such as request aggregation.
  */
@@ -65,6 +67,29 @@ public enum BackpressureHelper {
             long u = addCap(r, n);
             if (requested.compareAndSet(r, u)) {
                 return r;
+            }
+        }
+    }
+    
+    /**
+     * Atomically subtract the given number (positive, not validated) from the target field.
+     * @param requested the target field holding the current requested amount
+     * @param n the produced element count, positive (not validated)
+     * @return the new amount
+     */
+    public static long produced(AtomicLong requested, long n) {
+        for (;;) {
+            long current = requested.get();
+            if (current == Long.MAX_VALUE) {
+                return Long.MAX_VALUE;
+            }
+            long update = current - n;
+            if (update < 0L) {
+                RxJavaPlugins.onError(new IllegalStateException("More produced than requested: " + update));
+                update = 0L;
+            }
+            if (requested.compareAndSet(current, update)) {
+                return update;
             }
         }
     }

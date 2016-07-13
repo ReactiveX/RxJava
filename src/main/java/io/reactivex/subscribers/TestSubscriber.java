@@ -43,7 +43,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     /** The actual subscriber to forward events to. */
     private final Subscriber<? super T> actual;
     /** The initial request amount if not null. */
-    private final Long initialRequest;
+    private final long initialRequest;
     /** The latch that indicates an onError or onCompleted has been called. */
     private final CountDownLatch done;
     /** The list of values received. */
@@ -82,9 +82,9 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * Constructs a non-forwarding TestSubscriber with the specified initial request value.
      * <p>The TestSubscriber doesn't validate the initialRequest value so one can
      * test sources with invalid values as well.
-     * @param initialRequest the initial request value if not null
+     * @param initialRequest the initial request value
      */
-    public TestSubscriber(Long initialRequest) {
+    public TestSubscriber(long initialRequest) {
         this(EmptySubscriber.INSTANCE, initialRequest);
     }
 
@@ -93,7 +93,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @param actual the actual Subscriber to forward events to
      */
     public TestSubscriber(Subscriber<? super T> actual) {
-        this(actual, null);
+        this(actual, Long.MAX_VALUE);
     }
 
     /**
@@ -101,9 +101,9 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * <p>The TestSubscriber doesn't validate the initialRequest value so one can
      * test sources with invalid values as well.
      * @param actual the actual Subscriber to forward events to
-     * @param initialRequest the initial request value if not null
+     * @param initialRequest the initial request value
      */
-    public TestSubscriber(Subscriber<? super T> actual, Long initialRequest) {
+    public TestSubscriber(Subscriber<? super T> actual, long initialRequest) {
         this.actual = actual;
         this.initialRequest = initialRequest;
         this.values = new ArrayList<T>();
@@ -163,7 +163,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
             return;
         }
         
-        if (initialRequest != null) {
+        if (initialRequest != 0L) {
             s.request(initialRequest);
         }
         

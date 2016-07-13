@@ -171,7 +171,7 @@ public class FlowableAmbTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testProducerRequestThroughAmb() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(3);
         final AtomicLong requested1 = new AtomicLong();
         final AtomicLong requested2 = new AtomicLong();

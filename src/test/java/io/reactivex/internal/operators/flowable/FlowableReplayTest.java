@@ -878,7 +878,7 @@ public class FlowableReplayTest {
     public void testColdReplayBackpressure() {
         Flowable<Integer> source = Flowable.range(0, 1000).replay().autoConnect();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(10);
         
         source.subscribe(ts);

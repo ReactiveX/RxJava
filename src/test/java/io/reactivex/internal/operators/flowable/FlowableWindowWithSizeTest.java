@@ -292,7 +292,7 @@ public class FlowableWindowWithSizeTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testBackpressureOuterInexact() {
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>((Long)null);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
         
         Flowable.range(1, 5)
         .window(2, 1)

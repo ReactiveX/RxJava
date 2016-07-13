@@ -1527,7 +1527,7 @@ public class FlowableGroupByTest {
      */
     @Test
     public void testBackpressureInnerDoesntOverflowOuter() {
-        TestSubscriber<GroupedFlowable<Integer, Integer>> ts = new TestSubscriber<GroupedFlowable<Integer, Integer>>((Long)null);
+        TestSubscriber<GroupedFlowable<Integer, Integer>> ts = new TestSubscriber<GroupedFlowable<Integer, Integer>>(0L);
         
         Flowable.fromArray(1, 2)
                 .groupBy(new Function<Integer, Integer>() {
@@ -1553,8 +1553,8 @@ public class FlowableGroupByTest {
     
     @Test
     public void testOneGroupInnerRequestsTwiceBuffer() {
-        TestSubscriber<Object> ts1 = new TestSubscriber<Object>((Long)null);
-        final TestSubscriber<Object> ts2 = new TestSubscriber<Object>((Long)null);
+        TestSubscriber<Object> ts1 = new TestSubscriber<Object>(0L);
+        final TestSubscriber<Object> ts2 = new TestSubscriber<Object>(0L);
         
         Flowable.range(1, Flowable.bufferSize() * 2)
         .groupBy(new Function<Integer, Object>() {

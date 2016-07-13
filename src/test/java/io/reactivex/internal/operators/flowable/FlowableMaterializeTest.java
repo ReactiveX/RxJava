@@ -96,7 +96,7 @@ public class FlowableMaterializeTest {
 
     @Test
     public void testBackpressureOnEmptyStream() {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>((Long)null);
+        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>(0L);
         Flowable.<Integer> empty().materialize().subscribe(ts);
         ts.assertNoValues();
         ts.request(1);
@@ -107,7 +107,7 @@ public class FlowableMaterializeTest {
 
     @Test
     public void testBackpressureNoError() {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>((Long)null);
+        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>(0L);
         Flowable.just(1, 2, 3).materialize().subscribe(ts);
         ts.assertNoValues();
         ts.request(1);
@@ -121,7 +121,7 @@ public class FlowableMaterializeTest {
     
     @Test
     public void testBackpressureNoErrorAsync() throws InterruptedException {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>((Long)null);
+        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>(0L);
         Flowable.just(1, 2, 3)
             .materialize()
             .subscribeOn(Schedulers.computation())
@@ -142,7 +142,7 @@ public class FlowableMaterializeTest {
 
     @Test
     public void testBackpressureWithError() {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>((Long)null);
+        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>(0L);
         Flowable.<Integer> error(new IllegalArgumentException()).materialize().subscribe(ts);
         ts.assertNoValues();
         ts.request(1);
@@ -152,7 +152,7 @@ public class FlowableMaterializeTest {
 
     @Test
     public void testBackpressureWithEmissionThenError() {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>((Long)null);
+        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>(0L);
         IllegalArgumentException ex = new IllegalArgumentException();
         Flowable.fromIterable(Arrays.asList(1)).concatWith(Flowable.<Integer> error(ex)).materialize()
                 .subscribe(ts);
@@ -184,7 +184,7 @@ public class FlowableMaterializeTest {
     
     @Test
     public void testUnsubscribeJustBeforeCompletionNotificationShouldPreventThatNotificationArriving() {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>((Long)null);
+        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>(0L);
 
         Flowable.<Integer>empty().materialize()
                 .subscribe(ts);

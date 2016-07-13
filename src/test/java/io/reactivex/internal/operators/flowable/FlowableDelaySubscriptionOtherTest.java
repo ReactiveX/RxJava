@@ -195,7 +195,7 @@ public class FlowableDelaySubscriptionOtherTest {
         
         PublishProcessor<Object> other = PublishProcessor.create();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         final AtomicInteger subscribed = new AtomicInteger();
         

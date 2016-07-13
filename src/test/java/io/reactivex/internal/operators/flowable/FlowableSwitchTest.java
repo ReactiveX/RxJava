@@ -547,7 +547,7 @@ public class FlowableSwitchTest {
     
     @Test(timeout = 10000)
     public void testInitialRequestsAreAdditive() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
                           .map(
@@ -566,7 +566,7 @@ public class FlowableSwitchTest {
     
     @Test(timeout = 10000)
     public void testInitialRequestsDontOverflow() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
                         .map(new Function<Long, Flowable<Long>>() {
@@ -584,7 +584,7 @@ public class FlowableSwitchTest {
     
     @Test(timeout = 10000)
     public void testSecondaryRequestsDontOverflow() throws InterruptedException {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
                         .map(new Function<Long, Flowable<Long>>() {

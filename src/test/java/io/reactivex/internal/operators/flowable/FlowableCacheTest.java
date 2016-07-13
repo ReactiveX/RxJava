@@ -59,7 +59,7 @@ public class FlowableCacheTest {
         
         assertFalse("Source is connected!", source.isConnected());
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(10);
         
         source.subscribe(ts);

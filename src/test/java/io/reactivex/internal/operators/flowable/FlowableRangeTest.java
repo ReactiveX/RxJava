@@ -95,7 +95,7 @@ public class FlowableRangeTest {
     public void testBackpressureViaRequest() {
         Flowable<Integer> o = Flowable.range(1, Flowable.bufferSize());
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         ts.assertNoValues();
         ts.request(1);
@@ -123,7 +123,7 @@ public class FlowableRangeTest {
 
         Flowable<Integer> o = Flowable.range(1, list.size());
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         ts.assertNoValues();
         ts.request(Long.MAX_VALUE); // infinite
@@ -136,7 +136,7 @@ public class FlowableRangeTest {
     void testWithBackpressureOneByOne(int start) {
         Flowable<Integer> source = Flowable.range(start, 100);
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(1);
         source.subscribe(ts);
         
@@ -151,7 +151,7 @@ public class FlowableRangeTest {
     void testWithBackpressureAllAtOnce(int start) {
         Flowable<Integer> source = Flowable.range(start, 100);
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(100);
         source.subscribe(ts);
         
@@ -178,7 +178,7 @@ public class FlowableRangeTest {
     public void testWithBackpressureRequestWayMore() {
         Flowable<Integer> source = Flowable.range(50, 100);
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(150);
         source.subscribe(ts);
         

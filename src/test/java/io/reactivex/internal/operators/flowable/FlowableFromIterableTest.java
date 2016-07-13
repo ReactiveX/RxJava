@@ -119,7 +119,7 @@ public class FlowableFromIterableTest {
         }
         Flowable<Integer> o = Flowable.fromIterable(list);
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         ts.assertNoValues();
         ts.request(1);
@@ -139,7 +139,7 @@ public class FlowableFromIterableTest {
     public void testNoBackpressure() {
         Flowable<Integer> o = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         ts.assertNoValues();
         ts.request(Long.MAX_VALUE); // infinite

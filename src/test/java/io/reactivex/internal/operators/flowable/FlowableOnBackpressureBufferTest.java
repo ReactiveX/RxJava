@@ -30,7 +30,7 @@ public class FlowableOnBackpressureBufferTest {
 
     @Test
     public void testNoBackpressureSupport() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         // this will be ignored
         ts.request(100);
         // we take 500 so it unsubscribes
@@ -64,7 +64,7 @@ public class FlowableOnBackpressureBufferTest {
                 l2.countDown();
             }
 
-        }, null);
+        }, 0L);
         // this will be ignored
         ts.request(100);
         // we take 500 so it unsubscribes
@@ -118,7 +118,7 @@ public class FlowableOnBackpressureBufferTest {
                 l1.countDown();
             }
 
-        }, null);
+        }, 0L);
 
         ts.request(100);
         infinite.subscribeOn(Schedulers.computation())

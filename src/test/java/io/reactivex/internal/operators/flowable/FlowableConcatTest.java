@@ -402,7 +402,7 @@ public class FlowableConcatTest {
         final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(observer, null);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer, 0L);
 
         final Flowable<String> concat = Flowable.concat(Flowable.create(w1), Flowable.create(w2));
 
@@ -444,7 +444,7 @@ public class FlowableConcatTest {
         final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(observer, null);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer, 0L);
         
         @SuppressWarnings("unchecked")
         TestObservable<Flowable<String>> observableOfObservables = new TestObservable<Flowable<String>>(Flowable.create(w1), Flowable.create(w2));

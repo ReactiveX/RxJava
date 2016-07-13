@@ -433,7 +433,7 @@ public class SingleTest {
             }
         });
 
-        TestSubscriber<String> ts = new TestSubscriber<String>((Long)null);
+        TestSubscriber<String> ts = new TestSubscriber<String>(0L);
 
         s.subscribe(ts);
 

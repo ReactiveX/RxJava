@@ -341,7 +341,7 @@ public class FlowableBufferTest {
         Flowable<Integer> source = Flowable.never();
 
         Subscriber<List<Integer>> o = TestHelper.mockSubscriber();
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(o, (Long)null);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(o, 0L);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
         .doOnNext(new Consumer<List<Integer>>() {

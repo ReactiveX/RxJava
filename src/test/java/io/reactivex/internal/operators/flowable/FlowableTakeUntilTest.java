@@ -255,7 +255,7 @@ public class FlowableTakeUntilTest {
     public void testBackpressure() {
         PublishProcessor<Integer> until = PublishProcessor.create();
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
         Flowable.range(1, 10).takeUntil(until).unsafeSubscribe(ts);
 

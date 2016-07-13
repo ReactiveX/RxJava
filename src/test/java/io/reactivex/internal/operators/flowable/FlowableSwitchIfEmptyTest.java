@@ -157,7 +157,7 @@ public class FlowableSwitchIfEmptyTest {
     }
     @Test
     public void testBackpressureNoRequest() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         Flowable.<Integer>empty().switchIfEmpty(Flowable.just(1, 2, 3)).subscribe(ts);
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -165,7 +165,7 @@ public class FlowableSwitchIfEmptyTest {
     
     @Test
     public void testBackpressureOnFirstObservable() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Long)null);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         Flowable.just(1,2,3).switchIfEmpty(Flowable.just(4, 5, 6)).subscribe(ts);
         ts.assertNotComplete();
         ts.assertNoErrors();
@@ -174,7 +174,7 @@ public class FlowableSwitchIfEmptyTest {
     
     @Test(timeout = 10000)
     public void testRequestsNotLost() throws InterruptedException {
-        final TestSubscriber<Long> ts = new TestSubscriber<Long>((Long)null);
+        final TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.create(new Publisher<Long>() {
 
             @Override
