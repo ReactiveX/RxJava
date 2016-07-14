@@ -71,6 +71,26 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     private int establishedFusionMode;
     
     private QueueSubscription<T> qs;
+    
+    /**
+     * Creates a TestSubscriber with Long.MAX_VALUE initial request.
+     * @param <T> the value type
+     * @return the new TestSubscriber instance.
+     */
+    public static <T> TestSubscriber<T> create() {
+        return new TestSubscriber<T>();
+    }
+
+    /**
+     * Creates a TestSubscriber with the given initial request.
+     * @param <T> the value type
+     * @param initialRequested the initial requested amount
+     * @return the new TestSubscriber instance.
+     */
+    public static <T> TestSubscriber<T> create(long initialRequested) {
+        return new TestSubscriber<T>(initialRequested);
+    }
+
     /**
      * Constructs a non-forwarding TestSubscriber with an initial request value of Long.MAX_VALUE.
      */
@@ -171,6 +191,15 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (mr != 0L) {
             s.request(mr);
         }
+        
+        onStart();
+    }
+    
+    /**
+     * Called after the onSubscribe is called and handled.
+     */
+    protected void onStart() {
+        
     }
     
     @Override

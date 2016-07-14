@@ -40,10 +40,12 @@ implements CompletableSubscriber, Disposable {
     @Override
     public void onComplete() {
         // no-op
+        lazySet(DisposableHelper.DISPOSED);
     }
 
     @Override
     public void onError(Throwable e) {
+        lazySet(DisposableHelper.DISPOSED);
         RxJavaPlugins.onError(e);
     }
 

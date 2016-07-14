@@ -12,7 +12,9 @@
  */
 package io.reactivex.plugins;
 
-import org.reactivestreams.*;
+import java.lang.Thread.UncaughtExceptionHandler;
+
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.functions.*;
@@ -24,12 +26,6 @@ public final class RxJavaPlugins {
     
     static volatile Consumer<Throwable> errorHandler;
     
-    static volatile Function<Subscriber<Object>, Subscriber<Object>> onSubscribeHandler;
-
-    static volatile Function<Observer<Object>, Observer<Object>> onNbpSubscribeHandler;
-
-    static volatile Function<Publisher<Object>, Publisher<Object>> onCreateHandler;
-
     static volatile Function<Runnable, Runnable> onScheduleHandler;
 
     static volatile Function<Scheduler, Scheduler> onInitComputationHandler;
@@ -47,6 +43,28 @@ public final class RxJavaPlugins {
     static volatile Function<Scheduler, Scheduler> onIoHandler;
 
     static volatile Function<Scheduler, Scheduler> onNewThreadHandler;
+    
+    @SuppressWarnings("rawtypes")
+    static volatile Function<Flowable, Flowable> onFlowableAssembly;
+    
+    @SuppressWarnings("rawtypes")
+    static volatile Function<Observable, Observable> onObservableAssembly;
+    
+    @SuppressWarnings("rawtypes")
+    static volatile Function<Single, Single> onSingleAssembly;
+    
+    static volatile Function<Completable, Completable> onCompletableAssembly;
+    
+    @SuppressWarnings("rawtypes")
+    static volatile BiFunction<Flowable, Subscriber, Subscriber> onFlowableSubscribe;
+
+    @SuppressWarnings("rawtypes")
+    static volatile BiFunction<Observable, Observer, Observer> onObservableSubscribe;
+
+    @SuppressWarnings("rawtypes")
+    static volatile BiFunction<Single, SingleSubscriber, SingleSubscriber> onSingleSubscribe;
+
+    static volatile BiFunction<Completable, CompletableSubscriber, CompletableSubscriber> onCompletableSubscribe;
 
     /** Prevents changing the plugins. */
     private static volatile boolean lockdown;
@@ -72,11 +90,6 @@ public final class RxJavaPlugins {
         return onComputationHandler;
     }
     
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Function<Publisher<T>, Publisher<T>> getCreateHandler() {
-        return (Function)onCreateHandler;
-    }
-
     public static Consumer<Throwable> getErrorHandler() {
         return errorHandler;
     }
@@ -110,15 +123,6 @@ public final class RxJavaPlugins {
     }
     public static Function<Scheduler, Scheduler> getSingleSchedulerHandler() {
         return onSingleHandler;
-    }
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Function<Subscriber<T>, Subscriber<T>> getSubscribeHandler() {
-        return (Function)onSubscribeHandler;
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Function<Observer<T>, Observer<T>> getNbpSubscribeHandler() {
-        return (Function)onNbpSubscribeHandler;
     }
 
     public static Scheduler initComputationScheduler(Scheduler defaultScheduler) {
@@ -160,20 +164,7 @@ public final class RxJavaPlugins {
         }
         return f.apply(defaultScheduler);
     }
-    /**
-     * Called when an Observable is created.
-     * @param <T> the value type
-     * @param publisher the original publisher
-     * @return the replacement publisher
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes"})
-    public static <T> Publisher<T> onCreate(Publisher<T> publisher) {
-        Function<Publisher<Object>, Publisher<Object>> f = onCreateHandler;
-        if (f == null) {
-            return publisher;
-        }
-        return (Publisher)((Function)f).apply(publisher);
-    }
+
     /**
      * Called when an undeliverable error occurs.
      * @param error the error to report
@@ -196,6 +187,9 @@ public final class RxJavaPlugins {
             }
         }
         error.printStackTrace(); // NOPMD
+        
+        UncaughtExceptionHandler handler = Thread.currentThread().getUncaughtExceptionHandler();
+        handler.uncaughtException(Thread.currentThread(), error);
     }
     
     public static Scheduler onIoScheduler(Scheduler defaultScheduler) {
@@ -236,58 +230,11 @@ public final class RxJavaPlugins {
     }
 
     /**
-     * Called when a subscriber subscribes to an observable.
-     * @param <T> the value type
-     * @param subscriber the original subscriber
-     * @return the subscriber replacement
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes"})
-    public static <T> Subscriber<T> onSubscribe(Subscriber<T> subscriber) {
-        Function<Subscriber<Object>, Subscriber<Object>> f = onSubscribeHandler;
-        if (f == null) {
-            return subscriber;
-        }
-        return (Subscriber)((Function)f).apply(subscriber);
-    }
-
-    /**
-     * Called when a subscriber subscribes to an observable.
-     * @param <T> the value type
-     * @param subscriber the original NbpSubscriber
-     * @return the replacement NbpSubscriber
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes"})
-    public static <T> Observer<T> onNbpSubscribe(Observer<T> subscriber) {
-        Function<Observer<Object>, Observer<Object>> f = onNbpSubscribeHandler;
-        if (f == null) {
-            return subscriber;
-        }
-        return (Observer)((Function)f).apply(subscriber);
-    }
-
-    /**
-     * Called when a subscriber subscribes to an observable.
-     * @param <T> the value type
-     * @param subscriber the original subscriber
-     * @return the replacement subscriber
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes"})
-    public static <T> Observer<T> onSubscribe(Observer<T> subscriber) {
-        Function<Observer<Object>, Observer<Object>> f = onNbpSubscribeHandler;
-        if (f == null) {
-            return subscriber;
-        }
-        return (Observer)((Function)f).apply(subscriber);
-    }
-
-    /**
      * Removes all handlers and resets the default behavior.
      */
     public static void reset() {
-        setCreateHandler(null);
         setErrorHandler(null);
         setScheduleHandler(null);
-        setSubscribeHandler(null);
         
         setComputationSchedulerHandler(null);
         setInitComputationSchedulerHandler(null);
@@ -307,14 +254,6 @@ public final class RxJavaPlugins {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
         onComputationHandler = handler;
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> void setCreateHandler(Function<Publisher<T>, Publisher<T>> handler) {
-        if (lockdown) {
-            throw new IllegalStateException("Plugins can't be changed anymore");
-        }
-        onCreateHandler = (Function)handler;
     }
 
     public static void setErrorHandler(Consumer<Throwable> handler) {
@@ -381,27 +320,183 @@ public final class RxJavaPlugins {
         onSingleHandler = handler;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> void setSubscribeHandler(Function<Subscriber<T>, Subscriber<T>> handler) {
-        if (lockdown) {
-            throw new IllegalStateException("Plugins can't be changed anymore");
-        }
-        onSubscribeHandler = (Function)handler;
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> void setNbpSubscribeHandler(Function<Observer<T>, Observer<T>> handler) {
-        if (lockdown) {
-            throw new IllegalStateException("Plugins can't be changed anymore");
-        }
-        onNbpSubscribeHandler = (Function)handler;
-    }
-
     /**
      * Rewokes the lockdown, only for testing purposes.
      */
     /* test. */static void unlock() {
         lockdown = false;
+    }
+
+    public static Function<Completable, Completable> getOnCompletableAssembly() {
+        return onCompletableAssembly;
+    }
+    
+    public static BiFunction<Completable, CompletableSubscriber, CompletableSubscriber> getOnCompletableSubscribe() {
+        return onCompletableSubscribe;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static Function<Flowable, Flowable> getOnFlowableAssembly() {
+        return onFlowableAssembly;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static BiFunction<Flowable, Subscriber, Subscriber> getOnFlowableSubscribe() {
+        return onFlowableSubscribe;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static Function<Single, Single> getOnSingleAssembly() {
+        return onSingleAssembly;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static BiFunction<Single, SingleSubscriber, SingleSubscriber> getOnSingleSubscribe() {
+        return onSingleSubscribe;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static Function<Observable, Observable> getOnObservableAssembly() {
+        return onObservableAssembly;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static BiFunction<Observable, Observer, Observer> getOnObservableSubscribe() {
+        return onObservableSubscribe;
+    }
+    
+    public static void setOnCompletableAssembly(Function<Completable, Completable> onCompletableAssembly) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onCompletableAssembly = onCompletableAssembly;
+    }
+    
+    public static void setOnCompletableSubscribe(
+            BiFunction<Completable, CompletableSubscriber, CompletableSubscriber> onCompletableSubscribe) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onCompletableSubscribe = onCompletableSubscribe;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static void setOnFlowableAssembly(Function<Flowable, Flowable> onFlowableAssembly) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onFlowableAssembly = onFlowableAssembly;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static void setOnFlowableSubscribe(BiFunction<Flowable, Subscriber, Subscriber> onFlowableSubscribe) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onFlowableSubscribe = onFlowableSubscribe;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static void setOnObservableAssembly(Function<Observable, Observable> onObservableAssembly) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onObservableAssembly = onObservableAssembly;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static void setOnObservableSubscribe(
+            BiFunction<Observable, Observer, Observer> onObservableSubscribe) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onObservableSubscribe = onObservableSubscribe;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static void setOnSingleAssembly(Function<Single, Single> onSingleAssembly) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onSingleAssembly = onSingleAssembly;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static void setOnSingleSubscribe(BiFunction<Single, SingleSubscriber, SingleSubscriber> onSingleSubscribe) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onSingleSubscribe = onSingleSubscribe;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Subscriber<? super T> onSubscribe(Flowable<T> source, Subscriber<? super T> subscriber) {
+        BiFunction<Flowable, Subscriber, Subscriber> f = onFlowableSubscribe;
+        if (f != null) {
+            return f.apply(source, subscriber);
+        }
+        return subscriber;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Observer<? super T> onSubscribe(Observable<T> source, Observer<? super T> subscriber) {
+        BiFunction<Observable, Observer, Observer> f = onObservableSubscribe;
+        if (f != null) {
+            return f.apply(source, subscriber);
+        }
+        return subscriber;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> SingleSubscriber<? super T> onSubscribe(Single<T> source, SingleSubscriber<? super T> subscriber) {
+        BiFunction<Single, SingleSubscriber, SingleSubscriber> f = onSingleSubscribe;
+        if (f != null) {
+            return f.apply(source, subscriber);
+        }
+        return subscriber;
+    }
+
+    public static CompletableSubscriber onSubscribe(Completable source, CompletableSubscriber subscriber) {
+        BiFunction<Completable, CompletableSubscriber, CompletableSubscriber> f = onCompletableSubscribe;
+        if (f != null) {
+            return f.apply(source, subscriber);
+        }
+        return subscriber;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Flowable<T> onAssembly(Flowable<T> source) {
+        Function<Flowable, Flowable> f = onFlowableAssembly;
+        if (f != null) {
+            return f.apply(source);
+        }
+        return source;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Observable<T> onAssembly(Observable<T> source) {
+        Function<Observable, Observable> f = onObservableAssembly;
+        if (f != null) {
+            return f.apply(source);
+        }
+        return source;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Single<T> onAssembly(Single<T> source) {
+        Function<Single, Single> f = onSingleAssembly;
+        if (f != null) {
+            return f.apply(source);
+        }
+        return source;
+    }
+
+    public static Completable onAssembly(Completable source) {
+        Function<Completable, Completable> f = onCompletableAssembly;
+        if (f != null) {
+            return f.apply(source);
+        }
+        return source;
     }
 
     /** Singleton consumer that calls RxJavaPlugins.onError. */

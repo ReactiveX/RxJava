@@ -2948,6 +2948,11 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final BlockingObservable<T> toBlocking() {
         return BlockingObservable.from(this);
     }
+    
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable toCompletable() {
+        return Completable.fromObservable(this);
+    }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<List<T>> toList() {

@@ -19,6 +19,7 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletablePeek extends Completable {
@@ -27,20 +28,24 @@ public final class CompletablePeek extends Completable {
     final Consumer<? super Disposable> onSubscribe; 
     final Consumer<? super Throwable> onError;
     final Runnable onComplete;
-    final Runnable onAfterComplete;
+    final Runnable onTerminate;
+    final Runnable onAfterTerminate;
     final Runnable onDisposed;
     
     public CompletablePeek(CompletableConsumable source, Consumer<? super Disposable> onSubscribe,
-            Consumer<? super Throwable> onError, Runnable onComplete, Runnable onAfterComplete, Runnable onDisposed) {
+            Consumer<? super Throwable> onError, 
+            Runnable onComplete, 
+            Runnable onTerminate, 
+            Runnable onAfterTerminate, 
+            Runnable onDisposed) {
         this.source = source;
         this.onSubscribe = onSubscribe;
         this.onError = onError;
         this.onComplete = onComplete;
-        this.onAfterComplete = onAfterComplete;
+        this.onTerminate = onTerminate;
+        this.onAfterTerminate = onAfterTerminate;
         this.onDisposed = onDisposed;
     }
-
-
 
     @Override
     protected void subscribeActual(final CompletableSubscriber s) {
@@ -51,7 +56,9 @@ public final class CompletablePeek extends Completable {
             public void onComplete() {
                 try {
                     onComplete.run();
+                    onTerminate.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     s.onError(e);
                     return;
                 }
@@ -59,8 +66,9 @@ public final class CompletablePeek extends Completable {
                 s.onComplete();
                 
                 try {
-                    onAfterComplete.run();
+                    onAfterTerminate.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     RxJavaPlugins.onError(e);
                 }
             }
@@ -69,11 +77,20 @@ public final class CompletablePeek extends Completable {
             public void onError(Throwable e) {
                 try {
                     onError.accept(e);
+                    onTerminate.run();
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     e = new CompositeException(ex, e);
                 }
                 
                 s.onError(e);
+                
+                try {
+                    onAfterTerminate.run();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    RxJavaPlugins.onError(ex);
+                }
             }
 
             @Override
@@ -82,6 +99,7 @@ public final class CompletablePeek extends Completable {
                 try {
                     onSubscribe.accept(d);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     d.dispose();
                     s.onSubscribe(EmptyDisposable.INSTANCE);
                     s.onError(ex);
@@ -94,6 +112,7 @@ public final class CompletablePeek extends Completable {
                         try {
                             onDisposed.run();
                         } catch (Throwable e) {
+                            Exceptions.throwIfFatal(e);
                             RxJavaPlugins.onError(e);
                         }
                         d.dispose();

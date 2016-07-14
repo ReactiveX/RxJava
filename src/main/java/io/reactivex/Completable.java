@@ -185,7 +185,7 @@ public abstract class Completable implements CompletableConsumable {
         try {
             // TODO plugin wrapping onSubscribe
             
-            return new CompletableWrapper(onSubscribe);
+            return RxJavaPlugins.onAssembly(new CompletableWrapper(onSubscribe));
         } catch (NullPointerException ex) { // NOPMD
             throw ex;
         } catch (Throwable ex) {
@@ -258,6 +258,18 @@ public abstract class Completable implements CompletableConsumable {
     public static <T> Completable fromFlowable(final Publisher<T> flowable) {
         Objects.requireNonNull(flowable, "flowable is null");
         return new CompletableFromFlowable<T>(flowable);
+    }
+    
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Completable fromFuture(final Future<?> future) {
+        Objects.requireNonNull(future, "future is null");
+        return fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                future.get();
+                return null;
+            }
+        });
     }
     
     /**
@@ -572,6 +584,71 @@ public abstract class Completable implements CompletableConsumable {
     }
     
     /**
+     * Returns an Observable which will subscribe to this Completable and once that is completed then 
+     * will subscribe to the {@code next} Observable. An error event from this Completable will be 
+     * propagated to the downstream subscriber and will result in skipping the subscription of the 
+     * Observable.  
+     * 
+     * @param <T> the value type of the next Observable
+     * @param next the Observable to subscribe after this Completable is completed, not null
+     * @return Observable that composes this Completable and next
+     * @throws NullPointerException if next is null
+     */
+    public final <T> Observable<T> andThen(Observable<T> next) {
+        Objects.requireNonNull(next, "next is null");
+        return next.delaySubscription(toObservable());
+    }
+
+    /**
+     * Returns an Flowable which will subscribe to this Completable and once that is completed then 
+     * will subscribe to the {@code next} Flowable. An error event from this Completable will be 
+     * propagated to the downstream subscriber and will result in skipping the subscription of the 
+     * Observable.  
+     * 
+     * @param <T> the value type of the next Flowable
+     * @param next the Observable to subscribe after this Completable is completed, not null
+     * @return Flowable that composes this Completable and next
+     * @throws NullPointerException if next is null
+     */
+    public final <T> Flowable<T> andThen(Flowable<T> next) {
+        Objects.requireNonNull(next, "next is null");
+        return next.delaySubscription(toFlowable());
+    }
+
+    /**
+     * Returns a Single which will subscribe to this Completable and once that is completed then
+     * will subscribe to the {@code next} Single. An error event from this Completable will be
+     * propagated to the downstream subscriber and will result in skipping the subscription of the
+     * Single.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the value type of the next Single
+     * @param next the Single to subscribe after this Completable is completed, not null
+     * @return Single that composes this Completable and next
+     */
+    public final <T> Single<T> andThen(Single<T> next) {
+        Objects.requireNonNull(next, "next is null");
+        return next.delaySubscription(toObservable());
+    }
+
+    /**
+     * Returns a Completable that first runs this Completable
+     * and then the other completable.
+     * <p>
+     * This is an alias for {@link #concatWith(CompletableConsumable)}.
+     * @param next the other Completable, not null
+     * @return the new Completable instance
+     * @throws NullPointerException if other is null
+     */
+    public final Completable andThen(Completable next) {
+        return concatWith(next);
+    }
+    
+
+    /**
      * Concatenates this Completable with another Completable.
      * @param other the other Completable, not null
      * @return the new Completable which subscribes to this and then the other Completable
@@ -634,7 +711,9 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnComplete(Runnable onComplete) {
-        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete, Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), 
+                onComplete, Functions.emptyRunnable(), Functions.emptyRunnable(),
+                Functions.emptyRunnable());
     }
     
     /**
@@ -646,7 +725,9 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnDispose(Runnable onDispose) {
-        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable(), onDispose);
+        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), 
+                Functions.emptyRunnable(), Functions.emptyRunnable(),
+                Functions.emptyRunnable(), onDispose);
     }
     
     /**
@@ -657,7 +738,9 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnError(Consumer<? super Throwable> onError) {
-        return doOnLifecycle(Functions.emptyConsumer(), onError, Functions.emptyRunnable(), Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnLifecycle(Functions.emptyConsumer(), onError, 
+                Functions.emptyRunnable(), Functions.emptyRunnable(),
+                Functions.emptyRunnable(), Functions.emptyRunnable());
     }
 
     /**
@@ -666,7 +749,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param onSubscribe the consumer called when a CompletableSubscriber subscribes.
      * @param onError the consumer called when this emits an onError event
      * @param onComplete the runnable called just before when this Completable completes normally
-     * @param onAfterComplete the runnable called after this Completable completes normally
+     * @param onAfterTerminate the runnable called after this Completable completes normally
      * @param onDisposed the runnable called when the child cancels the subscription
      * @return the new Completable instance
      */
@@ -675,14 +758,16 @@ public abstract class Completable implements CompletableConsumable {
             final Consumer<? super Disposable> onSubscribe, 
             final Consumer<? super Throwable> onError, 
             final Runnable onComplete, 
-            final Runnable onAfterComplete,
+            final Runnable onTerminate,
+            final Runnable onAfterTerminate,
             final Runnable onDisposed) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
-        Objects.requireNonNull(onAfterComplete, "onAfterComplete is null");
+        Objects.requireNonNull(onTerminate, "onTerminate is null");
+        Objects.requireNonNull(onAfterTerminate, "onAfterTerminate is null");
         Objects.requireNonNull(onDisposed, "onDisposed is null");
-        return new CompletablePeek(this, onSubscribe, onError, onComplete, onAfterComplete, onDisposed);
+        return new CompletablePeek(this, onSubscribe, onError, onComplete, onTerminate, onAfterTerminate, onDisposed);
     }
     
     /**
@@ -694,7 +779,9 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnSubscribe(Consumer<? super Disposable> onSubscribe) {
-        return doOnLifecycle(onSubscribe, Functions.emptyConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnLifecycle(onSubscribe, Functions.emptyConsumer(), 
+                Functions.emptyRunnable(), Functions.emptyRunnable(),
+                Functions.emptyRunnable(), Functions.emptyRunnable());
     }
     
     /**
@@ -705,14 +792,24 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnTerminate(final Runnable onTerminate) {
-        return doOnLifecycle(Functions.emptyConsumer(), new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                onTerminate.run();
-            }
-        }, onTerminate, Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), 
+                Functions.emptyRunnable(), onTerminate, 
+                Functions.emptyRunnable(), Functions.emptyRunnable());
     }
-    
+
+    /**
+     * Returns a Completable instance that calls the given onTerminate callback after this Completable
+     * completes normally or with an exception
+     * @param onAfterTerminate the callback to call after this Completable terminates
+     * @return the new Completable instance
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable doAfterTerminate(final Runnable onAfterTerminate) {
+        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), 
+                onAfterTerminate, Functions.emptyRunnable(), 
+                Functions.emptyRunnable(), Functions.emptyRunnable());
+    }
+
     /**
      * Returns a completable that first runs this Completable
      * and then the other completable.
@@ -760,8 +857,11 @@ public abstract class Completable implements CompletableConsumable {
      * @throws NullPointerException if onAfterComplete is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
+    @Deprecated
     public final Completable finallyDo(Runnable onAfterComplete) {
-        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.emptyRunnable(), onAfterComplete, Functions.emptyRunnable());
+        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), 
+                Functions.emptyRunnable(), onAfterComplete, 
+                Functions.emptyRunnable(), Functions.emptyRunnable());
     }
     
     /**
@@ -1035,7 +1135,8 @@ public abstract class Completable implements CompletableConsumable {
     public final void subscribe(CompletableSubscriber s) {
         Objects.requireNonNull(s, "s is null");
         try {
-            // TODO plugin wrapping the subscriber
+            
+            s = RxJavaPlugins.onSubscribe(this, s);
             
             subscribeActual(s);
         } catch (NullPointerException ex) { // NOPMD
@@ -1050,14 +1151,14 @@ public abstract class Completable implements CompletableConsumable {
 
     /**
      * Subscribes to this Completable and calls back either the onError or onComplete functions.
-     * 
-     * @param onError the consumer that is called if this Completable emits an error
      * @param onComplete the runnable that is called if the Completable completes normally
+     * @param onError the consumer that is called if this Completable emits an error
+     * 
      * @return the Disposable that can be used for cancelling the subscription asynchronously
      * @throws NullPointerException if either callback is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(final Consumer<? super Throwable> onError, final Runnable onComplete) {
+    public final Disposable subscribe(final Runnable onComplete, final Consumer<? super Throwable> onError) {
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
         
