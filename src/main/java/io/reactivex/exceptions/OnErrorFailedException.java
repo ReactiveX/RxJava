@@ -18,6 +18,10 @@ public final class OnErrorFailedException extends RuntimeException {
     private static final long serialVersionUID = 2656125445290831911L;
 
     public OnErrorFailedException(Throwable cause) {
-        super(cause);
+        super(cause != null ? cause : new NullPointerException());
+    }
+
+    public OnErrorFailedException(String message, Throwable cause) {
+        super(message, cause != null ? cause : new NullPointerException());
     }
 }

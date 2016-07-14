@@ -1,6 +1,9 @@
 buildscript {
   repositories { jcenter() }
-  dependencies { classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:4.0.0' }
+  dependencies { 
+    classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:4.0.0' 
+    classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.1.0'
+  }
 }
 
 group = 'io.reactivex.rxjava2'
@@ -11,23 +14,43 @@ apply plugin: 'java'
 apply plugin: 'pmd'
 apply plugin: 'findbugs'
 apply plugin: 'jacoco'
+apply plugin: 'ru.vyarus.animalsniffer'
 apply plugin: 'nebula.rxjava-project'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
 dependencies {
+    signature 'org.codehaus.mojo.signature:java16:1.1@signature'
+
     compile 'org.reactivestreams:reactive-streams:1.0.0'
+
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
 
     perfCompile 'org.openjdk.jmh:jmh-core:1.11.3'
     perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.11.3'
-    // perfCompile 'org.reactivex:rxjava:1.0.14'
 }
 
 javadoc {
-    exclude "**/io/reactivex/internal/**"
+    exclude "**/rx/internal/**"
+    exclude "**/test/**"
+    exclude "**/perf/**"
+    options {
+        windowTitle = "RxJava Javadoc ${project.version}"
+    }
+    // Clear the following options to make the docs consistent with the old format
+    options.addStringOption('top').value = ''
+    options.addStringOption('doctitle').value = ''
+    options.addStringOption('header').value = ''
+    if (JavaVersion.current().isJava7()) {
+        // "./gradle/stylesheet.css" only supports Java 7
+        options.addStringOption('stylesheetfile', rootProject.file('./gradle/stylesheet.css').toString())
+    }
+}
+
+animalsniffer {
+    annotation = 'io.reactivex.internal.util.SuppressAnimalSniffer'
 }
 
 // support for snapshot/final releases with the various branches RxJava uses
@@ -41,7 +64,7 @@ if (project.hasProperty('release.useLastTag')) {
 }
 
 test {
-    maxHeapSize = "2g"
+    maxHeapSize = "1200m"
 
     if (System.getenv('CI') == null) {
         maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
@@ -112,3 +135,4 @@ findbugsMain {
         xml.enabled = true
     }
 }
+

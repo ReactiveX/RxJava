@@ -156,7 +156,7 @@ public enum SubscriptionHelper {
     
     /**
      * Atomically swaps in the common cancelled subscription instance
-     * and disposes the previous subscription if any.
+     * and cancels the previous subscription if any.
      * @param field the target field to dispose the contents of
      * @return true if the swap from the non-cancelled instance to the
      * common cancelled instance happened in the caller's thread (allows

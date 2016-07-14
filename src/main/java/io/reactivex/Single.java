@@ -824,6 +824,10 @@ public abstract class Single<T> implements SingleConsumable<T> {
         toFlowable().subscribe(s);
     }
     
+    public final void subscribe(Observer<? super T> s) {
+        toObservable().subscribe(s);
+    }
+    
     public final Single<T> subscribeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         return new SingleSubscribeOn<T>(this, scheduler);
@@ -859,6 +863,10 @@ public abstract class Single<T> implements SingleConsumable<T> {
     
     public final Flowable<T> toFlowable() {
         return new SingleToFlowable<T>(this);
+    }
+    
+    public final Observable<T> toObservable() {
+        return new SingleToObservable<T>(this);
     }
     
     public final void unsafeSubscribe(Subscriber<? super T> s) {

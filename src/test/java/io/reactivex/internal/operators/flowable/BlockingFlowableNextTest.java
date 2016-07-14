@@ -23,14 +23,14 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.BlockingFlowable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
 
-public class BlockingOperatorNextTest {
+public class BlockingFlowableNextTest {
 
     private void fireOnNextInNewThread(final FlowProcessor<String> o, final String value) {
         new Thread() {
@@ -316,4 +316,11 @@ public class BlockingOperatorNextTest {
         assertEquals(2, BehaviorProcessor.createDefault(2).toBlocking().iterator().next().intValue());
         assertEquals(3, BehaviorProcessor.createDefault(3).toBlocking().next().iterator().next().intValue());
     }
+    
+    @Ignore("THe target is an enum")
+    @Test
+    public void constructorshouldbeprivate() {
+        TestHelper.checkUtilityClass(BlockingFlowableNext.class);
+    }
+
 }

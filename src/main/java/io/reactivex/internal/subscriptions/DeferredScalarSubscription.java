@@ -107,6 +107,7 @@ public class DeferredScalarSubscription<T> extends BasicQueueSubscription<T> {
                 if (get() != CANCELLED) {
                     actual.onComplete();
                 }
+                lazySet(HAS_REQUEST_HAS_VALUE);
                 return;
             }
             this.value = v;

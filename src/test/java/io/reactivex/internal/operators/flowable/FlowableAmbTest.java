@@ -17,6 +17,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -26,6 +28,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
@@ -42,7 +45,7 @@ public class FlowableAmbTest {
         innerScheduler = scheduler.createWorker();
     }
 
-    private Flowable<String> createObservable(final String[] values,
+    private Flowable<String> createFlowable(final String[] values,
             final long interval, final Throwable e) {
         return Flowable.create(new Publisher<String>() {
 
@@ -89,16 +92,16 @@ public class FlowableAmbTest {
 
     @Test
     public void testAmb() {
-        Flowable<String> observable1 = createObservable(new String[] {
+        Flowable<String> Flowable1 = createFlowable(new String[] {
                 "1", "11", "111", "1111" }, 2000, null);
-        Flowable<String> observable2 = createObservable(new String[] {
+        Flowable<String> Flowable2 = createFlowable(new String[] {
                 "2", "22", "222", "2222" }, 1000, null);
-        Flowable<String> observable3 = createObservable(new String[] {
+        Flowable<String> Flowable3 = createFlowable(new String[] {
                 "3", "33", "333", "3333" }, 3000, null);
 
         @SuppressWarnings("unchecked")
-        Flowable<String> o = Flowable.amb(observable1,
-                observable2, observable3);
+        Flowable<String> o = Flowable.amb(Flowable1,
+                Flowable2, Flowable3);
 
         @SuppressWarnings("unchecked")
         DefaultObserver<String> observer = mock(DefaultObserver.class);
@@ -119,16 +122,16 @@ public class FlowableAmbTest {
     public void testAmb2() {
         IOException expectedException = new IOException(
                 "fake exception");
-        Flowable<String> observable1 = createObservable(new String[] {},
+        Flowable<String> Flowable1 = createFlowable(new String[] {},
                 2000, new IOException("fake exception"));
-        Flowable<String> observable2 = createObservable(new String[] {
+        Flowable<String> Flowable2 = createFlowable(new String[] {
                 "2", "22", "222", "2222" }, 1000, expectedException);
-        Flowable<String> observable3 = createObservable(new String[] {},
+        Flowable<String> Flowable3 = createFlowable(new String[] {},
                 3000, new IOException("fake exception"));
 
         @SuppressWarnings("unchecked")
-        Flowable<String> o = Flowable.amb(observable1,
-                observable2, observable3);
+        Flowable<String> o = Flowable.amb(Flowable1,
+                Flowable2, Flowable3);
 
         @SuppressWarnings("unchecked")
         DefaultObserver<String> observer = mock(DefaultObserver.class);
@@ -147,16 +150,16 @@ public class FlowableAmbTest {
 
     @Test
     public void testAmb3() {
-        Flowable<String> observable1 = createObservable(new String[] {
+        Flowable<String> Flowable1 = createFlowable(new String[] {
                 "1" }, 2000, null);
-        Flowable<String> observable2 = createObservable(new String[] {},
+        Flowable<String> Flowable2 = createFlowable(new String[] {},
                 1000, null);
-        Flowable<String> observable3 = createObservable(new String[] {
+        Flowable<String> Flowable3 = createFlowable(new String[] {
                 "3" }, 3000, null);
 
         @SuppressWarnings("unchecked")
-        Flowable<String> o = Flowable.amb(observable1,
-                observable2, observable3);
+        Flowable<String> o = Flowable.amb(Flowable1,
+                Flowable2, Flowable3);
 
         @SuppressWarnings("unchecked")
         DefaultObserver<String> observer = mock(DefaultObserver.class);
@@ -282,10 +285,10 @@ public class FlowableAmbTest {
 
     @Test
     public void testSynchronousSources() {
-        // under async subscription the second observable would complete before
+        // under async subscription the second Flowable would complete before
         // the first but because this is a synchronous subscription to sources
-        // then second observable does not get subscribed to before first
-        // subscription completes hence first observable emits result through
+        // then second Flowable does not get subscribed to before first
+        // subscription completes hence first Flowable emits result through
         // amb
         int result = Flowable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -321,5 +324,199 @@ public class FlowableAmbTest {
         assertFalse("Source 2 still has subscribers!", source2.hasSubscribers());
         assertFalse("Source 2 still has subscribers!", source3.hasSubscribers());
         
+    }
+    
+    @Test(timeout = 1000)
+    public void testMultipleUse() {
+        TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
+
+        Flowable<Long> amb = Flowable.timer(100, TimeUnit.MILLISECONDS).ambWith(Flowable.timer(200, TimeUnit.MILLISECONDS));
+        
+        amb.subscribe(ts1);
+        amb.subscribe(ts2);
+        
+        ts1.awaitTerminalEvent();
+        ts2.awaitTerminalEvent();
+        
+        ts1.assertValue(0L);
+        ts1.assertComplete();
+        ts1.assertNoErrors();
+
+        ts2.assertValue(0L);
+        ts2.assertComplete();
+        ts2.assertNoErrors();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambIterable() {
+        PublishProcessor<Integer> ps1 = PublishProcessor.create();
+        PublishProcessor<Integer> ps2 = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.amb(Arrays.asList(ps1, ps2)).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ps1.onNext(1);
+        ps1.onComplete();
+        
+        assertFalse(ps1.hasSubscribers());
+        assertFalse(ps2.hasSubscribers());
+
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambIterable2() {
+        PublishProcessor<Integer> ps1 = PublishProcessor.create();
+        PublishProcessor<Integer> ps2 = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.amb(Arrays.asList(ps1, ps2)).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ps2.onNext(2);
+        ps2.onComplete();
+        
+        assertFalse(ps1.hasSubscribers());
+        assertFalse(ps2.hasSubscribers());
+
+        ts.assertValue(2);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Ignore("No 2-9 arg overloads")
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambMany() throws Exception {
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] clazz = new Class[i];
+            Arrays.fill(clazz, Publisher.class);
+
+            PublishProcessor<Integer>[] ps = new PublishProcessor[i];
+
+            for (int j = 0; j < i; j++) {
+                
+                for (int k = 0; k < i; k++) {
+                    ps[k] = PublishProcessor.create();
+                }
+                
+                Method m = Flowable.class.getMethod("amb", clazz);
+                
+                Flowable<Integer> obs = (Flowable<Integer>)m.invoke(null, (Object[])ps);
+            
+                TestSubscriber<Integer> ts = TestSubscriber.create();
+                
+                obs.subscribe(ts);
+                
+                for (int k = 0; k < i; k++) {
+                    assertTrue("@" + i + "/" + k + " has no observers?", ps[k].hasSubscribers());
+                }
+                
+                ps[j].onNext(j);
+                ps[j].onComplete();
+                
+                for (int k = 0; k < i; k++) {
+                    assertFalse("@" + i + "/" + k + " has observers?", ps[k].hasSubscribers());
+                }
+                
+                ts.assertValue(j);
+                ts.assertNoErrors();
+                ts.assertComplete();
+            }
+        }
+    }
+    
+    @Ignore("No 2-9 arg overloads")
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambManyError() throws Exception {
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] clazz = new Class[i];
+            Arrays.fill(clazz, Publisher.class);
+
+            PublishProcessor<Integer>[] ps = new PublishProcessor[i];
+
+            for (int j = 0; j < i; j++) {
+                
+                for (int k = 0; k < i; k++) {
+                    ps[k] = PublishProcessor.create();
+                }
+                
+                Method m = Flowable.class.getMethod("amb", clazz);
+                
+                Flowable<Integer> obs = (Flowable<Integer>)m.invoke(null, (Object[])ps);
+            
+                TestSubscriber<Integer> ts = TestSubscriber.create();
+                
+                obs.subscribe(ts);
+                
+                for (int k = 0; k < i; k++) {
+                    assertTrue("@" + i + "/" + k + " has no observers?", ps[k].hasSubscribers());
+                }
+                
+                ps[j].onError(new TestException(Integer.toString(j)));
+                
+                for (int k = 0; k < i; k++) {
+                    assertFalse("@" + i + "/" + k + " has observers?", ps[k].hasSubscribers());
+                }
+                
+                ts.assertNoValues();
+                ts.assertError(TestException.class);
+                ts.assertNotComplete();
+                
+                assertEquals(Integer.toString(j), ts.errors().get(0).getMessage());
+            }
+        }
+    }
+    
+    @Ignore("No 2-9 arg overloads")
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambManyComplete() throws Exception {
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] clazz = new Class[i];
+            Arrays.fill(clazz, Publisher.class);
+
+            PublishProcessor<Integer>[] ps = new PublishProcessor[i];
+
+            for (int j = 0; j < i; j++) {
+                
+                for (int k = 0; k < i; k++) {
+                    ps[k] = PublishProcessor.create();
+                }
+                
+                Method m = Flowable.class.getMethod("amb", clazz);
+                
+                Flowable<Integer> obs = (Flowable<Integer>)m.invoke(null, (Object[])ps);
+            
+                TestSubscriber<Integer> ts = TestSubscriber.create();
+                
+                obs.subscribe(ts);
+                
+                for (int k = 0; k < i; k++) {
+                    assertTrue("@" + i + "/" + k + " has no observers?", ps[k].hasSubscribers());
+                }
+                
+                ps[j].onComplete();
+                
+                for (int k = 0; k < i; k++) {
+                    assertFalse("@" + i + "/" + k + " has observers?", ps[k].hasSubscribers());
+                }
+                
+                ts.assertNoValues();
+                ts.assertNoErrors();
+                ts.assertComplete();
+            }
+        }
     }
 }

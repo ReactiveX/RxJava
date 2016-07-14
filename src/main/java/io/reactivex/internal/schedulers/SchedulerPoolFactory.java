@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.internal.util.SuppressAnimalSniffer;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -62,9 +63,10 @@ public enum SchedulerPoolFactory {
                 
                 next.scheduleAtFixedRate(new Runnable() {
                     @Override
+                    @SuppressAnimalSniffer
                     public void run() {
                         try {
-                            for (ScheduledThreadPoolExecutor e : new ArrayList<ScheduledThreadPoolExecutor>(POOLS.keySet())) {
+                            for (ScheduledThreadPoolExecutor e : new ArrayList<ScheduledThreadPoolExecutor>(POOLS.keySet())) {  // CHM.keySet returns KeySetView in Java 8+; false positive here
                                 if (e.isShutdown()) {
                                     POOLS.remove(e);
                                 } else {

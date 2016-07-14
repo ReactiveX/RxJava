@@ -18,7 +18,11 @@ public final class OnCompleteFailedException extends RuntimeException {
     private static final long serialVersionUID = -6179993283427447098L;
 
     public OnCompleteFailedException(Throwable cause) {
-        super(cause);
+        super(cause != null ? cause : new NullPointerException());
     }
-    
+
+    public OnCompleteFailedException(String message, Throwable cause) {
+        super(message, cause != null ? cause : new NullPointerException());
+    }
+
 }

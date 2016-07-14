@@ -75,38 +75,38 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void combineLatestVarargsNull() {
-        Flowable.combineLatest(new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, true, 128, (Publisher<Object>[])null);
+        }, (Publisher<Object>[])null);
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestVarargsOneIsNull() {
-        Flowable.combineLatest(new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, true, 128, Flowable.never(), null).toBlocking().lastOption();
+        }, Flowable.never(), null).toBlocking().lastOption();
     }
 
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableNull() {
-        Flowable.combineLatest((Iterable<Publisher<Object>>)null, new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError((Iterable<Publisher<Object>>)null, new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, true, 128);
+        });
     }
     
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableIteratorNull() {
-        Flowable.combineLatest(new Iterable<Publisher<Object>>() {
+        Flowable.combineLatestDelayError(new Iterable<Publisher<Object>>() {
             @Override
             public Iterator<Publisher<Object>> iterator() {
                 return null;
@@ -116,52 +116,52 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, true, 128).toBlocking().lastOption();
+        }).toBlocking().lastOption();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableOneIsNull() {
-        Flowable.combineLatest(Arrays.asList(Flowable.never(), null), new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(Arrays.asList(Flowable.never(), null), new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, true, 128).toBlocking().lastOption();
+        }).toBlocking().lastOption();
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestVarargsFunctionNull() {
-        Flowable.combineLatest(null, true, 128, Flowable.never());
+        Flowable.combineLatestDelayError(null, Flowable.never());
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestVarargsFunctionReturnsNull() {
-        Flowable.combineLatest(new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] v) {
                 return null;
             }
-        }, true, 128, just1).toBlocking().lastOption();
+        }, just1).toBlocking().lastOption();
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionNull() {
-        Flowable.combineLatest(Arrays.asList(just1), null, true, 128);
+        Flowable.combineLatestDelayError(Arrays.asList(just1), null);
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionReturnsNull() {
-        Flowable.combineLatest(Arrays.asList(just1), new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(Arrays.asList(just1), new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] v) {
                 return null;
             }
-        }, true, 128).toBlocking().lastOption();
+        }).toBlocking().lastOption();
     }
     
     @Test(expected = NullPointerException.class)

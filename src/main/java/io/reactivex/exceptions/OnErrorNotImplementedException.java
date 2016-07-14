@@ -17,20 +17,12 @@ public final class OnErrorNotImplementedException extends RuntimeException {
     /** */
     private static final long serialVersionUID = -3698670655303683299L;
 
-    public OnErrorNotImplementedException() {
-        super();
-    }
-
     public OnErrorNotImplementedException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public OnErrorNotImplementedException(String message) {
-        super(message);
+        super(message, cause != null ? cause : new NullPointerException());
     }
 
     public OnErrorNotImplementedException(Throwable cause) {
-        super(cause);
+        super(cause != null ? cause : new NullPointerException());
     }
     
 }

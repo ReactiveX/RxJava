@@ -93,59 +93,82 @@ public abstract class Flowable<T> implements Publisher<T> {
         return BUFFER_SIZE;
     }
 
-    @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> combineLatest(Function<? super Object[], ? extends R> combiner, boolean delayError, int bufferSize, Publisher<? extends T>... sources) {
-        return combineLatest(sources, combiner, delayError, bufferSize);
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<Object[], ? extends R> combiner) {
+        return combineLatest(sources, combiner, bufferSize());
     }
 
-    @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> combineLatest(Iterable<? extends Publisher<? extends T>> sources, Function<? super Object[], ? extends R> combiner) {
-        return combineLatest(sources, combiner, false, bufferSize());
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T, R> Flowable<R> combineLatest(Function<Object[], ? extends R> combiner, Publisher<? extends T>... sources) {
+        return combineLatest(sources, combiner, bufferSize());
     }
 
-    @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> combineLatest(Iterable<? extends Publisher<? extends T>> sources, Function<? super Object[], ? extends R> combiner, boolean delayError) {
-        return combineLatest(sources, combiner, delayError, bufferSize());
-    }
-
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> combineLatest(Iterable<? extends Publisher<? extends T>> sources, Function<? super Object[], ? extends R> combiner, boolean delayError, int bufferSize) {
+    public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<Object[], ? extends R> combiner, int bufferSize) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(combiner, "combiner is null");
         validateBufferSize(bufferSize);
-        
-        // the queue holds a pair of values so we need to double the capacity
-        int s = bufferSize << 1;
-        return new FlowableCombineLatest<T, R>(null, sources, combiner, s, delayError);
-    }
-
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<? super Object[], ? extends R> combiner) {
-        return combineLatest(sources, combiner, false, bufferSize());
-    }
-
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<? super Object[], ? extends R> combiner, boolean delayError) {
-        return combineLatest(sources, combiner, delayError, bufferSize());
-    }
-
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<? super Object[], ? extends R> combiner, boolean delayError, int bufferSize) {
-        validateBufferSize(bufferSize);
-        Objects.requireNonNull(combiner, "combiner is null");
         if (sources.length == 0) {
             return empty();
         }
-        // the queue holds a pair of values so we need to double the capacity
-        int s = bufferSize << 1;
-        return new FlowableCombineLatest<T, R>(sources, null, combiner, s, delayError);
+        return new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, false);
+    }
+
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T, R> Flowable<R> combineLatest(Iterable<? extends Publisher<? extends T>> sources, Function<Object[], ? extends R> combiner) {
+        return combineLatest(sources, combiner, bufferSize());
+    }
+
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T, R> Flowable<R> combineLatest(Iterable<? extends Publisher<? extends T>> sources, Function<Object[], ? extends R> combiner, int bufferSize) {
+        Objects.requireNonNull(sources, "sources is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        validateBufferSize(bufferSize);
+        return new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, false);
+    }
+
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T, R> Flowable<R> combineLatestDelayError(Publisher<? extends T>[] sources, Function<Object[], ? extends R> combiner) {
+        return combineLatestDelayError(sources, combiner, bufferSize());
+    }
+
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T, R> Flowable<R> combineLatestDelayError(Function<Object[], ? extends R> combiner, Publisher<? extends T>... sources) {
+        return combineLatestDelayError(sources, combiner, bufferSize());
+    }
+
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T, R> Flowable<R> combineLatestDelayError(Publisher<? extends T>[] sources, Function<Object[], ? extends R> combiner, int bufferSize) {
+        Objects.requireNonNull(sources, "sources is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        validateBufferSize(bufferSize);
+        if (sources.length == 0) {
+            return empty();
+        }
+        return new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, true);
+    }
+
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T, R> Flowable<R> combineLatestDelayError(Iterable<? extends Publisher<? extends T>> sources, Function<Object[], ? extends R> combiner) {
+        return combineLatestDelayError(sources, combiner, bufferSize());
+    }
+
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T, R> Flowable<R> combineLatestDelayError(Iterable<? extends Publisher<? extends T>> sources, Function<Object[], ? extends R> combiner, int bufferSize) {
+        Objects.requireNonNull(sources, "sources is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        validateBufferSize(bufferSize);
+        return new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, true);
     }
 
     @SuppressWarnings("unchecked")
@@ -155,7 +178,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             BiFunction<? super T1, ? super T2, ? extends R> combiner) {
         Function<Object[], R> f = Functions.toFunction(combiner);
-        return combineLatest(f, false, bufferSize(), p1, p2);
+        return combineLatest(f, p1, p2);
     }
 
     @SuppressWarnings("unchecked")
@@ -165,7 +188,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             Publisher<? extends T3> p3, 
             Function3<? super T1, ? super T2, ? super T3, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), false, bufferSize(), p1, p2, p3);
+        return combineLatest(Functions.toFunction(combiner), p1, p2, p3);
     }
 
     @SuppressWarnings("unchecked")
@@ -175,7 +198,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
             Publisher<? extends T3> p3, Publisher<? extends T4> p4,
             Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), false, bufferSize(), p1, p2, p3, p4);
+        return combineLatest(Functions.toFunction(combiner), p1, p2, p3, p4);
     }
 
     @SuppressWarnings("unchecked")
@@ -186,7 +209,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T3> p3, Publisher<? extends T4> p4,
             Publisher<? extends T5> p5,
             Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), false, bufferSize(), p1, p2, p3, p4, p5);
+        return combineLatest(Functions.toFunction(combiner), p1, p2, p3, p4, p5);
     }
 
     @SuppressWarnings("unchecked")
@@ -197,7 +220,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T3> p3, Publisher<? extends T4> p4,
             Publisher<? extends T5> p5, Publisher<? extends T6> p6,
             Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), false, bufferSize(), p1, p2, p3, p4, p5, p6);
+        return combineLatest(Functions.toFunction(combiner), p1, p2, p3, p4, p5, p6);
     }
 
     @SuppressWarnings("unchecked")
@@ -209,7 +232,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T5> p5, Publisher<? extends T6> p6,
             Publisher<? extends T7> p7,
             Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), false, bufferSize(), p1, p2, p3, p4, p5, p6, p7);
+        return combineLatest(Functions.toFunction(combiner), p1, p2, p3, p4, p5, p6, p7);
     }
 
     @SuppressWarnings("unchecked")
@@ -221,7 +244,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T5> p5, Publisher<? extends T6> p6,
             Publisher<? extends T7> p7, Publisher<? extends T8> p8,
             Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), false, bufferSize(), p1, p2, p3, p4, p5, p6, p7, p8);
+        return combineLatest(Functions.toFunction(combiner), p1, p2, p3, p4, p5, p6, p7, p8);
     }
 
     @SuppressWarnings("unchecked")
@@ -234,7 +257,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T7> p7, Publisher<? extends T8> p8,
             Publisher<? extends T9> p9,
             Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), false, bufferSize(), p1, p2, p3, p4, p5, p6, p7, p8, p9);
+        return combineLatest(Functions.toFunction(combiner), p1, p2, p3, p4, p5, p6, p7, p8, p9);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
