@@ -22,13 +22,25 @@ public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
     
     final String prefix;
     
+    static volatile boolean CREATE_TRACE = true;
+    
     public RxThreadFactory(String prefix) {
         this.prefix = prefix;
     }
     
     @Override
     public Thread newThread(Runnable r) {
-        Thread t = new Thread(r, prefix + incrementAndGet());
+        StringBuilder nameBuilder = new StringBuilder();
+        nameBuilder.append(prefix)
+        .append(incrementAndGet());
+        
+        if (CREATE_TRACE) {
+            nameBuilder.append("\r\n");
+            for (StackTraceElement se :Thread.currentThread().getStackTrace()) {
+                nameBuilder.append(se.toString()).append("\r\n");
+            }
+        }
+        Thread t = new Thread(r, nameBuilder.toString());
         t.setDaemon(true);
         return t;
     }
