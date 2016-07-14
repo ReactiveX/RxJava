@@ -335,7 +335,11 @@ public abstract class AbstractSchedulerTests {
                     @Override
                     public void run() {
                         if (i > 42) {
-                            observer.onComplete();
+                            try {
+                                observer.onComplete();
+                            } finally {
+                                inner.dispose();
+                            }
                             return;
                         }
 
