@@ -34,6 +34,7 @@ import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Scheduler.Worker;
 import rx.functions.*;
+import rx.internal.operators.OperatorMerge.*;
 import rx.internal.util.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.*;
@@ -1497,5 +1498,45 @@ public class OperatorMergeTest {
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNoErrors();
         ts.assertCompleted();
+    }
+    
+    @Test
+    public void noInnerReordering() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        MergeSubscriber<Integer> ms = new MergeSubscriber<Integer>(ts, false, 128);
+        ms.producer = new MergeProducer<Integer>(ms);
+        ts.setProducer(ms.producer);
+
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        ms.onNext(ps);
+        
+        ps.onNext(1);
+        
+        BackpressureUtils.getAndAddRequest(ms.producer, 2);
+        
+        ps.onNext(2);
+        
+        ms.emit();
+        
+        ts.assertValues(1, 2);
+    }
+    
+    @Test
+    public void noOuterScalarReordering() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        MergeSubscriber<Integer> ms = new MergeSubscriber<Integer>(ts, false, 128);
+        ms.producer = new MergeProducer<Integer>(ms);
+        ts.setProducer(ms.producer);
+        
+        ms.onNext(Observable.just(1));
+        
+        BackpressureUtils.getAndAddRequest(ms.producer, 2);
+        
+        ms.onNext(Observable.just(2));
+        
+        ms.emit();
+        
+        ts.assertValues(1, 2);
     }
 }
