@@ -21,13 +21,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.BlockingFlowable;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.TestScheduler;
 
-public class BlockingOperatorMostRecentTest {
+public class BlockingFlowableMostRecentTest {
     @Test
     public void testMostRecentNull() {
         assertEquals(null, Flowable.<Void>never().toBlocking().mostRecent(null).iterator().next());
@@ -98,4 +98,11 @@ public class BlockingOperatorMostRecentTest {
         }
 
     }
+
+    @Ignore("THe target is an enum")
+    @Test
+    public void constructorshouldbeprivate() {
+        TestHelper.checkUtilityClass(BlockingFlowableMostRecent.class);
+    }
+
 }

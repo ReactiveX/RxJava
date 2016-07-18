@@ -67,4 +67,10 @@ implements Subscriber<T> {
             actual.onComplete();
         }
     }
+    
+    @Override
+    public void cancel() {
+        super.cancel();
+        s.cancel();
+    }
 }

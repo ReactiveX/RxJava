@@ -20,11 +20,11 @@ import java.util.Iterator;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 
-public class BlockingOperatorToIteratorTest {
+public class BlockingFlowableToIteratorTest {
 
     @Test
     public void testToIterator() {
@@ -78,6 +78,56 @@ public class BlockingOperatorToIteratorTest {
         for (String string : strings) {
             // never reaches here
             System.out.println(string);
+        }
+    }
+    
+    @Ignore("This is not a separate class anymore")
+    @Test
+    public void constructorShouldBePrivate() {
+        // TestHelper.checkUtilityClass(BlockingOperatorToIterator.class);
+    }
+    
+    @Test
+    public void testIteratorExertBackpressure() {
+        final Counter src = new Counter();
+
+        Flowable<Integer> obs = Flowable.fromIterable(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return src;
+            }
+        });
+
+        Iterator<Integer> it = obs.toBlocking().iterator();
+        while (it.hasNext()) {
+            // Correct backpressure should cause this interleaved behavior.
+            // We first request RxRingBuffer.SIZE. Then in increments of
+            // SubscriberIterator.LIMIT.
+            int i = it.next();
+            int expected = i - (i % (Flowable.bufferSize() - (Flowable.bufferSize() >> 2))) + Flowable.bufferSize();
+            expected = Math.min(expected, Counter.MAX);
+
+            assertEquals(expected, src.count);
+        }
+    }
+    
+    public static final class Counter implements Iterator<Integer> {
+        static final int MAX = 5 * Flowable.bufferSize();
+        public int count;
+
+        @Override
+        public boolean hasNext() {
+            return count < MAX;
+        }
+
+        @Override
+        public Integer next() {
+            return ++count;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
         }
     }
 }

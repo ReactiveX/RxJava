@@ -439,12 +439,12 @@ public final class RxJavaPlugins {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Observer<? super T> onSubscribe(Observable<T> source, Observer<? super T> subscriber) {
+    public static <T> Observer<? super T> onSubscribe(Observable<T> source, Observer<? super T> observer) {
         BiFunction<Observable, Observer, Observer> f = onObservableSubscribe;
         if (f != null) {
-            return f.apply(source, subscriber);
+            return f.apply(source, observer);
         }
-        return subscriber;
+        return observer;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

@@ -2637,7 +2637,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final void subscribe(Observer<? super T> observer) {
         Objects.requireNonNull(observer, "observer is null");
         
-        // TODO plugin wrappings
+        observer = RxJavaPlugins.onSubscribe(this, observer);
         
         subscribeActual(observer);
     }

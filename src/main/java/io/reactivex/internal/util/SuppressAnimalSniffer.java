@@ -11,14 +11,16 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.exceptions;
+package io.reactivex.internal.util;
 
-public final class UnsubscribeFailedException extends RuntimeException {
-    /** */
-    private static final long serialVersionUID = 8947024194181365640L;
+import java.lang.annotation.*;
 
-    public UnsubscribeFailedException(Throwable cause) {
-        super(cause != null ? cause : new NullPointerException());
-    }
-    
+/**
+ * Suppress errors by the AnimalSniffer plugin.
+ */
+@Retention(RetentionPolicy.CLASS)
+@Documented
+@Target({ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE})
+public @interface SuppressAnimalSniffer {
+
 }

@@ -18,12 +18,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.flowables.BlockingFlowable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 
-public class BlockingOperatorLatestTest {
+public class BlockingFlowableLatestTest {
     @Test(timeout = 1000)
     public void testSimple() {
         TestScheduler scheduler = new TestScheduler();
@@ -162,5 +162,11 @@ public class BlockingOperatorLatestTest {
         source.onComplete();
 
         Assert.assertEquals(false, it.hasNext());
+    }
+    
+    @Ignore("THe target is an enum")
+    @Test
+    public void constructorshouldbeprivate() {
+        TestHelper.checkUtilityClass(BlockingFlowableLatest.class);
     }
 }

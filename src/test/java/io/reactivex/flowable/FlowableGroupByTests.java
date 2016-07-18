@@ -20,6 +20,7 @@ import io.reactivex.Flowable;
 import io.reactivex.flowable.FlowableEventStream.Event;
 import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableGroupByTests {
 
@@ -83,5 +84,28 @@ public class FlowableGroupByTests {
         });
 
         System.out.println("**** finished");
+    }
+    
+    @Test
+    public void groupsCompleteAsSoonAsMainCompletes() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.range(0, 20)
+        .groupBy(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer i) {
+                return i % 5;
+            }
+        })
+        .concatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> v) {
+                return v;
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(0, 5, 10, 15, 1, 6, 11, 16, 2, 7, 12, 17, 3, 8, 13, 18, 4, 9, 14, 19);
+        ts.assertComplete();
+        ts.assertNoErrors();
     }
 }

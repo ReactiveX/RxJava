@@ -181,7 +181,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
 
     @Override
-    public boolean isDisposed() {
+    public final boolean isDisposed() {
         return cancelled;
     }
 
@@ -289,10 +289,20 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * will capture those potential errors and report it along with the original failure.
      * 
      * @param message the message to use
-     * @param errors the sequence of errors to add as suppressed exception
      */
-    private void fail(String prefix, String message, Iterable<? extends Throwable> errors) {
-        AssertionError ae = new AssertionError(prefix + message);
+    private void fail(String message) {
+        StringBuilder b = new StringBuilder(64 + message.length());
+        b.append(message);
+        
+        b.append(" (")
+        .append("latch = ").append(done.getCount()).append(", ")
+        .append("values = ").append(values.size()).append(", ")
+        .append("errors = ").append(errors.size()).append(", ")
+        .append("completions = ").append(completions)
+        .append(')')
+        ;
+        
+        AssertionError ae = new AssertionError(b.toString());
         CompositeException ce = new CompositeException();
         for (Throwable e : errors) {
             if (e == null) {
@@ -309,54 +319,44 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     
     /**
      * Assert that this TestSubscriber received exactly one onComplete event.
+     * @return this;
      */
-    public void assertComplete() {
-        String prefix = "";
-        /*
-         * This creates a happens-before relation with the possible completion of the TestSubscriber.
-         * Don't move it after the instance reads or into fail()!
-         */
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    public final TestObserver<T> assertComplete() {
         long c = completions;
         if (c == 0) {
-            fail(prefix, "Not completed", errors);
+            fail("Not completed");
         } else
         if (c > 1) {
-            fail(prefix, "Multiple completions: " + c, errors);
+            fail("Multiple completions: " + c);
         }
+        return this;
     }
     
     /**
      * Assert that this TestSubscriber has not received any onComplete event.
+     * @return this;
      */
-    public void assertNotComplete() {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    public final TestObserver<T> assertNotComplete() {
         long c = completions;
         if (c == 1) {
-            fail(prefix, "Completed!", errors);
+            fail("Completed!");
         } else 
         if (c > 1) {
-            fail(prefix, "Multiple completions: " + c, errors);
+            fail("Multiple completions: " + c);
         }
+        return this;
     }
     
     /**
      * Assert that this TestSubscriber has not received any onError event.
+     * @return this;
      */
-    public void assertNoErrors() {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    public final TestObserver<T> assertNoErrors() {
         int s = errors.size();
         if (s != 0) {
-            fail(prefix, "Error(s) present: " + errors, errors);
+            fail("Error(s) present: " + errors);
         }
+        return this;
     }
     
     /**
@@ -366,39 +366,34 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * implement equals(), this assertion may fail. Use the {@link #assertError(Class)}
      * overload to test against the class of an error instead of an instance of an error.
      * @param error the error to check
+     * @return this;
      * @see #assertError(Class)
      */
-    public void assertError(Throwable error) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    public final TestObserver<T> assertError(Throwable error) {
         int s = errors.size();
         if (s == 0) {
-            fail(prefix, "No errors", Collections.<Throwable>emptyList());
+            fail("No errors");
         }
         if (errors.contains(error)) {
             if (s != 1) {
-                fail(prefix, "Error present but other errors as well", errors);
+                fail("Error present but other errors as well");
             }
         } else {
-            fail(prefix, "Error not present", errors);
+            fail("Error not present");
         }
+        return this;
     }
     
     /**
      * Asserts that this TestSubscriber received exactly one onError event which is an
      * instance of the specified errorClass class.
      * @param errorClass the error class to expect
+     * @return this;
      */
-    public void assertError(Class<? extends Throwable> errorClass) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    public final TestObserver<T> assertError(Class<? extends Throwable> errorClass) {
         int s = errors.size();
         if (s == 0) {
-            fail(prefix, "No errors", Collections.<Throwable>emptyList());
+            fail("No errors");
         }
         
         boolean found = false;
@@ -412,31 +407,30 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         
         if (found) {
             if (s != 1) {
-                fail(prefix, "Error present but other errors as well", errors);
+                fail("Error present but other errors as well");
             }
         } else {
-            fail(prefix, "Error not present", errors);
+            fail("Error not present");
         }
+        return this;
     }
     
     /**
      * Assert that this TestSubscriber received exactly one onNext value which is equal to
      * the given value with respect to Objects.equals.
      * @param value the value to expect
+     * @return this;
      */
-    public final void assertValue(T value) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    public final TestObserver<T> assertValue(T value) {
         int s = values.size();
         if (s != 1) {
-            fail(prefix, "Expected: " + valueAndClass(value) + ", Actual: " + values, errors);
+            fail("Expected: " + valueAndClass(value) + ", Actual: " + values);
         }
         T v = values.get(0);
         if (!Objects.equals(value, v)) {
-            fail(prefix, "Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v), errors);
+            fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
         }
+        return this;
     }
     
     /** Appends the class name to a non-null value. */
@@ -450,47 +444,44 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     /**
      * Assert that this TestSubscriber received the specified number onNext events.
      * @param count the expected number of onNext events
+     * @return this;
      */
-    public final void assertValueCount(int count) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    public final TestObserver<T> assertValueCount(int count) {
         int s = values.size();
         if (s != count) {
-            fail(prefix, "Value counts differ; Expected: " + count + ", Actual: " + s, errors);
+            fail("Value counts differ; Expected: " + count + ", Actual: " + s);
         }
+        return this;
     }
     
     /**
      * Assert that this TestSubscriber has not received any onNext events.
+     * @return this;
      */
-    public final void assertNoValues() {
-        assertValueCount(0);
+    public final TestObserver<T> assertNoValues() {
+        return assertValueCount(0);
     }
     
     /**
      * Assert that the TestSubscriber received only the specified values in the specified order.
      * @param values the values expected
+     * @return this;
      * @see #assertValueSet(Collection)
      */
-    public final void assertValues(T... values) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    public final TestObserver<T> assertValues(T... values) {
         int s = this.values.size();
         if (s != values.length) {
-            fail(prefix, "Value count differs; Expected: " + values.length + " " + Arrays.toString(values)
-            + ", Actual: " + s + " " + this.values, errors);
+            fail("Value count differs; Expected: " + values.length + " " + Arrays.toString(values)
+            + ", Actual: " + s + " " + this.values);
         }
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             T u = values[i];
             if (!Objects.equals(u, v)) {
-                fail(prefix, "Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v), errors);
+                fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
         }
+        return this;
     }
     
     /**
@@ -499,35 +490,30 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * asynchronous streams.
      * 
      * @param values the collection of values expected in any order
+     * @return this;
      */
-    public final void assertValueSet(Collection<? extends T> values) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    public final TestObserver<T> assertValueSet(Collection<? extends T> values) {
         int s = this.values.size();
         if (s != values.size()) {
-            fail(prefix, "Value count differs; Expected: " + values.size() + " " + values
-            + ", Actual: " + s + " " + this.values, errors);
+            fail("Value count differs; Expected: " + values.size() + " " + values
+            + ", Actual: " + s + " " + this.values);
         }
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             
             if (!values.contains(v)) {
-                fail(prefix, "Value not in the expected collection: " + valueAndClass(v), errors);
+                fail("Value not in the expected collection: " + valueAndClass(v));
             }
         }
+        return this;
     }
     
     /**
      * Assert that the TestSubscriber received only the specified sequence of values in the same order.
      * @param sequence the sequence of expected values in order
+     * @return this;
      */
-    public final void assertValueSequence(Iterable<? extends T> sequence) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    public final TestObserver<T> assertValueSequence(Iterable<? extends T> sequence) {
         int i = 0;
         Iterator<T> vit = values.iterator();
         Iterator<? extends T> it = sequence.iterator();
@@ -538,76 +524,77 @@ public class TestObserver<T> implements Observer<T>, Disposable {
             T u = vit.next();
             
             if (!Objects.equals(u, v)) {
-                fail(prefix, "Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v), errors);
+                fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
             i++;
         }
         
         if (itNext && !vitNext) {
-            fail(prefix, "More values received than expected (" + i + ")", errors);
+            fail("More values received than expected (" + i + ")");
         }
         if (!itNext && !vitNext) {
-            fail(prefix, "Fever values received than expected (" + i + ")", errors);
+            fail("Fever values received than expected (" + i + ")");
         }
+        return this;
     }
     
     /**
      * Assert that the TestSubscriber terminated (i.e., the terminal latch reached zero).
+     * @return this;
      */
-    public final void assertTerminated() {
+    public final TestObserver<T> assertTerminated() {
         if (done.getCount() != 0) {
-            fail("", "Subscriber still running!", errors);
+            fail("Subscriber still running!");
         }
         long c = completions;
         if (c > 1) {
-            fail("", "Terminated with multiple completions: " + c, errors);
+            fail("Terminated with multiple completions: " + c);
         }
         int s = errors.size();
         if (s > 1) {
-            fail("", "Terminated with multiple errors: " + s, errors);
+            fail("Terminated with multiple errors: " + s);
         }
         
         if (c != 0 && s != 0) {
-            fail("", "Terminated with multiple completions and errors: " + c, errors);
+            fail("Terminated with multiple completions and errors: " + c);
         }
+        return this;
     }
     
     /**
      * Assert that the TestSubscriber has not terminated (i.e., the terminal latch is still non-zero).
+     * @return this;
      */
-    public final void assertNotTerminated() {
+    public final TestObserver<T> assertNotTerminated() {
         if (done.getCount() == 0) {
-            fail("", "Subscriber terminated!", errors);
+            fail("Subscriber terminated!");
         }
+        return this;
     }
     
     /**
      * Assert that the onSubscribe method was called exactly once.
+     * @return this;
      */
-    public final void assertSubscribed() {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    public final TestObserver<T> assertSubscribed() {
         if (subscription == null) {
-            fail(prefix, "Not subscribed!", errors);
+            fail("Not subscribed!");
         }
+        return this;
     }
     
     /**
      * Assert that the onSubscribe method hasn't been called at all.
+     * @return this;
      */
-    public final void assertNotSubscribed() {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    public final TestObserver<T> assertNotSubscribed() {
         if (subscription != null) {
-            fail(prefix, "Subscribed!", errors);
+            fail("Subscribed!");
         } else
         if (!errors.isEmpty()) {
-            fail(prefix, "Not subscribed but errors found", errors);
+            fail("Not subscribed but errors found");
         }
+        return this;
     }
     
     /**
@@ -615,7 +602,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * or returns false if the wait has been interrupted.
      * @return true if the TestSubscriber terminated, false if the wait has been interrupted
      */
-    public boolean awaitTerminalEvent() {
+    public final boolean awaitTerminalEvent() {
         try {
             await();
             return true;
@@ -632,7 +619,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * @param unit the time unit of the waiting time
      * @return true if the TestSubscriber terminated, false if timeout or interrupt happened
      */
-    public boolean awaitTerminalEvent(long duration, TimeUnit unit) {
+    public final boolean awaitTerminalEvent(long duration, TimeUnit unit) {
         try {
             return await(duration, unit);
         } catch (InterruptedException ex) {
@@ -641,27 +628,29 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         }
     }
     
-    public void assertErrorMessage(String message) {
-        String prefix = "";
-        if (done.getCount() != 0) {
-            prefix = "Subscriber still running! ";
-        }
+    /**
+     * Assert that there is a single error and it has the given message.
+     * @param message the message expected
+     * @return this
+     */
+    public final TestObserver<T> assertErrorMessage(String message) {
         int s = errors.size();
         if (s == 0) {
-            fail(prefix, "No errors", Collections.<Throwable>emptyList());
+            fail("No errors");
         } else
         if (s == 1) {
             Throwable e = errors.get(0);
             if (e == null) {
-                fail(prefix, "Error is null", Collections.<Throwable>emptyList());
+                fail("Error is null");
             }
             String errorMessage = e.getMessage();
             if (!Objects.equals(message, errorMessage)) {
-                fail(prefix, "Error message differs; Expected: " + message + ", Actual: " + errorMessage, Collections.singletonList(e));
+                fail("Error message differs; Expected: " + message + ", Actual: " + errorMessage);
             }
         } else {
-            fail(prefix, "Multiple errors", errors);
+            fail("Multiple errors");
         }
+        return this;
     }
     
     /**
@@ -672,7 +661,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * @return a list of (values, errors, completion-notifications)
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public List<List<Object>> getEvents() {
+    public final List<List<Object>> getEvents() {
         List<List<Object>> result = new ArrayList<List<Object>>();
         
         result.add((List)values());
@@ -688,6 +677,50 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         return result;
     }
 
+    /**
+     * Assert that the upstream signalled the specified values in order and
+     * completed normally.
+     * @param values the expected values, asserted in order
+     * @return this
+     * @see #assertFailure(Class, Object...)
+     * @see #assertFailureAndMessage(Class, String, Object...)
+     */
+    public final TestObserver<T> assertResult(T... values) {
+        return assertValues(values)
+                .assertNoErrors()
+                .assertComplete();
+    }
+
+    /**
+     * Assert that the upstream signalled the specified values in order
+     * and then failed with a specific class or subclass of Throwable.
+     * @param error the expected exception (parent) class
+     * @param values the expected values, asserted in order
+     * @return this
+     */
+    public final TestObserver<T> assertFailure(Class<Throwable> error, T... values) {
+        return assertValues(values)
+                .assertError(error)
+                .assertNotComplete();
+    }
+
+    /**
+     * Assert that the upstream signalled the specified values in order,
+     * then failed with a specific class or subclass of Throwable
+     * and with the given exact error message.
+     * @param error the expected exception (parent) class
+     * @param message the expected failure message
+     * @param values the expected values, asserted in order
+     * @return this
+     */
+    public final TestObserver<T> assertFailureAndMessage(Class<? extends Throwable> error, 
+            String message, T... values) {
+        return assertValues(values)
+                .assertError(error)
+                .assertErrorMessage(message)
+                .assertNotComplete();
+    }
+    
     /**
      * An observer that ignores all events and does not report errors.
      */

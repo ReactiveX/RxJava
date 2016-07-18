@@ -103,9 +103,7 @@ public enum Exceptions {
             if (current == null) {
                 update = exception;
             } else {
-                update = new Throwable("Multiple exceptions");
-                update.addSuppressed(current);
-                update.addSuppressed(exception);
+                update = new CompositeException(current, exception);
             }
             
             if (field.compareAndSet(current, update)) {

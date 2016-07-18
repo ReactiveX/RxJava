@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Netflix, Inc.
+ * Copyright 2016 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,10 +47,11 @@ public final class CompositeException extends RuntimeException {
 
     public CompositeException(Throwable... exceptions) {
         this.exceptions = new ArrayList<Throwable>();
-        this.message = null;
         if (exceptions == null) {
+            this.message = "1 exception occurred. ";
             this.exceptions.add(new NullPointerException("exceptions is null"));
         } else {
+            this.message = exceptions.length + " exceptions occurred. ";
             for (Throwable t : exceptions) {
                 this.exceptions.add(t != null ? t : new NullPointerException("One of the exceptions is null"));
             }
@@ -135,12 +136,12 @@ public final class CompositeException extends RuntimeException {
                 // we now have 'e' as the last in the chain
                 try {
                     chain.initCause(e);
-                } catch (Throwable t) {
+                } catch (Throwable t) { // NOPMD 
                     // ignore
                     // the javadocs say that some Throwables (depending on how they're made) will never
                     // let me call initCause without blowing up even if it returns null
                 }
-                chain = chain.getCause();
+                chain = getRootCause(chain);
             }
             cause = localCause;
         }
@@ -292,5 +293,26 @@ public final class CompositeException extends RuntimeException {
      */
     public boolean isEmpty() {
         return exceptions.isEmpty() && getCause() == null;
+    }
+    
+    /**
+     * Returns the root cause of {@code e}. If {@code e.getCause()} returns {@null} or {@code e}, just return {@code e} itself.
+     *
+     * @param e the {@link Throwable} {@code e}.
+     * @return The root cause of {@code e}. If {@code e.getCause()} returns {@null} or {@code e}, just return {@code e} itself.
+     */
+    private Throwable getRootCause(Throwable e) {
+        Throwable root = e.getCause();
+        if (root == null || root == e) {
+            return e;
+        } else {
+            while(true) {
+                Throwable cause = root.getCause();
+                if (cause == null || cause == root) {
+                    return root;
+                }
+                root = root.getCause();
+            }
+        }
     }
 }

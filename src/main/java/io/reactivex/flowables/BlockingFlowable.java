@@ -13,13 +13,13 @@
 
 package io.reactivex.flowables;
 
-import java.io.Closeable;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
 
+import io.reactivex.Flowable;
 import io.reactivex.Optional;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Consumer;
@@ -50,7 +50,7 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
     }
     
     public void forEach(Consumer<? super T> action) {
-        BlockingIterator<T> it = iterate(o);
+        BlockingFlowableIterator<T> it = iterate(o);
         while (it.hasNext()) {
             try {
                 action.accept(it.next());
@@ -61,115 +61,12 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
         }
     }
     
-    static <T> BlockingIterator<T> iterate(Publisher<? extends T> p) {
-        final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
-
-        LambdaSubscriber<T> ls = new LambdaSubscriber<T>(
-            new Consumer<T>() {
-                @Override
-                public void accept(T v) {
-                    queue.offer(NotificationLite.<T>next(v));
-                }
-            },
-            new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) {
-                    queue.offer(NotificationLite.error(e));
-                }
-            },
-            new Runnable() {
-                @Override
-                public void run() {
-                    queue.offer(NotificationLite.complete());
-                }
-            },
-            new Consumer<Subscription>() {
-                @Override
-                public void accept(Subscription s) {
-                    s.request(Long.MAX_VALUE);
-                }
-            }
-        );
-        
-        p.subscribe(ls);
-        
-        return new BlockingIterator<T>(queue, ls);
+    static <T> BlockingFlowableIterator<T> iterate(Publisher<? extends T> p) {
+        BlockingFlowableIterator<T> it = new BlockingFlowableIterator<T>(Flowable.bufferSize());
+        p.subscribe(it);
+        return it;
     }
     
-    static final class BlockingIterator<T> implements Iterator<T>, Closeable, Disposable {
-        final BlockingQueue<Object> queue;
-        final Disposable resource;
-        
-        Object last;
-        
-        public BlockingIterator(BlockingQueue<Object> queue, Disposable resource) {
-            this.queue = queue;
-            this.resource = resource;
-        }
-        @Override
-        public boolean hasNext() {
-            if (last == null) { 
-                Object o = queue.poll();
-                if (o == null) {
-                    try {
-                        o = queue.take();
-                    } catch (InterruptedException ex) {
-                        resource.dispose();
-                        Thread.currentThread().interrupt();
-                        Exceptions.propagate(ex);
-                    }
-                }
-                last = o;
-                if (NotificationLite.isError(o)) {
-                    resource.dispose();
-                    Throwable e = NotificationLite.getError(o);
-                    Exceptions.propagate(e);
-                }
-                if (NotificationLite.isComplete(o)) {
-                    resource.dispose();
-                    return false;
-                }
-                return true;
-            }
-            Object o = last;
-            if (NotificationLite.isError(o)) {
-                Throwable e = NotificationLite.getError(o);
-                Exceptions.propagate(e);
-            }
-            return !NotificationLite.isComplete(o);
-        }
-        
-        @Override
-        public T next() {
-            if (hasNext()) {
-                Object o = last;
-                last = null;
-                return NotificationLite.getValue(o);
-            }
-            throw new NoSuchElementException();
-        }
-        
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-        
-        @Override
-        public void close() {
-            resource.dispose();
-        }
-        
-        @Override
-        public void dispose() {
-            resource.dispose();
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return resource.isDisposed();
-        }
-    }
-
     public Optional<T> firstOption() {
         T v = first(o);
         return v != null ? Optional.of(v) : Optional.<T>empty();
@@ -262,6 +159,11 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
 
             @Override
             public void onNext(T v) {
+                if (value.get() != null) {
+                    sd.dispose();
+                    onError(new IndexOutOfBoundsException("More than one element received"));
+                    return;
+                }
                 value.lazySet(v);
             }
 
@@ -273,6 +175,10 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
 
             @Override
             public void onComplete() {
+                if (value.get() == null) {
+                    onError(new NoSuchElementException("The source is empty"));
+                    return;
+                }
                 cdl.countDown();
             }
             
@@ -284,6 +190,8 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
             public boolean cancel(boolean mayInterruptIfRunning) {
                 if (cdl.getCount() != 0) {
                     sd.dispose();
+                    error.set(new CancellationException());
+                    cdl.countDown();
                     return true;
                 }
                 return false;
@@ -306,6 +214,9 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
                 }
                 Throwable e = error.get();
                 if (e != null) {
+                    if (e instanceof CancellationException) {
+                        throw (CancellationException)e;
+                    }
                     throw new ExecutionException(e);
                 }
                 return value.get();
@@ -321,6 +232,9 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
                 }
                 Throwable e = error.get();
                 if (e != null) {
+                    if (e instanceof CancellationException) {
+                        throw (CancellationException)e;
+                    }
                     throw new ExecutionException(e);
                 }
                 return value.get();
