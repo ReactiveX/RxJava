@@ -1712,6 +1712,7 @@ public class Observable<T> {
      * You should call the AsyncEmitter's onNext, onError and onCompleted methods in a serialized fashion. The
      * rest of its methods are threadsafe.
      * 
+     * @param <T> the element type
      * @param asyncEmitter the emitter that is called when a Subscriber subscribes to the returned {@code Observable}
      * @param backpressure the backpressure mode to apply if the downstream Subscriber doesn't request (fast) enough
      * @return the new Observable instance

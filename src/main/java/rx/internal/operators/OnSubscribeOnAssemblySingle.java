@@ -61,7 +61,7 @@ public final class OnSubscribeOnAssemblySingle<T> implements Single.OnSubscribe<
 
         @Override
         public void onError(Throwable e) {
-            e = new AssemblyStackTraceException(stacktrace, e);
+            new AssemblyStackTraceException(stacktrace).attach(e);
             actual.onError(e);
         }
 

@@ -253,8 +253,10 @@ public abstract class Scheduler {
 	 * });
 	 * </pre>
 	 * 
-	 * @param combine
-	 * @return
+	 * @param <S> a Scheduler and a Subscription
+	 * @param combine the function that takes a two-level nested Observable sequence of a Completable and returns
+	 * the Completable that will be subscribed to and should trigger the execution of the scheduled Actions.
+	 * @return the Scheduler with the customized execution behavior
 	 */
     @SuppressWarnings("unchecked")
     @Experimental

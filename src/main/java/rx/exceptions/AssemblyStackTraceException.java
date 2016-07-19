@@ -15,7 +15,10 @@
  */
 package rx.exceptions;
 
+import java.util.*;
+
 import rx.annotations.Experimental;
+import rx.plugins.RxJavaHooks;
 
 /**
  * A RuntimeException that is stackless but holds onto a textual
@@ -28,16 +31,6 @@ public final class AssemblyStackTraceException extends RuntimeException {
     private static final long serialVersionUID = 2038859767182585852L;
 
     /**
-     * Constructs an AssemblyStackTraceException with the given message and
-     * a cause.
-     * @param message the message
-     * @param cause the cause
-     */
-    public AssemblyStackTraceException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    /**
      * Constructs an AssemblyStackTraceException with the given message.
      * @param message the message
      */
@@ -48,5 +41,49 @@ public final class AssemblyStackTraceException extends RuntimeException {
     @Override
     public synchronized Throwable fillInStackTrace() { // NOPMD 
         return this;
+    }
+    
+    /**
+     * Finds an empty cause slot and assigns itself to it.
+     * @param exception the exception to start from
+     */
+    public void attach(Throwable exception) {
+        Set<Throwable> memory = new HashSet<Throwable>();
+        
+        for (;;) {
+            if (exception.getCause() == null) {
+                exception.initCause(this);
+                return;
+            }
+            
+            exception = exception.getCause();
+            if (!memory.add(exception)) {
+                // in case we run into a cycle, give up and report this to the hooks
+                RxJavaHooks.onError(this);
+                return;
+            }
+        }
+    }
+    
+    /**
+     * Locate the first AssemblyStackTraceException in the causal chain of the
+     * given Throwable (or it if it's one).
+     * @param e the input throwable 
+     * @return the AssemblyStackTraceException located or null if not found 
+     */
+    public static AssemblyStackTraceException find(Throwable e) {
+        Set<Throwable> memory = new HashSet<Throwable>();
+        for (;;) {
+            if (e instanceof AssemblyStackTraceException) {
+                return (AssemblyStackTraceException)e;
+            }
+            if (e == null || e.getCause() == null) {
+                return null;
+            }
+            e = e.getCause();
+            if (!memory.add(e)) {
+                return null;
+            }
+        }
     }
 }

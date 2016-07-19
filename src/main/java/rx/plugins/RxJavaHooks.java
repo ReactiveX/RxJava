@@ -974,7 +974,7 @@ public final class RxJavaHooks {
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
-     * @param onObservableLift the function that is called with original Operator and should
+     * @param onCompletableLift the function that is called with original Operator and should
      * return an Operator instance.
      */
     public static void setOnCompletableLift(Func1<CompletableOperator, CompletableOperator> onCompletableLift) {
