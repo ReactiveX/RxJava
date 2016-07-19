@@ -25,7 +25,6 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.Exceptions;
@@ -1999,7 +1998,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <TRight, TLeftEnd, TRightEnd, R> Observable<R> groupJoin(
-            Publisher<? extends TRight> other,
+            ObservableConsumable<? extends TRight> other,
             Function<? super T, ? extends ObservableConsumable<TLeftEnd>> leftEnd,
             Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd,
             BiFunction<? super T, ? super Observable<TRight>, ? extends R> resultSelector
@@ -2026,7 +2025,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <TRight, TLeftEnd, TRightEnd, R> Observable<R> join(
-            Publisher<? extends TRight> other,
+            ObservableConsumable<? extends TRight> other,
             Function<? super T, ? extends ObservableConsumable<TLeftEnd>> leftEnd,
             Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd,
             BiFunction<? super T, ? super TRight, ? extends R> resultSelector

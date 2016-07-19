@@ -21,8 +21,6 @@ import static io.reactivex.Flowable.bufferSize;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
-import org.reactivestreams.*;
-
 import io.reactivex.Observable;
 import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
@@ -30,9 +28,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.operators.flowable.FlowableGroupJoin.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
@@ -96,7 +92,7 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
         /** */
         private static final long serialVersionUID = -6071216598687999801L;
 
-        final Subscriber<? super R> actual;
+        final Observer<? super R> actual;
         
         final SpscLinkedArrayQueue<Object> queue;
         
@@ -131,7 +127,7 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
         static final Integer RIGHT_CLOSE = 4;
         
         public GroupJoinSubscription(
-                Subscriber<? super R> actual, 
+                Observer<? super R> actual, 
                 Function<? super TLeft, ? extends ObservableConsumable<TLeftEnd>> leftEnd,
                 Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd,
                 BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector) {
@@ -168,7 +164,7 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
             disposables.dispose();
         }
         
-        void errorAll(Subscriber<?> a) {
+        void errorAll(Observer<?> a) {
             Throwable ex = Exceptions.terminate(error);
             
             for (UnicastSubject<TRight> up : lefts.values()) {
@@ -181,7 +177,7 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
             a.onError(ex);
         }
         
-        void fail(Throwable exc, Subscriber<?> a, Queue<?> q) {
+        void fail(Throwable exc, Observer<?> a, Queue<?> q) {
             Exceptions.throwIfFatal(exc);
             Exceptions.addThrowable(error, exc);
             q.clear();
@@ -196,7 +192,7 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
             
             int missed = 1;
             SpscLinkedArrayQueue<Object> q = queue;
-            Subscriber<? super R> a = actual;
+            Observer<? super R> a = actual;
             
             for (;;) {
                 for (;;) {

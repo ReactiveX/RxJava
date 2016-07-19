@@ -16,36 +16,36 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static io.reactivex.Flowable.bufferSize;
+
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
-import org.reactivestreams.*;
-
+import io.reactivex.ObservableConsumable;
+import io.reactivex.Observer;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.operators.flowable.FlowableSource;
+import io.reactivex.internal.operators.observable.ObservableGroupJoin.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends FlowableSource<TLeft, R> {
+public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends ObservableSource<TLeft, R> {
 
-    final Publisher<? extends TRight> other;
+    final ObservableConsumable<? extends TRight> other;
     
-    final Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd;
+    final Function<? super TLeft, ? extends ObservableConsumable<TLeftEnd>> leftEnd;
     
-    final Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd;
+    final Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd;
     
     final BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector;
     
     public ObservableJoin(
-            Publisher<TLeft> source, 
-            Publisher<? extends TRight> other,
-            Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
-            Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
+            ObservableConsumable<TLeft> source, 
+            ObservableConsumable<? extends TRight> other,
+            Function<? super TLeft, ? extends ObservableConsumable<TLeftEnd>> leftEnd,
+            Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd,
             BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector) {
         super(source);
         this.other = other;
@@ -55,10 +55,11 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> s) {
+    protected void subscribeActual(Observer<? super R> s) {
 
         GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> parent = 
-                new GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>(s, leftEnd, rightEnd, resultSelector);
+                new GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>(
+                        s, leftEnd, rightEnd, resultSelector);
         
         s.onSubscribe(parent);
         
@@ -72,14 +73,12 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
     }
     
     static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> 
-    extends AtomicInteger implements Subscription {
+    extends AtomicInteger implements Disposable, JoinSupport {
 
         /** */
         private static final long serialVersionUID = -6071216598687999801L;
 
-        final Subscriber<? super R> actual;
-        
-        final AtomicLong requested;
+        final Observer<? super R> actual;
         
         final SpscLinkedArrayQueue<Object> queue;
         
@@ -91,9 +90,9 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
 
         final AtomicReference<Throwable> error;
         
-        final Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd;
+        final Function<? super TLeft, ? extends ObservableConsumable<TLeftEnd>> leftEnd;
         
-        final Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd;
+        final Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd;
         
         final BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector;
         
@@ -113,11 +112,11 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
         
         static final Integer RIGHT_CLOSE = 4;
         
-        public GroupJoinSubscription(Subscriber<? super R> actual, Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
-                Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
+        public GroupJoinSubscription(Observer<? super R> actual, 
+                Function<? super TLeft, ? extends ObservableConsumable<TLeftEnd>> leftEnd,
+                Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd,
                         BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector) {
             this.actual = actual;
-            this.requested = new AtomicLong();
             this.disposables = new CompositeDisposable();
             this.queue = new SpscLinkedArrayQueue<Object>(bufferSize());
             this.lefts = new LinkedHashMap<Integer, TLeft>();
@@ -130,14 +129,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
         }
         
         @Override
-        public void request(long n) {
-            if (SubscriptionHelper.validate(n)) {
-                BackpressureHelper.add(requested, n);
-            }
-        }
-
-        @Override
-        public void cancel() {
+        public void dispose() {
             if (cancelled) {
                 return;
             }
@@ -148,11 +140,16 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
             }
         }
         
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+        
         void cancelAll() {
             disposables.dispose();
         }
         
-        void errorAll(Subscriber<?> a) {
+        void errorAll(Observer<?> a) {
             Throwable ex = Exceptions.terminate(error);
             
             lefts.clear();
@@ -161,7 +158,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
             a.onError(ex);
         }
         
-        void fail(Throwable exc, Subscriber<?> a, Queue<?> q) {
+        void fail(Throwable exc, Observer<?> a, Queue<?> q) {
             Exceptions.throwIfFatal(exc);
             Exceptions.addThrowable(error, exc);
             q.clear();
@@ -176,7 +173,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
             
             int missed = 1;
             SpscLinkedArrayQueue<Object> q = queue;
-            Subscriber<? super R> a = actual;
+            Observer<? super R> a = actual;
             
             for (;;) {
                 for (;;) {
@@ -222,7 +219,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
                         int idx = leftIndex++;
                         lefts.put(idx, left);
                         
-                        Publisher<TLeftEnd> p;
+                        ObservableConsumable<TLeftEnd> p;
                         
                         try {
                             p = Objects.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
@@ -244,9 +241,6 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
                             return;
                         }
                         
-                        long r = requested.get();
-                        long e = 0L;
-                        
                         for (TRight right : rights.values()) {
                             
                             R w;
@@ -258,21 +252,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
                                 return;
                             }
                             
-                            if (e != r) {
-                                a.onNext(w);
-                                
-                                e++;
-                            } else {
-                                Exceptions.addThrowable(error, new MissingBackpressureException("Could not emit value due to lack of requests"));
-                                q.clear();
-                                cancelAll();
-                                errorAll(a);
-                                return;
-                            }
-                        }
-                        
-                        if (e != 0L) {
-                            BackpressureHelper.produced(requested, e);
+                            a.onNext(w);
                         }
                     } 
                     else if (mode == RIGHT_VALUE) {
@@ -283,7 +263,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
                         
                         rights.put(idx, right);
                         
-                        Publisher<TRightEnd> p;
+                        ObservableConsumable<TRightEnd> p;
                         
                         try {
                             p = Objects.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
@@ -305,9 +285,6 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
                             return;
                         }
                         
-                        long r = requested.get();
-                        long e = 0L;
-                        
                         for (TLeft left : lefts.values()) {
                             
                             R w;
@@ -319,21 +296,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
                                 return;
                             }
                             
-                            if (e != r) {
-                                a.onNext(w);
-                                
-                                e++;
-                            } else {
-                                Exceptions.addThrowable(error, new MissingBackpressureException("Could not emit value due to lack of requests"));
-                                q.clear();
-                                cancelAll();
-                                errorAll(a);
-                                return;
-                            }
-                        }
-                        
-                        if (e != 0L) {
-                            BackpressureHelper.produced(requested, e);
+                            a.onNext(w);
                         }
                     }
                     else if (mode == LEFT_CLOSE) {
@@ -357,7 +320,8 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
             }
         }
         
-        void innerError(Throwable ex) {
+        @Override
+        public void innerError(Throwable ex) {
             if (Exceptions.addThrowable(error, ex)) {
                 active.decrementAndGet();
                 drain();
@@ -366,27 +330,31 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
             }
         }
         
-        void innerComplete(LeftRightSubscriber sender) {
+        @Override
+        public void innerComplete(LeftRightSubscriber sender) {
             disposables.delete(sender);
             active.decrementAndGet();
             drain();
         }
         
-        void innerValue(boolean isLeft, Object o) {
+        @Override
+        public void innerValue(boolean isLeft, Object o) {
             synchronized (this) {
                 queue.offer(isLeft ? LEFT_VALUE : RIGHT_VALUE, o);
             }
             drain();
         }
         
-        void innerClose(boolean isLeft, LeftRightEndSubscriber index) {
+        @Override
+        public void innerClose(boolean isLeft, LeftRightEndSubscriber index) {
             synchronized (this) {
                 queue.offer(isLeft ? LEFT_CLOSE : RIGHT_CLOSE, index);
             }
             drain();
         }
         
-        void innerCloseError(Throwable ex) {
+        @Override
+        public void innerCloseError(Throwable ex) {
             if (Exceptions.addThrowable(error, ex)) {
                 drain();
             } else {
@@ -394,109 +362,4 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Flowa
             }
         }
     }
-    
-    static final class LeftRightSubscriber 
-    extends AtomicReference<Subscription>
-    implements Subscriber<Object>, Disposable {
-        /** */
-        private static final long serialVersionUID = 1883890389173668373L;
-
-        final GroupJoinSubscription<?, ?, ?, ?, ?> parent;
-
-        final boolean isLeft;
-        
-        public LeftRightSubscriber(GroupJoinSubscription<?, ?, ?, ?, ?> parent, boolean isLeft) {
-            this.parent = parent;
-            this.isLeft = isLeft;
-        }
-        
-        @Override
-        public void dispose() {
-            SubscriptionHelper.dispose(this);
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return SubscriptionHelper.isCancelled(get());
-        }
-
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this, s)) {
-                s.request(Long.MAX_VALUE);
-            }
-        }
-
-        @Override
-        public void onNext(Object t) {
-            parent.innerValue(isLeft, t);
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            parent.innerError(t);
-        }
-
-        @Override
-        public void onComplete() {
-            parent.innerComplete(this);
-        }
-        
-    }
-    
-    static final class LeftRightEndSubscriber 
-    extends AtomicReference<Subscription>
-    implements Subscriber<Object>, Disposable {
-        /** */
-        private static final long serialVersionUID = 1883890389173668373L;
-
-        final GroupJoinSubscription<?, ?, ?, ?, ?> parent;
-
-        final boolean isLeft;
-        
-        final int index;
-        
-        public LeftRightEndSubscriber(GroupJoinSubscription<?, ?, ?, ?, ?> parent, 
-                boolean isLeft, int index) {
-            this.parent = parent;
-            this.isLeft = isLeft;
-            this.index = index;
-        }
-        
-        @Override
-        public void dispose() {
-            SubscriptionHelper.dispose(this);
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return SubscriptionHelper.isCancelled(get());
-        }
-
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this, s)) {
-                s.request(Long.MAX_VALUE);
-            }
-        }
-
-        @Override
-        public void onNext(Object t) {
-            if (SubscriptionHelper.dispose(this)) {
-                parent.innerClose(isLeft, this);
-            }
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            parent.innerError(t);
-        }
-
-        @Override
-        public void onComplete() {
-            parent.innerClose(isLeft, this);
-        }
-        
-    }
-
 }

@@ -26,7 +26,7 @@ import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
 
-public class OnSubscribeJoinTest {
+public class FlowableJoinTest {
     Subscriber<Object> observer = TestHelper.mockSubscriber();
 
     BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {
