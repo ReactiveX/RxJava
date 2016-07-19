@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.DefaultObserver;
 import io.reactivex.subscribers.TestSubscriber;
@@ -318,4 +319,229 @@ public class FlowableFromIterableTest {
         assertFalse(called.get());
     }
     
+    @Test
+    public void getIteratorThrows() {
+        Iterable<Integer> it = new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                throw new TestException("Forced failure");
+            }
+        };
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+
+    @Test
+    public void hasNextThrowsImmediately() {
+        Iterable<Integer> it = new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    @Override
+                    public boolean hasNext() {
+                        throw new TestException("Forced failure");
+                    }
+                    
+                    @Override
+                    public Integer next() {
+                        return null;
+                    }
+                    
+                    @Override
+                    public void remove() {
+                        // ignored
+                    }
+                };
+            }
+        };
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+
+    @Test
+    public void hasNextThrowsSecondTimeFastpath() {
+        Iterable<Integer> it = new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    int count;
+                    @Override
+                    public boolean hasNext() {
+                        if (++count >= 2) {
+                            throw new TestException("Forced failure");
+                        }
+                        return true;
+                    }
+                    
+                    @Override
+                    public Integer next() {
+                        return 1;
+                    }
+                    
+                    @Override
+                    public void remove() {
+                        // ignored
+                    }
+                };
+            }
+        };
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        
+        ts.assertValues(1);
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+
+    @Test
+    public void hasNextThrowsSecondTimeSlowpath() {
+        Iterable<Integer> it = new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    int count;
+                    @Override
+                    public boolean hasNext() {
+                        if (++count >= 2) {
+                            throw new TestException("Forced failure");
+                        }
+                        return true;
+                    }
+                    
+                    @Override
+                    public Integer next() {
+                        return 1;
+                    }
+                    
+                    @Override
+                    public void remove() {
+                        // ignored
+                    }
+                };
+            }
+        };
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5);
+        
+        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        
+        ts.assertValues(1);
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+    
+    @Test
+    public void nextThrowsFastpath() {
+        Iterable<Integer> it = new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+                    
+                    @Override
+                    public Integer next() {
+                        throw new TestException("Forced failure");
+                    }
+                    
+                    @Override
+                    public void remove() {
+                        // ignored
+                    }
+                };
+            }
+        };
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+
+    @Test
+    public void nextThrowsSlowpath() {
+        Iterable<Integer> it = new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+                    
+                    @Override
+                    public Integer next() {
+                        throw new TestException("Forced failure");
+                    }
+                    
+                    @Override
+                    public void remove() {
+                        // ignored
+                    }
+                };
+            }
+        };
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5);
+        
+        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+
+    @Test
+    public void deadOnArrival() {
+        Iterable<Integer> it = new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+                    
+                    @Override
+                    public Integer next() {
+                        throw new NoSuchElementException();
+                    }
+                    
+                    @Override
+                    public void remove() {
+                        // ignored
+                    }
+                };
+            }
+        };
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5);
+        ts.cancel();
+        
+        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+    }
 }

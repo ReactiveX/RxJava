@@ -155,7 +155,15 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                     return;
                 }
                 
-                T t = it.next();
+                T t;
+                
+                try {
+                    t = it.next();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
 
                 if (cancelled) {
                     return;
@@ -172,7 +180,18 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                     return;
                 }
 
-                if (!it.hasNext()) {
+                boolean b;
+                
+                try {
+                    b = it.hasNext();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
+                
+                
+                if (!b) {
                     if (!cancelled) {
                         a.onComplete();
                     }
@@ -195,7 +214,15 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                         return;
                     }
                     
-                    T t = it.next();
+                    T t;
+                    
+                    try {
+                        t = it.next();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        a.onError(ex);
+                        return;
+                    }
 
                     if (cancelled) {
                         return;
@@ -212,7 +239,17 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                         return;
                     }
 
-                    if (!it.hasNext()) {
+                    boolean b;
+                    
+                    try {
+                        b = it.hasNext();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        a.onError(ex);
+                        return;
+                    }
+                    
+                    if (!b) {
                         if (!cancelled) {
                             a.onComplete();
                         }
@@ -229,7 +266,17 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                         return;
                     }
 
-                    if (!it.hasNext()) {
+                    boolean b;
+                    
+                    try {
+                        b = it.hasNext();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        a.onError(ex);
+                        return;
+                    }
+                    
+                    if (!b) {
                         if (!cancelled) {
                             a.onComplete();
                         }
@@ -268,7 +315,15 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                     return;
                 }
                 
-                T t = it.next();
+                T t;
+                
+                try {
+                    t = it.next();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
 
                 if (cancelled) {
                     return;
@@ -285,7 +340,17 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                     return;
                 }
 
-                if (!it.hasNext()) {
+                boolean b;
+                
+                try {
+                    b = it.hasNext();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
+                
+                if (!b) {
                     if (!cancelled) {
                         a.onComplete();
                     }
@@ -308,7 +373,15 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                         return;
                     }
                     
-                    T t = it.next();
+                    T t;
+                    
+                    try {
+                        t = it.next();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        a.onError(ex);
+                        return;
+                    }
 
                     if (cancelled) {
                         return;
@@ -326,7 +399,17 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                         return;
                     }
 
-                    if (!it.hasNext()) {
+                    boolean hasNext;
+                    
+                    try {
+                        hasNext = it.hasNext();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        a.onError(ex);
+                        return;
+                    }
+                    
+                    if (!hasNext) {
                         if (!cancelled) {
                             a.onComplete();
                         }
@@ -345,7 +428,17 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                         return;
                     }
 
-                    if (!it.hasNext()) {
+                    boolean hasNext;
+                    
+                    try {
+                        hasNext = it.hasNext();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        a.onError(ex);
+                        return;
+                    }
+                    
+                    if (!hasNext) {
                         if (!cancelled) {
                             a.onComplete();
                         }

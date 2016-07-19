@@ -2196,6 +2196,19 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U, V> Flowable<V> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, final BiFunction<? super T, ? super U, ? extends V> resultSelector, int prefetch) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        Objects.requireNonNull(resultSelector, "resultSelector is null");
+        return flatMap(new Function<T, Publisher<U>>() {
+            @Override
+            public Publisher<U> apply(T t) {
+                return new FlowableFromIterable<U>(mapper.apply(t));
+            }
+        }, resultSelector, false, bufferSize(), prefetch);
+    }
+
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int bufferSize) {
         return new FlowableFlattenIterable<T, U>(this, mapper, bufferSize);
     }
@@ -2282,6 +2295,18 @@ public abstract class Flowable<T> implements Publisher<T> {
         return new FlowableGroupBy<T, K, V>(this, keySelector, valueSelector, bufferSize, delayError);
     }
 
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <TRight, TLeftEnd, TRightEnd, R> Flowable<R> groupJoin(
+            Publisher<? extends TRight> other,
+            Function<? super T, ? extends Publisher<TLeftEnd>> leftEnd,
+            Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
+            BiFunction<? super T, ? super Flowable<TRight>, ? extends R> resultSelector
+                    ) {
+        return new FlowableGroupJoin<T, TRight, TLeftEnd, TRightEnd, R>(
+                this, other, leftEnd, rightEnd, resultSelector);
+    }
+    
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> ignoreElements() {
@@ -2298,6 +2323,19 @@ public abstract class Flowable<T> implements Publisher<T> {
             }
         });
     }
+
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <TRight, TLeftEnd, TRightEnd, R> Flowable<R> join(
+            Publisher<? extends TRight> other,
+            Function<? super T, ? extends Publisher<TLeftEnd>> leftEnd,
+            Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
+            BiFunction<? super T, ? super TRight, ? extends R> resultSelector
+                    ) {
+        return new FlowableJoin<T, TRight, TLeftEnd, TRightEnd, R>(
+                this, other, leftEnd, rightEnd, resultSelector);
+    }
+    
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2492,6 +2530,12 @@ public abstract class Flowable<T> implements Publisher<T> {
         }, true);
     }
 
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Flowable<T> onTerminateDetach() {
+        return new FlowableDetach<T>(this);
+    }
+    
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableFlowable<T> publish() {

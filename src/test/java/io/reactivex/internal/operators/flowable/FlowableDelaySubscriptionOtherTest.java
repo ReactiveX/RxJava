@@ -12,7 +12,7 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.reactivestreams.Subscription;
@@ -239,5 +239,74 @@ public class FlowableDelaySubscriptionOtherTest {
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNoErrors();
         ts.assertComplete();
+    }
+    
+    @Test
+    public void unsubscriptionPropagatesBeforeSubscribe() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        PublishProcessor<Integer> other = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.delaySubscription(other).subscribe(ts);
+        
+        Assert.assertFalse("source subscribed?", source.hasSubscribers());
+        Assert.assertTrue("other not subscribed?", other.hasSubscribers());
+        
+        ts.dispose();
+        
+        Assert.assertFalse("source subscribed?", source.hasSubscribers());
+        Assert.assertFalse("other still subscribed?", other.hasSubscribers());
+    }
+
+    @Test
+    public void unsubscriptionPropagatesAfterSubscribe() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        PublishProcessor<Integer> other = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.delaySubscription(other).subscribe(ts);
+        
+        Assert.assertFalse("source subscribed?", source.hasSubscribers());
+        Assert.assertTrue("other not subscribed?", other.hasSubscribers());
+        
+        other.onComplete();
+        
+        Assert.assertTrue("source not subscribed?", source.hasSubscribers());
+        Assert.assertFalse("other still subscribed?", other.hasSubscribers());
+        
+        ts.dispose();
+        
+        Assert.assertFalse("source subscribed?", source.hasSubscribers());
+        Assert.assertFalse("other still subscribed?", other.hasSubscribers());
+    }
+
+    @Test
+    public void delayAndTakeUntilNeverSubscribeToSource() {
+        PublishProcessor<Integer> delayUntil = PublishProcessor.create();
+        PublishProcessor<Integer> interrupt = PublishProcessor.create();
+        final AtomicBoolean subscribed = new AtomicBoolean(false);
+
+        Flowable.just(1)
+        .doOnSubscribe(new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription s) {
+                subscribed.set(true);
+            }
+        })
+        .delaySubscription(delayUntil)
+        .takeUntil(interrupt)
+        .subscribe();
+
+        interrupt.onNext(9000);
+        delayUntil.onNext(1);
+
+        Assert.assertFalse(subscribed.get());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void otherNull() {
+        Flowable.just(1).delaySubscription((Flowable<Integer>)null);
     }
 }
