@@ -15,9 +15,10 @@
  */
 package rx.internal.operators;
 
+import java.util.ArrayList;
+import java.util.List;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
-import rx.exceptions.AssemblyStackTraceException;
 
 /**
  * Captures the current stack when it is instantiated, makes
@@ -30,7 +31,7 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
 
     final OnSubscribe<T> source;
     
-    final String stacktrace;
+    final StackTraceElement[] assemblyStacktrace;
 
     /**
      * If set to true, the creation of PublisherOnAssembly will capture the raw
@@ -40,15 +41,14 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
     
     public OnSubscribeOnAssembly(OnSubscribe<T> source) {
         this.source = source;
-        this.stacktrace = createStacktrace();
+        this.assemblyStacktrace = assemblyStacktrace();
     }
     
-    static String createStacktrace() {
-        StackTraceElement[] stes = Thread.currentThread().getStackTrace();
+    static StackTraceElement[] assemblyStacktrace() {
+        final StackTraceElement[] in = new Exception().getStackTrace();
+        final List<StackTraceElement> out = new ArrayList<StackTraceElement>(in.length);
 
-        StringBuilder sb = new StringBuilder("Assembly trace:");
-        
-        for (StackTraceElement e : stes) {
+        for (StackTraceElement e : in) {
             String row = e.toString();
             if (!fullStackTrace) {
                 if (e.getLineNumber() <= 1) {
@@ -85,27 +85,41 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
                     continue;
                 }
             }
-            sb.append("\n at ").append(row);
+            out.add(e);
         }
-        
-        return sb.append("\nOriginal exception:").toString();
+
+        return out.toArray(new StackTraceElement[out.size()]);
+    }
+
+    static Throwable addAssembly(Throwable original, StackTraceElement[] assemblyStacktrace) {
+        final StackTraceElement[] originalStacktrace = original.getStackTrace();
+        final StackTraceElement[] resultingStacktrace = new StackTraceElement[originalStacktrace.length + assemblyStacktrace.length];
+
+        System.arraycopy(originalStacktrace, 0, resultingStacktrace, 0, originalStacktrace.length);
+
+        System.arraycopy(assemblyStacktrace, 0, resultingStacktrace,
+            originalStacktrace.length, assemblyStacktrace.length);
+
+        original.setStackTrace(resultingStacktrace);
+
+        return original;
     }
 
     @Override
     public void call(Subscriber<? super T> t) {
-        source.call(new OnAssemblySubscriber<T>(t, stacktrace));
+        source.call(new OnAssemblySubscriber<T>(t, assemblyStacktrace));
     }
     
     static final class OnAssemblySubscriber<T> extends Subscriber<T> {
 
         final Subscriber<? super T> actual;
         
-        final String stacktrace;
+        final StackTraceElement[] assemblyStacktrace;
         
-        public OnAssemblySubscriber(Subscriber<? super T> actual, String stacktrace) {
+        public OnAssemblySubscriber(Subscriber<? super T> actual, StackTraceElement[] assemblyStacktrace) {
             super(actual);
             this.actual = actual;
-            this.stacktrace = stacktrace;
+            this.assemblyStacktrace = assemblyStacktrace;
         }
 
         @Override
@@ -115,8 +129,7 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
 
         @Override
         public void onError(Throwable e) {
-            e = new AssemblyStackTraceException(stacktrace, e);
-            actual.onError(e);
+            actual.onError(addAssembly(e, assemblyStacktrace));
         }
 
         @Override

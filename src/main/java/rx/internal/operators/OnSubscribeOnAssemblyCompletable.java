@@ -17,7 +17,6 @@ package rx.internal.operators;
 
 import rx.*;
 import rx.Completable.CompletableSubscriber;
-import rx.exceptions.AssemblyStackTraceException;
 
 /**
  * Captures the current stack when it is instantiated, makes
@@ -30,7 +29,7 @@ public final class OnSubscribeOnAssemblyCompletable<T> implements Completable.Co
 
     final Completable.CompletableOnSubscribe source;
     
-    final String stacktrace;
+    final StackTraceElement[] assemblyStacktrace;
 
     /**
      * If set to true, the creation of PublisherOnAssembly will capture the raw
@@ -40,23 +39,23 @@ public final class OnSubscribeOnAssemblyCompletable<T> implements Completable.Co
     
     public OnSubscribeOnAssemblyCompletable(Completable.CompletableOnSubscribe source) {
         this.source = source;
-        this.stacktrace = OnSubscribeOnAssembly.createStacktrace();
+        this.assemblyStacktrace = OnSubscribeOnAssembly.assemblyStacktrace();
     }
     
     @Override
     public void call(Completable.CompletableSubscriber t) {
-        source.call(new OnAssemblyCompletableSubscriber(t, stacktrace));
+        source.call(new OnAssemblyCompletableSubscriber(t, assemblyStacktrace));
     }
     
     static final class OnAssemblyCompletableSubscriber implements CompletableSubscriber {
 
         final CompletableSubscriber actual;
         
-        final String stacktrace;
+        final StackTraceElement[] assemblyStacktrace;
         
-        public OnAssemblyCompletableSubscriber(CompletableSubscriber actual, String stacktrace) {
+        public OnAssemblyCompletableSubscriber(CompletableSubscriber actual, StackTraceElement[] assemblyStacktrace) {
             this.actual = actual;
-            this.stacktrace = stacktrace;
+            this.assemblyStacktrace = assemblyStacktrace;
         }
 
         @Override
@@ -71,8 +70,7 @@ public final class OnSubscribeOnAssemblyCompletable<T> implements Completable.Co
 
         @Override
         public void onError(Throwable e) {
-            e = new AssemblyStackTraceException(stacktrace, e);
-            actual.onError(e);
+            actual.onError(OnSubscribeOnAssembly.addAssembly(e, assemblyStacktrace));
         }
     }
 }

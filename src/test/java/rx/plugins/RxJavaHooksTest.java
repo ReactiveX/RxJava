@@ -50,7 +50,17 @@ public class RxJavaHooksTest {
             }
         });
     }
-    
+
+    static boolean stacktraceContainsString(Throwable throwable, String expectedString) {
+        for (StackTraceElement element : throwable.getStackTrace()) {
+            if (element.toString().contains(expectedString)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @Test
     public void constructorShouldBePrivate() {
         TestUtil.checkUtilityClass(RxJavaHooks.class);
@@ -64,16 +74,14 @@ public class RxJavaHooksTest {
             
             createObservable().subscribe(ts);
             
-            ts.assertError(AssemblyStackTraceException.class);
+            ts.assertError(TestException.class);
             
             Throwable ex = ts.getOnErrorEvents().get(0);
             
-            assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
-            
-            assertTrue("" + ex, ex instanceof AssemblyStackTraceException);
-            
-            assertTrue(ex.getMessage(), ex.getMessage().contains("createObservable"));
-            
+            assertFalse(ex.getCause() instanceof TestException);
+
+            assertTrue(stacktraceContainsString(ex, "createObservable"));
+
             RxJavaHooks.clearAssemblyTracking();
 
             ts = TestSubscriber.create();
@@ -84,6 +92,21 @@ public class RxJavaHooksTest {
         } finally {
             RxJavaHooks.resetAssemblyTracking();
         }
+    }
+
+    @Test
+    public void noAssemblyTrackingObservable() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        createObservable().subscribe(ts);
+
+        ts.assertError(TestException.class);
+
+        Throwable ex = ts.getOnErrorEvents().get(0);
+
+        assertFalse(ex.getCause() instanceof TestException);
+
+        assertFalse(stacktraceContainsString(ex, "createObservable"));
     }
     
     static Single<Integer> createSingle() {
@@ -103,15 +126,13 @@ public class RxJavaHooksTest {
             
             createSingle().subscribe(ts);
             
-            ts.assertError(AssemblyStackTraceException.class);
+            ts.assertError(TestException.class);
             
             Throwable ex = ts.getOnErrorEvents().get(0);
 
-            assertTrue("" + ex, ex instanceof AssemblyStackTraceException);
+            assertFalse(ex.getCause() instanceof TestException);
 
-            assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
-
-            assertTrue(ex.getMessage(), ex.getMessage().contains("createSingle"));
+            assertTrue(stacktraceContainsString(ex, "createSingle"));
 
             RxJavaHooks.clearAssemblyTracking();
 
@@ -124,7 +145,22 @@ public class RxJavaHooksTest {
             RxJavaHooks.resetAssemblyTracking();
         }
     }
-    
+
+    @Test
+    public void noAssemblyTrackingSingle() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        createSingle().subscribe(ts);
+
+        ts.assertError(TestException.class);
+
+        Throwable ex = ts.getOnErrorEvents().get(0);
+
+        assertFalse(ex.getCause() instanceof TestException);
+
+        assertFalse(stacktraceContainsString(ex, "createSingle"));
+    }
+
     static Completable createCompletable() {
         return Completable.error(new Func0<Throwable>() {
             @Override
@@ -142,15 +178,13 @@ public class RxJavaHooksTest {
             
             createCompletable().subscribe(ts);
             
-            ts.assertError(AssemblyStackTraceException.class);
+            ts.assertError(TestException.class);
             
             Throwable ex = ts.getOnErrorEvents().get(0);
 
-            assertTrue("" + ex, ex instanceof AssemblyStackTraceException);
+            assertFalse(ex.getCause() instanceof TestException);
 
-            assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
-
-            assertTrue(ex.getMessage(), ex.getMessage().contains("createCompletable"));
+            assertTrue(stacktraceContainsString(ex, "createCompletable"));
 
             RxJavaHooks.clearAssemblyTracking();
 
@@ -163,6 +197,21 @@ public class RxJavaHooksTest {
         } finally {
             RxJavaHooks.resetAssemblyTracking();
         }
+    }
+
+    @Test
+    public void noAssemblyTracking() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        createCompletable().subscribe(ts);
+
+        ts.assertError(TestException.class);
+
+        Throwable ex = ts.getOnErrorEvents().get(0);
+
+        assertFalse(ex.getCause() instanceof TestException);
+
+        assertFalse(stacktraceContainsString(ex, "createCompletable"));
     }
     
     @SuppressWarnings("rawtypes")

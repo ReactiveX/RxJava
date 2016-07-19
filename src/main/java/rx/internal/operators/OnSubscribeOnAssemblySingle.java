@@ -16,7 +16,6 @@
 package rx.internal.operators;
 
 import rx.*;
-import rx.exceptions.AssemblyStackTraceException;
 
 /**
  * Captures the current stack when it is instantiated, makes
@@ -29,7 +28,7 @@ public final class OnSubscribeOnAssemblySingle<T> implements Single.OnSubscribe<
 
     final Single.OnSubscribe<T> source;
     
-    final String stacktrace;
+    final StackTraceElement[] assemblyStacktrace;
 
     /**
      * If set to true, the creation of PublisherOnAssembly will capture the raw
@@ -39,30 +38,29 @@ public final class OnSubscribeOnAssemblySingle<T> implements Single.OnSubscribe<
     
     public OnSubscribeOnAssemblySingle(Single.OnSubscribe<T> source) {
         this.source = source;
-        this.stacktrace = OnSubscribeOnAssembly.createStacktrace();
+        this.assemblyStacktrace = OnSubscribeOnAssembly.assemblyStacktrace();
     }
     
     @Override
     public void call(SingleSubscriber<? super T> t) {
-        source.call(new OnAssemblySingleSubscriber<T>(t, stacktrace));
+        source.call(new OnAssemblySingleSubscriber<T>(t, assemblyStacktrace));
     }
     
     static final class OnAssemblySingleSubscriber<T> extends SingleSubscriber<T> {
 
         final SingleSubscriber<? super T> actual;
         
-        final String stacktrace;
+        final StackTraceElement[] assemblyStacktrace;
         
-        public OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, String stacktrace) {
+        public OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, StackTraceElement[] assemblyStacktrace) {
             this.actual = actual;
-            this.stacktrace = stacktrace;
+            this.assemblyStacktrace = assemblyStacktrace;
             actual.add(this);
         }
 
         @Override
         public void onError(Throwable e) {
-            e = new AssemblyStackTraceException(stacktrace, e);
-            actual.onError(e);
+            actual.onError(OnSubscribeOnAssembly.addAssembly(e, assemblyStacktrace));
         }
 
         @Override
