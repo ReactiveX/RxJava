@@ -29,17 +29,11 @@ public final class OnSubscribeOnAssemblySingle<T> implements Single.OnSubscribe<
 
     final Single.OnSubscribe<T> source;
     
-    final String stacktrace;
-
-    /**
-     * If set to true, the creation of PublisherOnAssembly will capture the raw
-     * stacktrace instead of the sanitized version.
-     */
-    public static volatile boolean fullStackTrace;
+    final StackTraceElement[] stacktrace;
     
     public OnSubscribeOnAssemblySingle(Single.OnSubscribe<T> source) {
         this.source = source;
-        this.stacktrace = OnSubscribeOnAssembly.createStacktrace();
+        this.stacktrace = Thread.currentThread().getStackTrace();
     }
     
     @Override
@@ -51,9 +45,9 @@ public final class OnSubscribeOnAssemblySingle<T> implements Single.OnSubscribe<
 
         final SingleSubscriber<? super T> actual;
         
-        final String stacktrace;
+        final StackTraceElement[] stacktrace;
         
-        public OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, String stacktrace) {
+        public OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, StackTraceElement[] stacktrace) {
             this.actual = actual;
             this.stacktrace = stacktrace;
             actual.add(this);
@@ -61,7 +55,7 @@ public final class OnSubscribeOnAssemblySingle<T> implements Single.OnSubscribe<
 
         @Override
         public void onError(Throwable e) {
-            new AssemblyStackTraceException(stacktrace).attachTo(e);
+            new AssemblyStackTraceException(OnSubscribeOnAssembly.stacktraceToString(stacktrace)).attachTo(e);
             actual.onError(e);
         }
 
