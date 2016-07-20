@@ -71,7 +71,7 @@ public final class OnSubscribeOnAssemblyCompletable<T> implements Completable.Co
 
         @Override
         public void onError(Throwable e) {
-            new AssemblyStackTraceException(stacktrace).attach(e);
+            new AssemblyStackTraceException(stacktrace).attachTo(e);
             actual.onError(e);
         }
     }

@@ -115,7 +115,7 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
 
         @Override
         public void onError(Throwable e) {
-            new AssemblyStackTraceException(stacktrace).attach(e);
+            new AssemblyStackTraceException(stacktrace).attachTo(e);
             actual.onError(e);
         }
 

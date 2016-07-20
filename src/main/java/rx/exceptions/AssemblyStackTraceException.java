@@ -47,7 +47,7 @@ public final class AssemblyStackTraceException extends RuntimeException {
      * Finds an empty cause slot and assigns itself to it.
      * @param exception the exception to start from
      */
-    public void attach(Throwable exception) {
+    public void attachTo(Throwable exception) {
         Set<Throwable> memory = new HashSet<Throwable>();
         
         for (;;) {
