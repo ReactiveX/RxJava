@@ -352,9 +352,16 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 }
             }
             if (success) {
-                emitScalar(subscriber, value, r);
+                RxRingBuffer subscriberQueue = subscriber.queue;
+                if (subscriberQueue == null || subscriberQueue.isEmpty()) {
+                    emitScalar(subscriber, value, r);
+                } else {
+                    queueScalar(subscriber, value);
+                    emitLoop();
+                }
             } else {
                 queueScalar(subscriber, value);
+                emit();
             }
         }
 
@@ -383,7 +390,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 }
                 return;
             }
-            emit();
         }
 
         protected void emitScalar(InnerSubscriber<T> subscriber, T value, long r) {
@@ -460,9 +466,16 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 }
             }
             if (success) {
-                emitScalar(value, r);
+                Queue<Object> mainQueue = queue;
+                if (mainQueue == null || mainQueue.isEmpty()) {
+                    emitScalar(value, r);
+                } else {
+                    queueScalar(value);
+                    emitLoop();
+                }
             } else {
                 queueScalar(value);
+                emit();
             }
         }
 
@@ -495,7 +508,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 onError(OnErrorThrowable.addValueAsLastCause(new MissingBackpressureException(), value));
                 return;
             }
-            emit();
         }
 
         protected void emitScalar(T value, long r) {
