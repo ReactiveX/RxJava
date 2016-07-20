@@ -352,7 +352,8 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 }
             }
             if (success) {
-                if (subscriber.queue == null || subscriber.queue.isEmpty()) {
+                RxRingBuffer subscriberQueue = subscriber.queue;
+                if (subscriberQueue == null || subscriberQueue.isEmpty()) {
                     emitScalar(subscriber, value, r);
                 } else {
                     queueScalar(subscriber, value);
@@ -465,7 +466,8 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 }
             }
             if (success) {
-                if (queue == null || queue.isEmpty()) {
+                Queue<Object> mainQueue = queue;
+                if (mainQueue == null || mainQueue.isEmpty()) {
                     emitScalar(value, r);
                 } else {
                     queueScalar(value);
