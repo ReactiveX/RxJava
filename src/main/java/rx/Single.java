@@ -1396,6 +1396,25 @@ public class Single<T> {
         return Observable.merge(asObservable(map(func)));
     }
 
+    public final Completable flatMapCompletable(final Func1<? super T, ? extends Completable> func) {
+        return Completable.create(new Completable.CompletableOnSubscribe() {
+            @Override
+            public void call(final Completable.CompletableSubscriber completableSubscriber) {
+                subscribe(new SingleSubscriber<T>() {
+                    @Override
+                    public void onSuccess(final T value) {
+                        func.call(value).subscribe(completableSubscriber);
+                    }
+
+                    @Override
+                    public void onError(final Throwable error) {
+                        completableSubscriber.onError(error);
+                    }
+                });
+            }
+        });
+    }
+
     /**
      * Returns a Single that applies a specified function to the item emitted by the source Single and
      * emits the result of this function application.

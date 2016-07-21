@@ -2005,4 +2005,32 @@ public class SingleTest {
         assertFalse("Observers present?!", ps.hasObservers());
     }
 
+    @Test
+    public void flatMapCompletableComplete() {
+        TestSubscriber testSubscriber = new TestSubscriber();
+
+        Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
+            @Override
+            public Completable call(final Integer integer) {
+                return Completable.complete();
+            }
+        }).subscribe(testSubscriber);
+
+        testSubscriber.assertCompleted();
+    }
+
+    @Test
+    public void flatMapCompletableError() {
+        final RuntimeException error = new RuntimeException("some error");
+        TestSubscriber testSubscriber = new TestSubscriber();
+
+        Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
+            @Override
+            public Completable call(final Integer integer) {
+                return Completable.error(error);
+            }
+        }).subscribe(testSubscriber);
+
+        testSubscriber.assertError(error);
+    }
 }
