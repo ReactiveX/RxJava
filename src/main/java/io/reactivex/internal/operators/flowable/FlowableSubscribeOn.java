@@ -13,67 +13,63 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.BackpressureHelper;
 
 public final class FlowableSubscribeOn<T> extends Flowable<T> {
     final Publisher<? extends T> source;
     final Scheduler scheduler;
-    final boolean requestOn;
     
-    public FlowableSubscribeOn(Publisher<? extends T> source, Scheduler scheduler, boolean requestOn) {
+    public FlowableSubscribeOn(Publisher<? extends T> source, Scheduler scheduler) {
         this.source = source;
         this.scheduler = scheduler;
-        this.requestOn = requestOn;
     }
     
     @Override
     public void subscribeActual(final Subscriber<? super T> s) {
-        /*
-         * FIXME call onSubscribe first
-         */
-        if (requestOn) {
-            Scheduler.Worker w = scheduler.createWorker();
-            final SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<T>(s, w);
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    source.subscribe(sos);
-                }
-            });
-        } else {
-            scheduler.scheduleDirect(new Runnable() {
-                @Override
-                public void run() {
-                    source.subscribe(s);
-                }
-            });
-        }
+        Scheduler.Worker w = scheduler.createWorker();
+        final SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<T>(s, w);
+        s.onSubscribe(sos);
+        
+        w.schedule(new Runnable() {
+            @Override
+            public void run() {
+                sos.lazySet(Thread.currentThread());
+                source.subscribe(sos);
+            }
+        });
     }
     
-    static final class SubscribeOnSubscriber<T> extends AtomicReference<Thread> implements Subscriber<T>, Subscription {
+    static final class SubscribeOnSubscriber<T> extends AtomicReference<Thread>
+    implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = 8094547886072529208L;
         final Subscriber<? super T> actual;
         final Scheduler.Worker worker;
         
-        Subscription s;
+        final AtomicReference<Subscription> s;
+        
+        final AtomicLong requested;
         
         public SubscribeOnSubscriber(Subscriber<? super T> actual, Scheduler.Worker worker) {
             this.actual = actual;
             this.worker = worker;
+            this.s = new AtomicReference<Subscription>();
+            this.requested = new AtomicLong();
         }
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                lazySet(Thread.currentThread());
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.setOnce(this.s, s)) {
+                long r = requested.getAndSet(0L);
+                if (r != 0L) {
+                    requestUpstream(r, s);
+                }
             }
         }
         
@@ -105,6 +101,23 @@ public final class FlowableSubscribeOn<T> extends Flowable<T> {
             if (!SubscriptionHelper.validate(n)) {
                 return;
             }
+            Subscription s = this.s.get();
+            if (s != null) {
+                requestUpstream(n, s);
+            } else {
+                BackpressureHelper.add(requested, n);
+                s = this.s.get();
+                if (s != null) {
+                    long r = requested.getAndSet(0L);
+                    if (r != 0L) {
+                        requestUpstream(r, s);
+                    }
+                }
+                
+            }
+        }
+        
+        void requestUpstream(final long n, final Subscription s) {
             if (Thread.currentThread() == get()) {
                 s.request(n);
             } else {
@@ -119,7 +132,7 @@ public final class FlowableSubscribeOn<T> extends Flowable<T> {
         
         @Override
         public void cancel() {
-            s.cancel();
+            SubscriptionHelper.dispose(s);
             worker.dispose();
         }
     }

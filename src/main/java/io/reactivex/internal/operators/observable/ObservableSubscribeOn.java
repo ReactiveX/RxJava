@@ -30,39 +30,33 @@ public final class ObservableSubscribeOn<T> extends Observable<T> {
     
     @Override
     public void subscribeActual(final Observer<? super T> s) {
-        /*
-         * TODO can't use the returned disposable because to dispose it,
-         * one must set a Subscription on s on the current thread, but
-         * it is expected that onSubscribe is run on the target scheduler.
-         */
-        scheduler.scheduleDirect(new Runnable() {
+        final SubscribeOnObserver<T> parent = new SubscribeOnObserver<T>(s);
+        
+        s.onSubscribe(parent);
+        
+        parent.setDisposable(scheduler.scheduleDirect(new Runnable() {
             @Override
             public void run() {
-                source.subscribe(s);
+                source.subscribe(parent);
             }
-        });
+        }));
     }
     
-    static final class SubscribeOnSubscriber<T> extends AtomicReference<Thread> implements Observer<T>, Disposable {
+    static final class SubscribeOnObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
         /** */
         private static final long serialVersionUID = 8094547886072529208L;
         final Observer<? super T> actual;
-        final Scheduler.Worker worker;
         
-        Disposable s;
+        final AtomicReference<Disposable> s;
         
-        public SubscribeOnSubscriber(Observer<? super T> actual, Scheduler.Worker worker) {
+        public SubscribeOnObserver(Observer<? super T> actual) {
             this.actual = actual;
-            this.worker = worker;
+            this.s = new AtomicReference<Disposable>();
         }
         
         @Override
         public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                lazySet(Thread.currentThread());
-                actual.onSubscribe(this);
-            }
+            DisposableHelper.setOnce(this.s, s);
         }
         
         @Override
@@ -72,31 +66,27 @@ public final class ObservableSubscribeOn<T> extends Observable<T> {
         
         @Override
         public void onError(Throwable t) {
-            try {
-                actual.onError(t);
-            } finally {
-                worker.dispose();
-            }
+            actual.onError(t);
         }
         
         @Override
         public void onComplete() {
-            try {
-                actual.onComplete();
-            } finally {
-                worker.dispose();
-            }
+            actual.onComplete();
         }
         
         @Override
         public void dispose() {
-            s.dispose();
-            worker.dispose();
+            DisposableHelper.dispose(s);
+            DisposableHelper.dispose(this);
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return DisposableHelper.isDisposed(get());
+        }
+        
+        void setDisposable(Disposable d) {
+            DisposableHelper.setOnce(this, d);
         }
     }
 }
