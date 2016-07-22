@@ -1413,7 +1413,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     public final Completable flatMapCompletable(final Func1<? super T, ? extends Completable> func) {
-        return Completable.create(new CompletableFlatMapSingleToCompletable(this, func));
+        return Completable.create(new CompletableFlatMapSingleToCompletable<T>(this, func));
     }
 
     /**
