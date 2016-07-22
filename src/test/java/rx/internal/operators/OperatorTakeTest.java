@@ -425,7 +425,9 @@ public class OperatorTakeTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        source.take(1).doOnNext(new Action1<Integer>() {
+        source
+        .rebatchRequests(2) // take(1) requests 1
+        .take(1).doOnNext(new Action1<Integer>() {
             @Override
             public void call(Integer v) {
                 source.onNext(2);

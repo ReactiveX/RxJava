@@ -33,9 +33,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.exceptions.CompositeException;
-import rx.exceptions.OnErrorNotImplementedException;
-import rx.exceptions.TestException;
+import rx.exceptions.*;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
@@ -500,5 +498,65 @@ public class PublishSubjectTest {
         assertFalse(async.hasCompleted());
         assertTrue(async.hasThrowable());
         assertSame(te, async.getThrowable());
+    }
+    
+    @Test
+    public void backpressureFailFast() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create(1);
+        
+        ps.subscribe(ts);
+        
+        ps.onNext(1);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ps.onNext(2);
+        
+        ts.assertValue(1);
+        ts.assertError(MissingBackpressureException.class);
+        ts.assertNotCompleted();
+
+        assertEquals("PublishSubject: could not emit value due to lack of requests", ts.getOnErrorEvents().get(0).getMessage());
+    }
+    
+    @Test
+    public void crossUnsubscribe() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        final TestSubscriber<Integer> ts0 = TestSubscriber.create();
+
+        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 2) {
+                    ts0.unsubscribe();
+                }
+            }
+        };
+        
+        ps.subscribe(ts1);
+        ps.subscribe(ts0);
+        
+        ps.onNext(1);
+        
+        ts0.assertValue(1);
+        ts1.assertValue(1);
+        
+        ps.onNext(2);
+        ps.onCompleted();
+        
+        ts0.assertValue(1);
+        ts0.assertNoErrors();
+        ts0.assertNotCompleted();
+        ts0.assertUnsubscribed();
+        
+        ts1.assertValues(1, 2);
+        ts1.assertNoErrors();
+        ts1.assertCompleted();
     }
 }

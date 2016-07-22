@@ -222,7 +222,7 @@ public class OperatorPublishFunctionTest {
         ts.assertError(MissingBackpressureException.class);
         ts.assertNotCompleted();
         
-        Assert.assertEquals("Queue full?!", ts.getOnErrorEvents().get(0).getMessage());
+        Assert.assertEquals("PublishSubject: could not emit value due to lack of requests", ts.getOnErrorEvents().get(0).getMessage());
         Assert.assertFalse("Source has subscribers?", ps.hasObservers());
     }
     
@@ -249,7 +249,7 @@ public class OperatorPublishFunctionTest {
         ts.assertError(MissingBackpressureException.class);
         ts.assertNotCompleted();
         
-        Assert.assertEquals("Queue full?!", ts.getOnErrorEvents().get(0).getMessage());
+        Assert.assertEquals("PublishSubject: could not emit value due to lack of requests", ts.getOnErrorEvents().get(0).getMessage());
         Assert.assertFalse("Source has subscribers?", ps.hasObservers());
     }
 }
