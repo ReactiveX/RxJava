@@ -2007,7 +2007,7 @@ public class SingleTest {
 
     @Test
     public void flatMapCompletableComplete() {
-        TestSubscriber testSubscriber = new TestSubscriber();
+        TestSubscriber testSubscriber = TestSubscriber.create();
 
         Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
             @Override
@@ -2022,7 +2022,7 @@ public class SingleTest {
     @Test
     public void flatMapCompletableError() {
         final RuntimeException error = new RuntimeException("some error");
-        TestSubscriber testSubscriber = new TestSubscriber();
+        TestSubscriber testSubscriber = TestSubscriber.create();
 
         Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
             @Override
@@ -2032,5 +2032,33 @@ public class SingleTest {
         }).subscribe(testSubscriber);
 
         testSubscriber.assertError(error);
+    }
+
+    @Test
+    public void flatMapCompletableNullCompletable() {
+        TestSubscriber testSubscriber = TestSubscriber.create();
+
+        Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
+            @Override
+            public Completable call(final Integer integer) {
+                return null;
+            }
+        }).subscribe(testSubscriber);
+
+        testSubscriber.assertError(NullPointerException.class);
+    }
+
+    @Test
+    public void flatMapCompletableException() {
+        TestSubscriber testSubscriber = TestSubscriber.create();
+
+        Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
+            @Override
+            public Completable call(final Integer integer) {
+                throw new UnsupportedOperationException();
+            }
+        }).subscribe(testSubscriber);
+
+        testSubscriber.assertError(UnsupportedOperationException.class);
     }
 }

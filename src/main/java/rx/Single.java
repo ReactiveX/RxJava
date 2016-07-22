@@ -1396,23 +1396,24 @@ public class Single<T> {
         return Observable.merge(asObservable(map(func)));
     }
 
+    /**
+     * Returns a Completable that completes based on applying a specified function to the item emitted by the
+     * source Completable, where that function returns a Completable.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapCompletable.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code flatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param func
+     *            a function that, when applied to the item emitted by the source Single, returns a
+     *            Completable
+     * @return the Completable returned from {@code func} when applied to the item emitted by the source Single
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
     public final Completable flatMapCompletable(final Func1<? super T, ? extends Completable> func) {
-        return Completable.create(new Completable.CompletableOnSubscribe() {
-            @Override
-            public void call(final Completable.CompletableSubscriber completableSubscriber) {
-                subscribe(new SingleSubscriber<T>() {
-                    @Override
-                    public void onSuccess(final T value) {
-                        func.call(value).subscribe(completableSubscriber);
-                    }
-
-                    @Override
-                    public void onError(final Throwable error) {
-                        completableSubscriber.onError(error);
-                    }
-                });
-            }
-        });
+        return Completable.create(new CompletableFlatMapSingleToCompletable(this, func));
     }
 
     /**
