@@ -29,9 +29,9 @@ public final class CompletableFlatMapSingleToCompletable<T> implements Completab
 
     final Single<T> source;
 
-    final Func1<? super T, Completable> mapper;
+    final Func1<? super T, ? extends Completable> mapper;
 
-    public CompletableFlatMapSingleToCompletable(Single<T> source, Func1<? super T, Completable> mapper) {
+    public CompletableFlatMapSingleToCompletable(Single<T> source, Func1<? super T, ? extends Completable> mapper) {
         this.source = source;
         this.mapper = mapper;
     }
@@ -46,9 +46,9 @@ public final class CompletableFlatMapSingleToCompletable<T> implements Completab
     static final class SourceSubscriber<T> extends SingleSubscriber<T> implements CompletableSubscriber {
         final CompletableSubscriber actual;
 
-        final Func1<? super T, Completable> mapper;
+        final Func1<? super T, ? extends Completable> mapper;
 
-        public SourceSubscriber(CompletableSubscriber actual, Func1<? super T, Completable> mapper) {
+        public SourceSubscriber(CompletableSubscriber actual, Func1<? super T, ? extends Completable> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }
