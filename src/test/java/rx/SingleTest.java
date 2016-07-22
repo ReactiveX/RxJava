@@ -2007,16 +2007,24 @@ public class SingleTest {
 
     @Test
     public void flatMapCompletableComplete() {
+        final AtomicInteger atomicInteger = new AtomicInteger();
         TestSubscriber testSubscriber = TestSubscriber.create();
 
         Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
             @Override
             public Completable call(final Integer integer) {
-                return Completable.complete();
+                return Completable.fromAction(new Action0() {
+                    @Override
+                    public void call() {
+                        atomicInteger.set(5);
+                    }
+                });
             }
         }).subscribe(testSubscriber);
 
         testSubscriber.assertCompleted();
+
+        assertEquals(5, atomicInteger.get());
     }
 
     @Test
