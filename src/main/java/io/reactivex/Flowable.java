@@ -3171,14 +3171,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> subscribeOn(Scheduler scheduler) {
-        return subscribeOn(scheduler, true);
-    }
-
-    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Flowable<T> subscribeOn(Scheduler scheduler, boolean requestOn) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return new FlowableSubscribeOn<T>(this, scheduler, requestOn);
+        return new FlowableSubscribeOn<T>(this, scheduler);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)

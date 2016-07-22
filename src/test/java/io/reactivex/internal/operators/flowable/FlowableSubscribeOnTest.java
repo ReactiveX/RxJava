@@ -24,8 +24,8 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Flowable.Operator;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.*;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
 public class FlowableSubscribeOnTest {
@@ -264,6 +264,21 @@ public class FlowableSubscribeOnTest {
         }).subscribeOn(Schedulers.newThread()).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
+    }
+    
+    @Test
+    public void cancelBeforeActualSubscribe() {
+        TestScheduler test = Schedulers.test();
+        
+        TestSubscriber<Integer> ts = Flowable.just(1).hide()
+                .subscribeOn(test).test(Long.MAX_VALUE, 0, true);
+        
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ts
+        .assertSubscribed()
+        .assertNoValues()
+        .assertNotTerminated();
     }
 
 }

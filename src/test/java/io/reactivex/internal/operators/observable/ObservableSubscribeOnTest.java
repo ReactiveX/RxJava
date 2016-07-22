@@ -24,7 +24,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.*;
 
 public class ObservableSubscribeOnTest {
 
@@ -181,4 +181,24 @@ public class ObservableSubscribeOnTest {
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         assertEquals(10, count.get());
     }
+    
+    @Test
+    public void cancelBeforeActualSubscribe() {
+        TestScheduler test = Schedulers.test();
+        
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        
+        Observable.just(1).asObservable()
+                .subscribeOn(test).subscribe(to);
+        
+        to.dispose();
+        
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        to
+        .assertSubscribed()
+        .assertNoValues()
+        .assertNotTerminated();
+    }
+    
 }
