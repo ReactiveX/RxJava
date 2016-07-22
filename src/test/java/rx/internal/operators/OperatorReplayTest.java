@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.lang.management.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -1495,4 +1496,85 @@ public class OperatorReplayTest {
         ts.assertNoErrors();
         ts.assertCompleted();
     }
+    
+    void replayNoRetention(Func1<Observable<Integer>, ConnectableObservable<Integer>> replayOp) throws InterruptedException {
+        System.gc();
+        
+        Thread.sleep(500);
+        
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage memHeap = memoryMXBean.getHeapMemoryUsage();
+        long initial = memHeap.getUsed();
+
+        System.out.printf("Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
+        
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        ConnectableObservable<Integer> co = replayOp.call(ps);
+        
+        Subscription s = co.subscribe(new Action1<Integer>() {
+            int[] array = new int[1024 * 1024 * 32];
+            
+            @Override
+            public void call(Integer t) {
+                System.out.println(array.length);
+            }
+        });
+
+        co.connect();
+        ps.onNext(1); 
+        
+        memHeap = memoryMXBean.getHeapMemoryUsage();
+        long middle = memHeap.getUsed();
+
+        System.out.printf("Starting: %.3f MB%n", middle / 1024.0 / 1024.0);
+
+        s.unsubscribe();
+        s = null;
+        
+        System.gc();
+        
+        Thread.sleep(500);
+
+        memHeap = memoryMXBean.getHeapMemoryUsage();
+        long finish = memHeap.getUsed();
+        
+        System.out.printf("After: %.3f MB%n", finish / 1024.0 / 1024.0);
+
+        if (finish > initial * 5) {
+            fail(String.format("Leak: %.3f -> %.3f -> %.3f", initial / 1024 / 1024.0, middle / 1024 / 1024.0, finish / 1024 / 1024d));
+        }
+        
+    }
+    
+    @Test
+    public void replayNoRetentionUnbounded() throws Exception {
+        replayNoRetention(new Func1<Observable<Integer>, ConnectableObservable<Integer>>() {
+            @Override
+            public ConnectableObservable<Integer> call(Observable<Integer> o) {
+                return o.replay();
+            }
+        });
+    }
+
+    @Test
+    public void replayNoRetentionSizeBound() throws Exception {
+        replayNoRetention(new Func1<Observable<Integer>, ConnectableObservable<Integer>>() {
+            @Override
+            public ConnectableObservable<Integer> call(Observable<Integer> o) {
+                return o.replay(1);
+            }
+        });
+    }
+    
+    @Test
+    public void replayNoRetentionTimebound() throws Exception {
+        replayNoRetention(new Func1<Observable<Integer>, ConnectableObservable<Integer>>() {
+            @Override
+            public ConnectableObservable<Integer> call(Observable<Integer> o) {
+                return o.replay(1, TimeUnit.DAYS);
+            }
+        });
+    }
+
 }
