@@ -1411,7 +1411,10 @@ public class Single<T> {
      *            Completable
      * @return the Completable returned from {@code func} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @Experimental The behavior of this can change at any time.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
+    @Experimental
     public final Completable flatMapCompletable(final Func1<? super T, ? extends Completable> func) {
         return Completable.create(new CompletableFlatMapSingleToCompletable<T>(this, func));
     }
