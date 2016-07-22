@@ -202,6 +202,8 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
             if (!cancelled) {
                 cancelled = true;
 
+                s.cancel();
+                
                 if (getAndIncrement() == 0) {
                     queue.clear();
                 }
@@ -250,6 +252,7 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
                             b = it.hasNext();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
+                            s.cancel();
                             onError(ex);
                             it = null;
                             continue;
@@ -280,6 +283,7 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
                             v = it.next();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
+                            s.cancel();
                             onError(ex);
                             continue;
                         }
@@ -298,6 +302,7 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
                             b = it.hasNext();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
+                            s.cancel();
                             onError(ex);
                             continue;
                         }
@@ -318,6 +323,7 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
                             empty = q.isEmpty() && it == null;
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
+                            s.cancel();
                             onError(ex);
                             empty = true;
                         }
@@ -373,11 +379,10 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
 
                     a.onError(ex);
                     return true;
-                } else
-                    if (empty) {
-                        a.onComplete();
-                        return true;
-                    }
+                } else if (empty) {
+                    a.onComplete();
+                    return true;
+                }
             }
             return false;
         }

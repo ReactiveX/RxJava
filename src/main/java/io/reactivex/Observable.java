@@ -1995,6 +1995,18 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         return new ObservableGroupBy<T, K, V>(this, keySelector, valueSelector, bufferSize, delayError);
     }
 
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <TRight, TLeftEnd, TRightEnd, R> Observable<R> groupJoin(
+            ObservableConsumable<? extends TRight> other,
+            Function<? super T, ? extends ObservableConsumable<TLeftEnd>> leftEnd,
+            Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd,
+            BiFunction<? super T, ? super Observable<TRight>, ? extends R> resultSelector
+                    ) {
+        return new ObservableGroupJoin<T, TRight, TLeftEnd, TRightEnd, R>(
+                this, other, leftEnd, rightEnd, resultSelector);
+    }
+    
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> ignoreElements() {
         return new ObservableIgnoreElements<T>(this);
@@ -2010,6 +2022,18 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         });
     }
 
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <TRight, TLeftEnd, TRightEnd, R> Observable<R> join(
+            ObservableConsumable<? extends TRight> other,
+            Function<? super T, ? extends ObservableConsumable<TLeftEnd>> leftEnd,
+            Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd,
+            BiFunction<? super T, ? super TRight, ? extends R> resultSelector
+                    ) {
+        return new ObservableJoin<T, TRight, TLeftEnd, TRightEnd, R>(
+                this, other, leftEnd, rightEnd, resultSelector);
+    }
+    
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> last() {
         return takeLast(1).single();

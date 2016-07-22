@@ -1,0 +1,359 @@
+/**
+ * Copyright 2016 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.reactivex.internal.operators.observable;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
+
+import org.junit.*;
+import org.mockito.MockitoAnnotations;
+
+import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.*;
+import io.reactivex.subjects.PublishSubject;
+
+public class ObservableGroupJoinTest {
+
+    Observer<Object> observer = TestHelper.mockObserver();
+
+    BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {
+        @Override
+        public Integer apply(Integer t1, Integer t2) {
+            return t1 + t2;
+        }
+    };
+
+    <T> Function<Integer, Observable<T>> just(final Observable<T> observable) {
+        return new Function<Integer, Observable<T>>() {
+            @Override
+            public Observable<T> apply(Integer t1) {
+                return observable;
+            }
+        };
+    }
+
+    <T, R> Function<T, Observable<R>> just2(final Observable<R> observable) {
+        return new Function<T, Observable<R>>() {
+            @Override
+            public Observable<R> apply(T t1) {
+                return observable;
+            }
+        };
+    }
+
+    BiFunction<Integer, Observable<Integer>, Observable<Integer>> add2 = new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
+        @Override
+        public Observable<Integer> apply(final Integer leftValue, Observable<Integer> rightValues) {
+            return rightValues.map(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer rightValue) {
+                    return add.apply(leftValue, rightValue);
+                }
+            });
+        }
+
+    };
+
+    @Before
+    public void before() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void behaveAsJoin() {
+        PublishSubject<Integer> source1 = PublishSubject.create();
+        PublishSubject<Integer> source2 = PublishSubject.create();
+
+        Observable<Integer> m = Observable.merge(source1.groupJoin(source2,
+                just(Observable.never()),
+                just(Observable.never()), add2));
+
+        m.subscribe(observer);
+
+        source1.onNext(1);
+        source1.onNext(2);
+        source1.onNext(4);
+
+        source2.onNext(16);
+        source2.onNext(32);
+        source2.onNext(64);
+
+        source1.onComplete();
+        source2.onComplete();
+
+        verify(observer, times(1)).onNext(17);
+        verify(observer, times(1)).onNext(18);
+        verify(observer, times(1)).onNext(20);
+        verify(observer, times(1)).onNext(33);
+        verify(observer, times(1)).onNext(34);
+        verify(observer, times(1)).onNext(36);
+        verify(observer, times(1)).onNext(65);
+        verify(observer, times(1)).onNext(66);
+        verify(observer, times(1)).onNext(68);
+
+        verify(observer, times(1)).onComplete(); //Never emitted?
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+
+    class Person {
+        final int id;
+        final String name;
+
+        public Person(int id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+    }
+
+    class PersonFruit {
+        final int personId;
+        final String fruit;
+
+        public PersonFruit(int personId, String fruit) {
+            this.personId = personId;
+            this.fruit = fruit;
+        }
+    }
+
+    class PPF {
+        final Person person;
+        final Observable<PersonFruit> fruits;
+
+        public PPF(Person person, Observable<PersonFruit> fruits) {
+            this.person = person;
+            this.fruits = fruits;
+        }
+    }
+
+    @Test
+    public void normal1() {
+        Observable<Person> source1 = Observable.fromIterable(Arrays.asList(
+                new Person(1, "Joe"),
+                new Person(2, "Mike"),
+                new Person(3, "Charlie")
+                ));
+
+        Observable<PersonFruit> source2 = Observable.fromIterable(Arrays.asList(
+                new PersonFruit(1, "Strawberry"),
+                new PersonFruit(1, "Apple"),
+                new PersonFruit(3, "Peach")
+                ));
+
+        Observable<PPF> q = source1.groupJoin(
+                source2,
+                just2(Observable.<Object> never()),
+                just2(Observable.<Object> never()),
+                new BiFunction<Person, Observable<PersonFruit>, PPF>() {
+                    @Override
+                    public PPF apply(Person t1, Observable<PersonFruit> t2) {
+                        return new PPF(t1, t2);
+                    }
+                });
+
+        q.subscribe(
+                new Observer<PPF>() {
+                    @Override
+                    public void onNext(final PPF ppf) {
+                        ppf.fruits.filter(new Predicate<PersonFruit>() {
+                            @Override
+                            public boolean test(PersonFruit t1) {
+                                return ppf.person.id == t1.personId;
+                            }
+                        }).subscribe(new Consumer<PersonFruit>() {
+                            @Override
+                            public void accept(PersonFruit t1) {
+                                observer.onNext(Arrays.asList(ppf.person.name, t1.fruit));
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        observer.onError(e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        observer.onComplete();
+                    }
+                    
+                    @Override
+                    public void onSubscribe(Disposable s) {
+                    }
+
+                }
+                );
+
+        verify(observer, times(1)).onNext(Arrays.asList("Joe", "Strawberry"));
+        verify(observer, times(1)).onNext(Arrays.asList("Joe", "Apple"));
+        verify(observer, times(1)).onNext(Arrays.asList("Charlie", "Peach"));
+
+        verify(observer, times(1)).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void leftThrows() {
+        PublishSubject<Integer> source1 = PublishSubject.create();
+        PublishSubject<Integer> source2 = PublishSubject.create();
+
+        Observable<Observable<Integer>> m = source1.groupJoin(source2,
+                just(Observable.never()),
+                just(Observable.never()), add2);
+
+        m.subscribe(observer);
+
+        source2.onNext(1);
+        source1.onError(new RuntimeException("Forced failure"));
+
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verify(observer, never()).onNext(any());
+    }
+
+    @Test
+    public void rightThrows() {
+        PublishSubject<Integer> source1 = PublishSubject.create();
+        PublishSubject<Integer> source2 = PublishSubject.create();
+
+        Observable<Observable<Integer>> m = source1.groupJoin(source2,
+                just(Observable.never()),
+                just(Observable.never()), add2);
+
+        m.subscribe(observer);
+
+        source1.onNext(1);
+        source2.onError(new RuntimeException("Forced failure"));
+
+        verify(observer, times(1)).onNext(any(Observable.class));
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+    }
+
+    @Test
+    public void leftDurationThrows() {
+        PublishSubject<Integer> source1 = PublishSubject.create();
+        PublishSubject<Integer> source2 = PublishSubject.create();
+
+        Observable<Integer> duration1 = Observable.<Integer> error(new RuntimeException("Forced failure"));
+
+        Observable<Observable<Integer>> m = source1.groupJoin(source2,
+                just(duration1),
+                just(Observable.never()), add2);
+        m.subscribe(observer);
+
+        source1.onNext(1);
+
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verify(observer, never()).onNext(any());
+    }
+
+    @Test
+    public void rightDurationThrows() {
+        PublishSubject<Integer> source1 = PublishSubject.create();
+        PublishSubject<Integer> source2 = PublishSubject.create();
+
+        Observable<Integer> duration1 = Observable.<Integer> error(new RuntimeException("Forced failure"));
+
+        Observable<Observable<Integer>> m = source1.groupJoin(source2,
+                just(Observable.never()),
+                just(duration1), add2);
+        m.subscribe(observer);
+
+        source2.onNext(1);
+
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verify(observer, never()).onNext(any());
+    }
+
+    @Test
+    public void leftDurationSelectorThrows() {
+        PublishSubject<Integer> source1 = PublishSubject.create();
+        PublishSubject<Integer> source2 = PublishSubject.create();
+
+        Function<Integer, Observable<Integer>> fail = new Function<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Integer t1) {
+                throw new RuntimeException("Forced failure");
+            }
+        };
+
+        Observable<Observable<Integer>> m = source1.groupJoin(source2,
+                fail,
+                just(Observable.never()), add2);
+        m.subscribe(observer);
+
+        source1.onNext(1);
+
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verify(observer, never()).onNext(any());
+    }
+
+    @Test
+    public void rightDurationSelectorThrows() {
+        PublishSubject<Integer> source1 = PublishSubject.create();
+        PublishSubject<Integer> source2 = PublishSubject.create();
+
+        Function<Integer, Observable<Integer>> fail = new Function<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Integer t1) {
+                throw new RuntimeException("Forced failure");
+            }
+        };
+
+        Observable<Observable<Integer>> m = source1.groupJoin(source2,
+                just(Observable.never()),
+                fail, add2);
+        m.subscribe(observer);
+
+        source2.onNext(1);
+
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verify(observer, never()).onNext(any());
+    }
+
+    @Test
+    public void resultSelectorThrows() {
+        PublishSubject<Integer> source1 = PublishSubject.create();
+        PublishSubject<Integer> source2 = PublishSubject.create();
+
+        BiFunction<Integer, Observable<Integer>, Integer> fail = new BiFunction<Integer, Observable<Integer>, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Observable<Integer> t2) {
+                throw new RuntimeException("Forced failure");
+            }
+        };
+
+        Observable<Integer> m = source1.groupJoin(source2,
+                just(Observable.never()),
+                just(Observable.never()), fail);
+        m.subscribe(observer);
+
+        source1.onNext(1);
+        source2.onNext(2);
+
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verify(observer, never()).onNext(any());
+    }
+}
