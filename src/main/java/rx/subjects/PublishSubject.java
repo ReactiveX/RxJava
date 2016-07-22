@@ -231,7 +231,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
                     pp.onError(e);
                 } catch (Throwable ex) {
                     if (errors == null) {
-                        errors = new ArrayList<Throwable>();
+                        errors = new ArrayList<Throwable>(1);
                     }
                     errors.add(ex);
                 }
@@ -312,16 +312,14 @@ public final class PublishSubject<T> extends Subject<T, T> {
         
         @Override
         public void onError(Throwable e) {
-            long r = get();
-            if (r != Long.MIN_VALUE) {
+            if (get() != Long.MIN_VALUE) {
                 actual.onError(e);
             }
         }
         
         @Override
         public void onCompleted() {
-            long r = get();
-            if (r != Long.MIN_VALUE) {
+            if (get() != Long.MIN_VALUE) {
                 actual.onCompleted();
             }
         }
