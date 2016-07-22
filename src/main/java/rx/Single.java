@@ -1397,8 +1397,8 @@ public class Single<T> {
     }
 
     /**
-     * Returns a Completable that completes based on applying a specified function to the item emitted by the
-     * source Completable, where that function returns a Completable.
+     * Returns a {@link Completable} that completes based on applying a specified function to the item emitted by the
+     * source {@link Completable}, where that function returns a {@link Completable}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapCompletable.png" alt="">
      * <dl>
