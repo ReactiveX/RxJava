@@ -18,6 +18,8 @@ package rx.schedulers;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.Test;
 
 import rx.*;
@@ -83,4 +85,71 @@ public class IoSchedulerTest extends AbstractSchedulerConcurrencyTests {
         }
     }
 
+    // Tests that an uninterruptible worker does not get reused
+    @Test(timeout = 10000)
+    public void testUninterruptibleActionDoesNotBlockOtherAction() throws InterruptedException {
+        final Worker uninterruptibleWorker = Schedulers.io().createWorker();
+        final AtomicBoolean running = new AtomicBoolean(false);
+        final AtomicBoolean shouldQuit = new AtomicBoolean(false);
+        try {
+            uninterruptibleWorker.schedule(new Action0() {
+                @Override
+                public void call() {
+                    synchronized (running) {
+                        running.set(true);
+                        running.notifyAll();
+                    }
+                    synchronized (shouldQuit) {
+                        while (!shouldQuit.get()) {
+                            try {
+                                shouldQuit.wait();
+                            } catch (final InterruptedException ignored) {
+                            }
+                        }
+                    }
+                    synchronized (running) {
+                        running.set(false);
+                        running.notifyAll();
+                    }
+                }
+            });
+
+            // Wait for the action to start executing
+            synchronized (running) {
+                while (!running.get()) {
+                    running.wait();
+                }
+            }
+        } finally {
+            uninterruptibleWorker.unsubscribe();
+        }
+
+        final Worker otherWorker = Schedulers.io().createWorker();
+        final AtomicBoolean otherActionRan = new AtomicBoolean(false);
+        try {
+            otherWorker.schedule(new Action0() {
+                @Override
+                public void call() {
+                    otherActionRan.set(true);
+                }
+            });
+            Thread.sleep(1000); // give the action a chance to run
+        } finally {
+            otherWorker.unsubscribe();
+        }
+
+        assertTrue(running.get()); // uninterruptible action keeps on running since InterruptedException is swallowed
+        assertTrue(otherActionRan.get());
+
+        // Wait for uninterruptibleWorker to exit (to clean up after ourselves)
+        synchronized (shouldQuit) {
+            shouldQuit.set(true);
+            shouldQuit.notifyAll();
+        }
+        synchronized (running) {
+            while (running.get()) {
+                running.wait();
+            }
+        }
+    }
 }
