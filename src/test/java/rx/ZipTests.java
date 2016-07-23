@@ -102,7 +102,7 @@ public class ZipTests {
      * Occasionally zip may be invoked with 0 observables. Test that we don't block indefinitely instead
      * of immediately invoking zip with 0 argument.
      * 
-     * We now expect an NoSuchElementException since last() requires at least one value and nothing will be emitted.
+     * We now expect a NoSuchElementException since last() requires at least one value and nothing will be emitted.
      */
     @Test(expected = NoSuchElementException.class)
     public void nonBlockingObservable() {

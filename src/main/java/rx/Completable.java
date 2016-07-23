@@ -1660,7 +1660,7 @@ public class Completable {
     /**
      * Returns a Completable instance that if this Completable emits an error and the predicate returns
      * true, it will emit an onComplete and swallow the throwable.
-     * @param predicate the predicate to call when an Throwable is emitted which should return true
+     * @param predicate the predicate to call when a Throwable is emitted which should return true
      * if the Throwable should be swallowed and replaced with an onComplete.
      * @return the new Completable instance
      */

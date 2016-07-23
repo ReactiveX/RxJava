@@ -266,9 +266,9 @@ public class Single<T> {
      * 
      * @param <T> the common value type
      * @param t1
-     *            an Single to be concatenated
+     *            a Single to be concatenated
      * @param t2
-     *            an Single to be concatenated
+     *            a Single to be concatenated
      * @return an Observable that emits items emitted by the two source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
@@ -1504,7 +1504,7 @@ public class Single<T> {
      * By default, when a Single encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the Single invokes its Observer's {@code onError} method, and then quits
      * without invoking any more of its Observer's methods. The {@code onErrorResumeNext} method changes this
-     * behavior. If you pass another Single ({@code resumeSingleInCaseOfError}) to an Single's
+     * behavior. If you pass another Single ({@code resumeSingleInCaseOfError}) to a Single's
      * {@code onErrorResumeNext} method, if the original Single encounters an error, instead of invoking its
      * Observer's {@code onError} method, it will instead relinquish control to {@code resumeSingleInCaseOfError} which
      * will invoke the Observer's {@link Observer#onNext onNext} method if it is able to do so. In such a case,
@@ -1538,7 +1538,7 @@ public class Single<T> {
      * By default, when a Single encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the Single invokes its Observer's {@code onError} method, and then quits
      * without invoking any more of its Observer's methods. The {@code onErrorResumeNext} method changes this
-     * behavior. If you pass a function that will return another Single ({@code resumeFunctionInCaseOfError}) to an Single's
+     * behavior. If you pass a function that will return another Single ({@code resumeFunctionInCaseOfError}) to a Single's
      * {@code onErrorResumeNext} method, if the original Single encounters an error, instead of invoking its
      * Observer's {@code onError} method, it will instead relinquish control to {@code resumeSingleInCaseOfError} which
      * will invoke the Observer's {@link Observer#onNext onNext} method if it is able to do so. In such a case,
@@ -2452,7 +2452,7 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Single that emits the items emitted by the source Single shifted forward in time by a
+     * Returns a Single that emits the items emitted by the source Single shifted forward in time by a
      * specified delay. Error notifications from the source Single are not delayed.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
@@ -2476,7 +2476,7 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Single that emits the items emitted by the source Single shifted forward in time by a
+     * Returns a Single that emits the items emitted by the source Single shifted forward in time by a
      * specified delay. Error notifications from the source Observable are not delayed.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
@@ -2646,7 +2646,7 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Single that mirrors the source Single, resubscribing to it if it calls {@code onError}
+     * Returns a Single that mirrors the source Single, resubscribing to it if it calls {@code onError}
      * up to a specified number of retries.
      *
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
@@ -2671,7 +2671,7 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Single that mirrors the source Single, resubscribing to it if it calls {@code onError}
+     * Returns a Single that mirrors the source Single, resubscribing to it if it calls {@code onError}
      * and the predicate returns true for that specific exception and retry count.
      *
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
@@ -2739,7 +2739,7 @@ public class Single<T> {
     }
 
     /**
-     * Constructs an Single that creates a dependent resource object which is disposed of on unsubscription.
+     * Constructs a Single that creates a dependent resource object which is disposed of on unsubscription.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
      * <dl>
@@ -2767,7 +2767,7 @@ public class Single<T> {
     }
     
     /**
-     * Constructs an Single that creates a dependent resource object which is disposed of just before 
+     * Constructs a Single that creates a dependent resource object which is disposed of just before 
      * termination if you have set {@code disposeEagerly} to {@code true} and unsubscription does not occur
      * before termination. Otherwise resource disposal will occur on unsubscription.  Eager disposal is
      * particularly appropriate for a synchronous Single that reuses resources. {@code disposeAction} will

@@ -967,7 +967,7 @@ public final class RxJavaHooks {
     }
 
     /**
-     * Sets a hook function that is called with an operator when an Completable operator built with
+     * Sets a hook function that is called with an operator when a Completable operator built with
      * lift() gets subscribed to.
      * <p>
      * This operation is threadsafe.
