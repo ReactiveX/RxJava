@@ -410,6 +410,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
          * Atomically removes the given producer from the producers array.
          * @param producer the producer to remove
          */
+        @SuppressWarnings("unchecked")
         void remove(InnerProducer<T> producer) {
             if (terminated) {
                 return;
@@ -419,6 +420,9 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     return;
                 }
                 producers.remove(producer);
+                if (producers.isEmpty()) {
+                    producersCache = EMPTY;
+                }
                 producersVersion++;
             }
         }
@@ -643,7 +647,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
          */
         final ReplaySubscriber<T> parent;
         /** The actual child subscriber. */
-        final Subscriber<? super T> child;
+        Subscriber<? super T> child;
         /** 
          * Holds an object that represents the current location in the buffer.
          * Guarded by the emitter loop. 
@@ -784,6 +788,8 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     // the others had non-zero. By removing this 'blocking' child, the others
                     // are now free to receive events
                     parent.manageRequests(this);
+                    // break the reference
+                    child = null;
                 }
             }
         }
@@ -878,20 +884,25 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 Integer destIndexObject = output.index();
                 int destIndex = destIndexObject != null ? destIndexObject : 0;
                 
+                Subscriber<? super T> child = output.child;
+                if (child == null) {
+                    return;
+                }
+
                 long r = output.get();
                 long e = 0L;
                 
                 while (e != r && destIndex < sourceIndex) {
                     Object o = get(destIndex);
                     try {
-                        if (nl.accept(output.child, o)) {
+                        if (nl.accept(child, o)) {
                             return;
                         }
                     } catch (Throwable err) {
                         Exceptions.throwIfFatal(err);
                         output.unsubscribe();
                         if (!nl.isError(o) && !nl.isCompleted(o)) {
-                            output.child.onError(OnErrorThrowable.addValueAsLastCause(err, nl.getValue(o)));
+                            child.onError(OnErrorThrowable.addValueAsLastCause(err, nl.getValue(o)));
                         }
                         return;
                     }
@@ -1066,6 +1077,11 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     return;
                 }
 
+                Subscriber<? super T> child = output.child;
+                if (child == null) {
+                    return;
+                }
+
                 long r = output.get();
                 long e = 0L;
 
@@ -1074,7 +1090,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     if (v != null) {
                         Object o = leaveTransform(v.value);
                         try {
-                            if (nl.accept(output.child, o)) {
+                            if (nl.accept(child, o)) {
                                 output.index = null;
                                 return;
                             }
@@ -1083,7 +1099,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                             Exceptions.throwIfFatal(err);
                             output.unsubscribe();
                             if (!nl.isError(o) && !nl.isCompleted(o)) {
-                                output.child.onError(OnErrorThrowable.addValueAsLastCause(err, nl.getValue(o)));
+                                child.onError(OnErrorThrowable.addValueAsLastCause(err, nl.getValue(o)));
                             }
                             return;
                         }
