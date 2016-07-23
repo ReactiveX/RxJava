@@ -1,5 +1,13 @@
 # RxJava Releases #
 
+### Version 1.1.8 - July 23, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.8%7C))
+
+#### Bugfixes
+
+  - [Pull 4209](https://github.com/ReactiveX/RxJava/pull/4209): `merge`/`flatMap` to keep scalar/inner element relative order.
+  - [Pull 4215](https://github.com/ReactiveX/RxJava/pull/4215): Fix assembly tracking replacing original exception.
+  - [Pull 4229](https://github.com/ReactiveX/RxJava/pull/4229): fix replay() retaining reference to the child Subscriber
+
 ### Version 1.1.7 - July 10, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.7%7C))
 
 This release has several documentation fixes (`AsyncSubject`, `doOnEach`, `cache`, `scan`, `reduce`, backpressure descriptions) and internal cleanups based on tool feedback (code-coverage and PMD).
