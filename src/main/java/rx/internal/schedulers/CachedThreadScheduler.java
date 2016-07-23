@@ -174,7 +174,7 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         return new EventLoopWorker(pool.get());
     }
 
-    static final class EventLoopWorker extends Scheduler.Worker {
+    static final class EventLoopWorker extends Scheduler.Worker implements Action0 {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final CachedWorkerPool pool;
         private final ThreadWorker threadWorker;
@@ -192,14 +192,14 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
                 // unsubscribe should be idempotent, so only do this once
 
                 // Release the worker _after_ the previous action (if any) has completed
-                threadWorker.schedule(new Action0() {
-                    @Override
-                    public void call() {
-                        pool.release(threadWorker);
-                    }
-                });
+                threadWorker.schedule(this);
             }
             innerSubscription.unsubscribe();
+        }
+
+        @Override
+        public void call() {
+            pool.release(threadWorker);
         }
 
         @Override
