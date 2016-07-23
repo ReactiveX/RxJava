@@ -65,25 +65,27 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
     }
 
     /** Manages sub-observers and subscriptions. */
-    final class ResultManager implements Subscription {
+    final class ResultManager extends HashMap<Integer, Observer<T2>>implements Subscription {
+        // HashMap aspect of `this` refers to `leftMap`
+        
+        private static final long serialVersionUID = -3035156013812425335L;
+        
         final RefCountSubscription cancel;
         final Subscriber<? super R> subscriber;
         final CompositeSubscription group;
-        final Object guard = new Object();
-        /** Guarded by guard. */
+        /** Guarded by this. */
         int leftIds;
-        /** Guarded by guard. */
+        /** Guarded by this. */
         int rightIds;
-        /** Guarded by guard. */
-        final Map<Integer, Observer<T2>> leftMap = new HashMap<Integer, Observer<T2>>(); // NOPMD 
-        /** Guarded by guard. */
+        /** Guarded by this. */
         final Map<Integer, T2> rightMap = new HashMap<Integer, T2>(); // NOPMD 
-        /** Guarded by guard. */
+        /** Guarded by this. */
         boolean leftDone;
-        /** Guarded by guard. */
+        /** Guarded by this. */
         boolean rightDone;
 
         public ResultManager(Subscriber<? super R> subscriber) {
+            super();
             this.subscriber = subscriber;
             this.group = new CompositeSubscription();
             this.cancel = new RefCountSubscription(group);
@@ -110,15 +112,20 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
         public boolean isUnsubscribed() {
             return cancel.isUnsubscribed();
         }
+        
+        Map<Integer, Observer<T2>> leftMap() {
+            return this;
+        }
+        
         /**
          * Notify everyone and cleanup.
          * @param e the exception
          */
         void errorAll(Throwable e) {
             List<Observer<T2>> list;
-            synchronized (guard) {
-                list = new ArrayList<Observer<T2>>(leftMap.values());
-                leftMap.clear();
+            synchronized (ResultManager.this) {
+                list = new ArrayList<Observer<T2>>(leftMap().values());
+                leftMap().clear();
                 rightMap.clear();
             }
             for (Observer<T2> o : list) {
@@ -132,8 +139,8 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
          * @param e  the exception
          */
         void errorMain(Throwable e) {
-            synchronized (guard) {
-                leftMap.clear();
+            synchronized (ResultManager.this) {
+                leftMap().clear();
                 rightMap.clear();
             }            
             subscriber.onError(e);
@@ -158,9 +165,9 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
                     Subject<T2, T2> subj = PublishSubject.create();
                     Observer<T2> subjSerial = new SerializedObserver<T2>(subj);
                     
-                    synchronized (guard) {
+                    synchronized (ResultManager.this) {
                         id = leftIds++;
-                        leftMap.put(id, subjSerial);
+                        leftMap().put(id, subjSerial);
                     }
 
                     Observable<T2> window = Observable.create(new WindowObservableFunc<T2>(subj, cancel));
@@ -174,7 +181,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
                     R result = resultSelector.call(args, window);
 
                     List<T2> rightMapValues;
-                    synchronized (guard) {
+                    synchronized (ResultManager.this) {
                         rightMapValues = new ArrayList<T2>(rightMap.values());
                     }
                     
@@ -192,11 +199,11 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
             @Override
             public void onCompleted() {
                 List<Observer<T2>> list = null;
-                synchronized (guard) {
+                synchronized (ResultManager.this) {
                     leftDone = true;
                     if (rightDone) {
-                        list = new ArrayList<Observer<T2>>(leftMap.values());
-                        leftMap.clear();
+                        list = new ArrayList<Observer<T2>>(leftMap().values());
+                        leftMap().clear();
                         rightMap.clear();
                     }
                 }
@@ -216,7 +223,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
             public void onNext(T2 args) {
                 try {
                     int id;
-                    synchronized (guard) {
+                    synchronized (ResultManager.this) {
                         id = rightIds++;
                         rightMap.put(id, args);
                     }
@@ -228,8 +235,8 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
                     duration.unsafeSubscribe(d2);
 
                     List<Observer<T2>> list;
-                    synchronized (guard) {
-                        list = new ArrayList<Observer<T2>>(leftMap.values());
+                    synchronized (ResultManager.this) {
+                        list = new ArrayList<Observer<T2>>(leftMap().values());
                     }
                     for (Observer<T2> o : list) {
                         o.onNext(args);
@@ -242,11 +249,11 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
             @Override
             public void onCompleted() {
                 List<Observer<T2>> list = null;
-                synchronized (guard) {
+                synchronized (ResultManager.this) {
                     rightDone = true;
                     if (leftDone) {
-                        list = new ArrayList<Observer<T2>>(leftMap.values());
-                        leftMap.clear();
+                        list = new ArrayList<Observer<T2>>(leftMap().values());
+                        leftMap().clear();
                         rightMap.clear();
                     }
                 }
@@ -273,8 +280,8 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
                 if (once) {
                     once = false;
                     Observer<T2> gr;
-                    synchronized (guard) {
-                        gr = leftMap.remove(id);
+                    synchronized (ResultManager.this) {
+                        gr = leftMap().remove(id);
                     }
                     if (gr != null) {
                         gr.onCompleted();
@@ -306,7 +313,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
             public void onCompleted() {
                 if (once) {
                     once = false;
-                    synchronized (guard) {
+                    synchronized (ResultManager.this) {
                         rightMap.remove(id);
                     }
                     group.remove(this);
