@@ -190,7 +190,14 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
         public void unsubscribe() {
             if (once.compareAndSet(false, true)) {
                 // unsubscribe should be idempotent, so only do this once
-                pool.release(threadWorker);
+
+                // Release the worker _after_ the previous action (if any) has completed
+                threadWorker.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        pool.release(threadWorker);
+                    }
+                });
             }
             innerSubscription.unsubscribe();
         }
