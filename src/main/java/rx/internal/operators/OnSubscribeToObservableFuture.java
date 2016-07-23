@@ -74,7 +74,7 @@ public final class OnSubscribeToObservableFuture {
                 T value = (unit == null) ? (T) that.get() : (T) that.get(time, unit);
                 subscriber.setProducer(new SingleProducer<T>(subscriber, value));
             } catch (Throwable e) {
-                // If this Observable is unsubscribed, we will receive an CancellationException.
+                // If this Observable is unsubscribed, we will receive a CancellationException.
                 // However, CancellationException will not be passed to the final Subscriber
                 // since it's already subscribed.
                 // If the Future is canceled in other place, CancellationException will be still

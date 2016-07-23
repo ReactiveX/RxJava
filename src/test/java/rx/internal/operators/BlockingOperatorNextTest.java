@@ -113,7 +113,7 @@ public class BlockingOperatorNextTest {
         fireOnErrorInNewThread(obs);
         try {
             it.hasNext();
-            fail("Expected an TestException");
+            fail("Expected a TestException");
         } catch (TestException e) {
         }
 
@@ -149,7 +149,7 @@ public class BlockingOperatorNextTest {
         obs.onError(new TestException());
         try {
             it.hasNext();
-            fail("Expected an TestException");
+            fail("Expected a TestException");
         } catch (TestException e) {
             // successful
         }
@@ -166,7 +166,7 @@ public class BlockingOperatorNextTest {
 
         try {
             it.hasNext();
-            fail("Expected an TestException");
+            fail("Expected a TestException");
         } catch (TestException e) {
             // successful
         }
