@@ -29,11 +29,13 @@ import rx.observers.Subscribers;
  *
  * @param <T> the value type of the chain
  */
-public final class OnSubscribeAutoConnect<T> implements OnSubscribe<T> {
-    final ConnectableObservable<? extends T> source;
+@SuppressWarnings("serial")
+public final class OnSubscribeAutoConnect<T> extends AtomicInteger implements OnSubscribe<T> {
+    // AtomicInteger aspect of `this` represents the number of clients
+	
+	final ConnectableObservable<? extends T> source;
     final int numberOfSubscribers;
     final Action1<? super Subscription> connection;
-    final AtomicInteger clients;
     
     public OnSubscribeAutoConnect(ConnectableObservable<? extends T> source,
             int numberOfSubscribers,
@@ -44,12 +46,12 @@ public final class OnSubscribeAutoConnect<T> implements OnSubscribe<T> {
         this.source = source;
         this.numberOfSubscribers = numberOfSubscribers;
         this.connection = connection;
-        this.clients = new AtomicInteger();
     }
     @Override
     public void call(Subscriber<? super T> child) {
         source.unsafeSubscribe(Subscribers.wrap(child));
-        if (clients.incrementAndGet() == numberOfSubscribers) {
+        //this.get() represents the number of clients
+        if (this.incrementAndGet() == numberOfSubscribers) {
             source.connect(connection);
         }
     }
