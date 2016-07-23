@@ -320,12 +320,12 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
             if (chosen) {
                 return true;
             }
-            if (selection.choice.get() == this) {
+            if (selection.get() == this) {
                 // fast-path
                 chosen = true;
                 return true;
             } else {
-                if (selection.choice.compareAndSet(null, this)) {
+                if (selection.compareAndSet(null, this)) {
                     selection.unsubscribeOthers(this);
                     chosen = true;
                     return true;
@@ -338,12 +338,12 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         }
     }
 
-    static final class Selection<T> {
-        final AtomicReference<AmbSubscriber<T>> choice = new AtomicReference<AmbSubscriber<T>>();
+    @SuppressWarnings("serial")
+	static final class Selection<T> extends AtomicReference<AmbSubscriber<T>> {
         final Collection<AmbSubscriber<T>> ambSubscribers = new ConcurrentLinkedQueue<AmbSubscriber<T>>();
 
         public void unsubscribeLosers() {
-            AmbSubscriber<T> winner = choice.get();
+            AmbSubscriber<T> winner = get();
             if(winner != null) {
                 unsubscribeOthers(winner);
             }
@@ -367,7 +367,6 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     @Override
     public void call(final Subscriber<? super T> subscriber) {
         final Selection<T> selection = new Selection<T>();
-        final AtomicReference<AmbSubscriber<T>> choice = selection.choice;
         
         //setup unsubscription of all the subscribers to the sources
         subscriber.add(Subscriptions.create(new Action0() {
@@ -375,7 +374,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
             @Override
             public void call() {
                 AmbSubscriber<T> c;
-                if ((c = choice.get()) != null) {
+                if ((c = selection.get()) != null) {
                     // there is a single winner so we unsubscribe it
                     c.unsubscribe();
                 } 
@@ -399,7 +398,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
             // if all sources were backpressure aware then this check 
             // would be pointless given that 0 was requested above from each ambSubscriber
             AmbSubscriber<T> c;
-            if ((c = choice.get()) != null) {
+            if ((c = selection.get()) != null) {
                 // Already chose one, the rest can be skipped and we can clean up
                 selection.unsubscribeOthers(c);
                 return;
@@ -416,7 +415,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
             @Override
             public void request(long n) {
                 AmbSubscriber<T> c;
-                if ((c = choice.get()) != null) {
+                if ((c = selection.get()) != null) {
                     // propagate the request to that single Subscriber that won
                     c.requestMore(n);
                 } else {
@@ -425,7 +424,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
                         if (!ambSubscriber.isUnsubscribed()) {
                             // make a best endeavours check to not waste requests 
                             // if first emission has already occurred
-                            if (choice.get() == ambSubscriber) {
+                            if (selection.get() == ambSubscriber) {
                                 ambSubscriber.requestMore(n);
                                 // don't need to request from other subscribers because choice has been made
                                 // and request has gone to choice 
