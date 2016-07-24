@@ -61,30 +61,36 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
     }
 
     /** Manage the left and right sources. */
-    final class ResultSink {
+    final class ResultSink extends HashMap<Integer,TLeft> {
+        //HashMap aspect of `this` refers to the `leftMap`
+        
+        private static final long serialVersionUID = 3491669543549085380L;
+
         final CompositeSubscription group;
         final Subscriber<? super R> subscriber;
-        final Object guard = new Object();
-        /** Guarded by guard. */
+        /** Guarded by this. */
         boolean leftDone;
-        /** Guarded by guard. */
+        /** Guarded by this. */
         int leftId;
-        /** Guarded by guard. */
-        final Map<Integer, TLeft> leftMap;
-        /** Guarded by guard. */
+        /** Guarded by this. */
         boolean rightDone;
-        /** Guarded by guard. */
+        /** Guarded by this. */
         int rightId;
-        /** Guarded by guard. */
+        /** Guarded by this. */
         final Map<Integer, TRight> rightMap;
 
         public ResultSink(Subscriber<? super R> subscriber) {
+            super();
             this.subscriber = subscriber;
             this.group = new CompositeSubscription();
-            this.leftMap = new HashMap<Integer, TLeft>();
+            //`leftMap` is `this`
             this.rightMap = new HashMap<Integer, TRight>();
         }
 
+        HashMap<Integer, TLeft> leftMap() {
+            return this;
+        }
+        
         public void run() {
             subscriber.add(group);
             
@@ -103,8 +109,8 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
 
             protected void expire(int id, Subscription resource) {
                 boolean complete = false;
-                synchronized (guard) {
-                    if (leftMap.remove(id) != null && leftMap.isEmpty() && leftDone) {
+                synchronized (ResultSink.this) {
+                    if (leftMap().remove(id) != null && leftMap().isEmpty() && leftDone) {
                         complete = true;
                     }
                 }
@@ -121,9 +127,9 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
                 int id;
                 int highRightId;
 
-                synchronized (guard) {
+                synchronized (ResultSink.this) {
                     id = leftId++;
-                    leftMap.put(id, args);
+                    leftMap().put(id, args);
                     highRightId = rightId;
                 }
 
@@ -137,7 +143,7 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
                     duration.unsafeSubscribe(d1);
 
                     List<TRight> rightValues = new ArrayList<TRight>();
-                    synchronized (guard) {
+                    synchronized (ResultSink.this) {
                         for (Map.Entry<Integer, TRight> entry : rightMap.entrySet()) {
                             if (entry.getKey() < highRightId) {
                                 rightValues.add(entry.getValue());
@@ -162,9 +168,9 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
             @Override
             public void onCompleted() {
                 boolean complete = false;
-                synchronized (guard) {
+                synchronized (ResultSink.this) {
                     leftDone = true;
-                    if (rightDone || leftMap.isEmpty()) {
+                    if (rightDone || leftMap().isEmpty()) {
                         complete = true;
                     }
                 }
@@ -211,7 +217,7 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
 
             void expire(int id, Subscription resource) {
                 boolean complete = false;
-                synchronized (guard) {
+                synchronized (ResultSink.this) {
                     if (rightMap.remove(id) != null && rightMap.isEmpty() && rightDone) {
                         complete = true;
                     }
@@ -228,7 +234,7 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
             public void onNext(TRight args) {
                 int id; 
                 int highLeftId;
-                synchronized (guard) {
+                synchronized (ResultSink.this) {
                     id = rightId++;
                     rightMap.put(id, args);
                     highLeftId = leftId;
@@ -247,8 +253,8 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
                     
 
                     List<TLeft> leftValues = new ArrayList<TLeft>();
-                    synchronized (guard) {
-                        for (Map.Entry<Integer, TLeft> entry : leftMap.entrySet()) {
+                    synchronized (ResultSink.this) {
+                        for (Map.Entry<Integer, TLeft> entry : leftMap().entrySet()) {
                             if (entry.getKey() < highLeftId) {
                                 leftValues.add(entry.getValue());
                             }
@@ -274,7 +280,7 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
             @Override
             public void onCompleted() {
                 boolean complete = false;
-                synchronized (guard) {
+                synchronized (ResultSink.this) {
                     rightDone = true;
                     if (leftDone || rightMap.isEmpty()) {
                         complete = true;
