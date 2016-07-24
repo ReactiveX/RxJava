@@ -11763,7 +11763,7 @@ public class Observable<T> {
      * @param <T5> the fifth other source's value type
      * @param <T6> the sixth other source's value type
      * @param <T7> the seventh other source's value type
-     * @param <T8> the eigth other source's value type
+     * @param <T8> the eighth other source's value type
      * @param <R> the result value type
      * @param o1 the first other Observable
      * @param o2 the second other Observable

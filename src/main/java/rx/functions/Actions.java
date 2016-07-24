@@ -229,7 +229,7 @@ public final class Actions {
      * @param <T5> the fifth argument type
      * @param <T6> the sixth argument type
      * @param <T7> the seventh argument type
-     * @param <T8> the eigth argument type
+     * @param <T8> the eighth argument type
      * @param action
      *            the {@link Action8} to convert
      * @return a {@link Func8} that calls {@code action} and returns {@code null}
@@ -249,7 +249,7 @@ public final class Actions {
      * @param <T5> the fifth argument type
      * @param <T6> the sixth argument type
      * @param <T7> the seventh argument type
-     * @param <T8> the eigth argument type
+     * @param <T8> the eighth argument type
      * @param <T9> the ninth argument type
      * @param action
      *            the {@link Action9} to convert
@@ -473,7 +473,7 @@ public final class Actions {
      * @param <T5> the fifth argument type
      * @param <T6> the sixth argument type
      * @param <T7> the seventh argument type
-     * @param <T8> the eigth argument type
+     * @param <T8> the eighth argument type
      * @param <R> the result type
      * @param action
      *            the {@link Action8} to convert
@@ -502,7 +502,7 @@ public final class Actions {
      * @param <T5> the fifth argument type
      * @param <T6> the sixth argument type
      * @param <T7> the seventh argument type
-     * @param <T8> the eigth argument type
+     * @param <T8> the eighth argument type
      * @param <T9> the ninth argument type
      * @param <R> the result type
      * @param action

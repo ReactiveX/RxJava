@@ -241,7 +241,7 @@ public final class Functions {
      * @param <T4> the fifth argument type
      * @param <T5> the sixth argument type
      * @param <T6> the seventh argument type
-     * @param <T7> the eigth argument type
+     * @param <T7> the eighth argument type
      * @param <R> the result type
      * @param f
      *          the {@code Func8} to convert
@@ -272,7 +272,7 @@ public final class Functions {
      * @param <T4> the fifth argument type
      * @param <T5> the sixth argument type
      * @param <T6> the seventh argument type
-     * @param <T7> the eigth argument type
+     * @param <T7> the eighth argument type
      * @param <T8> the ninth argument type
      * @param <R> the result type
      * @param f

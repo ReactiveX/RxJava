@@ -1213,7 +1213,7 @@ public class Single<T> {
      * @param <T5> the fifth source Single's value type
      * @param <T6> the sixth source Single's value type
      * @param <T7> the seventh source Single's value type
-     * @param <T8> the eigth source Single's value type
+     * @param <T8> the eighth source Single's value type
      * @param <R> the result value type
      * @param s1
      *            the first source Single
@@ -1265,7 +1265,7 @@ public class Single<T> {
      * @param <T5> the fifth source Single's value type
      * @param <T6> the sixth source Single's value type
      * @param <T7> the seventh source Single's value type
-     * @param <T8> the eigth source Single's value type
+     * @param <T8> the eighth source Single's value type
      * @param <T9> the ninth source Single's value type
      * @param <R> the result value type
      * @param s1
