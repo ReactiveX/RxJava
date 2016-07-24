@@ -24,7 +24,7 @@ package rx.functions;
  * @param <T5> the fifth argument type
  * @param <T6> the sixth argument type
  * @param <T7> the seventh argument type
- * @param <T8> the eigth argument type
+ * @param <T8> the eighth argument type
  * @param <R> the result type
  */
 public interface Func8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Function {
