@@ -9203,7 +9203,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/skip.html">ReactiveX operators documentation: Skip</a>
      */
     public final Observable<T> skip(long time, TimeUnit unit, Scheduler scheduler) {
-        return lift(new OperatorSkipTimed<T>(time, unit, scheduler));
+        return create(new OnSubscribeSkipTimed<T>(this, time, unit, scheduler));
     }
 
     /**
