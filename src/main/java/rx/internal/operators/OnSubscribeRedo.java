@@ -41,7 +41,7 @@ import rx.functions.*;
 import rx.internal.producers.ProducerArbiter;
 import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
-import rx.subjects.BehaviorSubject;
+import rx.subjects.*;
 import rx.subscriptions.SerialSubscription;
 
 public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
@@ -202,7 +202,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
         // the source observable. We use a BehaviorSubject because subscribeToSource 
         // may emit a terminal before the restarts observable (transformed terminals) 
         // is subscribed
-        final BehaviorSubject<Notification<?>> terminals = BehaviorSubject.create();
+        final Subject<Notification<?>, Notification<?>> terminals = BehaviorSubject.<Notification<?>>create().toSerialized();
         final Subscriber<Notification<?>> dummySubscriber = Subscribers.empty();
         // subscribe immediately so the last emission will be replayed to the next 
         // subscriber (which is the one we care about)
