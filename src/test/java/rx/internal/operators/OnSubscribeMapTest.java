@@ -32,7 +32,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-public class OperatorMapTest {
+public class OnSubscribeMapTest {
 
     @Mock
     Observer<String> stringObserver;

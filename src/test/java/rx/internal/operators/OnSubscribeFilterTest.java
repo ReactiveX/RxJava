@@ -30,7 +30,7 @@ import rx.internal.util.*;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
-public class OperatorFilterTest {
+public class OnSubscribeFilterTest {
 
     @Test
     public void testFilter() {
