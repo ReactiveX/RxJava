@@ -44,15 +44,16 @@ public final class OnSubscribeSkipTimed<T> implements OnSubscribe<T> {
     @Override
     public void call(final Subscriber<? super T> child) {
         final Worker worker = scheduler.createWorker();
-        child.add(worker);
         SkipTimedSubscriber<T> subscriber = new SkipTimedSubscriber<T>(child);
+        subscriber.add(worker);
+        child.add(subscriber);
         worker.schedule(subscriber, time, unit);
         source.unsafeSubscribe(subscriber);
     }
     
     final static class SkipTimedSubscriber<T> extends Subscriber<T> implements Action0 {
 
-        Subscriber<? super T> child;
+        final Subscriber<? super T> child;
         volatile boolean gate;
 
         SkipTimedSubscriber(Subscriber<? super T> child) {
