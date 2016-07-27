@@ -5,7 +5,7 @@ sudo: false
 # as per http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
 
 git:
-  depth: 10
+  depth: 20
 
 # prevent travis running gradle assemble; let the build script do it anyway
 install: true
