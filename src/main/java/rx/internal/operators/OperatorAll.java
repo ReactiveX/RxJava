@@ -20,6 +20,7 @@ import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.internal.producers.SingleDelayedProducer;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Returns an Observable that emits a Boolean that indicates whether all items emitted by an
@@ -43,6 +44,9 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
 
             @Override
             public void onNext(T t) {
+                if (done) {
+                    return;
+                }
                 Boolean result;
                 try {
                     result = predicate.call(t);
@@ -50,7 +54,7 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
                     Exceptions.throwOrReport(e, this, t);
                     return;
                 }
-                if (!result && !done) {
+                if (!result) {
                     done = true;
                     producer.setValue(false);
                     unsubscribe();
@@ -61,7 +65,12 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
 
             @Override
             public void onError(Throwable e) {
-                child.onError(e);
+                if (!done) {
+                    done = true;
+                    child.onError(e);
+                } else {
+                    RxJavaHooks.onError(e);
+                }
             }
 
             @Override
