@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -22,6 +23,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -29,6 +31,8 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.exceptions.TestException;
+import rx.functions.Action0;
+import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -165,5 +169,28 @@ public class OperatorSkipTimedTest {
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onCompleted();
 
+    }
+    
+    @Test
+    public void testSkipTimedUnsubscribePropagatesToUpstream() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        final AtomicBoolean unsub = new AtomicBoolean();
+        Observable<Integer> result = source.doOnUnsubscribe(new Action0() {
+
+            @Override
+            public void call() {
+                unsub.set(true);
+            }
+        }).skip(1, TimeUnit.SECONDS, scheduler);
+
+        TestSubscriber<Object> ts = TestSubscriber.create();
+
+        result.subscribe(ts);
+        source.onNext(1);
+        ts.unsubscribe();
+        assertTrue(unsub.get());
     }
 }
