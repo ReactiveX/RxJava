@@ -22,6 +22,7 @@ import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.Exceptions;
 import rx.functions.Func2;
+import rx.plugins.RxJavaHooks;
 
 public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
 
@@ -57,6 +58,8 @@ public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
         
         static final Object EMPTY = new Object();
         
+        boolean done;
+        
         @SuppressWarnings("unchecked")
         public ReduceSubscriber(Subscriber<? super T> actual, Func2<T, T, T> reducer) {
             this.actual = actual;
@@ -68,6 +71,9 @@ public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
         @SuppressWarnings("unchecked")
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             Object o = value;
             if (o == EMPTY) {
                 value = t;
@@ -77,19 +83,28 @@ public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     unsubscribe();
-                    actual.onError(ex);
+                    onError(ex);
                 }
             }
         }
         
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            if (!done) {
+                done = true;
+                actual.onError(e);
+            } else {
+                RxJavaHooks.onError(e);
+            }
         }
         
         @SuppressWarnings("unchecked")
         @Override
         public void onCompleted() {
+            if (done) {
+                return;
+            }
+            done = true;
             Object o = value;
             if (o != EMPTY) {
                 actual.onNext((T)o);
