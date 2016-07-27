@@ -132,9 +132,16 @@ public class OperatorMapNotificationTest {
         ps.onNext(3);
         ps.onCompleted();
         
-        ts.assertValues(2, 3, 4, 5);
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(1);
+        
+        ts.assertValue(0);
         ts.assertNoErrors();
         ts.assertCompleted();
+        
     }
 
 }
