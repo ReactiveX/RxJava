@@ -20,13 +20,17 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import rx.*;
+import rx.Observable.OnSubscribe;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
+import rx.plugins.RxJavaHooks;
 
 public class OperatorAllTest {
 
@@ -177,5 +181,115 @@ public class OperatorAllTest {
         assertEquals(1, errors.size());
         assertEquals(ex, errors.get(0));
         assertTrue(ex.getCause().getMessage().contains("Boo!"));
+    }
+    
+    @Test
+    public void testDoesNotEmitMultipleTerminalEvents() {
+        TestSubscriber<Boolean> ts = TestSubscriber.create();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> sub) {
+                sub.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        if (n > 0) {
+                            sub.onNext(1);
+                            sub.onCompleted();
+                        }
+                    }
+                });
+            }
+        })
+        .all(new Func1<Integer,Boolean>() {
+
+            @Override
+            public Boolean call(Integer t) {
+                throw new RuntimeException("boo");
+            }})
+        .unsafeSubscribe(ts);
+        ts.assertError(RuntimeException.class);
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testUpstreamEmitsOnNextAfterFailureWithoutCheckingSubscription() {
+        TestSubscriber<Boolean> ts = TestSubscriber.create();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> sub) {
+                sub.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        if (n > 1) {
+                            sub.onNext(1);
+                            sub.onNext(2);
+                        }
+                    }
+                });
+            }
+        })
+        .all(new Func1<Integer,Boolean>() {
+            boolean once = true;
+            @Override
+            public Boolean call(Integer t) {
+                if (once)
+                    throw new RuntimeException("boo");
+                else  {
+                    once = false;
+                    return true; 
+                }
+            }})
+        .unsafeSubscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(RuntimeException.class);
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testDoesNotEmitMultipleErrorEventsAndReportsSecondErrorToHooks() {
+        try {
+            final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+            RxJavaHooks.setOnError(new Action1<Throwable>() {
+
+                @Override
+                public void call(Throwable t) {
+                    list.add(t);
+                }
+            });
+            TestSubscriber<Boolean> ts = TestSubscriber.create();
+            final RuntimeException e1 = new RuntimeException();
+            final Throwable e2 = new RuntimeException();
+            Observable.create(new OnSubscribe<Integer>() {
+
+                @Override
+                public void call(final Subscriber<? super Integer> sub) {
+                    sub.setProducer(new Producer() {
+
+                        @Override
+                        public void request(long n) {
+                            if (n > 0) {
+                                sub.onNext(1);
+                                sub.onError(e2);
+                            }
+                        }
+                    });
+                }
+            }).all(new Func1<Integer, Boolean>() {
+
+                @Override
+                public Boolean call(Integer t) {
+                    throw e1;
+                }
+            }).unsafeSubscribe(ts);
+            ts.assertNotCompleted();
+            assertEquals(Arrays.asList(e1), ts.getOnErrorEvents());
+            assertEquals(Arrays.asList(e2), list);
+        } finally {
+            RxJavaHooks.setOnError(null);
+        }
     }
 }
