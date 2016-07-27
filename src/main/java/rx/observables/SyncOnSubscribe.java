@@ -27,7 +27,7 @@ import rx.internal.operators.BackpressureUtils;
 import rx.plugins.RxJavaHooks;
 
 /**
- * A utility class to create {@code OnSubscribe<T>} functions that respond correctly to back
+ * A utility class to create {@code OnSubscribe<T>} functions that responds correctly to back
  * pressure requests from subscribers. This is an improvement over
  * {@link rx.Observable#create(OnSubscribe) Observable.create(OnSubscribe)} which does not provide
  * any means of managing back pressure requests out-of-the-box.
@@ -271,7 +271,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
 
     /**
      * An implementation of SyncOnSubscribe that delegates
-     * {@link SyncOnSubscribe#next(Object, Subscriber)}, {@link SyncOnSubscribe#generateState()},
+     * {@link SyncOnSubscribe#next(Object, Observer)}, {@link SyncOnSubscribe#generateState()},
      * and {@link SyncOnSubscribe#onUnsubscribe(Object)} to provided functions/closures.
      *
      * @param <S>
