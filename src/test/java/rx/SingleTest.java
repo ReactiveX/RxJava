@@ -2005,4 +2005,68 @@ public class SingleTest {
         assertFalse("Observers present?!", ps.hasObservers());
     }
 
+    @Test
+    public void flatMapCompletableComplete() {
+        final AtomicInteger atomicInteger = new AtomicInteger();
+        TestSubscriber testSubscriber = TestSubscriber.create();
+
+        Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
+            @Override
+            public Completable call(final Integer integer) {
+                return Completable.fromAction(new Action0() {
+                    @Override
+                    public void call() {
+                        atomicInteger.set(5);
+                    }
+                });
+            }
+        }).subscribe(testSubscriber);
+
+        testSubscriber.assertCompleted();
+
+        assertEquals(5, atomicInteger.get());
+    }
+
+    @Test
+    public void flatMapCompletableError() {
+        final RuntimeException error = new RuntimeException("some error");
+        TestSubscriber testSubscriber = TestSubscriber.create();
+
+        Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
+            @Override
+            public Completable call(final Integer integer) {
+                return Completable.error(error);
+            }
+        }).subscribe(testSubscriber);
+
+        testSubscriber.assertError(error);
+    }
+
+    @Test
+    public void flatMapCompletableNullCompletable() {
+        TestSubscriber testSubscriber = TestSubscriber.create();
+
+        Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
+            @Override
+            public Completable call(final Integer integer) {
+                return null;
+            }
+        }).subscribe(testSubscriber);
+
+        testSubscriber.assertError(NullPointerException.class);
+    }
+
+    @Test
+    public void flatMapCompletableException() {
+        TestSubscriber testSubscriber = TestSubscriber.create();
+
+        Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
+            @Override
+            public Completable call(final Integer integer) {
+                throw new UnsupportedOperationException();
+            }
+        }).subscribe(testSubscriber);
+
+        testSubscriber.assertError(UnsupportedOperationException.class);
+    }
 }

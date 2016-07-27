@@ -1397,6 +1397,29 @@ public class Single<T> {
     }
 
     /**
+     * Returns a {@link Completable} that completes based on applying a specified function to the item emitted by the
+     * source {@link Completable}, where that function returns a {@link Completable}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapCompletable.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code flatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param func
+     *            a function that, when applied to the item emitted by the source Single, returns a
+     *            Completable
+     * @return the Completable returned from {@code func} when applied to the item emitted by the source Single
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @Experimental The behavior of this can change at any time.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public final Completable flatMapCompletable(final Func1<? super T, ? extends Completable> func) {
+        return Completable.create(new CompletableFlatMapSingleToCompletable<T>(this, func));
+    }
+
+    /**
      * Returns a Single that applies a specified function to the item emitted by the source Single and
      * emits the result of this function application.
      * <p>
