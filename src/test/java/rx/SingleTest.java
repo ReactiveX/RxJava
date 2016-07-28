@@ -2008,7 +2008,7 @@ public class SingleTest {
     @Test
     public void flatMapCompletableComplete() {
         final AtomicInteger atomicInteger = new AtomicInteger();
-        TestSubscriber testSubscriber = TestSubscriber.create();
+        TestSubscriber<Object> testSubscriber = TestSubscriber.create();
 
         Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
             @Override
@@ -2030,7 +2030,7 @@ public class SingleTest {
     @Test
     public void flatMapCompletableError() {
         final RuntimeException error = new RuntimeException("some error");
-        TestSubscriber testSubscriber = TestSubscriber.create();
+        TestSubscriber<Object> testSubscriber = TestSubscriber.create();
 
         Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
             @Override
@@ -2044,7 +2044,7 @@ public class SingleTest {
 
     @Test
     public void flatMapCompletableNullCompletable() {
-        TestSubscriber testSubscriber = TestSubscriber.create();
+        TestSubscriber<Object> testSubscriber = TestSubscriber.create();
 
         Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
             @Override
@@ -2058,7 +2058,7 @@ public class SingleTest {
 
     @Test
     public void flatMapCompletableException() {
-        TestSubscriber testSubscriber = TestSubscriber.create();
+        TestSubscriber<Object> testSubscriber = TestSubscriber.create();
 
         Single.just(1).flatMapCompletable(new Func1<Integer, Completable>() {
             @Override
