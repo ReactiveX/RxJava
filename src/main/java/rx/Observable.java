@@ -93,7 +93,11 @@ public class Observable<T> {
      * @return an Observable that, when a {@link Subscriber} subscribes to it, will execute the specified
      *         function
      * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
+     * @deprecated this API is very delicate and easy to misuse for typical user and mostly intended for internal usage.
+     * Please use other operators or {@link #fromAsync(Action1, AsyncEmitter.BackpressureMode)} if you need
+     * to turn some callback-styled code into {@link Observable}.
      */
+    @Deprecated
     public static <T> Observable<T> create(OnSubscribe<T> f) {
         return new Observable<T>(RxJavaHooks.onCreate(f));
     }
