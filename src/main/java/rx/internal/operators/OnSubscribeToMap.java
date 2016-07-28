@@ -16,13 +16,15 @@
 
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
-import rx.Observable.Operator;
+import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
-import rx.observers.Subscribers;
+import rx.functions.Func0;
+import rx.functions.Func1;
 
 /**
  * Maps the elements of the source observable into a java.util.Map instance and
@@ -33,35 +35,25 @@ import rx.observers.Subscribers;
  * @param <K> the map-key type
  * @param <V> the map-value type
  */
-public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
+public final class OnSubscribeToMap<T, K, V> implements OnSubscribe<Map<K, V>>, Func0<Map<K, V>> {
+
+    final Observable<T> source;
 
     final Func1<? super T, ? extends K> keySelector;
 
     final Func1<? super T, ? extends V> valueSelector;
 
-    private final Func0<? extends Map<K, V>> mapFactory;
-
-    /**
-     * The default map factory.
-     * @param <K> the key type
-     * @param <V> the value type
-     */
-    public static final class DefaultToMapFactory<K, V> implements Func0<Map<K, V>> {
-        @Override
-        public Map<K, V> call() {
-            return new HashMap<K, V>();
-        }
-    }
+    final Func0<? extends Map<K, V>> mapFactory;
 
     /**
      * ToMap with key selector, value selector and default HashMap factory.
      * @param keySelector the function extracting the map-key from the main value
      * @param valueSelector the function extracting the map-value from the main value
      */
-    public OperatorToMap(
+    public OnSubscribeToMap(Observable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector) {
-        this(keySelector, valueSelector, new DefaultToMapFactory<K, V>());
+        this(source, keySelector, valueSelector, null);
     }
 
 
@@ -71,70 +63,72 @@ public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
      * @param valueSelector the function extracting the map-value from the main value
      * @param mapFactory function that returns a Map instance to store keys and values into
      */
-    public OperatorToMap(
+    public OnSubscribeToMap(Observable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector,
             Func0<? extends Map<K, V>> mapFactory) {
+        this.source = source;
         this.keySelector = keySelector;
         this.valueSelector = valueSelector;
-        this.mapFactory = mapFactory;
-
+        if (mapFactory == null) {
+            this.mapFactory = this;
+        } else {
+            this.mapFactory = mapFactory;
+        }
     }
 
     @Override
-    public Subscriber<? super T> call(final Subscriber<? super Map<K, V>> subscriber) {
-        
-        Map<K, V> localMap;
-        
+    public Map<K, V> call() {
+        return new HashMap<K, V>();
+    }
+    
+    @Override
+    public void call(final Subscriber<? super Map<K, V>> subscriber) {
+        Map<K, V> map;
         try {
-            localMap = mapFactory.call();
+            map = mapFactory.call();
         } catch (Throwable ex) {
             Exceptions.throwOrReport(ex, subscriber);
-            Subscriber<? super T> parent = Subscribers.empty();
-            parent.unsubscribe();
-            return parent;
+            return;
+        }
+        new ToMapSubscriber<T, K, V>(subscriber, map, keySelector, valueSelector)
+            .subscribeTo(source);;    
+    }
+    
+    static final class ToMapSubscriber<T, K, V> extends DeferredScalarSubscriberSafe<T, Map<K,V>> {
+
+        final Func1<? super T, ? extends K> keySelector;
+        final Func1<? super T, ? extends V> valueSelector;
+
+        ToMapSubscriber(Subscriber<? super Map<K,V>> actual, Map<K,V> map, Func1<? super T, ? extends K> keySelector,
+                Func1<? super T, ? extends V> valueSelector) {
+            super(actual);
+            this.value = map;
+            this.hasValue = true;
+            this.keySelector = keySelector;
+            this.valueSelector = valueSelector;
+        }
+
+        @Override
+        public void onStart() {
+            request(Long.MAX_VALUE);
         }
         
-        final Map<K, V> fLocalMap = localMap;
-        
-        return new Subscriber<T>(subscriber) {
-
-            private Map<K, V> map = fLocalMap;
-
-            @Override
-            public void onStart() {
-                request(Long.MAX_VALUE);
+        @Override
+        public void onNext(T t) {
+            if (done) {
+                return;
             }
-            
-            @Override
-            public void onNext(T v) {
-                K key;
-                V value;
-
-                try {
-                    key = keySelector.call(v);
-                    value = valueSelector.call(v);
-                } catch (Throwable ex) {
-                    Exceptions.throwOrReport(ex, subscriber);
-                    return;
-                }
-                
-                map.put(key, value);
+            try {
+                K key = keySelector.call(t);
+                V val = valueSelector.call(t);
+                value.put(key, val);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                unsubscribe();
+                onError(ex);
             }
-
-            @Override
-            public void onError(Throwable e) {
-                map = null;
-                subscriber.onError(e);
-            }
-
-            @Override
-            public void onCompleted() {
-                Map<K, V> map0 = map;
-                map = null;
-                subscriber.onNext(map0);
-                subscriber.onCompleted();
-            }
-        };
+        }
     }
+    
 }
