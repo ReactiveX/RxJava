@@ -255,7 +255,7 @@ public class OnSubscribeReduceTest {
             assertEquals(Arrays.asList(e1), ts.getOnErrorEvents());
             assertEquals(Arrays.asList(e2), list);
         } finally {
-            RxJavaHooks.setOnError(null);
+            RxJavaHooks.reset();
         }
     }
 

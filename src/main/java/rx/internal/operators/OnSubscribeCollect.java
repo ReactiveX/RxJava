@@ -50,7 +50,7 @@ public final class OnSubscribeCollect<T, R> implements OnSubscribe<R> {
         new CollectSubscriber<T, R>(t, initialValue, collector).subscribeTo(source);
     }
     
-    static final class CollectSubscriber<T, R> extends DeferredScalarSubscriber<T, R> {
+    static final class CollectSubscriber<T, R> extends DeferredScalarSubscriberSafe<T, R> {
 
         final Action2<R, ? super T> collector;
 
@@ -63,12 +63,15 @@ public final class OnSubscribeCollect<T, R> implements OnSubscribe<R> {
 
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             try {
                 collector.call(value, t);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 unsubscribe();
-                actual.onError(ex);
+                onError(ex);
             }
         }
         
