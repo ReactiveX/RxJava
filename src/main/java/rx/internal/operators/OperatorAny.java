@@ -21,6 +21,7 @@ import rx.Observable.Operator;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.internal.producers.SingleDelayedProducer;
+import rx.plugins.RxJavaHooks;
 
 /**
  * Returns an {@link Observable} that emits <code>true</code> if any element of
@@ -45,6 +46,9 @@ public final class OperatorAny<T> implements Operator<Boolean, T> {
 
             @Override
             public void onNext(T t) {
+                if (done) {
+                    return;
+                }
                 hasElements = true;
                 boolean result;
                 try {
@@ -53,7 +57,7 @@ public final class OperatorAny<T> implements Operator<Boolean, T> {
                     Exceptions.throwOrReport(e, this, t);
                     return;
                 }
-                if (result && !done) {
+                if (result) {
                     done = true;
                     producer.setValue(!returnOnEmpty);
                     unsubscribe();
@@ -64,7 +68,12 @@ public final class OperatorAny<T> implements Operator<Boolean, T> {
 
             @Override
             public void onError(Throwable e) {
-                child.onError(e);
+                if (!done) {
+                    done = true;
+                    child.onError(e);
+                } else {
+                    RxJavaHooks.onError(e);
+                }
             }
 
             @Override
