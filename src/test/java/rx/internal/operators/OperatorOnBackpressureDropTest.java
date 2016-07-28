@@ -18,19 +18,24 @@ package rx.internal.operators;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action1;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
+import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
 
 public class OperatorOnBackpressureDropTest {
@@ -140,6 +145,144 @@ public class OperatorOnBackpressureDropTest {
           .subscribe(ts);
         assertFalse(errorOccurred.get());
     }
+    
+    @Test
+    public void testOnDropMethodIsCalled() {
+        final List<Integer> list = new ArrayList<Integer>();
+        // request 0
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> sub) {
+                sub.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        if (n > 1) {
+                            sub.onNext(1);
+                            sub.onNext(2);
+                            sub.onCompleted();
+                        }
+                    }
+                });
+            }
+        }).onBackpressureDrop(new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                list.add(t);
+            }
+        }).subscribe(ts);
+        assertEquals(Arrays.asList(1, 2), list);
+    }
+    
+    @Test
+    public void testUpstreamEmitsOnCompletedAfterFailureWithoutCheckingSubscription() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        final RuntimeException e = new RuntimeException();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> sub) {
+                sub.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        if (n > 1) {
+                            sub.onNext(1);
+                            sub.onCompleted();
+                        }
+                    }
+                });
+            }
+        })
+        .onBackpressureDrop(new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                throw e;
+            }})
+        .unsafeSubscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(e);
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testUpstreamEmitsErrorAfterFailureWithoutCheckingSubscriptionResultsInHooksOnErrorCalled() {
+        try {
+            final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+            RxJavaHooks.setOnError(new Action1<Throwable>() {
+
+                @Override
+                public void call(Throwable t) {
+                    list.add(t);
+                }
+            });
+            TestSubscriber<Integer> ts = TestSubscriber.create(0);
+            final RuntimeException e1 = new RuntimeException();
+            final RuntimeException e2 = new RuntimeException();
+            Observable.create(new OnSubscribe<Integer>() {
+
+                @Override
+                public void call(final Subscriber<? super Integer> sub) {
+                    sub.setProducer(new Producer() {
+
+                        @Override
+                        public void request(long n) {
+                            if (n > 1) {
+                                sub.onNext(1);
+                                sub.onError(e2);
+                            }
+                        }
+                    });
+                }
+            }).onBackpressureDrop(new Action1<Integer>() {
+                @Override
+                public void call(Integer t) {
+                    throw e1;
+                }
+            }).unsafeSubscribe(ts);
+            ts.assertNoValues();
+            assertEquals(Arrays.asList(e1), ts.getOnErrorEvents());
+            ts.assertNotCompleted();
+            assertEquals(Arrays.asList(e2), list);
+        } finally {
+            RxJavaHooks.setOnError(null);
+        }
+    }
+    
+    @Test
+    public void testUpstreamEmitsOnNextAfterFailureWithoutCheckingSubscription() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        final RuntimeException e = new RuntimeException();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> sub) {
+                sub.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        if (n > 1) {
+                            sub.onNext(1);
+                            sub.onNext(2);
+                        }
+                    }
+                });
+            }
+        })
+        .onBackpressureDrop(new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                throw e;
+            }})
+        .unsafeSubscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(e);
+        ts.assertNotCompleted();
+    }
+    
+    
     
     private static final Action1<Long> THROW_NON_FATAL = new Action1<Long>() {
         @Override
