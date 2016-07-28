@@ -21,6 +21,7 @@ import rx.*;
 import rx.Observable.Operator;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
+import rx.plugins.RxJavaHooks;
 
 public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
 
@@ -62,6 +63,9 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
 
         });
         return new Subscriber<T>(child) {
+            
+            boolean done;
+            
             @Override
             public void onStart() {
                 request(Long.MAX_VALUE);
@@ -69,16 +73,27 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
 
             @Override
             public void onCompleted() {
-                child.onCompleted();
+                if (!done) {
+                    done = true;
+                    child.onCompleted();
+                }
             }
 
             @Override
             public void onError(Throwable e) {
-                child.onError(e);
+                if (!done) {
+                    done = true;
+                    child.onError(e);
+                } else {
+                   RxJavaHooks.onError(e);
+                }
             }
 
             @Override
             public void onNext(T t) {
+                if (done) {
+                    return;
+                }
                 if (requested.get() > 0) {
                     child.onNext(t);
                     requested.decrementAndGet();
@@ -88,7 +103,7 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
                         try {
                             onDrop.call(t);
                         } catch (Throwable e) {
-                            Exceptions.throwOrReport(e, child, t);
+                            Exceptions.throwOrReport(e, this, t);
                             return;
                         }
                     }
