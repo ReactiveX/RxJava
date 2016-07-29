@@ -939,62 +939,7 @@ public class ObservableTests {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @Test
-    public void testCollectToList() {
-        Observable<List<Integer>> o = Observable.just(1, 2, 3).collect(new Func0<List<Integer>>() {
-
-            @Override
-            public List<Integer> call() {
-                return new ArrayList<Integer>();
-            }
-            
-        }, new Action2<List<Integer>, Integer>() {
-
-            @Override
-            public void call(List<Integer> list, Integer v) {
-                list.add(v);
-            }
-        });
         
-        List<Integer> list =  o.toBlocking().last();
-
-        assertEquals(3, list.size());
-        assertEquals(1, list.get(0).intValue());
-        assertEquals(2, list.get(1).intValue());
-        assertEquals(3, list.get(2).intValue());
-        
-        // test multiple subscribe
-        List<Integer> list2 =  o.toBlocking().last();
-
-        assertEquals(3, list2.size());
-        assertEquals(1, list2.get(0).intValue());
-        assertEquals(2, list2.get(1).intValue());
-        assertEquals(3, list2.get(2).intValue());
-    }
-
-    @Test
-    public void testCollectToString() {
-        String value = Observable.just(1, 2, 3).collect(new Func0<StringBuilder>() {
-
-            @Override
-            public StringBuilder call() {
-                return new StringBuilder();
-            }
-            
-        }, new Action2<StringBuilder, Integer>() {
-
-            @Override
-            public void call(StringBuilder sb, Integer v) {
-                if (sb.length() > 0) {
-                    sb.append("-");
-                }
-                sb.append(v);
-            }
-        }).toBlocking().last().toString();
-
-        assertEquals("1-2-3", value);
-    }
-    
     @Test
     public void testMergeWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
