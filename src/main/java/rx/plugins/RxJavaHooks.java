@@ -580,7 +580,7 @@ public final class RxJavaHooks {
      * <p>
      * This operation is threadsafe.
      * <p>
-     * Calling with a {@code null} parameter restores the default behavior:
+     * Calling with a {@code null} parameter has the effect that
      * errors are routed to the current thread's {@link UncaughtExceptionHandler}.
      * @param onError the action that will receive undeliverable Throwables
      */
