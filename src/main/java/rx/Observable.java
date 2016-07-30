@@ -11158,7 +11158,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K> Observable<Map<K, T>> toMap(Func1<? super T, ? extends K> keySelector) {
-        return lift(new OperatorToMap<T, K, T>(keySelector, UtilityFunctions.<T>identity()));
+        return create(new OnSubscribeToMap<T, K, T>(this, keySelector, UtilityFunctions.<T>identity()));
     }
 
     /**
@@ -11188,7 +11188,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K, V> Observable<Map<K, V>> toMap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector) {
-        return lift(new OperatorToMap<T, K, V>(keySelector, valueSelector));
+        return create(new OnSubscribeToMap<T, K, V>(this, keySelector, valueSelector));
     }
 
     /**
@@ -11217,7 +11217,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K, V> Observable<Map<K, V>> toMap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, V>> mapFactory) {
-        return lift(new OperatorToMap<T, K, V>(keySelector, valueSelector, mapFactory));
+        return create(new OnSubscribeToMap<T, K, V>(this, keySelector, valueSelector, mapFactory));
     }
 
     /**

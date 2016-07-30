@@ -15,22 +15,37 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.junit.*;
-import org.mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Producer;
+import rx.Subscriber;
 import rx.exceptions.TestException;
-import rx.functions.*;
+import rx.functions.Action1;
+import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.internal.util.UtilityFunctions;
 import rx.observers.TestSubscriber;
+import rx.plugins.RxJavaHooks;
 
-public class OperatorToMapTest {
+public class OnSubscribeToMapTest {
     @Mock
     Observer<Object> objectObserver;
 
@@ -280,5 +295,128 @@ public class OperatorToMapTest {
         ts.assertError(TestException.class);
         ts.assertNoValues();
         ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testFactoryFailureDoesNotAllowErrorAndCompletedEmissions() {
+        TestSubscriber<Map<Integer, Integer>> ts = TestSubscriber.create(0);
+        final RuntimeException e = new RuntimeException();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> sub) {
+                sub.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        if (n > 1) {
+                            sub.onNext(1);
+                            sub.onCompleted();
+                        }
+                    }
+                });
+            }
+        }).toMap(new Func1<Integer,Integer>() {
+
+            @Override
+            public Integer call(Integer t) {
+                throw e;
+            }
+        }).unsafeSubscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(e);
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testFactoryFailureDoesNotAllowTwoErrorEmissions() {
+        try {
+            final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+            RxJavaHooks.setOnError(new Action1<Throwable>() {
+
+                @Override
+                public void call(Throwable t) {
+                    list.add(t);
+                }
+            });
+            TestSubscriber<Map<Integer, Integer>> ts = TestSubscriber.create(0);
+            final RuntimeException e1 = new RuntimeException();
+            final RuntimeException e2 = new RuntimeException();
+            Observable.create(new OnSubscribe<Integer>() {
+
+                @Override
+                public void call(final Subscriber<? super Integer> sub) {
+                    sub.setProducer(new Producer() {
+
+                        @Override
+                        public void request(long n) {
+                            if (n > 1) {
+                                sub.onNext(1);
+                                sub.onError(e2);
+                            }
+                        }
+                    });
+                }
+            }).toMap(new Func1<Integer, Integer>() {
+
+                @Override
+                public Integer call(Integer t) {
+                    throw e1;
+                }
+            }).unsafeSubscribe(ts);
+            ts.assertNoValues();
+            assertEquals(Arrays.asList(e1), ts.getOnErrorEvents());
+            assertEquals(Arrays.asList(e2), list);
+            ts.assertNotCompleted();
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+    
+    @Test
+    public void testFactoryFailureDoesNotAllowErrorThenOnNextEmissions() {
+        TestSubscriber<Map<Integer, Integer>> ts = TestSubscriber.create(0);
+        final RuntimeException e = new RuntimeException();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> sub) {
+                sub.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        if (n > 1) {
+                            sub.onNext(1);
+                            sub.onNext(2);
+                        }
+                    }
+                });
+            }
+        }).toMap(new Func1<Integer,Integer>() {
+
+            @Override
+            public Integer call(Integer t) {
+                throw e;
+            }
+        }).unsafeSubscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(e);
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testBackpressure() {
+        TestSubscriber<Object> ts = TestSubscriber.create(0);
+        Observable
+            .just("a", "bb", "ccc", "dddd")
+            .toMap(lengthFunc)
+            .subscribe(ts);
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        ts.assertNoValues();
+        ts.requestMore(1);
+        ts.assertValueCount(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
     }
 }
