@@ -40,12 +40,11 @@ public class OperatorToObservableSortedListTest {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
         Observable<List<Integer>> observable = w.toSortedList();
 
-        @SuppressWarnings("unchecked")
-        Observer<List<Integer>> observer = mock(Observer.class);
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
+        TestSubscriber<List<Integer>> testSubscriber = new TestSubscriber<List<Integer>>();
+        observable.subscribe(testSubscriber);
+        testSubscriber.assertValue(Arrays.asList(1,2,3,4,5));
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertCompleted();
     }
 
     @Test
@@ -154,12 +153,11 @@ public class OperatorToObservableSortedListTest {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
         Observable<List<Integer>> observable = w.toSortedList(4);
 
-        @SuppressWarnings("unchecked")
-        Observer<List<Integer>> observer = mock(Observer.class);
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
+        TestSubscriber<List<Integer>> testSubscriber = new TestSubscriber<List<Integer>>();
+        observable.subscribe(testSubscriber);
+        testSubscriber.assertValue(Arrays.asList(1,2,3,4,5));
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertCompleted();
     }
     
     @Test
@@ -172,12 +170,11 @@ public class OperatorToObservableSortedListTest {
             }
         });
 
-        @SuppressWarnings("unchecked")
-        Observer<List<Integer>> observer = mock(Observer.class);
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
+        TestSubscriber<List<Integer>> testSubscriber = new TestSubscriber<List<Integer>>();
+        observable.subscribe(testSubscriber);
+        testSubscriber.assertValue(Arrays.asList(5, 4, 3, 2, 1));
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertCompleted();
     }
     
     @Test
@@ -190,12 +187,11 @@ public class OperatorToObservableSortedListTest {
             }
         }, 4);
 
-        @SuppressWarnings("unchecked")
-        Observer<List<Integer>> observer = mock(Observer.class);
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
+        TestSubscriber<List<Integer>> testSubscriber = new TestSubscriber<List<Integer>>();
+        observable.subscribe(testSubscriber);
+        testSubscriber.assertValue(Arrays.asList(5, 4, 3, 2, 1));
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertCompleted();
     }
 
     @Test
@@ -203,16 +199,11 @@ public class OperatorToObservableSortedListTest {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
         Observable<Integer> observable = w.sorted();
 
-        @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onNext(2);
-        verify(observer, times(1)).onNext(3);
-        verify(observer, times(1)).onNext(4);
-        verify(observer, times(1)).onNext(5);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>();
+        observable.subscribe(testSubscriber);
+        testSubscriber.assertValues(1,2,3,4,5);
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertCompleted();
     }
 
     @Test
@@ -227,16 +218,11 @@ public class OperatorToObservableSortedListTest {
 
         });
 
-        @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(5);
-        verify(observer, times(1)).onNext(4);
-        verify(observer, times(1)).onNext(3);
-        verify(observer, times(1)).onNext(2);
-        verify(observer, times(1)).onNext(1);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>();
+        observable.subscribe(testSubscriber);
+        testSubscriber.assertValues(5,4,3,2,1);
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertCompleted();
     }
 
     @Test
@@ -250,16 +236,11 @@ public class OperatorToObservableSortedListTest {
 
         });
 
-        @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onNext(2);
-        verify(observer, times(1)).onNext(3);
-        verify(observer, times(1)).onNext(4);
-        verify(observer, times(1)).onNext(5);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>();
+        observable.subscribe(testSubscriber);
+        testSubscriber.assertValues(1,2,3,4,5);
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertCompleted();
     }
 
     @Test
@@ -271,12 +252,11 @@ public class OperatorToObservableSortedListTest {
 
         Observable<NonComparable> observable = w.sorted();
 
-        @SuppressWarnings("unchecked")
-        Observer<NonComparable> observer = mock(Observer.class);
-        observable.subscribe(observer);
-        verify(observer, never()).onNext(any(NonComparable.class));
-        verify(observer, never()).onCompleted();
-        verify(observer,times(1)).onError(any(ClassCastException.class));
+        TestSubscriber<NonComparable> testSubscriber = new TestSubscriber<NonComparable>();
+        observable.subscribe(testSubscriber);
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(ClassCastException.class);
+        testSubscriber.assertNotCompleted();
     }
 
     private final class NonComparable{
