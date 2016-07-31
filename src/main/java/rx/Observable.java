@@ -5507,9 +5507,9 @@ public class Observable<T> {
     public final Observable<T> doOnCompleted(final Action0 onCompleted) {
         Action1<T> onNext = Actions.empty();
         Action1<Throwable> onError = Actions.empty();
-        Observer<T> observer = new ActionSubscriber<T>(onNext, onError, onCompleted);
+        Observer<T> observer = new ActionObserver<T>(onNext, onError, onCompleted);
 
-        return lift(new OperatorDoOnEach<T>(observer));
+        return create(new OnSubscribeDoOnEach<T>(this, observer));
     }
 
     /**
@@ -5531,8 +5531,7 @@ public class Observable<T> {
      */
     public final Observable<T> doOnEach(final Action1<Notification<? super T>> onNotification) {
         Observer<T> observer = new ActionNotificationObserver<T>(onNotification);
-
-        return lift(new OperatorDoOnEach<T>(observer));
+        return create(new OnSubscribeDoOnEach<T>(this, observer));
     }
 
     /**
@@ -5559,7 +5558,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     public final Observable<T> doOnEach(Observer<? super T> observer) {
-        return lift(new OperatorDoOnEach<T>(observer));
+        return create(new OnSubscribeDoOnEach<T>(this, observer));
     }
 
     /**
@@ -5585,9 +5584,9 @@ public class Observable<T> {
     public final Observable<T> doOnError(final Action1<Throwable> onError) {
         Action1<T> onNext = Actions.empty();
         Action0 onCompleted = Actions.empty();
-        Observer<T> observer = new ActionSubscriber<T>(onNext, onError, onCompleted);
+        Observer<T> observer = new ActionObserver<T>(onNext, onError, onCompleted);
 
-        return lift(new OperatorDoOnEach<T>(observer));
+        return create(new OnSubscribeDoOnEach<T>(this, observer));
     }
 
     /**
@@ -5610,9 +5609,9 @@ public class Observable<T> {
     public final Observable<T> doOnNext(final Action1<? super T> onNext) {
         Action1<Throwable> onError = Actions.empty();
         Action0 onCompleted = Actions.empty();
-        Observer<T> observer = new ActionSubscriber<T>(onNext, onError, onCompleted);
+        Observer<T> observer = new ActionObserver<T>(onNext, onError, onCompleted);
 
-        return lift(new OperatorDoOnEach<T>(observer));
+        return create(new OnSubscribeDoOnEach<T>(this, observer));
     }
 
     /**
@@ -5693,9 +5692,9 @@ public class Observable<T> {
         Action1<T> onNext = Actions.empty();
         Action1<Throwable> onError = Actions.toAction1(onTerminate);
         
-        Observer<T> observer = new ActionSubscriber<T>(onNext, onError, onTerminate);
+        Observer<T> observer = new ActionObserver<T>(onNext, onError, onTerminate);
 
-        return lift(new OperatorDoOnEach<T>(observer));
+        return create(new OnSubscribeDoOnEach<T>(this, observer));
     }
     
     /**

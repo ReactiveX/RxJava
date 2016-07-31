@@ -2413,7 +2413,7 @@ public class Single<T> {
             }
         };
 
-        return lift(new OperatorDoOnEach<T>(observer));
+        return Observable.create(new OnSubscribeDoOnEach<T>(this.toObservable(), observer)).toSingle();
     }
     
     /**
@@ -2449,7 +2449,7 @@ public class Single<T> {
             }
         };
 
-        return lift(new OperatorDoOnEach<T>(observer));
+        return Observable.create(new OnSubscribeDoOnEach<T>(this.toObservable(), observer)).toSingle();
     }
 
     /**
