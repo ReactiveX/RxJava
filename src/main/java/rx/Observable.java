@@ -11442,6 +11442,10 @@ public class Observable<T> {
      * Returns an Observable that emits the events emitted by source Observable, in a
      * sorted order. Each item emitted by the Observable must implement {@link Comparable} with respect to all
      * other items in the sequence.
+     *
+     * <p>Note that calling {@code sorted} with long, non-terminating or infinite sources
+     * might cause {@link OutOfMemoryError}
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
@@ -11463,6 +11467,10 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the events emitted by source Observable, in a
      * sorted order based on a specified comparison function.
+     *
+     * <p>Note that calling {@code sorted} with long, non-terminating or infinite sources
+     * might cause {@link OutOfMemoryError}
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
