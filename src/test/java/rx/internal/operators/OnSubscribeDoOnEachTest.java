@@ -19,18 +19,23 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 import org.mockito.*;
 
 import rx.*;
+import rx.Observable.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
+import rx.plugins.RxJavaHooks;
 
-public class OperatorDoOnEachTest {
+public class OnSubscribeDoOnEachTest {
 
     @Mock
     Observer<String> subscribedObserver;
@@ -219,4 +224,146 @@ public class OperatorDoOnEachTest {
         assertTrue(exceptions.get(0) instanceof TestException);
         assertTrue(exceptions.get(1) instanceof TestException);
     }
+    
+    @Test
+    public void testIfOnNextActionFailsEmitsErrorAndDoesNotFollowWithCompleted() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        final RuntimeException e1 = new RuntimeException();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> subscriber) {
+                subscriber.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        if (n > 0) {
+                            subscriber.onNext(1);
+                            subscriber.onCompleted();
+                        }
+                    }});
+            }})
+            .doOnNext(new Action1<Integer>() {
+
+                @Override
+                public void call(Integer t) {
+                    throw e1;
+                }})
+            .unsafeSubscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(e1);
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testIfOnNextActionFailsEmitsErrorAndDoesNotFollowWithOnNext() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        final RuntimeException e1 = new RuntimeException();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> subscriber) {
+                subscriber.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        if (n > 2) {
+                            subscriber.onNext(1);
+                            subscriber.onNext(2);
+                        }
+                    }});
+            }})
+            .doOnNext(new Action1<Integer>() {
+                
+                @Override
+                public void call(Integer t) {
+                    throw e1;
+                }})
+            .unsafeSubscribe(ts);
+        ts.assertNoValues();
+        assertEquals(1, ts.getOnErrorEvents().size());
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testIfOnNextActionFailsEmitsErrorAndReportsMoreErrorsToRxJavaHooksNotDownstream() {
+        try {
+            final List<Throwable> list= new CopyOnWriteArrayList<Throwable>();
+            RxJavaHooks.setOnError(new Action1<Throwable>() {
+
+                @Override
+                public void call(Throwable e) {
+                     list.add(e);  
+                }});
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            final RuntimeException e1 = new RuntimeException();
+            final RuntimeException e2 = new RuntimeException();
+            Observable.create(new OnSubscribe<Integer>() {
+
+                @Override
+                public void call(final Subscriber<? super Integer> subscriber) {
+                    subscriber.setProducer(new Producer() {
+
+                        @Override
+                        public void request(long n) {
+                            if (n > 2) {
+                                subscriber.onNext(1);
+                                subscriber.onError(e2);
+                            }
+                        }
+                    });
+                }
+            }).doOnNext(new Action1<Integer>() {
+
+                @Override
+                public void call(Integer t) {
+                    throw e1;
+                }
+            }).unsafeSubscribe(ts);
+            ts.assertNoValues();
+            assertEquals(1, ts.getOnErrorEvents().size());
+            ts.assertNotCompleted();
+            assertEquals(Arrays.asList(e2), list);
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+    
+    @Test
+    public void testIfCompleteActionFailsEmitsError() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        final RuntimeException e1 = new RuntimeException();
+        Observable.<Integer>empty()
+            .doOnCompleted(new Action0() {
+
+                @Override
+                public void call() {
+                    throw e1;
+                }})
+            .unsafeSubscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(e1);
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testUnsubscribe() {
+        TestSubscriber<Object> ts = TestSubscriber.create(0);
+        final AtomicBoolean unsub = new AtomicBoolean();
+        Observable.just(1,2,3,4)
+           .doOnUnsubscribe(new Action0() {
+
+            @Override
+            public void call() {
+                unsub.set(true);
+            }})
+           .doOnNext(Actions.empty())
+           .subscribe(ts);
+        ts.requestMore(1);
+        ts.unsubscribe();
+        ts.assertNotCompleted();
+        ts.assertValueCount(1);
+        assertTrue(unsub.get());
+    }
+
 }

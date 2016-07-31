@@ -273,5 +273,4 @@ public class OnSubscribeReduceTest {
         ts.assertError(NoSuchElementException.class);
     }
 
-
 }
