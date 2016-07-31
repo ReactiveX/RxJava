@@ -1453,15 +1453,15 @@ public class Observable<T> {
     }
 
     /**
-     * Concatenates two Observables into a single sequence by subscribing to each Observable,
-     * one after the other, one at a time and delays any errors till all inner Observables terminate.
+     * Returns an Observable that emits the items emitted by two Observables, one after the other, without
+     * interleaving them, and delays any errors till all Observables terminate.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}
-     *  sources are expected to honor backpressure as well. If the outer violates this, a
-     *  {@code MissingBackpressureException} is signalled. If any of the inner {@code Observable}s violates
-     *  this, it <em>may</em> throw an {@code IllegalStateException} when an inner {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The {@code Observable}
+     *  sources are expected to honor backpressure as well.
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1471,7 +1471,7 @@ public class Observable<T> {
      *            an Observable to be concatenated
      * @param t2
      *            an Observable to be concatenated
-     * @return the new Observable with the concatenating behavior
+     * @return an Observable with the concatenating behavior
      */
     @Experimental
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2) {
@@ -1479,15 +1479,15 @@ public class Observable<T> {
     }
 
     /**
-     * Concatenates three Observables into a single sequence by subscribing to each Observable,
-     * one after the other, one at a time and delays any errors till all inner Observables terminate.
+     * Returns an Observable that emits the items emitted by three Observables, one after the other, without
+     * interleaving them, and delays any errors till all Observables terminate.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}
-     *  sources are expected to honor backpressure as well. If the outer violates this, a
-     *  {@code MissingBackpressureException} is signalled. If any of the inner {@code Observable}s violates
-     *  this, it <em>may</em> throw an {@code IllegalStateException} when an inner {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The {@code Observable}
+     *  sources are expected to honor backpressure as well.
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1499,7 +1499,7 @@ public class Observable<T> {
      *            an Observable to be concatenated
      * @param t3
      *            an Observable to be concatenated
-     * @return the new Observable with the concatenating behavior
+     * @return an Observable with the concatenating behavior
      */
     @Experimental
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2,Observable<? extends T> t3 ) {
@@ -1507,15 +1507,15 @@ public class Observable<T> {
     }
 
     /**
-     * Concatenates four Observables into a single sequence by subscribing to each Observable,
-     * one after the other, one at a time and delays any errors till all inner Observables terminate.
+     * Returns an Observable that emits the items emitted by four Observables, one after the other, without
+     * interleaving them, and delays any errors till all Observables terminate.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}
-     *  sources are expected to honor backpressure as well. If the outer violates this, a
-     *  {@code MissingBackpressureException} is signalled. If any of the inner {@code Observable}s violates
-     *  this, it <em>may</em> throw an {@code IllegalStateException} when an inner {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The {@code Observable}
+     *  sources are expected to honor backpressure as well.
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1529,7 +1529,7 @@ public class Observable<T> {
      *            an Observable to be concatenated
      * @param t4
      *            an Observable to be concatenated
-     * @return the new Observable with the concatenating behavior
+     * @return an Observable with the concatenating behavior
      */
     @Experimental
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
@@ -1537,15 +1537,15 @@ public class Observable<T> {
     }
 
     /**
-     * Concatenates five Observables into a single sequence by subscribing to each Observable,
-     * one after the other, one at a time and delays any errors till all inner Observables terminate.
+     * Returns an Observable that emits the items emitted by five Observables, one after the other, without
+     * interleaving them, and delays any errors till all Observables terminate.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}
-     *  sources are expected to honor backpressure as well. If the outer violates this, a
-     *  {@code MissingBackpressureException} is signalled. If any of the inner {@code Observable}s violates
-     *  this, it <em>may</em> throw an {@code IllegalStateException} when an inner {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The {@code Observable}
+     *  sources are expected to honor backpressure as well.
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1561,7 +1561,7 @@ public class Observable<T> {
      *            an Observable to be concatenated
      * @param t5
      *            an Observable to be concatenated
-     * @return the new Observable with the concatenating behavior
+     * @return an Observable with the concatenating behavior
      */
     @Experimental
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
@@ -1569,15 +1569,15 @@ public class Observable<T> {
     }
 
     /**
-     * Concatenates six Observables into a single sequence by subscribing to each Observable,
-     * one after the other, one at a time and delays any errors till all inner Observables terminate.
+     * Returns an Observable that emits the items emitted by six Observables, one after the other, without
+     * interleaving them, and delays any errors till all Observables terminate.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}
-     *  sources are expected to honor backpressure as well. If the outer violates this, a
-     *  {@code MissingBackpressureException} is signalled. If any of the inner {@code Observable}s violates
-     *  this, it <em>may</em> throw an {@code IllegalStateException} when an inner {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The {@code Observable}
+     *  sources are expected to honor backpressure as well.
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1595,7 +1595,7 @@ public class Observable<T> {
      *            an Observable to be concatenated
      * @param t6
      *            an Observable to be concatenated
-     * @return the new Observable with the concatenating behavior
+     * @return an Observable with the concatenating behavior
      */
     @Experimental
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
@@ -1603,15 +1603,15 @@ public class Observable<T> {
     }
 
     /**
-     * Concatenates seven Observables into a single sequence by subscribing to each Observable,
-     * one after the other, one at a time and delays any errors till all inner Observables terminate.
+     * Returns an Observable that emits the items emitted by seven Observables, one after the other, without
+     * interleaving them, and delays any errors till all Observables terminate.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}
-     *  sources are expected to honor backpressure as well. If the outer violates this, a
-     *  {@code MissingBackpressureException} is signalled. If any of the inner {@code Observable}s violates
-     *  this, it <em>may</em> throw an {@code IllegalStateException} when an inner {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The {@code Observable}
+     *  sources are expected to honor backpressure as well.
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1631,7 +1631,7 @@ public class Observable<T> {
      *            an Observable to be concatenated
      * @param t7
      *            an Observable to be concatenated
-     * @return the new Observable with the concatenating behavior
+     * @return an Observable with the concatenating behavior
      */
     @Experimental
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
@@ -1639,15 +1639,15 @@ public class Observable<T> {
     }
 
     /**
-     * Concatenates eight Observables into a single sequence by subscribing to each Observable,
-     * one after the other, one at a time and delays any errors till all inner Observables terminate.
+     * Returns an Observable that emits the items emitted by eight Observables, one after the other, without
+     * interleaving them, and delays any errors till all Observables terminate.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}
-     *  sources are expected to honor backpressure as well. If the outer violates this, a
-     *  {@code MissingBackpressureException} is signalled. If any of the inner {@code Observable}s violates
-     *  this, it <em>may</em> throw an {@code IllegalStateException} when an inner {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The {@code Observable}
+     *  sources are expected to honor backpressure as well.
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1669,7 +1669,7 @@ public class Observable<T> {
      *            an Observable to be concatenated
      * @param t8
      *            an Observable to be concatenated
-     * @return the new Observable with the concatenating behavior
+     * @return an Observable with the concatenating behavior
      */
     @Experimental
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
@@ -1677,15 +1677,15 @@ public class Observable<T> {
     }
 
     /**
-     * Concatenates nine Observables into a single sequence by subscribing to each Observable,
-     * one after the other, one at a time and delays any errors till all inner Observables terminate.
+     * Returns an Observable that emits the items emitted by nine Observables, one after the other, without
+     * interleaving them, and delays any errors till all Observables terminate.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Observable}
-     *  sources are expected to honor backpressure as well. If the outer violates this, a
-     *  {@code MissingBackpressureException} is signalled. If any of the inner {@code Observable}s violates
-     *  this, it <em>may</em> throw an {@code IllegalStateException} when an inner {@code Observable} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream. The {@code Observable}
+     *  sources are expected to honor backpressure as well.
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1709,7 +1709,7 @@ public class Observable<T> {
      *            an Observable to be concatenated
      * @param t9
      *            an Observable to be concatenated
-     * @return the new Observable with the concatenating behavior
+     * @return an Observable with the concatenating behavior
      */
     @Experimental
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
