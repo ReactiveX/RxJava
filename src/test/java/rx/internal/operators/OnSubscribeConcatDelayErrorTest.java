@@ -277,4 +277,317 @@ public class OnSubscribeConcatDelayErrorTest {
         assertEquals(2, ((CompositeException)ts.getOnErrorEvents().get(0)).getExceptions().size());
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError2() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> o1 = Observable.just(1);
+        Observable<Integer> o2 = Observable.just(2);
+
+        Observable.concatDelayError(o1, o2)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError2Error() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> withError1 = withError(Observable.just(1));
+        Observable<Integer> withError2 = withError(Observable.just(2));
+
+        Observable.concatDelayError(withError1, withError2)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+
+        assertEquals(2, ((CompositeException)ts.getOnErrorEvents().get(0)).getExceptions().size());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError3() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> o1 = Observable.just(1);
+        Observable<Integer> o2 = Observable.just(2);
+        Observable<Integer> o3 = Observable.just(3);
+
+        Observable.concatDelayError(o1, o2, o3)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError3Error() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> withError1 = withError(Observable.just(1));
+        Observable<Integer> withError2 = withError(Observable.just(2));
+        Observable<Integer> withError3 = withError(Observable.just(3));
+
+        Observable.concatDelayError(withError1, withError2, withError3)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+
+        assertEquals(3, ((CompositeException)ts.getOnErrorEvents().get(0)).getExceptions().size());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError4() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> o1 = Observable.just(1);
+        Observable<Integer> o2 = Observable.just(2);
+        Observable<Integer> o3 = Observable.just(3);
+        Observable<Integer> o4 = Observable.just(4);
+
+        Observable.concatDelayError(o1, o2, o3, o4)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3, 4);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError4Error() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> withError1 = withError(Observable.just(1));
+        Observable<Integer> withError2 = withError(Observable.just(2));
+        Observable<Integer> withError3 = withError(Observable.just(3));
+        Observable<Integer> withError4 = withError(Observable.just(4));
+
+        Observable.concatDelayError(withError1, withError2, withError3, withError4)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3, 4);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+
+        assertEquals(4, ((CompositeException)ts.getOnErrorEvents().get(0)).getExceptions().size());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError5() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> o1 = Observable.just(1);
+        Observable<Integer> o2 = Observable.just(2);
+        Observable<Integer> o3 = Observable.just(3);
+        Observable<Integer> o4 = Observable.just(4);
+        Observable<Integer> o5 = Observable.just(5);
+
+        Observable.concatDelayError(o1, o2, o3, o4, o5)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError5Error() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> withError1 = withError(Observable.just(1));
+        Observable<Integer> withError2 = withError(Observable.just(2));
+        Observable<Integer> withError3 = withError(Observable.just(3));
+        Observable<Integer> withError4 = withError(Observable.just(4));
+        Observable<Integer> withError5 = withError(Observable.just(5));
+
+        Observable.concatDelayError(withError1, withError2, withError3, withError4, withError5)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+
+        assertEquals(5, ((CompositeException)ts.getOnErrorEvents().get(0)).getExceptions().size());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError6() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> o1 = Observable.just(1);
+        Observable<Integer> o2 = Observable.just(2);
+        Observable<Integer> o3 = Observable.just(3);
+        Observable<Integer> o4 = Observable.just(4);
+        Observable<Integer> o5 = Observable.just(5);
+        Observable<Integer> o6 = Observable.just(6);
+
+        Observable.concatDelayError(o1, o2, o3, o4, o5, o6)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3, 4, 5, 6);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError6Error() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> withError1 = withError(Observable.just(1));
+        Observable<Integer> withError2 = withError(Observable.just(2));
+        Observable<Integer> withError3 = withError(Observable.just(3));
+        Observable<Integer> withError4 = withError(Observable.just(4));
+        Observable<Integer> withError5 = withError(Observable.just(5));
+        Observable<Integer> withError6 = withError(Observable.just(6));
+
+        Observable.concatDelayError(withError1, withError2, withError3, withError4, withError5, withError6)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3, 4, 5, 6);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+
+        assertEquals(6, ((CompositeException)ts.getOnErrorEvents().get(0)).getExceptions().size());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError7() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> o1 = Observable.just(1);
+        Observable<Integer> o2 = Observable.just(2);
+        Observable<Integer> o3 = Observable.just(3);
+        Observable<Integer> o4 = Observable.just(4);
+        Observable<Integer> o5 = Observable.just(5);
+        Observable<Integer> o6 = Observable.just(6);
+        Observable<Integer> o7 = Observable.just(7);
+
+        Observable.concatDelayError(o1, o2, o3, o4, o5, o6, o7)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError7Error() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> withError1 = withError(Observable.just(1));
+        Observable<Integer> withError2 = withError(Observable.just(2));
+        Observable<Integer> withError3 = withError(Observable.just(3));
+        Observable<Integer> withError4 = withError(Observable.just(4));
+        Observable<Integer> withError5 = withError(Observable.just(5));
+        Observable<Integer> withError6 = withError(Observable.just(6));
+        Observable<Integer> withError7 = withError(Observable.just(7));
+
+        Observable.concatDelayError(withError1, withError2, withError3, withError4, withError5, withError6, withError7)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+
+        assertEquals(7, ((CompositeException)ts.getOnErrorEvents().get(0)).getExceptions().size());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError8() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> o1 = Observable.just(1);
+        Observable<Integer> o2 = Observable.just(2);
+        Observable<Integer> o3 = Observable.just(3);
+        Observable<Integer> o4 = Observable.just(4);
+        Observable<Integer> o5 = Observable.just(5);
+        Observable<Integer> o6 = Observable.just(6);
+        Observable<Integer> o7 = Observable.just(7);
+        Observable<Integer> o8 = Observable.just(8);
+
+
+        Observable.concatDelayError(o1, o2, o3, o4, o5, o6, o7, o8)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError8Error() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> withError1 = withError(Observable.just(1));
+        Observable<Integer> withError2 = withError(Observable.just(2));
+        Observable<Integer> withError3 = withError(Observable.just(3));
+        Observable<Integer> withError4 = withError(Observable.just(4));
+        Observable<Integer> withError5 = withError(Observable.just(5));
+        Observable<Integer> withError6 = withError(Observable.just(6));
+        Observable<Integer> withError7 = withError(Observable.just(7));
+        Observable<Integer> withError8 = withError(Observable.just(8));
+
+        Observable.concatDelayError(withError1, withError2, withError3, withError4, withError5, withError6, withError7, withError8)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+
+        assertEquals(8, ((CompositeException)ts.getOnErrorEvents().get(0)).getExceptions().size());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError9() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> o1 = Observable.just(1);
+        Observable<Integer> o2 = Observable.just(2);
+        Observable<Integer> o3 = Observable.just(3);
+        Observable<Integer> o4 = Observable.just(4);
+        Observable<Integer> o5 = Observable.just(5);
+        Observable<Integer> o6 = Observable.just(6);
+        Observable<Integer> o7 = Observable.just(7);
+        Observable<Integer> o8 = Observable.just(8);
+        Observable<Integer> o9 = Observable.just(9);
+
+
+        Observable.concatDelayError(o1, o2, o3, o4, o5, o6, o7, o8, o9)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatDelayError9Error() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable<Integer> withError1 = withError(Observable.just(1));
+        Observable<Integer> withError2 = withError(Observable.just(2));
+        Observable<Integer> withError3 = withError(Observable.just(3));
+        Observable<Integer> withError4 = withError(Observable.just(4));
+        Observable<Integer> withError5 = withError(Observable.just(5));
+        Observable<Integer> withError6 = withError(Observable.just(6));
+        Observable<Integer> withError7 = withError(Observable.just(7));
+        Observable<Integer> withError8 = withError(Observable.just(8));
+        Observable<Integer> withError9 = withError(Observable.just(9));
+
+        Observable.concatDelayError(withError1, withError2, withError3, withError4, withError5, withError6, withError7, withError8, withError9)
+                .subscribe(ts);
+
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        ts.assertError(CompositeException.class);
+        ts.assertNotCompleted();
+
+        assertEquals(9, ((CompositeException)ts.getOnErrorEvents().get(0)).getExceptions().size());
+    }
 }
