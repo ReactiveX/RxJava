@@ -241,8 +241,9 @@ public class RxRingBuffer implements Subscription {
      * r.o.OperatorObserveOnPerf.observeOnNewThread     1000000  thrpt         5        1.173        0.100    ops/s
      * } </pre>
      */
-    static int defaultSize = 128;
     static {
+        int defaultSize = 128;
+
         // lower default for Android (https://github.com/ReactiveX/RxJava/issues/1820)
         if (PlatformDependent.isAndroid()) {
             defaultSize = 16;
@@ -257,8 +258,10 @@ public class RxRingBuffer implements Subscription {
                 System.err.println("Failed to set 'rx.buffer.size' with value " + sizeFromProperty + " => " + e.getMessage()); // NOPMD 
             }
         }
+
+        SIZE = defaultSize;
     }
-    public static final int SIZE = defaultSize;
+    public static final int SIZE;
 
     /* Public so Schedulers can manage the lifecycle of the inner worker. */
     public static final ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
