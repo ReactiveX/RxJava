@@ -11239,7 +11239,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K> Observable<Map<K, Collection<T>>> toMultimap(Func1<? super T, ? extends K> keySelector) {
-        return lift(new OperatorToMultimap<T, K, T>(keySelector, UtilityFunctions.<T>identity()));
+        return create(new OnSubscribeToMultimap<T, K, T>(this, keySelector, UtilityFunctions.<T>identity()));
     }
 
     /**
@@ -11267,7 +11267,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector) {
-        return lift(new OperatorToMultimap<T, K, V>(keySelector, valueSelector));
+        return create(new OnSubscribeToMultimap<T, K, V>(this, keySelector, valueSelector));
     }
 
     /**
@@ -11297,7 +11297,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory) {
-        return lift(new OperatorToMultimap<T, K, V>(keySelector, valueSelector, mapFactory));
+        return create(new OnSubscribeToMultimap<T, K, V>(this, keySelector, valueSelector, mapFactory));
     }
 
     /**
@@ -11329,7 +11329,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory, Func1<? super K, ? extends Collection<V>> collectionFactory) {
-        return lift(new OperatorToMultimap<T, K, V>(keySelector, valueSelector, mapFactory, collectionFactory));
+        return create(new OnSubscribeToMultimap<T, K, V>(this, keySelector, valueSelector, mapFactory, collectionFactory));
     }
 
     /**

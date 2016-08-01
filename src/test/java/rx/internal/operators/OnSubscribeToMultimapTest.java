@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -27,7 +28,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,15 +39,18 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Observable.OnSubscribe;
 import rx.exceptions.TestException;
+import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
-import rx.internal.operators.OperatorToMultimap.DefaultMultimapCollectionFactory;
-import rx.internal.operators.OperatorToMultimap.DefaultToMultimapFactory;
 import rx.internal.util.UtilityFunctions;
 import rx.observers.TestSubscriber;
+import rx.plugins.RxJavaHooks;
 
-public class OperatorToMultimapTest {
+public class OnSubscribeToMultimapTest {
     @Mock
     Observer<Object> objectObserver;
 
@@ -121,7 +127,7 @@ public class OperatorToMultimapTest {
 
         Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(
                 lengthFunc, UtilityFunctions.<String>identity(),
-                mapFactory, new DefaultMultimapCollectionFactory<Integer, String>());
+                mapFactory, OnSubscribeToMultimapTest.<Integer, String>arrayListCollectionFactory());
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(2, Arrays.asList("cc", "dd"));
@@ -132,6 +138,25 @@ public class OperatorToMultimapTest {
         verify(objectObserver, never()).onError(any(Throwable.class));
         verify(objectObserver, times(1)).onNext(expected);
         verify(objectObserver, times(1)).onCompleted();
+    }
+    
+    private static final <K,V> Func1<K, Collection<V>> arrayListCollectionFactory() {
+        return new Func1<K, Collection<V>>() {
+
+            @Override
+            public Collection<V> call(K k) {
+                return new ArrayList<V>();
+            }};
+    }
+    
+    private static final <K, V> Func0<Map<K, Collection<V>>> multimapFactory() {
+        return new Func0<Map<K, Collection<V>>>() {
+
+            @Override
+            public Map<K, Collection<V>> call() {
+                return new HashMap<K, Collection<V>>();
+            }
+        };
     }
 
     @Test
@@ -152,7 +177,7 @@ public class OperatorToMultimapTest {
 
         Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(
                 lengthFunc, UtilityFunctions.<String>identity(),
-                new DefaultToMultimapFactory<Integer, String>(), collectionFactory);
+                OnSubscribeToMultimapTest.<Integer, String>multimapFactory(), collectionFactory);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(2, Arrays.asList("cc", "dd"));
@@ -259,7 +284,7 @@ public class OperatorToMultimapTest {
             }
         };
 
-        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, UtilityFunctions.<String>identity(), new DefaultToMultimapFactory<Integer, String>(), collectionFactory);
+        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, UtilityFunctions.<String>identity(), OnSubscribeToMultimapTest.<Integer, String>multimapFactory(), collectionFactory);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(2, Arrays.asList("cc", "dd"));
@@ -365,4 +390,127 @@ public class OperatorToMultimapTest {
         ts.assertNoValues();
         ts.assertNotCompleted();
     }
+    
+    @Test
+    public void testKeySelectorFailureDoesNotAllowErrorAndCompletedEmissions() {
+        TestSubscriber<Map<Integer, Collection<Integer>>> ts = TestSubscriber.create(0);
+        final RuntimeException e = new RuntimeException();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> sub) {
+                sub.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        if (n > 1) {
+                            sub.onNext(1);
+                            sub.onCompleted();
+                        }
+                    }
+                });
+            }
+        }).toMultimap(new Func1<Integer,Integer>() {
+
+            @Override
+            public Integer call(Integer t) {
+                throw e;
+            }
+        }).unsafeSubscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(e);
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testKeySelectorFailureDoesNotAllowTwoErrorEmissions() {
+        try {
+            final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+            RxJavaHooks.setOnError(new Action1<Throwable>() {
+
+                @Override
+                public void call(Throwable t) {
+                    list.add(t);
+                }
+            });
+            TestSubscriber<Map<Integer, Collection<Integer>>> ts = TestSubscriber.create(0);
+            final RuntimeException e1 = new RuntimeException();
+            final RuntimeException e2 = new RuntimeException();
+            Observable.create(new OnSubscribe<Integer>() {
+
+                @Override
+                public void call(final Subscriber<? super Integer> sub) {
+                    sub.setProducer(new Producer() {
+
+                        @Override
+                        public void request(long n) {
+                            if (n > 1) {
+                                sub.onNext(1);
+                                sub.onError(e2);
+                            }
+                        }
+                    });
+                }
+            }).toMultimap(new Func1<Integer, Integer>() {
+
+                @Override
+                public Integer call(Integer t) {
+                    throw e1;
+                }
+            }).unsafeSubscribe(ts);
+            ts.assertNoValues();
+            assertEquals(Arrays.asList(e1), ts.getOnErrorEvents());
+            assertEquals(Arrays.asList(e2), list);
+            ts.assertNotCompleted();
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+    
+    @Test
+    public void testFactoryFailureDoesNotAllowErrorThenOnNextEmissions() {
+        TestSubscriber<Map<Integer, Collection<Integer>>> ts = TestSubscriber.create(0);
+        final RuntimeException e = new RuntimeException();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> sub) {
+                sub.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        if (n > 1) {
+                            sub.onNext(1);
+                            sub.onNext(2);
+                        }
+                    }
+                });
+            }
+        }).toMultimap(new Func1<Integer,Integer>() {
+
+            @Override
+            public Integer call(Integer t) {
+                throw e;
+            }
+        }).unsafeSubscribe(ts);
+        ts.assertNoValues();
+        ts.assertError(e);
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testBackpressure() {
+        TestSubscriber<Object> ts = TestSubscriber.create(0);
+        Observable
+            .just("a", "bb", "ccc", "dddd")
+            .toMultimap(lengthFunc)
+            .subscribe(ts);
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        ts.assertNoValues();
+        ts.requestMore(1);
+        ts.assertValueCount(1);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }    
 }
