@@ -35,15 +35,7 @@ public final class OperatorSequenceEqual {
     }
 
     static <T> Observable<Object> materializeLite(Observable<T> source) {
-        return concat(
-                source.map(new Func1<T, Object>() {
-
-                    @Override
-                    public Object call(T t1) {
-                        return t1;
-                    }
-
-                }), just(LOCAL_ONCOMPLETED));
+        return concat(source, just(LOCAL_ONCOMPLETED));
     }
 
     /**
