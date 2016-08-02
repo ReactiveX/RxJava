@@ -27,12 +27,12 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
-import io.reactivex.subscribers.DefaultObserver;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableConcatTest {
 
@@ -824,5 +824,25 @@ public class FlowableConcatTest {
             assertEquals((Integer)999, ts.values().get(999));
         }
     }
-    
+ 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void arrayDelayError() {
+        Publisher<Integer>[] sources = new Publisher[] {
+                Flowable.just(1),
+                null, 
+                Flowable.range(2, 3),
+                Flowable.error(new TestException()),
+                Flowable.empty()
+        };
+        
+        TestSubscriber<Integer> ts = Flowable.concatArrayDelayError(sources).test();
+        
+        ts.assertFailure(CompositeException.class, 1, 2, 3, 4);
+        
+        CompositeException composite = (CompositeException)ts.errors().get(0);
+        List<Throwable> list = composite.getExceptions();
+        assertTrue(list.get(0).toString(), list.get(0) instanceof NullPointerException);
+        assertTrue(list.get(1).toString(), list.get(1) instanceof TestException);
+    }
 }

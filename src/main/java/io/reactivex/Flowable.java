@@ -373,12 +373,11 @@ public abstract class Flowable<T> implements Publisher<T> {
         return concatArray(p1, p2, p3, p4, p5, p6, p7, p8, p9);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @Deprecated // prefetch is unnecessary when the sources is synchronously available
     public static <T> Flowable<T> concatArray(int prefetch, Publisher<? extends T>... sources) {
-        Objects.requireNonNull(sources, "sources is null");
-        return fromArray(sources).concatMap((Function)Functions.identity(), prefetch);
+        return concatArray(sources);
     }
 
     /**
@@ -387,10 +386,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note: named this way because of overload conflict with concat(NbpObservable&lt;NbpObservable&gt)
      * @param sources the array of sources
      * @param <T> the common base value type
-     * @return the new NbpObservable instance
+     * @return the new Observable instance
      * @throws NullPointerException if sources is null
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concatArray(Publisher<? extends T>... sources) {
@@ -400,7 +398,27 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (sources.length == 1) {
             return fromPublisher(sources[0]);
         }
-        return fromArray(sources).concatMap((Function)Functions.identity());
+        return new FlowableConcatArray<T>(sources, false);
+    }
+
+    /**
+     * Concatenates a variable number of Observable sources and delays errors from any of them
+     * till all terminate.
+     * @param sources the array of sources
+     * @param <T> the common base value type
+     * @return the new Flowable instance
+     * @throws NullPointerException if sources is null
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatArrayDelayError(Publisher<? extends T>... sources) {
+        if (sources.length == 0) {
+            return empty();
+        } else
+        if (sources.length == 1) {
+            return fromPublisher(sources[0]);
+        }
+        return new FlowableConcatArray<T>(sources, true);
     }
 
     public static <T> Flowable<T> concatArrayEager(Publisher<? extends T>... sources) {

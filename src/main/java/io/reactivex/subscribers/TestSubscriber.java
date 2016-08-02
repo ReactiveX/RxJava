@@ -888,7 +888,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @param values the expected values, asserted in order
      * @return this
      */
-    public final TestSubscriber<T> assertFailure(Class<Throwable> error, T... values) {
+    public final TestSubscriber<T> assertFailure(Class<? extends Throwable> error, T... values) {
         return assertValues(values)
                 .assertError(error)
                 .assertNotComplete();
