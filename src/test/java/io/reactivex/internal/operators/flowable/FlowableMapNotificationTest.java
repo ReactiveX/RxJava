@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.*;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableMapNotificationTest {
@@ -48,5 +49,95 @@ public class FlowableMapNotificationTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
         ts.assertValue(2);
+    }
+    
+    @Test
+    public void backpressure() {
+        TestSubscriber<Object> ts = TestSubscriber.create(0L);
+
+        new FlowableMapNotification<Integer, Integer>(Flowable.range(1, 3),
+                new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer item) {
+                        return item + 1;
+                    }
+                },
+                new Function<Throwable, Integer>() {
+                    @Override
+                    public Integer apply(Throwable e) {
+                        return 0;
+                    }
+                },
+                new Supplier<Integer>() {
+                    @Override
+                    public Integer get() {
+                        return 5;
+                    }
+                }
+        ).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ts.request(3);
+        
+        ts.assertValues(2, 3, 4);
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+
+        ts.request(1);
+        
+        ts.assertValues(2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
+    @Test
+    public void noBackpressure() {
+        TestSubscriber<Object> ts = TestSubscriber.create(0L);
+
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+        
+        new FlowableMapNotification<Integer, Integer>(ps, 
+                new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer item) {
+                        return item + 1;
+                    }
+                },
+                new Function<Throwable, Integer>() {
+                    @Override
+                    public Integer apply(Throwable e) {
+                        return 0;
+                    }
+                },
+                new Supplier<Integer>() {
+                    @Override
+                    public Integer get() {
+                        return 5;
+                    }
+                }
+        ).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ps.onNext(1);
+        ps.onNext(2);
+        ps.onNext(3);
+        ps.onComplete();
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ts.request(1);
+        
+        ts.assertValue(0);
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
     }
 }
