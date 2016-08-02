@@ -247,6 +247,18 @@ public final class RxJavaPlugins {
 
         setNewThreadSchedulerHandler(null);
         setInitNewThreadSchedulerHandler(null);
+        
+        setOnFlowableAssembly(null);
+        setOnFlowableSubscribe(null);
+        
+        setOnObservableAssembly(null);
+        setOnObservableSubscribe(null);
+        
+        setOnSingleAssembly(null);
+        setOnSingleSubscribe(null);
+        
+        setOnCompletableAssembly(null);
+        setOnCompletableSubscribe(null);
     }
 
     public static void setComputationSchedulerHandler(Function<Scheduler, Scheduler> handler) {

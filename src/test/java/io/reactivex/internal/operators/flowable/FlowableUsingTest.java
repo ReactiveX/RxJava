@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -26,6 +27,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableUsingTest {
 
@@ -431,4 +433,73 @@ public class FlowableUsingTest {
         };
     }
     
+    @Test
+    public void factoryThrows() {
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        final AtomicInteger count = new AtomicInteger();
+        
+        Flowable.<Integer, Integer>using(
+                new Supplier<Integer>() {
+                    @Override
+                    public Integer get() {
+                        return 1;
+                    }
+                }, 
+                new Function<Integer, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Integer v) { 
+                        throw new TestException("forced failure"); 
+                    }
+                }, 
+                new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer c) {
+                        count.incrementAndGet();
+                    }
+                }
+        )
+        .unsafeSubscribe(ts);
+        
+        ts.assertError(TestException.class);
+        
+        Assert.assertEquals(1, count.get());
+    }
+    
+    @Test
+    public void nonEagerTermination() {
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        final AtomicInteger count = new AtomicInteger();
+        
+        Flowable.<Integer, Integer>using(
+                new Supplier<Integer>() {
+                    @Override
+                    public Integer get() {
+                        return 1;
+                    }
+                }, 
+                new Function<Integer, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Integer v) { 
+                        return Flowable.just(v);
+                    }
+                }, 
+                new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer c) {
+                        count.incrementAndGet();
+                    }
+                }, false
+        )
+        .unsafeSubscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+        Assert.assertEquals(1, count.get());
+    }
 }

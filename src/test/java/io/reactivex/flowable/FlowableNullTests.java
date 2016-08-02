@@ -1315,7 +1315,7 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void finallyDoNull() {
-        just1.finallyDo(null);
+        just1.doAfterTerminate(null);
     }
     
     @Test(expected = NullPointerException.class)

@@ -13,7 +13,7 @@
 package io.reactivex.internal.util;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
@@ -384,5 +384,196 @@ public enum QueueDrainHelper {
      */
     public static void request(Subscription s, int prefetch) {
         s.request(prefetch < 0 ? Long.MAX_VALUE : prefetch);
+    }
+    
+    static final long COMPLETED_MASK = 0x8000000000000000L;
+    static final long REQUESTED_MASK = 0x7FFFFFFFFFFFFFFFL;
+
+    /**
+     * Accumulates requests (validated) and handles the completed mode draining of the queue based on the requests.
+     * 
+     * <p>
+     * Post-completion backpressure handles the case when a source produces values based on
+     * requests when it is active but more values are available even after its completion.
+     * In this case, the onComplete() can't just emit the contents of the queue but has to
+     * coordinate with the requested amounts. This requires two distinct modes: active and
+     * completed. In active mode, requests flow through and the queue is not accessed but
+     * in completed mode, requests no-longer reach the upstream but help in draining the queue.
+     *
+     * @param <T> the value type emitted
+     * @param n
+     * @param actual
+     * @param queue
+     * @param state
+     * @param isCancelled
+     * @return true if the state indicates a completion state.
+     */
+    public static <T> boolean postCompleteRequest(long n,
+                                                  Subscriber<? super T> actual,
+                                                  Queue<T> queue,
+                                                  AtomicLong state,
+                                                  BooleanSupplier isCancelled) {
+        for (; ; ) {
+            long r = state.get();
+
+            // extract the current request amount
+            long r0 = r & REQUESTED_MASK;
+
+            // preserve COMPLETED_MASK and calculate new requested amount
+            long u = (r & COMPLETED_MASK) | BackpressureHelper.addCap(r0, n);
+
+            if (state.compareAndSet(r, u)) {
+                // (complete, 0) -> (complete, n) transition then replay
+                if (r == COMPLETED_MASK) {
+
+                    postCompleteDrain(n | COMPLETED_MASK, actual, queue, state, isCancelled);
+
+                    return true;
+                }
+                // (active, r) -> (active, r + n) transition then continue with requesting from upstream
+                return false;
+            }
+        }
+
+    }
+
+    /**
+     * Drains the queue based on the outstanding requests in post-completed mode (only!).
+     *
+     * @param n
+     * @param actual
+     * @param queue
+     * @param state
+     * @param isCancelled
+     * @return true if the queue was completely drained or the drain process was cancelled
+     */
+    static <T> boolean postCompleteDrain(long n,
+                                         Subscriber<? super T> actual,
+                                         Queue<T> queue,
+                                         AtomicLong state,
+                                         BooleanSupplier isCancelled) {
+
+// TODO enable fast-path
+//        if (n == -1 || n == Long.MAX_VALUE) {
+//            for (;;) {
+//                if (isCancelled.getAsBoolean()) {
+//                    break;
+//                }
+//                
+//                T v = queue.poll();
+//                
+//                if (v == null) {
+//                    actual.onComplete();
+//                    break;
+//                }
+//                
+//                actual.onNext(v);
+//            }
+//            
+//            return true;
+//        }
+
+        long e = n & COMPLETED_MASK;
+
+        for (; ; ) {
+
+            while (e != n) {
+                if (isCancelled.getAsBoolean()) {
+                    return true;
+                }
+
+                T t = queue.poll();
+
+                if (t == null) {
+                    actual.onComplete();
+                    return true;
+                }
+
+                actual.onNext(t);
+                e++;
+            }
+
+            if (isCancelled.getAsBoolean()) {
+                return true;
+            }
+
+            if (queue.isEmpty()) {
+                actual.onComplete();
+                return true;
+            }
+
+            n = state.get();
+
+            if (n == e) {
+
+                n = state.addAndGet(-(e & REQUESTED_MASK));
+
+                if ((n & REQUESTED_MASK) == 0L) {
+                    return false;
+                }
+
+                e = n & COMPLETED_MASK;
+            }
+        }
+
+    }
+
+    /**
+     * Signals the completion of the main sequence and switches to post-completion replay mode.
+     * 
+     * <p>
+     * Don't modify the queue after calling this method!
+     * 
+     * <p>
+     * Post-completion backpressure handles the case when a source produces values based on
+     * requests when it is active but more values are available even after its completion.
+     * In this case, the onCompleted() can't just emit the contents of the queue but has to
+     * coordinate with the requested amounts. This requires two distinct modes: active and
+     * completed. In active mode, requests flow through and the queue is not accessed but
+     * in completed mode, requests no-longer reach the upstream but help in draining the queue.
+     * <p>
+     * The algorithm utilizes the most significant bit (bit 63) of a long value (AtomicLong) since
+     * request amount only goes up to Long.MAX_VALUE (bits 0-62) and negative values aren't
+     * allowed.
+     *
+     * @param <T> the value type emitted
+     * @param actual
+     * @param queue
+     * @param state
+     * @param isCancelled
+     */
+    public static <T> void postComplete(Subscriber<? super T> actual,
+                                        Queue<T> queue,
+                                        AtomicLong state,
+                                        BooleanSupplier isCancelled) {
+
+        if (queue.isEmpty()) {
+            actual.onComplete();
+            return;
+        }
+
+        if (postCompleteDrain(state.get(), actual, queue, state, isCancelled)) {
+            return;
+        }
+
+        for (; ; ) {
+            long r = state.get();
+
+            if ((r & COMPLETED_MASK) != 0L) {
+                return;
+            }
+
+            long u = r | COMPLETED_MASK;
+            // (active, r) -> (complete, r) transition
+            if (state.compareAndSet(r, u)) {
+                // if the requested amount was non-zero, drain the queue
+                if (r != 0L) {
+                    postCompleteDrain(u, actual, queue, state, isCancelled);
+                }
+
+                return;
+            }
+        }
+
     }
 }

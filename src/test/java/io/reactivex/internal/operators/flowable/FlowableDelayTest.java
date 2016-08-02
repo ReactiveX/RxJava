@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -869,4 +870,26 @@ public class FlowableDelayTest {
         ts.assertError(TestException.class);
     }
 
+    @Test
+    public void delayAndTakeUntilNeverSubscribeToSource() {
+        PublishProcessor<Integer> delayUntil = PublishProcessor.create();
+        PublishProcessor<Integer> interrupt = PublishProcessor.create();
+        final AtomicBoolean subscribed = new AtomicBoolean(false);
+
+        Flowable.just(1)
+        .doOnSubscribe(new Consumer<Object>() {
+            @Override
+            public void accept(Object o) {
+                subscribed.set(true);
+            }
+        })
+        .delaySubscription(delayUntil)
+        .takeUntil(interrupt)
+        .subscribe();
+
+        interrupt.onNext(9000);
+        delayUntil.onNext(1);
+
+        Assert.assertFalse(subscribed.get());
+    }
 }

@@ -18,7 +18,9 @@ import java.util.NoSuchElementException;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleFromPublisher<T> extends Single<T> {
 
@@ -30,38 +32,85 @@ public final class SingleFromPublisher<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(final SingleSubscriber<? super T> s) {
+        publisher.subscribe(new ToSingleSubscriber<T>(s));
+    }
+    
+    static final class ToSingleSubscriber<T> implements Subscriber<T>, Disposable {
+        final SingleSubscriber<? super T> actual;
+        
+        Subscription s;
+        
+        T value;
+        
+        boolean done;
+        
+        volatile boolean disposed;
 
-        publisher.subscribe(new Subscriber<T>() {
-            T value;
-            @Override
-            public void onComplete() {
-                T v = value;
-                value = null;
-                if (v != null) {
-                    s.onSuccess(v);
-                } else {
-                    s.onError(new NoSuchElementException());
-                }
+        public ToSingleSubscriber(SingleSubscriber<? super T> actual) {
+            this.actual = actual;
+        }
+        
+        @Override
+        public void onSubscribe(Subscription s) {
+            if (SubscriptionHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                actual.onSubscribe(this);
+                
+                s.request(Long.MAX_VALUE);
             }
-
-            @Override
-            public void onError(Throwable t) {
-                value = null;
-                s.onError(t);
+        }
+        
+        @Override
+        public void onNext(T t) {
+            if (done) {
+                return;
             }
-
-            @Override
-            public void onNext(T t) {
+            if (value != null) {
+                s.cancel();
+                done = true;
+                this.value = null;
+                actual.onError(new IndexOutOfBoundsException("Too many elements in the Publisher"));
+            } else {
                 value = t;
             }
-
-            @Override
-            public void onSubscribe(Subscription inner) {
-                s.onSubscribe(Disposables.from(inner));
-                inner.request(Long.MAX_VALUE);
+        }
+        
+        @Override
+        public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
             }
-            
-        });
+            done = true;
+            this.value = null;
+            actual.onError(t);
+        }
+        
+        @Override
+        public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
+            T v = this.value;
+            this.value = null;
+            if (v == null) {
+                actual.onError(new NoSuchElementException("The source Publisher is empty"));
+            } else {
+                actual.onSuccess(v);
+            }
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
+        
+        @Override
+        public void dispose() {
+            disposed = true;
+            s.cancel();
+        }
     }
-
 }

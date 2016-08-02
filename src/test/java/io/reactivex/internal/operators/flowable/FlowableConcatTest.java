@@ -17,11 +17,12 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
@@ -29,7 +30,8 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
@@ -824,7 +826,7 @@ public class FlowableConcatTest {
             assertEquals((Integer)999, ts.values().get(999));
         }
     }
- 
+
     @SuppressWarnings("unchecked")
     @Test
     public void arrayDelayError() {
@@ -844,5 +846,165 @@ public class FlowableConcatTest {
         List<Throwable> list = composite.getExceptions();
         assertTrue(list.get(0).toString(), list.get(0) instanceof NullPointerException);
         assertTrue(list.get(1).toString(), list.get(1) instanceof TestException);
+    }
+
+    @Test
+    public void scalarAndRangeBackpressured() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        Flowable.just(1).concatWith(Flowable.range(2, 3)).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.request(5);
+        
+        ts.assertValues(1, 2, 3, 4);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @Test
+    public void scalarAndEmptyBackpressured() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        Flowable.just(1).concatWith(Flowable.<Integer>empty()).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.request(5);
+        
+        ts.assertValue(1);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void rangeAndEmptyBackpressured() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        Flowable.range(1, 2).concatWith(Flowable.<Integer>empty()).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.request(5);
+        
+        ts.assertValues(1, 2);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void emptyAndScalarBackpressured() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        Flowable.<Integer>empty().concatWith(Flowable.just(1)).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.request(5);
+        
+        ts.assertValue(1);
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    @Ignore("concat(a, b, ...) replaced by concatArray(T...)")
+    public void concatMany() throws Exception {
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] clazz = new Class[i];
+            Arrays.fill(clazz, Flowable.class);
+            
+            Flowable<Integer>[] obs = new Flowable[i];
+            Arrays.fill(obs, Flowable.just(1));
+            
+            Integer[] expected = new Integer[i];
+            Arrays.fill(expected, 1);
+            
+            Method m = Flowable.class.getMethod("concat", clazz);
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            ((Flowable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
+            
+            ts.assertValues(expected);
+            ts.assertNoErrors();
+            ts.assertComplete();
+        }
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void concatMapJustJust() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.just(Flowable.just(1)).concatMap((Function)Functions.identity()).subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void concatMapJustRange() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.just(Flowable.range(1, 5)).concatMap((Function)Functions.identity()).subscribe(ts);
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void concatMapDelayErrorJustJust() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.just(Flowable.just(1)).concatMapDelayError((Function)Functions.identity()).subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void concatMapDelayErrorJustRange() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.just(Flowable.range(1, 5)).concatMapDelayError((Function)Functions.identity()).subscribe(ts);
+        
+        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    @Ignore("startWith(a, b, ...) replaced by startWithArray(T...)")
+    public void startWith() throws Exception {
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] clazz = new Class[i];
+            Arrays.fill(clazz, Object.class);
+            
+            Object[] obs = new Object[i];
+            Arrays.fill(obs, 1);
+            
+            Integer[] expected = new Integer[i];
+            Arrays.fill(expected, 1);
+            
+            Method m = Flowable.class.getMethod("startWith", clazz);
+            
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            ((Flowable<Integer>)m.invoke(Flowable.empty(), obs)).subscribe(ts);
+            
+            ts.assertValues(expected);
+            ts.assertNoErrors();
+            ts.assertComplete();
+        }
     }
 }

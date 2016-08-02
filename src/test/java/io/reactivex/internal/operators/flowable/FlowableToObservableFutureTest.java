@@ -138,4 +138,87 @@ public class FlowableToObservableFutureTest {
         ts.assertNoValues();
         ts.assertNotComplete();
     }
+    
+    @Test
+    public void backpressure() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+        
+        FutureTask<Integer> f = new FutureTask<Integer>(new Runnable() {
+            @Override
+            public void run() {
+                
+            }
+        }, 1);
+        
+        f.run();
+        
+        Flowable.fromFuture(f).subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.request(1);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void withTimeoutNoTimeout() {
+        FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
+            @Override
+            public void run() {
+                
+            }
+        }, 1);
+        
+        task.run();
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.fromFuture(task, 1, TimeUnit.SECONDS).subscribe(ts);
+        
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void withTimeoutTimeout() {
+        FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
+            @Override
+            public void run() {
+                
+            }
+        }, 1);
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.fromFuture(task, 10, TimeUnit.MILLISECONDS).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TimeoutException.class);
+        ts.assertNotComplete();
+    }
+    
+    @Test
+    public void withTimeoutNoTimeoutScheduler() {
+        FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
+            @Override
+            public void run() {
+                
+            }
+        }, 1);
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.fromFuture(task, Schedulers.computation()).subscribe(ts);
+
+        task.run();
+
+        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        ts.assertValue(1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
 }

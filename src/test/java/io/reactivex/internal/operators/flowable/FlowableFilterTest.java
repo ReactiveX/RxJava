@@ -18,12 +18,15 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Predicate;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableFilterTest {
@@ -144,9 +147,9 @@ public class FlowableFilterTest {
         latch.await();
     }
     
-    // FIXME subscribers are not allowed to throw
-//    @Test
-//    public void testFatalError() {
+    @Test
+    @Ignore("subscribers are not allowed to throw")
+    public void testFatalError() {
 //        try {
 //            Observable.just(1)
 //            .filter(new Predicate<Integer>() {
@@ -168,5 +171,43 @@ public class FlowableFilterTest {
 //                Assert.fail("Failed to report the original exception, instead: " + ex.getCause());
 //            }
 //        }
-//    }
+    }
+
+    @Test
+    public void functionCrashUnsubscribes() {
+        
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        ps.filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) { 
+                throw new TestException(); 
+            }
+        }).unsafeSubscribe(ts);
+        
+        Assert.assertTrue("Not subscribed?", ps.hasSubscribers());
+        
+        ps.onNext(1);
+        
+        Assert.assertFalse("Subscribed?", ps.hasSubscribers());
+        
+        ts.assertError(TestException.class);
+    }
+
+    @Test
+    public void doesntRequestOnItsOwn() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0L);
+        
+        Flowable.range(1, 10).filter(Functions.alwaysTrue()).unsafeSubscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.request(10);
+        
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
 }
