@@ -11439,6 +11439,57 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits the events emitted by source Observable, in a
+     * sorted order. Each item emitted by the Observable must implement {@link Comparable} with respect to all
+     * other items in the sequence.
+     *
+     * <p>Note that calling {@code sorted} with long, non-terminating or infinite sources
+     * might cause {@link OutOfMemoryError}
+     *
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
+     *  unbounded manner (i.e., without applying backpressure to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code sorted} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @throws ClassCastException
+     *             if any item emitted by the Observable does not implement {@link Comparable} with respect to
+     *             all other items emitted by the Observable
+     * @return an Observable that emits the items emitted by the source Observable in sorted order
+     */
+    @Experimental
+    public final Observable<T> sorted(){
+        return toSortedList().flatMapIterable(UtilityFunctions.<List<T>>identity());
+    }
+
+    /**
+     * Returns an Observable that emits the events emitted by source Observable, in a
+     * sorted order based on a specified comparison function.
+     *
+     * <p>Note that calling {@code sorted} with long, non-terminating or infinite sources
+     * might cause {@link OutOfMemoryError}
+     *
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an
+     *  unbounded manner (i.e., without applying backpressure to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code sorted} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param sortFunction
+     *            a function that compares two items emitted by the source Observable and returns an Integer
+     *            that indicates their sort order
+     * @return an Observable that emits the items emitted by the source Observable in sorted order
+     */
+    @Experimental
+    public final Observable<T> sorted(Func2<? super T, ? super T, Integer> sortFunction) {
+        return toSortedList(sortFunction).flatMapIterable(UtilityFunctions.<List<T>>identity());
+    }
+
+    /**
      * Modifies the source Observable so that subscribers will unsubscribe from it on a specified
      * {@link Scheduler}.
      * <dl>
