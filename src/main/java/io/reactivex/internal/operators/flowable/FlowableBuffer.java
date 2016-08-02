@@ -14,257 +14,449 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
-import io.reactivex.functions.Supplier;
-import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableBuffer<T, U extends Collection<? super T>> extends Flowable<U> {
-    final Publisher<T> source;
-    final int count;
+public final class FlowableBuffer<T, C extends Collection<? super T>> extends FlowableSource<T, C> {
+    final int size;
+
     final int skip;
-    final Supplier<U> bufferSupplier;
-    
-    public FlowableBuffer(Publisher<T> source, int count, int skip, Supplier<U> bufferSupplier) {
-        this.source = source;
-        this.count = count;
+
+    final Supplier<C> bufferSupplier;
+
+    public FlowableBuffer(Publisher<T> source, int size, Supplier<C> bufferSupplier) {
+        this(source, size, size, bufferSupplier);
+    }
+
+    public FlowableBuffer(Publisher<T> source, int size, int skip, Supplier<C> bufferSupplier) {
+        super(source);
+        if (size <= 0) {
+            throw new IllegalArgumentException("size > 0 required but it was " + size);
+        }
+
+        if (skip <= 0) {
+            throw new IllegalArgumentException("skip > 0 required but it was " + size);
+        }
+
+        this.size = size;
         this.skip = skip;
-        this.bufferSupplier = bufferSupplier;
+        this.bufferSupplier = Objects.requireNonNull(bufferSupplier, "bufferSupplier");
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super U> s) {
-        if (skip == count) {
-            BufferExactSubscriber<T, U> bes = new BufferExactSubscriber<T, U>(s, count, bufferSupplier);
-            if (bes.createBuffer()) {
-                source.subscribe(bes);
-            }
+    public void subscribeActual(Subscriber<? super C> s) {
+        if (size == skip) {
+            source.subscribe(new PublisherBufferExactSubscriber<T, C>(s, size, bufferSupplier));
+        } else if (skip > size) {
+            source.subscribe(new PublisherBufferSkipSubscriber<T, C>(s, size, skip, bufferSupplier));
         } else {
-            source.subscribe(new BufferSkipSubscriber<T, U>(s, count, skip, bufferSupplier));
+            source.subscribe(new PublisherBufferOverlappingSubscriber<T, C>(s, size, skip, bufferSupplier));
         }
     }
-    
-    static final class BufferExactSubscriber<T, U extends Collection<? super T>> implements Subscriber<T>, Subscription {
-        final Subscriber<? super U> actual;
-        final int count;
-        final Supplier<U> bufferSupplier;
-        U buffer;
-        
-        int size;
-        
+
+    static final class PublisherBufferExactSubscriber<T, C extends Collection<? super T>>
+      implements Subscriber<T>, Subscription {
+
+        final Subscriber<? super C> actual;
+
+        final Supplier<C> bufferSupplier;
+
+        final int size;
+
+        C buffer;
+
         Subscription s;
 
-        public BufferExactSubscriber(Subscriber<? super U> actual, int count, Supplier<U> bufferSupplier) {
+        boolean done;
+
+        public PublisherBufferExactSubscriber(Subscriber<? super C> actual, int size, Supplier<C> bufferSupplier) {
             this.actual = actual;
-            this.count = count;
+            this.size = size;
             this.bufferSupplier = bufferSupplier;
         }
-        
-        boolean createBuffer() {
-            U b;
-            try {
-                b = bufferSupplier.get();
-            } catch (Throwable t) {
-                buffer = null;
-                if (s == null) {
-                    EmptySubscription.error(t, actual);
-                } else {
-                    s.cancel();
-                    actual.onError(t);
-                }
-                return false;
+
+        @Override
+        public void request(long n) {
+            if (SubscriptionHelper.validate(n)) {
+                s.request(BackpressureHelper.multiplyCap(n, size));
             }
-            
-            buffer = b;
-            if (b == null) {
-                Throwable t = new NullPointerException("Empty buffer supplied");
-                if (s == null) {
-                    EmptySubscription.error(t, actual);
-                } else {
-                    s.cancel();
-                    actual.onError(t);
-                }
-                return false;
-            }
-            
-            return true;
         }
-        
+
+        @Override
+        public void cancel() {
+            s.cancel();
+        }
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
+
                 actual.onSubscribe(this);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
-            U b = buffer;
-            if (b == null) {
+            if (done) {
                 return;
             }
-            
+
+            C b = buffer;
+            if (b == null) {
+
+                try {
+                    b = bufferSupplier.get();
+                } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
+                    cancel();
+                    onError(e);
+                    return;
+                }
+
+                if (b == null) {
+                    cancel();
+
+                    onError(new NullPointerException("The bufferSupplier returned a null buffer"));
+                    return;
+                }
+                buffer = b;
+            }
+
             b.add(t);
-            
-            if (++size >= count) {
+
+            if (b.size() == size) {
+                buffer = null;
                 actual.onNext(b);
-                
-                size = 0;
-                createBuffer();
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
-            buffer = null;
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            done = true;
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
-            U b = buffer;
-            buffer = null;
+            if (done) {
+                return;
+            }
+            done = true;
+
+            C b = buffer;
+
             if (b != null && !b.isEmpty()) {
                 actual.onNext(b);
             }
             actual.onComplete();
         }
-        
+    }
+
+    static final class PublisherBufferSkipSubscriber<T, C extends Collection<? super T>>
+    extends AtomicInteger
+    implements Subscriber<T>, Subscription {
+
+        /** */
+        private static final long serialVersionUID = -5616169793639412593L;
+
+        final Subscriber<? super C> actual;
+
+        final Supplier<C> bufferSupplier;
+
+        final int size;
+
+        final int skip;
+
+        C buffer;
+
+        Subscription s;
+
+        boolean done;
+
+        long index;
+
+        public PublisherBufferSkipSubscriber(Subscriber<? super C> actual, int size, int skip,
+                                             Supplier<C> bufferSupplier) {
+            this.actual = actual;
+            this.size = size;
+            this.skip = skip;
+            this.bufferSupplier = bufferSupplier;
+        }
+
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validate(n)) {
-                long m = BackpressureHelper.multiplyCap(n, count);
-                s.request(m);
+            if (get() == 0 && compareAndSet(0, 1)) {
+                // n full buffers
+                long u = BackpressureHelper.multiplyCap(n, size);
+                // + (n - 1) gaps
+                long v = BackpressureHelper.multiplyCap(skip - size, n - 1);
+
+                s.request(BackpressureHelper.addCap(u, v));
+            } else {
+                // n full buffer + gap
+                s.request(BackpressureHelper.multiplyCap(skip, n));
             }
         }
-        
+
         @Override
         public void cancel() {
             s.cancel();
-        }
-    }
-    
-    static final class BufferSkipSubscriber<T, U extends Collection<? super T>> extends AtomicBoolean implements Subscriber<T>, Subscription {
-        /** */
-        private static final long serialVersionUID = -8223395059921494546L;
-        final Subscriber<? super U> actual;
-        final int count;
-        final int skip;
-        final Supplier<U> bufferSupplier;
-
-        Subscription s;
-        
-        final ArrayDeque<U> buffers;
-        
-        long index;
-
-        public BufferSkipSubscriber(Subscriber<? super U> actual, int count, int skip, Supplier<U> bufferSupplier) {
-            this.actual = actual;
-            this.count = count;
-            this.skip = skip;
-            this.bufferSupplier = bufferSupplier;
-            this.buffers = new ArrayDeque<U>();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
+
                 actual.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            if (index++ % skip == 0) {
-                U b;
-                
+            if (done) {
+                return;
+            }
+
+            C b = buffer;
+
+            long i = index;
+
+            if (i % skip == 0L) {
                 try {
                     b = bufferSupplier.get();
                 } catch (Throwable e) {
-                    buffers.clear();
-                    s.cancel();
-                    actual.onError(e);
+                    cancel();
+
+                    onError(e);
                     return;
                 }
-                
+
                 if (b == null) {
-                    buffers.clear();
-                    s.cancel();
-                    actual.onError(new NullPointerException());
+                    cancel();
+
+                    onError(new NullPointerException("The bufferSupplier returned a null buffer"));
                     return;
                 }
-                
-                buffers.offer(b);
+
+                buffer = b;
             }
-            
-            Iterator<U> it = buffers.iterator();
-            while (it.hasNext()) {
-                U b = it.next();
+
+            if (b != null) {
                 b.add(t);
-                if (count <= b.size()) {
-                    it.remove();
-                    
+                if (b.size() == size) {
+                    buffer = null;
                     actual.onNext(b);
                 }
             }
+
+            index = i + 1;
         }
-        
+
         @Override
         public void onError(Throwable t) {
-            buffers.clear();
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+
+            done = true;
+            buffer = null;
+
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
-            while (!buffers.isEmpty()) {
-                actual.onNext(buffers.poll());
+            if (done) {
+                return;
             }
+
+            done = true;
+            C b = buffer;
+            buffer = null;
+
+            if (b != null) {
+                actual.onNext(b);
+            }
+
             actual.onComplete();
         }
+    }
+
+
+    static final class PublisherBufferOverlappingSubscriber<T, C extends Collection<? super T>>
+    extends AtomicLong
+    implements Subscriber<T>, Subscription, BooleanSupplier {
+        /** */
+        private static final long serialVersionUID = -7370244972039324525L;
+
+        final Subscriber<? super C> actual;
+
+        final Supplier<C> bufferSupplier;
+
+        final int size;
+
+        final int skip;
+
+        final ArrayDeque<C> buffers;
+
+        final AtomicBoolean once;
+
+        Subscription s;
+
+        boolean done;
+
+        long index;
+
+        volatile boolean cancelled;
+
+        long produced;
         
+        public PublisherBufferOverlappingSubscriber(Subscriber<? super C> actual, int size, int skip,
+                                                    Supplier<C> bufferSupplier) {
+            this.actual = actual;
+            this.size = size;
+            this.skip = skip;
+            this.bufferSupplier = bufferSupplier;
+            this.once = new AtomicBoolean();
+            this.buffers = new ArrayDeque<C>();
+        }
+
+        @Override
+        public boolean getAsBoolean() {
+            return cancelled;
+        }
+
         @Override
         public void request(long n) {
+
             if (!SubscriptionHelper.validate(n)) {
                 return;
             }
-            // requesting the first set of buffers must happen only once
-            if (!get() && compareAndSet(false, true)) {
-                
-                if (count < skip) {
-                    // don't request the first gap after n buffers
-                    long m = BackpressureHelper.multiplyCap(n, count);
-                    s.request(m);
-                } else {
-                    // request 1 full and n - 1 skip gaps
-                    long m = BackpressureHelper.multiplyCap(n - 1, skip);
-                    long k = BackpressureHelper.addCap(count, m);
-                    s.request(k);
-                }
-                
+
+            if (QueueDrainHelper.postCompleteRequest(n, actual, buffers, this, this)) {
+                return;
+            }
+
+            if (!once.get() && once.compareAndSet(false, true)) {
+                // (n - 1) skips
+                long u = BackpressureHelper.multiplyCap(skip, n - 1);
+
+                // + 1 full buffer
+                long r = BackpressureHelper.addCap(size, u);
+                s.request(r);
             } else {
-                
-                if (count < skip) {
-                    // since this isn't the first, request n buffers and n gaps
-                    long m = BackpressureHelper.multiplyCap(n, count + skip);
-                    s.request(m);
-                } else {
-                    // request the remaining n * skip
-                    long m = BackpressureHelper.multiplyCap(n, skip);
-                    s.request(m);
-                }
+                // n skips
+                long r = BackpressureHelper.multiplyCap(skip, n);
+                s.request(r);
             }
         }
-        
+
         @Override
         public void cancel() {
+            cancelled = true;
             s.cancel();
+        }
+
+        @Override
+        public void onSubscribe(Subscription s) {
+            if (SubscriptionHelper.validate(this.s, s)) {
+                this.s = s;
+
+                actual.onSubscribe(this);
+            }
+        }
+
+        @Override
+        public void onNext(T t) {
+            if (done) {
+                return;
+            }
+
+            ArrayDeque<C> bs = buffers;
+
+            long i = index;
+
+            if (i % skip == 0L) {
+                C b;
+
+                try {
+                    b = bufferSupplier.get();
+                } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
+                    cancel();
+                    onError(e);
+                    return;
+                }
+
+                if (b == null) {
+                    cancel();
+
+                    onError(new NullPointerException("The bufferSupplier returned a null buffer"));
+                    return;
+                }
+
+                bs.offer(b);
+            }
+
+            C b = bs.peek();
+
+            if (b != null && b.size() + 1 == size) {
+                bs.poll();
+
+                b.add(t);
+
+                produced++;
+                
+                actual.onNext(b);
+            }
+
+            for (C b0 : bs) {
+                b0.add(t);
+            }
+
+            index = i + 1;
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+
+            done = true;
+            buffers.clear();
+
+            actual.onError(t);
+        }
+
+        @Override
+        public void onComplete() {
+            if (done) {
+                return;
+            }
+
+            done = true;
+
+            long p = produced;
+            if (p != 0L) {
+                BackpressureHelper.produced(this, p);
+            }
+            QueueDrainHelper.postComplete(actual, buffers, this, this);
         }
     }
 }

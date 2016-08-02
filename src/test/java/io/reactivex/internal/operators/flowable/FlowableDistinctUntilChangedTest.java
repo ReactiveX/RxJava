@@ -16,13 +16,17 @@ package io.reactivex.internal.operators.flowable;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableDistinctUntilChangedTest {
 
@@ -195,5 +199,66 @@ public class FlowableDistinctUntilChangedTest {
         .test(Long.MAX_VALUE, QueueSubscription.ANY, false)
         .assertFusionMode(QueueSubscription.SYNC)
         .assertResult(1, 2, 3, 2, 4, 1, 2);
+    }
+    
+    private final static Function<String, String> THROWS_NON_FATAL = new Function<String, String>() {
+        @Override
+        public String apply(String s) {
+            throw new RuntimeException();
+        }
+    };
+    
+    @Test
+    public void testDistinctUntilChangedWhenNonFatalExceptionThrownByKeySelectorIsNotReportedByUpstream() {
+        Flowable<String> src = Flowable.just("a", "b", "null", "c");
+        final AtomicBoolean errorOccurred = new AtomicBoolean(false);
+        src
+          .doOnError(new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable t) {
+                    errorOccurred.set(true);
+                }
+            })
+          .distinctUntilChanged(THROWS_NON_FATAL)
+          .subscribe(w);
+        Assert.assertFalse(errorOccurred.get());
+    }
+    
+    @Test
+    public void customComparator() {
+        Flowable<String> source = Flowable.just("a", "b", "B", "A","a", "C");
+        
+        TestSubscriber<String> ts = TestSubscriber.create();
+        
+        source.distinctUntilChanged(new BiPredicate<String, String>() {
+            @Override
+            public boolean test(String a, String b) {
+                return a.compareToIgnoreCase(b) == 0;
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValues("a", "b", "A", "C");
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
+    @Test
+    public void customComparatorThrows() {
+        Flowable<String> source = Flowable.just("a", "b", "B", "A","a", "C");
+        
+        TestSubscriber<String> ts = TestSubscriber.create();
+        
+        source.distinctUntilChanged(new BiPredicate<String, String>() {
+            @Override
+            public boolean test(String a, String b) {
+                throw new TestException();
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue("a");
+        ts.assertNotComplete();
+        ts.assertError(TestException.class);
     }
 }

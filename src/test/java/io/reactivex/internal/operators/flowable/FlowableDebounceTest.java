@@ -291,4 +291,17 @@ public class FlowableDebounceTest {
         subscriber.assertTerminated();
         subscriber.assertNoErrors();
     }
+    
+    @Test
+    public void debounceDefaultScheduler() throws Exception {
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        Flowable.range(1, 1000).debounce(1, TimeUnit.SECONDS).subscribe(ts);
+
+        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        ts.assertValue(1000);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
 }

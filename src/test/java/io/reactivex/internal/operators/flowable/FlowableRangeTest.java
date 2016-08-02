@@ -267,4 +267,15 @@ public class FlowableRangeTest {
         ts.assertNoErrors();
         ts.assertValues(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
     }
+    
+
+    @Test
+    public void negativeCount() {
+        try {
+            Flowable.range(1, -1);
+            fail("Should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("count >= 0 required but it was -1", ex.getMessage());
+        }
+    }
 }

@@ -118,7 +118,7 @@ public class FlowableObserveOnTest {
                 assertTrue(correctThreadName);
             }
 
-        }).finallyDo(new Runnable() {
+        }).doAfterTerminate(new Runnable() {
 
             @Override
             public void run() {

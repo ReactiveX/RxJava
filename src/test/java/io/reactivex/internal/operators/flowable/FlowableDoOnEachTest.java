@@ -24,7 +24,9 @@ import org.junit.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableDoOnEachTest {
 
@@ -161,9 +163,9 @@ public class FlowableDoOnEachTest {
         assertEquals(expectedCount, count.get());
     }
 
-    // FIXME crashing publisher can't propagate to a subscriber
-//    @Test
-//    public void testFatalError() {
+    @Test
+    @Ignore("crashing publisher can't propagate to a subscriber")
+    public void testFatalError() {
 //        try {
 //            Observable.just(1, 2, 3)
 //                    .flatMap(new Function<Integer, Observable<?>>() {
@@ -190,5 +192,29 @@ public class FlowableDoOnEachTest {
 //            assertEquals(e.getCause().getMessage(), "Test NPE");
 //            System.out.println("Received exception: " + e);
 //        }
-//    }
+    }
+    
+    @Test
+    public void testOnErrorThrows() {
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        
+        Flowable.error(new TestException())
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) {
+                throw new TestException();
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(CompositeException.class);
+        
+        CompositeException ex = (CompositeException)ts.errors().get(0);
+        
+        List<Throwable> exceptions = ex.getExceptions();
+        assertEquals(2, exceptions.size());
+        Assert.assertTrue(exceptions.get(0) instanceof TestException);
+        Assert.assertTrue(exceptions.get(1) instanceof TestException);
+    }
 }

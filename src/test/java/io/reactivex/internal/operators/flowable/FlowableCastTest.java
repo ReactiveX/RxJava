@@ -15,10 +15,12 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.mockito.Mockito.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.processors.PublishProcessor;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableCastTest {
 
@@ -49,5 +51,23 @@ public class FlowableCastTest {
         
         verify(observer, times(1)).onError(
                 org.mockito.Matchers.any(ClassCastException.class));
+    }
+    
+    @Test
+    public void castCrashUnsubscribes() {
+        
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+        
+        TestSubscriber<String> ts = TestSubscriber.create();
+        
+        ps.cast(String.class).unsafeSubscribe(ts);
+        
+        Assert.assertTrue("Not subscribed?", ps.hasSubscribers());
+        
+        ps.onNext(1);
+        
+        Assert.assertFalse("Subscribed?", ps.hasSubscribers());
+        
+        ts.assertError(ClassCastException.class);
     }
 }

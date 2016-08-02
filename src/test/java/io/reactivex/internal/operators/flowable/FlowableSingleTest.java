@@ -18,15 +18,15 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.functions.*;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.*;
 
 public class FlowableSingleTest {
 

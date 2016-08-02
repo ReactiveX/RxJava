@@ -482,7 +482,7 @@ public class FlowableFlatMapTest {
                 public Flowable<Integer> apply(Integer t) {
                     Flowable<Integer> r = Flowable.just(t);
                     if (rnd.nextBoolean()) {
-                        r = r.asObservable();
+                        r = r.hide();
                     }
                     return r;
                 }
@@ -543,6 +543,110 @@ public class FlowableFlatMapTest {
             ts.assertNoErrors();
             ts.assertComplete();
             ts.assertValueCount(n * 2);
+        }
+    }
+    
+    @Test
+    public void justEmptyMixture() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.range(0, 4 * Flowable.bufferSize())
+        .flatMap(new Function<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer v) {
+                return (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.just(v);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValueCount(2 * Flowable.bufferSize());
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+        int j = 1;
+        for (Integer v : ts.values()) {
+            Assert.assertEquals(j, v.intValue());
+            
+            j += 2;
+        }
+    }
+
+    @Test
+    public void rangeEmptyMixture() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.range(0, 4 * Flowable.bufferSize())
+        .flatMap(new Function<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer v) {
+                return (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.range(v, 2);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValueCount(4 * Flowable.bufferSize());
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+        int j = 1;
+        List<Integer> list = ts.values();
+        for (int i = 0; i < list.size(); i += 2) {
+            Assert.assertEquals(j, list.get(i).intValue());
+            Assert.assertEquals(j + 1, list.get(i + 1).intValue());
+            
+            j += 2;
+        }
+    }
+
+    @Test
+    public void justEmptyMixtureMaxConcurrent() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.range(0, 4 * Flowable.bufferSize())
+        .flatMap(new Function<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer v) {
+                return (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.just(v);
+            }
+        }, 16)
+        .subscribe(ts);
+        
+        ts.assertValueCount(2 * Flowable.bufferSize());
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+        int j = 1;
+        for (Integer v : ts.values()) {
+            Assert.assertEquals(j, v.intValue());
+            
+            j += 2;
+        }
+    }
+
+    @Test
+    public void rangeEmptyMixtureMaxConcurrent() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.range(0, 4 * Flowable.bufferSize())
+        .flatMap(new Function<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer v) {
+                return (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.range(v, 2);
+            }
+        }, 16)
+        .subscribe(ts);
+        
+        ts.assertValueCount(4 * Flowable.bufferSize());
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+        int j = 1;
+        List<Integer> list = ts.values();
+        for (int i = 0; i < list.size(); i += 2) {
+            Assert.assertEquals(j, list.get(i).intValue());
+            Assert.assertEquals(j + 1, list.get(i + 1).intValue());
+            
+            j += 2;
         }
     }
 }

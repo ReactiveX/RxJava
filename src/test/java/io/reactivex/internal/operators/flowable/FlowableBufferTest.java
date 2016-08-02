@@ -28,11 +28,11 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.*;
-import io.reactivex.subscribers.DefaultObserver;
 
 public class FlowableBufferTest {
 
@@ -1015,5 +1015,257 @@ public class FlowableBufferTest {
         verify(o, never()).onError(any(Throwable.class));
         
         assertFalse(s.isDisposed());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testPostCompleteBackpressure() {
+        Flowable<List<Integer>> source = Flowable.range(1, 10).buffer(3, 1);
+        
+        TestSubscriber<List<Integer>> ts = TestSubscriber.create(0L);
+        
+        source.subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+        
+        ts.request(7);
+        
+        ts.assertValues(
+                Arrays.asList(1, 2, 3),
+                Arrays.asList(2, 3, 4),
+                Arrays.asList(3, 4, 5),
+                Arrays.asList(4, 5, 6),
+                Arrays.asList(5, 6, 7),
+                Arrays.asList(6, 7, 8),
+                Arrays.asList(7, 8, 9)
+        );
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+
+        ts.request(1);
+
+        ts.assertValues(
+                Arrays.asList(1, 2, 3),
+                Arrays.asList(2, 3, 4),
+                Arrays.asList(3, 4, 5),
+                Arrays.asList(4, 5, 6),
+                Arrays.asList(5, 6, 7),
+                Arrays.asList(6, 7, 8),
+                Arrays.asList(7, 8, 9),
+                Arrays.asList(8, 9, 10)
+        );
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+        
+        ts.request(1);
+
+        ts.assertValues(
+                Arrays.asList(1, 2, 3),
+                Arrays.asList(2, 3, 4),
+                Arrays.asList(3, 4, 5),
+                Arrays.asList(4, 5, 6),
+                Arrays.asList(5, 6, 7),
+                Arrays.asList(6, 7, 8),
+                Arrays.asList(7, 8, 9),
+                Arrays.asList(8, 9, 10),
+                Arrays.asList(9, 10)
+        );
+        ts.assertNotComplete();
+        ts.assertNoErrors();
+        
+        ts.request(1);
+
+        ts.assertValues(
+                Arrays.asList(1, 2, 3),
+                Arrays.asList(2, 3, 4),
+                Arrays.asList(3, 4, 5),
+                Arrays.asList(4, 5, 6),
+                Arrays.asList(5, 6, 7),
+                Arrays.asList(6, 7, 8),
+                Arrays.asList(7, 8, 9),
+                Arrays.asList(8, 9, 10),
+                Arrays.asList(9, 10),
+                Arrays.asList(10)
+        );
+        ts.assertComplete();
+        ts.assertNoErrors();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void timeAndSkipOverlap() {
+        
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+        
+        TestSubscriber<List<Integer>> ts = TestSubscriber.create();
+        
+        ps.buffer(2, 1, TimeUnit.SECONDS, scheduler).subscribe(ts);
+        
+        ps.onNext(1);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ps.onNext(2);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        ps.onNext(3);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        ps.onNext(4);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ps.onComplete();
+        
+        ts.assertValues(
+                Arrays.asList(1, 2),
+                Arrays.asList(2, 3),
+                Arrays.asList(3, 4),
+                Arrays.asList(4),
+                Collections.<Integer>emptyList()
+        );
+        
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void timeAndSkipSkip() {
+        
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+        
+        TestSubscriber<List<Integer>> ts = TestSubscriber.create();
+        
+        ps.buffer(2, 3, TimeUnit.SECONDS, scheduler).subscribe(ts);
+        
+        ps.onNext(1);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ps.onNext(2);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        ps.onNext(3);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        ps.onNext(4);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ps.onComplete();
+        
+        ts.assertValues(
+                Arrays.asList(1, 2),
+                Arrays.asList(4)
+        );
+        
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void timeAndSkipOverlapScheduler() {
+        
+        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
+            @Override
+            public Scheduler apply(Scheduler t) {
+                return scheduler;
+            }
+        });
+        
+        try {
+            PublishProcessor<Integer> ps = PublishProcessor.create();
+            
+            TestSubscriber<List<Integer>> ts = TestSubscriber.create();
+            
+            ps.buffer(2, 1, TimeUnit.SECONDS).subscribe(ts);
+            
+            ps.onNext(1);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            
+            ps.onNext(2);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+    
+            ps.onNext(3);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+    
+            ps.onNext(4);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            
+            ps.onComplete();
+            
+            ts.assertValues(
+                    Arrays.asList(1, 2),
+                    Arrays.asList(2, 3),
+                    Arrays.asList(3, 4),
+                    Arrays.asList(4),
+                    Collections.<Integer>emptyList()
+            );
+            
+            ts.assertNoErrors();
+            ts.assertComplete();
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void timeAndSkipSkipDefaultScheduler() {
+        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
+            @Override
+            public Scheduler apply(Scheduler t) {
+                return scheduler;
+            }
+        });
+        
+        try {
+        
+            PublishProcessor<Integer> ps = PublishProcessor.create();
+            
+            TestSubscriber<List<Integer>> ts = TestSubscriber.create();
+            
+            ps.buffer(2, 3, TimeUnit.SECONDS).subscribe(ts);
+            
+            ps.onNext(1);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            
+            ps.onNext(2);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+    
+            ps.onNext(3);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+    
+            ps.onNext(4);
+            
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            
+            ps.onComplete();
+            
+            ts.assertValues(
+                    Arrays.asList(1, 2),
+                    Arrays.asList(4)
+            );
+            
+            ts.assertNoErrors();
+            ts.assertComplete();
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
