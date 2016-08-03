@@ -528,23 +528,23 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableNull() {
-        Flowable.mergeDelayError(128, 128, (Iterable<Publisher<Object>>)null);
+        Flowable.mergeDelayError((Iterable<Publisher<Object>>)null, 128, 128);
     }
     
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableIteratorNull() {
-        Flowable.mergeDelayError(128, 128, new Iterable<Publisher<Object>>() {
+        Flowable.mergeDelayError(new Iterable<Publisher<Object>>() {
             @Override
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }, 128, 128).toBlocking().lastOption();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableOneIsNull() {
-        Flowable.mergeDelayError(128, 128, Arrays.asList(just1, null)).toBlocking().lastOption();
+        Flowable.mergeDelayError(Arrays.asList(just1, null), 128, 128).toBlocking().lastOption();
     }
     
     @Test(expected = NullPointerException.class)

@@ -22,19 +22,19 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableMapNotification<T, R> extends Flowable<Publisher<? extends R>>{
+public final class FlowableMapNotification<T, R> extends Flowable<R> {
 
     final Publisher<T> source;
     
-    final Function<? super T, ? extends Publisher<? extends R>> onNextMapper;
-    final Function<? super Throwable, ? extends Publisher<? extends R>> onErrorMapper;
-    final Supplier<? extends Publisher<? extends R>> onCompleteSupplier;
+    final Function<? super T, ? extends R> onNextMapper;
+    final Function<? super Throwable, ? extends R> onErrorMapper;
+    final Supplier<? extends R> onCompleteSupplier;
 
     public FlowableMapNotification(
             Publisher<T> source,
-            Function<? super T, ? extends Publisher<? extends R>> onNextMapper, 
-            Function<? super Throwable, ? extends Publisher<? extends R>> onErrorMapper, 
-            Supplier<? extends Publisher<? extends R>> onCompleteSupplier) {
+            Function<? super T, ? extends R> onNextMapper, 
+            Function<? super Throwable, ? extends R> onErrorMapper, 
+            Supplier<? extends R> onCompleteSupplier) {
         this.source = source;
         this.onNextMapper = onNextMapper;
         this.onErrorMapper = onErrorMapper;
@@ -42,7 +42,7 @@ public final class FlowableMapNotification<T, R> extends Flowable<Publisher<? ex
     }
     
     @Override
-    protected void subscribeActual(Subscriber<? super Publisher<? extends R>> s) {
+    protected void subscribeActual(Subscriber<? super R> s) {
         source.subscribe(new MapNotificationSubscriber<T, R>(s, onNextMapper, onErrorMapper, onCompleteSupplier));
     }
     
@@ -53,14 +53,14 @@ public final class FlowableMapNotification<T, R> extends Flowable<Publisher<? ex
         /** */
         private static final long serialVersionUID = 2757120512858778108L;
         
-        final Subscriber<? super Publisher<? extends R>> actual;
-        final Function<? super T, ? extends Publisher<? extends R>> onNextMapper;
-        final Function<? super Throwable, ? extends Publisher<? extends R>> onErrorMapper;
-        final Supplier<? extends Publisher<? extends R>> onCompleteSupplier;
+        final Subscriber<? super R> actual;
+        final Function<? super T, ? extends R> onNextMapper;
+        final Function<? super Throwable, ? extends R> onErrorMapper;
+        final Supplier<? extends R> onCompleteSupplier;
         
         Subscription s;
         
-        Publisher<? extends R> value;
+        R value;
         
         volatile boolean done;
 
@@ -71,10 +71,10 @@ public final class FlowableMapNotification<T, R> extends Flowable<Publisher<? ex
         static final int HAS_REQUEST_NO_VALUE = 2;
         static final int HAS_REQUEST_HAS_VALUE = 3;
 
-        public MapNotificationSubscriber(Subscriber<? super Publisher<? extends R>> actual,
-                Function<? super T, ? extends Publisher<? extends R>> onNextMapper,
-                Function<? super Throwable, ? extends Publisher<? extends R>> onErrorMapper,
-                Supplier<? extends Publisher<? extends R>> onCompleteSupplier) {
+        public MapNotificationSubscriber(Subscriber<? super R> actual,
+                Function<? super T, ? extends R> onNextMapper,
+                Function<? super Throwable, ? extends R> onErrorMapper,
+                Supplier<? extends R> onCompleteSupplier) {
             this.actual = actual;
             this.onNextMapper = onNextMapper;
             this.onErrorMapper = onErrorMapper;
@@ -91,7 +91,7 @@ public final class FlowableMapNotification<T, R> extends Flowable<Publisher<? ex
         
         @Override
         public void onNext(T t) {
-            Publisher<? extends R> p;
+            R p;
             
             try {
                 p = onNextMapper.apply(t);
@@ -115,7 +115,7 @@ public final class FlowableMapNotification<T, R> extends Flowable<Publisher<? ex
         
         @Override
         public void onError(Throwable t) {
-            Publisher<? extends R> p;
+            R p;
             
             try {
                 p = onErrorMapper.apply(t);
@@ -134,7 +134,7 @@ public final class FlowableMapNotification<T, R> extends Flowable<Publisher<? ex
         
         @Override
         public void onComplete() {
-            Publisher<? extends R> p;
+            R p;
             
             try {
                 p = onCompleteSupplier.get();
@@ -152,7 +152,7 @@ public final class FlowableMapNotification<T, R> extends Flowable<Publisher<? ex
         }
         
         
-        void tryEmit(Publisher<? extends R> p) {
+        void tryEmit(R p) {
             long r = get();
             if (r != 0L) {
                 actual.onNext(p);
@@ -197,7 +197,7 @@ public final class FlowableMapNotification<T, R> extends Flowable<Publisher<? ex
                     } else
                     if (s == NO_REQUEST_HAS_VALUE) {
                         if (state.compareAndSet(NO_REQUEST_HAS_VALUE, HAS_REQUEST_HAS_VALUE)) {
-                            Publisher<? extends R> p = value;
+                            R p = value;
                             value = null;
                             actual.onNext(p);
                             actual.onComplete();

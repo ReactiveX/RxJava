@@ -22,8 +22,11 @@ import org.junit.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableMapTest {
 
@@ -306,9 +309,9 @@ public class FlowableMapTest {
         return m;
     }
 
-    // FIXME RS subscribers can't throw
-//    @Test(expected = OnErrorNotImplementedException.class)
-//    public void testShouldNotSwallowOnErrorNotImplementedException() {
+    @Test//(expected = OnErrorNotImplementedException.class)
+    @Ignore("RS subscribers can't throw")
+    public void testShouldNotSwallowOnErrorNotImplementedException() {
 //        Observable.just("a", "b").flatMap(new Function<String, Observable<String>>() {
 //            @Override
 //            public Observable<String> apply(String s) {
@@ -325,5 +328,80 @@ public class FlowableMapTest {
 //                System.out.println(s);
 //            }
 //        });
-//    }
+    }
+    
+    @Test//(expected = OnErrorNotImplementedException.class)
+    @Ignore("RS subscribers can't throw")
+    public void verifyExceptionIsThrownIfThereIsNoExceptionHandler() {
+//
+//        Observable.OnSubscribe<Object> creator = new Observable.OnSubscribe<Object>() {
+//
+//            @Override
+//            public void call(Subscriber<? super Object> observer) {
+//                observer.onNext("a");
+//                observer.onNext("b");
+//                observer.onNext("c");
+//                observer.onCompleted();
+//            }
+//        };
+//
+//        Func1<Object, Observable<Object>> manyMapper = new Func1<Object, Observable<Object>>() {
+//
+//            @Override
+//            public Observable<Object> call(Object object) {
+//                return Observable.just(object);
+//            }
+//        };
+//
+//        Func1<Object, Object> mapper = new Func1<Object, Object>() {
+//            private int count = 0;
+//
+//            @Override
+//            public Object call(Object object) {
+//                ++count;
+//                if (count > 2) {
+//                    throw new RuntimeException();
+//                }
+//                return object;
+//            }
+//        };
+//
+//        Action1<Object> onNext = new Action1<Object>() {
+//
+//            @Override
+//            public void call(Object object) {
+//                System.out.println(object.toString());
+//            }
+//        };
+//
+//        try {
+//            Observable.create(creator).flatMap(manyMapper).map(mapper).subscribe(onNext);
+//        } catch (RuntimeException e) {
+//            e.printStackTrace();
+//            throw e;
+//        }
+    }
+
+    @Test
+    public void functionCrashUnsubscribes() {
+        
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        ps.map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) { 
+                throw new TestException(); 
+            }
+        }).unsafeSubscribe(ts);
+        
+        Assert.assertTrue("Not subscribed?", ps.hasSubscribers());
+        
+        ps.onNext(1);
+        
+        Assert.assertFalse("Subscribed?", ps.hasSubscribers());
+        
+        ts.assertError(TestException.class);
+    }
 }

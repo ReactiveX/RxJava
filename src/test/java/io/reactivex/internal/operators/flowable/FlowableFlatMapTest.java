@@ -27,6 +27,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -648,5 +649,33 @@ public class FlowableFlatMapTest {
             
             j += 2;
         }
+    }
+    
+    @Test
+    public void castCrashUnsubscribes() {
+        
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        ps.flatMap(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer t) {
+                throw new TestException();
+            }
+        }, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1;
+            }
+        }).unsafeSubscribe(ts);
+        
+        Assert.assertTrue("Not subscribed?", ps.hasSubscribers());
+        
+        ps.onNext(1);
+        
+        Assert.assertFalse("Subscribed?", ps.hasSubscribers());
+        
+        ts.assertError(TestException.class);
     }
 }

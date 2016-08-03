@@ -226,7 +226,8 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         void tryEmitScalar(U value) {
             if (get() == 0 && compareAndSet(0, 1)) {
                 long r = requested.get();
-                if (r != 0L) {
+                Queue<U> q = queue;
+                if (r != 0L && (q == null || q.isEmpty())) {
                     actual.onNext(value);
                     if (r != Long.MAX_VALUE) {
                         requested.decrementAndGet();
@@ -237,7 +238,9 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
                         s.request(scalarLimit);
                     }
                 } else {
-                    Queue<U> q = getMainQueue();
+                    if (q == null) {
+                        q = getMainQueue();
+                    }
                     if (!q.offer(value)) {
                         onError(new IllegalStateException("Scalar queue full?!"));
                         return;
@@ -271,14 +274,17 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         void tryEmit(U value, InnerSubscriber<T, U> inner) {
             if (get() == 0 && compareAndSet(0, 1)) {
                 long r = requested.get();
-                if (r != 0L) {
+                Queue<U> q = inner.queue;
+                if (r != 0L && (q == null || q.isEmpty())) {
                     actual.onNext(value);
                     if (r != Long.MAX_VALUE) {
                         requested.decrementAndGet();
                     }
                     inner.requestMore(1);
                 } else {
-                    Queue<U> q = getInnerQueue(inner);
+                    if (q == null) {
+                        q = getInnerQueue(inner);
+                    }
                     if (!q.offer(value)) {
                         onError(new MissingBackpressureException("Inner queue full?!"));
                         return;

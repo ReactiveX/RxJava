@@ -55,7 +55,7 @@ public class FlowableObserveOnTest {
 
     @Test
     public void testOrdering() throws InterruptedException {
-//        Observable<String> obs = Observable.just("one", null, "two", "three", "four");
+//        Flowable<String> obs = Flowable.just("one", null, "two", "three", "four");
         // FIXME null values not allowed
         Flowable<String> obs = Flowable.just("one", "null", "two", "three", "four");
 
@@ -87,7 +87,7 @@ public class FlowableObserveOnTest {
     public void testThreadName() throws InterruptedException {
         System.out.println("Main Thread: " + Thread.currentThread().getName());
         // FIXME null values not allowed
-//        Observable<String> obs = Observable.just("one", null, "two", "three", "four");
+//        Flowable<String> obs = Flowable.just("one", null, "two", "three", "four");
         Flowable<String> obs = Flowable.just("one", "null", "two", "three", "four");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
@@ -407,7 +407,7 @@ public class FlowableObserveOnTest {
     @Test
     public void testBackpressureWithTakeAfter() {
         final AtomicInteger generated = new AtomicInteger();
-        Flowable<Integer> observable = Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable<Integer> flowable = Flowable.fromIterable(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
@@ -441,7 +441,7 @@ public class FlowableObserveOnTest {
             }
         };
 
-        observable
+        flowable
                 .observeOn(Schedulers.newThread())
                 .take(3)
                 .subscribe(testSubscriber);
@@ -457,7 +457,7 @@ public class FlowableObserveOnTest {
     public void testBackpressureWithTakeAfterAndMultipleBatches() {
         int numForBatches = Flowable.bufferSize() * 3 + 1; // should be 4 batches == ((3*n)+1) items
         final AtomicInteger generated = new AtomicInteger();
-        Flowable<Integer> observable = Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable<Integer> flowable = Flowable.fromIterable(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
@@ -487,7 +487,7 @@ public class FlowableObserveOnTest {
             }
         };
 
-        observable
+        flowable
                 .observeOn(Schedulers.newThread())
                 .take(numForBatches)
                 .subscribe(testSubscriber);
@@ -501,7 +501,7 @@ public class FlowableObserveOnTest {
     @Test
     public void testBackpressureWithTakeBefore() {
         final AtomicInteger generated = new AtomicInteger();
-        Flowable<Integer> observable = Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable<Integer> flowable = Flowable.fromIterable(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
@@ -524,7 +524,7 @@ public class FlowableObserveOnTest {
         });
 
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>();
-        observable
+        flowable
                 .take(7)
                 .observeOn(Schedulers.newThread())
                 .subscribe(testSubscriber);
@@ -537,7 +537,7 @@ public class FlowableObserveOnTest {
     @Test
     public void testQueueFullEmitsError() {
         final CountDownLatch latch = new CountDownLatch(1);
-        Flowable<Integer> observable = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> flowable = Flowable.create(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> o) {
@@ -574,7 +574,7 @@ public class FlowableObserveOnTest {
             }
 
         });
-        observable.observeOn(Schedulers.newThread()).subscribe(testSubscriber);
+        flowable.observeOn(Schedulers.newThread()).subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
         List<Throwable> errors = testSubscriber.errors();
@@ -796,5 +796,161 @@ public class FlowableObserveOnTest {
         // FIXME observeOn requests bufferSize at first always
         assertEquals(Arrays.asList(128L), requests);
     }
+
     
+    @Test
+    public void testErrorDelayed() {
+        TestScheduler s = Schedulers.test();
+        
+        Flowable<Integer> source = Flowable.just(1, 2 ,3)
+                .concatWith(Flowable.<Integer>error(new TestException()));
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+
+        source.observeOn(s, true).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        s.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+
+        ts.request(1);
+        s.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ts.assertValues(1);
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ts.request(3); // requesting 2 doesn't switch to the error() source for some reason in concat.
+        s.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ts.assertValues(1, 2, 3);
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+    
+    @Test
+    public void testErrorDelayedAsync() {
+        Flowable<Integer> source = Flowable.just(1, 2 ,3)
+                .concatWith(Flowable.<Integer>error(new TestException()));
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        source.observeOn(Schedulers.computation(), true).subscribe(ts);
+        
+        ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
+        ts.assertValues(1, 2, 3);
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+    
+    @Test
+    public void requestExactCompletesImmediately() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        TestScheduler test = Schedulers.test();
+
+        Flowable.range(1, 10).observeOn(test).subscribe(ts);
+
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+        
+        ts.request(10);
+
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ts.assertValueCount(10);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void fixedReplenishPattern() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+
+        TestScheduler test = Schedulers.test();
+        
+        final List<Long> requests = new ArrayList<Long>();
+        
+        Flowable.range(1, 100)
+        .doOnRequest(new LongConsumer() {
+            @Override
+            public void accept(long v) {
+                requests.add(v);
+            }
+        })
+        .observeOn(test, false, 16).subscribe(ts);
+        
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        ts.request(20);
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        ts.request(10);
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        ts.request(50);
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        ts.request(35);
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ts.assertValueCount(100);
+        ts.assertComplete();
+        ts.assertNoErrors();
+        
+        assertEquals(Arrays.asList(16L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L), requests);
+    }
+    
+    @Test
+    public void bufferSizesWork() {
+        for (int i = 1; i <= 1024; i = i * 2) {
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            
+            Flowable.range(1, 1000 * 1000).observeOn(Schedulers.computation(), false, i)
+            .subscribe(ts);
+            
+            ts.awaitTerminalEvent();
+            ts.assertValueCount(1000 * 1000);
+            ts.assertComplete();
+            ts.assertNoErrors();
+        }
+    }
+    
+    @Test
+    public void synchronousRebatching() {
+        final List<Long> requests = new ArrayList<Long>();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            
+        Flowable.range(1, 50)
+        .doOnRequest(new LongConsumer() {
+            @Override
+            public void accept(long r) {
+                requests.add(r);
+            }
+        })
+       .rebatchRequests(20)
+       .subscribe(ts);
+       
+       ts.assertValueCount(50);
+       ts.assertNoErrors();
+       ts.assertComplete();
+       
+       assertEquals(Arrays.asList(20L, 15L, 15L, 15L), requests);
+    }
+    
+    @Test
+    public void rebatchRequestsArgumentCheck() {
+        try {
+            Flowable.never().rebatchRequests(-99);
+            fail("Didn't throw IAE");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("bufferSize > 0 required but it was -99", ex.getMessage());
+        }
+    }
 }
