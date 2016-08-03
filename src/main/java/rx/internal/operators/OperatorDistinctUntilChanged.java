@@ -62,7 +62,7 @@ public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T>,
     
     @Override
     public Boolean call(U t1, U t2) {
-        return (t1 == t2 || (t1 != null && t1.equals(t2)));
+        return (t1 == t2 || (t2 != null && t2.equals(t1)));
     }
 
     @Override
