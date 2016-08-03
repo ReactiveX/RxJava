@@ -94,8 +94,7 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
 
             long now = scheduler.now(unit);
 
-            q.offer(now);
-            q.offer(t);
+            q.offer(now, t);
             
             trim(now, q);
         }
@@ -123,8 +122,9 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
             boolean unbounded = c == Long.MAX_VALUE;
 
             while (!q.isEmpty()) {
-                long ts = (Long)q.poll();
+                long ts = (Long)q.peek();
                 if (ts < now - time || (!unbounded && (q.size() >> 1) > c)) {
+                    q.poll();
                     q.poll();
                 } else {
                     break;
@@ -177,7 +177,7 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
                     long e = 0L;
                     
                     for (;;) {
-                        Object ts = q.poll(); // the timestamp long
+                        Object ts = q.peek(); // the timestamp long
                         empty = ts == null;
                         
                         if (checkTerminated(empty, a, delayError)) {
@@ -188,6 +188,7 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
                             break;
                         }
                         
+                        q.poll();
                         @SuppressWarnings("unchecked")
                         T o = (T)q.poll();
                         if (o == null) {

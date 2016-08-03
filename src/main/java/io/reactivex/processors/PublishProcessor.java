@@ -257,7 +257,7 @@ public final class PublishProcessor<T> extends FlowProcessor<T> {
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = ps;
                 
-                if (compareAndSet(a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return true;
                 }
             }

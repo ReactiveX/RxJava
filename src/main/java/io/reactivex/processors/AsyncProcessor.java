@@ -232,7 +232,7 @@ public final class AsyncProcessor<T> extends FlowProcessor<T> {
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = as;
                 
-                if (compareAndSet(a, b)) {
+                if (subscribers.compareAndSet(a, b)) {
                     return true;
                 }
             }

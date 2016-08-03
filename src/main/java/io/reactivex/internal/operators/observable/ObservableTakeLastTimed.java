@@ -90,12 +90,12 @@ public final class ObservableTakeLastTimed<T> extends ObservableSource<T, T> {
             long c = count;
             boolean unbounded = c == Long.MAX_VALUE;
             
-            q.offer(now);
-            q.offer(t);
+            q.offer(now, t);
             
             while (!q.isEmpty()) {
-                long ts = (Long)q.poll();
+                long ts = (Long)q.peek();
                 if (ts <= now - time || (!unbounded && (q.size() >> 1) > c)) {
+                    q.poll();
                     q.poll();
                 } else {
                     break;

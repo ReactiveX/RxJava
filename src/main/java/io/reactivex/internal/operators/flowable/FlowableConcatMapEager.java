@@ -284,6 +284,8 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
                         if (em == ErrorMode.IMMEDIATE) {
                             Throwable ex = error.get();
                             if (ex != null) {
+                                current = null;
+                                inner.cancel();
                                 cancelAll();
                                 
                                 a.onError(ex);
@@ -299,6 +301,8 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
                             v = q.poll();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
+                            current = null;
+                            inner.cancel();
                             cancelAll();
                             a.onError(ex);
                             return;
@@ -308,7 +312,6 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
                         
                         if (d && empty) {
                             inner = null;
-                            subscribers.poll();
                             current = null;
                             s.request(1);
                             continue outer;
@@ -334,6 +337,8 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
                         if (em == ErrorMode.IMMEDIATE) {
                             Throwable ex = error.get();
                             if (ex != null) {
+                                current = null;
+                                inner.cancel();
                                 cancelAll();
                                 
                                 a.onError(ex);
@@ -347,7 +352,6 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
                         
                         if (d && empty) {
                             inner = null;
-                            subscribers.poll();
                             current = null;
                             s.request(1);
                             continue outer;

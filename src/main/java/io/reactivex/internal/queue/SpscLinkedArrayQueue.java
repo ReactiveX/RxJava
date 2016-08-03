@@ -151,6 +151,26 @@ public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public T peek() {
+        final AtomicReferenceArray<Object> buffer = consumerBuffer;
+        final long index = lpConsumerIndex();
+        final int mask = consumerMask;
+        final int offset = calcWrappedOffset(index, mask);
+        final Object e = lvElement(buffer, offset);// LoadLoad
+        if (e == HAS_NEXT) {
+            return newBufferPeek(lvNext(buffer), index, mask);
+        }
+
+        return (T) e;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private T newBufferPeek(AtomicReferenceArray<Object> nextBuffer, final long index, final int mask) {
+        consumerBuffer = nextBuffer;
+        final int offsetInNew = calcWrappedOffset(index, mask);
+        return (T) lvElement(nextBuffer, offsetInNew);// LoadLoad
+    }
     @Override
     public void clear() {
         while (poll() != null || !isEmpty()); // NOPMD
@@ -239,8 +259,8 @@ public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
         if (null == lvElement(buffer, pi)) {
             pi = calcWrappedOffset(p, m);
             soElement(buffer, pi + 1, second);
-            soProducerIndex(p + 2);
             soElement(buffer, pi, first);
+            soProducerIndex(p + 2);
         } else {
             final int capacity = buffer.length();
             final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<Object>(capacity);

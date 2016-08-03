@@ -162,6 +162,15 @@ public final class ObservableZip<T, R> extends Observable<R> {
                             } else {
                                 emptyCount++;
                             }
+                        } else {
+                            if (z.done && !delayError) {
+                                Throwable ex = z.error;
+                                if (ex != null) {
+                                    clear();
+                                    a.onError(ex);
+                                    return;
+                                }
+                            }
                         }
                         i++;
                     }

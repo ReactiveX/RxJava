@@ -151,8 +151,8 @@ public final class FlowableSkipLastTimed<T> extends Flowable<T> {
                 
                 while (e != r) {
                     boolean d = done;
-                    
-                    Long ts = (Long)q.poll();
+
+                    Long ts = (Long)q.peek();
                     
                     boolean empty = ts == null;
 
@@ -170,7 +170,7 @@ public final class FlowableSkipLastTimed<T> extends Flowable<T> {
                         break;
                     }
                     
-                    
+                    q.poll();
                     @SuppressWarnings("unchecked")
                     T v = (T)q.poll();
 

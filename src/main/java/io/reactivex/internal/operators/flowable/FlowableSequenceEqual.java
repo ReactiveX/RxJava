@@ -56,6 +56,10 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
         
         final AtomicBoolean once = new AtomicBoolean();
         
+        T v1;
+        
+        T v2;
+        
         public EqualCoordinator(Subscriber<? super Boolean> actual, int bufferSize,
                 Publisher<? extends T> first, Publisher<? extends T> second,
                 BiPredicate<? super T, ? super T> comparer) {
@@ -160,9 +164,14 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                         }
                     }
 
-                    T v1 = q1.poll();
+                    if (v1 == null) {
+                        v1 = q1.poll();
+                    }
                     boolean e1 = v1 == null;
-                    T v2 = q2.poll();
+                    
+                    if (v2 == null) {
+                        v2 = q2.poll();
+                    }
                     boolean e2 = v2 == null;
 
                     if (d1 && d2 && e1 && e2) {
@@ -198,6 +207,9 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                             return;
                         }
                         r++;
+                        
+                        v1 = null;
+                        v2 = null;
                     }
                     
                     if (e1 || e2) {
