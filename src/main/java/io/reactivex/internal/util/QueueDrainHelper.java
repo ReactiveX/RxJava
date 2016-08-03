@@ -309,7 +309,7 @@ public enum QueueDrainHelper {
         return false;
     }
     
-    public static <T, U> void drainLoop(Queue<T> q, Observer<? super U> a, boolean delayError, Disposable dispose, NbpQueueDrain<T, U> qd) {
+    public static <T, U> void drainLoop(SimpleQueue<T> q, Observer<? super U> a, boolean delayError, Disposable dispose, NbpQueueDrain<T, U> qd) {
         
         int missed = 1;
         
@@ -320,7 +320,15 @@ public enum QueueDrainHelper {
             
             for (;;) {
                 boolean d = qd.done();
-                T v = q.poll();
+                T v;
+                
+                try {
+                    v = q.poll();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
                 
                 boolean empty = v == null;
                 
@@ -343,7 +351,7 @@ public enum QueueDrainHelper {
     }
 
     public static <T, U> boolean checkTerminated(boolean d, boolean empty, 
-            Observer<?> s, boolean delayError, Queue<?> q, Disposable disposable, NbpQueueDrain<T, U> qd) {
+            Observer<?> s, boolean delayError, SimpleQueue<?> q, Disposable disposable, NbpQueueDrain<T, U> qd) {
         if (qd.cancelled()) {
             q.clear();
             disposable.dispose();

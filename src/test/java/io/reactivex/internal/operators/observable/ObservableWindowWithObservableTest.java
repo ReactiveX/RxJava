@@ -18,6 +18,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -26,7 +27,6 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Supplier;
 import io.reactivex.observers.*;
 import io.reactivex.subjects.PublishSubject;
 
@@ -267,9 +267,9 @@ public class ObservableWindowWithObservableTest {
                 super.onNext(t);
             }
         };
-        source.window(new Supplier<Observable<Object>>() {
+        source.window(new Callable<Observable<Object>>() {
             @Override
-            public Observable<Object> get() {
+            public Observable<Object> call() {
                 return Observable.never();
             }
         }).subscribe(ts);
@@ -284,9 +284,9 @@ public class ObservableWindowWithObservableTest {
     @Test
     public void testWindowViaObservableNoUnsubscribe() {
         Observable<Integer> source = Observable.range(1, 10);
-        Supplier<Observable<String>> boundary = new Supplier<Observable<String>>() {
+        Callable<Observable<String>> boundary = new Callable<Observable<String>>() {
             @Override
-            public Observable<String> get() {
+            public Observable<String> call() {
                 return Observable.empty();
             }
         };
@@ -301,9 +301,9 @@ public class ObservableWindowWithObservableTest {
     public void testBoundaryUnsubscribedOnMainCompletion() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> boundary = PublishSubject.create();
-        Supplier<Observable<Integer>> boundaryFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> boundaryFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return boundary;
             }
         };
@@ -327,9 +327,9 @@ public class ObservableWindowWithObservableTest {
     public void testMainUnsubscribedOnBoundaryCompletion() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> boundary = PublishSubject.create();
-        Supplier<Observable<Integer>> boundaryFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> boundaryFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return boundary;
             }
         };
@@ -355,9 +355,9 @@ public class ObservableWindowWithObservableTest {
     public void testChildUnsubscribed() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> boundary = PublishSubject.create();
-        Supplier<Observable<Integer>> boundaryFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> boundaryFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return boundary;
             }
         };
@@ -385,9 +385,9 @@ public class ObservableWindowWithObservableTest {
         final AtomicInteger calls = new AtomicInteger();
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> boundary = PublishSubject.create();
-        Supplier<Observable<Integer>> boundaryFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> boundaryFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 calls.getAndIncrement();
                 return boundary;
             }

@@ -18,6 +18,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
@@ -26,8 +27,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.DefaultObserver;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableScanTest {
 
@@ -254,10 +254,10 @@ public class FlowableScanTest {
     @Test
     public void testSeedFactory() {
         Flowable<List<Integer>> o = Flowable.range(1, 10)
-                .collect(new Supplier<List<Integer>>() {
+                .collect(new Callable<List<Integer>>() {
 
                     @Override
-                    public List<Integer> get() {
+                    public List<Integer> call() {
                         return new ArrayList<Integer>();
                     }
                     

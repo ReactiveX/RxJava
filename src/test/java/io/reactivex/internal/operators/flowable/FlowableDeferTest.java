@@ -16,12 +16,13 @@ package io.reactivex.internal.operators.flowable;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.Callable;
+
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Supplier;
 import io.reactivex.subscribers.DefaultObserver;
 
 @SuppressWarnings("unchecked")
@@ -30,11 +31,11 @@ public class FlowableDeferTest {
     @Test
     public void testDefer() throws Throwable {
 
-        Supplier<Flowable<String>> factory = mock(Supplier.class);
+        Callable<Flowable<String>> factory = mock(Callable.class);
 
         Flowable<String> firstObservable = Flowable.just("one", "two");
         Flowable<String> secondObservable = Flowable.just("three", "four");
-        when(factory.get()).thenReturn(firstObservable, secondObservable);
+        when(factory.call()).thenReturn(firstObservable, secondObservable);
 
         Flowable<String> deferred = Flowable.defer(factory);
 
@@ -43,7 +44,7 @@ public class FlowableDeferTest {
         Subscriber<String> firstObserver = TestHelper.mockSubscriber();
         deferred.subscribe(firstObserver);
 
-        verify(factory, times(1)).get();
+        verify(factory, times(1)).call();
         verify(firstObserver, times(1)).onNext("one");
         verify(firstObserver, times(1)).onNext("two");
         verify(firstObserver, times(0)).onNext("three");
@@ -53,7 +54,7 @@ public class FlowableDeferTest {
         Subscriber<String> secondObserver = TestHelper.mockSubscriber();
         deferred.subscribe(secondObserver);
 
-        verify(factory, times(2)).get();
+        verify(factory, times(2)).call();
         verify(secondObserver, times(0)).onNext("one");
         verify(secondObserver, times(0)).onNext("two");
         verify(secondObserver, times(1)).onNext("three");
@@ -63,10 +64,10 @@ public class FlowableDeferTest {
     }
     
     @Test
-    public void testDeferFunctionThrows() {
-        Supplier<Flowable<String>> factory = mock(Supplier.class);
+    public void testDeferFunctionThrows() throws Exception {
+        Callable<Flowable<String>> factory = mock(Callable.class);
         
-        when(factory.get()).thenThrow(new TestException());
+        when(factory.call()).thenThrow(new TestException());
         
         Flowable<String> result = Flowable.defer(factory);
         

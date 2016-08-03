@@ -14,43 +14,39 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 
 import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
 
 public final class ObservableToList<T, U extends Collection<? super T>> 
-extends ObservableSource<T, U> implements Supplier<List<T>>{
+extends ObservableSource<T, U> {
     
-    final Supplier<U> collectionSupplier;
+    final Callable<U> collectionSupplier;
     
-    final int defaultCapacityHint;
-    
-    @SuppressWarnings("unchecked")
-    public ObservableToList(ObservableConsumable<T> source, int defaultCapacityHint) {
+    public ObservableToList(ObservableConsumable<T> source, final int defaultCapacityHint) {
         super(source);
-        this.collectionSupplier = (Supplier<U>)this;
-        this.defaultCapacityHint = defaultCapacityHint;
+        this.collectionSupplier = new Callable<U>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public U call() throws Exception {
+                return (U)new ArrayList<T>(defaultCapacityHint);
+            }
+        };
     }
 
-    public ObservableToList(ObservableConsumable<T> source, Supplier<U> collectionSupplier) {
+    public ObservableToList(ObservableConsumable<T> source, Callable<U> collectionSupplier) {
         super(source);
         this.collectionSupplier = collectionSupplier;
-        this.defaultCapacityHint = 0;
-    }
-
-    @Override
-    public List<T> get() {
-        return new ArrayList<T>(defaultCapacityHint);
     }
 
     @Override
     public void subscribeActual(Observer<? super U> t) {
         U coll;
         try {
-            coll = collectionSupplier.get();
+            coll = collectionSupplier.call();
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
             return;

@@ -24,9 +24,9 @@ import io.reactivex.Flowable;
 import io.reactivex.Flowable.Operator;
 import io.reactivex.functions.*;
 import io.reactivex.internal.operators.flowable.*;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableConversionTest {
     
@@ -60,11 +60,19 @@ public class FlowableConversionTest {
         }
         
         public <R, O> O x(Function<Publisher<T>, O> operator) {
-            return operator.apply(onSubscribe);
+            try {
+                return operator.apply(onSubscribe);
+            } catch (Throwable ex) {
+                throw Exceptions.propagate(ex);
+            }
         }
 
         public <R> CylonDetectorObservable<? extends R> compose(Function<CylonDetectorObservable<? super T>, CylonDetectorObservable<? extends R>> transformer) {
-            return transformer.apply(this);
+            try {
+                return transformer.apply(this);
+            } catch (Throwable ex) {
+                throw Exceptions.propagate(ex);
+            }
         }
         
         public final CylonDetectorObservable<T> beep(Predicate<? super T> predicate) {

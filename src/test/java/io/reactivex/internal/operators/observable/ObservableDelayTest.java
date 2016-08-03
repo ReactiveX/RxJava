@@ -18,7 +18,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -367,9 +367,9 @@ public class ObservableDelayTest {
     public void testDelayWithObservableSubscriptionNormal() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
-        Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> subFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return delay;
             }
         };
@@ -402,9 +402,9 @@ public class ObservableDelayTest {
     public void testDelayWithObservableSubscriptionFunctionThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
-        Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> subFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 throw new TestException();
             }
         };
@@ -436,9 +436,9 @@ public class ObservableDelayTest {
     public void testDelayWithObservableSubscriptionThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
-        Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> subFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return delay;
             }
         };
@@ -496,9 +496,9 @@ public class ObservableDelayTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> sdelay = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
-        Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> subFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return sdelay;
             }
         };
@@ -733,10 +733,10 @@ public class ObservableDelayTest {
     public void testBackpressureWithSelectorDelayAndSubscriptionDelay() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         Observable.range(1, Flowable.bufferSize() * 2)
-                .delay(new Supplier<Observable<Long>>() {
+                .delay(new Callable<Observable<Long>>() {
 
                     @Override
-                    public Observable<Long> get() {
+                    public Observable<Long> call() {
                         return Observable.timer(500, TimeUnit.MILLISECONDS);
                     }
                 }, new Function<Integer, Observable<Long>>() {
@@ -800,9 +800,9 @@ public class ObservableDelayTest {
         
         TestObserver<Integer> ts = new TestObserver<Integer>();
         
-        source.delaySubscription(new Supplier<Observable<Integer>>() {
+        source.delaySubscription(new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return ps;
             }
         }).subscribe(ts);
@@ -826,9 +826,9 @@ public class ObservableDelayTest {
         
         TestObserver<Integer> ts = new TestObserver<Integer>();
         
-        source.delaySubscription(new Supplier<Observable<Integer>>() {
+        source.delaySubscription(new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return ps;
             }
         }).subscribe(ts);
@@ -853,9 +853,9 @@ public class ObservableDelayTest {
         
         TestObserver<Integer> ts = new TestObserver<Integer>();
         
-        source.delaySubscription(new Supplier<Observable<Integer>>() {
+        source.delaySubscription(new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return ps;
             }
         }).subscribe(ts);

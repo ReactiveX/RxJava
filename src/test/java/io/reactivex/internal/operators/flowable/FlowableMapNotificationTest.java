@@ -13,10 +13,12 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import java.util.concurrent.Callable;
+
 import org.junit.Test;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -38,9 +40,9 @@ public class FlowableMapNotificationTest {
                         return Flowable.error(e);
                     }
                 },
-                new Supplier<Flowable<Object>>() {
+                new Callable<Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> get() {
+                    public Flowable<Object> call() {
                         return Flowable.never();
                     }
                 }
@@ -68,9 +70,9 @@ public class FlowableMapNotificationTest {
                         return 0;
                     }
                 },
-                new Supplier<Integer>() {
+                new Callable<Integer>() {
                     @Override
-                    public Integer get() {
+                    public Integer call() {
                         return 5;
                     }
                 }
@@ -112,9 +114,9 @@ public class FlowableMapNotificationTest {
                         return 0;
                     }
                 },
-                new Supplier<Integer>() {
+                new Callable<Integer>() {
                     @Override
-                    public Integer get() {
+                    public Integer call() {
                         return 5;
                     }
                 }

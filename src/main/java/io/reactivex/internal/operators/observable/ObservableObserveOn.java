@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
@@ -64,7 +63,7 @@ public final class ObservableObserveOn<T> extends ObservableSource<T, T> {
         final Scheduler.Worker worker;
         final boolean delayError;
         final int bufferSize;
-        final Queue<T> queue;
+        final SpscLinkedArrayQueue<T> queue;
         
         Disposable s;
         
@@ -147,7 +146,7 @@ public final class ObservableObserveOn<T> extends ObservableSource<T, T> {
         public void run() {
             int missed = 1;
             
-            final Queue<T> q = queue;
+            final SpscLinkedArrayQueue<T> q = queue;
             final Observer<? super T> a = actual;
             
             for (;;) {

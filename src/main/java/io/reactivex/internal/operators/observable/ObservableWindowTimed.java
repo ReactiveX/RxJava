@@ -24,9 +24,10 @@ import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.QueueDrainObserver;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.util.*;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.subjects.UnicastSubject;
 
@@ -203,7 +204,7 @@ public final class ObservableWindowTimed<T> extends ObservableSource<T, Observab
         
         void drainLoop() {
             
-            final Queue<Object> q = queue;
+            final SimpleQueue<Object> q = queue;
             final Observer<? super Observable<T>> a = actual;
             UnicastSubject<T> w = window;
             
@@ -215,7 +216,16 @@ public final class ObservableWindowTimed<T> extends ObservableSource<T, Observab
                     
                     boolean d = done;
                     
-                    Object o = q.poll();
+                    Object o;
+                    
+                    try {
+                        o = q.poll();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        disposeTimer();
+                        w.onError(ex);
+                        return;
+                    }
                     
                     if (d && (o == null || o == NEXT)) {
                         window = null;
@@ -427,7 +437,7 @@ public final class ObservableWindowTimed<T> extends ObservableSource<T, Observab
         }
         
         void drainLoop() {
-            final Queue<Object> q = queue;
+            final SimpleQueue<Object> q = queue;
             final Observer<? super Observable<T>> a = actual;
             UnicastSubject<T> w = window;
             
@@ -444,7 +454,16 @@ public final class ObservableWindowTimed<T> extends ObservableSource<T, Observab
                     
                     boolean d = done;
                     
-                    Object o = q.poll();
+                    Object o;
+                    
+                    try {
+                        o = q.poll();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        disposeTimer();
+                        w.onError(ex);
+                        return;
+                    }
                     
                     boolean empty = o == null;
                     boolean isHolder = o instanceof ConsumerIndexHolder;
@@ -663,7 +682,7 @@ public final class ObservableWindowTimed<T> extends ObservableSource<T, Observab
         }
         
         void drainLoop() {
-            final Queue<Object> q = queue;
+            final SimpleQueue<Object> q = queue;
             final Observer<? super Observable<T>> a = actual;
             final List<UnicastSubject<T>> ws = windows;
             
@@ -682,7 +701,18 @@ public final class ObservableWindowTimed<T> extends ObservableSource<T, Observab
                     
                     boolean d = done;
                     
-                    Object v = q.poll();
+                    Object v;
+                    
+                    try {
+                        v = q.poll();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        disposeWorker();
+                        for (UnicastSubject<T> w : ws) {
+                            w.onError(ex);
+                        }
+                        return;
+                    }
                     
                     boolean empty = v == null;
                     boolean sw = v instanceof SubjectWork;

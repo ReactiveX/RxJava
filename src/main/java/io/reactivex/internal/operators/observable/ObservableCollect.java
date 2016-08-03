@@ -12,17 +12,19 @@
  */
 package io.reactivex.internal.operators.observable;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.BiConsumer;
 import io.reactivex.internal.disposables.*;
 
 public final class ObservableCollect<T, U> extends ObservableSource<T, U> {
-    final Supplier<? extends U> initialSupplier;
+    final Callable<? extends U> initialSupplier;
     final BiConsumer<? super U, ? super T> collector;
     
     public ObservableCollect(ObservableConsumable<T> source, 
-            Supplier<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
+            Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
         super(source);
         this.initialSupplier = initialSupplier;
         this.collector = collector;
@@ -32,7 +34,7 @@ public final class ObservableCollect<T, U> extends ObservableSource<T, U> {
     protected void subscribeActual(Observer<? super U> t) {
         U u;
         try {
-            u = initialSupplier.get();
+            u = initialSupplier.call();
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
             return;

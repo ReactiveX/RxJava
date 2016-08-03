@@ -14,22 +14,22 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
 
 public final class ObservableBuffer<T, U extends Collection<? super T>> extends Observable<U> {
     final ObservableConsumable<T> source;
     final int count;
     final int skip;
-    final Supplier<U> bufferSupplier;
+    final Callable<U> bufferSupplier;
     
-    public ObservableBuffer(ObservableConsumable<T> source, int count, int skip, Supplier<U> bufferSupplier) {
+    public ObservableBuffer(ObservableConsumable<T> source, int count, int skip, Callable<U> bufferSupplier) {
         this.source = source;
         this.count = count;
         this.skip = skip;
@@ -51,14 +51,14 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
     static final class BufferExactSubscriber<T, U extends Collection<? super T>> implements Observer<T>, Disposable {
         final Observer<? super U> actual;
         final int count;
-        final Supplier<U> bufferSupplier;
+        final Callable<U> bufferSupplier;
         U buffer;
         
         int size;
         
         Disposable s;
 
-        public BufferExactSubscriber(Observer<? super U> actual, int count, Supplier<U> bufferSupplier) {
+        public BufferExactSubscriber(Observer<? super U> actual, int count, Callable<U> bufferSupplier) {
             this.actual = actual;
             this.count = count;
             this.bufferSupplier = bufferSupplier;
@@ -67,7 +67,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         boolean createBuffer() {
             U b;
             try {
-                b = bufferSupplier.get();
+                b = bufferSupplier.call();
             } catch (Throwable t) {
                 buffer = null;
                 if (s == null) {
@@ -153,7 +153,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         final Observer<? super U> actual;
         final int count;
         final int skip;
-        final Supplier<U> bufferSupplier;
+        final Callable<U> bufferSupplier;
 
         Disposable s;
         
@@ -161,7 +161,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         
         long index;
 
-        public BufferSkipSubscriber(Observer<? super U> actual, int count, int skip, Supplier<U> bufferSupplier) {
+        public BufferSkipSubscriber(Observer<? super U> actual, int count, int skip, Callable<U> bufferSupplier) {
             this.actual = actual;
             this.count = count;
             this.skip = skip;
@@ -194,7 +194,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
                 U b;
                 
                 try {
-                    b = bufferSupplier.get();
+                    b = bufferSupplier.call();
                 } catch (Throwable e) {
                     buffers.clear();
                     s.dispose();

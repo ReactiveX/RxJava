@@ -13,22 +13,24 @@
 
 package io.reactivex.internal.operators.observable;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class ObservableMapNotification<T, R> extends ObservableSource<T, ObservableConsumable<? extends R>>{
 
     final Function<? super T, ? extends ObservableConsumable<? extends R>> onNextMapper;
     final Function<? super Throwable, ? extends ObservableConsumable<? extends R>> onErrorMapper;
-    final Supplier<? extends ObservableConsumable<? extends R>> onCompleteSupplier;
+    final Callable<? extends ObservableConsumable<? extends R>> onCompleteSupplier;
 
     public ObservableMapNotification(
             ObservableConsumable<T> source, 
             Function<? super T, ? extends ObservableConsumable<? extends R>> onNextMapper, 
             Function<? super Throwable, ? extends ObservableConsumable<? extends R>> onErrorMapper, 
-            Supplier<? extends ObservableConsumable<? extends R>> onCompleteSupplier) {
+                    Callable<? extends ObservableConsumable<? extends R>> onCompleteSupplier) {
         super(source);
         this.onNextMapper = onNextMapper;
         this.onErrorMapper = onErrorMapper;
@@ -45,7 +47,7 @@ public final class ObservableMapNotification<T, R> extends ObservableSource<T, O
         final Observer<? super ObservableConsumable<? extends R>> actual;
         final Function<? super T, ? extends ObservableConsumable<? extends R>> onNextMapper;
         final Function<? super Throwable, ? extends ObservableConsumable<? extends R>> onErrorMapper;
-        final Supplier<? extends ObservableConsumable<? extends R>> onCompleteSupplier;
+        final Callable<? extends ObservableConsumable<? extends R>> onCompleteSupplier;
         
         Disposable s;
         
@@ -56,7 +58,7 @@ public final class ObservableMapNotification<T, R> extends ObservableSource<T, O
         public MapNotificationSubscriber(Observer<? super ObservableConsumable<? extends R>> actual,
                 Function<? super T, ? extends ObservableConsumable<? extends R>> onNextMapper,
                 Function<? super Throwable, ? extends ObservableConsumable<? extends R>> onErrorMapper,
-                Supplier<? extends ObservableConsumable<? extends R>> onCompleteSupplier) {
+                        Callable<? extends ObservableConsumable<? extends R>> onCompleteSupplier) {
             this.actual = actual;
             this.onNextMapper = onNextMapper;
             this.onErrorMapper = onErrorMapper;
@@ -127,7 +129,7 @@ public final class ObservableMapNotification<T, R> extends ObservableSource<T, O
             ObservableConsumable<? extends R> p;
             
             try {
-                p = onCompleteSupplier.get();
+                p = onCompleteSupplier.call();
             } catch (Throwable e) {
                 actual.onError(e);
                 return;

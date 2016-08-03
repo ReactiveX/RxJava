@@ -13,11 +13,11 @@
 
 package io.reactivex.internal.subscribers.observable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.util.*;
 
 /**
@@ -30,14 +30,14 @@ import io.reactivex.internal.util.*;
  */
 public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPad2 implements Observer<T>, NbpQueueDrain<U, V> {
     protected final Observer<? super V> actual;
-    protected final Queue<U> queue;
+    protected final SimpleQueue<U> queue;
     
     protected volatile boolean cancelled;
     
     protected volatile boolean done;
     protected Throwable error;
     
-    public QueueDrainObserver(Observer<? super V> actual, Queue<U> queue) {
+    public QueueDrainObserver(Observer<? super V> actual, SimpleQueue<U> queue) {
         this.actual = actual;
         this.queue = queue;
     }
@@ -63,7 +63,7 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
     
     protected final void fastpathEmit(U value, boolean delayError, Disposable dispose) {
         final Observer<? super V> s = actual;
-        final Queue<U> q = queue;
+        final SimpleQueue<U> q = queue;
         
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             accept(s, value);
@@ -86,7 +86,7 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
      */
     protected final void fastpathOrderedEmit(U value, boolean delayError, Disposable disposable) {
         final Observer<? super V> s = actual;
-        final Queue<U> q = queue;
+        final SimpleQueue<U> q = queue;
         
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             if (q.isEmpty()) {

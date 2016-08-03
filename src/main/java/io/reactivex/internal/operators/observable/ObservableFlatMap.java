@@ -22,9 +22,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.*;
-import io.reactivex.internal.util.Pow2;
+import io.reactivex.internal.util.Exceptions;
 
 public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
     final Function<? super T, ? extends ObservableConsumable<? extends U>> mapper;
@@ -57,13 +57,13 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
         final int maxConcurrency;
         final int bufferSize;
         
-        volatile Queue<U> queue;
+        volatile SimpleQueue<U> queue;
         
         volatile boolean done;
         
-        final AtomicReference<Queue<Throwable>> errors = new AtomicReference<Queue<Throwable>>();
+        final AtomicReference<SimpleQueue<Throwable>> errors = new AtomicReference<SimpleQueue<Throwable>>();
         
-        static final Queue<Throwable> ERRORS_CLOSED = new RejectingQueue<Throwable>();
+        static final SimpleQueue<Throwable> ERRORS_CLOSED = new RejectingQueue<Throwable>();
         
         volatile boolean cancelled;
         
@@ -189,17 +189,13 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
             }
         }
         
-        Queue<U> getMainQueue() {
-            Queue<U> q = queue;
+        SimpleQueue<U> getMainQueue() {
+            SimpleQueue<U> q = queue;
             if (q == null) {
                 if (maxConcurrency == Integer.MAX_VALUE) {
                     q = new SpscLinkedArrayQueue<U>(bufferSize);
                 } else {
-                    if (Pow2.isPowerOfTwo(maxConcurrency)) {
-                        q = new SpscArrayQueue<U>(maxConcurrency);
-                    } else {
-                        q = new SpscExactArrayQueue<U>(maxConcurrency);
-                    }
+                    q = new SpscArrayQueue<U>(maxConcurrency);
                 }
                 queue = q;
             }
@@ -213,7 +209,7 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
                     return;
                 }
             } else {
-                Queue<U> q = getMainQueue();
+                SimpleQueue<U> q = getMainQueue();
                 if (!q.offer(value)) {
                     onError(new IllegalStateException("Scalar queue full?!"));
                     return;
@@ -225,8 +221,8 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
             drainLoop();
         }
         
-        Queue<U> getInnerQueue(InnerSubscriber<T, U> inner) {
-            Queue<U> q = inner.queue;
+        SimpleQueue<U> getInnerQueue(InnerSubscriber<T, U> inner) {
+            SimpleQueue<U> q = inner.queue;
             if (q == null) {
                 q = new SpscArrayQueue<U>(bufferSize);
                 inner.queue = q;
@@ -241,7 +237,7 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
                     return;
                 }
             } else {
-                Queue<U> q = inner.queue;
+                SimpleQueue<U> q = inner.queue;
                 if (q == null) {
                     q = new SpscLinkedArrayQueue<U>(bufferSize);
                     inner.queue = q;
@@ -307,15 +303,21 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
                 if (checkTerminate()) {
                     return;
                 }
-                Queue<U> svq = queue;
+                SimpleQueue<U> svq = queue;
                 
                 if (svq != null) {
                     for (;;) {
                         U o = null;
                         for (;;) {
-                            o = svq.poll();
                             if (checkTerminate()) {
                                 return;
+                            }
+                            try {
+                                o = svq.poll();
+                            } catch (Throwable ex) {
+                                Exceptions.throwIfFatal(ex);
+                                getErrorQueue().offer(ex);
+                                continue;
                             }
                             if (o == null) {
                                 break;
@@ -335,7 +337,7 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
                 int n = inner.length;
                 
                 if (d && (svq == null || svq.isEmpty()) && n == 0) {
-                    Queue<Throwable> e = errors.get();
+                    SimpleQueue<Throwable> e = errors.get();
                     if (e == null || e.isEmpty()) {
                         child.onComplete();
                     } else {
@@ -382,11 +384,17 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
                                 if (checkTerminate()) {
                                     return;
                                 }
-                                Queue<U> q = is.queue;
+                                SimpleQueue<U> q = is.queue;
                                 if (q == null) {
                                     break;
                                 }
-                                o = q.poll();
+                                try {
+                                    o = q.poll();
+                                } catch (Throwable ex) {
+                                    Exceptions.throwIfFatal(ex);
+                                    getErrorQueue().offer(ex);
+                                    continue;
+                                }
                                 if (o == null) {
                                     break;
                                 }
@@ -398,7 +406,7 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
                             }
                         }
                         boolean innerDone = is.done;
-                        Queue<U> innerQueue = is.queue;
+                        SimpleQueue<U> innerQueue = is.queue;
                         if (innerDone && (innerQueue == null || innerQueue.isEmpty())) {
                             removeInner(is);
                             if (checkTerminate()) {
@@ -443,7 +451,7 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
                 unsubscribe();
                 return true;
             }
-            Queue<Throwable> e = errors.get();
+            SimpleQueue<Throwable> e = errors.get();
             if (!delayErrors && (e != null && !e.isEmpty())) {
                 try {
                     reportError(e);
@@ -455,13 +463,26 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
             return false;
         }
         
-        void reportError(Queue<Throwable> q) {
+        void reportError(SimpleQueue<Throwable> q) {
             CompositeException composite = null;
             Throwable ex = null;
             
             Throwable t;
             int count = 0;
-            while ((t = q.poll()) != null) {
+            for (;;) {
+                try {
+                    t = q.poll();
+                } catch (Throwable exc) {
+                    if (composite == null) {
+                        composite = new CompositeException(exc);
+                    }
+                    composite.suppress(exc);
+                    break;
+                }
+                
+                if (t == null) {
+                    break;
+                }
                 if (count == 0) {
                     ex = t;
                 } else {
@@ -493,9 +514,9 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
             }
         }
         
-        Queue<Throwable> getErrorQueue() {
+        SimpleQueue<Throwable> getErrorQueue() {
             for (;;) {
-                Queue<Throwable> q = errors.get();
+                SimpleQueue<Throwable> q = errors.get();
                 if (q != null) {
                     return q;
                 }
@@ -515,7 +536,7 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
         final MergeSubscriber<T, U> parent;
         
         volatile boolean done;
-        volatile Queue<U> queue;
+        volatile SimpleQueue<U> queue;
         
         int fusionMode;
         
@@ -576,7 +597,7 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
         }
     }
     
-    static final class RejectingQueue<T> extends AbstractQueue<T> {
+    static final class RejectingQueue<T> implements SimpleQueue<T> {
         @Override
         public boolean offer(T e) {
             return false;
@@ -588,19 +609,19 @@ public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
         }
 
         @Override
-        public T peek() {
-            return null;
+        public boolean offer(T v1, T v2) {
+            return false;
         }
 
         @Override
-        public Iterator<T> iterator() {
-            return Collections.<T>emptyList().iterator();
+        public boolean isEmpty() {
+            return true;
         }
 
         @Override
-        public int size() {
-            return 0;
+        public void clear() {
+            
         }
-        
+
     }
 }

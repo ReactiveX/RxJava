@@ -13,20 +13,21 @@
 
 package io.reactivex.internal.operators.observable;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.*;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class ObservableDefer<T> extends Observable<T> {
-    final Supplier<? extends ObservableConsumable<? extends T>> supplier;
-    public ObservableDefer(Supplier<? extends ObservableConsumable<? extends T>> supplier) {
+    final Callable<? extends ObservableConsumable<? extends T>> supplier;
+    public ObservableDefer(Callable<? extends ObservableConsumable<? extends T>> supplier) {
         this.supplier = supplier;
     }
     @Override
     public void subscribeActual(Observer<? super T> s) {
         ObservableConsumable<? extends T> pub;
         try {
-            pub = supplier.get();
+            pub = supplier.call();
         } catch (Throwable t) {
             EmptyDisposable.error(t, s);
             return;

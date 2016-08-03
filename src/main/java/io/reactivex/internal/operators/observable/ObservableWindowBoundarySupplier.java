@@ -13,13 +13,13 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.NotificationLite;
@@ -28,12 +28,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
 public final class ObservableWindowBoundarySupplier<T, B> extends ObservableSource<T, Observable<T>> {
-    final Supplier<? extends ObservableConsumable<B>> other;
+    final Callable<? extends ObservableConsumable<B>> other;
     final int bufferSize;
     
     public ObservableWindowBoundarySupplier(
             ObservableConsumable<T> source, 
-            Supplier<? extends ObservableConsumable<B>> other, int bufferSize) {
+            Callable<? extends ObservableConsumable<B>> other, int bufferSize) {
         super(source);
         this.other = other;
         this.bufferSize = bufferSize;
@@ -48,7 +48,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends ObservableSour
     extends QueueDrainObserver<T, Object, Observable<T>> 
     implements Disposable {
         
-        final Supplier<? extends ObservableConsumable<B>> other;
+        final Callable<? extends ObservableConsumable<B>> other;
         final int bufferSize;
         
         Disposable s;
@@ -61,7 +61,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends ObservableSour
         
         final AtomicLong windows = new AtomicLong();
 
-        public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, Supplier<? extends ObservableConsumable<B>> other,
+        public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, Callable<? extends ObservableConsumable<B>> other,
                 int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.other = other;
@@ -84,7 +84,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends ObservableSour
                 ObservableConsumable<B> p;
                 
                 try {
-                    p = other.get();
+                    p = other.call();
                 } catch (Throwable e) {
                     s.dispose();
                     a.onError(e);
@@ -180,7 +180,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends ObservableSour
         }
 
         void drainLoop() {
-            final Queue<Object> q = queue;
+            final SimpleQueue<Object> q = queue;
             final Observer<? super Observable<T>> a = actual;
             int missed = 1;
             UnicastSubject<T> w = window;
@@ -189,7 +189,15 @@ public final class ObservableWindowBoundarySupplier<T, B> extends ObservableSour
                 for (;;) {
                     boolean d = done;
                     
-                    Object o = q.poll();
+                    Object o;
+                    
+                    try {
+                        o = q.poll();
+                    } catch (Throwable ex) {
+                        DisposableHelper.dispose(boundary);
+                        w.onError(ex);
+                        return;
+                    }
                     boolean empty = o == null;
                     
                     if (d && empty) {
@@ -222,7 +230,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends ObservableSour
                         ObservableConsumable<B> p;
 
                         try {
-                            p = other.get();
+                            p = other.call();
                         } catch (Throwable e) {
                             DisposableHelper.dispose(boundary);
                             a.onError(e);

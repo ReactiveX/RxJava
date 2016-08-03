@@ -18,7 +18,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
@@ -158,11 +158,11 @@ public class FlowableFlatMapTest {
         };
     }
 
-    <R> Supplier<R> just0(final R value) {
-        return new Supplier<R>() {
+    <R> Callable<R> just0(final R value) {
+        return new Callable<R>() {
 
             @Override
-            public R get() {
+            public R call() {
                 return value;
             }
         };
@@ -216,10 +216,10 @@ public class FlowableFlatMapTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    <R> Supplier<R> funcThrow0(R r) {
-        return new Supplier<R>() {
+    <R> Callable<R> funcThrow0(R r) {
+        return new Callable<R>() {
             @Override
-            public R get() {
+            public R call() {
                 throw new TestException();
             }
         };
@@ -414,7 +414,7 @@ public class FlowableFlatMapTest {
 
         Function<Integer, Flowable<Integer>> just = just(onNext);
         Function<Throwable, Flowable<Integer>> just2 = just(onError);
-        Supplier<Flowable<Integer>> just0 = just0(onCompleted);
+        Callable<Flowable<Integer>> just0 = just0(onCompleted);
         source.flatMap(just, just2, just0, m).subscribe(ts);
         
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);

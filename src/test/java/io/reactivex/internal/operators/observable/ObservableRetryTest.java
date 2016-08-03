@@ -341,14 +341,14 @@ public class ObservableRetryTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    /**
+    /*
      * Checks in a simple and synchronous way that retry resubscribes
      * after error. This test fails against 0.16.1-0.17.4, hangs on 0.17.5 and
      * passes in 0.17.6 thanks to fix for issue #1027.
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testRetrySubscribesAgainAfterError() {
+    public void testRetrySubscribesAgainAfterError() throws Exception {
 
         // record emitted values with this action
         Consumer<Integer> record = mock(Consumer.class);

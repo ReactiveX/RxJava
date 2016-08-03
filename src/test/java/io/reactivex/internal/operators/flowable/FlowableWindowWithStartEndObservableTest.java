@@ -16,18 +16,17 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subscribers.DefaultObserver;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableWindowWithStartEndObservableTest {
 
@@ -109,10 +108,10 @@ public class FlowableWindowWithStartEndObservableTest {
             }
         });
 
-        Supplier<Flowable<Object>> closer = new Supplier<Flowable<Object>>() {
+        Callable<Flowable<Object>> closer = new Callable<Flowable<Object>>() {
             int calls;
             @Override
-            public Flowable<Object> get() {
+            public Flowable<Object> call() {
                 return Flowable.create(new Publisher<Object>() {
                     @Override
                     public void subscribe(Subscriber<? super Object> observer) {

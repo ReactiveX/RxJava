@@ -13,15 +13,14 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.queue.SpscArrayQueue;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.internal.util.*;
 import io.reactivex.observables.ConnectableObservable;
 
 /**
@@ -126,7 +125,17 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> {
                 
                 final ObserverResourceWrapper<R> srw = new ObserverResourceWrapper<R>(sr);
                 
-                selector.apply(op).subscribe(srw);
+                ObservableConsumable<R> target;
+                
+                try {
+                    target = selector.apply(op);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    EmptyDisposable.error(ex, srw);
+                    return;
+                }
+                
+                target.subscribe(srw);
                 
                 op.connect(new Consumer<Disposable>() {
                     @Override
@@ -189,7 +198,12 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> {
          * issue because the unsubscription was always triggered by the child-subscribers 
          * themselves.
          */
-        connection.accept(ps);
+        try {
+            connection.accept(ps);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            throw Exceptions.propagate(ex);
+        }
         if (doConnect) {
             source.subscribe(ps);
         }
@@ -198,7 +212,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> {
     @SuppressWarnings("rawtypes")
     static final class PublishSubscriber<T> implements Observer<T>, Disposable {
         /** Holds notifications from upstream. */
-        final Queue<Object> queue;
+        final SpscLinkedArrayQueue<Object> queue;
         /** Holds onto the current connected PublishSubscriber. */
         final AtomicReference<PublishSubscriber<T>> current;
         /** The prefetch buffer size. */
@@ -227,7 +241,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> {
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
         
         public PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
-            this.queue = new SpscArrayQueue<Object>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
             
             this.producers = new AtomicReference<InnerProducer[]>(EMPTY);
             this.current = current;

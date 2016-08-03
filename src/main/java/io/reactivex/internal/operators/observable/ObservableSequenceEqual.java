@@ -13,11 +13,10 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.disposables.ArrayCompositeDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -98,7 +97,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
             return cancelled;
         }
 
-        void cancel(Queue<T> q1, Queue<T> q2) {
+        void cancel(SpscLinkedArrayQueue<T> q1, SpscLinkedArrayQueue<T> q2) {
             cancelled = true;
             q1.clear();
             q2.clear();
@@ -113,9 +112,9 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
             EqualSubscriber<T>[] as = subscribers;
             
             final EqualSubscriber<T> s1 = as[0];
-            final Queue<T> q1 = s1.queue;
+            final SpscLinkedArrayQueue<T> q1 = s1.queue;
             final EqualSubscriber<T> s2 = as[1];
-            final Queue<T> q2 = s2.queue;
+            final SpscLinkedArrayQueue<T> q2 = s2.queue;
             
             for (;;) {
                 
@@ -149,10 +148,10 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                         }
                     }
 
-                    T v1 = q1.peek();
+                    T v1 = q1.poll();
                     boolean e1 = v1 == null;
 
-                    T v2 = q2.peek();
+                    T v2 = q2.poll();
                     boolean e2 = v2 == null;
 
                     if (d1 && d2 && e1 && e2) {
@@ -169,8 +168,6 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                     }
                     
                     if (!e1 && !e2) {
-                        q1.poll();
-                        q2.poll();
                         boolean c;
                         
                         try {
@@ -206,7 +203,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
     
     static final class EqualSubscriber<T> implements Observer<T> {
         final EqualCoordinator<T> parent;
-        final Queue<T> queue;
+        final SpscLinkedArrayQueue<T> queue;
         final int index;
         
         volatile boolean done;

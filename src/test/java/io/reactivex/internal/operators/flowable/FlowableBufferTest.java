@@ -247,9 +247,9 @@ public class FlowableBufferTest {
             }
         });
 
-        Supplier<Flowable<Object>> closer = new Supplier<Flowable<Object>>() {
+        Callable<Flowable<Object>> closer = new Callable<Flowable<Object>>() {
             @Override
-            public Flowable<Object> get() {
+            public Flowable<Object> call() {
                 return Flowable.create(new Publisher<Object>() {
                     @Override
                     public void subscribe(Subscriber<? super Object> observer) {

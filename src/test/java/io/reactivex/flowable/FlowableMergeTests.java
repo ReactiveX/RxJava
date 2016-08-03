@@ -16,13 +16,13 @@ package io.reactivex.flowable;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.Flowable;
 import io.reactivex.flowable.FlowableCovarianceTest.*;
-import io.reactivex.functions.Supplier;
 
 public class FlowableMergeTests {
 
@@ -76,9 +76,9 @@ public class FlowableMergeTests {
     @Test
     public void testMergeCovariance4() {
 
-        Flowable<Movie> o1 = Flowable.defer(new Supplier<Publisher<Movie>>() {
+        Flowable<Movie> o1 = Flowable.defer(new Callable<Publisher<Movie>>() {
             @Override
-            public Publisher<Movie> get() {
+            public Publisher<Movie> call() {
                 return Flowable.just(
                         new HorrorMovie(),
                         new Movie()

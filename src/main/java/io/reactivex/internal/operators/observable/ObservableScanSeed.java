@@ -12,17 +12,19 @@
  */
 package io.reactivex.internal.operators.observable;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableScanSeed<T, R> extends ObservableSource<T, R> {
     final BiFunction<R, ? super T, R> accumulator;
-    final Supplier<R> seedSupplier;
+    final Callable<R> seedSupplier;
 
-    public ObservableScanSeed(ObservableConsumable<T> source, Supplier<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+    public ObservableScanSeed(ObservableConsumable<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
         super(source);
         this.accumulator = accumulator;
         this.seedSupplier = seedSupplier;
@@ -33,7 +35,7 @@ public final class ObservableScanSeed<T, R> extends ObservableSource<T, R> {
         R r;
         
         try {
-            r = seedSupplier.get();
+            r = seedSupplier.call();
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
             return;

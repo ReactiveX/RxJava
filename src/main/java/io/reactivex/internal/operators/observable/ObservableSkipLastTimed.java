@@ -141,7 +141,7 @@ public final class ObservableSkipLastTimed<T> extends ObservableSource<T, T> {
                 for (;;) {
                     boolean d = done;
                     
-                    Long ts = (Long)q.peek();
+                    Long ts = (Long)q.poll();
                     
                     boolean empty = ts == null;
 
@@ -164,13 +164,6 @@ public final class ObservableSkipLastTimed<T> extends ObservableSource<T, T> {
                         // not old enough
                         break;
                     }
-                    
-                    // wait unit the second value arrives
-                    if (q.size() == 1L) {
-                        continue;
-                    }
-                    
-                    q.poll();
                     
                     @SuppressWarnings("unchecked")
                     T v = (T)q.poll();

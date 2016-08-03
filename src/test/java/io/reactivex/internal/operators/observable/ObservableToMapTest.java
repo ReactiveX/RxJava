@@ -17,13 +17,14 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 
 import org.junit.*;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.TestHelper;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Function;
 
 public class ObservableToMapTest {
     Observer<Object> objectObserver;
@@ -147,9 +148,9 @@ public class ObservableToMapTest {
     public void testToMapWithFactory() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
+        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
             @Override
-            public Map<Integer, String> get() {
+            public Map<Integer, String> call() {
                 return new LinkedHashMap<Integer, String>() {
                     /** */
                     private static final long serialVersionUID = -3296811238780863394L;
@@ -191,9 +192,9 @@ public class ObservableToMapTest {
     public void testToMapWithErrorThrowingFactory() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
+        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
             @Override
-            public Map<Integer, String> get() {
+            public Map<Integer, String> call() {
                 throw new RuntimeException("Forced failure");
             }
         };

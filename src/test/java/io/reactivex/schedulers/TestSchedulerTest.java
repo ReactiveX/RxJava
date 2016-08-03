@@ -28,13 +28,14 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.util.Exceptions;
 
 public class TestSchedulerTest {
 
     @SuppressWarnings("unchecked")
     // mocking is unchecked, unfortunately
     @Test
-    public final void testPeriodicScheduling() {
+    public final void testPeriodicScheduling() throws Exception {
         final Function<Long, Void> calledOp = mock(Function.class);
 
         final TestScheduler scheduler = new TestScheduler();
@@ -45,7 +46,11 @@ public class TestSchedulerTest {
                 @Override
                 public void run() {
                     System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
-                    calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
+                    try {
+                        calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
+                    } catch (Throwable ex) {
+                        Exceptions.propagate(ex);
+                    }
                 }
             }, 1, 2, TimeUnit.SECONDS);
     
@@ -80,7 +85,7 @@ public class TestSchedulerTest {
     @SuppressWarnings("unchecked")
     // mocking is unchecked, unfortunately
     @Test
-    public final void testPeriodicSchedulingUnsubscription() {
+    public final void testPeriodicSchedulingUnsubscription() throws Exception {
         final Function<Long, Void> calledOp = mock(Function.class);
 
         final TestScheduler scheduler = new TestScheduler();
@@ -91,7 +96,11 @@ public class TestSchedulerTest {
                 @Override
                 public void run() {
                     System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
-                    calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
+                    try {
+                        calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
+                    } catch (Throwable ex) {
+                        Exceptions.propagate(ex);
+                    }
                 }
             }, 1, 2, TimeUnit.SECONDS);
     

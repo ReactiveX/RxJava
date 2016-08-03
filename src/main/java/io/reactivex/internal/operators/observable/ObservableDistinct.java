@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
@@ -21,22 +22,23 @@ import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.*;
+import io.reactivex.internal.util.Exceptions;
 
 public final class ObservableDistinct<T, K> extends ObservableSource<T, T> {
     final Function<? super T, K> keySelector;
-    final Supplier<? extends Predicate<? super K>> predicateSupplier;
+    final Callable<? extends Predicate<? super K>> predicateSupplier;
 
-    public ObservableDistinct(ObservableConsumable<T> source, Function<? super T, K> keySelector, Supplier<? extends Predicate<? super K>> predicateSupplier) {
+    public ObservableDistinct(ObservableConsumable<T> source, Function<? super T, K> keySelector, Callable<? extends Predicate<? super K>> predicateSupplier) {
         super(source);
         this.predicateSupplier = predicateSupplier;
         this.keySelector = keySelector;
     }
     
-    public static <T, K> ObservableDistinct<T, K> withCollection(ObservableConsumable<T> source, final Function<? super T, K> keySelector, final Supplier<? extends Collection<? super K>> collectionSupplier) {
-        Supplier<? extends Predicate<? super K>> p = new Supplier<Predicate<K>>() {
+    public static <T, K> ObservableDistinct<T, K> withCollection(ObservableConsumable<T> source, final Function<? super T, K> keySelector, final Callable<? extends Collection<? super K>> collectionSupplier) {
+        Callable<? extends Predicate<? super K>> p = new Callable<Predicate<K>>() {
             @Override
-            public Predicate<K> get() {
-                final Collection<? super K> coll = collectionSupplier.get();
+            public Predicate<K> call() throws Exception {
+                final Collection<? super K> coll = collectionSupplier.call();
                 
                 return new Predicate<K>() {
                     @Override
@@ -55,9 +57,9 @@ public final class ObservableDistinct<T, K> extends ObservableSource<T, T> {
     }
     
     public static <T> ObservableDistinct<T, T> untilChanged(ObservableConsumable<T> source) {
-        Supplier<? extends Predicate<? super T>> p = new Supplier<Predicate<T>>() {
+        Callable<? extends Predicate<? super T>> p = new Callable<Predicate<T>>() {
             @Override
-            public Predicate<T> get() {
+            public Predicate<T> call() {
                 final Object[] last = { null };
                 
                 return new Predicate<T>() {
@@ -78,9 +80,9 @@ public final class ObservableDistinct<T, K> extends ObservableSource<T, T> {
     }
 
     public static <T, K> ObservableDistinct<T, K> untilChanged(ObservableConsumable<T> source, Function<? super T, K> keySelector) {
-        Supplier<? extends Predicate<? super K>> p = new Supplier<Predicate<K>>() {
+        Callable<? extends Predicate<? super K>> p = new Callable<Predicate<K>>() {
             @Override
-            public Predicate<K> get() {
+            public Predicate<K> call() {
                 final Object[] last = { null };
                 
                 return new Predicate<K>() {
@@ -105,8 +107,9 @@ public final class ObservableDistinct<T, K> extends ObservableSource<T, T> {
     public void subscribeActual(Observer<? super T> t) {
         Predicate<? super K> coll;
         try {
-            coll = predicateSupplier.get();
+            coll = predicateSupplier.call();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);
             return;
         }

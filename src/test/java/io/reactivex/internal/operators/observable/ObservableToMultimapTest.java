@@ -17,13 +17,14 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 
 import org.junit.*;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.TestHelper;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Function;
 
 public class ObservableToMultimapTest {
     Observer<Object> objectObserver;
@@ -84,9 +85,9 @@ public class ObservableToMultimapTest {
     public void testToMultimapWithMapFactory() {
         Observable<String> source = Observable.just("a", "b", "cc", "dd", "eee", "fff");
 
-        Supplier<Map<Integer, Collection<String>>> mapFactory = new Supplier<Map<Integer, Collection<String>>>() {
+        Callable<Map<Integer, Collection<String>>> mapFactory = new Callable<Map<Integer, Collection<String>>>() {
             @Override
-            public Map<Integer, Collection<String>> get() {
+            public Map<Integer, Collection<String>> call() {
                 return new LinkedHashMap<Integer, Collection<String>>() {
                     /** */
                     private static final long serialVersionUID = -2084477070717362859L;
@@ -147,9 +148,9 @@ public class ObservableToMultimapTest {
                 return v;
             }
         };
-        Supplier<Map<Integer, Collection<String>>> mapSupplier = new Supplier<Map<Integer, Collection<String>>>() {
+        Callable<Map<Integer, Collection<String>>> mapSupplier = new Callable<Map<Integer, Collection<String>>>() {
             @Override
-            public Map<Integer, Collection<String>> get() {
+            public Map<Integer, Collection<String>> call() {
                 return new HashMap<Integer, Collection<String>>();
             }
         };
@@ -226,9 +227,9 @@ public class ObservableToMultimapTest {
     public void testToMultimapWithMapThrowingFactory() {
         Observable<String> source = Observable.just("a", "b", "cc", "dd", "eee", "fff");
 
-        Supplier<Map<Integer, Collection<String>>> mapFactory = new Supplier<Map<Integer, Collection<String>>>() {
+        Callable<Map<Integer, Collection<String>>> mapFactory = new Callable<Map<Integer, Collection<String>>>() {
             @Override
-            public Map<Integer, Collection<String>> get() {
+            public Map<Integer, Collection<String>> call() {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -273,9 +274,9 @@ public class ObservableToMultimapTest {
                 return v;
             }
         };
-        Supplier<Map<Integer, Collection<String>>> mapSupplier = new Supplier<Map<Integer, Collection<String>>>() {
+        Callable<Map<Integer, Collection<String>>> mapSupplier = new Callable<Map<Integer, Collection<String>>>() {
             @Override
-            public Map<Integer, Collection<String>> get() {
+            public Map<Integer, Collection<String>> call() {
                 return new HashMap<Integer, Collection<String>>();
             }
         };

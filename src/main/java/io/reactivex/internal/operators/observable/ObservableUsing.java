@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
@@ -23,12 +24,12 @@ import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableUsing<T, D> extends Observable<T> {
-    final Supplier<? extends D> resourceSupplier;
+    final Callable<? extends D> resourceSupplier;
     final Function<? super D, ? extends ObservableConsumable<? extends T>> sourceSupplier;
     final Consumer<? super D> disposer;
     final boolean eager;
     
-    public ObservableUsing(Supplier<? extends D> resourceSupplier,
+    public ObservableUsing(Callable<? extends D> resourceSupplier,
             Function<? super D, ? extends ObservableConsumable<? extends T>> sourceSupplier, 
             Consumer<? super D> disposer,
             boolean eager) {
@@ -43,7 +44,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
         D resource;
         
         try {
-            resource = resourceSupplier.get();
+            resource = resourceSupplier.call();
         } catch (Throwable e) {
             EmptyDisposable.error(e, s);
             return;
