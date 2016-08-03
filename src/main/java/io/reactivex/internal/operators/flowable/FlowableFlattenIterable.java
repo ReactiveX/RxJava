@@ -22,7 +22,7 @@ import org.reactivestreams.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.*;
@@ -101,7 +101,7 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
 
         Subscription s;
 
-        Queue<T> queue;
+        SimpleQueue<T> queue;
 
         volatile boolean done;
 
@@ -216,7 +216,7 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
             }
 
             final Subscriber<? super R> a = actual;
-            final Queue<T> q = queue;
+            final SimpleQueue<T> q = queue;
             final boolean replenish = fusionMode != SYNC;
 
             int missed = 1;
@@ -231,7 +231,20 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
 
                     T t;
 
-                    t = q.poll();
+                    try {
+                        t = q.poll();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        s.cancel();
+                        Exceptions.addThrowable(error, ex);
+                        ex = Exceptions.terminate(error);
+
+                        current = null;
+                        q.clear();
+
+                        a.onError(ex);
+                        return;
+                    }
 
                     boolean empty = t == null;
 
@@ -363,7 +376,7 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
             }
         }
 
-        boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, Queue<?> q) {
+        boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, SimpleQueue<?> q) {
             if (cancelled) {
                 current = null;
                 q.clear();
@@ -403,7 +416,7 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
         }
 
         @Override
-        public R poll() {
+        public R poll() throws Exception {
             Iterator<? extends R> it = current;
             for (;;) {
                 if (it == null) {

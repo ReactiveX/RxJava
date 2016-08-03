@@ -13,8 +13,6 @@
 
 package io.reactivex.internal.subscribers.flowable;
 
-import java.util.*;
-
 import org.reactivestreams.*;
 
 import io.reactivex.internal.functions.Objects;
@@ -208,11 +206,6 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
     }
     
     @Override
-    public final int size() {
-        return qs.size();
-    }
-    
-    @Override
     public void clear() {
         qs.clear();
     }
@@ -222,72 +215,12 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
     // -----------------------------------------------------------
     
     @Override
-    public final boolean add(R e) {
-        throw new UnsupportedOperationException("Should not be called!");
-    }
-    
-    @Override
-    public final boolean addAll(Collection<? extends R> c) {
-        throw new UnsupportedOperationException("Should not be called!");
-    }
-    
-    @Override
-    public final boolean contains(Object o) {
-        throw new UnsupportedOperationException("Should not be called!");
-    }
-    
-    @Override
-    public final boolean containsAll(Collection<?> c) {
-        throw new UnsupportedOperationException("Should not be called!");
-    }
-
-    @Override
-    public final R element() {
-        throw new UnsupportedOperationException("Should not be called!");
-    }
-    
-    @Override
-    public final Iterator<R> iterator() {
-        throw new UnsupportedOperationException("Should not be called!");
-    }
-    
-    @Override
     public final boolean offer(R e) {
         throw new UnsupportedOperationException("Should not be called!");
     }
-
-    @Override
-    public final R peek() {
-        throw new UnsupportedOperationException("Should not be called!");
-    }
     
     @Override
-    public final R remove() {
-        throw new UnsupportedOperationException("Should not be called!");
-    }
-    
-    @Override
-    public final boolean remove(Object o) {
-        throw new UnsupportedOperationException("Should not be called!");
-    }
-
-    @Override
-    public final boolean removeAll(Collection<?> c) {
-        throw new UnsupportedOperationException("Should not be called!");
-    }
-    
-    @Override
-    public final boolean retainAll(Collection<?> c) {
-        throw new UnsupportedOperationException("Should not be called!");
-    }
-    
-    @Override
-    public final Object[] toArray() {
-        throw new UnsupportedOperationException("Should not be called!");
-    }
-
-    @Override
-    public <U extends Object> U[] toArray(U[] a) {
+    public final boolean offer(R v1, R v2) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 }

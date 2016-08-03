@@ -14,12 +14,12 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.*;
@@ -30,9 +30,9 @@ public final class FlowableBufferExactBoundary<T, U extends Collection<? super T
 extends Flowable<U> {
     final Publisher<T> source;
     final Publisher<B> boundary;
-    final Supplier<U> bufferSupplier;
+    final Callable<U> bufferSupplier;
     
-    public FlowableBufferExactBoundary(Publisher<T> source, Publisher<B> boundary, Supplier<U> bufferSupplier) {
+    public FlowableBufferExactBoundary(Publisher<T> source, Publisher<B> boundary, Callable<U> bufferSupplier) {
         this.source = source;
         this.boundary = boundary;
         this.bufferSupplier = bufferSupplier;
@@ -46,7 +46,7 @@ extends Flowable<U> {
     static final class BufferExactBondarySubscriber<T, U extends Collection<? super T>, B>
     extends QueueDrainSubscriber<T, U, U> implements Subscriber<T>, Subscription, Disposable {
         /** */
-        final Supplier<U> bufferSupplier;
+        final Callable<U> bufferSupplier;
         final Publisher<B> boundary;
         
         Subscription s;
@@ -55,7 +55,7 @@ extends Flowable<U> {
         
         U buffer;
         
-        public BufferExactBondarySubscriber(Subscriber<? super U> actual, Supplier<U> bufferSupplier,
+        public BufferExactBondarySubscriber(Subscriber<? super U> actual, Callable<U> bufferSupplier,
                 Publisher<B> boundary) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -72,7 +72,7 @@ extends Flowable<U> {
             U b;
             
             try {
-                b = bufferSupplier.get();
+                b = bufferSupplier.call();
             } catch (Throwable e) {
                 cancelled = true;
                 s.cancel();
@@ -157,7 +157,7 @@ extends Flowable<U> {
             U next;
             
             try {
-                next = bufferSupplier.get();
+                next = bufferSupplier.call();
             } catch (Throwable e) {
                 cancel();
                 actual.onError(e);

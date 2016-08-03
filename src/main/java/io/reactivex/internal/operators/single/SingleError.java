@@ -13,15 +13,16 @@
 
 package io.reactivex.internal.operators.single;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.*;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class SingleError<T> extends Single<T> {
 
-    final Supplier<? extends Throwable> errorSupplier;
+    final Callable<? extends Throwable> errorSupplier;
     
-    public SingleError(Supplier<? extends Throwable> errorSupplier) {
+    public SingleError(Callable<? extends Throwable> errorSupplier) {
         this.errorSupplier = errorSupplier;
     }
 
@@ -30,7 +31,7 @@ public final class SingleError<T> extends Single<T> {
         Throwable error;
         
         try {
-            error = errorSupplier.get();
+            error = errorSupplier.call();
         } catch (Throwable e) {
             error = e;
         }

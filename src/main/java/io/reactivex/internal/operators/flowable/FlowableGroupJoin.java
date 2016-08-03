@@ -26,6 +26,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
@@ -179,7 +180,7 @@ public class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Fl
             a.onError(ex);
         }
         
-        void fail(Throwable exc, Subscriber<?> a, Queue<?> q) {
+        void fail(Throwable exc, Subscriber<?> a, SimpleQueue<?> q) {
             Exceptions.throwIfFatal(exc);
             Exceptions.addThrowable(error, exc);
             q.clear();

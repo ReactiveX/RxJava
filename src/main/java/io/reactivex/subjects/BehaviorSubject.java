@@ -439,7 +439,13 @@ public final class BehaviorSubject<T> extends Subject<T> {
                     queue = null;
                 }
                 
-                q.forEachWhile(this);
+                try {
+                    q.forEachWhile(this);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    actual.onError(ex);
+                    return;
+                }
             }
         }
     }

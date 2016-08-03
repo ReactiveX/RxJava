@@ -12,7 +12,6 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
@@ -20,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.Exceptions;
@@ -99,7 +98,7 @@ public final class FlowableConcatMap<T, R> extends FlowableSource<T, R> {
 
         int consumed;
         
-        Queue<T> queue;
+        SimpleQueue<T> queue;
         
         volatile boolean done;
         

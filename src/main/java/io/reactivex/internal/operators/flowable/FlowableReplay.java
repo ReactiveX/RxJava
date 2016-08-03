@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -35,14 +35,14 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
     final AtomicReference<ReplaySubscriber<T>> current;
     /** A factory that creates the appropriate buffer for the ReplaySubscriber. */
-    final Supplier<? extends ReplayBuffer<T>> bufferFactory;
+    final Callable<? extends ReplayBuffer<T>> bufferFactory;
 
     final Publisher<T> onSubscribe;
     
     @SuppressWarnings("rawtypes")
-    static final Supplier DEFAULT_UNBOUNDED_FACTORY = new Supplier() {
+    static final Callable DEFAULT_UNBOUNDED_FACTORY = new Callable() {
         @Override
-        public Object get() {
+        public Object call() {
             return new UnboundedReplayBuffer<Object>(16);
         }
     };
@@ -57,14 +57,14 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
      * @return the new Observable instance
      */
     public static <U, R> Flowable<R> multicastSelector(
-            final Supplier<? extends ConnectableFlowable<U>> connectableFactory,
+            final Callable<? extends ConnectableFlowable<U>> connectableFactory,
             final Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
         return Flowable.create(new Publisher<R>() {
             @Override
             public void subscribe(Subscriber<? super R> child) {
                 ConnectableFlowable<U> co;
                 try {
-                    co = connectableFactory.get();
+                    co = connectableFactory.call();
                 } catch (Throwable e) {
                     EmptySubscription.error(e, child);
                     return;
@@ -146,9 +146,9 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
         if (bufferSize == Integer.MAX_VALUE) {
             return createFrom(source);
         }
-        return create(source, new Supplier<ReplayBuffer<T>>() {
+        return create(source, new Callable<ReplayBuffer<T>>() {
             @Override
-            public ReplayBuffer<T> get() {
+            public ReplayBuffer<T> call() {
                 return new SizeBoundReplayBuffer<T>(bufferSize);
             }
         });
@@ -180,9 +180,9 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
      */
     public static <T> ConnectableFlowable<T> create(Flowable<? extends T> source, 
             final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize) {
-        return create(source, new Supplier<ReplayBuffer<T>>() {
+        return create(source, new Callable<ReplayBuffer<T>>() {
             @Override
-            public ReplayBuffer<T> get() {
+            public ReplayBuffer<T> call() {
                 return new SizeAndTimeBoundReplayBuffer<T>(bufferSize, maxAge, unit, scheduler);
             }
         });
@@ -195,7 +195,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
      * @return the connectable observable
      */
     static <T> ConnectableFlowable<T> create(Flowable<? extends T> source, 
-            final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
+            final Callable<? extends ReplayBuffer<T>> bufferFactory) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<ReplaySubscriber<T>> curr = new AtomicReference<ReplaySubscriber<T>>();
         Publisher<T> onSubscribe = new Publisher<T>() {
@@ -208,8 +208,15 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
                     ReplaySubscriber<T> r = curr.get();
                     // if there isn't one
                     if (r == null) {
+                        ReplayBuffer<T> buf;
+                        
+                        try {
+                            buf = bufferFactory.call();
+                        } catch (Throwable ex) {
+                            throw Exceptions.propagate(ex);
+                        }
                         // create a new subscriber to source
-                        ReplaySubscriber<T> u = new ReplaySubscriber<T>(bufferFactory.get());
+                        ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
                         // let's try setting it as the current subscriber-to-source
                         if (!curr.compareAndSet(r, u)) {
                             // didn't work, maybe someone else did it or the current subscriber 
@@ -242,7 +249,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
     
     private FlowableReplay(Publisher<T> onSubscribe, Flowable<? extends T> source, 
             final AtomicReference<ReplaySubscriber<T>> current,
-            final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
+            final Callable<? extends ReplayBuffer<T>> bufferFactory) {
         this.onSubscribe = onSubscribe;
         this.source = source;
         this.current = current;
@@ -264,8 +271,17 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
             ps = current.get();
             // if there is none yet or the current has unsubscribed
             if (ps == null || ps.isDisposed()) {
+                
+                ReplayBuffer<T> buf;
+                
+                try {
+                    buf = bufferFactory.call();
+                } catch (Throwable ex) {
+                    throw Exceptions.propagate(ex);
+                }
+                
                 // create a new subscriber-to-source
-                ReplaySubscriber<T> u = new ReplaySubscriber<T>(bufferFactory.get());
+                ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
                 // try setting it as the current subscriber-to-source
                 if (!current.compareAndSet(ps, u)) {
                     // did not work, perhaps a new subscriber arrived 
@@ -292,7 +308,11 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
          * issue because the unsubscription was always triggered by the child-subscribers 
          * themselves.
          */
-        connection.accept(ps);
+        try {
+            connection.accept(ps);
+        } catch (Throwable ex) {
+            throw Exceptions.propagate(ex);
+        }
         if (doConnect) {
             source.subscribe(ps);
         }

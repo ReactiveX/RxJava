@@ -13,13 +13,12 @@
 
 package io.reactivex.internal.schedulers;
 
-import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.*;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.schedulers.ExecutorScheduler.ExecutorWorker.BooleanRunnable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -232,7 +231,7 @@ public final class ExecutorScheduler extends Scheduler {
         @Override
         public void run() {
             int missed = 1;
-            final Queue<Runnable> q = queue;
+            final MpscLinkedQueue<Runnable> q = queue;
             for (;;) {
                 
                 if (disposed) {

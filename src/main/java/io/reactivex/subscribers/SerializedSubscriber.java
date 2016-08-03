@@ -168,7 +168,14 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
                 queue = null;
             }
             
-            q.forEachWhile(consumer);
+            try {
+                q.forEachWhile(consumer);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                subscription.cancel();
+                actual.onError(ex);
+                return;
+            }
         }
     }
     

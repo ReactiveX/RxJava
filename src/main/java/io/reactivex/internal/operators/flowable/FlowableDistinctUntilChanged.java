@@ -97,7 +97,7 @@ public final class FlowableDistinctUntilChanged<T> extends FlowableSource<T, T> 
         }
 
         @Override
-        public T poll() {
+        public T poll() throws Exception {
             for (;;) {
                 T v = qs.poll();
                 if (v == null) {
@@ -108,6 +108,7 @@ public final class FlowableDistinctUntilChanged<T> extends FlowableSource<T, T> 
                     last = v;
                     return v;
                 }
+                
                 if (!comparer.test(last, v)) {
                     last = v;
                     return v;
@@ -176,7 +177,7 @@ public final class FlowableDistinctUntilChanged<T> extends FlowableSource<T, T> 
         }
 
         @Override
-        public T poll() {
+        public T poll() throws Exception {
             for (;;) {
                 T v = qs.poll();
                 if (v == null) {

@@ -11,9 +11,22 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.functions;
+package io.reactivex.internal.fuseable;
 
-public interface Supplier<T> {
+/**
+ * A minimalist queue interface without the method bloat of java.util.Collection and java.util.Queue.
+ *
+ * @param <T> the value type to enqueue and dequeue, not null
+ */
+public interface SimpleQueue<T> {
+
+    boolean offer(T value);
     
-    T get();
+    boolean offer(T v1, T v2);
+    
+    T poll() throws Exception;
+    
+    boolean isEmpty();
+    
+    void clear();
 }

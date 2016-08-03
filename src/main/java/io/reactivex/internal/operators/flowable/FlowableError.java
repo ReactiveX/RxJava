@@ -13,22 +13,23 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import java.util.concurrent.Callable;
+
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 
 public final class FlowableError<T> extends Flowable<T> {
-    final Supplier<? extends Throwable> errorSupplier;
-    public FlowableError(Supplier<? extends Throwable> errorSupplier) {
+    final Callable<? extends Throwable> errorSupplier;
+    public FlowableError(Callable<? extends Throwable> errorSupplier) {
         this.errorSupplier = errorSupplier;
     }
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         Throwable error;
         try {
-            error = errorSupplier.get();
+            error = errorSupplier.call();
         } catch (Throwable t) {
             error = t;
             return;

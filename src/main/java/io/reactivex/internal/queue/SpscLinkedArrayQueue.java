@@ -18,9 +18,9 @@
 
 package io.reactivex.internal.queue;
 
-import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.util.Pow2;
 
 /**
@@ -28,7 +28,7 @@ import io.reactivex.internal.util.Pow2;
  * than the producer.
  * @param <T> the contained value type
  */
-public final class SpscLinkedArrayQueue<T> implements Queue<T> {
+public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
     static final int MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
     final AtomicLong producerIndex = new AtomicLong();
     
@@ -151,39 +151,11 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * This implementation is correct for single consumer thread use only.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public T peek() {
-        final AtomicReferenceArray<Object> buffer = consumerBuffer;
-        final long index = lpConsumerIndex();
-        final int mask = consumerMask;
-        final int offset = calcWrappedOffset(index, mask);
-        final Object e = lvElement(buffer, offset);// LoadLoad
-        if (e == HAS_NEXT) {
-            return newBufferPeek(lvNext(buffer), index, mask);
-        }
-
-        return (T) e;
-    }
-    
     @Override
     public void clear() {
         while (poll() != null || !isEmpty()); // NOPMD
     }
 
-    @SuppressWarnings("unchecked")
-    private T newBufferPeek(AtomicReferenceArray<Object> nextBuffer, final long index, final int mask) {
-        consumerBuffer = nextBuffer;
-        final int offsetInNew = calcWrappedOffset(index, mask);
-        return (T) lvElement(nextBuffer, offsetInNew);// LoadLoad
-    }
-
-    @Override
     public int size() {
         /*
          * It is possible for a thread to be interrupted or reschedule between the read of the producer and
@@ -249,66 +221,6 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
         return buffer.get(offset);
     }
 
-    @Override
-    public Iterator<T> iterator() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Object[] toArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <E> E[] toArray(E[] a) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean containsAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends T> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean add(T e) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public T remove() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public T element() {
-        throw new UnsupportedOperationException();
-    }
-    
     /**
      * Offer two elements at the same time.
      * <p>Don't use the regular offer() with this at all!
@@ -316,6 +228,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
      * @param second the second value, not null
      * @return true if the queue accepted the two new values
      */
+    @Override
     public boolean offer(T first, T second) {
         final AtomicReferenceArray<Object> buffer = producerBuffer;
         final long p = lvProducerIndex();

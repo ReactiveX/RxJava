@@ -181,7 +181,13 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
                 queue = null;
             }
             
-            q.forEachWhile(consumer);
+            try {
+                q.forEachWhile(consumer);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                actual.onError(ex);
+                return;
+            }
         }
     }
     

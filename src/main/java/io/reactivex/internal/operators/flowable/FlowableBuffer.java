@@ -14,11 +14,12 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.functions.*;
+import io.reactivex.functions.BooleanSupplier;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
@@ -29,13 +30,13 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Fl
 
     final int skip;
 
-    final Supplier<C> bufferSupplier;
+    final Callable<C> bufferSupplier;
 
-    public FlowableBuffer(Publisher<T> source, int size, Supplier<C> bufferSupplier) {
+    public FlowableBuffer(Publisher<T> source, int size, Callable<C> bufferSupplier) {
         this(source, size, size, bufferSupplier);
     }
 
-    public FlowableBuffer(Publisher<T> source, int size, int skip, Supplier<C> bufferSupplier) {
+    public FlowableBuffer(Publisher<T> source, int size, int skip, Callable<C> bufferSupplier) {
         super(source);
         if (size <= 0) {
             throw new IllegalArgumentException("size > 0 required but it was " + size);
@@ -66,7 +67,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Fl
 
         final Subscriber<? super C> actual;
 
-        final Supplier<C> bufferSupplier;
+        final Callable<C> bufferSupplier;
 
         final int size;
 
@@ -76,7 +77,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Fl
 
         boolean done;
 
-        public PublisherBufferExactSubscriber(Subscriber<? super C> actual, int size, Supplier<C> bufferSupplier) {
+        public PublisherBufferExactSubscriber(Subscriber<? super C> actual, int size, Callable<C> bufferSupplier) {
             this.actual = actual;
             this.size = size;
             this.bufferSupplier = bufferSupplier;
@@ -113,7 +114,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Fl
             if (b == null) {
 
                 try {
-                    b = bufferSupplier.get();
+                    b = bufferSupplier.call();
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();
@@ -173,7 +174,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Fl
 
         final Subscriber<? super C> actual;
 
-        final Supplier<C> bufferSupplier;
+        final Callable<C> bufferSupplier;
 
         final int size;
 
@@ -188,7 +189,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Fl
         long index;
 
         public PublisherBufferSkipSubscriber(Subscriber<? super C> actual, int size, int skip,
-                                             Supplier<C> bufferSupplier) {
+                Callable<C> bufferSupplier) {
             this.actual = actual;
             this.size = size;
             this.skip = skip;
@@ -236,7 +237,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Fl
 
             if (i % skip == 0L) {
                 try {
-                    b = bufferSupplier.get();
+                    b = bufferSupplier.call();
                 } catch (Throwable e) {
                     cancel();
 
@@ -305,7 +306,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Fl
 
         final Subscriber<? super C> actual;
 
-        final Supplier<C> bufferSupplier;
+        final Callable<C> bufferSupplier;
 
         final int size;
 
@@ -326,7 +327,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Fl
         long produced;
         
         public PublisherBufferOverlappingSubscriber(Subscriber<? super C> actual, int size, int skip,
-                                                    Supplier<C> bufferSupplier) {
+                Callable<C> bufferSupplier) {
             this.actual = actual;
             this.size = size;
             this.skip = skip;
@@ -394,7 +395,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Fl
                 C b;
 
                 try {
-                    b = bufferSupplier.get();
+                    b = bufferSupplier.call();
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();

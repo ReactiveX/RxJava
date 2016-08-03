@@ -14,13 +14,15 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Function;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -31,12 +33,12 @@ import io.reactivex.subscribers.SerializedSubscriber;
 public final class FlowableBufferBoundary<T, U extends Collection<? super T>, Open, Close> 
 extends Flowable<U> {
     final Publisher<T> source;
-    final Supplier<U> bufferSupplier;
+    final Callable<U> bufferSupplier;
     final Publisher<? extends Open> bufferOpen;
     final Function<? super Open, ? extends Publisher<? extends Close>> bufferClose;
 
     public FlowableBufferBoundary(Publisher<T> source, Publisher<? extends Open> bufferOpen,
-            Function<? super Open, ? extends Publisher<? extends Close>> bufferClose, Supplier<U> bufferSupplier) {
+            Function<? super Open, ? extends Publisher<? extends Close>> bufferClose, Callable<U> bufferSupplier) {
         this.source = source;
         this.bufferOpen = bufferOpen;
         this.bufferClose = bufferClose;
@@ -55,7 +57,7 @@ extends Flowable<U> {
     extends QueueDrainSubscriber<T, U, U> implements Subscription, Disposable {
         final Publisher<? extends Open> bufferOpen;
         final Function<? super Open, ? extends Publisher<? extends Close>> bufferClose;
-        final Supplier<U> bufferSupplier;
+        final Callable<U> bufferSupplier;
         final CompositeDisposable resources;
         
         Subscription s;
@@ -67,7 +69,7 @@ extends Flowable<U> {
         public BufferBoundarySubscriber(Subscriber<? super U> actual, 
                 Publisher<? extends Open> bufferOpen,
                 Function<? super Open, ? extends Publisher<? extends Close>> bufferClose,
-                Supplier<U> bufferSupplier) {
+                        Callable<U> bufferSupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferOpen = bufferOpen;
             this.bufferClose = bufferClose;
@@ -125,7 +127,7 @@ extends Flowable<U> {
                 buffers.clear();
             }
             
-            Queue<U> q = queue;
+            SimpleQueue<U> q = queue;
             for (U u : list) {
                 q.offer(u);
             }
@@ -172,7 +174,7 @@ extends Flowable<U> {
             U b;
             
             try {
-                b = bufferSupplier.get();
+                b = bufferSupplier.call();
             } catch (Throwable e) {
                 onError(e);
                 return;

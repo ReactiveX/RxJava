@@ -92,20 +92,17 @@ public final class MpscLinkedQueue<T> extends BaseLinkedQueue<T> {
         }
         return null;
     }
-
+    
     @Override
-    public T peek() {
-        LinkedQueueNode<T> currConsumerNode = lpConsumerNode(); // don't load twice, it's alright
-        LinkedQueueNode<T> nextNode = currConsumerNode.lvNext();
-        if (nextNode != null) {
-            return nextNode.lpValue();
-        } else 
-        if (currConsumerNode != lvProducerNode()) {
-            // spin, we are no longer wait free
-            while ((nextNode = currConsumerNode.lvNext()) == null); // NOPMD
-            // got the next node...
-            return nextNode.lpValue();
+    public boolean offer(T v1, T v2) {
+        if (offer(v1)) {
+            return offer(v2); 
         }
-        return null;
+        return false;
+    }
+    
+    @Override
+    public void clear() {
+        while (poll() != null && !isEmpty()) ; // NOPMD
     }
 }

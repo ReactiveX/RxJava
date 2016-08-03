@@ -325,7 +325,7 @@ public final class FlowableWindow<T> extends FlowableSource<T, Flowable<T>> {
 
         final Subscriber<? super Flowable<T>> actual;
 
-        final Queue<UnicastProcessor<T>> queue;
+        final SpscLinkedArrayQueue<UnicastProcessor<T>> queue;
         
         final long size;
         
@@ -460,7 +460,7 @@ public final class FlowableWindow<T> extends FlowableSource<T, Flowable<T>> {
             }
             
             final Subscriber<? super Flowable<T>> a = actual;
-            final Queue<UnicastProcessor<T>> q = queue;
+            final SpscLinkedArrayQueue<UnicastProcessor<T>> q = queue;
             int missed = 1;
             
             for (;;) {
@@ -505,7 +505,7 @@ public final class FlowableWindow<T> extends FlowableSource<T, Flowable<T>> {
             }
         }
         
-        boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, Queue<?> q) {
+        boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, SpscLinkedArrayQueue<?> q) {
             if (cancelled) {
                 q.clear();
                 return true;

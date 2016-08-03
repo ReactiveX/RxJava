@@ -13,16 +13,14 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.BiPredicate;
-import io.reactivex.internal.queue.*;
+import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.Pow2;
 
 public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
     final Publisher<? extends T> first;
@@ -109,7 +107,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
             }
         }
         
-        void cancel(Queue<T> q1, Queue<T> q2) {
+        void cancel(SpscArrayQueue<T> q1, SpscArrayQueue<T> q2) {
             cancelled = true;
             q1.clear();
             q2.clear();
@@ -124,9 +122,9 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
             EqualSubscriber<T>[] as = subscribers;
             
             final EqualSubscriber<T> s1 = as[0];
-            final Queue<T> q1 = s1.queue;
+            final SpscArrayQueue<T> q1 = s1.queue;
             final EqualSubscriber<T> s2 = as[1];
-            final Queue<T> q2 = s2.queue;
+            final SpscArrayQueue<T> q2 = s2.queue;
             
             for (;;) {
                 
@@ -162,9 +160,9 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                         }
                     }
 
-                    T v1 = q1.peek();
+                    T v1 = q1.poll();
                     boolean e1 = v1 == null;
-                    T v2 = q2.peek();
+                    T v2 = q2.poll();
                     boolean e2 = v2 == null;
 
                     if (d1 && d2 && e1 && e2) {
@@ -181,8 +179,6 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                     }
                     
                     if (!e1 && !e2) {
-                        q1.poll();
-                        q2.poll();
                         boolean c;
                         
                         try {
@@ -225,7 +221,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
     
     static final class EqualSubscriber<T> implements Subscriber<T> {
         final EqualCoordinator<T> parent;
-        final Queue<T> queue;
+        final SpscArrayQueue<T> queue;
         final int index;
         final int bufferSize;
         
@@ -238,13 +234,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
             this.parent = parent;
             this.bufferSize = bufferSize;
             this.index = index;
-            Queue<T> q;
-            if (Pow2.isPowerOfTwo(bufferSize)) {
-                q = new SpscArrayQueue<T>(bufferSize);
-            } else {
-                q = new SpscExactArrayQueue<T>(bufferSize);
-            }
-            this.queue = q;
+            this.queue = new SpscArrayQueue<T>(bufferSize);
         }
         
         @Override

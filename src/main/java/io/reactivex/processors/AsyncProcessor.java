@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.functions.IntFunction;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -207,7 +207,11 @@ public final class AsyncProcessor<T> extends FlowProcessor<T> {
          */
         @SuppressWarnings("unchecked")
         public AsyncSubscription<T>[] terminate() {
-            return TerminalAtomicsHelper.terminate(subscribers, TERMINATED);
+            AsyncSubscription<T>[] a = subscribers.get();
+            if (a != TERMINATED) {
+                a = subscribers.getAndSet(TERMINATED);
+            }
+            return a;
         }
         
         /**
@@ -216,9 +220,22 @@ public final class AsyncProcessor<T> extends FlowProcessor<T> {
          * @param as the AsyncSubscription to add
          * @return true if successful, false if the state has been terminated
          */
-        @SuppressWarnings("unchecked")
         boolean add(AsyncSubscription<T> as) {
-            return TerminalAtomicsHelper.add(subscribers, as, TERMINATED, this);
+            for (;;) {
+                AsyncSubscription<T>[] a = subscribers.get();
+                if (a == TERMINATED) {
+                    return false;
+                }
+                
+                int n = a.length;
+                AsyncSubscription<T>[] b = apply(n + 1);
+                System.arraycopy(a, 0, b, 0, n);
+                b[n] = as;
+                
+                if (compareAndSet(a, b)) {
+                    return true;
+                }
+            }
         }
         
         /**
@@ -227,7 +244,38 @@ public final class AsyncProcessor<T> extends FlowProcessor<T> {
          */
         @SuppressWarnings("unchecked")
         void remove(AsyncSubscription<T> as) {
-            TerminalAtomicsHelper.remove(subscribers, as, TERMINATED, EMPTY, this);
+            for (;;) {
+                AsyncSubscription<T>[] a = subscribers.get();
+                if (a == TERMINATED || a == EMPTY) {
+                    return;
+                }
+                
+                int n = a.length;
+                int j = -1;
+                for (int i = 0; i < n; i++) {
+                    if (a[i] == as) {
+                        j = i;
+                        break;
+                    }
+                }
+                
+                if (j < 0) {
+                    return;
+                }
+                
+                AsyncSubscription<T>[] b;
+                
+                if (n == 1) {
+                    b = EMPTY;
+                } else {
+                    b = apply(n - 1);
+                    System.arraycopy(a, 0, b, 0, j);
+                    System.arraycopy(a, j + 1, b, j, n - j - 1);
+                }
+                if (subscribers.compareAndSet(a, b)) {
+                    return;
+                }
+            }
         }
         
         @SuppressWarnings("unchecked")

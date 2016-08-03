@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -58,7 +57,7 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
         final long time;
         final TimeUnit unit;
         final Scheduler scheduler;
-        final Queue<Object> queue;
+        final SpscLinkedArrayQueue<Object> queue;
         final boolean delayError;
         
         Subscription s;
@@ -91,7 +90,7 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
         
         @Override
         public void onNext(T t) {
-            final Queue<Object> q = queue;
+            final SpscLinkedArrayQueue<Object> q = queue;
 
             long now = scheduler.now(unit);
 
@@ -118,15 +117,14 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
             drain();
         }
         
-        void trim(long now, Queue<Object> q) {
+        void trim(long now, SpscLinkedArrayQueue<Object> q) {
             long time = this.time;
             long c = count;
             boolean unbounded = c == Long.MAX_VALUE;
 
             while (!q.isEmpty()) {
-                long ts = (Long)q.peek();
+                long ts = (Long)q.poll();
                 if (ts < now - time || (!unbounded && (q.size() >> 1) > c)) {
-                    q.poll();
                     q.poll();
                 } else {
                     break;
@@ -162,7 +160,7 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
             int missed = 1;
             
             final Subscriber<? super T> a = actual;
-            final Queue<Object> q = queue;
+            final SpscLinkedArrayQueue<Object> q = queue;
             final boolean delayError = this.delayError;
             
             for (;;) {
@@ -179,7 +177,7 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
                     long e = 0L;
                     
                     for (;;) {
-                        Object ts = q.peek(); // the timestamp long
+                        Object ts = q.poll(); // the timestamp long
                         empty = ts == null;
                         
                         if (checkTerminated(empty, a, delayError)) {
@@ -190,7 +188,6 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
                             break;
                         }
                         
-                        q.poll();
                         @SuppressWarnings("unchecked")
                         T o = (T)q.poll();
                         if (o == null) {

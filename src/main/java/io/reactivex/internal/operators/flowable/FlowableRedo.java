@@ -21,6 +21,7 @@ import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscribers.flowable.ToNotificationSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.processors.BehaviorProcessor;
 
 // FIXME split and update to the Rsc version
@@ -44,7 +45,15 @@ public final class FlowableRedo<T> extends Flowable<T> {
 
         s.onSubscribe(parent.arbiter);
 
-        Publisher<?> action = manager.apply(subject);
+        Publisher<?> action;
+        
+        try {
+            action = manager.apply(subject);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            s.onError(ex);
+            return;
+        }
         
         action.subscribe(new ToNotificationSubscriber<Object>(new Consumer<Try<Optional<Object>>>() {
             @Override

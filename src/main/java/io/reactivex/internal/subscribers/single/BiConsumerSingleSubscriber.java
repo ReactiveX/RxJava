@@ -19,6 +19,8 @@ import io.reactivex.SingleSubscriber;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Exceptions;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class BiConsumerSingleSubscriber<T> 
 extends AtomicReference<Disposable>
@@ -34,7 +36,12 @@ implements SingleSubscriber<T>, Disposable {
     
     @Override
     public void onError(Throwable e) {
-        onCallback.accept(null, e);
+        try {
+            onCallback.accept(null, e);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            RxJavaPlugins.onError(ex);
+        }
     }
     
     @Override
@@ -44,7 +51,12 @@ implements SingleSubscriber<T>, Disposable {
     
     @Override
     public void onSuccess(T value) {
-        onCallback.accept(value, null);
+        try {
+            onCallback.accept(value, null);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            RxJavaPlugins.onError(ex);
+        }
     }
 
     @Override

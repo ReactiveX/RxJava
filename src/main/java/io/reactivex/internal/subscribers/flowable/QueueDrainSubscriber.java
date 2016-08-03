@@ -13,12 +13,12 @@
 
 package io.reactivex.internal.subscribers.flowable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 
@@ -32,14 +32,14 @@ import io.reactivex.internal.util.*;
  */
 public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriberPad4 implements Subscriber<T>, QueueDrain<U, V> {
     protected final Subscriber<? super V> actual;
-    protected final Queue<U> queue;
+    protected final SimpleQueue<U> queue;
     
     protected volatile boolean cancelled;
     
     protected volatile boolean done;
     protected Throwable error;
     
-    public QueueDrainSubscriber(Subscriber<? super V> actual, Queue<U> queue) {
+    public QueueDrainSubscriber(Subscriber<? super V> actual, SimpleQueue<U> queue) {
         this.actual = actual;
         this.queue = queue;
     }
@@ -65,7 +65,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
     
     protected final void fastpathEmit(U value, boolean delayError) {
         final Subscriber<? super V> s = actual;
-        final Queue<U> q = queue;
+        final SimpleQueue<U> q = queue;
         
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             long r = requested.get();
@@ -91,7 +91,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
 
     protected final void fastpathEmitMax(U value, boolean delayError, Disposable dispose) {
         final Subscriber<? super V> s = actual;
-        final Queue<U> q = queue;
+        final SimpleQueue<U> q = queue;
         
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             long r = requested.get();
@@ -120,7 +120,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
 
     protected final void fastpathOrderedEmitMax(U value, boolean delayError, Disposable dispose) {
         final Subscriber<? super V> s = actual;
-        final Queue<U> q = queue;
+        final SimpleQueue<U> q = queue;
         
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             long r = requested.get();
@@ -159,7 +159,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
      */
     protected final void fastpathOrderedEmit(U value, boolean delayError) {
         final Subscriber<? super V> s = actual;
-        final Queue<U> q = queue;
+        final SimpleQueue<U> q = queue;
         
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             if (q.isEmpty()) {

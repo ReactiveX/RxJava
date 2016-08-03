@@ -20,7 +20,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.*;
@@ -197,7 +197,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                         if (values[j] == null) {
                             try {
                                 boolean d = inner.done;
-                                Queue<T> q = inner.queue;
+                                SimpleQueue<T> q = inner.queue;
 
                                 T v = q != null ? q.poll() : null;
 
@@ -289,7 +289,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                         if (values[j] == null) {
                             try {
                                 boolean d = inner.done;
-                                Queue<T> q = inner.queue;
+                                SimpleQueue<T> q = inner.queue;
                                 T v = q != null ? q.poll() : null;
 
                                 boolean empty = v == null;
@@ -352,7 +352,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         final int index;
 
-        Queue<T> queue;
+        SimpleQueue<T> queue;
 
         long produced;
 

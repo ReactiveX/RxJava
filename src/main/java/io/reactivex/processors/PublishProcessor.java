@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.functions.IntFunction;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -230,7 +230,11 @@ public final class PublishProcessor<T> extends FlowProcessor<T> {
         @SuppressWarnings("unchecked")
         PublishSubscriber<T>[] terminate(Object event) {
             if (compareAndSet(null, event)) {
-                return TerminalAtomicsHelper.terminate(subscribers, TERMINATED);
+                PublishSubscriber<T>[] a = subscribers.get();
+                if (a != TERMINATED) {
+                    a = subscribers.getAndSet(TERMINATED);
+                }
+                return a;
             }
             return TERMINATED;
         }
@@ -241,9 +245,22 @@ public final class PublishProcessor<T> extends FlowProcessor<T> {
          * @param ps the subscriber to add
          * @return true if successful, false if the subject has terminated
          */
-        @SuppressWarnings("unchecked")
         boolean add(PublishSubscriber<T> ps) {
-            return TerminalAtomicsHelper.add(subscribers, ps, TERMINATED, this);
+            for (;;) {
+                PublishSubscriber<T>[] a = subscribers.get();
+                if (a == TERMINATED) {
+                    return false;
+                }
+                
+                int n = a.length;
+                PublishSubscriber<T>[] b = apply(n + 1);
+                System.arraycopy(a, 0, b, 0, n);
+                b[n] = ps;
+                
+                if (compareAndSet(a, b)) {
+                    return true;
+                }
+            }
         }
         
         /**
@@ -252,7 +269,38 @@ public final class PublishProcessor<T> extends FlowProcessor<T> {
          */
         @SuppressWarnings("unchecked")
         void remove(PublishSubscriber<T> ps) {
-            TerminalAtomicsHelper.remove(subscribers, ps, TERMINATED, EMPTY, this);
+            for (;;) {
+                PublishSubscriber<T>[] a = subscribers.get();
+                if (a == TERMINATED || a == EMPTY) {
+                    return;
+                }
+                
+                int n = a.length;
+                int j = -1;
+                for (int i = 0; i < n; i++) {
+                    if (a[i] == ps) {
+                        j = i;
+                        break;
+                    }
+                }
+                
+                if (j < 0) {
+                    return;
+                }
+                
+                PublishSubscriber<T>[] b;
+                
+                if (n == 1) {
+                    b = EMPTY;
+                } else {
+                    b = apply(n - 1);
+                    System.arraycopy(a, 0, b, 0, j);
+                    System.arraycopy(a, j + 1, b, j, n - j - 1);
+                }
+                if (subscribers.compareAndSet(a, b)) {
+                    return;
+                }
+            }
         }
         
         @SuppressWarnings("unchecked")

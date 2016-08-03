@@ -13,11 +13,12 @@
 
 package io.reactivex.internal.operators.completable;
 
-import java.util.*;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 
 public final class CompletableMergeDelayErrorIterable extends Completable {
@@ -49,7 +50,7 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
 
         final AtomicInteger wip = new AtomicInteger(1);
         
-        final Queue<Throwable> queue = new MpscLinkedQueue<Throwable>();
+        final SimpleQueue<Throwable> queue = new MpscLinkedQueue<Throwable>();
 
         for (;;) {
             if (set.isDisposed()) {

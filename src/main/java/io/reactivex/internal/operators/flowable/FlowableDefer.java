@@ -13,22 +13,23 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import java.util.concurrent.Callable;
+
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 
 public final class FlowableDefer<T> extends Flowable<T> {
-    final Supplier<? extends Publisher<? extends T>> supplier;
-    public FlowableDefer(Supplier<? extends Publisher<? extends T>> supplier) {
+    final Callable<? extends Publisher<? extends T>> supplier;
+    public FlowableDefer(Callable<? extends Publisher<? extends T>> supplier) {
         this.supplier = supplier;
     }
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         Publisher<? extends T> pub;
         try {
-            pub = supplier.get();
+            pub = supplier.call();
         } catch (Throwable t) {
             EmptySubscription.error(t, s);
             return;

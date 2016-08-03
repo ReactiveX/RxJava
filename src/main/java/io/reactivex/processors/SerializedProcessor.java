@@ -165,7 +165,13 @@ import io.reactivex.plugins.RxJavaPlugins;
                 }
                 queue = null;
             }
-            q.forEachWhile(consumer);
+            try {
+                q.forEachWhile(consumer);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                actual.onError(ex);
+                return;
+            }
         }
     }
     

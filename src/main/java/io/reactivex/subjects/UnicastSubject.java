@@ -13,12 +13,12 @@
 
 package io.reactivex.subjects;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 
 /**
@@ -105,7 +105,7 @@ public final class UnicastSubject<T> extends Subject<T> {
         private static final long serialVersionUID = 5058617037583835632L;
 
         /** The queue that buffers the source events. */
-        final Queue<T> queue;
+        final SpscLinkedArrayQueue<T> queue;
         
         /** The single subscriber. */
         final AtomicReference<Observer<? super T>> subscriber = new AtomicReference<Observer<? super T>>();
@@ -181,7 +181,7 @@ public final class UnicastSubject<T> extends Subject<T> {
          * Clears the subscriber and the queue.
          * @param q the queue reference (avoid re-reading instance field).
          */
-        void clear(Queue<?> q) {
+        void clear(SimpleQueue<?> q) {
             subscriber.lazySet(null);
             q.clear();
             notifyOnCancelled();
@@ -234,7 +234,7 @@ public final class UnicastSubject<T> extends Subject<T> {
                 return;
             }
             
-            final Queue<T> q = queue;
+            final SimpleQueue<T> q = queue;
             Observer<? super T> a = subscriber.get();
             int missed = 1;
             

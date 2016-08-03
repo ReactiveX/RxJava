@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -21,6 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.operators.flowable.FlowableConcatMap.ErrorMode;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscribers.flowable.*;
@@ -79,7 +79,7 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
         
         Subscription s;
         
-        Queue<InnerQueuedSubscriber<R>> subscribers;
+        SpscLinkedArrayQueue<InnerQueuedSubscriber<R>> subscribers;
         
         volatile boolean cancelled;
         
@@ -255,7 +255,7 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
 
                     boolean outerDone = done;
                     
-                    inner = subscribers.peek();
+                    inner = subscribers.poll();
                     
                     if (outerDone && inner == null) {
                         Throwable ex = error.get();
@@ -273,7 +273,7 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
                 }
                 
                 if (inner != null) {
-                    Queue<R> q = inner.queue();
+                    SimpleQueue<R> q = inner.queue();
                     
                     while (e != r) {
                         if (cancelled) {
@@ -293,7 +293,16 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
                         
                         boolean d = inner.isDone();
                         
-                        R v = q.poll();
+                        R v;
+                        
+                        try {
+                            v = q.poll();
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            cancelAll();
+                            a.onError(ex);
+                            return;
+                        }
                         
                         boolean empty = v == null;
                         

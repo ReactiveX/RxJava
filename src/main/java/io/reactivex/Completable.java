@@ -16,12 +16,13 @@ import java.util.concurrent.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.SchedulerSupport;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.subscribers.completable.*;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
@@ -200,7 +201,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the Completable instance
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable defer(final Supplier<? extends CompletableConsumable> completableSupplier) {
+    public static Completable defer(final Callable<? extends CompletableConsumable> completableSupplier) {
         Objects.requireNonNull(completableSupplier, "completableSupplier");
         return new CompletableDefer(completableSupplier);
     }
@@ -216,7 +217,7 @@ public abstract class Completable implements CompletableConsumable {
      * @throws NullPointerException if errorSupplier is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable error(final Supplier<? extends Throwable> errorSupplier) {
+    public static Completable error(final Callable<? extends Throwable> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
         return new CompletableErrorSupplier(errorSupplier);
     }
@@ -499,7 +500,7 @@ public abstract class Completable implements CompletableConsumable {
      * @param disposer the consumer that disposes the resource created by the resource supplier
      * @return the new Completable instance
      */
-    public static <R> Completable using(Supplier<R> resourceSupplier, 
+    public static <R> Completable using(Callable<R> resourceSupplier, 
             Function<? super R, ? extends CompletableConsumable> completableFunction, 
             Consumer<? super R> disposer) {
         return using(resourceSupplier, completableFunction, disposer, true);
@@ -523,7 +524,7 @@ public abstract class Completable implements CompletableConsumable {
      * @return the new Completable instance
      */
     public static <R> Completable using(
-            final Supplier<R> resourceSupplier, 
+            final Callable<R> resourceSupplier, 
             final Function<? super R, ? extends CompletableConsumable> completableFunction, 
             final Consumer<? super R> disposer, 
             final boolean eager) {
@@ -1315,7 +1316,11 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> U to(Function<? super Completable, U> converter) {
-        return converter.apply(this);
+        try {
+            return converter.apply(this);
+        } catch (Throwable ex) {
+            throw Exceptions.propagate(ex);
+        }
     }
 
     /**
@@ -1349,7 +1354,7 @@ public abstract class Completable implements CompletableConsumable {
      * @throws NullPointerException if completionValueSupplier is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <T> Single<T> toSingle(final Supplier<? extends T> completionValueSupplier) {
+    public final <T> Single<T> toSingle(final Callable<? extends T> completionValueSupplier) {
         Objects.requireNonNull(completionValueSupplier, "completionValueSupplier is null");
         return new CompletableToSingle<T>(this, completionValueSupplier, null);
     }

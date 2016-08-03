@@ -14,5 +14,5 @@
 package io.reactivex.functions;
 
 public interface BooleanSupplier {
-    boolean getAsBoolean(); // NOPMD
+    boolean getAsBoolean() throws Exception; // NOPMD
 }

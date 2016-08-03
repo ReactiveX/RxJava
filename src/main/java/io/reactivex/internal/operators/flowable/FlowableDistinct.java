@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
@@ -26,19 +27,19 @@ import io.reactivex.internal.subscriptions.*;
 public final class FlowableDistinct<T, K> extends Flowable<T> {
     final Publisher<T> source;
     final Function<? super T, K> keySelector;
-    final Supplier<? extends Predicate<? super K>> predicateSupplier;
+    final Callable<? extends Predicate<? super K>> predicateSupplier;
     
-    public FlowableDistinct(Publisher<T> source, Function<? super T, K> keySelector, Supplier<? extends Predicate<? super K>> predicateSupplier) {
+    public FlowableDistinct(Publisher<T> source, Function<? super T, K> keySelector, Callable<? extends Predicate<? super K>> predicateSupplier) {
         this.source = source;
         this.predicateSupplier = predicateSupplier;
         this.keySelector = keySelector;
     }
     
-    public static <T, K> FlowableDistinct<T, K> withCollection(Publisher<T> source, Function<? super T, K> keySelector, final Supplier<? extends Collection<? super K>> collectionSupplier) {
-        Supplier<? extends Predicate<? super K>> p = new Supplier<Predicate<K>>() {
+    public static <T, K> FlowableDistinct<T, K> withCollection(Publisher<T> source, Function<? super T, K> keySelector, final Callable<? extends Collection<? super K>> collectionSupplier) {
+        Callable<? extends Predicate<? super K>> p = new Callable<Predicate<K>>() {
             @Override
-            public Predicate<K> get() {
-                final Collection<? super K> coll = collectionSupplier.get();
+            public Predicate<K> call() throws Exception {
+                final Collection<? super K> coll = collectionSupplier.call();
                 
                 return new Predicate<K>() {
                     @Override
@@ -57,10 +58,10 @@ public final class FlowableDistinct<T, K> extends Flowable<T> {
     }
     
     public static <T> FlowableDistinct<T, T> untilChanged(Publisher<T> source) {
-        Supplier<? extends Predicate<? super T>> p = new Supplier<Predicate<T>>() {
+        Callable<? extends Predicate<? super T>> p = new Callable<Predicate<T>>() {
             Object last;
             @Override
-            public Predicate<T> get() {
+            public Predicate<T> call() {
                 
                 return new Predicate<T>() {
                     @Override
@@ -80,10 +81,10 @@ public final class FlowableDistinct<T, K> extends Flowable<T> {
     }
 
     public static <T, K> FlowableDistinct<T, K> untilChanged(Publisher<T> source, Function<? super T, K> keySelector) {
-        Supplier<? extends Predicate<? super K>> p = new Supplier<Predicate<K>>() {
+        Callable<? extends Predicate<? super K>> p = new Callable<Predicate<K>>() {
             Object last;
             @Override
-            public Predicate<K> get() {
+            public Predicate<K> call() {
                 
                 return new Predicate<K>() {
                     @Override
@@ -106,7 +107,7 @@ public final class FlowableDistinct<T, K> extends Flowable<T> {
     protected void subscribeActual(Subscriber<? super T> s) {
         Predicate<? super K> coll;
         try {
-            coll = predicateSupplier.get();
+            coll = predicateSupplier.call();
         } catch (Throwable e) {
             EmptySubscription.error(e, s);
             return;

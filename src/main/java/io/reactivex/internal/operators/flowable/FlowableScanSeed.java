@@ -12,6 +12,8 @@
  */
 package io.reactivex.internal.operators.flowable;
 
+import java.util.concurrent.Callable;
+
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
@@ -24,9 +26,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class FlowableScanSeed<T, R> extends Flowable<R> {
     final Publisher<T> source;
     final BiFunction<R, ? super T, R> accumulator;
-    final Supplier<R> seedSupplier;
+    final Callable<R> seedSupplier;
 
-    public FlowableScanSeed(Publisher<T> source, Supplier<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+    public FlowableScanSeed(Publisher<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
         this.source = source;
         this.accumulator = accumulator;
         this.seedSupplier = seedSupplier;
@@ -37,7 +39,7 @@ public final class FlowableScanSeed<T, R> extends Flowable<R> {
         R r;
         
         try {
-            r = seedSupplier.get();
+            r = seedSupplier.call();
         } catch (Throwable e) {
             EmptySubscription.error(e, s);
             return;

@@ -13,16 +13,15 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.queue.*;
+import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableSwitchMap<T, R> extends Flowable<R> {
@@ -210,7 +209,7 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
                 SwitchMapInnerSubscriber<T, R> inner = active.get();
 
                 if (inner != null) {
-                    Queue<R> q = inner.queue;
+                    SpscArrayQueue<R> q = inner.queue;
 
                     if (inner.done) {
                         Throwable err = inner.error;
@@ -317,7 +316,7 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
         final SwitchMapSubscriber<T, R> parent;
         final long index;
         final int bufferSize;
-        final Queue<R> queue;
+        final SpscArrayQueue<R> queue;
         
         volatile boolean done;
         Throwable error;
@@ -326,13 +325,7 @@ public final class FlowableSwitchMap<T, R> extends Flowable<R> {
             this.parent = parent;
             this.index = index;
             this.bufferSize = bufferSize;
-            Queue<R> q;
-            if (Pow2.isPowerOfTwo(bufferSize)) {
-                q = new SpscArrayQueue<R>(bufferSize);
-            } else {
-                q = new SpscExactArrayQueue<R>(bufferSize);
-            }
-            this.queue = q;
+            this.queue = new SpscArrayQueue<R>(bufferSize);
         }
         
         @Override

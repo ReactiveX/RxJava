@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.operators.single;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
@@ -22,12 +24,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleUsing<T, U> extends Single<T> {
 
-    final Supplier<U> resourceSupplier;
+    final Callable<U> resourceSupplier;
     final Function<? super U, ? extends SingleConsumable<? extends T>> singleFunction; 
     final Consumer<? super U> disposer; 
     final boolean eager;
     
-    public SingleUsing(Supplier<U> resourceSupplier,
+    public SingleUsing(Callable<U> resourceSupplier,
             Function<? super U, ? extends SingleConsumable<? extends T>> singleFunction, Consumer<? super U> disposer,
             boolean eager) {
         this.resourceSupplier = resourceSupplier;
@@ -44,7 +46,7 @@ public final class SingleUsing<T, U> extends Single<T> {
         final U resource; // NOPMD
         
         try {
-            resource = resourceSupplier.get();
+            resource = resourceSupplier.call();
         } catch (Throwable ex) {
             s.onSubscribe(EmptyDisposable.INSTANCE);
             s.onError(ex);

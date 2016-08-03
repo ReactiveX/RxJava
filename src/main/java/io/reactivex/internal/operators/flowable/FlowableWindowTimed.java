@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.disposables.DisposableHelper;
 import java.nio.channels.CancelledKeyException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +23,8 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -222,7 +223,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         
         void drainLoop() {
             
-            final Queue<Object> q = queue;
+            final SimpleQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             UnicastProcessor<T> w = window;
             
@@ -234,7 +235,16 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
                     
                     boolean d = done;
                     
-                    Object o = q.poll();
+                    Object o;
+                    
+                    try {
+                        o = q.poll();
+                    } catch (Throwable ex) {
+                        s.cancel();
+                        dispose();
+                        a.onError(ex);
+                        return;
+                    }
                     
                     if (d && (o == null || o == NEXT)) {
                         window = null;
@@ -495,7 +505,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         }
         
         void drainLoop() {
-            final Queue<Object> q = queue;
+            final SimpleQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             UnicastProcessor<T> w = window;
             
@@ -512,7 +522,16 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
                     
                     boolean d = done;
                     
-                    Object o = q.poll();
+                    Object o;
+                    
+                    try {
+                        o = q.poll();
+                    } catch (Throwable ex) {
+                        s.cancel();
+                        dispose();
+                        a.onError(ex);
+                        return;
+                    }
                     
                     boolean empty = o == null;
                     boolean isHolder = o instanceof ConsumerIndexHolder;
@@ -778,7 +797,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
         }
         
         void drainLoop() {
-            final Queue<Object> q = queue;
+            final SimpleQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             final List<UnicastProcessor<T>> ws = windows;
             
@@ -797,7 +816,16 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
                     
                     boolean d = done;
                     
-                    Object v = q.poll();
+                    Object v;
+                    
+                    try {
+                        v = q.poll();
+                    } catch (Throwable ex) {
+                        s.cancel();
+                        dispose();
+                        a.onError(ex);
+                        return;
+                    }
                     
                     boolean empty = v == null;
                     boolean sw = v instanceof SubjectWork;

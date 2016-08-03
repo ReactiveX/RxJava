@@ -20,6 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class LambdaSubscriber<T> extends AtomicReference<Subscription> implements Subscriber<T>, Subscription, Disposable {
@@ -43,7 +44,12 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
     @Override
     public void onSubscribe(Subscription s) {
         if (SubscriptionHelper.setOnce(this, s)) {
-            onSubscribe.accept(this);
+            try {
+                onSubscribe.accept(this);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                onError(ex);
+            }
         }
     }
     

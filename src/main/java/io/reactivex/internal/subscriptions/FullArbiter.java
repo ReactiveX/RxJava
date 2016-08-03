@@ -132,13 +132,11 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
         for (;;) {
             
             for (;;) {
-                Object o = q.peek();
                 
+                Object o = q.poll();
                 if (o == null) {
                     break;
                 }
-                
-                q.poll();
                 Object v = q.poll();
                 
                 if (o == REQUEST) {

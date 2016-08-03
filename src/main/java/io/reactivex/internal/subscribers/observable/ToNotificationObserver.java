@@ -17,6 +17,8 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Exceptions;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ToNotificationObserver<T> implements Observer<T> {
     final Consumer<? super Try<Optional<Object>>> consumer;
@@ -40,17 +42,33 @@ public final class ToNotificationObserver<T> implements Observer<T> {
             s.dispose();
             onError(new NullPointerException());
         } else {
-            consumer.accept(Try.ofValue(Optional.<Object>of(t)));
+            try {
+                consumer.accept(Try.ofValue(Optional.<Object>of(t)));
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                s.dispose();
+                onError(ex);
+            }
         }
     }
     
     @Override
     public void onError(Throwable t) {
-        consumer.accept(Try.<Optional<Object>>ofError(t));
+        try {
+            consumer.accept(Try.<Optional<Object>>ofError(t));
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            RxJavaPlugins.onError(ex);
+        }
     }
     
     @Override
     public void onComplete() {
-        consumer.accept(Notification.complete());
+        try {
+            consumer.accept(Notification.complete());
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            RxJavaPlugins.onError(ex);
+        }
     }
 }

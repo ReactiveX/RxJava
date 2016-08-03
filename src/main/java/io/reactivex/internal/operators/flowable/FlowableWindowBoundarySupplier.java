@@ -13,30 +13,30 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.disposables.DisposableHelper;
-import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Supplier;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.SerializedSubscriber;
 
 public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowable<T>> {
     final Publisher<T> source;
-    final Supplier<? extends Publisher<B>> other;
+    final Callable<? extends Publisher<B>> other;
     final int bufferSize;
     
     public FlowableWindowBoundarySupplier(Publisher<T> source,
-            Supplier<? extends Publisher<B>> other, int bufferSize) {
+            Callable<? extends Publisher<B>> other, int bufferSize) {
         this.source = source;
         this.other = other;
         this.bufferSize = bufferSize;
@@ -52,7 +52,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
     extends QueueDrainSubscriber<T, Object, Flowable<T>> 
     implements Subscription {
         
-        final Supplier<? extends Publisher<B>> other;
+        final Callable<? extends Publisher<B>> other;
         final int bufferSize;
         
         Subscription s;
@@ -65,7 +65,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
         
         final AtomicLong windows = new AtomicLong();
 
-        public WindowBoundaryMainSubscriber(Subscriber<? super Flowable<T>> actual, Supplier<? extends Publisher<B>> other,
+        public WindowBoundaryMainSubscriber(Subscriber<? super Flowable<T>> actual, Callable<? extends Publisher<B>> other,
                 int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.other = other;
@@ -90,7 +90,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
             Publisher<B> p;
             
             try {
-                p = other.get();
+                p = other.call();
             } catch (Throwable e) {
                 s.cancel();
                 a.onError(e);
@@ -196,7 +196,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
         }
 
         void drainLoop() {
-            final Queue<Object> q = queue;
+            final SimpleQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             int missed = 1;
             UnicastProcessor<T> w = window;
@@ -205,7 +205,17 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
                 for (;;) {
                     boolean d = done;
                     
-                    Object o = q.poll();
+                    Object o;
+                    
+                    try {
+                        o = q.poll();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        DisposableHelper.dispose(boundary);
+                        w.onError(ex);
+                        return;
+                    }
+                    
                     boolean empty = o == null;
                     
                     if (d && empty) {
@@ -238,7 +248,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends Flowable<Flowabl
                         Publisher<B> p;
 
                         try {
-                            p = other.get();
+                            p = other.call();
                         } catch (Throwable e) {
                             DisposableHelper.dispose(boundary);
                             a.onError(e);

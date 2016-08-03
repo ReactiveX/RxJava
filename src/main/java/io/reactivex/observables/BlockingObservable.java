@@ -445,14 +445,34 @@ public final class BlockingObservable<T> implements Iterable<T> {
      */
     public void subscribe(final Consumer<? super T> onNext, final Consumer<? super Throwable> onError, final Runnable onComplete) {
         subscribe(new DefaultObserver<T>() {
+            boolean done;
             @Override
             public void onNext(T t) {
-                onNext.accept(t);
+                if (done) {
+                    return;
+                }
+                try {
+                    onNext.accept(t);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    cancel();
+                    onError(ex);
+                }
             }
             
             @Override
             public void onError(Throwable e) {
-                onError.accept(e);
+                if (done) {
+                    RxJavaPlugins.onError(e);
+                    return;
+                }
+                
+                try {
+                    onError.accept(e);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    RxJavaPlugins.onError(ex);
+                }
             }
             
             @Override

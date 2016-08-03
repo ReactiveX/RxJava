@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
@@ -97,7 +96,7 @@ final Scheduler scheduler;
         
         Subscription s;
         
-        Queue<T> queue;
+        SimpleQueue<T> queue;
         
         volatile boolean cancelled;
         
@@ -339,7 +338,7 @@ final Scheduler scheduler;
             int missed = 1;
 
             final Subscriber<? super T> a = actual;
-            final Queue<T> q = queue;
+            final SimpleQueue<T> q = queue;
 
             long e = produced;
 
@@ -410,7 +409,7 @@ final Scheduler scheduler;
             int missed = 1;
 
             final Subscriber<? super T> a = actual;
-            final Queue<T> q = queue;
+            final SimpleQueue<T> q = queue;
 
             long e = produced;
 
@@ -521,7 +520,7 @@ final Scheduler scheduler;
         }
 
         @Override
-        public T poll() {
+        public T poll() throws Exception {
             T v = queue.poll();
             if (v != null && sourceMode != SYNC) {
                 long p = produced + 1;
@@ -599,7 +598,7 @@ final Scheduler scheduler;
             int missed = 1;
             
             final ConditionalSubscriber<? super T> a = actual;
-            final Queue<T> q = queue;
+            final SimpleQueue<T> q = queue;
 
             long e = produced;
 
@@ -669,7 +668,7 @@ final Scheduler scheduler;
             int missed = 1;
             
             final ConditionalSubscriber<? super T> a = actual;
-            final Queue<T> q = queue;
+            final SimpleQueue<T> q = queue;
             
             long emitted = produced;
             long polled = consumed;
@@ -781,7 +780,7 @@ final Scheduler scheduler;
         }
         
         @Override
-        public T poll() {
+        public T poll() throws Exception {
             T v = queue.poll();
             if (v != null && sourceMode != SYNC) {
                 long p = consumed + 1;

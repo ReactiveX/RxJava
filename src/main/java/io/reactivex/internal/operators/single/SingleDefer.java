@@ -13,15 +13,16 @@
 
 package io.reactivex.internal.operators.single;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.*;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class SingleDefer<T> extends Single<T> {
 
-    final Supplier<? extends SingleConsumable<? extends T>> singleSupplier;
+    final Callable<? extends SingleConsumable<? extends T>> singleSupplier;
     
-    public SingleDefer(Supplier<? extends SingleConsumable<? extends T>> singleSupplier) {
+    public SingleDefer(Callable<? extends SingleConsumable<? extends T>> singleSupplier) {
         this.singleSupplier = singleSupplier;
     }
 
@@ -30,7 +31,7 @@ public final class SingleDefer<T> extends Single<T> {
         SingleConsumable<? extends T> next;
         
         try {
-            next = singleSupplier.get();
+            next = singleSupplier.call();
         } catch (Throwable e) {
             s.onSubscribe(EmptyDisposable.INSTANCE);
             s.onError(e);

@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
@@ -23,7 +22,7 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
@@ -63,13 +62,13 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         final int maxConcurrency;
         final int bufferSize;
         
-        volatile Queue<U> queue;
+        volatile SimpleQueue<U> queue;
         
         volatile boolean done;
         
-        final AtomicReference<Queue<Throwable>> errors = new AtomicReference<Queue<Throwable>>();
+        final AtomicReference<SimpleQueue<Throwable>> errors = new AtomicReference<SimpleQueue<Throwable>>();
         
-        static final Queue<Throwable> ERRORS_CLOSED = new RejectingQueue<Throwable>();
+        static final SimpleQueue<Throwable> ERRORS_CLOSED = new RejectingQueue<Throwable>();
         
         volatile boolean cancelled;
         
@@ -206,17 +205,13 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
             }
         }
         
-        Queue<U> getMainQueue() {
-            Queue<U> q = queue;
+        SimpleQueue<U> getMainQueue() {
+            SimpleQueue<U> q = queue;
             if (q == null) {
                 if (maxConcurrency == Integer.MAX_VALUE) {
                     q = new SpscLinkedArrayQueue<U>(bufferSize);
                 } else {
-                    if (Pow2.isPowerOfTwo(maxConcurrency)) {
-                        q = new SpscArrayQueue<U>(maxConcurrency);
-                    } else {
-                        q = new SpscExactArrayQueue<U>(maxConcurrency);
-                    }
+                    q = new SpscArrayQueue<U>(maxConcurrency);
                 }
                 queue = q;
             }
@@ -226,7 +221,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         void tryEmitScalar(U value) {
             if (get() == 0 && compareAndSet(0, 1)) {
                 long r = requested.get();
-                Queue<U> q = queue;
+                SimpleQueue<U> q = queue;
                 if (r != 0L && (q == null || q.isEmpty())) {
                     actual.onNext(value);
                     if (r != Long.MAX_VALUE) {
@@ -250,7 +245,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
                     return;
                 }
             } else {
-                Queue<U> q = getMainQueue();
+                SimpleQueue<U> q = getMainQueue();
                 if (!q.offer(value)) {
                     onError(new IllegalStateException("Scalar queue full?!"));
                     return;
@@ -262,8 +257,8 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
             drainLoop();
         }
         
-        Queue<U> getInnerQueue(InnerSubscriber<T, U> inner) {
-            Queue<U> q = inner.queue;
+        SimpleQueue<U> getInnerQueue(InnerSubscriber<T, U> inner) {
+            SimpleQueue<U> q = inner.queue;
             if (q == null) {
                 q = new SpscArrayQueue<U>(bufferSize);
                 inner.queue = q;
@@ -274,7 +269,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         void tryEmit(U value, InnerSubscriber<T, U> inner) {
             if (get() == 0 && compareAndSet(0, 1)) {
                 long r = requested.get();
-                Queue<U> q = inner.queue;
+                SimpleQueue<U> q = inner.queue;
                 if (r != 0L && (q == null || q.isEmpty())) {
                     actual.onNext(value);
                     if (r != Long.MAX_VALUE) {
@@ -294,7 +289,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
                     return;
                 }
             } else {
-                Queue<U> q = inner.queue;
+                SimpleQueue<U> q = inner.queue;
                 if (q == null) {
                     q = new SpscArrayQueue<U>(bufferSize);
                     inner.queue = q;
@@ -363,7 +358,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
                 if (checkTerminate()) {
                     return;
                 }
-                Queue<U> svq = queue;
+                SimpleQueue<U> svq = queue;
                 
                 long r = requested.get();
                 boolean unbounded = r == Long.MAX_VALUE;
@@ -375,7 +370,12 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
                         long scalarEmission = 0;
                         U o = null;
                         while (r != 0L) {
-                            o = svq.poll();
+                            try {
+                                o = svq.poll();
+                            } catch (Throwable ex) {
+                                Exceptions.throwIfFatal(ex);
+                                getErrorQueue().offer(ex);
+                            }
                             if (checkTerminate()) {
                                 return;
                             }
@@ -408,7 +408,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
                 int n = inner.length;
                 
                 if (d && (svq == null || svq.isEmpty()) && n == 0) {
-                    Queue<Throwable> e = errors.get();
+                    SimpleQueue<Throwable> e = errors.get();
                     if (e == null || e.isEmpty()) {
                         child.onComplete();
                     } else {
@@ -456,7 +456,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
                                 if (checkTerminate()) {
                                     return;
                                 }
-                                Queue<U> q = is.queue;
+                                SimpleQueue<U> q = is.queue;
                                 if (q == null) {
                                     break;
                                 }
@@ -494,7 +494,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
                             }
                         }
                         boolean innerDone = is.done;
-                        Queue<U> innerQueue = is.queue;
+                        SimpleQueue<U> innerQueue = is.queue;
                         if (innerDone && (innerQueue == null || innerQueue.isEmpty())) {
                             removeInner(is);
                             if (checkTerminate()) {
@@ -535,7 +535,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
                 unsubscribe();
                 return true;
             }
-            Queue<Throwable> e = errors.get();
+            SimpleQueue<Throwable> e = errors.get();
             if (!delayErrors && (e != null && !e.isEmpty())) {
                 try {
                     reportError(e);
@@ -547,13 +547,27 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
             return false;
         }
         
-        void reportError(Queue<Throwable> q) {
+        void reportError(SimpleQueue<Throwable> q) {
             CompositeException composite = null;
             Throwable ex = null;
             
             Throwable t;
             int count = 0;
-            while ((t = q.poll()) != null) {
+            for (;;) {
+                try {
+                    t = q.poll();
+                } catch (Throwable exc) {
+                    Exceptions.throwIfFatal(exc);
+                    if (composite == null) {
+                        composite = new CompositeException(ex);
+                    }
+                    composite.suppress(exc);
+                    break;
+                }
+                
+                if (t == null) {
+                    break;
+                }
                 if (count == 0) {
                     ex = t;
                 } else {
@@ -585,9 +599,9 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
             }
         }
         
-        Queue<Throwable> getErrorQueue() {
+        SimpleQueue<Throwable> getErrorQueue() {
             for (;;) {
-                Queue<Throwable> q = errors.get();
+                SimpleQueue<Throwable> q = errors.get();
                 if (q != null) {
                     return q;
                 }
@@ -609,7 +623,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         final int bufferSize;
         
         volatile boolean done;
-        volatile Queue<U> queue;
+        volatile SimpleQueue<U> queue;
         long produced;
         int fusionMode;
 
@@ -687,32 +701,30 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
         }
     }
     
-    static final class RejectingQueue<T> extends AbstractQueue<T> {
+    static final class RejectingQueue<T> implements SimpleQueue<T> {
         @Override
         public boolean offer(T e) {
             return false;
         }
 
         @Override
+        public boolean offer(T v1, T v2) {
+            return false;
+        }
+        
+        @Override
         public T poll() {
             return null;
         }
-
+        
         @Override
-        public T peek() {
-            return null;
-        }
-
-        @Override
-        public Iterator<T> iterator() {
-            return Collections.<T>emptyList().iterator();
-        }
-
-        @Override
-        public int size() {
-            return 0;
+        public void clear() {
+            
         }
         
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
     }
-
 }
