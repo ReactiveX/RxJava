@@ -61,8 +61,6 @@ public final class IndexedRingBuffer<E> implements Subscription {
 
     };
 
-    static int defaultSize = 256;
-
     /* package for unit testing */static final int SIZE;
 
     // default size of ring buffer
@@ -237,6 +235,8 @@ public final class IndexedRingBuffer<E> implements Subscription {
      * } </pre>
      */
     static {
+        int defaultSize = 128;
+
         // lower default for Android (https://github.com/ReactiveX/RxJava/issues/1820)
         if (PlatformDependent.isAndroid()) {
             defaultSize = 8;
