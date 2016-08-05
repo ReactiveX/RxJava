@@ -10511,7 +10511,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits items emitted by the source Observable, checks the specified predicate
-     * for each item, and then completes if the condition is satisfied.
+     * for each item, and then completes when the condition is satisfied.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.p.png" alt="">
      * <p>
@@ -10529,7 +10529,7 @@ public class Observable<T> {
      * @param stopPredicate 
      *            a function that evaluates an item emitted by the source Observable and returns a Boolean
      * @return an Observable that first emits items emitted by the source Observable, checks the specified
-     *         condition after each item, and then completes if the condition is satisfied.
+     *         condition after each item, and then completes when the condition is satisfied.
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      * @see Observable#takeWhile(Func1)
      * @since 1.1.0
