@@ -119,12 +119,12 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> {
 
     public static <T, R> Observable<R> create(final ObservableConsumable<? extends T> source, 
             final Function<? super Observable<T>, ? extends ObservableConsumable<R>> selector, final int bufferSize) {
-        return create(new ObservableConsumable<R>() {
+        return new Observable<R>() {
             @Override
-            public void subscribe(Observer<? super R> sr) {
-                ConnectableObservable<T> op = create(source, bufferSize);
+            protected void subscribeActual(Observer<? super R> o) {
+                ConnectableObservable<T> op = ObservablePublish.create(source, bufferSize);
                 
-                final ObserverResourceWrapper<R> srw = new ObserverResourceWrapper<R>(sr);
+                final ObserverResourceWrapper<R> srw = new ObserverResourceWrapper<R>(o);
                 
                 ObservableConsumable<R> target;
                 
@@ -145,7 +145,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> {
                     }
                 });
             }
-        });
+        };
     }
 
     private ObservablePublish(ObservableConsumable<T> onSubscribe, ObservableConsumable<? extends T> source, 
