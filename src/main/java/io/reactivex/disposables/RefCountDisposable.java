@@ -13,9 +13,9 @@
 
 package io.reactivex.disposables;
 
-import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Objects;
 
 public final class RefCountDisposable implements Disposable {

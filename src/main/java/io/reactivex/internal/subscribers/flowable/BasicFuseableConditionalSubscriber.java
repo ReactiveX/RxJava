@@ -15,10 +15,10 @@ package io.reactivex.internal.subscribers.flowable;
 
 import org.reactivestreams.Subscription;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**

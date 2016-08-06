@@ -14,8 +14,7 @@
 package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.disposables.*;
 
 public final class CompletableUnsubscribeOn extends Completable {
 

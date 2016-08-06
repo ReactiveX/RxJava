@@ -23,7 +23,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 

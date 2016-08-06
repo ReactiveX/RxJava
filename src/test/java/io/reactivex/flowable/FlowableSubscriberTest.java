@@ -26,7 +26,6 @@ import io.reactivex.Flowable;
 import io.reactivex.Flowable.Operator;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.subscribers.*;
-import io.reactivex.subscribers.DefaultObserver;
 
 public class FlowableSubscriberTest {
 

@@ -15,8 +15,8 @@ package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiPredicate;
-import io.reactivex.internal.util.Exceptions;
 
 public final class SingleContains<T> extends Single<Boolean> {
 

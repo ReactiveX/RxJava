@@ -13,8 +13,9 @@
 
 package io.reactivex.disposables;
 
-import io.reactivex.internal.functions.Objects;
 import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.internal.functions.Objects;
 
 abstract class ReferenceDisposable<T> extends AtomicReference<T> implements Disposable {
     /** */

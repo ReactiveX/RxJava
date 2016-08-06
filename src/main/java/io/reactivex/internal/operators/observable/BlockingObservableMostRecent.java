@@ -17,7 +17,8 @@ package io.reactivex.internal.operators.observable;
 import java.util.*;
 
 import io.reactivex.ObservableConsumable;
-import io.reactivex.internal.util.*;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observers.DefaultObserver;
 
 /**

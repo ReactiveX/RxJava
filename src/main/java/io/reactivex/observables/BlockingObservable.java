@@ -22,12 +22,13 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Optional;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.subscribers.flowable.BlockingSubscriber;
 import io.reactivex.internal.subscribers.observable.*;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observers.DefaultObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 

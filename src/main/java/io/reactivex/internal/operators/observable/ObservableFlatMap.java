@@ -24,7 +24,6 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.*;
-import io.reactivex.internal.util.Exceptions;
 
 public final class ObservableFlatMap<T, U> extends ObservableSource<T, U> {
     final Function<? super T, ? extends ObservableConsumable<? extends U>> mapper;

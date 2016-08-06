@@ -13,12 +13,13 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.*;
+import java.util.Iterator;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -291,7 +292,7 @@ extends Flowable<R> {
         
         void innerError(int index, Throwable e) {
             
-            if (Exceptions.addThrowable(error, e)) {
+            if (ExceptionHelper.addThrowable(error, e)) {
                 if (!delayErrors) {
                     cancelAll();
                     done = true;
@@ -382,8 +383,8 @@ extends Flowable<R> {
                         Exceptions.throwIfFatal(ex);
                         
                         cancelAll();
-                        Exceptions.addThrowable(error, ex);
-                        ex = Exceptions.terminate(error);
+                        ExceptionHelper.addThrowable(error, ex);
+                        ex = ExceptionHelper.terminate(error);
 
                         a.onError(ex);
                         return;
@@ -435,9 +436,9 @@ extends Flowable<R> {
             if (d) {
                 if (delayErrors) {
                     if (empty) {
-                        Throwable e = Exceptions.terminate(error);
+                        Throwable e = ExceptionHelper.terminate(error);
                         
-                        if (e != null && e != Exceptions.TERMINATED) {
+                        if (e != null && e != ExceptionHelper.TERMINATED) {
                             a.onError(e);
                         } else {
                             a.onComplete();
@@ -445,9 +446,9 @@ extends Flowable<R> {
                         return true;
                     }
                 } else {
-                    Throwable e = Exceptions.terminate(error);
+                    Throwable e = ExceptionHelper.terminate(error);
                     
-                    if (e != null && e != Exceptions.TERMINATED) {
+                    if (e != null && e != ExceptionHelper.TERMINATED) {
                         cancelAll();
                         q.clear();
                         a.onError(e);

@@ -13,12 +13,13 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.*;
+import java.util.Arrays;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
@@ -143,7 +144,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         }
 
         void error(Throwable e, int index) {
-            if (Exceptions.addThrowable(error, e)) {
+            if (ExceptionHelper.addThrowable(error, e)) {
                 drain();
             } else {
                 RxJavaPlugins.onError(e);
@@ -183,7 +184,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                     if (error.get() != null) {
                         cancelAll();
 
-                        Throwable ex = Exceptions.terminate(error);
+                        Throwable ex = ExceptionHelper.terminate(error);
 
                         a.onError(ex);
 
@@ -218,8 +219,8 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
                                 cancelAll();
 
-                                Exceptions.addThrowable(error, ex);
-                                ex = Exceptions.terminate(error);
+                                ExceptionHelper.addThrowable(error, ex);
+                                ex = ExceptionHelper.terminate(error);
 
                                 a.onError(ex);
 
@@ -241,8 +242,8 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
                         cancelAll();
 
-                        Exceptions.addThrowable(error, ex);
-                        ex = Exceptions.terminate(error);
+                        ExceptionHelper.addThrowable(error, ex);
+                        ex = ExceptionHelper.terminate(error);
 
                         a.onError(ex);
 
@@ -254,8 +255,8 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
                         Throwable ex = new NullPointerException("The zipper returned a null value");
 
-                        Exceptions.addThrowable(error, ex);
-                        ex = Exceptions.terminate(error);
+                        ExceptionHelper.addThrowable(error, ex);
+                        ex = ExceptionHelper.terminate(error);
 
                         a.onError(ex);
 
@@ -277,7 +278,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                     if (error.get() != null) {
                         cancelAll();
 
-                        Throwable ex = Exceptions.terminate(error);
+                        Throwable ex = ExceptionHelper.terminate(error);
 
                         a.onError(ex);
 
@@ -307,8 +308,8 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
                                 cancelAll();
 
-                                Exceptions.addThrowable(error, ex);
-                                ex = Exceptions.terminate(error);
+                                ExceptionHelper.addThrowable(error, ex);
+                                ex = ExceptionHelper.terminate(error);
 
                                 a.onError(ex);
 

@@ -26,7 +26,7 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 

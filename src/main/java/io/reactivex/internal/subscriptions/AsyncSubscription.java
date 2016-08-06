@@ -13,12 +13,12 @@
 
 package io.reactivex.internal.subscriptions;
 
-import io.reactivex.internal.disposables.DisposableHelper;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscription;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
 /**

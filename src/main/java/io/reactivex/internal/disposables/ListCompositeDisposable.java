@@ -14,10 +14,9 @@ package io.reactivex.internal.disposables;
 
 import java.util.*;
 
-import io.reactivex.disposables.*;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.*;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.util.*;
 
 /**
  * A disposable container that can hold onto multiple other disposables.

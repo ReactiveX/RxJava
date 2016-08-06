@@ -24,11 +24,12 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.operators.observable.ObservableGroupJoin.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.util.Exceptions;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends ObservableSource<TLeft, R> {
@@ -150,7 +151,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Obser
         }
         
         void errorAll(Observer<?> a) {
-            Throwable ex = Exceptions.terminate(error);
+            Throwable ex = ExceptionHelper.terminate(error);
             
             lefts.clear();
             rights.clear();
@@ -160,7 +161,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Obser
         
         void fail(Throwable exc, Observer<?> a, SpscLinkedArrayQueue<?> q) {
             Exceptions.throwIfFatal(exc);
-            Exceptions.addThrowable(error, exc);
+            ExceptionHelper.addThrowable(error, exc);
             q.clear();
             cancelAll();
             errorAll(a);
@@ -322,7 +323,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Obser
         
         @Override
         public void innerError(Throwable ex) {
-            if (Exceptions.addThrowable(error, ex)) {
+            if (ExceptionHelper.addThrowable(error, ex)) {
                 active.decrementAndGet();
                 drain();
             } else {
@@ -355,7 +356,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Obser
         
         @Override
         public void innerCloseError(Throwable ex) {
-            if (Exceptions.addThrowable(error, ex)) {
+            if (ExceptionHelper.addThrowable(error, ex)) {
                 drain();
             } else {
                 RxJavaPlugins.onError(ex);

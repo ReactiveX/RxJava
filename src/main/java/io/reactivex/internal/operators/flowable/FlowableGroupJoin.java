@@ -23,7 +23,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.SimpleQueue;
@@ -168,7 +168,7 @@ public class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Fl
         }
         
         void errorAll(Subscriber<?> a) {
-            Throwable ex = Exceptions.terminate(error);
+            Throwable ex = ExceptionHelper.terminate(error);
             
             for (UnicastProcessor<TRight> up : lefts.values()) {
                 up.onError(ex);
@@ -182,7 +182,7 @@ public class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Fl
         
         void fail(Throwable exc, Subscriber<?> a, SimpleQueue<?> q) {
             Exceptions.throwIfFatal(exc);
-            Exceptions.addThrowable(error, exc);
+            ExceptionHelper.addThrowable(error, exc);
             q.clear();
             cancelAll();
             errorAll(a);
@@ -349,7 +349,7 @@ public class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Fl
         
         @Override
         public void innerError(Throwable ex) {
-            if (Exceptions.addThrowable(error, ex)) {
+            if (ExceptionHelper.addThrowable(error, ex)) {
                 active.decrementAndGet();
                 drain();
             } else {
@@ -382,7 +382,7 @@ public class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Fl
         
         @Override
         public void innerCloseError(Throwable ex) {
-            if (Exceptions.addThrowable(error, ex)) {
+            if (ExceptionHelper.addThrowable(error, ex)) {
                 drain();
             } else {
                 RxJavaPlugins.onError(ex);

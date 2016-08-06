@@ -19,12 +19,13 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscribers.flowable.SubscriberResourceWrapper;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**

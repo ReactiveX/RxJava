@@ -15,7 +15,7 @@ package io.reactivex.disposables;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class SerialDisposable implements Disposable {
     final AtomicReference<Disposable> resource;

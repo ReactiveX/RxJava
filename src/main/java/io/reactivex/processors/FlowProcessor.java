@@ -13,7 +13,7 @@
 
 package io.reactivex.processors;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Processor;
 
 import io.reactivex.Flowable;
 

@@ -18,11 +18,10 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.*;
-import io.reactivex.internal.util.Exceptions;
 
 public final class ObservableDistinct<T, K> extends ObservableSource<T, T> {
     final Function<? super T, K> keySelector;

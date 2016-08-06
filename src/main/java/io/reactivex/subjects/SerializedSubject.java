@@ -15,6 +15,7 @@ package io.reactivex.subjects;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;

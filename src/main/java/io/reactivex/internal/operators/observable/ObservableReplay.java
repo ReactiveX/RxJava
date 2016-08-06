@@ -20,10 +20,11 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.schedulers.Timed;
 

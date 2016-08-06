@@ -16,12 +16,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.util.Exceptions;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 

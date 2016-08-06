@@ -13,7 +13,7 @@
 
 package io.reactivex.flowables;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;

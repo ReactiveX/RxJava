@@ -21,8 +21,8 @@ import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
 import io.reactivex.Optional;
-import io.reactivex.internal.subscribers.flowable.DisposableSubscriber;
-import io.reactivex.internal.util.Exceptions;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.subscribers.DisposableSubscriber;
 
 /**
  * Returns an Iterable that blocks until the Observable emits another item, then returns that item.

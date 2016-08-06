@@ -17,7 +17,8 @@ import java.util.*;
 
 import org.reactivestreams.Publisher;
 
-import io.reactivex.internal.util.*;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.subscribers.DefaultObserver;
 
 /**

@@ -13,13 +13,12 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.disposables.EmptyDisposable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.*;
 
 public final class ObservableTimer extends Observable<Long> {
     final Scheduler scheduler;

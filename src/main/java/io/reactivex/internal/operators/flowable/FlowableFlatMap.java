@@ -25,7 +25,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.BackpressureHelper;
 
 public final class FlowableFlatMap<T, U> extends Flowable<U> {
     final Publisher<T> source;

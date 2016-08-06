@@ -18,11 +18,11 @@ import org.reactivestreams.*;
 
 import io.reactivex.annotations.SchedulerSupport;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.subscribers.completable.*;
-import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 

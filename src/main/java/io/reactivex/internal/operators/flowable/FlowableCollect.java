@@ -17,9 +17,9 @@ import java.util.concurrent.Callable;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.Exceptions;
 
 public final class FlowableCollect<T, U> extends Flowable<U> {
     

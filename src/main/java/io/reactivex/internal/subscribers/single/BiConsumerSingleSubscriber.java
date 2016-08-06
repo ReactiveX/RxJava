@@ -17,9 +17,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.SingleSubscriber;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class BiConsumerSingleSubscriber<T> 

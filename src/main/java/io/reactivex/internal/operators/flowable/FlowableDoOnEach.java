@@ -16,11 +16,10 @@ package io.reactivex.internal.operators.flowable;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscribers.flowable.*;
-import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableDoOnEach<T> extends Flowable<T> {
