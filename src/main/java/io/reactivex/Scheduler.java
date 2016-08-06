@@ -106,13 +106,10 @@ public abstract class Scheduler {
         }
         
         public Disposable schedulePeriodically(Runnable run, final long initialDelay, final long period, final TimeUnit unit) {
-            final SerialDisposable first = new SerialDisposable();
-
-            final SerialDisposable sd = new SerialDisposable(first);
-            
             final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
-            
-            first.replace(schedule(new Runnable() {
+
+            final SerialDisposable sd = new SerialDisposable();
+            sd.replace(schedule(new Runnable() {
                 long lastNow = now(unit);
                 long startTime = lastNow + initialDelay;
                 long count;
