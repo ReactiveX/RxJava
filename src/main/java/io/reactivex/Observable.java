@@ -40,11 +40,11 @@ import io.reactivex.schedulers.*;
 public abstract class Observable<T> implements ObservableConsumable<T> {
     static final Object OBJECT = new Object();
     
-    public interface NbpOperator<Downstream, Upstream> extends Function<Observer<? super Downstream>, Observer<? super Upstream>> {
+    public interface Operator<Downstream, Upstream> extends Function<Observer<? super Downstream>, Observer<? super Upstream>> {
         
     }
     
-    public interface NbpTransformer<Upstream, Downstream> extends Function<Observable<Upstream>, ObservableConsumable<Downstream>> {
+    public interface Transformer<Upstream, Downstream> extends Function<Observable<Upstream>, ObservableConsumable<Downstream>> {
         
     }
     
@@ -1617,7 +1617,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final Observable<T> doOnLifecycle(final Consumer<? super Disposable> onSubscribe, final Runnable onCancel) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         Objects.requireNonNull(onCancel, "onCancel is null");
-        return lift(new NbpOperator<T, T>() {
+        return lift(new Operator<T, T>() {
             @Override
             public Observer<? super T> apply(Observer<? super T> s) {
                 return new SubscriptionLambdaObserver<T>(s, onSubscribe, onCancel);
@@ -2005,7 +2005,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         return takeLast(1).single(defaultValue);
     }
 
-    public final <R> Observable<R> lift(NbpOperator<? extends R, ? super T> onLift) {
+    public final <R> Observable<R> lift(Operator<? extends R, ? super T> onLift) {
         Objects.requireNonNull(onLift, "onLift is null");
         return new ObservableLift<R, T>(this, onLift);
     }
@@ -2457,7 +2457,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> serialize() {
-        return lift(new NbpOperator<T, T>() {
+        return lift(new Operator<T, T>() {
             @Override
             public Observer<? super T> apply(Observer<? super T> s) {
                 return new SerializedObserver<T>(s);
