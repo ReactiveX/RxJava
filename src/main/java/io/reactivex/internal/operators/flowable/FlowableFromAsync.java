@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -67,8 +66,12 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
         }
 
         t.onSubscribe(emitter);
-        asyncEmitter.accept(emitter);
-        
+        try {
+            asyncEmitter.accept(emitter);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            emitter.onError(ex);
+        }
     }
     
     static final class CancellableSubscription 
@@ -275,7 +278,7 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
         /** */
         private static final long serialVersionUID = 2427151001689639875L;
 
-        final Queue<T> queue;
+        final SpscLinkedArrayQueue<T> queue;
         
         Throwable error;
         volatile boolean done;
@@ -326,7 +329,7 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
             
             int missed = 1;
             final Subscriber<? super T> a = actual;
-            final Queue<T> q = queue;
+            final SpscLinkedArrayQueue<T> q = queue;
             
             for (;;) {
                 long r = get();

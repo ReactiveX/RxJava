@@ -14,13 +14,13 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.*;
@@ -32,10 +32,10 @@ import io.reactivex.subscribers.SerializedSubscriber;
 public final class FlowableBufferBoundarySupplier<T, U extends Collection<? super T>, B> 
 extends Flowable<U> {
     final Publisher<T> source;
-    final Supplier<? extends Publisher<B>> boundarySupplier;
-    final Supplier<U> bufferSupplier;
+    final Callable<? extends Publisher<B>> boundarySupplier;
+    final Callable<U> bufferSupplier;
     
-    public FlowableBufferBoundarySupplier(Publisher<T> source, Supplier<? extends Publisher<B>> boundarySupplier, Supplier<U> bufferSupplier) {
+    public FlowableBufferBoundarySupplier(Publisher<T> source, Callable<? extends Publisher<B>> boundarySupplier, Callable<U> bufferSupplier) {
         this.source = source;
         this.boundarySupplier = boundarySupplier;
         this.bufferSupplier = bufferSupplier;
@@ -49,8 +49,8 @@ extends Flowable<U> {
     static final class BufferBondarySupplierSubscriber<T, U extends Collection<? super T>, B>
     extends QueueDrainSubscriber<T, U, U> implements Subscriber<T>, Subscription, Disposable {
         /** */
-        final Supplier<U> bufferSupplier;
-        final Supplier<? extends Publisher<B>> boundarySupplier;
+        final Callable<U> bufferSupplier;
+        final Callable<? extends Publisher<B>> boundarySupplier;
         
         Subscription s;
         
@@ -58,8 +58,8 @@ extends Flowable<U> {
         
         U buffer;
         
-        public BufferBondarySupplierSubscriber(Subscriber<? super U> actual, Supplier<U> bufferSupplier,
-                Supplier<? extends Publisher<B>> boundarySupplier) {
+        public BufferBondarySupplierSubscriber(Subscriber<? super U> actual, Callable<U> bufferSupplier,
+                Callable<? extends Publisher<B>> boundarySupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundarySupplier = boundarySupplier;
@@ -77,7 +77,7 @@ extends Flowable<U> {
             U b;
             
             try {
-                b = bufferSupplier.get();
+                b = bufferSupplier.call();
             } catch (Throwable e) {
                 cancelled = true;
                 s.cancel();
@@ -96,7 +96,7 @@ extends Flowable<U> {
             Publisher<B> boundary;
             
             try {
-                boundary = boundarySupplier.get();
+                boundary = boundarySupplier.call();
             } catch (Throwable ex) {
                 cancelled = true;
                 s.cancel();
@@ -184,7 +184,7 @@ extends Flowable<U> {
             U next;
             
             try {
-                next = bufferSupplier.get();
+                next = bufferSupplier.call();
             } catch (Throwable e) {
                 cancel();
                 actual.onError(e);
@@ -200,7 +200,7 @@ extends Flowable<U> {
             Publisher<B> boundary;
             
             try {
-                boundary = boundarySupplier.get();
+                boundary = boundarySupplier.call();
             } catch (Throwable ex) {
                 cancelled = true;
                 s.cancel();

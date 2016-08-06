@@ -13,8 +13,6 @@
 
 package io.reactivex.internal.operators.completable;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +20,10 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
+import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableMerge extends Completable {
@@ -57,7 +58,7 @@ public final class CompletableMerge extends Completable {
         
         volatile boolean done;
         
-        final AtomicReference<Queue<Throwable>> errors = new AtomicReference<Queue<Throwable>>();
+        final AtomicReference<SimpleQueue<Throwable>> errors = new AtomicReference<SimpleQueue<Throwable>>();
         
         final AtomicBoolean once = new AtomicBoolean();
         
@@ -94,14 +95,14 @@ public final class CompletableMerge extends Completable {
             }
         }
         
-        Queue<Throwable> getOrCreateErrors() {
-            Queue<Throwable> q = errors.get();
+        SimpleQueue<Throwable> getOrCreateErrors() {
+            SimpleQueue<Throwable> q = errors.get();
             
             if (q != null) {
                 return q;
             }
             
-            q = new ConcurrentLinkedQueue<Throwable>();
+            q = new MpscLinkedQueue<Throwable>();
             if (errors.compareAndSet(null, q)) {
                 return q;
             }
@@ -182,7 +183,7 @@ public final class CompletableMerge extends Completable {
 
         void terminate() {
             if (decrementAndGet() == 0) {
-                Queue<Throwable> q = errors.get();
+                SimpleQueue<Throwable> q = errors.get();
                 if (q == null || q.isEmpty()) {
                     actual.onComplete();
                 } else {
@@ -195,7 +196,7 @@ public final class CompletableMerge extends Completable {
                 }
             } else
             if (!delayErrors) {
-                Queue<Throwable> q = errors.get();
+                SimpleQueue<Throwable> q = errors.get();
                 if (q != null && !q.isEmpty()) {
                     Throwable e = collectErrors(q);
                     if (once.compareAndSet(false, true)) {
@@ -214,13 +215,29 @@ public final class CompletableMerge extends Completable {
      * @param q the queue to drain
      * @return the Throwable containing all other Throwables as suppressed
      */
-    public static Throwable collectErrors(Queue<Throwable> q) {
+    public static Throwable collectErrors(SimpleQueue<Throwable> q) {
         CompositeException composite = null;
         Throwable first = null;
         
         Throwable t;
         int count = 0;
-        while ((t = q.poll()) != null) {
+        for (;;) {
+            
+            try {
+                t = q.poll();
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                if (composite == null) {
+                    composite = new CompositeException(first);
+                }
+                composite.suppress(ex);
+                break;
+            }
+            
+            if (t == null) {
+                break;
+            }
+            
             if (count == 0) {
                 first = t;
             } else {

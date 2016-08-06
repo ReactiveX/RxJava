@@ -130,9 +130,9 @@ public class FlowableTests {
 
     @Test
     public void testCountError() {
-        Flowable<String> o = Flowable.error(new Supplier<Throwable>() {
+        Flowable<String> o = Flowable.error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return new RuntimeException();
             }
         });
@@ -405,9 +405,9 @@ public class FlowableTests {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         // FIXME custom built???
-        Flowable.just("1", "2").concatWith(Flowable.<String>error(new Supplier<Throwable>() {
+        Flowable.just("1", "2").concatWith(Flowable.<String>error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return new NumberFormatException();
             }
         }))
@@ -890,9 +890,9 @@ public class FlowableTests {
     @Test
     public void testCollectToList() {
         Flowable<List<Integer>> o = Flowable.just(1, 2, 3)
-        .collect(new Supplier<List<Integer>>() {
+        .collect(new Callable<List<Integer>>() {
             @Override
-            public List<Integer> get() {
+            public List<Integer> call() {
                 return new ArrayList<Integer>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -920,9 +920,9 @@ public class FlowableTests {
 
     @Test
     public void testCollectToString() {
-        String value = Flowable.just(1, 2, 3).collect(new Supplier<StringBuilder>() {
+        String value = Flowable.just(1, 2, 3).collect(new Callable<StringBuilder>() {
             @Override
-            public StringBuilder get() {
+            public StringBuilder call() {
                 return new StringBuilder();
             }
         }, 

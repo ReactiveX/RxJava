@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -28,13 +29,13 @@ public final class FlowableMapNotification<T, R> extends Flowable<R> {
     
     final Function<? super T, ? extends R> onNextMapper;
     final Function<? super Throwable, ? extends R> onErrorMapper;
-    final Supplier<? extends R> onCompleteSupplier;
+    final Callable<? extends R> onCompleteSupplier;
 
     public FlowableMapNotification(
             Publisher<T> source,
             Function<? super T, ? extends R> onNextMapper, 
             Function<? super Throwable, ? extends R> onErrorMapper, 
-            Supplier<? extends R> onCompleteSupplier) {
+            Callable<? extends R> onCompleteSupplier) {
         this.source = source;
         this.onNextMapper = onNextMapper;
         this.onErrorMapper = onErrorMapper;
@@ -56,7 +57,7 @@ public final class FlowableMapNotification<T, R> extends Flowable<R> {
         final Subscriber<? super R> actual;
         final Function<? super T, ? extends R> onNextMapper;
         final Function<? super Throwable, ? extends R> onErrorMapper;
-        final Supplier<? extends R> onCompleteSupplier;
+        final Callable<? extends R> onCompleteSupplier;
         
         Subscription s;
         
@@ -74,7 +75,7 @@ public final class FlowableMapNotification<T, R> extends Flowable<R> {
         public MapNotificationSubscriber(Subscriber<? super R> actual,
                 Function<? super T, ? extends R> onNextMapper,
                 Function<? super Throwable, ? extends R> onErrorMapper,
-                Supplier<? extends R> onCompleteSupplier) {
+                Callable<? extends R> onCompleteSupplier) {
             this.actual = actual;
             this.onNextMapper = onNextMapper;
             this.onErrorMapper = onErrorMapper;
@@ -137,7 +138,7 @@ public final class FlowableMapNotification<T, R> extends Flowable<R> {
             R p;
             
             try {
-                p = onCompleteSupplier.get();
+                p = onCompleteSupplier.call();
             } catch (Throwable e) {
                 actual.onError(e);
                 return;

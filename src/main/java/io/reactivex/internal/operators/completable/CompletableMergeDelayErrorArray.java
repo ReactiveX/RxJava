@@ -13,12 +13,12 @@
 
 package io.reactivex.internal.operators.completable;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.queue.MpscLinkedQueue;
 
 public final class CompletableMergeDelayErrorArray extends Completable {
     final CompletableConsumable[] sources;
@@ -32,7 +32,7 @@ public final class CompletableMergeDelayErrorArray extends Completable {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicInteger wip = new AtomicInteger(sources.length + 1);
         
-        final Queue<Throwable> q = new ConcurrentLinkedQueue<Throwable>();
+        final SimpleQueue<Throwable> q = new MpscLinkedQueue<Throwable>();
         
         s.onSubscribe(set);
         

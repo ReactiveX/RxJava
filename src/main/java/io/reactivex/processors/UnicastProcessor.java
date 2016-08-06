@@ -13,7 +13,6 @@
 
 package io.reactivex.processors;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -41,7 +40,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public final class UnicastProcessor<T> extends FlowProcessor<T> {
 
-    final Queue<T> queue;
+    final SpscLinkedArrayQueue<T> queue;
     
     final AtomicReference<Runnable> onTerminate;
     
@@ -92,7 +91,7 @@ public final class UnicastProcessor<T> extends FlowProcessor<T> {
     void drainRegular(Subscriber<? super T> a) {
         int missed = 1;
         
-        final Queue<T> q = queue;
+        final SpscLinkedArrayQueue<T> q = queue;
         
         for (;;) {
 
@@ -136,7 +135,7 @@ public final class UnicastProcessor<T> extends FlowProcessor<T> {
     void drainFused(Subscriber<? super T> a) {
         int missed = 1;
         
-        final Queue<T> q = queue;
+        final SpscLinkedArrayQueue<T> q = queue;
         
         for (;;) {
             
@@ -195,7 +194,7 @@ public final class UnicastProcessor<T> extends FlowProcessor<T> {
         }
     }
     
-    boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a, Queue<T> q) {
+    boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a, SpscLinkedArrayQueue<T> q) {
         if (cancelled) {
             q.clear();
             actual.lazySet(null);

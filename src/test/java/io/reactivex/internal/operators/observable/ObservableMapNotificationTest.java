@@ -13,10 +13,12 @@
 
 package io.reactivex.internal.operators.observable;
 
+import java.util.concurrent.Callable;
+
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 
 public class ObservableMapNotificationTest {
@@ -37,9 +39,9 @@ public class ObservableMapNotificationTest {
                         return Observable.error(e);
                     }
                 },
-                new Supplier<Observable<Object>>() {
+                new Callable<Observable<Object>>() {
                     @Override
-                    public Observable<Object> get() {
+                    public Observable<Object> call() {
                         return Observable.never();
                     }
                 }

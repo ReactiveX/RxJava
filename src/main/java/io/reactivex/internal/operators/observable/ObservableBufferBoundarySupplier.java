@@ -14,11 +14,11 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
@@ -29,10 +29,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class ObservableBufferBoundarySupplier<T, U extends Collection<? super T>, B> 
 extends Observable<U> {
     final ObservableConsumable<T> source;
-    final Supplier<? extends ObservableConsumable<B>> boundarySupplier;
-    final Supplier<U> bufferSupplier;
+    final Callable<? extends ObservableConsumable<B>> boundarySupplier;
+    final Callable<U> bufferSupplier;
     
-    public ObservableBufferBoundarySupplier(ObservableConsumable<T> source, Supplier<? extends ObservableConsumable<B>> boundarySupplier, Supplier<U> bufferSupplier) {
+    public ObservableBufferBoundarySupplier(ObservableConsumable<T> source, Callable<? extends ObservableConsumable<B>> boundarySupplier, Callable<U> bufferSupplier) {
         this.source = source;
         this.boundarySupplier = boundarySupplier;
         this.bufferSupplier = bufferSupplier;
@@ -46,8 +46,8 @@ extends Observable<U> {
     static final class BufferBondarySupplierSubscriber<T, U extends Collection<? super T>, B>
     extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
         /** */
-        final Supplier<U> bufferSupplier;
-        final Supplier<? extends ObservableConsumable<B>> boundarySupplier;
+        final Callable<U> bufferSupplier;
+        final Callable<? extends ObservableConsumable<B>> boundarySupplier;
         
         Disposable s;
         
@@ -55,8 +55,8 @@ extends Observable<U> {
         
         U buffer;
         
-        public BufferBondarySupplierSubscriber(Observer<? super U> actual, Supplier<U> bufferSupplier,
-                Supplier<? extends ObservableConsumable<B>> boundarySupplier) {
+        public BufferBondarySupplierSubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
+                Callable<? extends ObservableConsumable<B>> boundarySupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundarySupplier = boundarySupplier;
@@ -72,7 +72,7 @@ extends Observable<U> {
                 U b;
                 
                 try {
-                    b = bufferSupplier.get();
+                    b = bufferSupplier.call();
                 } catch (Throwable e) {
                     cancelled = true;
                     s.dispose();
@@ -91,7 +91,7 @@ extends Observable<U> {
                 ObservableConsumable<B> boundary;
                 
                 try {
-                    boundary = boundarySupplier.get();
+                    boundary = boundarySupplier.call();
                 } catch (Throwable ex) {
                     cancelled = true;
                     s.dispose();
@@ -178,7 +178,7 @@ extends Observable<U> {
             U next;
             
             try {
-                next = bufferSupplier.get();
+                next = bufferSupplier.call();
             } catch (Throwable e) {
                 dispose();
                 actual.onError(e);
@@ -194,7 +194,7 @@ extends Observable<U> {
             ObservableConsumable<B> boundary;
             
             try {
-                boundary = boundarySupplier.get();
+                boundary = boundarySupplier.call();
             } catch (Throwable ex) {
                 cancelled = true;
                 s.dispose();

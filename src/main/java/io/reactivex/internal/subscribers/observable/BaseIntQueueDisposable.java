@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.subscribers.observable;
 
-import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.internal.fuseable.QueueDisposable;
@@ -31,77 +30,12 @@ implements QueueDisposable<T> {
     private static final long serialVersionUID = -1001730202384742097L;
 
     @Override
-    public final boolean add(T e) {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
-    public final boolean addAll(Collection<? extends T> c) {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
-    public final boolean contains(Object o) {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
-    public final boolean containsAll(Collection<?> c) {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
-    public final T element() {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
-    public final Iterator<T> iterator() {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
     public final boolean offer(T e) {
         throw new UnsupportedOperationException("Should not be called");
     }
-    
+
     @Override
-    public final T peek() {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
-    public final T remove() {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
-    public final boolean remove(Object o) {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
-    public final boolean removeAll(Collection<?> c) {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
-    public boolean retainAll(Collection<?> c) {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
-    public final int size() {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
-    public final Object[] toArray() {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-    
-    @Override
-    public final <U extends Object> U[] toArray(U[] a) {
+    public final boolean offer(T v1, T v2) {
         throw new UnsupportedOperationException("Should not be called");
     }
 }

@@ -309,9 +309,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void concatObservableError() {
-        Completable c = Completable.concat(Flowable.<Completable>error(new Supplier<Throwable>() {
+        Completable c = Completable.concat(Flowable.<Completable>error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return new TestException();
             }
         }));
@@ -410,9 +410,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000)
     public void defer() {
-        Completable c = Completable.defer(new Supplier<Completable>() {
+        Completable c = Completable.defer(new Callable<Completable>() {
             @Override
-            public Completable get() {
+            public Completable call() {
                 return normal.completable;
             }
         });
@@ -431,9 +431,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = NullPointerException.class)
     public void deferReturnsNull() {
-        Completable c = Completable.defer(new Supplier<Completable>() {
+        Completable c = Completable.defer(new Callable<Completable>() {
             @Override
-            public Completable get() {
+            public Completable call() {
                 return null;
             }
         });
@@ -443,9 +443,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void deferFunctionThrows() {
-        Completable c = Completable.defer(new Supplier<Completable>() {
+        Completable c = Completable.defer(new Callable<Completable>() {
             @Override
-            public Completable get() { throw new TestException(); }
+            public Completable call() { throw new TestException(); }
         });
         
         c.await();
@@ -453,9 +453,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void deferErrorSource() {
-        Completable c = Completable.defer(new Supplier<Completable>() {
+        Completable c = Completable.defer(new Callable<Completable>() {
             @Override
-            public Completable get() {
+            public Completable call() {
                 return error.completable;
             }
         });
@@ -465,14 +465,14 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void errorSupplierNull() {
-        Completable.error((Supplier<Throwable>)null);
+        Completable.error((Callable<Throwable>)null);
     }
 
     @Test(timeout = 1000, expected = TestException.class)
     public void errorSupplierNormal() {
-        Completable c = Completable.error(new Supplier<Throwable>() {
+        Completable c = Completable.error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return new TestException();
             }
         });
@@ -482,9 +482,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = NullPointerException.class)
     public void errorSupplierReturnsNull() {
-        Completable c = Completable.error(new Supplier<Throwable>() {
+        Completable c = Completable.error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return null;
             }
         });
@@ -494,9 +494,9 @@ public class CompletableTest {
 
     @Test(timeout = 1000, expected = TestException.class)
     public void errorSupplierThrows() {
-        Completable c = Completable.error(new Supplier<Throwable>() {
+        Completable c = Completable.error(new Callable<Throwable>() {
             @Override
-            public Throwable get() { throw new TestException(); }
+            public Throwable call() { throw new TestException(); }
         });
         
         c.await();
@@ -568,9 +568,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void fromFlowableError() {
-        Completable c = Completable.fromFlowable(Flowable.error(new Supplier<Throwable>() {
+        Completable c = Completable.fromFlowable(Flowable.error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return new TestException();
             }
         }));
@@ -601,9 +601,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void fromNbpObservableError() {
-        Completable c = Completable.fromObservable(Observable.error(new Supplier<Throwable>() {
+        Completable c = Completable.fromObservable(Observable.error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return new TestException();
             }
         }));
@@ -656,9 +656,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void fromSingleThrows() {
-        Completable c = Completable.fromSingle(Single.error(new Supplier<Throwable>() {
+        Completable c = Completable.fromSingle(Single.error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return new TestException();
             }
         }));
@@ -815,9 +815,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void mergeObservableError() {
-        Completable c = Completable.merge(Flowable.<Completable>error(new Supplier<Throwable>() {
+        Completable c = Completable.merge(Flowable.<Completable>error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return new TestException();
             }
         }));
@@ -1035,9 +1035,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void mergeDelayErrorObservableError() {
-        Completable c = Completable.mergeDelayError(Flowable.<Completable>error(new Supplier<Throwable>() {
+        Completable c = Completable.mergeDelayError(Flowable.<Completable>error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return new TestException();
             }
         }));
@@ -1218,9 +1218,9 @@ public class CompletableTest {
     public void usingNormalEager() {
         final AtomicInteger dispose = new AtomicInteger();
         
-        Completable c = Completable.using(new Supplier<Integer>() {
+        Completable c = Completable.using(new Callable<Integer>() {
             @Override
-            public Integer get() {
+            public Integer call() {
                 return 1;
             }
         }, new Function<Object, Completable>() {
@@ -1264,9 +1264,9 @@ public class CompletableTest {
     public void usingNormalLazy() {
         final AtomicInteger dispose = new AtomicInteger();
         
-        Completable c = Completable.using(new Supplier<Integer>() {
+        Completable c = Completable.using(new Callable<Integer>() {
             @Override
-            public Integer get() {
+            public Integer call() {
                 return 1;
             }
         }, new Function<Integer, Completable>() {
@@ -1310,9 +1310,9 @@ public class CompletableTest {
     public void usingErrorEager() {
         final AtomicInteger dispose = new AtomicInteger();
         
-        Completable c = Completable.using(new Supplier<Integer>() {
+        Completable c = Completable.using(new Callable<Integer>() {
             @Override
-            public Integer get() {
+            public Integer call() {
                 return 1;
             }
         }, new Function<Integer, Completable>() {
@@ -1356,9 +1356,9 @@ public class CompletableTest {
     public void usingErrorLazy() {
         final AtomicInteger dispose = new AtomicInteger();
         
-        Completable c = Completable.using(new Supplier<Integer>() {
+        Completable c = Completable.using(new Callable<Integer>() {
             @Override
-            public Integer get() {
+            public Integer call() {
                 return 1;
             }
         }, new Function<Integer, Completable>() {
@@ -1413,9 +1413,9 @@ public class CompletableTest {
 
     @Test(expected = NullPointerException.class)
     public void usingMapperNull() {
-        Completable.using(new Supplier<Object>() {
+        Completable.using(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }, null, new Consumer<Object>() {
@@ -1426,9 +1426,9 @@ public class CompletableTest {
 
     @Test(expected = NullPointerException.class)
     public void usingMapperReturnsNull() {
-        Completable c = Completable.using(new Supplier<Object>() {
+        Completable c = Completable.using(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }, new Function<Object, Completable>() {
@@ -1446,9 +1446,9 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void usingDisposeNull() {
-        Completable.using(new Supplier<Object>() {
+        Completable.using(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }, new Function<Object, Completable>() {
@@ -1461,9 +1461,9 @@ public class CompletableTest {
     
     @Test(expected = TestException.class)
     public void usingResourceThrows() {
-        Completable c = Completable.using(new Supplier<Object>() {
+        Completable c = Completable.using(new Callable<Object>() {
             @Override
-            public Object get() { throw new TestException(); }
+            public Object call() { throw new TestException(); }
         }, 
                 new Function<Object, Completable>() {
                     @Override
@@ -1480,9 +1480,9 @@ public class CompletableTest {
     
     @Test(expected = TestException.class)
     public void usingMapperThrows() {
-        Completable c = Completable.using(new Supplier<Object>() {
+        Completable c = Completable.using(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }, 
@@ -1499,9 +1499,9 @@ public class CompletableTest {
     
     @Test(expected = TestException.class)
     public void usingDisposerThrows() {
-        Completable c = Completable.using(new Supplier<Object>() {
+        Completable c = Completable.using(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }, 
@@ -2879,9 +2879,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000)
     public void toSingleSupplierNormal() {
-        Assert.assertEquals(1, normal.completable.toSingle(new Supplier<Object>() {
+        Assert.assertEquals(1, normal.completable.toSingle(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }).get());
@@ -2889,9 +2889,9 @@ public class CompletableTest {
 
     @Test(timeout = 1000, expected = TestException.class)
     public void toSingleSupplierError() {
-        error.completable.toSingle(new Supplier<Object>() {
+        error.completable.toSingle(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }).get();
@@ -2904,9 +2904,9 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void toSingleSupplierReturnsNull() {
-        normal.completable.toSingle(new Supplier<Object>() {
+        normal.completable.toSingle(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return null;
             }
         }).get();
@@ -2914,9 +2914,9 @@ public class CompletableTest {
 
     @Test(expected = TestException.class)
     public void toSingleSupplierThrows() {
-        normal.completable.toSingle(new Supplier<Object>() {
+        normal.completable.toSingle(new Callable<Object>() {
             @Override
-            public Object get() { throw new TestException(); }
+            public Object call() { throw new TestException(); }
         }).get();
     }
 
@@ -3700,9 +3700,9 @@ public class CompletableTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        Completable.using(new Supplier<Integer>() {
+        Completable.using(new Callable<Integer>() {
             @Override
-            public Integer get() {
+            public Integer call() {
                 return 1;
             }
         },
@@ -3965,7 +3965,7 @@ public class CompletableTest {
     }
     
     @Test
-    public void testHookCreate() {
+    public void testHookCreate() throws Exception {
         CompletableConsumable subscriber = mock(CompletableConsumable.class);
         Completable create = Completable.create(subscriber);
 
@@ -4249,15 +4249,15 @@ public class CompletableTest {
     }
     
     @Test
-    public void usingFactoryThrows() {
+    public void usingFactoryThrows() throws Exception {
         @SuppressWarnings("unchecked")
         Consumer<Integer> onDispose = mock(Consumer.class);
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        Completable.using(new Supplier<Integer>() {
+        Completable.using(new Callable<Integer>() {
             @Override
-            public Integer get() {
+            public Integer call() {
                 return 1;
             }
         },
@@ -4286,9 +4286,9 @@ public class CompletableTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        Completable.using(new Supplier<Integer>() {
+        Completable.using(new Callable<Integer>() {
             @Override
-            public Integer get() {
+            public Integer call() {
                 return 1;
             }
         },
@@ -4314,15 +4314,15 @@ public class CompletableTest {
     }
 
     @Test
-    public void usingFactoryReturnsNull() {
+    public void usingFactoryReturnsNull() throws Exception {
         @SuppressWarnings("unchecked")
         Consumer<Integer> onDispose = mock(Consumer.class);
         
         TestSubscriber<Integer> ts = TestSubscriber.create();
         
-        Completable.using(new Supplier<Integer>() {
+        Completable.using(new Callable<Integer>() {
             @Override
-            public Integer get() {
+            public Integer call() {
                 return 1;
             }
         },
@@ -4428,7 +4428,7 @@ public class CompletableTest {
     }
     
     @Test
-    public void testHookSubscribeStart() {
+    public void testHookSubscribeStart() throws Exception {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Completable completable = Completable.create(new CompletableConsumable() {

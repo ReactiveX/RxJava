@@ -51,7 +51,7 @@ import io.reactivex.disposables.Disposable;
  * </ul>
  * @param <T> the value type transmitted through the queue
  */
-public interface QueueDisposable<T> extends Queue<T>, Disposable {
+public interface QueueDisposable<T> extends SimpleQueue<T>, Disposable {
     /**
      * Returned by the {@link #requestFusion(int)} if the upstream doesn't support
      * the requested mode.

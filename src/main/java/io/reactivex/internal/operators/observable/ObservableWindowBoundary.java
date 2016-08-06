@@ -13,15 +13,15 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.util.*;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
@@ -160,7 +160,7 @@ public final class ObservableWindowBoundary<T, B> extends ObservableSource<T, Ob
         }
 
         void drainLoop() {
-            final Queue<Object> q = queue;
+            final SimpleQueue<Object> q = queue;
             final Observer<? super Observable<T>> a = actual;
             int missed = 1;
             UnicastSubject<T> w = window;
@@ -169,7 +169,16 @@ public final class ObservableWindowBoundary<T, B> extends ObservableSource<T, Ob
                 for (;;) {
                     boolean d = done;
                     
-                    Object o = q.poll();
+                    Object o;
+                    
+                    try {
+                        o = q.poll();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        DisposableHelper.dispose(boundary);
+                        w.onError(ex);
+                        return;
+                    }
                     
                     boolean empty = o == null;
                     

@@ -13,18 +13,18 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.disposables.DisposableHelper;
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.SerializedSubscriber;
@@ -177,7 +177,7 @@ public final class FlowableWindowBoundary<T, B> extends Flowable<Flowable<T>> {
         }
 
         void drainLoop() {
-            final Queue<Object> q = queue;
+            final SimpleQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             int missed = 1;
             UnicastProcessor<T> w = window;
@@ -186,7 +186,16 @@ public final class FlowableWindowBoundary<T, B> extends Flowable<Flowable<T>> {
                 for (;;) {
                     boolean d = done;
                     
-                    Object o = q.poll();
+                    Object o;
+                    
+                    try {
+                        o = q.poll();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        DisposableHelper.dispose(boundary);
+                        w.onError(ex);
+                        return;
+                    }
                     
                     boolean empty = o == null;
                     

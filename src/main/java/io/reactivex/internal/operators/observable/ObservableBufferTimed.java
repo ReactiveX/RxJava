@@ -22,7 +22,6 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.QueueDrainObserver;
@@ -37,11 +36,11 @@ extends Observable<U> {
     final long timeskip;
     final TimeUnit unit;
     final Scheduler scheduler;
-    final Supplier<U> bufferSupplier;
+    final Callable<U> bufferSupplier;
     final int maxSize;
     final boolean restartTimerOnMaxSize;
     
-    public ObservableBufferTimed(ObservableConsumable<T> source, long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Supplier<U> bufferSupplier, int maxSize,
+    public ObservableBufferTimed(ObservableConsumable<T> source, long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Callable<U> bufferSupplier, int maxSize,
             boolean restartTimerOnMaxSize) {
         this.source = source;
         this.timespan = timespan;
@@ -81,7 +80,7 @@ extends Observable<U> {
     
     static final class BufferExactUnboundedSubscriber<T, U extends Collection<? super T>>
     extends QueueDrainObserver<T, U, U> implements Runnable, Disposable {
-        final Supplier<U> bufferSupplier;
+        final Callable<U> bufferSupplier;
         final long timespan;
         final TimeUnit unit;
         final Scheduler scheduler;
@@ -95,7 +94,7 @@ extends Observable<U> {
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
         
         public BufferExactUnboundedSubscriber(
-                Observer<? super U> actual, Supplier<U> bufferSupplier,
+                Observer<? super U> actual, Callable<U> bufferSupplier,
                 long timespan, TimeUnit unit, Scheduler scheduler) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -112,7 +111,7 @@ extends Observable<U> {
                 U b;
                 
                 try {
-                    b = bufferSupplier.get();
+                    b = bufferSupplier.call();
                 } catch (Throwable e) {
                     dispose();
                     EmptyDisposable.error(e, actual);
@@ -202,7 +201,7 @@ extends Observable<U> {
             U next;
             
             try {
-                next = bufferSupplier.get();
+                next = bufferSupplier.call();
             } catch (Throwable e) {
                 selfCancel = true;
                 dispose();
@@ -243,7 +242,7 @@ extends Observable<U> {
     
     static final class BufferSkipBoundedSubscriber<T, U extends Collection<? super T>>
     extends QueueDrainObserver<T, U, U> implements Runnable, Disposable {
-        final Supplier<U> bufferSupplier;
+        final Callable<U> bufferSupplier;
         final long timespan;
         final long timeskip;
         final TimeUnit unit;
@@ -254,7 +253,7 @@ extends Observable<U> {
         List<U> buffers;
         
         public BufferSkipBoundedSubscriber(Observer<? super U> actual, 
-                Supplier<U> bufferSupplier, long timespan,
+                Callable<U> bufferSupplier, long timespan,
                 long timeskip, TimeUnit unit, Worker w) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -273,7 +272,7 @@ extends Observable<U> {
                 final U b; // NOPMD
 
                 try {
-                    b = bufferSupplier.get();
+                    b = bufferSupplier.call();
                 } catch (Throwable e) {
                     w.dispose();
                     s.dispose();
@@ -333,7 +332,7 @@ extends Observable<U> {
             }
             
             for (U b : bs) {
-                queue.add(b);
+                queue.offer(b);
             }
             done = true;
             if (enter()) {
@@ -370,7 +369,7 @@ extends Observable<U> {
             final U b; // NOPMD
             
             try {
-                b = bufferSupplier.get();
+                b = bufferSupplier.call();
             } catch (Throwable e) {
                 dispose();
                 actual.onError(e);
@@ -409,7 +408,7 @@ extends Observable<U> {
     
     static final class BufferExactBoundedSubscriber<T, U extends Collection<? super T>>
     extends QueueDrainObserver<T, U, U> implements Runnable, Disposable {
-        final Supplier<U> bufferSupplier;
+        final Callable<U> bufferSupplier;
         final long timespan;
         final TimeUnit unit;
         final int maxSize;
@@ -428,7 +427,7 @@ extends Observable<U> {
 
         public BufferExactBoundedSubscriber(
                 Observer<? super U> actual,
-                Supplier<U> bufferSupplier,
+                Callable<U> bufferSupplier,
                 long timespan, TimeUnit unit, int maxSize,
                 boolean restartOnMaxSize, Worker w) {
             super(actual, new MpscLinkedQueue<U>());
@@ -448,7 +447,7 @@ extends Observable<U> {
                 U b;
 
                 try {
-                    b = bufferSupplier.get();
+                    b = bufferSupplier.call();
                 } catch (Throwable e) {
                     w.dispose();
                     s.dispose();
@@ -497,7 +496,7 @@ extends Observable<U> {
             fastpathOrderedEmit(b, false, this);
             
             try {
-                b = bufferSupplier.get();
+                b = bufferSupplier.call();
             } catch (Throwable e) {
                 dispose();
                 actual.onError(e);
@@ -580,7 +579,7 @@ extends Observable<U> {
             U next;
             
             try {
-                next = bufferSupplier.get();
+                next = bufferSupplier.call();
             } catch (Throwable e) {
                 dispose();
                 actual.onError(e);

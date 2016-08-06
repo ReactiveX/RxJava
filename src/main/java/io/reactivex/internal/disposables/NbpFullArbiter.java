@@ -112,13 +112,11 @@ public final class NbpFullArbiter<T> extends FullArbiterPad1 implements Disposab
         for (;;) {
             
             for (;;) {
-                Object o = q.peek();
-                
+                Object o = q.poll();
                 if (o == null) {
                     break;
                 }
                 
-                q.poll();
                 Object v = q.poll();
                 
                 if (o != s) {

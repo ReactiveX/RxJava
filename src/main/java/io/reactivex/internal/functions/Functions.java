@@ -13,6 +13,7 @@
 package io.reactivex.internal.functions;
 
 import java.util.Comparator;
+import java.util.concurrent.Callable;
 
 import io.reactivex.functions.*;
 
@@ -27,7 +28,7 @@ public enum Functions {
         Objects.requireNonNull(biFunction, "biFunction is null");
         return new Function<Object[], R>() {
             @Override
-            public R apply(Object[] a) {
+            public R apply(Object[] a) throws Exception {
                 if (a.length != 2) {
                     throw new IllegalArgumentException("Array of size 2 expected but got " + a.length);
                 }
@@ -41,7 +42,7 @@ public enum Functions {
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
-            public R apply(Object[] a) {
+            public R apply(Object[] a) throws Exception {
                 if (a.length != 3) {
                     throw new IllegalArgumentException("Array of size 3 expected but got " + a.length);
                 }
@@ -55,7 +56,7 @@ public enum Functions {
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
-            public R apply(Object[] a) {
+            public R apply(Object[] a) throws Exception {
                 if (a.length != 4) {
                     throw new IllegalArgumentException("Array of size 4 expected but got " + a.length);
                 }
@@ -69,7 +70,7 @@ public enum Functions {
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
-            public R apply(Object[] a) {
+            public R apply(Object[] a) throws Exception {
                 if (a.length != 5) {
                     throw new IllegalArgumentException("Array of size 5 expected but got " + a.length);
                 }
@@ -84,7 +85,7 @@ public enum Functions {
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
-            public R apply(Object[] a) {
+            public R apply(Object[] a) throws Exception {
                 if (a.length != 6) {
                     throw new IllegalArgumentException("Array of size 6 expected but got " + a.length);
                 }
@@ -99,7 +100,7 @@ public enum Functions {
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
-            public R apply(Object[] a) {
+            public R apply(Object[] a) throws Exception {
                 if (a.length != 7) {
                     throw new IllegalArgumentException("Array of size 7 expected but got " + a.length);
                 }
@@ -114,7 +115,7 @@ public enum Functions {
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
-            public R apply(Object[] a) {
+            public R apply(Object[] a) throws Exception {
                 if (a.length != 8) {
                     throw new IllegalArgumentException("Array of size 8 expected but got " + a.length);
                 }
@@ -129,7 +130,7 @@ public enum Functions {
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
-            public R apply(Object[] a) {
+            public R apply(Object[] a) throws Exception {
                 if (a.length != 9) {
                     throw new IllegalArgumentException("Array of size 9 expected but got " + a.length);
                 }
@@ -211,9 +212,9 @@ public enum Functions {
         }
     };
     
-    static final Supplier<Object> NULL_SUPPLIER = new Supplier<Object>() {
+    static final Callable<Object> NULL_SUPPLIER = new Callable<Object>() {
         @Override
-        public Object get() {
+        public Object call() {
             return null;
         }
     };
@@ -237,8 +238,8 @@ public enum Functions {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Supplier<T> nullSupplier() {
-        return (Supplier<T>)NULL_SUPPLIER;
+    public static <T> Callable<T> nullSupplier() {
+        return (Callable<T>)NULL_SUPPLIER;
     }
     
     /**

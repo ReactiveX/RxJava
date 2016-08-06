@@ -48,9 +48,9 @@ public class FlowableTimeoutWithSelectorTest {
             }
         };
 
-        Supplier<Flowable<Integer>> firstTimeoutFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 return timeout;
             }
         };
@@ -88,9 +88,9 @@ public class FlowableTimeoutWithSelectorTest {
             }
         };
 
-        Supplier<Flowable<Integer>> firstTimeoutFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 return timeout;
             }
         };
@@ -122,9 +122,9 @@ public class FlowableTimeoutWithSelectorTest {
             }
         };
 
-        Supplier<Flowable<Integer>> firstTimeoutFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 throw new TestException();
             }
         };
@@ -153,9 +153,9 @@ public class FlowableTimeoutWithSelectorTest {
             }
         };
 
-        Supplier<Flowable<Integer>> firstTimeoutFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 return timeout;
             }
         };
@@ -187,9 +187,9 @@ public class FlowableTimeoutWithSelectorTest {
             }
         };
 
-        Supplier<Flowable<Integer>> firstTimeoutFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 return Flowable.<Integer> error(new TestException());
             }
         };
@@ -218,9 +218,9 @@ public class FlowableTimeoutWithSelectorTest {
             }
         };
 
-        Supplier<Flowable<Integer>> firstTimeoutFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 return timeout;
             }
         };
@@ -245,9 +245,9 @@ public class FlowableTimeoutWithSelectorTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
-        Supplier<Flowable<Integer>> firstTimeoutFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 return timeout;
             }
         };
@@ -274,9 +274,9 @@ public class FlowableTimeoutWithSelectorTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
-        Supplier<Flowable<Integer>> firstTimeoutFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 return PublishProcessor.create();
             }
         };

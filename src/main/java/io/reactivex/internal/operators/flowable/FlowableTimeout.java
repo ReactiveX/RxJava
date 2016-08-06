@@ -13,15 +13,15 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.disposables.DisposableHelper;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Function;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -29,13 +29,13 @@ import io.reactivex.subscribers.SerializedSubscriber;
 
 public final class FlowableTimeout<T, U, V> extends Flowable<T> {
     final Publisher<T> source;
-    final Supplier<? extends Publisher<U>> firstTimeoutSelector; 
+    final Callable<? extends Publisher<U>> firstTimeoutSelector; 
     final Function<? super T, ? extends Publisher<V>> timeoutSelector; 
     final Publisher<? extends T> other;
 
     public FlowableTimeout(
             Publisher<T> source,
-            Supplier<? extends Publisher<U>> firstTimeoutSelector,
+            Callable<? extends Publisher<U>> firstTimeoutSelector,
             Function<? super T, ? extends Publisher<V>> timeoutSelector, 
             Publisher<? extends T> other) {
         this.source = source;
@@ -58,7 +58,7 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
     
     static final class TimeoutSubscriber<T, U, V> implements Subscriber<T>, Subscription, OnTimeout {
         final Subscriber<? super T> actual;
-        final Supplier<? extends Publisher<U>> firstTimeoutSelector; 
+        final Callable<? extends Publisher<U>> firstTimeoutSelector; 
         final Function<? super T, ? extends Publisher<V>> timeoutSelector; 
 
         Subscription s;
@@ -70,7 +70,7 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
         final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
         
         public TimeoutSubscriber(Subscriber<? super T> actual,
-                Supplier<? extends Publisher<U>> firstTimeoutSelector,
+                Callable<? extends Publisher<U>> firstTimeoutSelector,
                 Function<? super T, ? extends Publisher<V>> timeoutSelector) {
             this.actual = actual;
             this.firstTimeoutSelector = firstTimeoutSelector;
@@ -94,7 +94,7 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
             
             if (firstTimeoutSelector != null) {
                 try {
-                    p = firstTimeoutSelector.get();
+                    p = firstTimeoutSelector.call();
                 } catch (Throwable ex) {
                     cancel();
                     EmptySubscription.error(ex, a);
@@ -230,7 +230,7 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
     
     static final class TimeoutOtherSubscriber<T, U, V> implements Subscriber<T>, Disposable, OnTimeout {
         final Subscriber<? super T> actual;
-        final Supplier<? extends Publisher<U>> firstTimeoutSelector; 
+        final Callable<? extends Publisher<U>> firstTimeoutSelector; 
         final Function<? super T, ? extends Publisher<V>> timeoutSelector;
         final Publisher<? extends T> other;
         final FullArbiter<T> arbiter;
@@ -246,7 +246,7 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
         final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
         
         public TimeoutOtherSubscriber(Subscriber<? super T> actual,
-                Supplier<? extends Publisher<U>> firstTimeoutSelector,
+                Callable<? extends Publisher<U>> firstTimeoutSelector,
                 Function<? super T, ? extends Publisher<V>> timeoutSelector, Publisher<? extends T> other) {
             this.actual = actual;
             this.firstTimeoutSelector = firstTimeoutSelector;
@@ -271,7 +271,7 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
                 Publisher<U> p;
                 
                 try {
-                    p = firstTimeoutSelector.get();
+                    p = firstTimeoutSelector.call();
                 } catch (Throwable ex) {
                     dispose();
                     EmptySubscription.error(ex, a);

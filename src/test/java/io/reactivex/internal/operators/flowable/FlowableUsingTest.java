@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
@@ -69,9 +70,9 @@ public class FlowableUsingTest {
         final Resource resource = mock(Resource.class);
         when(resource.getTextFromWeb()).thenReturn("Hello world!");
 
-        Supplier<Resource> resourceFactory = new Supplier<Resource>() {
+        Callable<Resource> resourceFactory = new Callable<Resource>() {
             @Override
-            public Resource get() {
+            public Resource call() {
                 return resource;
             }
         };
@@ -111,9 +112,9 @@ public class FlowableUsingTest {
 
     private void performTestUsingWithSubscribingTwice(boolean disposeEagerly) {
         // When subscribe is called, a new resource should be created.
-        Supplier<Resource> resourceFactory = new Supplier<Resource>() {
+        Callable<Resource> resourceFactory = new Callable<Resource>() {
             @Override
-            public Resource get() {
+            public Resource call() {
                 return new Resource() {
 
                     boolean first = true;
@@ -173,9 +174,9 @@ public class FlowableUsingTest {
     }
 
     private void performTestUsingWithResourceFactoryError(boolean disposeEagerly) {
-        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
+        Callable<Disposable> resourceFactory = new Callable<Disposable>() {
             @Override
-            public Disposable get() {
+            public Disposable call() {
                 throw new TestException();
             }
         };
@@ -204,9 +205,9 @@ public class FlowableUsingTest {
 
     private void performTestUsingWithObservableFactoryError(boolean disposeEagerly) {
         final Runnable unsubscribe = mock(Runnable.class);
-        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
+        Callable<Disposable> resourceFactory = new Callable<Disposable>() {
             @Override
-            public Disposable get() {
+            public Disposable call() {
                 return Disposables.from(unsubscribe);
             }
         };
@@ -243,9 +244,9 @@ public class FlowableUsingTest {
 
     private void performTestUsingWithObservableFactoryErrorInOnSubscribe(boolean disposeEagerly) {
         final Runnable unsubscribe = mock(Runnable.class);
-        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
+        Callable<Disposable> resourceFactory = new Callable<Disposable>() {
             @Override
-            public Disposable get() {
+            public Disposable call() {
                 return Disposables.from(unsubscribe);
             }
         };
@@ -278,7 +279,7 @@ public class FlowableUsingTest {
     @Test
     public void testUsingDisposesEagerlyBeforeCompletion() {
         final List<String> events = new ArrayList<String>();
-        Supplier<Resource> resourceFactory = createResourceFactory(events);
+        Callable<Resource> resourceFactory = createResourceFactory(events);
         final Runnable completion = createOnCompletedAction(events);
         final Runnable unsub =createUnsubAction(events);
 
@@ -305,7 +306,7 @@ public class FlowableUsingTest {
     @Test
     public void testUsingDoesNotDisposesEagerlyBeforeCompletion() {
         final List<String> events = new ArrayList<String>();
-        Supplier<Resource> resourceFactory = createResourceFactory(events);
+        Callable<Resource> resourceFactory = createResourceFactory(events);
         final Runnable completion = createOnCompletedAction(events);
         final Runnable unsub = createUnsubAction(events);
 
@@ -334,7 +335,7 @@ public class FlowableUsingTest {
     @Test
     public void testUsingDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
-        Supplier<Resource> resourceFactory = createResourceFactory(events);
+        Callable<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Runnable unsub = createUnsubAction(events);
         
@@ -362,7 +363,7 @@ public class FlowableUsingTest {
     @Test
     public void testUsingDoesNotDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
-        final Supplier<Resource> resourceFactory = createResourceFactory(events);
+        final Callable<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Runnable unsub = createUnsubAction(events);
         
@@ -404,10 +405,10 @@ public class FlowableUsingTest {
         };
     }
 
-    private static Supplier<Resource> createResourceFactory(final List<String> events) {
-        return new Supplier<Resource>() {
+    private static Callable<Resource> createResourceFactory(final List<String> events) {
+        return new Callable<Resource>() {
             @Override
-            public Resource get() {
+            public Resource call() {
                 return new Resource() {
 
                     @Override
@@ -441,9 +442,9 @@ public class FlowableUsingTest {
         final AtomicInteger count = new AtomicInteger();
         
         Flowable.<Integer, Integer>using(
-                new Supplier<Integer>() {
+                new Callable<Integer>() {
                     @Override
-                    public Integer get() {
+                    public Integer call() {
                         return 1;
                     }
                 }, 
@@ -475,9 +476,9 @@ public class FlowableUsingTest {
         final AtomicInteger count = new AtomicInteger();
         
         Flowable.<Integer, Integer>using(
-                new Supplier<Integer>() {
+                new Callable<Integer>() {
                     @Override
-                    public Integer get() {
+                    public Integer call() {
                         return 1;
                     }
                 }, 

@@ -12,20 +12,22 @@
  */
 package io.reactivex.internal.operators.flowable;
 
+import java.util.concurrent.Callable;
+
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.BiConsumer;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.Exceptions;
 
 public final class FlowableCollect<T, U> extends Flowable<U> {
     
     final Publisher<T> source;
-    final Supplier<? extends U> initialSupplier;
+    final Callable<? extends U> initialSupplier;
     final BiConsumer<? super U, ? super T> collector;
     
-    public FlowableCollect(Publisher<T> source, Supplier<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
+    public FlowableCollect(Publisher<T> source, Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
         this.source = source;
         this.initialSupplier = initialSupplier;
         this.collector = collector;
@@ -35,7 +37,7 @@ public final class FlowableCollect<T, U> extends Flowable<U> {
     protected void subscribeActual(Subscriber<? super U> s) {
         U u;
         try {
-            u = initialSupplier.get();
+            u = initialSupplier.call();
         } catch (Throwable e) {
             EmptySubscription.error(e, s);
             return;

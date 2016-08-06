@@ -13,19 +13,18 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscribers.flowable.SubscriberResourceWrapper;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -130,7 +129,16 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
                 
                 final SubscriberResourceWrapper<R> srw = new SubscriberResourceWrapper<R>(sr);
                 
-                selector.apply(op).subscribe(srw);
+                Publisher<R> target;
+                try {
+                    target = selector.apply(op);
+                } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
+                    EmptySubscription.error(e, srw);
+                    return;
+                }
+                
+                target.subscribe(srw);
                 
                 op.connect(new Consumer<Disposable>() {
                     @Override
@@ -193,7 +201,11 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
          * issue because the unsubscription was always triggered by the child-subscribers 
          * themselves.
          */
-        connection.accept(ps);
+        try {
+            connection.accept(ps);
+        } catch (Throwable ex) {
+            throw Exceptions.propagate(ex);
+        }
         if (doConnect) {
             source.subscribe(ps);
         }
@@ -202,7 +214,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
     @SuppressWarnings("rawtypes")
     static final class PublishSubscriber<T> implements Subscriber<T>, Disposable {
         /** Holds notifications from upstream. */
-        final Queue<Object> queue;
+        final SpscArrayQueue<Object> queue;
         /** Holds onto the current connected PublishSubscriber. */
         final AtomicReference<PublishSubscriber<T>> current;
         /** The prefetch buffer size. */

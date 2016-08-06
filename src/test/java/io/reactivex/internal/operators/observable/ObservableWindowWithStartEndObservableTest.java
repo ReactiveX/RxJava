@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import static org.junit.Assert.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.junit.*;
 
@@ -109,10 +109,10 @@ public class ObservableWindowWithStartEndObservableTest {
             }
         });
 
-        Supplier<Observable<Object>> closer = new Supplier<Observable<Object>>() {
+        Callable<Observable<Object>> closer = new Callable<Observable<Object>>() {
             int calls;
             @Override
-            public Observable<Object> get() {
+            public Observable<Object> call() {
                 return Observable.create(new ObservableConsumable<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> NbpObserver) {

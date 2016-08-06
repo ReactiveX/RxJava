@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
@@ -23,7 +23,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.util.*;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.schedulers.Timed;
 
@@ -33,14 +33,14 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
     final AtomicReference<ReplaySubscriber<T>> current;
     /** A factory that creates the appropriate buffer for the ReplaySubscriber. */
-    final Supplier<? extends ReplayBuffer<T>> bufferFactory;
+    final Callable<? extends ReplayBuffer<T>> bufferFactory;
 
     final ObservableConsumable<T> onSubscribe;
     
     @SuppressWarnings("rawtypes")
-    static final Supplier DEFAULT_UNBOUNDED_FACTORY = new Supplier() {
+    static final Callable DEFAULT_UNBOUNDED_FACTORY = new Callable() {
         @Override
-        public Object get() {
+        public Object call() {
             return new UnboundedReplayBuffer<Object>(16);
         }
     };
@@ -55,7 +55,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
      * @return the new NbpObservable instance
      */
     public static <U, R> Observable<R> multicastSelector(
-            final Supplier<? extends ConnectableObservable<U>> connectableFactory,
+            final Callable<? extends ConnectableObservable<U>> connectableFactory,
             final Function<? super Observable<U>, ? extends ObservableConsumable<R>> selector) {
         return Observable.create(new ObservableConsumable<R>() {
             @Override
@@ -63,7 +63,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
                 ConnectableObservable<U> co;
                 ObservableConsumable<R> observable;
                 try {
-                    co = connectableFactory.get();
+                    co = connectableFactory.call();
                     observable = selector.apply(co);
                 } catch (Throwable e) {
                     EmptyDisposable.error(e, child);
@@ -130,9 +130,9 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
         if (bufferSize == Integer.MAX_VALUE) {
             return createFrom(source);
         }
-        return create(source, new Supplier<ReplayBuffer<T>>() {
+        return create(source, new Callable<ReplayBuffer<T>>() {
             @Override
-            public ReplayBuffer<T> get() {
+            public ReplayBuffer<T> call() {
                 return new SizeBoundReplayBuffer<T>(bufferSize);
             }
         });
@@ -164,9 +164,9 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
      */
     public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
             final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize) {
-        return create(source, new Supplier<ReplayBuffer<T>>() {
+        return create(source, new Callable<ReplayBuffer<T>>() {
             @Override
-            public ReplayBuffer<T> get() {
+            public ReplayBuffer<T> call() {
                 return new SizeAndTimeBoundReplayBuffer<T>(bufferSize, maxAge, unit, scheduler);
             }
         });
@@ -179,7 +179,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
      * @return the connectable observable
      */
     static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
-            final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
+            final Callable<? extends ReplayBuffer<T>> bufferFactory) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<ReplaySubscriber<T>> curr = new AtomicReference<ReplaySubscriber<T>>();
         ObservableConsumable<T> onSubscribe = new ObservableConsumable<T>() {
@@ -193,7 +193,16 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
                     // if there isn't one
                     if (r == null) {
                         // create a new subscriber to source
-                        ReplaySubscriber<T> u = new ReplaySubscriber<T>(bufferFactory.get());
+                        ReplayBuffer<T> buf;
+                        
+                        try {
+                            buf = bufferFactory.call();
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            throw Exceptions.propagate(ex);
+                        }
+                        
+                        ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
                         // let's try setting it as the current subscriber-to-source
                         if (!curr.compareAndSet(r, u)) {
                             // didn't work, maybe someone else did it or the current subscriber 
@@ -228,7 +237,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
     
     private ObservableReplay(ObservableConsumable<T> onSubscribe, Observable<? extends T> source, 
             final AtomicReference<ReplaySubscriber<T>> current,
-            final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
+            final Callable<? extends ReplayBuffer<T>> bufferFactory) {
         this.onSubscribe = onSubscribe;
         this.source = source;
         this.current = current;
@@ -251,7 +260,16 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
             // if there is none yet or the current has unsubscribed
             if (ps == null || ps.isDisposed()) {
                 // create a new subscriber-to-source
-                ReplaySubscriber<T> u = new ReplaySubscriber<T>(bufferFactory.get());
+                ReplayBuffer<T> buf;
+                
+                try {
+                    buf = bufferFactory.call();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    throw Exceptions.propagate(ex);
+                }
+
+                ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
                 // try setting it as the current subscriber-to-source
                 if (!current.compareAndSet(ps, u)) {
                     // did not work, perhaps a new subscriber arrived 
@@ -278,7 +296,13 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
          * issue because the unsubscription was always triggered by the child-subscribers 
          * themselves.
          */
-        connection.accept(ps);
+        
+        try {
+            connection.accept(ps);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            throw Exceptions.propagate(ex);
+        }
         if (doConnect) {
             source.subscribe(ps);
         }

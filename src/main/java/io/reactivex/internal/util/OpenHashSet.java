@@ -136,7 +136,7 @@ public final class OpenHashSet<T> {
         }
     }
     
-    public void clear(Consumer<? super T> clearAction) {
+    public void clear(Consumer<? super T> clearAction) throws Exception {
         if (size == 0) {
             return;
         }
@@ -186,7 +186,7 @@ public final class OpenHashSet<T> {
         return h ^ (h >>> 16);
     }
     
-    public void forEach(Consumer<? super T> consumer) {
+    public void forEach(Consumer<? super T> consumer) throws Exception  {
         for (T k : keys) {
             if (k != null) {
                 consumer.accept(k);

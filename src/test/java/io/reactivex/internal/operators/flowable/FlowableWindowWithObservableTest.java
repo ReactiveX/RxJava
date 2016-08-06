@@ -18,6 +18,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -25,10 +26,8 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Supplier;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.DefaultObserver;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableWindowWithObservableTest {
 
@@ -267,9 +266,9 @@ public class FlowableWindowWithObservableTest {
                 super.onNext(t);
             }
         };
-        source.window(new Supplier<Flowable<Object>>() {
+        source.window(new Callable<Flowable<Object>>() {
             @Override
-            public Flowable<Object> get() {
+            public Flowable<Object> call() {
                 return Flowable.never();
             }
         }).subscribe(ts);
@@ -284,9 +283,9 @@ public class FlowableWindowWithObservableTest {
     @Test
     public void testWindowViaObservableNoUnsubscribe() {
         Flowable<Integer> source = Flowable.range(1, 10);
-        Supplier<Flowable<String>> boundary = new Supplier<Flowable<String>>() {
+        Callable<Flowable<String>> boundary = new Callable<Flowable<String>>() {
             @Override
-            public Flowable<String> get() {
+            public Flowable<String> call() {
                 return Flowable.empty();
             }
         };
@@ -301,9 +300,9 @@ public class FlowableWindowWithObservableTest {
     public void testBoundaryUnsubscribedOnMainCompletion() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
-        Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> boundaryFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 return boundary;
             }
         };
@@ -327,9 +326,9 @@ public class FlowableWindowWithObservableTest {
     public void testMainUnsubscribedOnBoundaryCompletion() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
-        Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> boundaryFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 return boundary;
             }
         };
@@ -355,9 +354,9 @@ public class FlowableWindowWithObservableTest {
     public void testChildUnsubscribed() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
-        Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> boundaryFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 return boundary;
             }
         };
@@ -383,9 +382,9 @@ public class FlowableWindowWithObservableTest {
     public void testInnerBackpressure() {
         Flowable<Integer> source = Flowable.range(1, 10);
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
-        Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> boundaryFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 return boundary;
             }
         };
@@ -421,9 +420,9 @@ public class FlowableWindowWithObservableTest {
         final AtomicInteger calls = new AtomicInteger();
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
-        Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
+        Callable<Flowable<Integer>> boundaryFunc = new Callable<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> get() {
+            public Flowable<Integer> call() {
                 calls.getAndIncrement();
                 return boundary;
             }

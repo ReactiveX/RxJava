@@ -146,7 +146,7 @@ public final class FlowableDoOnEach<T> extends Flowable<T> {
         }
 
         @Override
-        public T poll() {
+        public T poll() throws Exception {
             T v = qs.poll();
             
             if (v != null) {
@@ -280,7 +280,7 @@ public final class FlowableDoOnEach<T> extends Flowable<T> {
         }
 
         @Override
-        public T poll() {
+        public T poll() throws Exception {
             T v = qs.poll();
             
             if (v != null) {

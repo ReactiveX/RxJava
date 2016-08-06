@@ -74,7 +74,7 @@ public final class FlowableMap<T, U> extends Flowable<U> {
         }
 
         @Override
-        public U poll() {
+        public U poll() throws Exception {
             T t = qs.poll();
             return t != null ? nullCheck(mapper.apply(t), "The mapper function returned a null value.") : null;
         }
@@ -137,7 +137,7 @@ public final class FlowableMap<T, U> extends Flowable<U> {
         }
 
         @Override
-        public U poll() {
+        public U poll() throws Exception {
             T t = qs.poll();
             return t != null ? nullCheck(mapper.apply(t), "The mapper function returned a null value.") : null;
         }

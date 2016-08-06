@@ -14,10 +14,10 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
@@ -28,9 +28,9 @@ public final class ObservableBufferExactBoundary<T, U extends Collection<? super
 extends Observable<U> {
     final ObservableConsumable<T> source;
     final ObservableConsumable<B> boundary;
-    final Supplier<U> bufferSupplier;
+    final Callable<U> bufferSupplier;
     
-    public ObservableBufferExactBoundary(ObservableConsumable<T> source, ObservableConsumable<B> boundary, Supplier<U> bufferSupplier) {
+    public ObservableBufferExactBoundary(ObservableConsumable<T> source, ObservableConsumable<B> boundary, Callable<U> bufferSupplier) {
         this.source = source;
         this.boundary = boundary;
         this.bufferSupplier = bufferSupplier;
@@ -44,7 +44,7 @@ extends Observable<U> {
     static final class BufferExactBondarySubscriber<T, U extends Collection<? super T>, B>
     extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
         /** */
-        final Supplier<U> bufferSupplier;
+        final Callable<U> bufferSupplier;
         final ObservableConsumable<B> boundary;
         
         Disposable s;
@@ -53,7 +53,7 @@ extends Observable<U> {
         
         U buffer;
         
-        public BufferExactBondarySubscriber(Observer<? super U> actual, Supplier<U> bufferSupplier,
+        public BufferExactBondarySubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
                 ObservableConsumable<B> boundary) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -68,7 +68,7 @@ extends Observable<U> {
                 U b;
                 
                 try {
-                    b = bufferSupplier.get();
+                    b = bufferSupplier.call();
                 } catch (Throwable e) {
                     cancelled = true;
                     s.dispose();
@@ -152,7 +152,7 @@ extends Observable<U> {
             U next;
             
             try {
-                next = bufferSupplier.get();
+                next = bufferSupplier.call();
             } catch (Throwable e) {
                 dispose();
                 actual.onError(e);

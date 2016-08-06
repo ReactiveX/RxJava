@@ -19,6 +19,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscribers.observable.ToNotificationObserver;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.subjects.BehaviorSubject;
 
 public final class ObservableRedo<T> extends Observable<T> {
@@ -41,7 +42,15 @@ public final class ObservableRedo<T> extends Observable<T> {
 
         s.onSubscribe(parent.arbiter);
 
-        ObservableConsumable<?> action = manager.apply(subject);
+        ObservableConsumable<?> action;
+        
+        try {
+            action = manager.apply(subject);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            s.onError(ex);
+            return;
+        }
         
         action.subscribe(new ToNotificationObserver<Object>(new Consumer<Try<Optional<Object>>>() {
             @Override

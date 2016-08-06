@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -58,7 +57,7 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
         final long time;
         final TimeUnit unit;
         final Scheduler scheduler;
-        final Queue<Object> queue;
+        final SpscLinkedArrayQueue<Object> queue;
         final boolean delayError;
         
         Subscription s;
@@ -91,12 +90,11 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
         
         @Override
         public void onNext(T t) {
-            final Queue<Object> q = queue;
+            final SpscLinkedArrayQueue<Object> q = queue;
 
             long now = scheduler.now(unit);
 
-            q.offer(now);
-            q.offer(t);
+            q.offer(now, t);
             
             trim(now, q);
         }
@@ -118,7 +116,7 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
             drain();
         }
         
-        void trim(long now, Queue<Object> q) {
+        void trim(long now, SpscLinkedArrayQueue<Object> q) {
             long time = this.time;
             long c = count;
             boolean unbounded = c == Long.MAX_VALUE;
@@ -162,7 +160,7 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
             int missed = 1;
             
             final Subscriber<? super T> a = actual;
-            final Queue<Object> q = queue;
+            final SpscLinkedArrayQueue<Object> q = queue;
             final boolean delayError = this.delayError;
             
             for (;;) {

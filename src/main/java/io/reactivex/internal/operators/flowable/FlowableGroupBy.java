@@ -60,7 +60,7 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         final int bufferSize;
         final boolean delayError;
         final Map<Object, GroupedUnicast<K, V>> groups;
-        final Queue<GroupedFlowable<K, V>> queue;
+        final SpscLinkedArrayQueue<GroupedFlowable<K, V>> queue;
         
         static final Object NULL_KEY = new Object();
         
@@ -102,7 +102,7 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
                 return;
             }
 
-            final Queue<GroupedFlowable<K, V>> q = this.queue;
+            final SpscLinkedArrayQueue<GroupedFlowable<K, V>> q = this.queue;
 
             K key;
             try {
@@ -225,7 +225,7 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         void drainFused() {
             int missed = 1;
             
-            final Queue<GroupedFlowable<K, V>> q = this.queue;
+            final SpscLinkedArrayQueue<GroupedFlowable<K, V>> q = this.queue;
             final Subscriber<? super GroupedFlowable<K, V>> a = this.actual;
             
             for (;;) {
@@ -267,7 +267,7 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         void drainNormal() {
             int missed = 1;
             
-            final Queue<GroupedFlowable<K, V>> q = this.queue;
+            final SpscLinkedArrayQueue<GroupedFlowable<K, V>> q = this.queue;
             final Subscriber<? super GroupedFlowable<K, V>> a = this.actual;
             
             for (;;) {
@@ -313,7 +313,7 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
             }
         }
         
-        boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, Queue<?> q) {
+        boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, SpscLinkedArrayQueue<?> q) {
             if (cancelled.get()) {
                 q.clear();
                 return true;
@@ -408,7 +408,7 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         private static final long serialVersionUID = -3852313036005250360L;
 
         final K key;
-        final Queue<T> queue;
+        final SpscLinkedArrayQueue<T> queue;
         final GroupBySubscriber<?, K, T> parent;
         final boolean delayError;
         
@@ -496,7 +496,7 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         void drainFused() {
             int missed = 1;
             
-            final Queue<T> q = this.queue;
+            final SpscLinkedArrayQueue<T> q = this.queue;
             Subscriber<? super T> a = this.actual.get();
             
             for (;;) {
@@ -544,7 +544,7 @@ public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, 
         void drainNormal() {
             int missed = 1;
             
-            final Queue<T> q = queue;
+            final SpscLinkedArrayQueue<T> q = queue;
             final boolean delayError = this.delayError;
             Subscriber<? super T> a = actual.get();
             for (;;) {

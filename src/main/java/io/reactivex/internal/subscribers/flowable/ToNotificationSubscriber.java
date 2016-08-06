@@ -18,6 +18,8 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.Exceptions;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ToNotificationSubscriber<T> implements Subscriber<T> {
     final Consumer<? super Try<Optional<Object>>> consumer;
@@ -42,17 +44,34 @@ public final class ToNotificationSubscriber<T> implements Subscriber<T> {
             s.cancel();
             onError(new NullPointerException());
         } else {
-            consumer.accept(Try.ofValue(Optional.<Object>of(t)));
+            try {
+                consumer.accept(Try.ofValue(Optional.<Object>of(t)));
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                s.cancel();
+                onError(ex);
+            }
         }
     }
     
     @Override
     public void onError(Throwable t) {
-        consumer.accept(Try.<Optional<Object>>ofError(t));
+        try {
+            consumer.accept(Try.<Optional<Object>>ofError(t));
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            RxJavaPlugins.onError(ex);
+        }
     }
     
     @Override
     public void onComplete() {
-        consumer.accept(Notification.complete());
+        try {
+            consumer.accept(Notification.complete());
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            RxJavaPlugins.onError(ex);
+        }
+
     }
 }

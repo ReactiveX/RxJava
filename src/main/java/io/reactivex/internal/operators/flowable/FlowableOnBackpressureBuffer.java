@@ -13,13 +13,13 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
@@ -48,7 +48,7 @@ public final class FlowableOnBackpressureBuffer<T> extends Flowable<T> {
         /** */
         private static final long serialVersionUID = -2514538129242366402L;
         final Subscriber<? super T> actual;
-        final Queue<T> queue;
+        final SimpleQueue<T> queue;
         final boolean delayError;
         final Runnable onOverflow;
         
@@ -67,16 +67,12 @@ public final class FlowableOnBackpressureBuffer<T> extends Flowable<T> {
             this.onOverflow = onOverflow;
             this.delayError = delayError;
             
-            Queue<T> q;
+            SimpleQueue<T> q;
             
             if (unbounded) {
                 q = new SpscLinkedArrayQueue<T>(bufferSize);
             } else {
-                if (Pow2.isPowerOfTwo(bufferSize)) {
-                    q = new SpscArrayQueue<T>(bufferSize);
-                } else {
-                    q = new SpscExactArrayQueue<T>(bufferSize);
-                }
+                q = new SpscArrayQueue<T>(bufferSize);
             }
             
             this.queue = q;
@@ -143,7 +139,7 @@ public final class FlowableOnBackpressureBuffer<T> extends Flowable<T> {
         void drain() {
             if (getAndIncrement() == 0) {
                 int missed = 1;
-                final Queue<T> q = queue;
+                final SimpleQueue<T> q = queue;
                 final Subscriber<? super T> a = actual;
                 for (;;) {
                     
@@ -157,7 +153,16 @@ public final class FlowableOnBackpressureBuffer<T> extends Flowable<T> {
                     
                     while (e != r) {
                         boolean d = done;
-                        T v = q.poll();
+                        T v;
+                        
+                        try {
+                            v = q.poll();
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            s.cancel();
+                            a.onError(ex);
+                            return;
+                        }
                         boolean empty = v == null;
                         
                         if (checkTerminated(d, empty, a)) {

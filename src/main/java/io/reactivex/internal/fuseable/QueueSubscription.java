@@ -53,7 +53,7 @@ import org.reactivestreams.Subscription;
  * </ul>
  * @param <T> the value type transmitted through the queue
  */
-public interface QueueSubscription<T> extends Queue<T>, Subscription {
+public interface QueueSubscription<T> extends SimpleQueue<T>, Subscription {
     /**
      * Returned by the {@link #requestFusion(int)} if the upstream doesn't support
      * the requested mode.

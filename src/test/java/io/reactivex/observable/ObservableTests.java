@@ -130,9 +130,9 @@ public class ObservableTests {
 
     @Test
     public void testCountError() {
-        Observable<String> o = Observable.error(new Supplier<Throwable>() {
+        Observable<String> o = Observable.error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return new RuntimeException();
             }
         });
@@ -405,9 +405,9 @@ public class ObservableTests {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         // FIXME custom built???
-        Observable.just("1", "2").concatWith(Observable.<String>error(new Supplier<Throwable>() {
+        Observable.just("1", "2").concatWith(Observable.<String>error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return new NumberFormatException();
             }
         }))
@@ -889,9 +889,9 @@ public class ObservableTests {
     @Test
     public void testCollectToList() {
         Observable<List<Integer>> o = Observable.just(1, 2, 3)
-        .collect(new Supplier<List<Integer>>() {
+        .collect(new Callable<List<Integer>>() {
             @Override
-            public List<Integer> get() {
+            public List<Integer> call() {
                 return new ArrayList<Integer>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -919,9 +919,9 @@ public class ObservableTests {
 
     @Test
     public void testCollectToString() {
-        String value = Observable.just(1, 2, 3).collect(new Supplier<StringBuilder>() {
+        String value = Observable.just(1, 2, 3).collect(new Callable<StringBuilder>() {
             @Override
-            public StringBuilder get() {
+            public StringBuilder call() {
                 return new StringBuilder();
             }
         }, 

@@ -213,8 +213,12 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         lastThread = Thread.currentThread();
         
         if (establishedFusionMode == QueueSubscription.ASYNC) {
-            while ((t = qs.poll()) != null) {
-                values.add(t);
+            try {
+                while ((t = qs.poll()) != null) {
+                    values.add(t);
+                }
+            } catch (Throwable ex) {
+                errors.add(ex);
             }
             return;
         }

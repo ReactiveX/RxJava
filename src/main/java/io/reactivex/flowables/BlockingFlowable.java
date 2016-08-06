@@ -373,19 +373,48 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
      */
     public void subscribe(final Consumer<? super T> onNext, final Consumer<? super Throwable> onError, final Runnable onComplete) {
         subscribe(new DefaultObserver<T>() {
+            boolean done;
             @Override
             public void onNext(T t) {
-                onNext.accept(t);
+                if (done) {
+                    return;
+                }
+                try {
+                    onNext.accept(t);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    cancel();
+                    onError(ex);
+                }
             }
             
             @Override
             public void onError(Throwable e) {
-                onError.accept(e);
+                if (done) {
+                    RxJavaPlugins.onError(e);
+                    return;
+                }
+                done = true;
+                try {
+                    onError.accept(e);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    RxJavaPlugins.onError(ex);
+                }
             }
             
             @Override
             public void onComplete() {
-                onComplete.run();
+                if (done) {
+                    return;
+                }
+                done = true;
+                try {
+                    onComplete.run();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    RxJavaPlugins.onError(ex);
+                }
             }
         });
     }

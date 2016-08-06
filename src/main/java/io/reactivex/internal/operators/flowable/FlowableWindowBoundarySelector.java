@@ -22,10 +22,11 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.SerializedSubscriber;
@@ -196,7 +197,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends Flowable<Flow
         }
         
         void drainLoop() {
-            final Queue<Object> q = queue;
+            final SimpleQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             final List<UnicastProcessor<T>> ws = this.ws;
             int missed = 1;
@@ -205,7 +206,18 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends Flowable<Flow
                 
                 for (;;) {
                     boolean d = done;
-                    Object o = q.poll();
+                    Object o;
+                    
+                    try {
+                        o = q.poll();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        dispose();
+                        for (UnicastProcessor<T> w : ws) {
+                            w.onError(ex);
+                        }
+                        return;
+                    }
                     
                     boolean empty = o == null;
                     

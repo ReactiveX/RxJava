@@ -80,7 +80,7 @@ public final class FlowableFilter<T> extends FlowableSource<T, T> {
         }
 
         @Override
-        public T poll() {
+        public T poll() throws Exception {
             QueueSubscription<T> qs = this.qs;
             Predicate<? super T> f = filter;
             
@@ -144,7 +144,7 @@ public final class FlowableFilter<T> extends FlowableSource<T, T> {
         }
 
         @Override
-        public T poll() {
+        public T poll() throws Exception {
             QueueSubscription<T> qs = this.qs;
             Predicate<? super T> f = filter;
             

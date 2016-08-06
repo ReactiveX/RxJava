@@ -31,7 +31,7 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
     /** */
     private static final long serialVersionUID = 6695226475494099826L;
 
-    final Queue<T> queue;
+    final SpscLinkedArrayQueue<T> queue;
     
     final long batchSize;
     

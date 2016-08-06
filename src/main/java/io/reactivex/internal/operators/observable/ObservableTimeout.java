@@ -13,25 +13,25 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableTimeout<T, U, V> extends ObservableSource<T, T> {
-    final Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector; 
+    final Callable<? extends ObservableConsumable<U>> firstTimeoutSelector; 
     final Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector; 
     final ObservableConsumable<? extends T> other;
 
     public ObservableTimeout(
             ObservableConsumable<T> source, 
-            Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector,
+            Callable<? extends ObservableConsumable<U>> firstTimeoutSelector,
             Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector, 
                     ObservableConsumable<? extends T> other) {
         super(source);
@@ -58,7 +58,7 @@ public final class ObservableTimeout<T, U, V> extends ObservableSource<T, T> {
         /** */
         private static final long serialVersionUID = 2672739326310051084L;
         final Observer<? super T> actual;
-        final Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector; 
+        final Callable<? extends ObservableConsumable<U>> firstTimeoutSelector; 
         final Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector; 
 
         Disposable s;
@@ -66,7 +66,7 @@ public final class ObservableTimeout<T, U, V> extends ObservableSource<T, T> {
         volatile long index;
         
         public TimeoutSubscriber(Observer<? super T> actual,
-                Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector,
+                Callable<? extends ObservableConsumable<U>> firstTimeoutSelector,
                 Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector) {
             this.actual = actual;
             this.firstTimeoutSelector = firstTimeoutSelector;
@@ -84,7 +84,7 @@ public final class ObservableTimeout<T, U, V> extends ObservableSource<T, T> {
                 
                 if (firstTimeoutSelector != null) {
                     try {
-                        p = firstTimeoutSelector.get();
+                        p = firstTimeoutSelector.call();
                     } catch (Throwable ex) {
                         dispose();
                         EmptyDisposable.error(ex, a);
@@ -225,7 +225,7 @@ public final class ObservableTimeout<T, U, V> extends ObservableSource<T, T> {
         /** */
         private static final long serialVersionUID = -1957813281749686898L;
         final Observer<? super T> actual;
-        final Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector; 
+        final Callable<? extends ObservableConsumable<U>> firstTimeoutSelector; 
         final Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector;
         final ObservableConsumable<? extends T> other;
         final NbpFullArbiter<T> arbiter;
@@ -237,7 +237,7 @@ public final class ObservableTimeout<T, U, V> extends ObservableSource<T, T> {
         volatile long index;
         
         public TimeoutOtherSubscriber(Observer<? super T> actual,
-                Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector,
+                Callable<? extends ObservableConsumable<U>> firstTimeoutSelector,
                 Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector, ObservableConsumable<? extends T> other) {
             this.actual = actual;
             this.firstTimeoutSelector = firstTimeoutSelector;
@@ -260,7 +260,7 @@ public final class ObservableTimeout<T, U, V> extends ObservableSource<T, T> {
                     ObservableConsumable<U> p;
                     
                     try {
-                        p = firstTimeoutSelector.get();
+                        p = firstTimeoutSelector.call();
                     } catch (Throwable ex) {
                         dispose();
                         EmptyDisposable.error(ex, a);

@@ -13,15 +13,16 @@
 
 package io.reactivex.internal.operators.completable;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.*;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class CompletableDefer extends Completable {
 
-    final Supplier<? extends CompletableConsumable> completableSupplier;
+    final Callable<? extends CompletableConsumable> completableSupplier;
     
-    public CompletableDefer(Supplier<? extends CompletableConsumable> completableSupplier) {
+    public CompletableDefer(Callable<? extends CompletableConsumable> completableSupplier) {
         this.completableSupplier = completableSupplier;
     }
 
@@ -30,7 +31,7 @@ public final class CompletableDefer extends Completable {
         CompletableConsumable c;
         
         try {
-            c = completableSupplier.get();
+            c = completableSupplier.call();
         } catch (Throwable e) {
             s.onSubscribe(EmptyDisposable.INSTANCE);
             s.onError(e);

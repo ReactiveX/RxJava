@@ -67,9 +67,18 @@ public final class SpscArrayQueue<E> extends BaseArrayQueue<E> {
                 return false;
             }
         }
-        soProducerIndex(index + 1); // ordered store -> atomic and ordered for size()
         soElement(offset, e); // StoreStore
+        soProducerIndex(index + 1); // ordered store -> atomic and ordered for size()
         return true;
+    }
+    
+    @Override
+    public boolean offer(E v1, E v2) {
+        // FIXME 
+        if (offer(v1)) {
+            return offer(v2);
+        }
+        return false;
     }
 
     @Override
@@ -87,31 +96,8 @@ public final class SpscArrayQueue<E> extends BaseArrayQueue<E> {
     }
 
     @Override
-    public E peek() {
-        return lvElement(calcElementOffset(consumerIndex.get()));
-    }
-    
-    @Override
     public boolean isEmpty() {
         return producerIndex.get() == consumerIndex.get();
-    }
-
-    @Override
-    public int size() {
-        /*
-         * It is possible for a thread to be interrupted or reschedule between the read of the producer and consumer
-         * indices, therefore protection is required to ensure size is within valid range. In the event of concurrent
-         * polls/offers to this method the size is OVER estimated as we read consumer index BEFORE the producer index.
-         */
-        long after = lvConsumerIndex();
-        while (true) {
-            final long before = after;
-            final long currentProducerIndex = lvProducerIndex();
-            after = lvConsumerIndex();
-            if (before == after) {
-                return (int) (currentProducerIndex - after);
-            }
-        }
     }
 
     private void soProducerIndex(long newIndex) {
@@ -121,13 +107,5 @@ public final class SpscArrayQueue<E> extends BaseArrayQueue<E> {
     private void soConsumerIndex(long newIndex) {
         consumerIndex.lazySet(newIndex);
     }
-    
-    private long lvConsumerIndex() {
-        return consumerIndex.get();
-    }
-    private long lvProducerIndex() {
-        return producerIndex.get();
-    }
-
 }
 

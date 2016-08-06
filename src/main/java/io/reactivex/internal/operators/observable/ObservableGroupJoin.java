@@ -177,7 +177,7 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
             a.onError(ex);
         }
         
-        void fail(Throwable exc, Observer<?> a, Queue<?> q) {
+        void fail(Throwable exc, Observer<?> a, SpscLinkedArrayQueue<?> q) {
             Exceptions.throwIfFatal(exc);
             Exceptions.addThrowable(error, exc);
             q.clear();

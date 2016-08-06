@@ -504,12 +504,12 @@ public class ObservableReplayTest {
     }
 
 
-    /**
+    /*
      * test the basic expectation of OperatorMulticast via replay
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_UnsubscribeSource() {
+    public void testIssue2191_UnsubscribeSource() throws Exception {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Runnable sourceCompleted = mock(Runnable.class);

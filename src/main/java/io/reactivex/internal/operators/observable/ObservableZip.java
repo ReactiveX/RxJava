@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.Queue;
+import java.util.Arrays;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
@@ -149,29 +149,34 @@ public final class ObservableZip<T, R> extends Observable<R> {
                     int i = 0;
                     int emptyCount = 0;
                     for (ZipSubscriber<T, R> z : zs) {
-                        boolean d = z.done;
-                        T v = z.queue.peek();
-                        boolean empty = v == null;
-                        
-                        if (checkTerminated(d, empty, a, delayError, z)) {
-                            return;
+                        if (os[i] == null) {
+                            boolean d = z.done;
+                            T v = z.queue.poll();
+                            boolean empty = v == null;
+                            
+                            if (checkTerminated(d, empty, a, delayError, z)) {
+                                return;
+                            }
+                            if (!empty) {
+                                os[i] = v;
+                            } else {
+                                emptyCount++;
+                            }
+                        } else {
+                            if (z.done && !delayError) {
+                                Throwable ex = z.error;
+                                if (ex != null) {
+                                    clear();
+                                    a.onError(ex);
+                                    return;
+                                }
+                            }
                         }
-                        
-                        if (empty) {
-                            emptyCount++;
-                            continue;
-                        }
-                        
-                        os[i] = v;
                         i++;
                     }
                     
                     if (emptyCount != 0) {
                         break;
-                    }
-                    // consume the row
-                    for (ZipSubscriber<T, R> z : zs) {
-                        z.queue.poll();
                     }
 
                     R v;
@@ -190,6 +195,8 @@ public final class ObservableZip<T, R> extends Observable<R> {
                     }
                     
                     a.onNext(v);
+                    
+                    Arrays.fill(os, null);
                 }
                 
                 missing = addAndGet(-missing);
@@ -239,7 +246,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
     static final class ZipSubscriber<T, R> implements Observer<T>, Disposable {
         
         final ZipCoordinator<T, R> parent;
-        final Queue<T> queue;
+        final SpscLinkedArrayQueue<T> queue;
         
         volatile boolean done;
         Throwable error;

@@ -18,6 +18,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -172,10 +173,10 @@ public class ObservableScanTest {
     @Test
     public void testSeedFactory() {
         Observable<List<Integer>> o = Observable.range(1, 10)
-                .collect(new Supplier<List<Integer>>() {
+                .collect(new Callable<List<Integer>>() {
 
                     @Override
-                    public List<Integer> get() {
+                    public List<Integer> call() {
                         return new ArrayList<Integer>();
                     }
                     

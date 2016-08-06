@@ -20,6 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BooleanSupplier;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.*;
 
 /**
@@ -62,9 +63,10 @@ public enum QueueDrainHelper {
      * @param fastPath
      * @param queue
      * @param drain
+     * @throws Exception
      */
     public static <T> void queueDrainIf(AtomicInteger instance,
-            BooleanSupplier fastPath, BooleanSupplier queue, Runnable drain) {
+            BooleanSupplier fastPath, BooleanSupplier queue, Runnable drain) throws Exception  {
         if (instance.get() == 0 && instance.compareAndSet(0, 1)) {
             if (fastPath.getAsBoolean()) {
                 return;
@@ -124,9 +126,10 @@ public enum QueueDrainHelper {
      * @param fastPath
      * @param queue
      * @param drain
+     * @throws Exception
      */
     public static <T> void queueDrainLoopIf(AtomicInteger instance,
-            BooleanSupplier fastPath, BooleanSupplier queue, BooleanSupplier drain) {
+            BooleanSupplier fastPath, BooleanSupplier queue, BooleanSupplier drain) throws Exception {
         if (instance.get() == 0 && instance.compareAndSet(0, 1)) {
             if (fastPath.getAsBoolean()) {
                 return;
@@ -156,7 +159,7 @@ public enum QueueDrainHelper {
         }
     }
 
-    public static <T, U> void drainLoop(Queue<T> q, Subscriber<? super U> a, boolean delayError, QueueDrain<T, U> qd) {
+    public static <T, U> void drainLoop(SimpleQueue<T> q, Subscriber<? super U> a, boolean delayError, QueueDrain<T, U> qd) {
         
         int missed = 1;
         
@@ -170,7 +173,15 @@ public enum QueueDrainHelper {
             
             while (e != r) {
                 boolean d = qd.done();
-                T v = q.poll();
+                T v;
+                
+                try {
+                    v = q.poll();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
                 
                 boolean empty = v == null;
                 
@@ -208,14 +219,23 @@ public enum QueueDrainHelper {
      * @param dispose the disposable to call when termination happens and cleanup is necessary
      * @param qd the QueueDrain instance that gives status information to the drain logic
      */
-    public static <T, U> void drainMaxLoop(Queue<T> q, Subscriber<? super U> a, boolean delayError, 
+    public static <T, U> void drainMaxLoop(SimpleQueue<T> q, Subscriber<? super U> a, boolean delayError, 
             Disposable dispose, QueueDrain<T, U> qd) {
         int missed = 1;
         
         for (;;) {
             for (;;) {
                 boolean d = qd.done();
-                T v = q.poll();
+                
+                T v;
+                
+                try {
+                    v = q.poll();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
                 
                 boolean empty = v == null;
                 
@@ -255,7 +275,7 @@ public enum QueueDrainHelper {
     }
 
     public static <T, U> boolean checkTerminated(boolean d, boolean empty, 
-            Subscriber<?> s, boolean delayError, Queue<?> q, QueueDrain<T, U> qd) {
+            Subscriber<?> s, boolean delayError, SimpleQueue<?> q, QueueDrain<T, U> qd) {
         if (qd.cancelled()) {
             q.clear();
             return true;
@@ -289,7 +309,7 @@ public enum QueueDrainHelper {
         return false;
     }
     
-    public static <T, U> void drainLoop(Queue<T> q, Observer<? super U> a, boolean delayError, Disposable dispose, NbpQueueDrain<T, U> qd) {
+    public static <T, U> void drainLoop(SimpleQueue<T> q, Observer<? super U> a, boolean delayError, Disposable dispose, NbpQueueDrain<T, U> qd) {
         
         int missed = 1;
         
@@ -300,7 +320,15 @@ public enum QueueDrainHelper {
             
             for (;;) {
                 boolean d = qd.done();
-                T v = q.poll();
+                T v;
+                
+                try {
+                    v = q.poll();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
                 
                 boolean empty = v == null;
                 
@@ -323,7 +351,7 @@ public enum QueueDrainHelper {
     }
 
     public static <T, U> boolean checkTerminated(boolean d, boolean empty, 
-            Observer<?> s, boolean delayError, Queue<?> q, Disposable disposable, NbpQueueDrain<T, U> qd) {
+            Observer<?> s, boolean delayError, SimpleQueue<?> q, Disposable disposable, NbpQueueDrain<T, U> qd) {
         if (qd.cancelled()) {
             q.clear();
             disposable.dispose();
@@ -369,7 +397,7 @@ public enum QueueDrainHelper {
      * @param capacityHint the capacity hint
      * @return the queue instance
      */
-    public static <T> Queue<T> createQueue(int capacityHint) {
+    public static <T> SimpleQueue<T> createQueue(int capacityHint) {
         if (capacityHint < 0) {
             return new SpscLinkedArrayQueue<T>(-capacityHint); 
         }
@@ -437,6 +465,15 @@ public enum QueueDrainHelper {
 
     }
 
+    static boolean isCancelled(BooleanSupplier cancelled) {
+        try {
+            return cancelled.getAsBoolean();
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            return true;
+        }
+    }
+    
     /**
      * Drains the queue based on the outstanding requests in post-completed mode (only!).
      *
@@ -478,7 +515,7 @@ public enum QueueDrainHelper {
         for (; ; ) {
 
             while (e != n) {
-                if (isCancelled.getAsBoolean()) {
+                if (isCancelled(isCancelled)) {
                     return true;
                 }
 
@@ -493,7 +530,7 @@ public enum QueueDrainHelper {
                 e++;
             }
 
-            if (isCancelled.getAsBoolean()) {
+            if (isCancelled(isCancelled)) {
                 return true;
             }
 

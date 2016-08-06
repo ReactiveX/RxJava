@@ -145,7 +145,7 @@ extends Flowable<R> {
         if (n == 1) {
             new FlowableMap<T, R>((Publisher<T>)a[0], new Function<T, R>() {
                 @Override
-                public R apply(T t) {
+                public R apply(T t) throws Exception {
                     return combiner.apply(new Object[] { t });
                 }
             }).subscribe(s);
@@ -425,7 +425,7 @@ extends Flowable<R> {
             }
         }
         
-        boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, Queue<?> q) {
+        boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, SpscLinkedArrayQueue<?> q) {
             if (cancelled) {
                 cancelAll();
                 q.clear();
@@ -482,7 +482,7 @@ extends Flowable<R> {
         
         @SuppressWarnings("unchecked")
         @Override
-        public R poll() {
+        public R poll() throws Exception {
             Object e = queue.poll();
             if (e == null) {
                 return null;

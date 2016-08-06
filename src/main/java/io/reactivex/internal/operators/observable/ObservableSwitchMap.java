@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscriber;
@@ -22,8 +21,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.queue.*;
-import io.reactivex.internal.util.Pow2;
+import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableSwitchMap<T, R> extends ObservableSource<T, R> {
@@ -197,7 +195,7 @@ public final class ObservableSwitchMap<T, R> extends ObservableSource<T, R> {
                 SwitchMapInnerSubscriber<T, R> inner = active.get();
 
                 if (inner != null) {
-                    Queue<R> q = inner.queue;
+                    SpscArrayQueue<R> q = inner.queue;
 
                     if (inner.done) {
                         Throwable err = inner.error;
@@ -290,7 +288,7 @@ public final class ObservableSwitchMap<T, R> extends ObservableSource<T, R> {
         final SwitchMapSubscriber<T, R> parent;
         final long index;
         final int bufferSize;
-        final Queue<R> queue;
+        final SpscArrayQueue<R> queue;
         
         volatile boolean done;
         Throwable error;
@@ -299,13 +297,7 @@ public final class ObservableSwitchMap<T, R> extends ObservableSource<T, R> {
             this.parent = parent;
             this.index = index;
             this.bufferSize = bufferSize;
-            Queue<R> q;
-            if (Pow2.isPowerOfTwo(bufferSize)) {
-                q = new SpscArrayQueue<R>(bufferSize);
-            } else {
-                q = new SpscExactArrayQueue<R>(bufferSize);
-            }
-            this.queue = q;
+            this.queue = new SpscArrayQueue<R>(bufferSize);
         }
         
         @Override

@@ -18,6 +18,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.util.Exceptions;
 
 /**
  * Utility class to inject handlers to certain standard RxJava operations.
@@ -130,7 +131,7 @@ public final class RxJavaPlugins {
         if (f == null) {
             return defaultScheduler;
         }
-        return f.apply(defaultScheduler); // JIT will skip this
+        return apply(f, defaultScheduler); // JIT will skip this
     }
 
     public static Scheduler initIoScheduler(Scheduler defaultScheduler) {
@@ -138,7 +139,7 @@ public final class RxJavaPlugins {
         if (f == null) {
             return defaultScheduler;
         }
-        return f.apply(defaultScheduler);
+        return apply(f, defaultScheduler);
     }
 
     public static Scheduler initNewThreadScheduler(Scheduler defaultScheduler) {
@@ -146,7 +147,7 @@ public final class RxJavaPlugins {
         if (f == null) {
             return defaultScheduler;
         }
-        return f.apply(defaultScheduler);
+        return apply(f, defaultScheduler);
     }
 
     public static Scheduler initSingleScheduler(Scheduler defaultScheduler) {
@@ -154,7 +155,7 @@ public final class RxJavaPlugins {
         if (f == null) {
             return defaultScheduler;
         }
-        return f.apply(defaultScheduler);
+        return apply(f, defaultScheduler);
     }
 
     public static Scheduler onComputationScheduler(Scheduler defaultScheduler) {
@@ -162,7 +163,7 @@ public final class RxJavaPlugins {
         if (f == null) {
             return defaultScheduler;
         }
-        return f.apply(defaultScheduler);
+        return apply(f, defaultScheduler);
     }
 
     /**
@@ -197,7 +198,7 @@ public final class RxJavaPlugins {
         if (f == null) {
             return defaultScheduler;
         }
-        return f.apply(defaultScheduler);
+        return apply(f, defaultScheduler);
     }
 
     public static Scheduler onNewThreadScheduler(Scheduler defaultScheduler) {
@@ -205,7 +206,7 @@ public final class RxJavaPlugins {
         if (f == null) {
             return defaultScheduler;
         }
-        return f.apply(defaultScheduler);
+        return apply(f, defaultScheduler);
     }
 
     /**
@@ -218,7 +219,7 @@ public final class RxJavaPlugins {
         if (f == null) {
             return run;
         }
-        return f.apply(run);
+        return apply(f, run);
     }
 
     public static Scheduler onSingleScheduler(Scheduler defaultScheduler) {
@@ -226,7 +227,7 @@ public final class RxJavaPlugins {
         if (f == null) {
             return defaultScheduler;
         }
-        return f.apply(defaultScheduler);
+        return apply(f, defaultScheduler);
     }
 
     /**
@@ -445,7 +446,7 @@ public final class RxJavaPlugins {
     public static <T> Subscriber<? super T> onSubscribe(Flowable<T> source, Subscriber<? super T> subscriber) {
         BiFunction<Flowable, Subscriber, Subscriber> f = onFlowableSubscribe;
         if (f != null) {
-            return f.apply(source, subscriber);
+            return apply(f, source, subscriber);
         }
         return subscriber;
     }
@@ -454,7 +455,7 @@ public final class RxJavaPlugins {
     public static <T> Observer<? super T> onSubscribe(Observable<T> source, Observer<? super T> observer) {
         BiFunction<Observable, Observer, Observer> f = onObservableSubscribe;
         if (f != null) {
-            return f.apply(source, observer);
+            return apply(f, source, observer);
         }
         return observer;
     }
@@ -463,7 +464,7 @@ public final class RxJavaPlugins {
     public static <T> SingleSubscriber<? super T> onSubscribe(Single<T> source, SingleSubscriber<? super T> subscriber) {
         BiFunction<Single, SingleSubscriber, SingleSubscriber> f = onSingleSubscribe;
         if (f != null) {
-            return f.apply(source, subscriber);
+            return apply(f, source, subscriber);
         }
         return subscriber;
     }
@@ -471,7 +472,7 @@ public final class RxJavaPlugins {
     public static CompletableSubscriber onSubscribe(Completable source, CompletableSubscriber subscriber) {
         BiFunction<Completable, CompletableSubscriber, CompletableSubscriber> f = onCompletableSubscribe;
         if (f != null) {
-            return f.apply(source, subscriber);
+            return apply(f, source, subscriber);
         }
         return subscriber;
     }
@@ -480,7 +481,7 @@ public final class RxJavaPlugins {
     public static <T> Flowable<T> onAssembly(Flowable<T> source) {
         Function<Flowable, Flowable> f = onFlowableAssembly;
         if (f != null) {
-            return f.apply(source);
+            return apply(f, source);
         }
         return source;
     }
@@ -489,7 +490,7 @@ public final class RxJavaPlugins {
     public static <T> Observable<T> onAssembly(Observable<T> source) {
         Function<Observable, Observable> f = onObservableAssembly;
         if (f != null) {
-            return f.apply(source);
+            return apply(f, source);
         }
         return source;
     }
@@ -498,7 +499,7 @@ public final class RxJavaPlugins {
     public static <T> Single<T> onAssembly(Single<T> source) {
         Function<Single, Single> f = onSingleAssembly;
         if (f != null) {
-            return f.apply(source);
+            return apply(f, source);
         }
         return source;
     }
@@ -506,7 +507,7 @@ public final class RxJavaPlugins {
     public static Completable onAssembly(Completable source) {
         Function<Completable, Completable> f = onCompletableAssembly;
         if (f != null) {
-            return f.apply(source);
+            return apply(f, source);
         }
         return source;
     }
@@ -527,6 +528,42 @@ public final class RxJavaPlugins {
         return CONSUME_BY_RXJAVA_PLUGIN;
     }
     
+    /**
+     * Wraps the call to the function in try-catch and propagates thrown
+     * checked exceptions as runtimeexception.
+     * @param <T> the input type
+     * @param <R> the output type
+     * @param f the function to call, not null (not verified)
+     * @param t the parameter value to the function
+     * @return the result of the function call
+     */
+    static <T, R> R apply(Function<T, R> f, T t) {
+        try {
+            return f.apply(t);
+        } catch (Throwable ex) {
+            throw Exceptions.propagate(ex);
+        }
+    }
+
+    /**
+     * Wraps the call to the function in try-catch and propagates thrown
+     * checked exceptions as runtimeexception.
+     * @param <T> the first input type
+     * @param <U> the second input type
+     * @param <R> the output type
+     * @param f the function to call, not null (not verified)
+     * @param t the first parameter value to the function
+     * @param u the second parameter value to the function
+     * @return the result of the function call
+     */
+    static <T, U, R> R apply(BiFunction<T, U, R> f, T t, U u) {
+        try {
+            return f.apply(t, u);
+        } catch (Throwable ex) {
+            throw Exceptions.propagate(ex);
+        }
+    }
+
     /** Helper class, no instances. */
     private RxJavaPlugins() {
         throw new IllegalStateException("No instances!");

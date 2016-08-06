@@ -48,9 +48,9 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Supplier<Observable<Integer>> firstTimeoutFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return timeout;
             }
         };
@@ -88,9 +88,9 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Supplier<Observable<Integer>> firstTimeoutFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return timeout;
             }
         };
@@ -122,9 +122,9 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Supplier<Observable<Integer>> firstTimeoutFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 throw new TestException();
             }
         };
@@ -153,9 +153,9 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Supplier<Observable<Integer>> firstTimeoutFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return timeout;
             }
         };
@@ -187,9 +187,9 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Supplier<Observable<Integer>> firstTimeoutFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return Observable.<Integer> error(new TestException());
             }
         };
@@ -218,9 +218,9 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Supplier<Observable<Integer>> firstTimeoutFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return timeout;
             }
         };
@@ -245,9 +245,9 @@ public class ObservableTimeoutWithSelectorTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Supplier<Observable<Integer>> firstTimeoutFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return timeout;
             }
         };
@@ -274,9 +274,9 @@ public class ObservableTimeoutWithSelectorTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Supplier<Observable<Integer>> firstTimeoutFunc = new Supplier<Observable<Integer>>() {
+        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return PublishSubject.create();
             }
         };

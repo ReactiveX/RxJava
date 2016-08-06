@@ -215,9 +215,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void deferFunctionReturnsNull() {
-        Observable.defer(new Supplier<Observable<Object>>() {
+        Observable.defer(new Callable<Observable<Object>>() {
             @Override
-            public Observable<Object> get() {
+            public Observable<Object> call() {
                 return null;
             }
         }).toBlocking().lastOption();
@@ -225,14 +225,14 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void errorFunctionNull() {
-        Observable.error((Supplier<Throwable>)null);
+        Observable.error((Callable<Throwable>)null);
     }
     
     @Test(expected = NullPointerException.class)
     public void errorFunctionReturnsNull() {
-        Observable.error(new Supplier<Throwable>() {
+        Observable.error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return null;
             }
         }).toBlocking().run();
@@ -369,9 +369,9 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void generateStateConsumerNull() {
-        Observable.generate(new Supplier<Integer>() {
+        Observable.generate(new Callable<Integer>() {
             @Override
-            public Integer get() {
+            public Integer call() {
                 return 1;
             }
         }, (BiConsumer<Integer, Observer<Object>>)null);
@@ -385,9 +385,9 @@ public class ObservableNullTests {
                 o.onComplete();
             }
         };
-        Observable.generate(new Supplier<Integer>() {
+        Observable.generate(new Callable<Integer>() {
             @Override
-            public Integer get() {
+            public Integer call() {
                 return null;
             }
         }, generator).toBlocking().lastOption();
@@ -395,9 +395,9 @@ public class ObservableNullTests {
 
     @Test
     public void generateFunctionStateNullAllowed() {
-        Observable.generate(new Supplier<Object>() {
+        Observable.generate(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return null;
             }
         }, new BiFunction<Object, Observer<Object>, Object>() {
@@ -414,9 +414,9 @@ public class ObservableNullTests {
                 o.onNext(1);
             }
         };
-        Observable.generate(new Supplier<Integer>() {
+        Observable.generate(new Callable<Integer>() {
             @Override
-            public Integer get() {
+            public Integer call() {
                 return 1;
             }
         }, generator, null);
@@ -424,9 +424,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void generateFunctionDisposeNull() {
-        Observable.generate(new Supplier<Object>() {
+        Observable.generate(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }, new BiFunction<Object, Observer<Object>, Object>() {
@@ -600,9 +600,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void usingNbpObservableSupplierNull() {
-        Observable.using(new Supplier<Object>() {
+        Observable.using(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }, null, new Consumer<Object>() {
@@ -613,9 +613,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void usingNbpObservableSupplierReturnsNull() {
-        Observable.using(new Supplier<Object>() {
+        Observable.using(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }, new Function<Object, Observable<Object>>() {
@@ -631,9 +631,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void usingDisposeNull() {
-        Observable.using(new Supplier<Object>() {
+        Observable.using(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }, new Function<Object, Observable<Integer>>() {
@@ -774,14 +774,14 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void bufferSupplierNull() {
-        just1.buffer(1, 1, (Supplier<List<Integer>>)null);
+        just1.buffer(1, 1, (Callable<List<Integer>>)null);
     }
     
     @Test(expected = NullPointerException.class)
     public void bufferSupplierReturnsNull() {
-        just1.buffer(1, 1, new Supplier<Collection<Integer>>() {
+        just1.buffer(1, 1, new Callable<Collection<Integer>>() {
             @Override
-            public Collection<Integer> get() {
+            public Collection<Integer> call() {
                 return null;
             }
         }).toBlocking().run();
@@ -804,9 +804,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void bufferTimedSupplierReturnsNull() {
-        just1.buffer(1L, 1L, TimeUnit.SECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
+        just1.buffer(1L, 1L, TimeUnit.SECONDS, Schedulers.single(), new Callable<Collection<Integer>>() {
             @Override
-            public Collection<Integer> get() {
+            public Collection<Integer> call() {
                 return null;
             }
         }).toBlocking().run();
@@ -844,14 +844,14 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void bufferBoundarySupplierNull() {
-        just1.buffer(just1, (Supplier<List<Integer>>)null);
+        just1.buffer(just1, (Callable<List<Integer>>)null);
     }
     
     @Test(expected = NullPointerException.class)
     public void bufferBoundarySupplierReturnsNull() {
-        just1.buffer(just1, new Supplier<Collection<Integer>>() {
+        just1.buffer(just1, new Callable<Collection<Integer>>() {
             @Override
-            public Collection<Integer> get() {
+            public Collection<Integer> call() {
                 return null;
             }
         }).toBlocking().run();
@@ -859,14 +859,14 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void bufferBoundarySupplier2Null() {
-        just1.buffer((Supplier<Observable<Integer>>)null);
+        just1.buffer((Callable<Observable<Integer>>)null);
     }
     
     @Test(expected = NullPointerException.class)
     public void bufferBoundarySupplier2ReturnsNull() {
-        just1.buffer(new Supplier<Observable<Object>>() {
+        just1.buffer(new Callable<Observable<Object>>() {
             @Override
-            public Observable<Object> get() {
+            public Observable<Object> call() {
                 return null;
             }
         }).toBlocking().run();
@@ -874,9 +874,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void bufferBoundarySupplier2SupplierNull() {
-        just1.buffer(new Supplier<Observable<Integer>>() {
+        just1.buffer(new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return just1;
             }
         }, null);
@@ -884,14 +884,14 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void bufferBoundarySupplier2SupplierReturnsNull() {
-        just1.buffer(new Supplier<Observable<Integer>>() {
+        just1.buffer(new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return just1;
             }
-        }, new Supplier<Collection<Integer>>() {
+        }, new Callable<Collection<Integer>>() {
             @Override
-            public Collection<Integer> get() {
+            public Collection<Integer> call() {
                 return null;
             }
         }).toBlocking().run();
@@ -904,7 +904,7 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void collectInitialSupplierNull() {
-        just1.collect((Supplier<Integer>)null, new BiConsumer<Integer, Integer>() {
+        just1.collect((Callable<Integer>)null, new BiConsumer<Integer, Integer>() {
             @Override
             public void accept(Integer a, Integer b) { }
         });
@@ -912,9 +912,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void collectInitialSupplierReturnsNull() {
-        just1.collect(new Supplier<Object>() {
+        just1.collect(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return null;
             }
         }, new BiConsumer<Object, Integer>() {
@@ -925,9 +925,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void collectInitialCollectorNull() {
-        just1.collect(new Supplier<Object>() {
+        just1.collect(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }, null);
@@ -1078,7 +1078,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void delaySubscriptionFunctionNull() {
-        just1.delaySubscription((Supplier<Observable<Object>>)null);
+        just1.delaySubscription((Callable<Observable<Object>>)null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -1093,9 +1093,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void delayBothInitialSupplierReturnsNull() {
-        just1.delay(new Supplier<Observable<Object>>() {
+        just1.delay(new Callable<Observable<Object>>() {
             @Override
-            public Observable<Object> get() {
+            public Observable<Object> call() {
                 return null;
             }
         }, new Function<Integer, Observable<Integer>>() {
@@ -1108,9 +1108,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void delayBothItemSupplierNull() {
-        just1.delay(new Supplier<Observable<Integer>>() {
+        just1.delay(new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return just1;
             }
         }, null);
@@ -1118,9 +1118,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void delayBothItemSupplierReturnsNull() {
-        just1.delay(new Supplier<Observable<Integer>>() {
+        just1.delay(new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return just1;
             }
         }, new Function<Integer, Observable<Object>>() {
@@ -1153,9 +1153,9 @@ public class ObservableNullTests {
             public Object apply(Integer v) {
                 return v;
             }
-        }, new Supplier<Collection<Object>>() {
+        }, new Callable<Collection<Object>>() {
             @Override
-            public Collection<Object> get() {
+            public Collection<Object> call() {
                 return null;
             }
         }).toBlocking().run();
@@ -1321,9 +1321,9 @@ public class ObservableNullTests {
             public Observable<Integer> apply(Throwable e) {
                 return just1;
             }
-        }, new Supplier<Observable<Integer>>() {
+        }, new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return just1;
             }
         });
@@ -1341,9 +1341,9 @@ public class ObservableNullTests {
             public Observable<Integer> apply(Throwable e) {
                 return just1;
             }
-        }, new Supplier<Observable<Integer>>() {
+        }, new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return just1;
             }
         }).toBlocking().run();
@@ -1356,9 +1356,9 @@ public class ObservableNullTests {
             public Observable<Integer> apply(Integer v) {
                 return just1;
             }
-        }, null, new Supplier<Observable<Integer>>() {
+        }, null, new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return just1;
             }
         });
@@ -1376,9 +1376,9 @@ public class ObservableNullTests {
             public Observable<Integer> apply(Throwable e) {
                 return null;
             }
-        }, new Supplier<Observable<Integer>>() {
+        }, new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return just1;
             }
         }).toBlocking().run();
@@ -1411,9 +1411,9 @@ public class ObservableNullTests {
             public Observable<Integer> apply(Throwable e) {
                 return just1;
             }
-        }, new Supplier<Observable<Integer>>() {
+        }, new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return null;
             }
         }).toBlocking().run();
@@ -1768,9 +1768,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void reduceWithSeedReturnsNull() {
-        just1.reduceWith(new Supplier<Object>() {
+        just1.reduceWith(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return null;
             }
         }, new BiFunction<Object, Integer, Object>() {
@@ -2023,9 +2023,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void scanSeedSupplierReturnsNull() {
-        just1.scanWith(new Supplier<Object>() {
+        just1.scanWith(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return null;
             }
         }, new BiFunction<Object, Integer, Object>() {
@@ -2038,9 +2038,9 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void scanSeedSupplierFunctionNull() {
-        just1.scanWith(new Supplier<Object>() {
+        just1.scanWith(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }, null);
@@ -2048,9 +2048,9 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void scanSeedSupplierFunctionReturnsNull() {
-        just1.scanWith(new Supplier<Object>() {
+        just1.scanWith(new Callable<Object>() {
             @Override
-            public Object get() {
+            public Object call() {
                 return 1;
             }
         }, new BiFunction<Object, Integer, Object>() {
@@ -2353,7 +2353,7 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void timeoutFirstNull() {
-        just1.timeout((Supplier<Observable<Integer>>)null, new Function<Integer, Observable<Integer>>() {
+        just1.timeout((Callable<Observable<Integer>>)null, new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer v) {
                 return just1;
@@ -2363,9 +2363,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void timeoutFirstReturnsNull() {
-        just1.timeout(new Supplier<Observable<Object>>() {
+        just1.timeout(new Callable<Observable<Object>>() {
             @Override
-            public Observable<Object> get() {
+            public Observable<Object> call() {
                 return null;
             }
         }, new Function<Integer, Observable<Integer>>() {
@@ -2378,9 +2378,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void timeoutFirstItemNull() {
-        just1.timeout(new Supplier<Observable<Integer>>() {
+        just1.timeout(new Callable<Observable<Integer>>() {
             @Override
-            public Observable<Integer> get() {
+            public Observable<Integer> call() {
                 return just1;
             }
         }, null);
@@ -2388,9 +2388,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void timeoutFirstItemReturnsNull() {
-        Observable.just(1, 1).timeout(new Supplier<Observable<Object>>() {
+        Observable.just(1, 1).timeout(new Callable<Observable<Object>>() {
             @Override
-            public Observable<Object> get() {
+            public Observable<Object> call() {
                 return Observable.never();
             }
         }, new Function<Integer, Observable<Object>>() {
@@ -2423,9 +2423,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void toListSupplierReturnsNull() {
-        just1.toList(new Supplier<Collection<Integer>>() {
+        just1.toList(new Callable<Collection<Integer>>() {
             @Override
-            public Collection<Integer> get() {
+            public Collection<Integer> call() {
                 return null;
             }
         }).toBlocking().run();
@@ -2493,9 +2493,9 @@ public class ObservableNullTests {
             public Object apply(Integer v) {
                 return v;
             }
-        }, new Supplier<Map<Object, Object>>() {
+        }, new Callable<Map<Object, Object>>() {
             @Override
-            public Map<Object, Object> get() {
+            public Map<Object, Object> call() {
                 return null;
             }
         }).toBlocking().run();
@@ -2558,9 +2558,9 @@ public class ObservableNullTests {
             public Object apply(Integer v) {
                 return v;
             }
-        }, new Supplier<Map<Object, Collection<Object>>>() {
+        }, new Callable<Map<Object, Collection<Object>>>() {
             @Override
-            public Map<Object, Collection<Object>> get() {
+            public Map<Object, Collection<Object>> call() {
                 return null;
             }
         }).toBlocking().run();
@@ -2578,9 +2578,9 @@ public class ObservableNullTests {
             public Integer apply(Integer v) {
                 return v;
             }
-        }, new Supplier<Map<Integer, Collection<Integer>>>() {
+        }, new Callable<Map<Integer, Collection<Integer>>>() {
             @Override
-            public Map<Integer, Collection<Integer>> get() {
+            public Map<Integer, Collection<Integer>> call() {
                 return new HashMap<Integer, Collection<Integer>>();
             }
         }, null);
@@ -2598,9 +2598,9 @@ public class ObservableNullTests {
             public Integer apply(Integer v) {
                 return v;
             }
-        }, new Supplier<Map<Integer, Collection<Integer>>>() {
+        }, new Callable<Map<Integer, Collection<Integer>>>() {
             @Override
-            public Map<Integer, Collection<Integer>> get() {
+            public Map<Integer, Collection<Integer>> call() {
                 return new HashMap<Integer, Collection<Integer>>();
             }
         }, new Function<Integer, Collection<Integer>>() {
@@ -2673,14 +2673,14 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void windowBoundarySupplierNull() {
-        just1.window((Supplier<Observable<Integer>>)null);
+        just1.window((Callable<Observable<Integer>>)null);
     }
     
     @Test(expected = NullPointerException.class)
     public void windowBoundarySupplierReturnsNull() {
-        just1.window(new Supplier<Observable<Object>>() {
+        just1.window(new Callable<Observable<Object>>() {
             @Override
-            public Observable<Object> get() {
+            public Observable<Object> call() {
                 return null;
             }
         }).toBlocking().run();

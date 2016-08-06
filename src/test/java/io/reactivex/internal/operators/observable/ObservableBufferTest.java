@@ -246,9 +246,9 @@ public class ObservableBufferTest {
             }
         });
 
-        Supplier<Observable<Object>> closer = new Supplier<Observable<Object>>() {
+        Callable<Observable<Object>> closer = new Callable<Observable<Object>>() {
             @Override
-            public Observable<Object> get() {
+            public Observable<Object> call() {
                 return Observable.create(new ObservableConsumable<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> NbpObserver) {

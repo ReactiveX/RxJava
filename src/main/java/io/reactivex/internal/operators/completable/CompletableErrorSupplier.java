@@ -13,15 +13,16 @@
 
 package io.reactivex.internal.operators.completable;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.*;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class CompletableErrorSupplier extends Completable {
 
-    final Supplier<? extends Throwable> errorSupplier;
+    final Callable<? extends Throwable> errorSupplier;
     
-    public CompletableErrorSupplier(Supplier<? extends Throwable> errorSupplier) {
+    public CompletableErrorSupplier(Callable<? extends Throwable> errorSupplier) {
         this.errorSupplier = errorSupplier;
     }
 
@@ -31,7 +32,7 @@ public final class CompletableErrorSupplier extends Completable {
         Throwable error;
         
         try {
-            error = errorSupplier.get();
+            error = errorSupplier.call();
         } catch (Throwable e) {
             error = e;
         }

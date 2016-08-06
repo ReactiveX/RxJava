@@ -27,7 +27,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.subscribers.observable.*;
-import io.reactivex.internal.util.Exceptions;
+import io.reactivex.internal.util.*;
 import io.reactivex.observables.*;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -365,7 +365,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> defer(Supplier<? extends ObservableConsumable<? extends T>> supplier) {
+    public static <T> Observable<T> defer(Callable<? extends ObservableConsumable<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return new ObservableDefer<T>(supplier);
     }
@@ -377,7 +377,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> error(Supplier<? extends Throwable> errorSupplier) {
+    public static <T> Observable<T> error(Callable<? extends Throwable> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
         return new ObservableError<T>(errorSupplier);
     }
@@ -385,9 +385,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> error(final Throwable e) {
         Objects.requireNonNull(e, "e is null");
-        return error(new Supplier<Throwable>() {
+        return error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return e;
             }
         });
@@ -487,7 +487,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         return generate(Functions.<Object>nullSupplier(), 
         new BiFunction<Object, Observer<T>, Object>() {
             @Override
-            public Object apply(Object s, Observer<T> o) {
+            public Object apply(Object s, Observer<T> o) throws Exception {
                 generator.accept(o);
                 return s;
             }
@@ -495,11 +495,11 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Observable<T> generate(Supplier<S> initialState, final BiConsumer<S, Observer<T>> generator) {
+    public static <T, S> Observable<T> generate(Callable<S> initialState, final BiConsumer<S, Observer<T>> generator) {
         Objects.requireNonNull(generator, "generator  is null");
         return generate(initialState, new BiFunction<S, Observer<T>, S>() {
             @Override
-            public S apply(S s, Observer<T> o) {
+            public S apply(S s, Observer<T> o) throws Exception {
                 generator.accept(s, o);
                 return s;
             }
@@ -508,13 +508,13 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Observable<T> generate(
-            final Supplier<S> initialState, 
+            final Callable<S> initialState, 
             final BiConsumer<S, Observer<T>> generator, 
             Consumer<? super S> disposeState) {
         Objects.requireNonNull(generator, "generator  is null");
         return generate(initialState, new BiFunction<S, Observer<T>, S>() {
             @Override
-            public S apply(S s, Observer<T> o) {
+            public S apply(S s, Observer<T> o) throws Exception {
                 generator.accept(s, o);
                 return s;
             }
@@ -522,12 +522,12 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Observable<T> generate(Supplier<S> initialState, BiFunction<S, Observer<T>, S> generator) {
+    public static <T, S> Observable<T> generate(Callable<S> initialState, BiFunction<S, Observer<T>, S> generator) {
         return generate(initialState, generator, Functions.emptyConsumer());
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Observable<T> generate(Supplier<S> initialState, BiFunction<S, Observer<T>, S> generator, Consumer<? super S> disposeState) {
+    public static <T, S> Observable<T> generate(Callable<S> initialState, BiFunction<S, Observer<T>, S> generator, Consumer<? super S> disposeState) {
         Objects.requireNonNull(initialState, "initialState is null");
         Objects.requireNonNull(generator, "generator  is null");
         Objects.requireNonNull(disposeState, "diposeState is null");
@@ -943,12 +943,12 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, D> Observable<T> using(Supplier<? extends D> resourceSupplier, Function<? super D, ? extends ObservableConsumable<? extends T>> sourceSupplier, Consumer<? super D> disposer) {
+    public static <T, D> Observable<T> using(Callable<? extends D> resourceSupplier, Function<? super D, ? extends ObservableConsumable<? extends T>> sourceSupplier, Consumer<? super D> disposer) {
         return using(resourceSupplier, sourceSupplier, disposer, true);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, D> Observable<T> using(Supplier<? extends D> resourceSupplier, Function<? super D, ? extends ObservableConsumable<? extends T>> sourceSupplier, Consumer<? super D> disposer, boolean eager) {
+    public static <T, D> Observable<T> using(Callable<? extends D> resourceSupplier, Function<? super D, ? extends ObservableConsumable<? extends T>> sourceSupplier, Consumer<? super D> disposer, boolean eager) {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
         Objects.requireNonNull(sourceSupplier, "sourceSupplier is null");
         Objects.requireNonNull(disposer, "disposer is null");
@@ -1130,16 +1130,11 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<List<T>> buffer(int count, int skip) {
-        return buffer(count, skip, new Supplier<List<T>>() {
-            @Override
-            public List<T> get() {
-                return new ArrayList<T>();
-            }
-        });
+        return buffer(count, skip, ArrayListSupplier.<T>instance());
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U extends Collection<? super T>> Observable<U> buffer(int count, int skip, Supplier<U> bufferSupplier) {
+    public final <U extends Collection<? super T>> Observable<U> buffer(int count, int skip, Callable<U> bufferSupplier) {
         if (count <= 0) {
             throw new IllegalArgumentException("count > 0 required but it was " + count);
         }
@@ -1151,32 +1146,22 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U extends Collection<? super T>> Observable<U> buffer(int count, Supplier<U> bufferSupplier) {
+    public final <U extends Collection<? super T>> Observable<U> buffer(int count, Callable<U> bufferSupplier) {
         return buffer(count, count, bufferSupplier);
     }
 
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Observable<List<T>> buffer(long timespan, long timeskip, TimeUnit unit) {
-        return buffer(timespan, timeskip, unit, Schedulers.computation(), new Supplier<List<T>>() {
-            @Override
-            public List<T> get() {
-                return new ArrayList<T>();
-            }
-        });
+        return buffer(timespan, timeskip, unit, Schedulers.computation(), ArrayListSupplier.<T>instance());
     }
 
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<List<T>> buffer(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler) {
-        return buffer(timespan, timeskip, unit, scheduler, new Supplier<List<T>>() {
-            @Override
-            public List<T> get() {
-                return new ArrayList<T>();
-            }
-        });
+        return buffer(timespan, timeskip, unit, scheduler, ArrayListSupplier.<T>instance());
     }
 
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final <U extends Collection<? super T>> Observable<U> buffer(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Supplier<U> bufferSupplier) {
+    public final <U extends Collection<? super T>> Observable<U> buffer(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Callable<U> bufferSupplier) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
@@ -1195,19 +1180,14 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<List<T>> buffer(long timespan, TimeUnit unit, int count, Scheduler scheduler) {
-        return buffer(timespan, unit, count, scheduler, new Supplier<List<T>>() {
-            @Override
-            public List<T> get() {
-                return new ArrayList<T>();
-            }
-        }, false);
+        return buffer(timespan, unit, count, scheduler, ArrayListSupplier.<T>instance(), false);
     }
 
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <U extends Collection<? super T>> Observable<U> buffer(
             long timespan, TimeUnit unit, 
             int count, Scheduler scheduler, 
-            Supplier<U> bufferSupplier, 
+            Callable<U> bufferSupplier, 
             boolean restartTimerOnMaxSize) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -1220,31 +1200,21 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler) {
-        return buffer(timespan, unit, Integer.MAX_VALUE, scheduler, new Supplier<List<T>>() {
-            @Override
-            public List<T> get() {
-                return new ArrayList<T>();
-            }
-        }, false);
+        return buffer(timespan, unit, Integer.MAX_VALUE, scheduler, ArrayListSupplier.<T>instance(), false);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <TOpening, TClosing> Observable<List<T>> buffer(
             ObservableConsumable<? extends TOpening> bufferOpenings, 
             Function<? super TOpening, ? extends ObservableConsumable<? extends TClosing>> bufferClosingSelector) {
-        return buffer(bufferOpenings, bufferClosingSelector, new Supplier<List<T>>() {
-            @Override
-            public List<T> get() {
-                return new ArrayList<T>();
-            }
-        });
+        return buffer(bufferOpenings, bufferClosingSelector, ArrayListSupplier.<T>instance());
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <TOpening, TClosing, U extends Collection<? super T>> Observable<U> buffer(
             ObservableConsumable<? extends TOpening> bufferOpenings, 
             Function<? super TOpening, ? extends ObservableConsumable<? extends TClosing>> bufferClosingSelector,
-            Supplier<U> bufferSupplier) {
+            Callable<U> bufferSupplier) {
         Objects.requireNonNull(bufferOpenings, "bufferOpenings is null");
         Objects.requireNonNull(bufferClosingSelector, "bufferClosingSelector is null");
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
@@ -1256,44 +1226,34 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         /*
          * XXX: javac complains if this is not manually cast, Eclipse is fine
          */
-        return buffer(boundary, new Supplier<List<T>>() {
-            @Override
-            public List<T> get() {
-                return new ArrayList<T>();
-            }
-        });
+        return buffer(boundary, ArrayListSupplier.<T>instance());
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Observable<List<T>> buffer(ObservableConsumable<B> boundary, final int initialCapacity) {
-        return buffer(boundary, new Supplier<List<T>>() {
+        return buffer(boundary, new Callable<List<T>>() {
             @Override
-            public List<T> get() {
+            public List<T> call() {
                 return new ArrayList<T>(initialCapacity);
             }
         });
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B, U extends Collection<? super T>> Observable<U> buffer(ObservableConsumable<B> boundary, Supplier<U> bufferSupplier) {
+    public final <B, U extends Collection<? super T>> Observable<U> buffer(ObservableConsumable<B> boundary, Callable<U> bufferSupplier) {
         Objects.requireNonNull(boundary, "boundary is null");
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
         return new ObservableBufferExactBoundary<T, U, B>(this, boundary, bufferSupplier);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Observable<List<T>> buffer(Supplier<? extends ObservableConsumable<B>> boundarySupplier) {
-        return buffer(boundarySupplier, new Supplier<List<T>>() {
-            @Override
-            public List<T> get() {
-                return new ArrayList<T>();
-            }
-        });
+    public final <B> Observable<List<T>> buffer(Callable<? extends ObservableConsumable<B>> boundarySupplier) {
+        return buffer(boundarySupplier, ArrayListSupplier.<T>instance());
         
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B, U extends Collection<? super T>> Observable<U> buffer(Supplier<? extends ObservableConsumable<B>> boundarySupplier, Supplier<U> bufferSupplier) {
+    public final <B, U extends Collection<? super T>> Observable<U> buffer(Callable<? extends ObservableConsumable<B>> boundarySupplier, Callable<U> bufferSupplier) {
         Objects.requireNonNull(boundarySupplier, "boundarySupplier is null");
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
         return new ObservableBufferBoundarySupplier<T, U, B>(this, boundarySupplier, bufferSupplier);
@@ -1321,7 +1281,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Observable<U> collect(Supplier<? extends U> initialValueSupplier, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Observable<U> collect(Callable<? extends U> initialValueSupplier, BiConsumer<? super U, ? super T> collector) {
         Objects.requireNonNull(initialValueSupplier, "initalValueSupplier is null");
         Objects.requireNonNull(collector, "collector is null");
         return new ObservableCollect<T, U>(this, initialValueSupplier, collector);
@@ -1330,9 +1290,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<U> collectInto(final U initialValue, BiConsumer<? super U, ? super T> collector) {
         Objects.requireNonNull(initialValue, "initialValue is null");
-        return collect(new Supplier<U>() {
+        return collect(new Callable<U>() {
             @Override
-            public U get() {
+            public U call() {
                 return initialValue;
             }
         }, collector);
@@ -1361,7 +1321,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(mapper, "mapper is null");
         return concatMap(new Function<T, Observable<U>>() {
             @Override
-            public Observable<U> apply(T v) {
+            public Observable<U> apply(T v) throws Exception {
                 return fromIterable(mapper.apply(v));
             }
         });
@@ -1371,7 +1331,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <U> Observable<U> concatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int prefetch) {
         return concatMap(new Function<T, Observable<U>>() {
             @Override
-            public Observable<U> apply(T v) {
+            public Observable<U> apply(T v) throws Exception {
                 return fromIterable(mapper.apply(v));
             }
         }, prefetch);
@@ -1430,7 +1390,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(itemDelay, "itemDelay is null");
         return flatMap(new Function<T, Observable<T>>() {
             @Override
-            public Observable<T> apply(final T v) {
+            public Observable<T> apply(final T v) throws Exception {
                 return new ObservableTake<U>(itemDelay.apply(v), 1).map(new Function<U, T>() {
                     @Override
                     public T apply(U u) {
@@ -1465,7 +1425,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U, V> Observable<T> delay(Supplier<? extends ObservableConsumable<U>> delaySupplier,
+    public final <U, V> Observable<T> delay(Callable<? extends ObservableConsumable<U>> delaySupplier,
             Function<? super T, ? extends ObservableConsumable<V>> itemDelay) {
         return delaySubscription(delaySupplier).delay(itemDelay);
     }
@@ -1515,14 +1475,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Observable<T> delaySubscription(final Supplier<? extends ObservableConsumable<U>> delaySupplier) {
+    public final <U> Observable<T> delaySubscription(final Callable<? extends ObservableConsumable<U>> delaySupplier) {
         Objects.requireNonNull(delaySupplier, "delaySupplier is null");
-        return fromCallable(new Callable<ObservableConsumable<U>>() {
-            @Override
-            public ObservableConsumable<U> call() {
-                return delaySupplier.get();
-            }
-        })
+        return fromCallable(delaySupplier)
         .flatMap((Function)Functions.identity())
         .take(1)
         .cast(Object.class)
@@ -1545,9 +1500,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> distinct() {
-        return distinct((Function)Functions.identity(), new Supplier<Collection<T>>() {
+        return distinct((Function)Functions.identity(), new Callable<Collection<T>>() {
             @Override
-            public Collection<T> get() {
+            public Collection<T> call() {
                 return new HashSet<T>();
             }
         });
@@ -1555,16 +1510,16 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Observable<T> distinct(Function<? super T, K> keySelector) {
-        return distinct(keySelector, new Supplier<Collection<K>>() {
+        return distinct(keySelector, new Callable<Collection<K>>() {
             @Override
-            public Collection<K> get() {
+            public Collection<K> call() {
                 return new HashSet<K>();
             }
         });
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K> Observable<T> distinct(Function<? super T, K> keySelector, Supplier<? extends Collection<? super K>> collectionSupplier) {
+    public final <K> Observable<T> distinct(Function<? super T, K> keySelector, Callable<? extends Collection<? super K>> collectionSupplier) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(collectionSupplier, "collectionSupplier is null");
         return ObservableDistinct.withCollection(this, keySelector, collectionSupplier);
@@ -1606,20 +1561,26 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         return doOnEach(
                 new Consumer<T>() {
                     @Override
-                    public void accept(T v) {
+                    public void accept(T v) throws Exception {
                         consumer.accept(Try.ofValue(Optional.of(v)));
                     }
                 },
                 new Consumer<Throwable>() {
                     @Override
-                    public void accept(Throwable e) {
+                    public void accept(Throwable e) throws Exception {
                         consumer.accept(Try.<Optional<T>>ofError(e));
                     }
                 },
                 new Runnable() {
                     @Override
                     public void run() {
-                        consumer.accept(Try.ofValue(Optional.<T>empty()));
+                        // TODO throwing Runnable?
+                        try {
+                            consumer.accept(Try.ofValue(Optional.<T>empty()));
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            Exceptions.propagate(ex);
+                        }
                     }
                 },
                 Functions.emptyRunnable()
@@ -1785,7 +1746,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <R> Observable<R> flatMap(
             Function<? super T, ? extends ObservableConsumable<? extends R>> onNextMapper, 
             Function<? super Throwable, ? extends ObservableConsumable<? extends R>> onErrorMapper, 
-            Supplier<? extends ObservableConsumable<? extends R>> onCompleteSupplier) {
+            Callable<? extends ObservableConsumable<? extends R>> onCompleteSupplier) {
         Objects.requireNonNull(onNextMapper, "onNextMapper is null");
         Objects.requireNonNull(onErrorMapper, "onErrorMapper is null");
         Objects.requireNonNull(onCompleteSupplier, "onCompleteSupplier is null");
@@ -1796,7 +1757,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <R> Observable<R> flatMap(
             Function<? super T, ? extends ObservableConsumable<? extends R>> onNextMapper, 
             Function<Throwable, ? extends ObservableConsumable<? extends R>> onErrorMapper, 
-            Supplier<? extends ObservableConsumable<? extends R>> onCompleteSupplier, 
+            Callable<? extends ObservableConsumable<? extends R>> onCompleteSupplier, 
             int maxConcurrency) {
         Objects.requireNonNull(onNextMapper, "onNextMapper is null");
         Objects.requireNonNull(onErrorMapper, "onErrorMapper is null");
@@ -1830,12 +1791,12 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(combiner, "combiner is null");
         return flatMap(new Function<T, Observable<R>>() {
             @Override
-            public Observable<R> apply(final T t) {
+            public Observable<R> apply(final T t) throws Exception {
                 @SuppressWarnings("unchecked")
                 Observable<U> u = (Observable<U>)mapper.apply(t);
                 return u.map(new Function<U, R>() {
                     @Override
-                    public R apply(U w) {
+                    public R apply(U w) throws Exception{
                         return combiner.apply(t, w);
                     }
                 });
@@ -1853,7 +1814,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(mapper, "mapper is null");
         return flatMap(new Function<T, Observable<U>>() {
             @Override
-            public Observable<U> apply(T v) {
+            public Observable<U> apply(T v) throws Exception {
                 return fromIterable(mapper.apply(v));
             }
         });
@@ -1863,7 +1824,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <U, V> Observable<V> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends V> resultSelector) {
         return flatMap(new Function<T, Observable<U>>() {
             @Override
-            public Observable<U> apply(T t) {
+            public Observable<U> apply(T t) throws Exception {
                 return fromIterable(mapper.apply(t));
             }
         }, resultSelector, false, bufferSize(), bufferSize());
@@ -1873,7 +1834,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <U> Observable<U> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int bufferSize) {
         return flatMap(new Function<T, Observable<U>>() {
             @Override
-            public Observable<U> apply(T v) {
+            public Observable<U> apply(T v) throws Exception {
                 return fromIterable(mapper.apply(v));
             }
         }, false, bufferSize);
@@ -1904,7 +1865,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         final AtomicReference<Disposable> subscription = new AtomicReference<Disposable>();
         return subscribe(new Consumer<T>() {
             @Override
-            public void accept(T v) {
+            public void accept(T v) throws Exception {
                 if (!onNext.test(v)) {
                     subscription.get().dispose();
                     onComplete.run();
@@ -2180,7 +2141,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     // Naming note, a plain scan would cause ambiguity with the value-seeded version
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Observable<R> reduceWith(Supplier<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
+    public final <R> Observable<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
         return scanWith(seedSupplier, reducer).last();
     }
 
@@ -2212,7 +2173,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         
         Function<Observable<Try<Optional<Object>>>, ObservableConsumable<?>> f = new Function<Observable<Try<Optional<Object>>>, ObservableConsumable<?>>() {
             @Override
-            public ObservableConsumable<?> apply(Observable<Try<Optional<Object>>> no) {
+            public ObservableConsumable<?> apply(Observable<Try<Optional<Object>>> no) throws Exception {
                 return handler.apply(no.map(new Function<Try<Optional<Object>>, Object>() {
                     @Override
                     public Object apply(Try<Optional<Object>> v) {
@@ -2234,9 +2195,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends ObservableConsumable<R>> selector) {
         Objects.requireNonNull(selector, "selector is null");
-        return ObservableReplay.multicastSelector(new Supplier<ConnectableObservable<T>>() {
+        return ObservableReplay.multicastSelector(new Callable<ConnectableObservable<T>>() {
             @Override
-            public ConnectableObservable<T> get() {
+            public ConnectableObservable<T> call() {
                 return replay();
             }
         }, selector);
@@ -2245,9 +2206,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends ObservableConsumable<R>> selector, final int bufferSize) {
         Objects.requireNonNull(selector, "selector is null");
-        return ObservableReplay.multicastSelector(new Supplier<ConnectableObservable<T>>() {
+        return ObservableReplay.multicastSelector(new Callable<ConnectableObservable<T>>() {
             @Override
-            public ConnectableObservable<T> get() {
+            public ConnectableObservable<T> call() {
                 return replay(bufferSize);
             }
         }, selector);
@@ -2264,9 +2225,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
             throw new IllegalArgumentException("bufferSize < 0");
         }
         Objects.requireNonNull(selector, "selector is null");
-        return ObservableReplay.multicastSelector(new Supplier<ConnectableObservable<T>>() {
+        return ObservableReplay.multicastSelector(new Callable<ConnectableObservable<T>>() {
             @Override
-            public ConnectableObservable<T> get() {
+            public ConnectableObservable<T> call() {
                 return replay(bufferSize, time, unit, scheduler);
             }
         }, selector);
@@ -2274,15 +2235,15 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Observable<R> replay(final Function<? super Observable<T>, ? extends ObservableConsumable<R>> selector, final int bufferSize, final Scheduler scheduler) {
-        return ObservableReplay.multicastSelector(new Supplier<ConnectableObservable<T>>() {
+        return ObservableReplay.multicastSelector(new Callable<ConnectableObservable<T>>() {
             @Override
-            public ConnectableObservable<T> get() {
+            public ConnectableObservable<T> call() {
                 return replay(bufferSize);
             }
         }, 
         new Function<Observable<T>, Observable<R>>() {
             @Override
-            public Observable<R> apply(Observable<T> t) {
+            public Observable<R> apply(Observable<T> t) throws Exception {
                 return new ObservableObserveOn<R>(selector.apply(t), scheduler, false, bufferSize());
             }
         });
@@ -2298,9 +2259,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(selector, "selector is null");
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return ObservableReplay.multicastSelector(new Supplier<ConnectableObservable<T>>() {
+        return ObservableReplay.multicastSelector(new Callable<ConnectableObservable<T>>() {
             @Override
-            public ConnectableObservable<T> get() {
+            public ConnectableObservable<T> call() {
                 return replay(time, unit, scheduler);
             }
         }, selector);
@@ -2310,15 +2271,15 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <R> Observable<R> replay(final Function<? super Observable<T>, ? extends ObservableConsumable<R>> selector, final Scheduler scheduler) {
         Objects.requireNonNull(selector, "selector is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return ObservableReplay.multicastSelector(new Supplier<ConnectableObservable<T>>() {
+        return ObservableReplay.multicastSelector(new Callable<ConnectableObservable<T>>() {
             @Override
-            public ConnectableObservable<T> get() {
+            public ConnectableObservable<T> call() {
                 return replay();
             }
         }, 
         new Function<Observable<T>, Observable<R>>() {
             @Override
-            public Observable<R> apply(Observable<T> t) {
+            public Observable<R> apply(Observable<T> t) throws Exception {
                 return new ObservableObserveOn<R>(selector.apply(t), scheduler, false, bufferSize());
             }
         });
@@ -2405,7 +2366,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(stop, "stop is null");
         return retry(Long.MAX_VALUE, new Predicate<Throwable>() {
             @Override
-            public boolean test(Throwable e) {
+            public boolean test(Throwable e) throws Exception {
                 return !stop.getAsBoolean();
             }
         });
@@ -2418,7 +2379,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         
         Function<Observable<Try<Optional<Object>>>, ObservableConsumable<?>> f = new Function<Observable<Try<Optional<Object>>>, ObservableConsumable<?>>() {
             @Override
-            public ObservableConsumable<?> apply(Observable<Try<Optional<Object>>> no) {
+            public ObservableConsumable<?> apply(Observable<Try<Optional<Object>>> no) throws Exception {
                 return handler.apply(no
                         .takeWhile(new Predicate<Try<Optional<Object>>>() {
                             @Override
@@ -2478,9 +2439,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> scan(final R seed, BiFunction<R, ? super T, R> accumulator) {
         Objects.requireNonNull(seed, "seed is null");
-        return scanWith(new Supplier<R>() {
+        return scanWith(new Callable<R>() {
             @Override
-            public R get() {
+            public R call() {
                 return seed;
             }
         }, accumulator);
@@ -2488,7 +2449,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     
     // Naming note, a plain scan would cause ambiguity with the value-seeded version
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Observable<R> scanWith(Supplier<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+    public final <R> Observable<R> scanWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
         Objects.requireNonNull(seedSupplier, "seedSupplier is null");
         Objects.requireNonNull(accumulator, "accumulator is null");
         return new ObservableScanSeed<T, R>(this, seedSupplier, accumulator);
@@ -2906,7 +2867,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         return timeout0(timeout, timeUnit, null, scheduler);
     }
     
-    public final <U, V> Observable<T> timeout(Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector, 
+    public final <U, V> Observable<T> timeout(Callable<? extends ObservableConsumable<U>> firstTimeoutSelector, 
             Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector) {
         Objects.requireNonNull(firstTimeoutSelector, "firstTimeoutSelector is null");
         return timeout0(firstTimeoutSelector, timeoutSelector, null);
@@ -2914,7 +2875,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Observable<T> timeout(
-            Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector, 
+            Callable<? extends ObservableConsumable<U>> firstTimeoutSelector, 
             Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector, 
                     ObservableConsumable<? extends T> other) {
         Objects.requireNonNull(firstTimeoutSelector, "firstTimeoutSelector is null");
@@ -2930,7 +2891,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     private <U, V> Observable<T> timeout0(
-            Supplier<? extends ObservableConsumable<U>> firstTimeoutSelector, 
+            Callable<? extends ObservableConsumable<U>> firstTimeoutSelector, 
             Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector, 
                     ObservableConsumable<? extends T> other) {
         Objects.requireNonNull(timeoutSelector, "timeoutSelector is null");
@@ -2965,7 +2926,12 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     public final <R> R to(Function<? super Observable<T>, R> convert) {
-        return convert.apply(this);
+        try {
+            return convert.apply(this);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            throw Exceptions.propagate(ex);
+        }
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2992,21 +2958,21 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U extends Collection<? super T>> Observable<U> toList(Supplier<U> collectionSupplier) {
+    public final <U extends Collection<? super T>> Observable<U> toList(Callable<U> collectionSupplier) {
         Objects.requireNonNull(collectionSupplier, "collectionSupplier is null");
         return new ObservableToList<T, U>(this, collectionSupplier);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Observable<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
-        return collect(new Supplier<Map<K, T>>() {
+        return collect(new Callable<Map<K, T>>() {
             @Override
-            public Map<K, T> get() {
+            public Map<K, T> call() {
                 return new HashMap<K, T>();
             }
         }, new BiConsumer<Map<K, T>, T>() {
             @Override
-            public void accept(Map<K, T> m, T t) {
+            public void accept(Map<K, T> m, T t) throws Exception {
                 K key = keySelector.apply(t);
                 m.put(key, t);
             }
@@ -3019,14 +2985,14 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
             final Function<? super T, ? extends V> valueSelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(valueSelector, "valueSelector is null");
-        return collect(new Supplier<Map<K, V>>() {
+        return collect(new Callable<Map<K, V>>() {
             @Override
-            public Map<K, V> get() {
+            public Map<K, V> call() {
                 return new HashMap<K, V>();
             }
         }, new BiConsumer<Map<K, V>, T>() {
             @Override
-            public void accept(Map<K, V> m, T t) {
+            public void accept(Map<K, V> m, T t) throws Exception {
                 K key = keySelector.apply(t);
                 V value = valueSelector.apply(t);
                 m.put(key, value);
@@ -3038,10 +3004,10 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <K, V> Observable<Map<K, V>> toMap(
             final Function<? super T, ? extends K> keySelector, 
             final Function<? super T, ? extends V> valueSelector,
-            Supplier<? extends Map<K, V>> mapSupplier) {
+            Callable<? extends Map<K, V>> mapSupplier) {
         return collect(mapSupplier, new BiConsumer<Map<K, V>, T>() {
             @Override
-            public void accept(Map<K, V> m, T t) {
+            public void accept(Map<K, V> m, T t) throws Exception {
                 K key = keySelector.apply(t);
                 V value = valueSelector.apply(t);
                 m.put(key, value);
@@ -3053,9 +3019,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <K> Observable<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
         @SuppressWarnings({ "rawtypes", "unchecked" })
         Function<? super T, ? extends T> valueSelector = (Function)Functions.identity();
-        Supplier<Map<K, Collection<T>>> mapSupplier = new Supplier<Map<K, Collection<T>>>() {
+        Callable<Map<K, Collection<T>>> mapSupplier = new Callable<Map<K, Collection<T>>>() {
             @Override
-            public Map<K, Collection<T>> get() {
+            public Map<K, Collection<T>> call() {
                 return new HashMap<K, Collection<T>>();
             }
         };
@@ -3070,9 +3036,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
-        Supplier<Map<K, Collection<V>>> mapSupplier = new Supplier<Map<K, Collection<V>>>() {
+        Callable<Map<K, Collection<V>>> mapSupplier = new Callable<Map<K, Collection<V>>>() {
             @Override
-            public Map<K, Collection<V>> get() {
+            public Map<K, Collection<V>> call() {
                 return new HashMap<K, Collection<V>>();
             }
         };
@@ -3090,7 +3056,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(
             final Function<? super T, ? extends K> keySelector, 
             final Function<? super T, ? extends V> valueSelector, 
-            final Supplier<? extends Map<K, Collection<V>>> mapSupplier,
+            final Callable<? extends Map<K, Collection<V>>> mapSupplier,
             final Function<? super K, ? extends Collection<? super V>> collectionFactory) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(valueSelector, "valueSelector is null");
@@ -3098,7 +3064,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         Objects.requireNonNull(collectionFactory, "collectionFactory is null");
         return collect(mapSupplier, new BiConsumer<Map<K, Collection<V>>, T>() {
             @Override
-            public void accept(Map<K, Collection<V>> m, T t) {
+            public void accept(Map<K, Collection<V>> m, T t) throws Exception {
                 K key = keySelector.apply(t);
 
                 Collection<V> coll = m.get(key);
@@ -3118,7 +3084,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(
             Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector,
-            Supplier<Map<K, Collection<V>>> mapSupplier
+            Callable<Map<K, Collection<V>>> mapSupplier
             ) {
         return toMultimap(keySelector, valueSelector, mapSupplier, new Function<K, Collection<V>>() {
             @Override
@@ -3381,12 +3347,12 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Observable<Observable<T>> window(Supplier<? extends ObservableConsumable<B>> boundary) {
+    public final <B> Observable<Observable<T>> window(Callable<? extends ObservableConsumable<B>> boundary) {
         return window(boundary, bufferSize());
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Observable<Observable<T>> window(Supplier<? extends ObservableConsumable<B>> boundary, int bufferSize) {
+    public final <B> Observable<Observable<T>> window(Callable<? extends ObservableConsumable<B>> boundary, int bufferSize) {
         Objects.requireNonNull(boundary, "boundary is null");
         return new ObservableWindowBoundarySupplier<T, B>(this, boundary, bufferSize);
     }

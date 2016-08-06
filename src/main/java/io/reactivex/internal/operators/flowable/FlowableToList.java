@@ -14,40 +14,35 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.util.ArrayListSupplier;
 
-public final class FlowableToList<T, U extends Collection<? super T>> extends Flowable<U>
-implements Supplier<U> {
+public final class FlowableToList<T, U extends Collection<? super T>> extends Flowable<U> {
     final Publisher<T> source;
     
-    final Supplier<U> collectionSupplier;
+    final Callable<U> collectionSupplier;
 
+    @SuppressWarnings("unchecked")
     public FlowableToList(Publisher<T> source) {
         this.source = source;
-        this.collectionSupplier = this;
+        this.collectionSupplier = (Callable<U>)ArrayListSupplier.instance();
     }
 
-    public FlowableToList(Publisher<T> source, Supplier<U> collectionSupplier) {
+    public FlowableToList(Publisher<T> source, Callable<U> collectionSupplier) {
         this.source = source;
         this.collectionSupplier = collectionSupplier;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public U get() {
-        return (U)new ArrayList<T>();
     }
     
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
         U coll;
         try {
-            coll = collectionSupplier.get();
+            coll = collectionSupplier.call();
         } catch (Throwable e) {
             EmptySubscription.error(e, s);
             return;

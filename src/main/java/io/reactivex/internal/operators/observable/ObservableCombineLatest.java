@@ -140,14 +140,14 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
             return cancelled;
         }
 
-        void cancel(Queue<?> q) {
+        void cancel(SpscLinkedArrayQueue<?> q) {
             clear(q);
             for (CombinerSubscriber<T, R> s : subscribers) {
                 s.dispose();
             }
         }
         
-        void clear(Queue<?> q) {
+        void clear(SpscLinkedArrayQueue<?> q) {
             synchronized (this) {
                 Arrays.fill(latest, null);
             }
@@ -203,7 +203,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                 return;
             }
             
-            final Queue<Object> q = queue;
+            final SpscLinkedArrayQueue<Object> q = queue;
             final Observer<? super R> a = actual;
             final boolean delayError = this.delayError;
             
@@ -218,7 +218,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                     
                     boolean d = done;
                     @SuppressWarnings("unchecked")
-                    CombinerSubscriber<T, R> cs = (CombinerSubscriber<T, R>)q.peek();
+                    CombinerSubscriber<T, R> cs = (CombinerSubscriber<T, R>)q.poll();
                     boolean empty = cs == null;
                     
                     if (checkTerminated(d, empty, a, q, delayError)) {
@@ -228,8 +228,6 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                     if (empty) {
                         break;
                     }
-
-                    q.poll();
 
                     @SuppressWarnings("unchecked")
                     T[] array = (T[])q.poll();
@@ -269,7 +267,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         }
         
         
-        boolean checkTerminated(boolean d, boolean empty, Observer<?> a, Queue<?> q, boolean delayError) {
+        boolean checkTerminated(boolean d, boolean empty, Observer<?> a, SpscLinkedArrayQueue<?> q, boolean delayError) {
             if (cancelled) {
                 cancel(q);
                 return true;

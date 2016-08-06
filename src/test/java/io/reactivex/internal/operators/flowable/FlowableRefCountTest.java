@@ -30,7 +30,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
 import io.reactivex.processors.ReplayProcessor;
 import io.reactivex.schedulers.*;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableRefCountTest {
 
@@ -522,9 +522,9 @@ public class FlowableRefCountTest {
                         .flatMap(new Function<Long, Publisher<String>>() {
                             @Override
                             public Publisher<String> apply(Long t1) {
-                                    return Flowable.defer(new Supplier<Publisher<String>>() {
+                                    return Flowable.defer(new Callable<Publisher<String>>() {
                                         @Override
-                                        public Publisher<String> get() {
+                                        public Publisher<String> call() {
                                                 return Flowable.<String>error(new Exception("Some exception"));
                                         }
                                     });

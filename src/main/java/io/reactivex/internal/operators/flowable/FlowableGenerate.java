@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
@@ -24,11 +25,11 @@ import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableGenerate<T, S> extends Flowable<T> {
-    final Supplier<S> stateSupplier;
+    final Callable<S> stateSupplier;
     final BiFunction<S, Subscriber<T>, S> generator;
     final Consumer<? super S> disposeState;
     
-    public FlowableGenerate(Supplier<S> stateSupplier, BiFunction<S, Subscriber<T>, S> generator,
+    public FlowableGenerate(Callable<S> stateSupplier, BiFunction<S, Subscriber<T>, S> generator,
             Consumer<? super S> disposeState) {
         this.stateSupplier = stateSupplier;
         this.generator = generator;
@@ -40,7 +41,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
         S state;
         
         try {
-            state = stateSupplier.get();
+            state = stateSupplier.call();
         } catch (Throwable e) {
             EmptySubscription.error(e, s);
             return;

@@ -19,6 +19,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class LambdaObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
@@ -42,7 +43,13 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable> impleme
     @Override
     public void onSubscribe(Disposable s) {
         if (DisposableHelper.setOnce(this, s)) {
-            onSubscribe.accept(this);
+            try {
+                onSubscribe.accept(this);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                s.dispose();
+                RxJavaPlugins.onError(ex);
+            }
         }
     }
     

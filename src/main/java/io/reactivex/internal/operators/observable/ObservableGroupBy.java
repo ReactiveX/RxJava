@@ -213,7 +213,7 @@ public final class ObservableGroupBy<T, K, V> extends ObservableSource<T, Groupe
         private static final long serialVersionUID = -3852313036005250360L;
 
         final K key;
-        final Queue<T> queue;
+        final SpscLinkedArrayQueue<T> queue;
         final GroupBySubscriber<?, K, T> parent;
         final boolean delayError;
         
@@ -282,7 +282,7 @@ public final class ObservableGroupBy<T, K, V> extends ObservableSource<T, Groupe
             }
             int missed = 1;
             
-            final Queue<T> q = queue;
+            final SpscLinkedArrayQueue<T> q = queue;
             final boolean delayError = this.delayError;
             Observer<? super T> a = actual.get();
             for (;;) {

@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -54,7 +53,7 @@ public final class ObservableTakeLastTimed<T> extends ObservableSource<T, T> {
         final long time;
         final TimeUnit unit;
         final Scheduler scheduler;
-        final Queue<Object> queue;
+        final SpscLinkedArrayQueue<Object> queue;
         final boolean delayError;
         
         Disposable s;
@@ -84,15 +83,14 @@ public final class ObservableTakeLastTimed<T> extends ObservableSource<T, T> {
         
         @Override
         public void onNext(T t) {
-            final Queue<Object> q = queue;
+            final SpscLinkedArrayQueue<Object> q = queue;
 
             long now = scheduler.now(unit);
             long time = this.time;
             long c = count;
             boolean unbounded = c == Long.MAX_VALUE;
             
-            q.offer(now);
-            q.offer(t);
+            q.offer(now, t);
             
             while (!q.isEmpty()) {
                 long ts = (Long)q.peek();
@@ -143,7 +141,7 @@ public final class ObservableTakeLastTimed<T> extends ObservableSource<T, T> {
             int missed = 1;
             
             final Observer<? super T> a = actual;
-            final Queue<Object> q = queue;
+            final SpscLinkedArrayQueue<Object> q = queue;
             final boolean delayError = this.delayError;
             
             for (;;) {

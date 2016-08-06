@@ -23,7 +23,6 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Supplier;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.*;
@@ -37,11 +36,11 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
     final long timeskip;
     final TimeUnit unit;
     final Scheduler scheduler;
-    final Supplier<U> bufferSupplier;
+    final Callable<U> bufferSupplier;
     final int maxSize;
     final boolean restartTimerOnMaxSize;
     
-    public FlowableBufferTimed(Publisher<T> source, long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Supplier<U> bufferSupplier, int maxSize,
+    public FlowableBufferTimed(Publisher<T> source, long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Callable<U> bufferSupplier, int maxSize,
             boolean restartTimerOnMaxSize) {
         this.source = source;
         this.timespan = timespan;
@@ -81,7 +80,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
     
     static final class BufferExactUnboundedSubscriber<T, U extends Collection<? super T>>
     extends QueueDrainSubscriber<T, U, U> implements Subscription, Runnable, Disposable {
-        final Supplier<U> bufferSupplier;
+        final Callable<U> bufferSupplier;
         final long timespan;
         final TimeUnit unit;
         final Scheduler scheduler;
@@ -95,7 +94,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
         
         public BufferExactUnboundedSubscriber(
-                Subscriber<? super U> actual, Supplier<U> bufferSupplier,
+                Subscriber<? super U> actual, Callable<U> bufferSupplier,
                 long timespan, TimeUnit unit, Scheduler scheduler) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -114,7 +113,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U b;
             
             try {
-                b = bufferSupplier.get();
+                b = bufferSupplier.call();
             } catch (Throwable e) {
                 cancel();
                 EmptySubscription.error(e, actual);
@@ -206,7 +205,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U next;
             
             try {
-                next = bufferSupplier.get();
+                next = bufferSupplier.call();
             } catch (Throwable e) {
                 selfCancel = true;
                 cancel();
@@ -259,7 +258,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
     
     static final class BufferSkipBoundedSubscriber<T, U extends Collection<? super T>>
     extends QueueDrainSubscriber<T, U, U> implements Subscription, Runnable {
-        final Supplier<U> bufferSupplier;
+        final Callable<U> bufferSupplier;
         final long timespan;
         final long timeskip;
         final TimeUnit unit;
@@ -270,7 +269,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         List<U> buffers;
         
         public BufferSkipBoundedSubscriber(Subscriber<? super U> actual, 
-                Supplier<U> bufferSupplier, long timespan,
+                Callable<U> bufferSupplier, long timespan,
                 long timeskip, TimeUnit unit, Worker w) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -291,7 +290,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             final U b; // NOPMD
 
             try {
-                b = bufferSupplier.get();
+                b = bufferSupplier.call();
             } catch (Throwable e) {
                 w.dispose();
                 s.cancel();
@@ -352,7 +351,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             }
             
             for (U b : bs) {
-                queue.add(b);
+                queue.offer(b);
             }
             done = true;
             if (enter()) {
@@ -386,7 +385,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             final U b; // NOPMD
             
             try {
-                b = bufferSupplier.get();
+                b = bufferSupplier.call();
             } catch (Throwable e) {
                 cancel();
                 actual.onError(e);
@@ -426,7 +425,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
     
     static final class BufferExactBoundedSubscriber<T, U extends Collection<? super T>>
     extends QueueDrainSubscriber<T, U, U> implements Subscription, Runnable, Disposable {
-        final Supplier<U> bufferSupplier;
+        final Callable<U> bufferSupplier;
         final long timespan;
         final TimeUnit unit;
         final int maxSize;
@@ -445,7 +444,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         public BufferExactBoundedSubscriber(
                 Subscriber<? super U> actual,
-                Supplier<U> bufferSupplier,
+                Callable<U> bufferSupplier,
                 long timespan, TimeUnit unit, int maxSize,
                 boolean restartOnMaxSize, Worker w) {
             super(actual, new MpscLinkedQueue<U>());
@@ -467,7 +466,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U b;
 
             try {
-                b = bufferSupplier.get();
+                b = bufferSupplier.call();
             } catch (Throwable e) {
                 w.dispose();
                 s.cancel();
@@ -517,7 +516,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             fastpathOrderedEmitMax(b, false, this);
             
             try {
-                b = bufferSupplier.get();
+                b = bufferSupplier.call();
             } catch (Throwable e) {
                 cancel();
                 actual.onError(e);
@@ -611,7 +610,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U next;
             
             try {
-                next = bufferSupplier.get();
+                next = bufferSupplier.call();
             } catch (Throwable e) {
                 cancel();
                 actual.onError(e);

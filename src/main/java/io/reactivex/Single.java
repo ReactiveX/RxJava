@@ -24,6 +24,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.subscribers.single.*;
+import io.reactivex.internal.util.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
@@ -60,9 +61,9 @@ public abstract class Single<T> implements SingleConsumable<T> {
     @SuppressWarnings("unchecked")
     public static <T> Single<T> amb(final SingleConsumable<? extends T>... sources) {
         if (sources.length == 0) {
-            return error(new Supplier<Throwable>() {
+            return error(new Callable<Throwable>() {
                 @Override
-                public Throwable get() {
+                public Throwable call() {
                     return new NoSuchElementException();
                 }
             });
@@ -208,21 +209,21 @@ public abstract class Single<T> implements SingleConsumable<T> {
         return new SingleWrapper<T>(onSubscribe);
     }
     
-    public static <T> Single<T> defer(final Supplier<? extends SingleConsumable<? extends T>> singleSupplier) {
+    public static <T> Single<T> defer(final Callable<? extends SingleConsumable<? extends T>> singleSupplier) {
         Objects.requireNonNull(singleSupplier, "singleSupplier is null");
         return new SingleDefer<T>(singleSupplier);
     }
     
-    public static <T> Single<T> error(final Supplier<? extends Throwable> errorSupplier) {
+    public static <T> Single<T> error(final Callable<? extends Throwable> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
         return new SingleError<T>(errorSupplier);
     }
     
     public static <T> Single<T> error(final Throwable error) {
         Objects.requireNonNull(error, "error is null");
-        return error(new Supplier<Throwable>() {
+        return error(new Callable<Throwable>() {
             @Override
-            public Throwable get() {
+            public Throwable call() {
                 return error;
             }
         });
@@ -415,13 +416,13 @@ public abstract class Single<T> implements SingleConsumable<T> {
         return new SingleEquals<T>(first, second);
     }
 
-    public static <T, U> Single<T> using(Supplier<U> resourceSupplier, 
+    public static <T, U> Single<T> using(Callable<U> resourceSupplier, 
             Function<? super U, ? extends SingleConsumable<? extends T>> singleFunction, Consumer<? super U> disposer) {
         return using(resourceSupplier, singleFunction, disposer, true);
     }
         
     public static <T, U> Single<T> using(
-            final Supplier<U> resourceSupplier, 
+            final Callable<U> resourceSupplier, 
             final Function<? super U, ? extends SingleConsumable<? extends T>> singleFunction, 
             final Consumer<? super U> disposer, 
             final boolean eager) {
@@ -730,7 +731,7 @@ public abstract class Single<T> implements SingleConsumable<T> {
         return new SingleObserveOn<T>(this, scheduler);
     }
 
-    public final Single<T> onErrorReturn(final Supplier<? extends T> valueSupplier) {
+    public final Single<T> onErrorReturn(final Callable<? extends T> valueSupplier) {
         Objects.requireNonNull(valueSupplier, "valueSupplier is null");
         return new SingleOnErrorReturn<T>(this, valueSupplier, null);
     }
@@ -858,7 +859,11 @@ public abstract class Single<T> implements SingleConsumable<T> {
     }
 
     public final <R> R to(Function<? super Single<T>, R> convert) {
-        return convert.apply(this);
+        try {
+            return convert.apply(this);
+        } catch (Throwable ex) {
+            throw Exceptions.propagate(ex);
+        }
     }
     
     public final Flowable<T> toFlowable() {

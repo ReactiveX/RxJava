@@ -159,19 +159,12 @@ public final class ObservableSkipLastTimed<T> extends ObservableSource<T, T> {
                         break;
                     }
                     
-                    
                     if (ts > now - time) {
                         // not old enough
                         break;
                     }
-                    
-                    // wait unit the second value arrives
-                    if (q.size() == 1L) {
-                        continue;
-                    }
-                    
+
                     q.poll();
-                    
                     @SuppressWarnings("unchecked")
                     T v = (T)q.poll();
                     

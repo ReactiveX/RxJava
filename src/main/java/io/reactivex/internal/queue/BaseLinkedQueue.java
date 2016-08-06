@@ -18,10 +18,11 @@
 
 package io.reactivex.internal.queue;
 
-import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-abstract class BaseLinkedQueue<E> extends AbstractQueue<E> {
+import io.reactivex.internal.fuseable.SimpleQueue;
+
+abstract class BaseLinkedQueue<E> implements SimpleQueue<E> {
     private final AtomicReference<LinkedQueueNode<E>> producerNode;
     private final AtomicReference<LinkedQueueNode<E>> consumerNode;
     public BaseLinkedQueue() {
@@ -50,33 +51,7 @@ abstract class BaseLinkedQueue<E> extends AbstractQueue<E> {
     protected final void spConsumerNode(LinkedQueueNode<E> node) {
         consumerNode.lazySet(node);
     }
-    @Override
-    public final Iterator<E> iterator() {
-        throw new UnsupportedOperationException();
-    }
 
-    /**
-     * {@inheritDoc} <br>
-     * <p>
-     * IMPLEMENTATION NOTES:<br>
-     * This is an O(n) operation as we run through all the nodes and count them.<br>
-     * 
-     * @see java.util.Queue#size()
-     */
-    @Override
-    public final int size() {
-        LinkedQueueNode<E> chaserNode = lvConsumerNode();
-        final LinkedQueueNode<E> producerNode = lvProducerNode();
-        int size = 0;
-        // must chase the nodes all the way to the producer node, but there's no need to chase a moving target.
-        while (chaserNode != producerNode && size < Integer.MAX_VALUE) {
-            LinkedQueueNode<E> next;
-            while((next = chaserNode.lvNext()) == null); // NOPMD
-            chaserNode = next;
-            size++;
-        }
-        return size;
-    }
     /**
      * {@inheritDoc} <br>
      * <p>

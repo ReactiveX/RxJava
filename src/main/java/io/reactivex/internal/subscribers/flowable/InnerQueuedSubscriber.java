@@ -13,12 +13,11 @@
 
 package io.reactivex.internal.subscribers.flowable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
 
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.QueueDrainHelper;
 
@@ -41,7 +40,7 @@ implements Subscriber<T>, Subscription {
     
     final int limit;
 
-    Queue<T> queue;
+    SimpleQueue<T> queue;
     
     volatile boolean done;
     
@@ -137,7 +136,7 @@ implements Subscriber<T>, Subscription {
         this.done = true;
     }
     
-    public Queue<T> queue() {
+    public SimpleQueue<T> queue() {
         return queue;
     }
     

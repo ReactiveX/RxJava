@@ -466,7 +466,13 @@ public final class BehaviorProcessor<T> extends FlowProcessor<T> {
                     queue = null;
                 }
                 
-                q.forEachWhile(this);
+                try {
+                    q.forEachWhile(this);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    actual.onError(ex);
+                    return;
+                }
             }
         }
     }

@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.single;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiPredicate;
+import io.reactivex.internal.util.Exceptions;
 
 public final class SingleContains<T> extends Single<Boolean> {
 
@@ -43,7 +44,16 @@ public final class SingleContains<T> extends Single<Boolean> {
 
             @Override
             public void onSuccess(T v) {
-                s.onSuccess(comparer.test(v, value));
+                boolean b;
+                
+                try {
+                    b = comparer.test(v, value);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    s.onError(ex);
+                    return;
+                }
+                s.onSuccess(b);
             }
 
             @Override

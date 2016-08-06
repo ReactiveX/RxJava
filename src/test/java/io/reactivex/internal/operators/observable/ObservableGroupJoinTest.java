@@ -62,7 +62,7 @@ public class ObservableGroupJoinTest {
         public Observable<Integer> apply(final Integer leftValue, Observable<Integer> rightValues) {
             return rightValues.map(new Function<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer rightValue) {
+                public Integer apply(Integer rightValue) throws Exception {
                     return add.apply(leftValue, rightValue);
                 }
             });

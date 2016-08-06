@@ -12,7 +12,6 @@
  */
 package io.reactivex.internal.operators.observable;
 
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
@@ -20,7 +19,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.Exceptions;
 import io.reactivex.observers.SerializedObserver;
@@ -49,7 +48,7 @@ public final class ObservableConcatMap<T, U> extends ObservableSource<T, U> {
         final Observer<U> inner;
         final int bufferSize;
 
-        Queue<T> queue;
+        SimpleQueue<T> queue;
 
         Disposable s;
         
