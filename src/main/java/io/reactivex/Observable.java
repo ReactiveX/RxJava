@@ -49,21 +49,21 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     }
     
     /** An empty observable instance as there is no need to instantiate this more than once. */
-    static final Observable<Object> EMPTY = create(new ObservableConsumable<Object>() {
+    static final Observable<Object> EMPTY = new Observable<Object>() {
         @Override
-        public void subscribe(Observer<? super Object> s) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onComplete();
+        protected void subscribeActual(Observer<? super Object> o) {
+            o.onSubscribe(EmptyDisposable.INSTANCE);
+            o.onComplete();
         }
-    });
+    };
     
-    /** A never NbpObservable instance as there is no need to instantiate this more than once. */
-    static final Observable<Object> NEVER = create(new ObservableConsumable<Object>() {
+    /** A never observable instance as there is no need to instantiate this more than once. */
+    static final Observable<Object> NEVER = new Observable<Object>() {
         @Override
-        public void subscribe(Observer<? super Object> s) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
+        protected void subscribeActual(Observer<? super Object> o) {
+            o.onSubscribe(EmptyDisposable.INSTANCE);
         }
-    });
+    };
     
     public static <T> Observable<T> amb(Iterable<? extends ObservableConsumable<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
