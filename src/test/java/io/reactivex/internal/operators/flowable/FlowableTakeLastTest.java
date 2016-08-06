@@ -27,8 +27,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableTakeLastTest {
 

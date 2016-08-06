@@ -18,9 +18,9 @@ import java.util.concurrent.Callable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
-import io.reactivex.internal.util.Exceptions;
 
 public final class FlowableFromCallable<T> extends Flowable<T> implements Callable<T> {
     final Callable<? extends T> callable;

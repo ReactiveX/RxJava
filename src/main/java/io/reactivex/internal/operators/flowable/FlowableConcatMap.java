@@ -17,12 +17,13 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.Exceptions;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableConcatMap<T, R> extends FlowableSource<T, R> {
@@ -213,12 +214,12 @@ public final class FlowableConcatMap<T, R> extends FlowableSource<T, R> {
         
         @Override
         public void onError(Throwable t) {
-            if (Exceptions.addThrowable(error, t)) {
+            if (ExceptionHelper.addThrowable(error, t)) {
                 inner.cancel();
                 
                 if (getAndIncrement() == 0) {
-                    t = Exceptions.terminate(error);
-                    if (t != Exceptions.TERMINATED) {
+                    t = ExceptionHelper.terminate(error);
+                    if (t != ExceptionHelper.TERMINATED) {
                         actual.onError(t);
                     }
                 }
@@ -234,8 +235,8 @@ public final class FlowableConcatMap<T, R> extends FlowableSource<T, R> {
                 if (compareAndSet(1, 0)) {
                     return;
                 }
-                Throwable e = Exceptions.terminate(error);
-                if (e != Exceptions.TERMINATED) {
+                Throwable e = ExceptionHelper.terminate(error);
+                if (e != ExceptionHelper.TERMINATED) {
                     actual.onError(e);
                 }
             }
@@ -243,12 +244,12 @@ public final class FlowableConcatMap<T, R> extends FlowableSource<T, R> {
         
         @Override
         public void innerError(Throwable e) {
-            if (Exceptions.addThrowable(error, e)) {
+            if (ExceptionHelper.addThrowable(error, e)) {
                 s.cancel();
                 
                 if (getAndIncrement() == 0) {
-                    e = Exceptions.terminate(error);
-                    if (e != Exceptions.TERMINATED) {
+                    e = ExceptionHelper.terminate(error);
+                    if (e != ExceptionHelper.TERMINATED) {
                         actual.onError(e);
                     }
                 }
@@ -355,8 +356,8 @@ public final class FlowableConcatMap<T, R> extends FlowableSource<T, R> {
                                     if (get() == 0 && compareAndSet(0, 1)) {
                                         actual.onNext(vr);
                                         if (!compareAndSet(1, 0)) {
-                                            Throwable e = Exceptions.terminate(error);
-                                            if (e != Exceptions.TERMINATED) {
+                                            Throwable e = ExceptionHelper.terminate(error);
+                                            if (e != ExceptionHelper.TERMINATED) {
                                                 actual.onError(e);
                                             }
                                             return;
@@ -433,7 +434,7 @@ public final class FlowableConcatMap<T, R> extends FlowableSource<T, R> {
         
         @Override
         public void onError(Throwable t) {
-            if (Exceptions.addThrowable(error, t)) {
+            if (ExceptionHelper.addThrowable(error, t)) {
                 done = true;
                 drain();
             } else {
@@ -449,7 +450,7 @@ public final class FlowableConcatMap<T, R> extends FlowableSource<T, R> {
         
         @Override
         public void innerError(Throwable e) {
-            if (Exceptions.addThrowable(error, e)) {
+            if (ExceptionHelper.addThrowable(error, e)) {
                 if (!veryEnd) {
                     s.cancel();
                     done = true;
@@ -492,8 +493,8 @@ public final class FlowableConcatMap<T, R> extends FlowableSource<T, R> {
                         if (d && !veryEnd) {
                             Throwable ex = error.get();
                             if (ex != null) {
-                                ex = Exceptions.terminate(error);
-                                if (ex != Exceptions.TERMINATED) {
+                                ex = ExceptionHelper.terminate(error);
+                                if (ex != ExceptionHelper.TERMINATED) {
                                     actual.onError(ex);
                                 }
                                 return;
@@ -514,8 +515,8 @@ public final class FlowableConcatMap<T, R> extends FlowableSource<T, R> {
                         boolean empty = v == null;
                         
                         if (d && empty) {
-                            Throwable ex = Exceptions.terminate(error);
-                            if (ex != null && ex != Exceptions.TERMINATED) {
+                            Throwable ex = ExceptionHelper.terminate(error);
+                            if (ex != null && ex != ExceptionHelper.TERMINATED) {
                                 actual.onError(ex);
                             } else {
                                 actual.onComplete();

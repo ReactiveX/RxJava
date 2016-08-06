@@ -21,10 +21,10 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.subscribers.flowable.*;
+import io.reactivex.internal.subscribers.flowable.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.QueueDrainHelper;
-import io.reactivex.subscribers.SerializedSubscriber;
+import io.reactivex.subscribers.*;
 
 public final class FlowableBufferExactBoundary<T, U extends Collection<? super T>, B> 
 extends Flowable<U> {

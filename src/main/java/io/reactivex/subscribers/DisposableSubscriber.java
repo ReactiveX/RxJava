@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.subscribers.flowable;
+package io.reactivex.subscribers;
 
 import java.util.concurrent.atomic.AtomicReference;
 

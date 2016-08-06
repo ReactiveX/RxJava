@@ -17,8 +17,8 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
-import io.reactivex.internal.util.Exceptions;
 
 /**
  * Utility class to inject handlers to certain standard RxJava operations.

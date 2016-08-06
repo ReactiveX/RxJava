@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import org.reactivestreams.Publisher;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
@@ -21,8 +20,9 @@ import java.util.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
+import org.reactivestreams.Publisher;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;

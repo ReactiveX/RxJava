@@ -22,10 +22,10 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.subscribers.flowable.*;
+import io.reactivex.internal.subscribers.flowable.FullArbiterSubscriber;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subscribers.SerializedSubscriber;
+import io.reactivex.subscribers.*;
 
 public final class FlowableTimeout<T, U, V> extends Flowable<T> {
     final Publisher<T> source;

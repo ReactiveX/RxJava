@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.*;
+import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;

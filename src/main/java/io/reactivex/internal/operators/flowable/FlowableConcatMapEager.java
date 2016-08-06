@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.SimpleQueue;
@@ -147,7 +147,7 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
         
         @Override
         public void onError(Throwable t) {
-            if (Exceptions.addThrowable(error, t)) {
+            if (ExceptionHelper.addThrowable(error, t)) {
                 done = true;
                 drain();
             } else {
@@ -208,7 +208,7 @@ public class FlowableConcatMapEager<T, R> extends FlowableSource<T, R> {
         
         @Override
         public void innerError(InnerQueuedSubscriber<R> inner, Throwable e) {
-            if (Exceptions.addThrowable(this.error, e)) {
+            if (ExceptionHelper.addThrowable(this.error, e)) {
                 inner.setDone();
                 if (errorMode != ErrorMode.END) {
                     s.cancel();

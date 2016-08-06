@@ -17,8 +17,8 @@ import java.util.concurrent.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.util.Exceptions;
 
 public enum CompletableAwait {
     ;

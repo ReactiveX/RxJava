@@ -25,11 +25,12 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableConsumable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.util.Exceptions;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
@@ -165,7 +166,7 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
         }
         
         void errorAll(Observer<?> a) {
-            Throwable ex = Exceptions.terminate(error);
+            Throwable ex = ExceptionHelper.terminate(error);
             
             for (UnicastSubject<TRight> up : lefts.values()) {
                 up.onError(ex);
@@ -179,7 +180,7 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
         
         void fail(Throwable exc, Observer<?> a, SpscLinkedArrayQueue<?> q) {
             Exceptions.throwIfFatal(exc);
-            Exceptions.addThrowable(error, exc);
+            ExceptionHelper.addThrowable(error, exc);
             q.clear();
             cancelAll();
             errorAll(a);
@@ -339,7 +340,7 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
         
         @Override
         public void innerError(Throwable ex) {
-            if (Exceptions.addThrowable(error, ex)) {
+            if (ExceptionHelper.addThrowable(error, ex)) {
                 active.decrementAndGet();
                 drain();
             } else {
@@ -372,7 +373,7 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
         
         @Override
         public void innerCloseError(Throwable ex) {
-            if (Exceptions.addThrowable(error, ex)) {
+            if (ExceptionHelper.addThrowable(error, ex)) {
                 drain();
             } else {
                 RxJavaPlugins.onError(ex);

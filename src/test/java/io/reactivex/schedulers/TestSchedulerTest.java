@@ -26,9 +26,9 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.internal.util.Exceptions;
 
 public class TestSchedulerTest {
 

@@ -26,7 +26,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
-import io.reactivex.internal.util.Exceptions;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.GroupedObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
@@ -36,7 +36,7 @@ public class ExceptionsTest {
     @Ignore("Exceptions is not an enum")
     @Test
     public void constructorShouldBePrivate() {
-        TestHelper.checkUtilityClass(Exceptions.class);
+        TestHelper.checkUtilityClass(ExceptionHelper.class);
     }
 
     @Test

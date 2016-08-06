@@ -13,13 +13,13 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.*;
+import java.util.Iterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.*;
@@ -175,7 +175,7 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
 
         @Override
         public void onError(Throwable t) {
-            if (Exceptions.addThrowable(error, t)) {
+            if (ExceptionHelper.addThrowable(error, t)) {
                 done = true;
                 drain();
             } else {
@@ -236,8 +236,8 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         s.cancel();
-                        Exceptions.addThrowable(error, ex);
-                        ex = Exceptions.terminate(error);
+                        ExceptionHelper.addThrowable(error, ex);
+                        ex = ExceptionHelper.terminate(error);
 
                         current = null;
                         q.clear();
@@ -385,7 +385,7 @@ public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
             if (d) {
                 Throwable ex = error.get();
                 if (ex != null) {
-                    ex = Exceptions.terminate(error);
+                    ex = ExceptionHelper.terminate(error);
 
                     current = null;
                     q.clear();

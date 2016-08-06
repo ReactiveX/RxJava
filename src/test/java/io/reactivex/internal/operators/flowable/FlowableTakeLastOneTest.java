@@ -22,8 +22,7 @@ import org.junit.Test;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.subscribers.DefaultObserver;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableTakeLastOneTest {
 

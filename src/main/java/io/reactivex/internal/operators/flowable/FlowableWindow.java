@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.*;
+import java.util.ArrayDeque;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;

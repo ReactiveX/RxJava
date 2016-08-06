@@ -20,9 +20,9 @@ import java.util.concurrent.locks.*;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.Exceptions;
 
 public final class BlockingFlowableIterator<T> 
 extends AtomicReference<Subscription>

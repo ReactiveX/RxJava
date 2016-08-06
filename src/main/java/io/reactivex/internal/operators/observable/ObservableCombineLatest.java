@@ -13,12 +13,10 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.*;
+import java.util.Arrays;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
-import io.reactivex.Observer;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Function;

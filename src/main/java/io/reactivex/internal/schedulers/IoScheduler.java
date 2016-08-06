@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.*;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**

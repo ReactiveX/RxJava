@@ -17,9 +17,9 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscribers.observable.ToNotificationObserver;
-import io.reactivex.internal.util.Exceptions;
 import io.reactivex.subjects.BehaviorSubject;
 
 public final class ObservableRedo<T> extends Observable<T> {

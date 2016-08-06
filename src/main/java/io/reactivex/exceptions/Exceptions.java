@@ -11,14 +11,18 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.util;
+package io.reactivex.exceptions;
 
-import java.util.concurrent.atomic.AtomicReference;
-
-import io.reactivex.exceptions.*;
-
-public enum Exceptions {
-    ;
+/**
+ * Utility class to help propagate checked exceptions and rethrow exceptions
+ * designated as fatal.
+ */
+public final class Exceptions {
+    
+    /** Utility class. */
+    private Exceptions() {
+        throw new IllegalStateException("No instances!");
+    }
     /**
      * Convenience method to throw a {@code RuntimeException} and {@code Error} directly
      * or wrap any other exception type into a {@code RuntimeException}.
@@ -83,40 +87,5 @@ public enum Exceptions {
         } else if (t instanceof LinkageError) {
             throw (LinkageError) t;
         }
-    }
-
-    /**
-     * A singleton instance of a Throwable indicating a terminal state for exceptions,
-     * don't leak this!
-     */
-    public static final Throwable TERMINATED = new Throwable("No further exceptions");
-    
-    public static <T> boolean addThrowable(AtomicReference<Throwable> field, Throwable exception) {
-        for (;;) {
-            Throwable current = field.get();
-            
-            if (current == TERMINATED) {
-                return false;
-            }
-            
-            Throwable update;
-            if (current == null) {
-                update = exception;
-            } else {
-                update = new CompositeException(current, exception);
-            }
-            
-            if (field.compareAndSet(current, update)) {
-                return true;
-            }
-        }
-    }
-    
-    public static <T> Throwable terminate(AtomicReference<Throwable> field) {
-        Throwable current = field.get();
-        if (current != TERMINATED) {
-            current = field.getAndSet(TERMINATED);
-        }
-        return current;
     }
 }

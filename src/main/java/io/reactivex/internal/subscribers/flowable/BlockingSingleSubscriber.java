@@ -17,7 +17,7 @@ import java.util.concurrent.CountDownLatch;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.util.Exceptions;
+import io.reactivex.exceptions.Exceptions;
 
 public abstract class BlockingSingleSubscriber<T> extends CountDownLatch
 implements Subscriber<T>, Disposable {

@@ -16,7 +16,7 @@ package io.reactivex;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.disposables.*;
-import io.reactivex.internal.util.Exceptions;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public abstract class Scheduler {

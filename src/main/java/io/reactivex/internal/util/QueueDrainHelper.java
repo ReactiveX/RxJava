@@ -19,6 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BooleanSupplier;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.*;

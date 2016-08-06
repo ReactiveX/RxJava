@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.util.Exceptions;
+import io.reactivex.exceptions.Exceptions;
 
 public enum SingleAwait {
     ;

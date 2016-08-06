@@ -18,10 +18,10 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscribers.flowable.ToNotificationSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
-import io.reactivex.internal.util.Exceptions;
 import io.reactivex.processors.BehaviorProcessor;
 
 // FIXME split and update to the Rsc version

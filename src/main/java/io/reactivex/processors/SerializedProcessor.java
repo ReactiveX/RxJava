@@ -15,6 +15,7 @@ package io.reactivex.processors;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;

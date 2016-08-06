@@ -16,7 +16,7 @@ package io.reactivex.internal.schedulers;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableContainer;
 import io.reactivex.plugins.RxJavaPlugins;
 
