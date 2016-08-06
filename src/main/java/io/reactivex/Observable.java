@@ -23,7 +23,6 @@ import io.reactivex.annotations.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.operators.observable.*;
@@ -41,23 +40,6 @@ import io.reactivex.schedulers.*;
 public abstract class Observable<T> implements ObservableSource<T> {
     static final Object OBJECT = new Object();
 
-    /** An empty observable instance as there is no need to instantiate this more than once. */
-    static final Observable<Object> EMPTY = new Observable<Object>() {
-        @Override
-        protected void subscribeActual(Observer<? super Object> o) {
-            o.onSubscribe(EmptyDisposable.INSTANCE);
-            o.onComplete();
-        }
-    };
-    
-    /** A never observable instance as there is no need to instantiate this more than once. */
-    static final Observable<Object> NEVER = new Observable<Object>() {
-        @Override
-        protected void subscribeActual(Observer<? super Object> o) {
-            o.onSubscribe(EmptyDisposable.INSTANCE);
-        }
-    };
-    
     public static <T> Observable<T> amb(Iterable<? extends ObservableSource<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return new ObservableAmb<T>(null, sources);
@@ -366,7 +348,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Observable<T> empty() {
-        return (Observable<T>)EMPTY;
+        return (Observable<T>) ObservableEmpty.INSTANCE;
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -443,35 +425,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     public static <T> Observable<T> fromPublisher(final Publisher<? extends T> publisher) {
         Objects.requireNonNull(publisher, "publisher is null");
-        return new Observable<T>() {
-            @Override
-            protected void subscribeActual(final Observer<? super T> o) {
-                publisher.subscribe(new Subscriber<T>() {
-
-                    @Override
-                    public void onComplete() {
-                        o.onComplete();
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        o.onError(t);
-                    }
-
-                    @Override
-                    public void onNext(T t) {
-                        o.onNext(t);
-                    }
-
-                    @Override
-                    public void onSubscribe(Subscription inner) {
-                        o.onSubscribe(Disposables.from(inner));
-                        inner.request(Long.MAX_VALUE);
-                    }
-
-                });
-            }
-        };
+        return new ObservableFromPublisher<T>(publisher);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -848,7 +802,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Observable<T> never() {
-        return (Observable<T>)NEVER;
+        return (Observable<T>) ObservableNever.INSTANCE;
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -865,21 +819,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if ((long)start + (count - 1) > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Integer overflow");
         }
-        return new Observable<Integer>() {
-            @Override
-            protected void subscribeActual(Observer<? super Integer> o) {
-                Disposable d = Disposables.empty();
-                o.onSubscribe(d);
-                
-                long end = start - 1L + count;
-                for (long i = start; i <= end && !d.isDisposed(); i++) {
-                    o.onNext((int)i);
-                }
-                if (!d.isDisposed()) {
-                    o.onComplete();
-                }
-            }
-        };
+        return new ObservableRange(start, count);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1108,13 +1048,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> asObservable() {
-        final Observable<T> outer = this;
-        return new Observable<T>() {
-            @Override
-            protected void subscribeActual(Observer<? super T> o) {
-                outer.subscribe(o);
-            }
-        };
+        return new ObservableWrapper<T>(this);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3381,6 +3315,4 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <U, R> Observable<R> zipWith(ObservableSource<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError, int bufferSize) {
         return zip(this, other, zipper, delayError, bufferSize);
     }
-
-
- }
+}
