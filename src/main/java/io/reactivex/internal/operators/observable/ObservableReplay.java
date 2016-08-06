@@ -57,9 +57,9 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
     public static <U, R> Observable<R> multicastSelector(
             final Callable<? extends ConnectableObservable<U>> connectableFactory,
             final Function<? super Observable<U>, ? extends ObservableConsumable<R>> selector) {
-        return Observable.create(new ObservableConsumable<R>() {
+        return new Observable<R>() {
             @Override
-            public void subscribe(Observer<? super R> child) {
+            protected void subscribeActual(Observer<? super R> child) {
                 ConnectableObservable<U> co;
                 ObservableConsumable<R> observable;
                 try {
@@ -81,7 +81,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
                     }
                 });
             }
-        });
+        };
     }
     
     /**

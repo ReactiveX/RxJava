@@ -450,35 +450,35 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     public static <T> Observable<T> fromPublisher(final Publisher<? extends T> publisher) {
         Objects.requireNonNull(publisher, "publisher is null");
-        return create(new ObservableConsumable<T>() {
+        return new Observable<T>() {
             @Override
-            public void subscribe(final Observer<? super T> s) {
+            protected void subscribeActual(final Observer<? super T> o) {
                 publisher.subscribe(new Subscriber<T>() {
 
                     @Override
                     public void onComplete() {
-                        s.onComplete();
+                        o.onComplete();
                     }
 
                     @Override
                     public void onError(Throwable t) {
-                        s.onError(t);
+                        o.onError(t);
                     }
 
                     @Override
                     public void onNext(T t) {
-                        s.onNext(t);
+                        o.onNext(t);
                     }
 
                     @Override
                     public void onSubscribe(Subscription inner) {
-                        s.onSubscribe(Disposables.from(inner));
+                        o.onSubscribe(Disposables.from(inner));
                         inner.request(Long.MAX_VALUE);
                     }
-                    
+
                 });
             }
-        });
+        };
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -872,21 +872,21 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         if ((long)start + (count - 1) > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Integer overflow");
         }
-        return create(new ObservableConsumable<Integer>() {
+        return new Observable<Integer>() {
             @Override
-            public void subscribe(Observer<? super Integer> s) {
+            protected void subscribeActual(Observer<? super Integer> o) {
                 Disposable d = Disposables.empty();
-                s.onSubscribe(d);
+                o.onSubscribe(d);
                 
                 long end = start - 1L + count;
                 for (long i = start; i <= end && !d.isDisposed(); i++) {
-                    s.onNext((int)i);
+                    o.onNext((int)i);
                 }
                 if (!d.isDisposed()) {
-                    s.onComplete();
+                    o.onComplete();
                 }
             }
-        });
+        };
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1115,12 +1115,13 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> asObservable() {
-        return create(new ObservableConsumable<T>() {
+        final Observable<T> outer = this;
+        return new Observable<T>() {
             @Override
-            public void subscribe(Observer<? super T> s) {
-                Observable.this.subscribe(s);
+            protected void subscribeActual(Observer<? super T> o) {
+                outer.subscribe(o);
             }
-        });
+        };
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
