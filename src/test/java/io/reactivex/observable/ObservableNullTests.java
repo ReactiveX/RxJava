@@ -21,7 +21,7 @@ import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpOperator;
+import io.reactivex.Observable.Operator;
 import io.reactivex.Observer;
 import io.reactivex.Optional;
 import io.reactivex.disposables.Disposable;
@@ -1618,7 +1618,7 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void liftReturnsNull() {
-        just1.lift(new NbpOperator<Object, Integer>() {
+        just1.lift(new Operator<Object, Integer>() {
             @Override
             public Observer<? super Integer> apply(Observer<? super Object> s) {
                 return null;

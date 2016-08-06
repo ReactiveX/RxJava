@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
-import io.reactivex.Observable.NbpOperator;
+import io.reactivex.Observable.Operator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -152,7 +152,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     @Ignore("Failed operator may leave the child NbpSubscriber in an inconsistent state which prevents further error delivery.")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable.just(1).lift(new NbpOperator<String, Integer>() {
+        Observable.just(1).lift(new Operator<String, Integer>() {
 
             @Override
             public Observer<? super Integer> apply(Observer<? super String> t1) {
@@ -185,7 +185,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     @Ignore("A crashing operator may leave the downstream in an inconsistent state and not suitable for event delivery")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable.just(1).lift(new NbpOperator<String, Integer>() {
+        Observable.just(1).lift(new Operator<String, Integer>() {
 
             @Override
             public Observer<? super Integer> apply(final Observer<? super String> t1) {

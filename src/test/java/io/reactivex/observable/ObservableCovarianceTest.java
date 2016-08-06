@@ -23,7 +23,7 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.Observable.NbpTransformer;
+import io.reactivex.Observable.Transformer;
 import io.reactivex.functions.*;
 import io.reactivex.observables.GroupedObservable;
 import io.reactivex.observers.TestObserver;
@@ -207,7 +207,7 @@ public class ObservableCovarianceTest {
         }
     };
     
-    static NbpTransformer<List<Movie>, Movie> deltaTransformer = new NbpTransformer<List<Movie>, Movie>() {
+    static Transformer<List<Movie>, Movie> deltaTransformer = new Transformer<List<Movie>, Movie>() {
         @Override
         public Observable<Movie> apply(Observable<List<Movie>> movieList) {
             return movieList

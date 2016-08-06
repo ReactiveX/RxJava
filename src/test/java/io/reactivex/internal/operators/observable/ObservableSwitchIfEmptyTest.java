@@ -67,7 +67,7 @@ public class ObservableSwitchIfEmptyTest {
 
         Observable.<Long>empty()
                 .switchIfEmpty(withProducer)
-                .lift(new Observable.NbpOperator<Long, Long>() {
+                .lift(new Observable.Operator<Long, Long>() {
             @Override
             public Observer<? super Long> apply(final Observer<? super Long> child) {
                 return new DefaultObserver<Long>() {

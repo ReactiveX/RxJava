@@ -27,11 +27,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public final class ObservableLift<R, T> extends Observable<R> {
     /** The actual operator. */
-    final NbpOperator<? extends R, ? super T> operator;
+    final Operator<? extends R, ? super T> operator;
     /** The source publisher. */
     final ObservableConsumable<? extends T> source;
     
-    public ObservableLift(ObservableConsumable<? extends T> source, NbpOperator<? extends R, ? super T> operator) {
+    public ObservableLift(ObservableConsumable<? extends T> source, Operator<? extends R, ? super T> operator) {
         this.source = source;
         this.operator = operator;
     }
@@ -40,7 +40,7 @@ public final class ObservableLift<R, T> extends Observable<R> {
      * Returns the operator of this lift publisher.
      * @return the operator of this lift publisher
      */
-    public NbpOperator<? extends R, ? super T> operator() {
+    public Operator<? extends R, ? super T> operator() {
         return operator;
     }
     
