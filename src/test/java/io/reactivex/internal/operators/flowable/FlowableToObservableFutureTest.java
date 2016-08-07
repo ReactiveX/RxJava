@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableToObservableFutureTest {
@@ -47,6 +47,27 @@ public class FlowableToObservableFutureTest {
         verify(o, times(1)).onComplete();
         verify(o, never()).onError(any(Throwable.class));
         verify(future, times(1)).cancel(true);
+    }
+
+    @Test
+    public void testSuccessOperatesOnSuppliedScheduler() throws Exception {
+        @SuppressWarnings("unchecked")
+        Future<Object> future = mock(Future.class);
+        Object value = new Object();
+        when(future.get()).thenReturn(value);
+
+        Subscriber<Object> o = TestHelper.mockSubscriber();
+
+        TestScheduler scheduler = new TestScheduler();
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
+
+        Flowable.fromFuture(future, scheduler).subscribe(ts);
+
+        verify(o, never()).onNext(value);
+
+        scheduler.triggerActions();
+
+        verify(o, times(1)).onNext(value);
     }
 
     @Test

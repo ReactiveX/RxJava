@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.observers.TestObserver;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.*;
 
 public class ObservableToFutureTest {
 
@@ -46,6 +46,27 @@ public class ObservableToFutureTest {
         verify(o, times(1)).onComplete();
         verify(o, never()).onError(any(Throwable.class));
         verify(future, times(1)).cancel(true);
+    }
+
+    @Test
+    public void testSuccessOperatesOnSuppliedScheduler() throws Exception {
+        @SuppressWarnings("unchecked")
+        Future<Object> future = mock(Future.class);
+        Object value = new Object();
+        when(future.get()).thenReturn(value);
+
+        Observer<Object> o = TestHelper.mockObserver();
+
+        TestScheduler scheduler = new TestScheduler();
+        TestObserver<Object> ts = new TestObserver<Object>(o);
+
+        Observable.fromFuture(future, scheduler).subscribe(ts);
+
+        verify(o, never()).onNext(value);
+
+        scheduler.triggerActions();
+
+        verify(o, times(1)).onNext(value);
     }
 
     @Test

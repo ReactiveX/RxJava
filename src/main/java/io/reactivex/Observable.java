@@ -437,11 +437,11 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
         return o.subscribeOn(scheduler);
     }
 
-    @SchedulerSupport(SchedulerSupport.IO)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Observable<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         Observable<T> o = fromFuture(future);
-        return o.subscribeOn(Schedulers.io());
+        return o.subscribeOn(scheduler);
     }
 
     public static <T> Observable<T> fromIterable(Iterable<? extends T> source) {
