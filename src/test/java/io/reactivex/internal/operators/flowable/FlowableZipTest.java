@@ -730,7 +730,7 @@ public class FlowableZipTest {
                     public Integer apply(Integer a, Integer b) {
                         return a + b;
                     }
-                }).subscribe(new DefaultObserver<Integer>() {
+                }).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {
@@ -819,7 +819,7 @@ public class FlowableZipTest {
                 });
 
         final ArrayList<String> list = new ArrayList<String>();
-        os.subscribe(new DefaultObserver<String>() {
+        os.subscribe(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {

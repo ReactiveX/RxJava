@@ -97,7 +97,7 @@ public class FlowableTakeLastOneTest {
         assertEquals(0L, count);
     }
     
-    private static class MySubscriber<T> extends DefaultObserver<T> {
+    private static class MySubscriber<T> extends DefaultSubscriber<T> {
 
         private long initialRequest;
 

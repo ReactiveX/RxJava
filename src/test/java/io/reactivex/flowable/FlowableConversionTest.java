@@ -147,7 +147,7 @@ public class FlowableConversionTest {
     
     @Test
     public void testConversionBetweenObservableClasses() {
-        final TestSubscriber<String> subscriber = new TestSubscriber<String>(new DefaultObserver<String>() {
+        final TestSubscriber<String> subscriber = new TestSubscriber<String>(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -229,7 +229,7 @@ public class FlowableConversionTest {
                         @Override
                         public ConcurrentLinkedQueue<Integer> apply(Flowable<Integer> onSubscribe) {
                             final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<Integer>();
-                            onSubscribe.subscribe(new DefaultObserver<Integer>(){
+                            onSubscribe.subscribe(new DefaultSubscriber<Integer>(){
                                 @Override
                                 public void onComplete() {
                                     isFinished.set(true);

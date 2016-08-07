@@ -89,7 +89,7 @@ public class FlowableRetryWithPredicateTest {
         });
         
         @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
         
         source.retry(retryTwice).subscribe(o);
@@ -117,7 +117,7 @@ public class FlowableRetryWithPredicateTest {
         });
         
         @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
         
         source.retry(retryTwice).subscribe(o);
@@ -153,7 +153,7 @@ public class FlowableRetryWithPredicateTest {
         });
         
         @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
         
         source.retry(retryOnTestException).subscribe(o);
@@ -190,7 +190,7 @@ public class FlowableRetryWithPredicateTest {
         });
         
         @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
         
         source.retry(retryOnTestException).subscribe(o);

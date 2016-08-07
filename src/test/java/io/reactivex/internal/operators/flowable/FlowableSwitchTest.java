@@ -448,7 +448,7 @@ public class FlowableSwitchTest {
 
         
         final TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
-        Flowable.switchOnNext(o).subscribe(new DefaultObserver<String>() {
+        Flowable.switchOnNext(o).subscribe(new DefaultSubscriber<String>() {
 
             private int requested = 0;
 

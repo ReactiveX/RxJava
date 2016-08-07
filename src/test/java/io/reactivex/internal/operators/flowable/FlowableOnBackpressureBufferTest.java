@@ -44,7 +44,7 @@ public class FlowableOnBackpressureBufferTest {
     public void testFixBackpressureWithBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch l2 = new CountDownLatch(150);
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultObserver<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultSubscriber<Long>() {
 
             @Override
             protected void onStart() {
@@ -101,7 +101,7 @@ public class FlowableOnBackpressureBufferTest {
     public void testFixBackpressureBoundedBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch backpressureCallback = new CountDownLatch(1);
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultObserver<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultSubscriber<Long>() {
 
             @Override
             protected void onStart() {

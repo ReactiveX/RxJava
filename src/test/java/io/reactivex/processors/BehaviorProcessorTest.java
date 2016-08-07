@@ -252,7 +252,7 @@ public class BehaviorProcessorTest {
                         return Flowable.just(t1 + ", " + t1);
                     }
                 })
-                .subscribe(new DefaultObserver<String>() {
+                .subscribe(new DefaultSubscriber<String>() {
                     @Override
                     public void onNext(String t) {
                         o.onNext(t);
@@ -426,7 +426,7 @@ public class BehaviorProcessorTest {
                 final AtomicReference<Object> o = new AtomicReference<Object>();
                 
                 rs.subscribeOn(s).observeOn(Schedulers.io())
-                .subscribe(new DefaultObserver<Object>() {
+                .subscribe(new DefaultSubscriber<Object>() {
     
                     @Override
                     public void onComplete() {

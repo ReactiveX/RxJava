@@ -160,7 +160,7 @@ public class FlowableTakeLastTest {
     @Test
     public void testIgnoreRequest1() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -186,7 +186,7 @@ public class FlowableTakeLastTest {
     @Test
     public void testIgnoreRequest2() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -211,7 +211,7 @@ public class FlowableTakeLastTest {
     @Test(timeout = 30000)
     public void testIgnoreRequest3() {
         // If `takeLast` does not ignore `request` properly, it will enter an infinite loop.
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -238,7 +238,7 @@ public class FlowableTakeLastTest {
     @Test
     public void testIgnoreRequest4() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -264,7 +264,7 @@ public class FlowableTakeLastTest {
     @Test
     public void testUnsubscribeTakesEffectEarlyOnFastPath() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -292,7 +292,7 @@ public class FlowableTakeLastTest {
     @Test(timeout=10000)
     public void testRequestOverflow() {
         final List<Integer> list = new ArrayList<Integer>();
-        Flowable.range(1, 100).takeLast(50).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(1, 100).takeLast(50).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {

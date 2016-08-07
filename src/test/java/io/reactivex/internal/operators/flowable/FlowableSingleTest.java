@@ -26,7 +26,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.functions.*;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 public class FlowableSingleTest {
 
@@ -128,7 +128,7 @@ public class FlowableSingleTest {
                 //
                 .single()
                 //
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onStart() {
@@ -168,7 +168,7 @@ public class FlowableSingleTest {
                 //
                 .single()
                 //
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onStart() {
@@ -207,7 +207,7 @@ public class FlowableSingleTest {
                 //
                 .single()
                 //
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onStart() {
@@ -402,7 +402,7 @@ public class FlowableSingleTest {
     public void testSingleWithBackpressure() {
         Flowable<Integer> observable = Flowable.just(1, 2).single();
 
-        Subscriber<Integer> subscriber = spy(new DefaultObserver<Integer>() {
+        Subscriber<Integer> subscriber = spy(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {

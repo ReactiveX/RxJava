@@ -23,7 +23,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 public class FlowableErrorHandlingTests {
 
@@ -36,7 +36,7 @@ public class FlowableErrorHandlingTests {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> caughtError = new AtomicReference<Throwable>();
         Flowable<Long> o = Flowable.interval(50, TimeUnit.MILLISECONDS);
-        Subscriber<Long> observer = new DefaultObserver<Long>() {
+        Subscriber<Long> observer = new DefaultSubscriber<Long>() {
 
             @Override
             public void onComplete() {
@@ -72,7 +72,7 @@ public class FlowableErrorHandlingTests {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> caughtError = new AtomicReference<Throwable>();
         Flowable<Long> o = Flowable.interval(50, TimeUnit.MILLISECONDS);
-        Subscriber<Long> observer = new DefaultObserver<Long>() {
+        Subscriber<Long> observer = new DefaultSubscriber<Long>() {
 
             @Override
             public void onComplete() {

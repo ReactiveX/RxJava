@@ -480,7 +480,7 @@ public class FlowableCombineLatestTest {
 
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            Subscriber<List<Object>> s = new DefaultObserver<List<Object>>() {
+            Subscriber<List<Object>> s = new DefaultSubscriber<List<Object>>() {
 
                 @Override
                 public void onNext(List<Object> t) {
@@ -811,7 +811,7 @@ public class FlowableCombineLatestTest {
             }});
         //should get at least 4
         final CountDownLatch latch = new CountDownLatch(4);
-        o.subscribeOn(Schedulers.computation()).subscribe(new DefaultObserver<Integer>() {
+        o.subscribeOn(Schedulers.computation()).subscribe(new DefaultSubscriber<Integer>() {
             
             @Override
             public void onStart() {

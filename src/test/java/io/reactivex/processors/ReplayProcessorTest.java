@@ -250,7 +250,7 @@ public class ReplayProcessorTest {
     public void testNewSubscriberDoesntBlockExisting() throws InterruptedException {
 
         final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<String>();
-        Subscriber<String> observer1 = new DefaultObserver<String>() {
+        Subscriber<String> observer1 = new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -274,7 +274,7 @@ public class ReplayProcessorTest {
         final CountDownLatch oneReceived = new CountDownLatch(1);
         final CountDownLatch makeSlow = new CountDownLatch(1);
         final CountDownLatch completed = new CountDownLatch(1);
-        Subscriber<String> observer2 = new DefaultObserver<String>() {
+        Subscriber<String> observer2 = new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -373,7 +373,7 @@ public class ReplayProcessorTest {
                         return Flowable.just(t1 + ", " + t1);
                     }
                 })
-                .subscribe(new DefaultObserver<String>() {
+                .subscribe(new DefaultSubscriber<String>() {
                     @Override
                     public void onNext(String t) {
                         System.out.println(t);
@@ -404,7 +404,7 @@ public class ReplayProcessorTest {
         
         final Subscriber<Integer> o = TestHelper.mockSubscriber();
         
-        source.unsafeSubscribe(new DefaultObserver<Integer>() {
+        source.unsafeSubscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onNext(Integer t) {

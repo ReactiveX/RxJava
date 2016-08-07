@@ -196,7 +196,7 @@ public class FlowableMaterializeTest {
 //        ts.assertUnsubscribed();
     }
 
-    private static class TestObserver extends DefaultObserver<Try<Optional<String>>> {
+    private static class TestObserver extends DefaultSubscriber<Try<Optional<String>>> {
 
         boolean onCompleted = false;
         boolean onError = false;

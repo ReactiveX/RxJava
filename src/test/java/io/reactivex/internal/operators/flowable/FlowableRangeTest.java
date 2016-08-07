@@ -196,7 +196,7 @@ public class FlowableRangeTest {
     public void testRequestOverflow() {
         final AtomicInteger count = new AtomicInteger();
         int n = 10;
-        Flowable.range(1, n).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(1, n).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -224,7 +224,7 @@ public class FlowableRangeTest {
     @Test
     public void testEmptyRangeSendsOnCompleteEagerlyWithRequestZero() {
         final AtomicBoolean completed = new AtomicBoolean(false);
-        Flowable.range(1, 0).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(1, 0).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {

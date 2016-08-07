@@ -61,7 +61,7 @@ public class FlowableDefaultIfEmptyTest {
     public void testEmptyButClientThrows() {
         final Subscriber<Integer> o = TestHelper.mockSubscriber();
         
-        Flowable.<Integer>empty().defaultIfEmpty(1).subscribe(new DefaultObserver<Integer>() {
+        Flowable.<Integer>empty().defaultIfEmpty(1).subscribe(new DefaultSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();

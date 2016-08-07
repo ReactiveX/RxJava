@@ -134,7 +134,7 @@ public class FlowableWindowWithTimeTest {
         return new Consumer<Flowable<T>>() {
             @Override
             public void accept(Flowable<T> stringObservable) {
-                stringObservable.subscribe(new DefaultObserver<T>() {
+                stringObservable.subscribe(new DefaultSubscriber<T>() {
                     @Override
                     public void onComplete() {
                         lists.add(new ArrayList<T>(list));

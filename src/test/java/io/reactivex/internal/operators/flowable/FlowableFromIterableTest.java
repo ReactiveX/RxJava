@@ -173,7 +173,7 @@ public class FlowableFromIterableTest {
         final CountDownLatch latch = new CountDownLatch(expectedCount);
         
         o.subscribeOn(Schedulers.computation())
-        .subscribe(new DefaultObserver<Integer>() {
+        .subscribe(new DefaultSubscriber<Integer>() {
             
             @Override
             public void onStart() {
@@ -203,7 +203,7 @@ public class FlowableFromIterableTest {
         
         final AtomicBoolean completed = new AtomicBoolean(false);
         
-        Flowable.fromIterable(Collections.emptyList()).subscribe(new DefaultObserver<Object>() {
+        Flowable.fromIterable(Collections.emptyList()).subscribe(new DefaultSubscriber<Object>() {
 
             @Override
             public void onStart() {
@@ -297,7 +297,7 @@ public class FlowableFromIterableTest {
                 };
             }
         };
-        Flowable.fromIterable(iterable).subscribe(new DefaultObserver<Integer>() {
+        Flowable.fromIterable(iterable).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {
