@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
@@ -36,19 +36,19 @@ import io.reactivex.subjects.UnicastSubject;
 
 public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends ObservableWithUpstream<TLeft, R> {
 
-    final ObservableConsumable<? extends TRight> other;
+    final ObservableSource<? extends TRight> other;
     
-    final Function<? super TLeft, ? extends ObservableConsumable<TLeftEnd>> leftEnd;
+    final Function<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd;
     
-    final Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd;
+    final Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd;
     
     final BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector;
     
     public ObservableGroupJoin(
-            ObservableConsumable<TLeft> source, 
-            ObservableConsumable<? extends TRight> other,
-            Function<? super TLeft, ? extends ObservableConsumable<TLeftEnd>> leftEnd,
-            Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd,
+            ObservableSource<TLeft> source,
+            ObservableSource<? extends TRight> other,
+            Function<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd,
+            Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
             BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector) {
         super(source);
         this.other = other;
@@ -105,9 +105,9 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
 
         final AtomicReference<Throwable> error;
         
-        final Function<? super TLeft, ? extends ObservableConsumable<TLeftEnd>> leftEnd;
+        final Function<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd;
         
-        final Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd;
+        final Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd;
         
         final BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector;
         
@@ -129,8 +129,8 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
         
         public GroupJoinSubscription(
                 Observer<? super R> actual, 
-                Function<? super TLeft, ? extends ObservableConsumable<TLeftEnd>> leftEnd,
-                Function<? super TRight, ? extends ObservableConsumable<TRightEnd>> rightEnd,
+                Function<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd,
+                Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
                 BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector) {
             this.actual = actual;
             this.disposables = new CompositeDisposable();
@@ -243,7 +243,7 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
                         int idx = leftIndex++;
                         lefts.put(idx, up);
                         
-                        ObservableConsumable<TLeftEnd> p;
+                        ObservableSource<TLeftEnd> p;
                         
                         try {
                             p = Objects.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
@@ -288,7 +288,7 @@ public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends 
                         
                         rights.put(idx, right);
                         
-                        ObservableConsumable<TRightEnd> p;
+                        ObservableSource<TRightEnd> p;
                         
                         try {
                             p = Objects.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");

@@ -17,12 +17,12 @@ package io.reactivex;
  * consumable via an {@link Observer}.
  * <p>
  * This class also serves the base type for custom operators wrapped into
- * Observable via {@link Observable#create(ObservableConsumable)}.
+ * Observable via {@link Observable#create(ObservableSource)}.
  * 
  * @param <T> the element type
  * @since 2.0
  */
-public interface ObservableConsumable<T> {
+public interface ObservableSource<T> {
 
     void subscribe(Observer<? super T> observer);
 }

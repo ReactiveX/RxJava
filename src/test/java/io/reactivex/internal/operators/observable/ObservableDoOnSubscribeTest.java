@@ -67,7 +67,7 @@ public class ObservableDoOnSubscribeTest {
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();
         final AtomicReference<Observer<? super Integer>> sref = new AtomicReference<Observer<? super Integer>>();
-        Observable<Integer> o = Observable.create(new ObservableConsumable<Integer>() {
+        Observable<Integer> o = Observable.create(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(Observer<? super Integer> s) {

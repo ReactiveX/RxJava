@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -235,7 +235,7 @@ public class BlockingObservableNextTest {
         final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
         final AtomicBoolean running = new AtomicBoolean(true);
         final AtomicInteger count = new AtomicInteger(0);
-        final Observable<Integer> obs = Observable.create(new ObservableConsumable<Integer>() {
+        final Observable<Integer> obs = Observable.create(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(final Observer<? super Integer> o) {

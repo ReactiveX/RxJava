@@ -21,9 +21,9 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class ObservableSampleWithObservable<T> extends ObservableWithUpstream<T, T> {
-    final ObservableConsumable<?> other;
+    final ObservableSource<?> other;
     
-    public ObservableSampleWithObservable(ObservableConsumable<T> source, ObservableConsumable<?> other) {
+    public ObservableSampleWithObservable(ObservableSource<T> source, ObservableSource<?> other) {
         super(source);
         this.other = other;
     }
@@ -40,13 +40,13 @@ public final class ObservableSampleWithObservable<T> extends ObservableWithUpstr
         private static final long serialVersionUID = -3517602651313910099L;
 
         final Observer<? super T> actual;
-        final ObservableConsumable<?> sampler;
+        final ObservableSource<?> sampler;
         
         final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
         
         Disposable s;
         
-        public SamplePublisherSubscriber(Observer<? super T> actual, ObservableConsumable<?> other) {
+        public SamplePublisherSubscriber(Observer<? super T> actual, ObservableSource<?> other) {
             this.actual = actual;
             this.sampler = other;
         }

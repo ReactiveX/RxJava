@@ -100,7 +100,7 @@ public class ObservableTakeWhileTest {
 
     @Test
     public void testTakeWhileDoesntLeakErrors() {
-        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> source = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -176,7 +176,7 @@ public class ObservableTakeWhileTest {
         verify(s, times(1)).dispose();
     }
 
-    private static class TestObservable implements ObservableConsumable<String> {
+    private static class TestObservable implements ObservableSource<String> {
 
         final Disposable s;
         final String[] values;

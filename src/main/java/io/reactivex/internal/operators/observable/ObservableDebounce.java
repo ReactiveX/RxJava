@@ -24,9 +24,9 @@ import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableDebounce<T, U> extends ObservableWithUpstream<T, T> {
-    final Function<? super T, ? extends ObservableConsumable<U>> debounceSelector;
+    final Function<? super T, ? extends ObservableSource<U>> debounceSelector;
 
-    public ObservableDebounce(ObservableConsumable<T> source, Function<? super T, ? extends ObservableConsumable<U>> debounceSelector) {
+    public ObservableDebounce(ObservableSource<T> source, Function<? super T, ? extends ObservableSource<U>> debounceSelector) {
         super(source);
         this.debounceSelector = debounceSelector;
     }
@@ -39,7 +39,7 @@ public final class ObservableDebounce<T, U> extends ObservableWithUpstream<T, T>
     static final class DebounceSubscriber<T, U> 
     implements Observer<T>, Disposable {
         final Observer<? super T> actual;
-        final Function<? super T, ? extends ObservableConsumable<U>> debounceSelector;
+        final Function<? super T, ? extends ObservableSource<U>> debounceSelector;
         
         volatile boolean gate;
 
@@ -52,7 +52,7 @@ public final class ObservableDebounce<T, U> extends ObservableWithUpstream<T, T>
         boolean done;
 
         public DebounceSubscriber(Observer<? super T> actual,
-                Function<? super T, ? extends ObservableConsumable<U>> debounceSelector) {
+                Function<? super T, ? extends ObservableSource<U>> debounceSelector) {
             this.actual = actual;
             this.debounceSelector = debounceSelector;
         }
@@ -79,7 +79,7 @@ public final class ObservableDebounce<T, U> extends ObservableWithUpstream<T, T>
                 d.dispose();
             }
             
-            ObservableConsumable<U> p;
+            ObservableSource<U> p;
             
             try {
                 p = debounceSelector.apply(t);

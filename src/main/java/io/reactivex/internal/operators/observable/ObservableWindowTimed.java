@@ -42,7 +42,7 @@ public final class ObservableWindowTimed<T> extends ObservableWithUpstream<T, Ob
     final boolean restartTimerOnMaxSize;
 
     public ObservableWindowTimed(
-            ObservableConsumable<T> source, 
+            ObservableSource<T> source,
             long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, long maxSize,
             int bufferSize, boolean restartTimerOnMaxSize) {
         super(source);

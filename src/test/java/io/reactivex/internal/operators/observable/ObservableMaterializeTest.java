@@ -132,7 +132,7 @@ public class ObservableMaterializeTest {
 
     }
 
-    private static class TestAsyncErrorObservable implements ObservableConsumable<String> {
+    private static class TestAsyncErrorObservable implements ObservableSource<String> {
 
         String[] valuesToReturn;
 

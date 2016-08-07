@@ -24,9 +24,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableWithLatestFrom<T, U, R> extends ObservableWithUpstream<T, R> {
     final BiFunction<? super T, ? super U, ? extends R> combiner;
-    final ObservableConsumable<? extends U> other;
-    public ObservableWithLatestFrom(ObservableConsumable<T> source, 
-            BiFunction<? super T, ? super U, ? extends R> combiner, ObservableConsumable<? extends U> other) {
+    final ObservableSource<? extends U> other;
+    public ObservableWithLatestFrom(ObservableSource<T> source,
+            BiFunction<? super T, ? super U, ? extends R> combiner, ObservableSource<? extends U> other) {
         super(source);
         this.combiner = combiner;
         this.other = other;

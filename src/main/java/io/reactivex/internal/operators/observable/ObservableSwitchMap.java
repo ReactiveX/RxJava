@@ -25,11 +25,11 @@ import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableSwitchMap<T, R> extends ObservableWithUpstream<T, R> {
-    final Function<? super T, ? extends ObservableConsumable<? extends R>> mapper;
+    final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
     final int bufferSize;
 
-    public ObservableSwitchMap(ObservableConsumable<T> source, 
-            Function<? super T, ? extends ObservableConsumable<? extends R>> mapper, int bufferSize) {
+    public ObservableSwitchMap(ObservableSource<T> source,
+                               Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
         super(source);
         this.mapper = mapper;
         this.bufferSize = bufferSize;
@@ -44,7 +44,7 @@ public final class ObservableSwitchMap<T, R> extends ObservableWithUpstream<T, R
         /** */
         private static final long serialVersionUID = -3491074160481096299L;
         final Observer<? super R> actual;
-        final Function<? super T, ? extends ObservableConsumable<? extends R>> mapper;
+        final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
         final int bufferSize;
         
         
@@ -65,7 +65,7 @@ public final class ObservableSwitchMap<T, R> extends ObservableWithUpstream<T, R
         
         volatile long unique;
         
-        public SwitchMapSubscriber(Observer<? super R> actual, Function<? super T, ? extends ObservableConsumable<? extends R>> mapper, int bufferSize) {
+        public SwitchMapSubscriber(Observer<? super R> actual, Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
             this.actual = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
@@ -89,7 +89,7 @@ public final class ObservableSwitchMap<T, R> extends ObservableWithUpstream<T, R
                 inner.cancel();
             }
             
-            ObservableConsumable<? extends R> p;
+            ObservableSource<? extends R> p;
             try {
                 p = mapper.apply(t);
             } catch (Throwable e) {

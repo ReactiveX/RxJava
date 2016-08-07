@@ -25,14 +25,14 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableCombineLatest<T, R> extends Observable<R> {
-    final ObservableConsumable<? extends T>[] sources;
-    final Iterable<? extends ObservableConsumable<? extends T>> sourcesIterable;
+    final ObservableSource<? extends T>[] sources;
+    final Iterable<? extends ObservableSource<? extends T>> sourcesIterable;
     final Function<? super T[], ? extends R> combiner;
     final int bufferSize;
     final boolean delayError;
     
-    public ObservableCombineLatest(ObservableConsumable<? extends T>[] sources,
-            Iterable<? extends ObservableConsumable<? extends T>> sourcesIterable,
+    public ObservableCombineLatest(ObservableSource<? extends T>[] sources,
+            Iterable<? extends ObservableSource<? extends T>> sourcesIterable,
             Function<? super T[], ? extends R> combiner, int bufferSize,
             boolean delayError) {
         this.sources = sources;
@@ -46,11 +46,11 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
     @Override
     @SuppressWarnings("unchecked")
     public void subscribeActual(Observer<? super R> s) {
-        ObservableConsumable<? extends T>[] sources = this.sources;
+        ObservableSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
             sources = new Observable[8];
-            for (ObservableConsumable<? extends T> p : sourcesIterable) {
+            for (ObservableSource<? extends T> p : sourcesIterable) {
                 if (count == sources.length) {
                     Observable<? extends T>[] b = new Observable[count + (count >> 2)];
                     System.arraycopy(sources, 0, b, 0, count);
@@ -106,7 +106,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
             this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
         }
         
-        public void subscribe(ObservableConsumable<? extends T>[] sources) {
+        public void subscribe(ObservableSource<? extends T>[] sources) {
             Observer<T>[] as = subscribers;
             int len = as.length;
             for (int i = 0; i < len; i++) {

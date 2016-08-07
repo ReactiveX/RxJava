@@ -19,7 +19,7 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.observable.ObservableCovarianceTest.*;
 
@@ -145,7 +145,7 @@ public class ObservableConcatTests {
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
         
-        Observable<Movie> o1 = Observable.create(new ObservableConsumable<Movie>() {
+        Observable<Movie> o1 = Observable.create(new ObservableSource<Movie>() {
             @Override
             public void subscribe(Observer<? super Movie> o) {
                     o.onNext(horrorMovie1);

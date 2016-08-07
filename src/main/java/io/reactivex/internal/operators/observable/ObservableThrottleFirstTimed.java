@@ -28,7 +28,7 @@ public final class ObservableThrottleFirstTimed<T> extends ObservableWithUpstrea
     final TimeUnit unit;
     final Scheduler scheduler;
 
-    public ObservableThrottleFirstTimed(ObservableConsumable<T> source, 
+    public ObservableThrottleFirstTimed(ObservableSource<T> source,
             long timeout, TimeUnit unit, Scheduler scheduler) {
         super(source);
         this.timeout = timeout;

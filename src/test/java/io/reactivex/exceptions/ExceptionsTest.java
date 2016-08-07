@@ -315,10 +315,10 @@ public class ExceptionsTest {
     @Ignore("v2 components should not throw")
     @Test(expected = OnErrorFailedException.class)
     public void testOnErrorExceptionIsThrownFromSubscribe() {
-        Observable.create(new ObservableConsumable<Integer>() {
+        Observable.create(new ObservableSource<Integer>() {
                               @Override
                               public void subscribe(Observer<? super Integer> s1) {
-                                  Observable.create(new ObservableConsumable<Integer>() {
+                                  Observable.create(new ObservableSource<Integer>() {
                                       @Override
                                       public void subscribe(Observer<? super Integer> s2) {
                                           throw new IllegalArgumentException("original exception");
@@ -332,10 +332,10 @@ public class ExceptionsTest {
     @Ignore("v2 components should not throw")
     @Test(expected = OnErrorFailedException.class)
     public void testOnErrorExceptionIsThrownFromUnsafeSubscribe() {
-        Observable.create(new ObservableConsumable<Integer>() {
+        Observable.create(new ObservableSource<Integer>() {
                               @Override
                               public void subscribe(Observer<? super Integer> s1) {
-                                  Observable.create(new ObservableConsumable<Integer>() {
+                                  Observable.create(new ObservableSource<Integer>() {
                                       @Override
                                       public void subscribe(Observer<? super Integer> s2) {
                                           throw new IllegalArgumentException("original exception");

@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
@@ -198,7 +198,7 @@ public class ObservableWindowWithSizeTest {
     
 
     public static Observable<Integer> hotStream() {
-        return Observable.create(new ObservableConsumable<Integer>() {
+        return Observable.create(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> s) {
                 Disposable d = Disposables.empty();

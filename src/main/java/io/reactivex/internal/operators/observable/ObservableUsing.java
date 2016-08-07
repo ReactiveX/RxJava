@@ -25,12 +25,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableUsing<T, D> extends Observable<T> {
     final Callable<? extends D> resourceSupplier;
-    final Function<? super D, ? extends ObservableConsumable<? extends T>> sourceSupplier;
+    final Function<? super D, ? extends ObservableSource<? extends T>> sourceSupplier;
     final Consumer<? super D> disposer;
     final boolean eager;
     
     public ObservableUsing(Callable<? extends D> resourceSupplier,
-            Function<? super D, ? extends ObservableConsumable<? extends T>> sourceSupplier, 
+            Function<? super D, ? extends ObservableSource<? extends T>> sourceSupplier,
             Consumer<? super D> disposer,
             boolean eager) {
         this.resourceSupplier = resourceSupplier;
@@ -50,7 +50,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
             return;
         }
         
-        ObservableConsumable<? extends T> source;
+        ObservableSource<? extends T> source;
         try {
             source = sourceSupplier.apply(resource);
         } catch (Throwable e) {

@@ -24,10 +24,10 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <U> the other value type, ignored
  */
 public final class ObservableDelaySubscriptionOther<T, U> extends Observable<T> {
-    final ObservableConsumable<? extends T> main;
-    final ObservableConsumable<U> other;
+    final ObservableSource<? extends T> main;
+    final ObservableSource<U> other;
     
-    public ObservableDelaySubscriptionOther(ObservableConsumable<? extends T> main, ObservableConsumable<U> other) {
+    public ObservableDelaySubscriptionOther(ObservableSource<? extends T> main, ObservableSource<U> other) {
         this.main = main;
         this.other = other;
     }

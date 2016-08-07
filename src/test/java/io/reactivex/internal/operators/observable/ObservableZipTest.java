@@ -616,7 +616,7 @@ public class ObservableZipTest {
         }
     }
 
-    private static class TestObservable implements ObservableConsumable<String> {
+    private static class TestObservable implements ObservableSource<String> {
 
         Observer<? super String> NbpObserver;
 
@@ -1051,7 +1051,7 @@ public class ObservableZipTest {
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
 
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS(final AtomicInteger numEmitted) {
-        return Observable.create(new ObservableConsumable<Integer>() {
+        return Observable.create(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(final Observer<? super Integer> o) {
@@ -1072,7 +1072,7 @@ public class ObservableZipTest {
     }
 
     Observable<Integer> ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(final CountDownLatch latch) {
-        return Observable.create(new ObservableConsumable<Integer>() {
+        return Observable.create(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(final Observer<? super Integer> o) {

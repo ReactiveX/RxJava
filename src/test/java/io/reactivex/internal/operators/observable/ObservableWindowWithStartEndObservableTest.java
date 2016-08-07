@@ -45,7 +45,7 @@ public class ObservableWindowWithStartEndObservableTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> source = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -58,7 +58,7 @@ public class ObservableWindowWithStartEndObservableTest {
             }
         });
 
-        Observable<Object> openings = Observable.create(new ObservableConsumable<Object>() {
+        Observable<Object> openings = Observable.create(new ObservableSource<Object>() {
             @Override
             public void subscribe(Observer<? super Object> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -71,7 +71,7 @@ public class ObservableWindowWithStartEndObservableTest {
         Function<Object, Observable<Object>> closer = new Function<Object, Observable<Object>>() {
             @Override
             public Observable<Object> apply(Object opening) {
-                return Observable.create(new ObservableConsumable<Object>() {
+                return Observable.create(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -96,7 +96,7 @@ public class ObservableWindowWithStartEndObservableTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> source = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -113,7 +113,7 @@ public class ObservableWindowWithStartEndObservableTest {
             int calls;
             @Override
             public Observable<Object> call() {
-                return Observable.create(new ObservableConsumable<Object>() {
+                return Observable.create(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);

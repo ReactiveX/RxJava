@@ -22,7 +22,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 public final class ObservableSkipLast<T> extends ObservableWithUpstream<T, T> {
     final int skip;
     
-    public ObservableSkipLast(ObservableConsumable<T> source, int skip) {
+    public ObservableSkipLast(ObservableSource<T> source, int skip) {
         super(source);
         this.skip = skip;
     }

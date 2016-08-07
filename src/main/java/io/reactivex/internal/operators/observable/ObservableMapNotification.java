@@ -20,17 +20,17 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableMapNotification<T, R> extends ObservableWithUpstream<T, ObservableConsumable<? extends R>> {
+public final class ObservableMapNotification<T, R> extends ObservableWithUpstream<T, ObservableSource<? extends R>> {
 
-    final Function<? super T, ? extends ObservableConsumable<? extends R>> onNextMapper;
-    final Function<? super Throwable, ? extends ObservableConsumable<? extends R>> onErrorMapper;
-    final Callable<? extends ObservableConsumable<? extends R>> onCompleteSupplier;
+    final Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper;
+    final Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper;
+    final Callable<? extends ObservableSource<? extends R>> onCompleteSupplier;
 
     public ObservableMapNotification(
-            ObservableConsumable<T> source, 
-            Function<? super T, ? extends ObservableConsumable<? extends R>> onNextMapper, 
-            Function<? super Throwable, ? extends ObservableConsumable<? extends R>> onErrorMapper, 
-                    Callable<? extends ObservableConsumable<? extends R>> onCompleteSupplier) {
+            ObservableSource<T> source,
+            Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
+            Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
+                    Callable<? extends ObservableSource<? extends R>> onCompleteSupplier) {
         super(source);
         this.onNextMapper = onNextMapper;
         this.onErrorMapper = onErrorMapper;
@@ -38,16 +38,16 @@ public final class ObservableMapNotification<T, R> extends ObservableWithUpstrea
     }
     
     @Override
-    public void subscribeActual(Observer<? super ObservableConsumable<? extends R>> t) {
+    public void subscribeActual(Observer<? super ObservableSource<? extends R>> t) {
         source.subscribe(new MapNotificationSubscriber<T, R>(t, onNextMapper, onErrorMapper, onCompleteSupplier));
     }
     
     static final class MapNotificationSubscriber<T, R>
     implements Observer<T>, Disposable {
-        final Observer<? super ObservableConsumable<? extends R>> actual;
-        final Function<? super T, ? extends ObservableConsumable<? extends R>> onNextMapper;
-        final Function<? super Throwable, ? extends ObservableConsumable<? extends R>> onErrorMapper;
-        final Callable<? extends ObservableConsumable<? extends R>> onCompleteSupplier;
+        final Observer<? super ObservableSource<? extends R>> actual;
+        final Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper;
+        final Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper;
+        final Callable<? extends ObservableSource<? extends R>> onCompleteSupplier;
         
         Disposable s;
         
@@ -55,10 +55,10 @@ public final class ObservableMapNotification<T, R> extends ObservableWithUpstrea
         
         volatile boolean done;
 
-        public MapNotificationSubscriber(Observer<? super ObservableConsumable<? extends R>> actual,
-                Function<? super T, ? extends ObservableConsumable<? extends R>> onNextMapper,
-                Function<? super Throwable, ? extends ObservableConsumable<? extends R>> onErrorMapper,
-                        Callable<? extends ObservableConsumable<? extends R>> onCompleteSupplier) {
+        public MapNotificationSubscriber(Observer<? super ObservableSource<? extends R>> actual,
+                Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
+                Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
+                        Callable<? extends ObservableSource<? extends R>> onCompleteSupplier) {
             this.actual = actual;
             this.onNextMapper = onNextMapper;
             this.onErrorMapper = onErrorMapper;
@@ -87,7 +87,7 @@ public final class ObservableMapNotification<T, R> extends ObservableWithUpstrea
         
         @Override
         public void onNext(T t) {
-            ObservableConsumable<? extends R> p;
+            ObservableSource<? extends R> p;
             
             try {
                 p = onNextMapper.apply(t);
@@ -106,7 +106,7 @@ public final class ObservableMapNotification<T, R> extends ObservableWithUpstrea
         
         @Override
         public void onError(Throwable t) {
-            ObservableConsumable<? extends R> p;
+            ObservableSource<? extends R> p;
             
             try {
                 p = onErrorMapper.apply(t);
@@ -126,7 +126,7 @@ public final class ObservableMapNotification<T, R> extends ObservableWithUpstrea
         
         @Override
         public void onComplete() {
-            ObservableConsumable<? extends R> p;
+            ObservableSource<? extends R> p;
             
             try {
                 p = onCompleteSupplier.call();

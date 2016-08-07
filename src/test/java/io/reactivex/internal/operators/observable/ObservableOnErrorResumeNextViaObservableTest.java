@@ -100,7 +100,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribe() {
-        Observable<String> testObservable = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> testObservable = Observable.create(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> t1) {
@@ -122,7 +122,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribeAsync() {
-        Observable<String> testObservable = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> testObservable = Observable.create(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> t1) {
@@ -145,7 +145,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         verify(NbpObserver, times(1)).onNext("resume");
     }
 
-    private static class TestObservable implements ObservableConsumable<String> {
+    private static class TestObservable implements ObservableSource<String> {
 
         final Disposable s;
         final String[] values;

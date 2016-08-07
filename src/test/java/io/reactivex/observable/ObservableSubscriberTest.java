@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.Observable.Operator;
+import io.reactivex.ObservableOperator;
 import io.reactivex.observers.DefaultObserver;
 
 public class ObservableSubscriberTest {
@@ -85,7 +85,7 @@ public class ObservableSubscriberTest {
     @Test
     public void testOnStartCalledOnceViaLift() {
         final AtomicInteger c = new AtomicInteger();
-        Observable.just(1, 2, 3, 4).lift(new Operator<Integer, Integer>() {
+        Observable.just(1, 2, 3, 4).lift(new ObservableOperator<Integer, Integer>() {
 
             @Override
             public Observer<? super Integer> apply(final Observer<? super Integer> child) {

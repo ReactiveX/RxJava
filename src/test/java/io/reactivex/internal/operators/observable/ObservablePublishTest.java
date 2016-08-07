@@ -36,7 +36,7 @@ public class ObservablePublishTest {
     @Test
     public void testPublish() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.create(new ObservableConsumable<String>() {
+        ConnectableObservable<String> o = Observable.create(new ObservableSource<String>() {
 
             @Override
             public void subscribe(final Observer<? super String> NbpObserver) {
@@ -344,7 +344,7 @@ public class ObservablePublishTest {
     @Test
     public void testConnectIsIdempotent() {
         final AtomicInteger calls = new AtomicInteger();
-        Observable<Integer> source = Observable.create(new ObservableConsumable<Integer>() {
+        Observable<Integer> source = Observable.create(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t) {
                 t.onSubscribe(EmptyDisposable.INSTANCE);

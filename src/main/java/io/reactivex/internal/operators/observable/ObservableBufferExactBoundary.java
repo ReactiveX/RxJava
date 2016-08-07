@@ -26,11 +26,11 @@ import io.reactivex.observers.SerializedObserver;
 
 public final class ObservableBufferExactBoundary<T, U extends Collection<? super T>, B> 
 extends Observable<U> {
-    final ObservableConsumable<T> source;
-    final ObservableConsumable<B> boundary;
+    final ObservableSource<T> source;
+    final ObservableSource<B> boundary;
     final Callable<U> bufferSupplier;
     
-    public ObservableBufferExactBoundary(ObservableConsumable<T> source, ObservableConsumable<B> boundary, Callable<U> bufferSupplier) {
+    public ObservableBufferExactBoundary(ObservableSource<T> source, ObservableSource<B> boundary, Callable<U> bufferSupplier) {
         this.source = source;
         this.boundary = boundary;
         this.bufferSupplier = bufferSupplier;
@@ -45,7 +45,7 @@ extends Observable<U> {
     extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
         /** */
         final Callable<U> bufferSupplier;
-        final ObservableConsumable<B> boundary;
+        final ObservableSource<B> boundary;
         
         Disposable s;
         
@@ -54,7 +54,7 @@ extends Observable<U> {
         U buffer;
         
         public BufferExactBondarySubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
-                ObservableConsumable<B> boundary) {
+                ObservableSource<B> boundary) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundary = boundary;

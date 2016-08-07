@@ -275,7 +275,7 @@ public class ObservableTests {
         Observer<String> observer = TestHelper.mockObserver();
 
         final RuntimeException re = new RuntimeException("bad impl");
-        Observable<String> o = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> o = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> s) { throw re; }
         });
@@ -442,7 +442,7 @@ public class ObservableTests {
     @Test
     public void testPublishLast() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
-        ConnectableObservable<String> connectable = Observable.<String>create(new ObservableConsumable<String>() {
+        ConnectableObservable<String> connectable = Observable.<String>create(new ObservableSource<String>() {
             @Override
             public void subscribe(final Observer<? super String> observer) {
                 observer.onSubscribe(EmptyDisposable.INSTANCE);
@@ -480,7 +480,7 @@ public class ObservableTests {
     @Test
     public void testReplay() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.<String>create(new ObservableConsumable<String>() {
+        ConnectableObservable<String> o = Observable.<String>create(new ObservableSource<String>() {
             @Override
             public void subscribe(final Observer<? super String> observer) {
                     observer.onSubscribe(EmptyDisposable.INSTANCE);
@@ -533,7 +533,7 @@ public class ObservableTests {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.<String>create(new ObservableConsumable<String>() {
+        Observable<String> o = Observable.<String>create(new ObservableSource<String>() {
             @Override
             public void subscribe(final Observer<? super String> observer) {
                     observer.onSubscribe(EmptyDisposable.INSTANCE);
@@ -578,7 +578,7 @@ public class ObservableTests {
     @Test
     public void testCacheWithCapacity() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.<String>create(new ObservableConsumable<String>() {
+        Observable<String> o = Observable.<String>create(new ObservableSource<String>() {
             @Override
             public void subscribe(final Observer<? super String> observer) {
                 observer.onSubscribe(EmptyDisposable.INSTANCE);
@@ -657,7 +657,7 @@ public class ObservableTests {
     public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        Observable.create(new ObservableConsumable<Object>() {
+        Observable.create(new ObservableSource<Object>() {
             @Override
             public void subscribe(final Observer<? super Object> observer) {
                 new Thread(new Runnable() {

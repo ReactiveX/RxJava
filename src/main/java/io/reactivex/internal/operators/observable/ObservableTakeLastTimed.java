@@ -29,7 +29,7 @@ public final class ObservableTakeLastTimed<T> extends ObservableWithUpstream<T, 
     final int bufferSize;
     final boolean delayError;
 
-    public ObservableTakeLastTimed(ObservableConsumable<T> source, 
+    public ObservableTakeLastTimed(ObservableSource<T> source,
             long count, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
         super(source);
         this.count = count;

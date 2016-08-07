@@ -42,7 +42,7 @@ public class ObservableRetryTest {
     public void iterativeBackoff() {
         Observer<String> consumer = TestHelper.mockObserver();
         
-        Observable<String> producer = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> producer = Observable.create(new ObservableSource<String>() {
 
             private AtomicInteger count = new AtomicInteger(4);
             long last = System.currentTimeMillis();
@@ -242,7 +242,7 @@ public class ObservableRetryTest {
     @Test
     public void testSingleSubscriptionOnFirst() throws Exception {
         final AtomicInteger inc = new AtomicInteger(0);
-        ObservableConsumable<Integer> onSubscribe = new ObservableConsumable<Integer>() {
+        ObservableSource<Integer> onSubscribe = new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
@@ -384,7 +384,7 @@ public class ObservableRetryTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    public static class FuncWithErrors implements ObservableConsumable<String> {
+    public static class FuncWithErrors implements ObservableSource<String> {
 
         private final int numFailures;
         private final AtomicInteger count = new AtomicInteger(0);
@@ -426,7 +426,7 @@ public class ObservableRetryTest {
     @Test
     public void testRetryAllowsSubscriptionAfterAllSubscriptionsUnsubscribed() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
-        ObservableConsumable<String> onSubscribe = new ObservableConsumable<String>() {
+        ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> s) {
                 subsCount.incrementAndGet();
@@ -455,7 +455,7 @@ public class ObservableRetryTest {
 
         final TestObserver<String> ts = new TestObserver<String>();
 
-        ObservableConsumable<String> onSubscribe = new ObservableConsumable<String>() {
+        ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> s) {
                 BooleanSubscription bs = new BooleanSubscription();
@@ -486,7 +486,7 @@ public class ObservableRetryTest {
 
         final TestObserver<String> ts = new TestObserver<String>();
 
-        ObservableConsumable<String> onSubscribe = new ObservableConsumable<String>() {
+        ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
@@ -505,7 +505,7 @@ public class ObservableRetryTest {
 
         final TestObserver<String> ts = new TestObserver<String>();
 
-        ObservableConsumable<String> onSubscribe = new ObservableConsumable<String>() {
+        ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
@@ -518,7 +518,7 @@ public class ObservableRetryTest {
         assertEquals(1, subsCount.get());
     }
 
-    static final class SlowObservable implements ObservableConsumable<Long> {
+    static final class SlowObservable implements ObservableSource<Long> {
 
         final AtomicInteger efforts = new AtomicInteger(0);
         final AtomicInteger active = new AtomicInteger(0), maxActive = new AtomicInteger(0);
@@ -828,7 +828,7 @@ public class ObservableRetryTest {
         final int NUM_MSG = 1034;
         final AtomicInteger count = new AtomicInteger();
 
-        Observable<String> origin = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> origin = Observable.create(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> o) {

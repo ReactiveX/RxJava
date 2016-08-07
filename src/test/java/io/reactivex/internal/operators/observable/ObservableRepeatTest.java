@@ -38,7 +38,7 @@ public class ObservableRepeatTest {
     public void testRepetition() {
         int NUM = 10;
         final AtomicInteger count = new AtomicInteger();
-        int value = Observable.create(new ObservableConsumable<Integer>() {
+        int value = Observable.create(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(final Observer<? super Integer> o) {
@@ -67,7 +67,7 @@ public class ObservableRepeatTest {
     public void testRepeatTakeWithSubscribeOn() throws InterruptedException {
 
         final AtomicInteger counter = new AtomicInteger();
-        Observable<Integer> oi = Observable.create(new ObservableConsumable<Integer>() {
+        Observable<Integer> oi = Observable.create(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {

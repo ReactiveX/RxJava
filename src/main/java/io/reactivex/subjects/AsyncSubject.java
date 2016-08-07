@@ -142,7 +142,7 @@ public final class AsyncSubject<T> extends Subject<T> {
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
     }
     
-    static final class State<T> extends AtomicReference<Object> implements ObservableConsumable<T>, Observer<T> {
+    static final class State<T> extends AtomicReference<Object> implements ObservableSource<T>, Observer<T> {
         /** */
         private static final long serialVersionUID = 4876574210612691772L;
 

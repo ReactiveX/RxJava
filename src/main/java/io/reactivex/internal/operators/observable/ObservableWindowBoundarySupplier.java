@@ -28,12 +28,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
 public final class ObservableWindowBoundarySupplier<T, B> extends ObservableWithUpstream<T, Observable<T>> {
-    final Callable<? extends ObservableConsumable<B>> other;
+    final Callable<? extends ObservableSource<B>> other;
     final int bufferSize;
     
     public ObservableWindowBoundarySupplier(
-            ObservableConsumable<T> source, 
-            Callable<? extends ObservableConsumable<B>> other, int bufferSize) {
+            ObservableSource<T> source,
+            Callable<? extends ObservableSource<B>> other, int bufferSize) {
         super(source);
         this.other = other;
         this.bufferSize = bufferSize;
@@ -48,7 +48,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends ObservableWith
     extends QueueDrainObserver<T, Object, Observable<T>> 
     implements Disposable {
         
-        final Callable<? extends ObservableConsumable<B>> other;
+        final Callable<? extends ObservableSource<B>> other;
         final int bufferSize;
         
         Disposable s;
@@ -61,7 +61,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends ObservableWith
         
         final AtomicLong windows = new AtomicLong();
 
-        public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, Callable<? extends ObservableConsumable<B>> other,
+        public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, Callable<? extends ObservableSource<B>> other,
                 int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.other = other;
@@ -81,7 +81,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends ObservableWith
                     return;
                 }
                 
-                ObservableConsumable<B> p;
+                ObservableSource<B> p;
                 
                 try {
                     p = other.call();
@@ -227,7 +227,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends ObservableWith
                             continue;
                         }
                         
-                        ObservableConsumable<B> p;
+                        ObservableSource<B> p;
 
                         try {
                             p = other.call();

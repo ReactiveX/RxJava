@@ -26,10 +26,10 @@ public final class ObservableDoOnEach<T> extends ObservableWithUpstream<T, T> {
     final Runnable onComplete;
     final Runnable onAfterTerminate;
     
-    public ObservableDoOnEach(ObservableConsumable<T> source, Consumer<? super T> onNext, 
-            Consumer<? super Throwable> onError, 
-            Runnable onComplete,
-            Runnable onAfterTerminate) {
+    public ObservableDoOnEach(ObservableSource<T> source, Consumer<? super T> onNext,
+                              Consumer<? super Throwable> onError,
+                              Runnable onComplete,
+                              Runnable onAfterTerminate) {
         super(source);
         this.onNext = onNext;
         this.onError = onError;

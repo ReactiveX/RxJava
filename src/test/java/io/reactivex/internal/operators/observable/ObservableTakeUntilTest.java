@@ -151,7 +151,7 @@ public class ObservableTakeUntilTest {
 
     }
 
-    private static class TestObservable implements ObservableConsumable<String> {
+    private static class TestObservable implements ObservableSource<String> {
 
         Observer<? super String> NbpObserver;
         Disposable s;

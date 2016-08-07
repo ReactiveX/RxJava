@@ -207,7 +207,7 @@ public class ObservableSerializeTest {
     /**
      * This spawns a single thread for the subscribe execution
      */
-    private static class TestSingleThreadedObservable implements ObservableConsumable<String> {
+    private static class TestSingleThreadedObservable implements ObservableSource<String> {
 
         final String[] values;
         private Thread t = null;
@@ -256,7 +256,7 @@ public class ObservableSerializeTest {
     /**
      * This spawns a thread for the subscription, then a separate thread for each onNext call.
      */
-    private static class TestMultiThreadedObservable implements ObservableConsumable<String> {
+    private static class TestMultiThreadedObservable implements ObservableSource<String> {
         final String[] values;
         Thread t = null;
         AtomicInteger threadsRunning = new AtomicInteger();

@@ -31,7 +31,7 @@ import io.reactivex.observers.SerializedObserver;
 public final class ObservableBufferTimed<T, U extends Collection<? super T>> 
 extends Observable<U> {
 
-    final ObservableConsumable<T> source;
+    final ObservableSource<T> source;
     final long timespan;
     final long timeskip;
     final TimeUnit unit;
@@ -40,8 +40,8 @@ extends Observable<U> {
     final int maxSize;
     final boolean restartTimerOnMaxSize;
     
-    public ObservableBufferTimed(ObservableConsumable<T> source, long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Callable<U> bufferSupplier, int maxSize,
-            boolean restartTimerOnMaxSize) {
+    public ObservableBufferTimed(ObservableSource<T> source, long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Callable<U> bufferSupplier, int maxSize,
+                                 boolean restartTimerOnMaxSize) {
         this.source = source;
         this.timespan = timespan;
         this.timeskip = timeskip;

@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
-import io.reactivex.Observable.Operator;
+import io.reactivex.ObservableOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -36,7 +36,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     @Test
     public void testResumeNextWithSynchronousExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
-        Observable<String> w = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> w = Observable.create(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
@@ -152,7 +152,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     @Ignore("Failed operator may leave the child NbpSubscriber in an inconsistent state which prevents further error delivery.")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable.just(1).lift(new Operator<String, Integer>() {
+        Observable.just(1).lift(new ObservableOperator<String, Integer>() {
 
             @Override
             public Observer<? super Integer> apply(Observer<? super String> t1) {
@@ -185,7 +185,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     @Ignore("A crashing operator may leave the downstream in an inconsistent state and not suitable for event delivery")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable.just(1).lift(new Operator<String, Integer>() {
+        Observable.just(1).lift(new ObservableOperator<String, Integer>() {
 
             @Override
             public Observer<? super Integer> apply(final Observer<? super String> t1) {
@@ -274,7 +274,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
         verify(NbpObserver, times(1)).onNext("threeResume");
     }
 
-    private static class TestObservable implements ObservableConsumable<String> {
+    private static class TestObservable implements ObservableSource<String> {
 
         final String[] values;
         Thread t = null;

@@ -24,7 +24,7 @@ public final class ObservableScanSeed<T, R> extends ObservableWithUpstream<T, R>
     final BiFunction<R, ? super T, R> accumulator;
     final Callable<R> seedSupplier;
 
-    public ObservableScanSeed(ObservableConsumable<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+    public ObservableScanSeed(ObservableSource<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
         super(source);
         this.accumulator = accumulator;
         this.seedSupplier = seedSupplier;

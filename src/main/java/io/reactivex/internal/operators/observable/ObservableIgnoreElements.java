@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 
 public final class ObservableIgnoreElements<T> extends ObservableWithUpstream<T, T> {
 
-    public ObservableIgnoreElements(ObservableConsumable<T> source) {
+    public ObservableIgnoreElements(ObservableSource<T> source) {
         super(source);
     }
 

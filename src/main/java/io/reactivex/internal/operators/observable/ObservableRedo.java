@@ -23,11 +23,11 @@ import io.reactivex.internal.subscribers.observable.ToNotificationObserver;
 import io.reactivex.subjects.BehaviorSubject;
 
 public final class ObservableRedo<T> extends Observable<T> {
-    final ObservableConsumable<? extends T> source;
-    final Function<? super Observable<Try<Optional<Object>>>, ? extends ObservableConsumable<?>> manager;
+    final ObservableSource<? extends T> source;
+    final Function<? super Observable<Try<Optional<Object>>>, ? extends ObservableSource<?>> manager;
 
-    public ObservableRedo(ObservableConsumable<? extends T> source,
-            Function<? super Observable<Try<Optional<Object>>>, ? extends ObservableConsumable<?>> manager) {
+    public ObservableRedo(ObservableSource<? extends T> source,
+            Function<? super Observable<Try<Optional<Object>>>, ? extends ObservableSource<?>> manager) {
         this.source = source;
         this.manager = manager;
     }
@@ -42,7 +42,7 @@ public final class ObservableRedo<T> extends Observable<T> {
 
         s.onSubscribe(parent.arbiter);
 
-        ObservableConsumable<?> action;
+        ObservableSource<?> action;
         
         try {
             action = manager.apply(subject);
@@ -68,12 +68,12 @@ public final class ObservableRedo<T> extends Observable<T> {
         private static final long serialVersionUID = -1151903143112844287L;
         final Observer<? super T> actual;
         final BehaviorSubject<Try<Optional<Object>>> subject;
-        final ObservableConsumable<? extends T> source;
+        final ObservableSource<? extends T> source;
         final SerialDisposable arbiter;
         
         final AtomicInteger wip = new AtomicInteger();
         
-        public RedoSubscriber(Observer<? super T> actual, BehaviorSubject<Try<Optional<Object>>> subject, ObservableConsumable<? extends T> source) {
+        public RedoSubscriber(Observer<? super T> actual, BehaviorSubject<Try<Optional<Object>>> subject, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.subject = subject;
             this.source = source;

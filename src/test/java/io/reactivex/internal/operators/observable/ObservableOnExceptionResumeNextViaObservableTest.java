@@ -214,7 +214,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
     }
 
 
-    private static class TestObservable implements ObservableConsumable<String> {
+    private static class TestObservable implements ObservableSource<String> {
 
         final String[] values;
         Thread t = null;

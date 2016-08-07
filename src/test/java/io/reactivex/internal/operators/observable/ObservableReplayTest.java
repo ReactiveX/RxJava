@@ -798,7 +798,7 @@ public class ObservableReplayTest {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> o = Observable.create(new ObservableSource<String>() {
 
             @Override
             public void subscribe(final Observer<? super String> NbpObserver) {
@@ -934,7 +934,7 @@ public class ObservableReplayTest {
     @Test
     public void testNoMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
-        Observable<Integer> firehose = Observable.create(new ObservableConsumable<Integer>() {
+        Observable<Integer> firehose = Observable.create(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t) {
                 t.onSubscribe(EmptyDisposable.INSTANCE);

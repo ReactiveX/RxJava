@@ -20,7 +20,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class ObservableTakeUntilPredicate<T> extends ObservableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
-    public ObservableTakeUntilPredicate(ObservableConsumable<T> source, Predicate<? super T> predicate) {
+    public ObservableTakeUntilPredicate(ObservableSource<T> source, Predicate<? super T> predicate) {
         super(source);
         this.predicate = predicate;
     }

@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.ObservableConsumable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
@@ -26,13 +26,13 @@ import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.*;
 
 public final class ObservableFlatMap<T, U> extends ObservableWithUpstream<T, U> {
-    final Function<? super T, ? extends ObservableConsumable<? extends U>> mapper;
+    final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
     final boolean delayErrors;
     final int maxConcurrency;
     final int bufferSize;
     
-    public ObservableFlatMap(ObservableConsumable<T> source, 
-            Function<? super T, ? extends ObservableConsumable<? extends U>> mapper,
+    public ObservableFlatMap(ObservableSource<T> source,
+            Function<? super T, ? extends ObservableSource<? extends U>> mapper,
             boolean delayErrors, int maxConcurrency, int bufferSize) {
         super(source);
         this.mapper = mapper;
@@ -51,7 +51,7 @@ public final class ObservableFlatMap<T, U> extends ObservableWithUpstream<T, U> 
         private static final long serialVersionUID = -2117620485640801370L;
         
         final Observer<? super U> actual;
-        final Function<? super T, ? extends ObservableConsumable<? extends U>> mapper;
+        final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
         final boolean delayErrors;
         final int maxConcurrency;
         final int bufferSize;
@@ -78,11 +78,11 @@ public final class ObservableFlatMap<T, U> extends ObservableWithUpstream<T, U> 
         long lastId;
         int lastIndex;
         
-        Queue<ObservableConsumable<? extends U>> sources;
+        Queue<ObservableSource<? extends U>> sources;
         
         int wip;
         
-        public MergeSubscriber(Observer<? super U> actual, Function<? super T, ? extends ObservableConsumable<? extends U>> mapper,
+        public MergeSubscriber(Observer<? super U> actual, Function<? super T, ? extends ObservableSource<? extends U>> mapper,
                 boolean delayErrors, int maxConcurrency, int bufferSize) {
             this.actual = actual;
             this.mapper = mapper;
@@ -90,7 +90,7 @@ public final class ObservableFlatMap<T, U> extends ObservableWithUpstream<T, U> 
             this.maxConcurrency = maxConcurrency;
             this.bufferSize = bufferSize;
             if (maxConcurrency != Integer.MAX_VALUE) {
-                sources = new ArrayDeque<ObservableConsumable<? extends U>>(maxConcurrency);
+                sources = new ArrayDeque<ObservableSource<? extends U>>(maxConcurrency);
             }
             this.subscribers = new AtomicReference<InnerSubscriber<?, ?>[]>(EMPTY);
         }
@@ -109,7 +109,7 @@ public final class ObservableFlatMap<T, U> extends ObservableWithUpstream<T, U> 
             if (done) {
                 return;
             }
-            ObservableConsumable<? extends U> p;
+            ObservableSource<? extends U> p;
             try {
                 p = mapper.apply(t);
             } catch (Throwable e) {
@@ -134,7 +134,7 @@ public final class ObservableFlatMap<T, U> extends ObservableWithUpstream<T, U> 
             }
         }
         
-        void subscribeInner(ObservableConsumable<? extends U> p) {
+        void subscribeInner(ObservableSource<? extends U> p) {
             InnerSubscriber<T, U> inner = new InnerSubscriber<T, U>(this, uniqueId++);
             addInner(inner);
             p.subscribe(inner);
@@ -425,7 +425,7 @@ public final class ObservableFlatMap<T, U> extends ObservableWithUpstream<T, U> 
                 
                 if (innerCompleted) {
                     if (maxConcurrency != Integer.MAX_VALUE) {
-                        ObservableConsumable<? extends U> p;
+                        ObservableSource<? extends U> p;
                         synchronized (this) {
                             p = sources.poll();
                             if (p == null) {

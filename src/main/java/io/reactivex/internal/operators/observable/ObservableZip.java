@@ -24,14 +24,14 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 
 public final class ObservableZip<T, R> extends Observable<R> {
     
-    final ObservableConsumable<? extends T>[] sources;
-    final Iterable<? extends ObservableConsumable<? extends T>> sourcesIterable;
+    final ObservableSource<? extends T>[] sources;
+    final Iterable<? extends ObservableSource<? extends T>> sourcesIterable;
     final Function<? super T[], ? extends R> zipper;
     final int bufferSize;
     final boolean delayError;
     
-    public ObservableZip(ObservableConsumable<? extends T>[] sources,
-            Iterable<? extends ObservableConsumable<? extends T>> sourcesIterable,
+    public ObservableZip(ObservableSource<? extends T>[] sources,
+            Iterable<? extends ObservableSource<? extends T>> sourcesIterable,
             Function<? super T[], ? extends R> zipper,
             int bufferSize,
             boolean delayError) {
@@ -45,11 +45,11 @@ public final class ObservableZip<T, R> extends Observable<R> {
     @Override
     @SuppressWarnings("unchecked")
     public void subscribeActual(Observer<? super R> s) {
-        ObservableConsumable<? extends T>[] sources = this.sources;
+        ObservableSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
             sources = new Observable[8];
-            for (ObservableConsumable<? extends T> p : sourcesIterable) {
+            for (ObservableSource<? extends T> p : sourcesIterable) {
                 if (count == sources.length) {
                     Observable<? extends T>[] b = new Observable[count + (count >> 2)];
                     System.arraycopy(sources, 0, b, 0, count);
@@ -92,7 +92,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
             this.delayError = delayError;
         }
         
-        public void subscribe(ObservableConsumable<? extends T>[] sources, int bufferSize) {
+        public void subscribe(ObservableSource<? extends T>[] sources, int bufferSize) {
             ZipSubscriber<T, R>[] s = subscribers;
             int len = s.length;
             for (int i = 0; i < len; i++) {

@@ -28,10 +28,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
 public final class ObservableWindowBoundary<T, B> extends ObservableWithUpstream<T, Observable<T>> {
-    final ObservableConsumable<B> other;
+    final ObservableSource<B> other;
     final int bufferSize;
     
-    public ObservableWindowBoundary(ObservableConsumable<T> source, ObservableConsumable<B> other, int bufferSize) {
+    public ObservableWindowBoundary(ObservableSource<T> source, ObservableSource<B> other, int bufferSize) {
         super(source);
         this.other = other;
         this.bufferSize = bufferSize;
@@ -46,7 +46,7 @@ public final class ObservableWindowBoundary<T, B> extends ObservableWithUpstream
     extends QueueDrainObserver<T, Object, Observable<T>> 
     implements Disposable {
         
-        final ObservableConsumable<B> other;
+        final ObservableSource<B> other;
         final int bufferSize;
         
         Disposable s;
@@ -59,7 +59,7 @@ public final class ObservableWindowBoundary<T, B> extends ObservableWithUpstream
         
         final AtomicLong windows = new AtomicLong();
         
-        public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, ObservableConsumable<B> other,
+        public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, ObservableSource<B> other,
                 int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.other = other;

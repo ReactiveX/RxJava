@@ -266,7 +266,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if flowable is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Completable fromObservable(final ObservableConsumable<T> observable) {
+    public static <T> Completable fromObservable(final ObservableSource<T> observable) {
         Objects.requireNonNull(observable, "observable is null");
         return new CompletableFromObservable<T>(observable);
     }
@@ -817,7 +817,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if next is null
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final <T> Observable<T> endWith(ObservableConsumable<T> next) {
+    public final <T> Observable<T> endWith(ObservableSource<T> next) {
         return this.<T>toObservable().endWith(next);
     }
     

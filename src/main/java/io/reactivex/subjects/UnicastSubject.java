@@ -100,7 +100,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     }
     
     /** The state of the UnicastSubject. */
-    static final class State<T> extends StatePad0 implements ObservableConsumable<T>, Disposable, Observer<T> {
+    static final class State<T> extends StatePad0 implements ObservableSource<T>, Disposable, Observer<T> {
         /** */
         private static final long serialVersionUID = 5058617037583835632L;
 

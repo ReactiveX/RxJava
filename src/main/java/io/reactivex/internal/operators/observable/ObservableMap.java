@@ -23,7 +23,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class ObservableMap<T, U> extends ObservableWithUpstream<T, U> {
     final Function<? super T, ? extends U> function;
     
-    public ObservableMap(ObservableConsumable<T> source, Function<? super T, ? extends U> function) {
+    public ObservableMap(ObservableSource<T> source, Function<? super T, ? extends U> function) {
         super(source);
         this.function = function;
     }

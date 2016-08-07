@@ -20,11 +20,11 @@ import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableOnErrorNext<T> extends ObservableWithUpstream<T, T> {
-    final Function<? super Throwable, ? extends ObservableConsumable<? extends T>> nextSupplier;
+    final Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier;
     final boolean allowFatal;
     
-    public ObservableOnErrorNext(ObservableConsumable<T> source, 
-            Function<? super Throwable, ? extends ObservableConsumable<? extends T>> nextSupplier, boolean allowFatal) {
+    public ObservableOnErrorNext(ObservableSource<T> source,
+                                 Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier, boolean allowFatal) {
         super(source);
         this.nextSupplier = nextSupplier;
         this.allowFatal = allowFatal;
@@ -39,7 +39,7 @@ public final class ObservableOnErrorNext<T> extends ObservableWithUpstream<T, T>
     
     static final class OnErrorNextSubscriber<T> implements Observer<T> {
         final Observer<? super T> actual;
-        final Function<? super Throwable, ? extends ObservableConsumable<? extends T>> nextSupplier;
+        final Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier;
         final boolean allowFatal;
         final SerialDisposable arbiter;
         
@@ -47,7 +47,7 @@ public final class ObservableOnErrorNext<T> extends ObservableWithUpstream<T, T>
         
         boolean done;
         
-        public OnErrorNextSubscriber(Observer<? super T> actual, Function<? super Throwable, ? extends ObservableConsumable<? extends T>> nextSupplier, boolean allowFatal) {
+        public OnErrorNextSubscriber(Observer<? super T> actual, Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier, boolean allowFatal) {
             this.actual = actual;
             this.nextSupplier = nextSupplier;
             this.allowFatal = allowFatal;
@@ -84,7 +84,7 @@ public final class ObservableOnErrorNext<T> extends ObservableWithUpstream<T, T>
                 return;
             }
             
-            ObservableConsumable<? extends T> p;
+            ObservableSource<? extends T> p;
             
             try {
                 p = nextSupplier.apply(t);

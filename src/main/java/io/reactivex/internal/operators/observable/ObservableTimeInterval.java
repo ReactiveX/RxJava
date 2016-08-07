@@ -24,7 +24,7 @@ public final class ObservableTimeInterval<T> extends ObservableWithUpstream<T, T
     final Scheduler scheduler;
     final TimeUnit unit;
     
-    public ObservableTimeInterval(ObservableConsumable<T> source, TimeUnit unit, Scheduler scheduler) {
+    public ObservableTimeInterval(ObservableSource<T> source, TimeUnit unit, Scheduler scheduler) {
         super(source);
         this.scheduler = scheduler;
         this.unit = unit;
