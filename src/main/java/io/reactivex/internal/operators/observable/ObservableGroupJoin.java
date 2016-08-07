@@ -34,7 +34,7 @@ import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
-public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends ObservableSource<TLeft, R> {
+public class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends ObservableWithUpstream<TLeft, R> {
 
     final ObservableConsumable<? extends TRight> other;
     

@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 
-public final class ObservableSkipLastTimed<T> extends ObservableSource<T, T> {
+public final class ObservableSkipLastTimed<T> extends ObservableWithUpstream<T, T> {
     final long time;
     final TimeUnit unit;
     final Scheduler scheduler;

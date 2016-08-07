@@ -19,7 +19,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.internal.disposables.*;
 
-public final class ObservableCollect<T, U> extends ObservableSource<T, U> {
+public final class ObservableCollect<T, U> extends ObservableWithUpstream<T, U> {
     final Callable<? extends U> initialSupplier;
     final BiConsumer<? super U, ? super T> collector;
     

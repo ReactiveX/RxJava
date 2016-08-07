@@ -17,7 +17,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableTake<T> extends ObservableSource<T, T> {
+public final class ObservableTake<T> extends ObservableWithUpstream<T, T> {
     final long limit;
     public ObservableTake(ObservableConsumable<T> source, long limit) {
         super(source);

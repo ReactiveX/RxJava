@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableTakeWhile<T> extends ObservableSource<T, T> {
+public final class ObservableTakeWhile<T> extends ObservableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
     public ObservableTakeWhile(ObservableConsumable<T> source, Predicate<? super T> predicate) {
         super(source);

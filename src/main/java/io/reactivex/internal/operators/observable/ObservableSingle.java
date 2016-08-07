@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableSingle<T> extends ObservableSource<T, T> {
+public final class ObservableSingle<T> extends ObservableWithUpstream<T, T> {
     
     final T defaultValue;
     

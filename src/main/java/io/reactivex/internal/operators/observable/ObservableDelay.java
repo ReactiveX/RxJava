@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
 
-public final class ObservableDelay<T> extends ObservableSource<T, T> {
+public final class ObservableDelay<T> extends ObservableWithUpstream<T, T> {
     final long delay;
     final TimeUnit unit;
     final Scheduler scheduler;

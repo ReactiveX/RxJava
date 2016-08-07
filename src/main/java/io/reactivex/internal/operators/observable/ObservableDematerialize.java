@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableDematerialize<T> extends ObservableSource<Try<Optional<T>>, T> {
+public final class ObservableDematerialize<T> extends ObservableWithUpstream<Try<Optional<T>>, T> {
     
     public ObservableDematerialize(ObservableConsumable<Try<Optional<T>>> source) {
         super(source);

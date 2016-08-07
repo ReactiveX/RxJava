@@ -25,7 +25,7 @@ import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.observables.GroupedObservable;
 
-public final class ObservableGroupBy<T, K, V> extends ObservableSource<T, GroupedObservable<K, V>>{
+public final class ObservableGroupBy<T, K, V> extends ObservableWithUpstream<T, GroupedObservable<K, V>> {
     final Function<? super T, ? extends K> keySelector;
     final Function<? super T, ? extends V> valueSelector;
     final int bufferSize;

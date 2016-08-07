@@ -32,7 +32,7 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends ObservableSource<TLeft, R> {
+public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends ObservableWithUpstream<TLeft, R> {
 
     final ObservableConsumable<? extends TRight> other;
     

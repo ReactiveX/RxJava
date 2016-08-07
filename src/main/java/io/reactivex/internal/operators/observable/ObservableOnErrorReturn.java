@@ -19,7 +19,7 @@ import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableOnErrorReturn<T> extends ObservableSource<T, T> {
+public final class ObservableOnErrorReturn<T> extends ObservableWithUpstream<T, T> {
     final Function<? super Throwable, ? extends T> valueSupplier;
     public ObservableOnErrorReturn(ObservableConsumable<T> source, Function<? super Throwable, ? extends T> valueSupplier) {
         super(source);

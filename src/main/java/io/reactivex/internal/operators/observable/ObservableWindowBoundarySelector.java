@@ -31,7 +31,7 @@ import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
-public final class ObservableWindowBoundarySelector<T, B, V> extends ObservableSource<T, Observable<T>> {
+public final class ObservableWindowBoundarySelector<T, B, V> extends ObservableWithUpstream<T, Observable<T>> {
     final ObservableConsumable<B> open;
     final Function<? super B, ? extends ObservableConsumable<V>> close;
     final int bufferSize;
