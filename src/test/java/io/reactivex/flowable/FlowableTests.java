@@ -26,7 +26,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable.Transformer;
+import io.reactivex.FlowableTransformer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
@@ -999,7 +999,7 @@ public class FlowableTests {
     @Test
     public void testCompose() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.just(1, 2, 3).compose(new Transformer<Integer, String>() {
+        Flowable.just(1, 2, 3).compose(new FlowableTransformer<Integer, String>() {
             @Override
             public Publisher<String> apply(Flowable<Integer> t1) {
                 return t1.map(new Function<Integer, String>() {

@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable.Operator;
+import io.reactivex.FlowableOperator;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
@@ -151,7 +151,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     @Ignore("Failed operator may leave the child subscriber in an inconsistent state which prevents further error delivery.")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.just(1).lift(new Operator<String, Integer>() {
+        Flowable.just(1).lift(new FlowableOperator<String, Integer>() {
 
             @Override
             public Subscriber<? super Integer> apply(Subscriber<? super String> t1) {
@@ -184,7 +184,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     @Ignore("A crashing operator may leave the downstream in an inconsistent state and not suitable for event delivery")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.just(1).lift(new Operator<String, Integer>() {
+        Flowable.just(1).lift(new FlowableOperator<String, Integer>() {
 
             @Override
             public Subscriber<? super Integer> apply(final Subscriber<? super String> t1) {

@@ -22,7 +22,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable.Operator;
+import io.reactivex.FlowableOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.*;
@@ -218,7 +218,7 @@ public class FlowableSubscribeOnTest {
     @Test
     public void testSetProducerSynchronousRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        Flowable.just(1, 2, 3).lift(new Operator<Integer, Integer>() {
+        Flowable.just(1, 2, 3).lift(new FlowableOperator<Integer, Integer>() {
 
             @Override
             public Subscriber<? super Integer> apply(final Subscriber<? super Integer> child) {
