@@ -579,11 +579,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.IO)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         Flowable<T> o = fromFuture(future);
-        return o.subscribeOn(Schedulers.io());
+        return o.subscribeOn(scheduler);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
