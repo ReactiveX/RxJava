@@ -295,7 +295,7 @@ public class FlowableMergeDelayErrorTest {
         final Flowable<Flowable<String>> o1 = Flowable.error(new RuntimeException("unit test"));
 
         final CountDownLatch latch = new CountDownLatch(1);
-        Flowable.mergeDelayError(o1).subscribe(new DefaultObserver<String>() {
+        Flowable.mergeDelayError(o1).subscribe(new DefaultSubscriber<String>() {
             @Override
             public void onComplete() {
                 fail("Expected onError path");
@@ -417,7 +417,7 @@ public class FlowableMergeDelayErrorTest {
         }
     }
 
-    private static class CaptureObserver extends DefaultObserver<String> {
+    private static class CaptureObserver extends DefaultSubscriber<String> {
         volatile Throwable e;
 
         @Override
@@ -458,7 +458,7 @@ public class FlowableMergeDelayErrorTest {
         final Subscriber<Integer> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
         
-        result.unsafeSubscribe(new DefaultObserver<Integer>() {
+        result.unsafeSubscribe(new DefaultSubscriber<Integer>() {
             int calls;
             @Override
             public void onNext(Integer t) {

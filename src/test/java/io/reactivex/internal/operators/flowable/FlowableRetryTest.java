@@ -613,7 +613,7 @@ public class FlowableRetryTest {
     }
 
     /** Observer for listener on seperate thread */
-    static final class AsyncObserver<T> extends DefaultObserver<T> {
+    static final class AsyncObserver<T> extends DefaultSubscriber<T> {
 
         protected CountDownLatch latch = new CountDownLatch(1);
 
@@ -660,7 +660,7 @@ public class FlowableRetryTest {
     public void testUnsubscribeAfterError() {
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<Long> observer = mock(DefaultObserver.class);
+        DefaultSubscriber<Long> observer = mock(DefaultSubscriber.class);
 
         // Observable that always fails after 100ms
         SlowObservable so = new SlowObservable(100, 0);
@@ -685,7 +685,7 @@ public class FlowableRetryTest {
     public void testTimeoutWithRetry() {
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<Long> observer = mock(DefaultObserver.class);
+        DefaultSubscriber<Long> observer = mock(DefaultSubscriber.class);
 
         // Observable that sends every 100ms (timeout fails instead)
         SlowObservable so = new SlowObservable(100, 10);

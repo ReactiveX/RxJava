@@ -126,7 +126,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
         Flowable<String> observable = Flowable.create(w).onErrorResumeNext(resume);
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
         observable.subscribe(observer);
 
         try {
@@ -258,7 +258,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
         });
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
         
         TestSubscriber<String> ts = new TestSubscriber<String>(observer, Long.MAX_VALUE);
         observable.subscribe(ts);

@@ -274,7 +274,7 @@ public final class Subscribers {
         };
     }
     
-    public static <T> DefaultObserver<T> create(
+    public static <T> DefaultSubscriber<T> create(
             final Consumer<? super T> onNext, 
             final Consumer<? super Throwable> onError, 
             final Runnable onComplete, 
@@ -283,7 +283,7 @@ public final class Subscribers {
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
         Objects.requireNonNull(onStart, "onStart is null");
-        return new DefaultObserver<T>() {
+        return new DefaultSubscriber<T>() {
             boolean done;
             @Override
             protected void onStart() {

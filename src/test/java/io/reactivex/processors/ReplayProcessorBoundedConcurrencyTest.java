@@ -61,7 +61,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
 
             @Override
             public void run() {
-                Subscriber<Long> slow = new DefaultObserver<Long>() {
+                Subscriber<Long> slow = new DefaultSubscriber<Long>() {
 
                     @Override
                     public void onComplete() {
@@ -102,7 +102,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
             @Override
             public void run() {
                 final CountDownLatch fastLatch = new CountDownLatch(1);
-                Subscriber<Long> fast = new DefaultObserver<Long>() {
+                Subscriber<Long> fast = new DefaultSubscriber<Long>() {
 
                     @Override
                     public void onComplete() {
@@ -355,7 +355,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
                 .subscribeOn(s)
                 .observeOn(Schedulers.io())
 //                .doOnNext(e -> System.out.println(">>> " + j))
-                .subscribe(new DefaultObserver<Object>() {
+                .subscribe(new DefaultSubscriber<Object>() {
     
                     @Override
                     protected void onStart() {

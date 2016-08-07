@@ -23,7 +23,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 public class FlowableAsObservableTest {
     @Test
@@ -54,7 +54,7 @@ public class FlowableAsObservableTest {
         assertFalse(dst instanceof PublishProcessor);
         
         @SuppressWarnings("unchecked")
-        DefaultObserver<Object> o = mock(DefaultObserver.class);
+        DefaultSubscriber<Object> o = mock(DefaultSubscriber.class);
         
         dst.subscribe(o);
         

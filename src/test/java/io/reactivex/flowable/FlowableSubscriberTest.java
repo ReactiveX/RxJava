@@ -362,7 +362,7 @@ public class FlowableSubscriberTest {
     @Test
     public void testOnStartCalledOnceViaSubscribe() {
         final AtomicInteger c = new AtomicInteger();
-        Flowable.just(1, 2, 3, 4).take(2).subscribe(new DefaultObserver<Integer>() {
+        Flowable.just(1, 2, 3, 4).take(2).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -393,7 +393,7 @@ public class FlowableSubscriberTest {
     @Test
     public void testOnStartCalledOnceViaUnsafeSubscribe() {
         final AtomicInteger c = new AtomicInteger();
-        Flowable.just(1, 2, 3, 4).take(2).unsafeSubscribe(new DefaultObserver<Integer>() {
+        Flowable.just(1, 2, 3, 4).take(2).unsafeSubscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -428,7 +428,7 @@ public class FlowableSubscriberTest {
 
             @Override
             public Subscriber<? super Integer> apply(final Subscriber<? super Integer> child) {
-                return new DefaultObserver<Integer>() {
+                return new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onStart() {
@@ -465,7 +465,7 @@ public class FlowableSubscriberTest {
     public void testNegativeRequestThrowsIllegalArgumentException() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        Flowable.just(1,2,3,4).subscribe(new DefaultObserver<Integer>() {
+        Flowable.just(1,2,3,4).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -496,7 +496,7 @@ public class FlowableSubscriberTest {
     @Test
     public void testOnStartRequestsAreAdditive() {
         final List<Integer> list = new ArrayList<Integer>();
-        Flowable.just(1,2,3,4,5).subscribe(new DefaultObserver<Integer>() {
+        Flowable.just(1,2,3,4,5).subscribe(new DefaultSubscriber<Integer>() {
             @Override
             public void onStart() {
                 request(3);
@@ -523,7 +523,7 @@ public class FlowableSubscriberTest {
     @Test
     public void testOnStartRequestsAreAdditiveAndOverflowBecomesMaxValue() {
         final List<Integer> list = new ArrayList<Integer>();
-        Flowable.just(1,2,3,4,5).subscribe(new DefaultObserver<Integer>() {
+        Flowable.just(1,2,3,4,5).subscribe(new DefaultSubscriber<Integer>() {
             @Override
             public void onStart() {
                 request(2);

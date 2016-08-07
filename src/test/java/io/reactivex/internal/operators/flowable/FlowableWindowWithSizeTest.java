@@ -205,14 +205,14 @@ public class FlowableWindowWithSizeTest {
         
         final Subscriber<Integer> o = TestHelper.mockSubscriber();
         
-        source.subscribe(new DefaultObserver<Flowable<Integer>>() {
+        source.subscribe(new DefaultSubscriber<Flowable<Integer>>() {
             @Override
             public void onStart() {
                 request(1);
             }
             @Override
             public void onNext(Flowable<Integer> t) {
-                t.subscribe(new DefaultObserver<Integer>() {
+                t.subscribe(new DefaultSubscriber<Integer>() {
                     @Override
                     public void onNext(Integer t) {
                         list.add(t);

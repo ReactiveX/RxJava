@@ -29,7 +29,7 @@ import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
     final Publisher<? extends T> o;
@@ -373,7 +373,7 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
      * @param onComplete the callback action for the completion event.
      */
     public void subscribe(final Consumer<? super T> onNext, final Consumer<? super Throwable> onError, final Runnable onComplete) {
-        subscribe(new DefaultObserver<T>() {
+        subscribe(new DefaultSubscriber<T>() {
             boolean done;
             @Override
             public void onNext(T t) {

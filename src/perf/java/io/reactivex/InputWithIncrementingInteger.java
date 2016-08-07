@@ -20,7 +20,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.EmptySubscription;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 /**
  * Exposes an Observable and Observer that increments n Integers and consumes them in a Blackhole.
@@ -83,7 +83,7 @@ public abstract class InputWithIncrementingInteger {
     }
 
     public Subscriber<Integer> newSubscriber() {
-        return new DefaultObserver<Integer>() {
+        return new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {

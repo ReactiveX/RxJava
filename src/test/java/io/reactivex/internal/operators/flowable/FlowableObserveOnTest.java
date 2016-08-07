@@ -145,9 +145,9 @@ public class FlowableObserveOnTest {
         Flowable<Integer> o2 = o.observeOn(scheduler);
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<Object> observer1 = mock(DefaultObserver.class);
+        DefaultSubscriber<Object> observer1 = mock(DefaultSubscriber.class);
         @SuppressWarnings("unchecked")
-        DefaultObserver<Object> observer2 = mock(DefaultObserver.class);
+        DefaultSubscriber<Object> observer2 = mock(DefaultSubscriber.class);
 
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
@@ -315,7 +315,7 @@ public class FlowableObserveOnTest {
         final CountDownLatch nextLatch = new CountDownLatch(1);
         final AtomicLong completeTime = new AtomicLong();
         // use subscribeOn to make async, observeOn to move
-        Flowable.range(1, 2).subscribeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(new DefaultObserver<Integer>() {
+        Flowable.range(1, 2).subscribeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {
@@ -368,7 +368,7 @@ public class FlowableObserveOnTest {
         Flowable<Integer> source = Flowable.concat(Flowable.<Integer> error(new TestException()), Flowable.just(1));
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
 
         source.observeOn(testScheduler).subscribe(o);
@@ -550,7 +550,7 @@ public class FlowableObserveOnTest {
 
         });
 
-        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>(new DefaultObserver<Integer>() {
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {
@@ -605,7 +605,7 @@ public class FlowableObserveOnTest {
             final PublishProcessor<Long> subject = PublishProcessor.create();
     
             final AtomicLong counter = new AtomicLong();
-            TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultObserver<Long>() {
+            TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultSubscriber<Long>() {
     
                 @Override
                 public void onComplete() {
@@ -722,7 +722,7 @@ public class FlowableObserveOnTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100).observeOn(Schedulers.computation())
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() {
 
                     boolean first = true;
                     
@@ -770,7 +770,7 @@ public class FlowableObserveOnTest {
                     }
                 })
                 .observeOn(Schedulers.io())
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onStart() {

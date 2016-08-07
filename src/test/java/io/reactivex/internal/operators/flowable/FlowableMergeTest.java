@@ -230,7 +230,7 @@ public class FlowableMergeTest {
         final AtomicInteger totalCounter = new AtomicInteger();
 
         Flowable<String> m = Flowable.merge(Flowable.create(o1), Flowable.create(o2));
-        m.subscribe(new DefaultObserver<String>() {
+        m.subscribe(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -1264,7 +1264,7 @@ public class FlowableMergeTest {
                 .mergeWith(Flowable.fromIterable(Arrays.asList(3,4)));
         final int expectedCount = 4;
         final CountDownLatch latch = new CountDownLatch(expectedCount);
-        o.subscribeOn(Schedulers.computation()).subscribe(new DefaultObserver<Integer>() {
+        o.subscribeOn(Schedulers.computation()).subscribe(new DefaultSubscriber<Integer>() {
             
             @Override
             public void onStart() {

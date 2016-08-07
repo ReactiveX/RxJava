@@ -960,7 +960,7 @@ public class FlowableBufferTest {
                 });
             }
 
-        }).buffer(3, 2).subscribe(new DefaultObserver<List<Integer>>() {
+        }).buffer(3, 2).subscribe(new DefaultSubscriber<List<Integer>>() {
 
             @Override
             public void onStart() {

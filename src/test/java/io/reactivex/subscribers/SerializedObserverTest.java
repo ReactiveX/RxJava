@@ -266,7 +266,7 @@ public class SerializedObserverTest {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final CountDownLatch running = new CountDownLatch(2);
 
-                TestSubscriber<String> to = new TestSubscriber<String>(new DefaultObserver<String>() {
+                TestSubscriber<String> to = new TestSubscriber<String>(new DefaultSubscriber<String>() {
 
                     @Override
                     public void onComplete() {
@@ -347,7 +347,7 @@ public class SerializedObserverTest {
     @Test
     public void testThreadStarvation() throws InterruptedException {
 
-        TestSubscriber<String> to = new TestSubscriber<String>(new DefaultObserver<String>() {
+        TestSubscriber<String> to = new TestSubscriber<String>(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -517,7 +517,7 @@ public class SerializedObserverTest {
         onCompleted, onError, onNext
     }
 
-    private static class TestConcurrencySubscriber extends DefaultObserver<String> {
+    private static class TestConcurrencySubscriber extends DefaultSubscriber<String> {
 
         /**
          * used to store the order and number of events received
@@ -750,7 +750,7 @@ public class SerializedObserverTest {
         }
     }
 
-    private static class BusySubscriber extends DefaultObserver<String> {
+    private static class BusySubscriber extends DefaultSubscriber<String> {
         volatile boolean onCompleted = false;
         volatile boolean onError = false;
         AtomicInteger onNextCount = new AtomicInteger();

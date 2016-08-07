@@ -187,7 +187,7 @@ public class FlowableSubscribeOnTest {
     @Test
     public void testBackpressureReschedulesCorrectly() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(10);
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(new DefaultObserver<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {
@@ -238,7 +238,7 @@ public class FlowableSubscribeOnTest {
                     }
 
                 });
-                Subscriber<Integer> parent = new DefaultObserver<Integer>() {
+                Subscriber<Integer> parent = new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onComplete() {

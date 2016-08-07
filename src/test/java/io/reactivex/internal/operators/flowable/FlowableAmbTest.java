@@ -104,7 +104,7 @@ public class FlowableAmbTest {
                 Flowable2, Flowable3);
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
         o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
@@ -134,7 +134,7 @@ public class FlowableAmbTest {
                 Flowable2, Flowable3);
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
         o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
@@ -162,7 +162,7 @@ public class FlowableAmbTest {
                 Flowable2, Flowable3);
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
         o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);

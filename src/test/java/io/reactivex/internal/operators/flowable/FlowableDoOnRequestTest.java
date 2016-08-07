@@ -22,7 +22,7 @@ import org.junit.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.LongConsumer;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 public class FlowableDoOnRequestTest {
 
@@ -61,7 +61,7 @@ public class FlowableDoOnRequestTest {
                     }
                 })
                 //
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onStart() {

@@ -170,7 +170,7 @@ public class FlowableWindowWithStartEndObservableTest {
         return new Consumer<Flowable<String>>() {
             @Override
             public void accept(Flowable<String> stringObservable) {
-                stringObservable.subscribe(new DefaultObserver<String>() {
+                stringObservable.subscribe(new DefaultSubscriber<String>() {
                     @Override
                     public void onComplete() {
                         lists.add(new ArrayList<String>(list));

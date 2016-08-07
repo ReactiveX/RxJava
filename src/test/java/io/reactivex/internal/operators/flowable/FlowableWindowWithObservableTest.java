@@ -40,7 +40,7 @@ public class FlowableWindowWithObservableTest {
 
         final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
 
-        Subscriber<Flowable<Integer>> wo = new DefaultObserver<Flowable<Integer>>() {
+        Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() {
             @Override
             public void onNext(Flowable<Integer> args) {
                 final Subscriber<Object> mo = TestHelper.mockSubscriber();
@@ -98,7 +98,7 @@ public class FlowableWindowWithObservableTest {
 
         final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
 
-        Subscriber<Flowable<Integer>> wo = new DefaultObserver<Flowable<Integer>>() {
+        Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() {
             @Override
             public void onNext(Flowable<Integer> args) {
                 final Subscriber<Object> mo = TestHelper.mockSubscriber();
@@ -154,7 +154,7 @@ public class FlowableWindowWithObservableTest {
 
         final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
 
-        Subscriber<Flowable<Integer>> wo = new DefaultObserver<Flowable<Integer>>() {
+        Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() {
             @Override
             public void onNext(Flowable<Integer> args) {
                 final Subscriber<Object> mo = TestHelper.mockSubscriber();
@@ -204,7 +204,7 @@ public class FlowableWindowWithObservableTest {
 
         final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
 
-        Subscriber<Flowable<Integer>> wo = new DefaultObserver<Flowable<Integer>>() {
+        Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() {
             @Override
             public void onNext(Flowable<Integer> args) {
                 final Subscriber<Object> mo = TestHelper.mockSubscriber();

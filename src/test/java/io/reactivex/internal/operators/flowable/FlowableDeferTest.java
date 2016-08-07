@@ -23,7 +23,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.subscribers.DefaultObserver;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 @SuppressWarnings("unchecked")
 public class FlowableDeferTest {
@@ -71,7 +71,7 @@ public class FlowableDeferTest {
         
         Flowable<String> result = Flowable.defer(factory);
         
-        DefaultObserver<String> o = mock(DefaultObserver.class);
+        DefaultSubscriber<String> o = mock(DefaultSubscriber.class);
         
         result.subscribe(o);
         

@@ -113,7 +113,7 @@ public class FlowableIgnoreElementsTest {
                     }
                 })
                 //
-                .subscribe(new DefaultObserver<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onStart() {
