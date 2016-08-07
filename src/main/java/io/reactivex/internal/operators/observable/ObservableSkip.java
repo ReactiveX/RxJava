@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 
 public final class ObservableSkip<T> extends ObservableWithUpstream<T, T> {
     final long n;
-    public ObservableSkip(ObservableConsumable<T> source, long n) {
+    public ObservableSkip(ObservableSource<T> source, long n) {
         super(source);
         this.n = n;
     }

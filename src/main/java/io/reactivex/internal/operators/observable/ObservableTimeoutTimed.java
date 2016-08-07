@@ -28,10 +28,10 @@ public final class ObservableTimeoutTimed<T> extends ObservableWithUpstream<T, T
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
-    final ObservableConsumable<? extends T> other;
+    final ObservableSource<? extends T> other;
     
-    public ObservableTimeoutTimed(ObservableConsumable<T> source, 
-            long timeout, TimeUnit unit, Scheduler scheduler, ObservableConsumable<? extends T> other) {
+    public ObservableTimeoutTimed(ObservableSource<T> source,
+            long timeout, TimeUnit unit, Scheduler scheduler, ObservableSource<? extends T> other) {
         super(source);
         this.timeout = timeout;
         this.unit = unit;
@@ -57,7 +57,7 @@ public final class ObservableTimeoutTimed<T> extends ObservableWithUpstream<T, T
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
-        final ObservableConsumable<? extends T> other;
+        final ObservableSource<? extends T> other;
         
         Disposable s; 
         
@@ -80,7 +80,7 @@ public final class ObservableTimeoutTimed<T> extends ObservableWithUpstream<T, T
         volatile boolean done;
         
         public TimeoutTimedOtherSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker,
-                ObservableConsumable<? extends T> other) {
+                ObservableSource<? extends T> other) {
             this.actual = actual;
             this.timeout = timeout;
             this.unit = unit;

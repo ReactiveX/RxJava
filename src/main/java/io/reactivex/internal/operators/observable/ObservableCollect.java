@@ -23,7 +23,7 @@ public final class ObservableCollect<T, U> extends ObservableWithUpstream<T, U> 
     final Callable<? extends U> initialSupplier;
     final BiConsumer<? super U, ? super T> collector;
     
-    public ObservableCollect(ObservableConsumable<T> source, 
+    public ObservableCollect(ObservableSource<T> source,
             Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
         super(source);
         this.initialSupplier = initialSupplier;

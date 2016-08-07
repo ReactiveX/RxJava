@@ -215,7 +215,7 @@ public class ObservableMergeDelayErrorTest {
         final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableConsumable<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableSource<Observable<String>>() {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
@@ -313,7 +313,7 @@ public class ObservableMergeDelayErrorTest {
         }
     }
 
-    private static class TestSynchronousObservable implements ObservableConsumable<String> {
+    private static class TestSynchronousObservable implements ObservableSource<String> {
 
         @Override
         public void subscribe(Observer<? super String> NbpObserver) {
@@ -323,7 +323,7 @@ public class ObservableMergeDelayErrorTest {
         }
     }
 
-    private static class TestASynchronousObservable implements ObservableConsumable<String> {
+    private static class TestASynchronousObservable implements ObservableSource<String> {
         Thread t;
 
         @Override
@@ -342,7 +342,7 @@ public class ObservableMergeDelayErrorTest {
         }
     }
 
-    private static class TestErrorObservable implements ObservableConsumable<String> {
+    private static class TestErrorObservable implements ObservableSource<String> {
 
         String[] valuesToReturn;
 
@@ -371,7 +371,7 @@ public class ObservableMergeDelayErrorTest {
         }
     }
 
-    private static class TestAsyncErrorObservable implements ObservableConsumable<String> {
+    private static class TestAsyncErrorObservable implements ObservableSource<String> {
 
         String[] valuesToReturn;
 
@@ -433,7 +433,7 @@ public class ObservableMergeDelayErrorTest {
     @Test
     @Ignore("Subscribers should not throw")
     public void testMergeSourceWhichDoesntPropagateExceptionBack() {
-        Observable<Integer> source = Observable.create(new ObservableConsumable<Integer>() {
+        Observable<Integer> source = Observable.create(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t1) {
                 t1.onSubscribe(EmptyDisposable.INSTANCE);
@@ -505,7 +505,7 @@ public class ObservableMergeDelayErrorTest {
         for (int i = 0; i < 50; i++) {
             final TestASynchronous1sDelayedObservable o1 = new TestASynchronous1sDelayedObservable();
             final TestASynchronous1sDelayedObservable o2 = new TestASynchronous1sDelayedObservable();
-            Observable<Observable<String>> parentObservable = Observable.create(new ObservableConsumable<Observable<String>>() {
+            Observable<Observable<String>> parentObservable = Observable.create(new ObservableSource<Observable<String>>() {
                 @Override
                 public void subscribe(Observer<? super Observable<String>> op) {
                     op.onSubscribe(EmptyDisposable.INSTANCE);
@@ -530,7 +530,7 @@ public class ObservableMergeDelayErrorTest {
         }
     }
 
-    private static class TestASynchronous1sDelayedObservable implements ObservableConsumable<String> {
+    private static class TestASynchronous1sDelayedObservable implements ObservableSource<String> {
         Thread t;
 
         @Override

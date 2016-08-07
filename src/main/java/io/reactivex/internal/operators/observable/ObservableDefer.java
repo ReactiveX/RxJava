@@ -19,13 +19,13 @@ import io.reactivex.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class ObservableDefer<T> extends Observable<T> {
-    final Callable<? extends ObservableConsumable<? extends T>> supplier;
-    public ObservableDefer(Callable<? extends ObservableConsumable<? extends T>> supplier) {
+    final Callable<? extends ObservableSource<? extends T>> supplier;
+    public ObservableDefer(Callable<? extends ObservableSource<? extends T>> supplier) {
         this.supplier = supplier;
     }
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        ObservableConsumable<? extends T> pub;
+        ObservableSource<? extends T> pub;
         try {
             pub = supplier.call();
         } catch (Throwable t) {

@@ -641,7 +641,7 @@ public abstract class Single<T> implements SingleSource<T> {
         return new SingleDelayWithSingle<T, U>(this, other);
     }
 
-    public final <U> Single<T> delaySubscription(ObservableConsumable<U> other) {
+    public final <U> Single<T> delaySubscription(ObservableSource<U> other) {
         return new SingleDelayWithObservable<T, U>(this, other);
     }
 

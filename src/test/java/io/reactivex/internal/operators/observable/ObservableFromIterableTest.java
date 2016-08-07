@@ -233,9 +233,9 @@ public class ObservableFromIterableTest {
         TestObserver<Integer> to = new TestObserver<Integer>();
         
         Observable.fromIterable(Arrays.asList(1, 2, 3, 4)).concatMap(
-        new Function<Integer, ObservableConsumable<Integer>>() {
+        new Function<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableConsumable<Integer> apply(Integer v) {
+            public ObservableSource<Integer> apply(Integer v) {
                 return Observable.range(v, 2);
             }
         }).subscribe(to);

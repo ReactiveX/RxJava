@@ -18,7 +18,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class ObservableTakeLastOne<T> extends ObservableWithUpstream<T, T> {
     
-    public ObservableTakeLastOne(ObservableConsumable<T> source) {
+    public ObservableTakeLastOne(ObservableSource<T> source) {
         super(source);
     }
 

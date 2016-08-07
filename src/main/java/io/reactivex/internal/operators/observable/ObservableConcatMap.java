@@ -26,9 +26,9 @@ import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableConcatMap<T, U> extends ObservableWithUpstream<T, U> {
-    final Function<? super T, ? extends ObservableConsumable<? extends U>> mapper;
+    final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
     final int bufferSize;
-    public ObservableConcatMap(ObservableConsumable<T> source, Function<? super T, ? extends ObservableConsumable<? extends U>> mapper, int bufferSize) {
+    public ObservableConcatMap(ObservableSource<T> source, Function<? super T, ? extends ObservableSource<? extends U>> mapper, int bufferSize) {
         super(source);
         this.mapper = mapper;
         this.bufferSize = Math.max(8, bufferSize);
@@ -44,7 +44,7 @@ public final class ObservableConcatMap<T, U> extends ObservableWithUpstream<T, U
         private static final long serialVersionUID = 8828587559905699186L;
         final Observer<? super U> actual;
         final SerialDisposable sa;
-        final Function<? super T, ? extends ObservableConsumable<? extends U>> mapper;
+        final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
         final Observer<U> inner;
         final int bufferSize;
 
@@ -61,7 +61,7 @@ public final class ObservableConcatMap<T, U> extends ObservableWithUpstream<T, U
         int fusionMode;
         
         public SourceSubscriber(Observer<? super U> actual,
-                Function<? super T, ? extends ObservableConsumable<? extends U>> mapper, int bufferSize) {
+                                Function<? super T, ? extends ObservableSource<? extends U>> mapper, int bufferSize) {
             this.actual = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
@@ -193,7 +193,7 @@ public final class ObservableConcatMap<T, U> extends ObservableWithUpstream<T, U
                     }
                     
                     if (!empty) {
-                        ObservableConsumable<? extends U> o;
+                        ObservableSource<? extends U> o;
                         
                         try {
                             o = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableConsumable");

@@ -73,7 +73,7 @@ public class ObservableMergeTest {
         final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableConsumable<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableSource<Observable<String>>() {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
@@ -128,7 +128,7 @@ public class ObservableMergeTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Observable<Observable<Long>> source = Observable.create(new ObservableConsumable<Observable<Long>>() {
+        Observable<Observable<Long>> source = Observable.create(new ObservableSource<Observable<Long>>() {
 
             @Override
             public void subscribe(final Observer<? super Observable<Long>> NbpObserver) {
@@ -340,7 +340,7 @@ public class ObservableMergeTest {
     @Ignore("Subscribe should not throw")
     public void testThrownErrorHandling() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable<String> o1 = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> o1 = Observable.create(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> s) {
@@ -355,7 +355,7 @@ public class ObservableMergeTest {
         System.out.println("Error: " + ts.errors());
     }
 
-    private static class TestSynchronousObservable implements ObservableConsumable<String> {
+    private static class TestSynchronousObservable implements ObservableSource<String> {
 
         @Override
         public void subscribe(Observer<? super String> NbpObserver) {
@@ -365,7 +365,7 @@ public class ObservableMergeTest {
         }
     }
 
-    private static class TestASynchronousObservable implements ObservableConsumable<String> {
+    private static class TestASynchronousObservable implements ObservableSource<String> {
         Thread t;
         final CountDownLatch onNextBeingSent = new CountDownLatch(1);
 
@@ -392,7 +392,7 @@ public class ObservableMergeTest {
         }
     }
 
-    private static class TestErrorObservable implements ObservableConsumable<String> {
+    private static class TestErrorObservable implements ObservableSource<String> {
 
         String[] valuesToReturn;
 
@@ -494,7 +494,7 @@ public class ObservableMergeTest {
     }
 
     private Observable<Long> createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(final Scheduler scheduler, final AtomicBoolean unsubscribed) {
-        return Observable.create(new ObservableConsumable<Long>() {
+        return Observable.create(new ObservableSource<Long>() {
 
             @Override
             public void subscribe(final Observer<? super Long> child) {
@@ -556,7 +556,7 @@ public class ObservableMergeTest {
     @Test
     public void testConcurrencyWithSleeping() {
 
-        Observable<Integer> o = Observable.create(new ObservableConsumable<Integer>() {
+        Observable<Integer> o = Observable.create(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(final Observer<? super Integer> s) {
@@ -606,7 +606,7 @@ public class ObservableMergeTest {
 
     @Test
     public void testConcurrencyWithBrokenOnCompleteContract() {
-        Observable<Integer> o = Observable.create(new ObservableConsumable<Integer>() {
+        Observable<Integer> o = Observable.create(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(final Observer<? super Integer> s) {
@@ -835,7 +835,7 @@ public class ObservableMergeTest {
     public void mergeWithTerminalEventAfterUnsubscribe() {
         System.out.println("mergeWithTerminalEventAfterUnsubscribe");
         TestObserver<String> ts = new TestObserver<String>();
-        Observable<String> bad = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> bad = Observable.create(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> s) {
@@ -1018,7 +1018,7 @@ public class ObservableMergeTest {
 
             @Override
             public Observable<Integer> apply(final Integer i) {
-                return Observable.create(new ObservableConsumable<Integer>() {
+                return Observable.create(new ObservableSource<Integer>() {
 
                     @Override
                     public void subscribe(Observer<? super Integer> s) {

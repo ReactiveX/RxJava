@@ -42,7 +42,7 @@ public class ObservableThrottleFirstTest {
 
     @Test
     public void testThrottlingWithCompleted() {
-        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> source = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -70,7 +70,7 @@ public class ObservableThrottleFirstTest {
 
     @Test
     public void testThrottlingWithError() {
-        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> source = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);

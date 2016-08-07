@@ -21,7 +21,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class ObservableUnsubscribeOn<T> extends ObservableWithUpstream<T, T> {
     final Scheduler scheduler;
-    public ObservableUnsubscribeOn(ObservableConsumable<T> source, Scheduler scheduler) {
+    public ObservableUnsubscribeOn(ObservableSource<T> source, Scheduler scheduler) {
         super(source);
         this.scheduler = scheduler;
     }

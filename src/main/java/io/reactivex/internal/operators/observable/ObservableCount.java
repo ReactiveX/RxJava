@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class ObservableCount<T> extends ObservableWithUpstream<T, Long> {
-    public ObservableCount(ObservableConsumable<T> source) {
+    public ObservableCount(ObservableSource<T> source) {
         super(source);
     }
 

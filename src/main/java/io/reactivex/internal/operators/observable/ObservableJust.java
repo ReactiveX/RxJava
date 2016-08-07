@@ -38,11 +38,11 @@ public final class ObservableJust<T> extends Observable<T> {
         return value;
     }
     
-    public <U> Observable<U> scalarFlatMap(final Function<? super T, ? extends ObservableConsumable<? extends U>> mapper) {
+    public <U> Observable<U> scalarFlatMap(final Function<? super T, ? extends ObservableSource<? extends U>> mapper) {
         return new Observable<U>() {
             @Override
             public void subscribeActual(Observer<? super U> s) {
-                ObservableConsumable<? extends U> other;
+                ObservableSource<? extends U> other;
                 try {
                     other = mapper.apply(value);
                 } catch (Throwable e) {

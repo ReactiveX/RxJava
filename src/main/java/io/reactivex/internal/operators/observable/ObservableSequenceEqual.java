@@ -22,13 +22,13 @@ import io.reactivex.internal.disposables.ArrayCompositeDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 
 public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
-    final ObservableConsumable<? extends T> first;
-    final ObservableConsumable<? extends T> second;
+    final ObservableSource<? extends T> first;
+    final ObservableSource<? extends T> second;
     final BiPredicate<? super T, ? super T> comparer;
     final int bufferSize;
     
-    public ObservableSequenceEqual(ObservableConsumable<? extends T> first, ObservableConsumable<? extends T> second,
-            BiPredicate<? super T, ? super T> comparer, int bufferSize) {
+    public ObservableSequenceEqual(ObservableSource<? extends T> first, ObservableSource<? extends T> second,
+                                   BiPredicate<? super T, ? super T> comparer, int bufferSize) {
         this.first = first;
         this.second = second;
         this.comparer = comparer;
@@ -47,8 +47,8 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
         final Observer<? super Boolean> actual;
         final BiPredicate<? super T, ? super T> comparer;
         final ArrayCompositeDisposable resources;
-        final ObservableConsumable<? extends T> first;
-        final ObservableConsumable<? extends T> second;
+        final ObservableSource<? extends T> first;
+        final ObservableSource<? extends T> second;
         final EqualSubscriber<T>[] subscribers;
         
         volatile boolean cancelled;
@@ -58,8 +58,8 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
         T v2;
         
         public EqualCoordinator(Observer<? super Boolean> actual, int bufferSize,
-                ObservableConsumable<? extends T> first, ObservableConsumable<? extends T> second,
-                BiPredicate<? super T, ? super T> comparer) {
+                                ObservableSource<? extends T> first, ObservableSource<? extends T> second,
+                                BiPredicate<? super T, ? super T> comparer) {
             this.actual = actual;
             this.first = first;
             this.second = second;

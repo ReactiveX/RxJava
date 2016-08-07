@@ -23,7 +23,7 @@ public final class ObservableSingle<T> extends ObservableWithUpstream<T, T> {
     
     final T defaultValue;
     
-    public ObservableSingle(ObservableConsumable<T> source, T defaultValue) {
+    public ObservableSingle(ObservableSource<T> source, T defaultValue) {
         super(source);
         this.defaultValue = defaultValue;
     }

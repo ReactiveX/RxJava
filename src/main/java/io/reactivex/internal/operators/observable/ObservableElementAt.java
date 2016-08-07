@@ -20,7 +20,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 public final class ObservableElementAt<T> extends ObservableWithUpstream<T, T> {
     final long index;
     final T defaultValue;
-    public ObservableElementAt(ObservableConsumable<T> source, long index, T defaultValue) {
+    public ObservableElementAt(ObservableSource<T> source, long index, T defaultValue) {
         super(source);
         this.index = index;
         this.defaultValue = defaultValue;

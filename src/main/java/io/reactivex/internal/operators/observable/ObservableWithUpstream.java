@@ -24,13 +24,13 @@ import io.reactivex.*;
 public abstract class ObservableWithUpstream<T, U> extends Observable<U> {
 
     /** The source consumable Observable. */
-    protected final ObservableConsumable<T> source;
+    protected final ObservableSource<T> source;
     
     /**
      * Constructs the ObservableSource with the given consumable.
      * @param source the consumable Observable
      */
-    public ObservableWithUpstream(ObservableConsumable<T> source) {
+    public ObservableWithUpstream(ObservableSource<T> source) {
         this.source = source;
     }
     
@@ -39,7 +39,7 @@ public abstract class ObservableWithUpstream<T, U> extends Observable<U> {
      * <p>Allows discovering the chain of observables.
      * @return the source ObservableConsumable
      */
-    public final ObservableConsumable<T> source() {
+    public final ObservableSource<T> source() {
         return source;
     }
 

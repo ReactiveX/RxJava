@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.Callable;
 
-import io.reactivex.ObservableConsumable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
@@ -26,7 +26,7 @@ extends ObservableWithUpstream<T, U> {
     
     final Callable<U> collectionSupplier;
     
-    public ObservableToList(ObservableConsumable<T> source, final int defaultCapacityHint) {
+    public ObservableToList(ObservableSource<T> source, final int defaultCapacityHint) {
         super(source);
         this.collectionSupplier = new Callable<U>() {
             @Override
@@ -37,7 +37,7 @@ extends ObservableWithUpstream<T, U> {
         };
     }
 
-    public ObservableToList(ObservableConsumable<T> source, Callable<U> collectionSupplier) {
+    public ObservableToList(ObservableSource<T> source, Callable<U> collectionSupplier) {
         super(source);
         this.collectionSupplier = collectionSupplier;
     }

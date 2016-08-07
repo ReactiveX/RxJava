@@ -26,7 +26,7 @@ public final class ObservableWindow<T> extends ObservableWithUpstream<T, Observa
     final long skip;
     final int capacityHint;
     
-    public ObservableWindow(ObservableConsumable<T> source, long count, long skip, int capacityHint) {
+    public ObservableWindow(ObservableSource<T> source, long count, long skip, int capacityHint) {
         super(source);
         this.count = count;
         this.skip = skip;

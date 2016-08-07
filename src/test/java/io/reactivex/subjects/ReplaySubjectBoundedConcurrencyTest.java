@@ -38,7 +38,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
 
             @Override
             public void run() {
-                Observable.create(new ObservableConsumable<Long>() {
+                Observable.create(new ObservableSource<Long>() {
 
                     @Override
                     public void subscribe(Observer<? super Long> o) {
@@ -148,7 +148,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
 
             @Override
             public void run() {
-                Observable.create(new ObservableConsumable<Long>() {
+                Observable.create(new ObservableSource<Long>() {
 
                     @Override
                     public void subscribe(Observer<? super Long> o) {

@@ -44,7 +44,7 @@ public class ObservableDebounceTest {
 
     @Test
     public void testDebounceWithCompleted() {
-        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> source = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -70,7 +70,7 @@ public class ObservableDebounceTest {
 
     @Test
     public void testDebounceNeverEmits() {
-        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> source = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -100,7 +100,7 @@ public class ObservableDebounceTest {
 
     @Test
     public void testDebounceWithError() {
-        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> source = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);

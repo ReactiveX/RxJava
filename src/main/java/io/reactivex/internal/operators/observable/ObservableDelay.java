@@ -27,7 +27,7 @@ public final class ObservableDelay<T> extends ObservableWithUpstream<T, T> {
     final Scheduler scheduler;
     final boolean delayError;
     
-    public ObservableDelay(ObservableConsumable<T> source, long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
+    public ObservableDelay(ObservableSource<T> source, long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
         super(source);
         this.delay = delay;
         this.unit = unit;

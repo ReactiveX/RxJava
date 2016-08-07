@@ -85,7 +85,7 @@ public class ObservableMergeMaxConcurrentTest {
         }
     }
 
-    private static class SubscriptionCheckObservable implements ObservableConsumable<String> {
+    private static class SubscriptionCheckObservable implements ObservableSource<String> {
 
         private final AtomicInteger subscriptionCount;
         private final int maxConcurrent;

@@ -170,7 +170,7 @@ public final class ReplaySubject<T> extends Subject<T> {
         return state.buffer.size();
     }
     
-    static final class State<T> extends AtomicReference<Object> implements ObservableConsumable<T>, Observer<T> {
+    static final class State<T> extends AtomicReference<Object> implements ObservableSource<T>, Observer<T> {
         /** */
         private static final long serialVersionUID = -4673197222000219014L;
 

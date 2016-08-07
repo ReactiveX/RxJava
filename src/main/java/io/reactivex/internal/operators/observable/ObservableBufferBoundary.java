@@ -18,7 +18,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
@@ -32,13 +32,13 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableBufferBoundary<T, U extends Collection<? super T>, Open, Close> 
 extends Observable<U> {
-    final ObservableConsumable<T> source;
+    final ObservableSource<T> source;
     final Callable<U> bufferSupplier;
-    final ObservableConsumable<? extends Open> bufferOpen;
-    final Function<? super Open, ? extends ObservableConsumable<? extends Close>> bufferClose;
+    final ObservableSource<? extends Open> bufferOpen;
+    final Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose;
 
-    public ObservableBufferBoundary(ObservableConsumable<T> source, ObservableConsumable<? extends Open> bufferOpen,
-            Function<? super Open, ? extends ObservableConsumable<? extends Close>> bufferClose, Callable<U> bufferSupplier) {
+    public ObservableBufferBoundary(ObservableSource<T> source, ObservableSource<? extends Open> bufferOpen,
+                                    Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose, Callable<U> bufferSupplier) {
         this.source = source;
         this.bufferOpen = bufferOpen;
         this.bufferClose = bufferClose;
@@ -55,8 +55,8 @@ extends Observable<U> {
     
     static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, Open, Close>
     extends QueueDrainObserver<T, U, U> implements Disposable {
-        final ObservableConsumable<? extends Open> bufferOpen;
-        final Function<? super Open, ? extends ObservableConsumable<? extends Close>> bufferClose;
+        final ObservableSource<? extends Open> bufferOpen;
+        final Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose;
         final Callable<U> bufferSupplier;
         final CompositeDisposable resources;
         
@@ -67,8 +67,8 @@ extends Observable<U> {
         final AtomicInteger windows = new AtomicInteger();
 
         public BufferBoundarySubscriber(Observer<? super U> actual, 
-                ObservableConsumable<? extends Open> bufferOpen,
-                Function<? super Open, ? extends ObservableConsumable<? extends Close>> bufferClose,
+                ObservableSource<? extends Open> bufferOpen,
+                Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose,
                         Callable<U> bufferSupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferOpen = bufferOpen;
@@ -171,7 +171,7 @@ extends Observable<U> {
                 return;
             }
 
-            ObservableConsumable<? extends Close> p;
+            ObservableSource<? extends Close> p;
             
             try {
                 p = bufferClose.apply(window);

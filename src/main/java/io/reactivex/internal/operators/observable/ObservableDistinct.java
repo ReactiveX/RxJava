@@ -27,13 +27,13 @@ public final class ObservableDistinct<T, K> extends ObservableWithUpstream<T, T>
     final Function<? super T, K> keySelector;
     final Callable<? extends Predicate<? super K>> predicateSupplier;
 
-    public ObservableDistinct(ObservableConsumable<T> source, Function<? super T, K> keySelector, Callable<? extends Predicate<? super K>> predicateSupplier) {
+    public ObservableDistinct(ObservableSource<T> source, Function<? super T, K> keySelector, Callable<? extends Predicate<? super K>> predicateSupplier) {
         super(source);
         this.predicateSupplier = predicateSupplier;
         this.keySelector = keySelector;
     }
     
-    public static <T, K> ObservableDistinct<T, K> withCollection(ObservableConsumable<T> source, final Function<? super T, K> keySelector, final Callable<? extends Collection<? super K>> collectionSupplier) {
+    public static <T, K> ObservableDistinct<T, K> withCollection(ObservableSource<T> source, final Function<? super T, K> keySelector, final Callable<? extends Collection<? super K>> collectionSupplier) {
         Callable<? extends Predicate<? super K>> p = new Callable<Predicate<K>>() {
             @Override
             public Predicate<K> call() throws Exception {
@@ -55,7 +55,7 @@ public final class ObservableDistinct<T, K> extends ObservableWithUpstream<T, T>
         return new ObservableDistinct<T, K>(source, keySelector, p);
     }
     
-    public static <T> ObservableDistinct<T, T> untilChanged(ObservableConsumable<T> source) {
+    public static <T> ObservableDistinct<T, T> untilChanged(ObservableSource<T> source) {
         Callable<? extends Predicate<? super T>> p = new Callable<Predicate<T>>() {
             @Override
             public Predicate<T> call() {
@@ -78,7 +78,7 @@ public final class ObservableDistinct<T, K> extends ObservableWithUpstream<T, T>
         return new ObservableDistinct<T, T>(source, Functions.<T>identity(), p);
     }
 
-    public static <T, K> ObservableDistinct<T, K> untilChanged(ObservableConsumable<T> source, Function<? super T, K> keySelector) {
+    public static <T, K> ObservableDistinct<T, K> untilChanged(ObservableSource<T> source, Function<? super T, K> keySelector) {
         Callable<? extends Predicate<? super K>> p = new Callable<Predicate<K>>() {
             @Override
             public Predicate<K> call() {

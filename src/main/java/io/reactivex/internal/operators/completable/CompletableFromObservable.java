@@ -18,9 +18,9 @@ import io.reactivex.disposables.Disposable;
 
 public final class CompletableFromObservable<T> extends Completable {
 
-    final ObservableConsumable<T> observable;
+    final ObservableSource<T> observable;
 
-    public CompletableFromObservable(ObservableConsumable<T> observable) {
+    public CompletableFromObservable(ObservableSource<T> observable) {
         this.observable = observable;
     }
 

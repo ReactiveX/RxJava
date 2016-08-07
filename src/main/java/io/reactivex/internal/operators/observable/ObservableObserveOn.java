@@ -27,7 +27,7 @@ public final class ObservableObserveOn<T> extends ObservableWithUpstream<T, T> {
     final Scheduler scheduler;
     final boolean delayError;
     final int bufferSize;
-    public ObservableObserveOn(ObservableConsumable<T> source, Scheduler scheduler, boolean delayError, int bufferSize) {
+    public ObservableObserveOn(ObservableSource<T> source, Scheduler scheduler, boolean delayError, int bufferSize) {
         super(source);
         this.scheduler = scheduler;
         this.delayError = delayError;

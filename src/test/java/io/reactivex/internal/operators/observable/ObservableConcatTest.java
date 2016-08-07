@@ -80,7 +80,7 @@ public class ObservableConcatTest {
         final Observable<String> odds = Observable.fromArray(o);
         final Observable<String> even = Observable.fromArray(e);
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableConsumable<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableSource<Observable<String>>() {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
@@ -156,7 +156,7 @@ public class ObservableConcatTest {
         final CountDownLatch parentHasFinished = new CountDownLatch(1);
         
         
-        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableConsumable<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableSource<Observable<String>>() {
 
             @Override
             public void subscribe(final Observer<? super Observable<String>> NbpObserver) {
@@ -343,7 +343,7 @@ public class ObservableConcatTest {
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
         
-        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableConsumable<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableSource<Observable<String>>() {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
@@ -469,7 +469,7 @@ public class ObservableConcatTest {
         verify(NbpObserver, never()).onError(any(Throwable.class));
     }
 
-    private static class TestObservable<T> implements ObservableConsumable<T> {
+    private static class TestObservable<T> implements ObservableSource<T> {
 
         private final Disposable s = new Disposable() {
             @Override
@@ -658,7 +658,7 @@ public class ObservableConcatTest {
     // https://github.com/ReactiveX/RxJava/issues/1818
     @Test
     public void testConcatWithNonCompliantSourceDoubleOnComplete() {
-        Observable<String> o = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> o = Observable.create(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> s) {

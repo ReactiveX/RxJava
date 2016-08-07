@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.ObservableConsumable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
@@ -31,7 +31,7 @@ public final class ObservableGroupBy<T, K, V> extends ObservableWithUpstream<T, 
     final int bufferSize;
     final boolean delayError;
     
-    public ObservableGroupBy(ObservableConsumable<T> source, 
+    public ObservableGroupBy(ObservableSource<T> source,
             Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, 
             int bufferSize, boolean delayError) {
         super(source);
@@ -208,7 +208,7 @@ public final class ObservableGroupBy<T, K, V> extends ObservableWithUpstream<T, 
         }
     }
     
-    static final class State<T, K> extends AtomicInteger implements Disposable, ObservableConsumable<T> {
+    static final class State<T, K> extends AtomicInteger implements Disposable, ObservableSource<T> {
         /** */
         private static final long serialVersionUID = -3852313036005250360L;
 

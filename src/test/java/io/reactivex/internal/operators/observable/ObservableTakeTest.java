@@ -109,7 +109,7 @@ public class ObservableTakeTest {
 
     @Test
     public void testTakeDoesntLeakErrors() {
-        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> source = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -135,7 +135,7 @@ public class ObservableTakeTest {
     public void testTakeZeroDoesntLeakError() {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final Disposable bs = Disposables.empty();
-        Observable<String> source = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> source = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 subscribed.set(true);
@@ -203,7 +203,7 @@ public class ObservableTakeTest {
     @Test(timeout = 2000)
     public void testMultiTake() {
         final AtomicInteger count = new AtomicInteger();
-        Observable.create(new ObservableConsumable<Integer>() {
+        Observable.create(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(Observer<? super Integer> s) {
@@ -229,7 +229,7 @@ public class ObservableTakeTest {
         assertEquals(1, count.get());
     }
 
-    private static class TestObservableFunc implements ObservableConsumable<String> {
+    private static class TestObservableFunc implements ObservableSource<String> {
 
         final String[] values;
         Thread t = null;
@@ -265,7 +265,7 @@ public class ObservableTakeTest {
         }
     }
 
-    private static Observable<Long> INFINITE_OBSERVABLE = Observable.create(new ObservableConsumable<Long>() {
+    private static Observable<Long> INFINITE_OBSERVABLE = Observable.create(new ObservableSource<Long>() {
 
         @Override
         public void subscribe(Observer<? super Long> op) {

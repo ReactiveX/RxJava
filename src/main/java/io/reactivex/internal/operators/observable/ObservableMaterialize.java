@@ -20,7 +20,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 public final class ObservableMaterialize<T> extends ObservableWithUpstream<T, Try<Optional<T>>> {
     
     
-    public ObservableMaterialize(ObservableConsumable<T> source) {
+    public ObservableMaterialize(ObservableSource<T> source) {
         super(source);
     }
 

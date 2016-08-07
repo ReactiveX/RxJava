@@ -101,7 +101,7 @@ public final class PublishSubject<T> extends Subject<T> {
         return false;
     }
     
-    static final class State<T> extends AtomicReference<Object> implements ObservableConsumable<T>, Observer<T> {
+    static final class State<T> extends AtomicReference<Object> implements ObservableSource<T>, Observer<T> {
         /** */
         private static final long serialVersionUID = 4876574210612691772L;
 

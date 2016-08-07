@@ -28,7 +28,7 @@ public final class ObservableDebounceTimed<T> extends ObservableWithUpstream<T, 
     final TimeUnit unit;
     final Scheduler scheduler;
 
-    public ObservableDebounceTimed(ObservableConsumable<T> source, long timeout, TimeUnit unit, Scheduler scheduler) {
+    public ObservableDebounceTimed(ObservableSource<T> source, long timeout, TimeUnit unit, Scheduler scheduler) {
         super(source);
         this.timeout = timeout;
         this.unit = unit;

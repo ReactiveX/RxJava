@@ -238,7 +238,7 @@ public class ObservableTimeoutTests {
 
             @Override
             public void run() {
-                Observable.create(new ObservableConsumable<String>() {
+                Observable.create(new ObservableSource<String>() {
 
                     @Override
                     public void subscribe(Observer<? super String> NbpSubscriber) {
@@ -273,7 +273,7 @@ public class ObservableTimeoutTests {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Disposable s = mock(Disposable.class);
 
-        Observable<String> never = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> never = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(s);
@@ -302,7 +302,7 @@ public class ObservableTimeoutTests {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Disposable s = mock(Disposable.class);
 
-        Observable<String> immediatelyComplete = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> immediatelyComplete = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(s);
@@ -333,7 +333,7 @@ public class ObservableTimeoutTests {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Disposable s = mock(Disposable.class);
 
-        Observable<String> immediatelyError = Observable.create(new ObservableConsumable<String>() {
+        Observable<String> immediatelyError = Observable.create(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(s);

@@ -325,7 +325,7 @@ public class ObservableTimeoutWithSelectorTest {
             public Observable<Integer> apply(Integer t1) {
                 if (t1 == 1) {
                     // Force "unsubscribe" run on another thread
-                    return Observable.create(new ObservableConsumable<Integer>() {
+                    return Observable.create(new ObservableSource<Integer>() {
                         @Override
                         public void subscribe(Observer<? super Integer> NbpSubscriber) {
                             NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);

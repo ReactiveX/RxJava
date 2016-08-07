@@ -44,7 +44,7 @@ public class ObservableSampleTest {
 
     @Test
     public void testSample() {
-        Observable<Long> source = Observable.create(new ObservableConsumable<Long>() {
+        Observable<Long> source = Observable.create(new ObservableSource<Long>() {
             @Override
             public void subscribe(final Observer<? super Long> observer1) {
                 observer1.onSubscribe(EmptyDisposable.INSTANCE);
@@ -266,7 +266,7 @@ public class ObservableSampleTest {
     public void testSampleUnsubscribe() {
         final Disposable s = mock(Disposable.class);
         Observable<Integer> o = Observable.create(
-                new ObservableConsumable<Integer>() {
+                new ObservableSource<Integer>() {
                     @Override
                     public void subscribe(Observer<? super Integer> NbpSubscriber) {
                         NbpSubscriber.onSubscribe(s);

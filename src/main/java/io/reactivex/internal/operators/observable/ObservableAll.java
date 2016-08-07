@@ -19,10 +19,10 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableAll<T> extends Observable<Boolean> {
-    final ObservableConsumable<T> source;
+    final ObservableSource<T> source;
     
     final Predicate<? super T> predicate;
-    public ObservableAll(ObservableConsumable<T> source, Predicate<? super T> predicate) {
+    public ObservableAll(ObservableSource<T> source, Predicate<? super T> predicate) {
         this.source = source;
         this.predicate = predicate;
     }

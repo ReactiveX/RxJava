@@ -36,7 +36,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
     /** A factory that creates the appropriate buffer for the ReplaySubscriber. */
     final Callable<? extends ReplayBuffer<T>> bufferFactory;
 
-    final ObservableConsumable<T> onSubscribe;
+    final ObservableSource<T> onSubscribe;
     
     @SuppressWarnings("rawtypes")
     static final Callable DEFAULT_UNBOUNDED_FACTORY = new Callable() {
@@ -57,12 +57,12 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
      */
     public static <U, R> Observable<R> multicastSelector(
             final Callable<? extends ConnectableObservable<U>> connectableFactory,
-            final Function<? super Observable<U>, ? extends ObservableConsumable<R>> selector) {
+            final Function<? super Observable<U>, ? extends ObservableSource<R>> selector) {
         return new Observable<R>() {
             @Override
             protected void subscribeActual(Observer<? super R> child) {
                 ConnectableObservable<U> co;
-                ObservableConsumable<R> observable;
+                ObservableSource<R> observable;
                 try {
                     co = connectableFactory.call();
                     observable = selector.apply(co);
@@ -183,7 +183,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
             final Callable<? extends ReplayBuffer<T>> bufferFactory) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<ReplaySubscriber<T>> curr = new AtomicReference<ReplaySubscriber<T>>();
-        ObservableConsumable<T> onSubscribe = new ObservableConsumable<T>() {
+        ObservableSource<T> onSubscribe = new ObservableSource<T>() {
             @Override
             public void subscribe(Observer<? super T> child) {
                 // concurrent connection/disconnection may change the state, 
@@ -236,9 +236,9 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
         return new ObservableReplay<T>(onSubscribe, source, curr, bufferFactory);
     }
     
-    private ObservableReplay(ObservableConsumable<T> onSubscribe, Observable<? extends T> source, 
-            final AtomicReference<ReplaySubscriber<T>> current,
-            final Callable<? extends ReplayBuffer<T>> bufferFactory) {
+    private ObservableReplay(ObservableSource<T> onSubscribe, Observable<? extends T> source,
+                             final AtomicReference<ReplaySubscriber<T>> current,
+                             final Callable<? extends ReplayBuffer<T>> bufferFactory) {
         this.onSubscribe = onSubscribe;
         this.source = source;
         this.current = current;

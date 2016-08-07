@@ -33,7 +33,7 @@ public class ObservableUnsubscribeOnTest {
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
-            Observable<Integer> w = Observable.create(new ObservableConsumable<Integer>() {
+            Observable<Integer> w = Observable.create(new ObservableSource<Integer>() {
 
                 @Override
                 public void subscribe(Observer<? super Integer> t1) {
@@ -77,7 +77,7 @@ public class ObservableUnsubscribeOnTest {
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
-            Observable<Integer> w = Observable.create(new ObservableConsumable<Integer>() {
+            Observable<Integer> w = Observable.create(new ObservableSource<Integer>() {
 
                 @Override
                 public void subscribe(Observer<? super Integer> t1) {

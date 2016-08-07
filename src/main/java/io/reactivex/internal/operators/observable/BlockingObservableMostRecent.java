@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.*;
 
-import io.reactivex.ObservableConsumable;
+import io.reactivex.ObservableSource;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observers.DefaultObserver;
@@ -41,7 +41,7 @@ public enum BlockingObservableMostRecent {
      * @return an {@code Iterable} that always returns the item most recently emitted by {@code source}, or
      *         {@code initialValue} if {@code source} has not yet emitted any items
      */
-    public static <T> Iterable<T> mostRecent(final ObservableConsumable<? extends T> source, final T initialValue) {
+    public static <T> Iterable<T> mostRecent(final ObservableSource<? extends T> source, final T initialValue) {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {

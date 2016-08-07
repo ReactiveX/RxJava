@@ -17,8 +17,8 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 
 public final class ObservableSwitchIfEmpty<T> extends ObservableWithUpstream<T, T> {
-    final ObservableConsumable<? extends T> other;
-    public ObservableSwitchIfEmpty(ObservableConsumable<T> source, ObservableConsumable<? extends T> other) {
+    final ObservableSource<? extends T> other;
+    public ObservableSwitchIfEmpty(ObservableSource<T> source, ObservableSource<? extends T> other) {
         super(source);
         this.other = other;
     }
@@ -32,12 +32,12 @@ public final class ObservableSwitchIfEmpty<T> extends ObservableWithUpstream<T, 
     
     static final class SwitchIfEmptySubscriber<T> implements Observer<T> {
         final Observer<? super T> actual;
-        final ObservableConsumable<? extends T> other;
+        final ObservableSource<? extends T> other;
         final SerialDisposable arbiter;
         
         boolean empty;
         
-        public SwitchIfEmptySubscriber(Observer<? super T> actual, ObservableConsumable<? extends T> other) {
+        public SwitchIfEmptySubscriber(Observer<? super T> actual, ObservableSource<? extends T> other) {
             this.actual = actual;
             this.other = other;
             this.empty = true;

@@ -26,7 +26,7 @@ public final class ObservableSampleTimed<T> extends ObservableWithUpstream<T, T>
     final TimeUnit unit;
     final Scheduler scheduler;
     
-    public ObservableSampleTimed(ObservableConsumable<T> source, long period, TimeUnit unit, Scheduler scheduler) {
+    public ObservableSampleTimed(ObservableSource<T> source, long period, TimeUnit unit, Scheduler scheduler) {
         super(source);
         this.period = period;
         this.unit = unit;

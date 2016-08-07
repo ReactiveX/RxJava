@@ -28,7 +28,7 @@ public final class ObservableSkipLastTimed<T> extends ObservableWithUpstream<T, 
     final int bufferSize;
     final boolean delayError;
 
-    public ObservableSkipLastTimed(ObservableConsumable<T> source, 
+    public ObservableSkipLastTimed(ObservableSource<T> source,
             long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
         super(source);
         this.time = time;

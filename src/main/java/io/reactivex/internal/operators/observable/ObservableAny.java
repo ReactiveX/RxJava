@@ -18,9 +18,9 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class ObservableAny<T> extends Observable<Boolean> {
-    final ObservableConsumable<T> source;
+    final ObservableSource<T> source;
     final Predicate<? super T> predicate;
-    public ObservableAny(ObservableConsumable<T> source, Predicate<? super T> predicate) {
+    public ObservableAny(ObservableSource<T> source, Predicate<? super T> predicate) {
         this.source = source;
         this.predicate = predicate;
     }

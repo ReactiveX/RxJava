@@ -28,11 +28,11 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableBufferBoundarySupplier<T, U extends Collection<? super T>, B> 
 extends Observable<U> {
-    final ObservableConsumable<T> source;
-    final Callable<? extends ObservableConsumable<B>> boundarySupplier;
+    final ObservableSource<T> source;
+    final Callable<? extends ObservableSource<B>> boundarySupplier;
     final Callable<U> bufferSupplier;
     
-    public ObservableBufferBoundarySupplier(ObservableConsumable<T> source, Callable<? extends ObservableConsumable<B>> boundarySupplier, Callable<U> bufferSupplier) {
+    public ObservableBufferBoundarySupplier(ObservableSource<T> source, Callable<? extends ObservableSource<B>> boundarySupplier, Callable<U> bufferSupplier) {
         this.source = source;
         this.boundarySupplier = boundarySupplier;
         this.bufferSupplier = bufferSupplier;
@@ -47,7 +47,7 @@ extends Observable<U> {
     extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
         /** */
         final Callable<U> bufferSupplier;
-        final Callable<? extends ObservableConsumable<B>> boundarySupplier;
+        final Callable<? extends ObservableSource<B>> boundarySupplier;
         
         Disposable s;
         
@@ -56,7 +56,7 @@ extends Observable<U> {
         U buffer;
         
         public BufferBondarySupplierSubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
-                Callable<? extends ObservableConsumable<B>> boundarySupplier) {
+                Callable<? extends ObservableSource<B>> boundarySupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundarySupplier = boundarySupplier;
@@ -88,7 +88,7 @@ extends Observable<U> {
                 }
                 buffer = b;
                 
-                ObservableConsumable<B> boundary;
+                ObservableSource<B> boundary;
                 
                 try {
                     boundary = boundarySupplier.call();
@@ -191,7 +191,7 @@ extends Observable<U> {
                 return;
             }
 
-            ObservableConsumable<B> boundary;
+            ObservableSource<B> boundary;
             
             try {
                 boundary = boundarySupplier.call();

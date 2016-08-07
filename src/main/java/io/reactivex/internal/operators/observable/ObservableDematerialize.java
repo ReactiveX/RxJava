@@ -20,7 +20,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableDematerialize<T> extends ObservableWithUpstream<Try<Optional<T>>, T> {
     
-    public ObservableDematerialize(ObservableConsumable<Try<Optional<T>>> source) {
+    public ObservableDematerialize(ObservableSource<Try<Optional<T>>> source) {
         super(source);
     }
 

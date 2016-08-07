@@ -71,7 +71,7 @@ public class ObservableRetryWithPredicateTest {
     }
     @Test
     public void testRetryTwice() {
-        Observable<Integer> source = Observable.create(new ObservableConsumable<Integer>() {
+        Observable<Integer> source = Observable.create(new ObservableSource<Integer>() {
             int count;
             @Override
             public void subscribe(Observer<? super Integer> t1) {
@@ -107,7 +107,7 @@ public class ObservableRetryWithPredicateTest {
     }
     @Test
     public void testRetryTwiceAndGiveUp() {
-        Observable<Integer> source = Observable.create(new ObservableConsumable<Integer>() {
+        Observable<Integer> source = Observable.create(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t1) {
                 t1.onSubscribe(EmptyDisposable.INSTANCE);
@@ -135,7 +135,7 @@ public class ObservableRetryWithPredicateTest {
     }
     @Test
     public void testRetryOnSpecificException() {
-        Observable<Integer> source = Observable.create(new ObservableConsumable<Integer>() {
+        Observable<Integer> source = Observable.create(new ObservableSource<Integer>() {
             int count;
             @Override
             public void subscribe(Observer<? super Integer> t1) {
@@ -172,7 +172,7 @@ public class ObservableRetryWithPredicateTest {
     public void testRetryOnSpecificExceptionAndNotOther() {
         final IOException ioe = new IOException();
         final TestException te = new TestException();
-        Observable<Integer> source = Observable.create(new ObservableConsumable<Integer>() {
+        Observable<Integer> source = Observable.create(new ObservableSource<Integer>() {
             int count;
             @Override
             public void subscribe(Observer<? super Integer> t1) {

@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableConsumable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
@@ -32,13 +32,13 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
 public final class ObservableWindowBoundarySelector<T, B, V> extends ObservableWithUpstream<T, Observable<T>> {
-    final ObservableConsumable<B> open;
-    final Function<? super B, ? extends ObservableConsumable<V>> close;
+    final ObservableSource<B> open;
+    final Function<? super B, ? extends ObservableSource<V>> close;
     final int bufferSize;
     
     public ObservableWindowBoundarySelector(
-            ObservableConsumable<T> source, 
-            ObservableConsumable<B> open, Function<? super B, ? extends ObservableConsumable<V>> close,
+            ObservableSource<T> source,
+            ObservableSource<B> open, Function<? super B, ? extends ObservableSource<V>> close,
             int bufferSize) {
         super(source);
         this.open = open;
@@ -56,8 +56,8 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends ObservableW
     static final class WindowBoundaryMainSubscriber<T, B, V>
     extends QueueDrainObserver<T, Object, Observable<T>>
     implements Disposable {
-        final ObservableConsumable<B> open;
-        final Function<? super B, ? extends ObservableConsumable<V>> close;
+        final ObservableSource<B> open;
+        final Function<? super B, ? extends ObservableSource<V>> close;
         final int bufferSize;
         final CompositeDisposable resources;
 
@@ -70,7 +70,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends ObservableW
         final AtomicLong windows = new AtomicLong();
 
         public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual,
-                ObservableConsumable<B> open, Function<? super B, ? extends ObservableConsumable<V>> close, int bufferSize) {
+                                            ObservableSource<B> open, Function<? super B, ? extends ObservableSource<V>> close, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.open = open;
             this.close = close;
@@ -263,7 +263,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends ObservableW
                         ws.add(w);
                         a.onNext(w);
                         
-                        ObservableConsumable<V> p;
+                        ObservableSource<V> p;
                         
                         try {
                             p = close.apply(wo.open);

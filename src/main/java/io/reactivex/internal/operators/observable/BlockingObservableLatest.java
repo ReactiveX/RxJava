@@ -40,14 +40,14 @@ public enum BlockingObservableLatest {
      * @return an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
      *         been returned by the {@code Iterable}, then returns that item
      */
-    public static <T> Iterable<T> latest(final ObservableConsumable<? extends T> source) {
+    public static <T> Iterable<T> latest(final ObservableSource<? extends T> source) {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
                 LatestObserverIterator<T> lio = new LatestObserverIterator<T>();
                 
                 @SuppressWarnings("unchecked")
-                Observable<Try<Optional<T>>> materialized = Observable.wrap((ObservableConsumable<T>)source).materialize();
+                Observable<Try<Optional<T>>> materialized = Observable.wrap((ObservableSource<T>)source).materialize();
                 
                 materialized.subscribe(lio);
                 return lio;

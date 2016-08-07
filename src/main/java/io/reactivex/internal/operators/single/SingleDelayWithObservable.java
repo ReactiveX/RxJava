@@ -25,9 +25,9 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
 
     final SingleSource<T> source;
     
-    final ObservableConsumable<U> other;
+    final ObservableSource<U> other;
     
-    public SingleDelayWithObservable(SingleSource<T> source, ObservableConsumable<U> other) {
+    public SingleDelayWithObservable(SingleSource<T> source, ObservableSource<U> other) {
         this.source = source;
         this.other = other;
     }
