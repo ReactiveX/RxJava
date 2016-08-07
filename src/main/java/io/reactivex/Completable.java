@@ -712,9 +712,9 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnComplete(Runnable onComplete) {
-        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), 
-                onComplete, Functions.emptyRunnable(), Functions.emptyRunnable(),
-                Functions.emptyRunnable());
+        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
+                onComplete, Functions.EMPTY_RUNNABLE,
+                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
     
     /**
@@ -726,9 +726,9 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnDispose(Runnable onDispose) {
-        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), 
-                Functions.emptyRunnable(), Functions.emptyRunnable(),
-                Functions.emptyRunnable(), onDispose);
+        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
+                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE,
+                Functions.EMPTY_RUNNABLE, onDispose);
     }
     
     /**
@@ -739,9 +739,9 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnError(Consumer<? super Throwable> onError) {
-        return doOnLifecycle(Functions.emptyConsumer(), onError, 
-                Functions.emptyRunnable(), Functions.emptyRunnable(),
-                Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnLifecycle(Functions.emptyConsumer(), onError,
+                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE,
+                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     /**
@@ -780,9 +780,9 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnSubscribe(Consumer<? super Disposable> onSubscribe) {
-        return doOnLifecycle(onSubscribe, Functions.emptyConsumer(), 
-                Functions.emptyRunnable(), Functions.emptyRunnable(),
-                Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnLifecycle(onSubscribe, Functions.emptyConsumer(),
+                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE,
+                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
     
     /**
@@ -793,9 +793,9 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnTerminate(final Runnable onTerminate) {
-        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), 
-                Functions.emptyRunnable(), onTerminate, 
-                Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
+                Functions.EMPTY_RUNNABLE, onTerminate,
+                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     /**
@@ -806,9 +806,9 @@ public abstract class Completable implements CompletableConsumable {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doAfterTerminate(final Runnable onAfterTerminate) {
-        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), 
-                onAfterTerminate, Functions.emptyRunnable(), 
-                Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
+                onAfterTerminate, Functions.EMPTY_RUNNABLE,
+                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     /**
@@ -860,9 +860,9 @@ public abstract class Completable implements CompletableConsumable {
     @SchedulerSupport(SchedulerSupport.NONE)
     @Deprecated
     public final Completable finallyDo(Runnable onAfterComplete) {
-        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(), 
-                Functions.emptyRunnable(), onAfterComplete, 
-                Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
+                Functions.EMPTY_RUNNABLE, onAfterComplete,
+                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
     
     /**

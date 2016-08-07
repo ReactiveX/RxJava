@@ -47,7 +47,7 @@ public final class Disposables {
     }
 
     public static Disposable empty() {
-        return from(Functions.emptyRunnable());
+        return from(Functions.EMPTY_RUNNABLE);
     }
 
     public static Disposable disposed() {

@@ -275,7 +275,7 @@ public class ObservableNullTests {
     
     @Test
     public void fromFutureReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.emptyRunnable(), null);
+        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
         f.run();
 
         TestObserver<Object> ts = new TestObserver<Object>();
@@ -292,24 +292,24 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedUnitNull() {
-        Observable.fromFuture(new FutureTask<Object>(Functions.emptyRunnable(), null), 1, null);
+        Observable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, null);
     }
     
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedSchedulerNull() {
-        Observable.fromFuture(new FutureTask<Object>(Functions.emptyRunnable(), null), 1, TimeUnit.SECONDS, null);
+        Observable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
     }
     
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.emptyRunnable(), null);
+        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Observable.fromFuture(f, 1, TimeUnit.SECONDS).toBlocking().lastOption();
     }
     
     @Test(expected = NullPointerException.class)
     public void fromFutureSchedulerNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.emptyRunnable(), null);
+        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
         Observable.fromFuture(f, null);
     }
     
@@ -1213,7 +1213,7 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void doOnLifecycleOnSubscribeNull() {
-        just1.doOnLifecycle(null, Functions.emptyRunnable());
+        just1.doOnLifecycle(null, Functions.EMPTY_RUNNABLE);
     }
     
     @Test(expected = NullPointerException.class)
@@ -2168,7 +2168,7 @@ public class ObservableNullTests {
         }, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable e) { }
-        }, Functions.emptyRunnable(), null);
+        }, Functions.EMPTY_RUNNABLE, null);
     }
     
     @Test(expected = NullPointerException.class)

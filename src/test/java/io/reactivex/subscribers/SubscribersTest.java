@@ -13,17 +13,21 @@
 
 package io.reactivex.subscribers;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.lang.reflect.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
-
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.OnErrorNotImplementedException;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class SubscribersTest {
     @Test
@@ -85,14 +89,14 @@ public class SubscribersTest {
             @Override
             public void accept(Throwable e) { }
         };
-        Subscribers.create(null, throwAction, Functions.emptyRunnable());
+        Subscribers.create(null, throwAction, Functions.EMPTY_RUNNABLE);
     }
     @Test(expected = NullPointerException.class)
     public void testCreate5Null() {
         Subscribers.create(new Consumer<Object>() {
             @Override
             public void accept(Object e) { }
-        }, null, Functions.emptyRunnable());
+        }, null, Functions.EMPTY_RUNNABLE);
     }
     @Test(expected = NullPointerException.class)
     public void testCreate6Null() {
@@ -150,7 +154,7 @@ public class SubscribersTest {
             @Override
             public void accept(Throwable e) { }
         };
-        Subscribers.create(action, throwAction, Functions.emptyRunnable()).onNext(1);
+        Subscribers.create(action, throwAction, Functions.EMPTY_RUNNABLE).onNext(1);
         
         assertEquals(1, value.get());
     }
@@ -186,7 +190,7 @@ public class SubscribersTest {
         Subscribers.create(new Consumer<Object>() {
             @Override
             public void accept(Object e) { }
-        }, action, Functions.emptyRunnable()).onError(exception);
+        }, action, Functions.EMPTY_RUNNABLE).onError(exception);
         
         assertEquals(exception, value.get());
     }

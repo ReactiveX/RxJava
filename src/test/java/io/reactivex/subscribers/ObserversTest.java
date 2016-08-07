@@ -13,18 +13,20 @@
 
 package io.reactivex.subscribers;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.lang.reflect.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.Test;
-
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.Observers;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class ObserversTest {
     @Test
@@ -91,11 +93,11 @@ public class ObserversTest {
     @Test(expected = NullPointerException.class)
     public void testCreate4Null() {
         Consumer<Throwable> throwAction = Functions.emptyConsumer();
-        Observers.create(null, throwAction, Functions.emptyRunnable());
+        Observers.create(null, throwAction, Functions.EMPTY_RUNNABLE);
     }
     @Test(expected = NullPointerException.class)
     public void testCreate5Null() {
-        Observers.create(Functions.emptyConsumer(), null, Functions.emptyRunnable());
+        Observers.create(Functions.emptyConsumer(), null, Functions.EMPTY_RUNNABLE);
     }
     @Test(expected = NullPointerException.class)
     public void testCreate6Null() {
@@ -141,7 +143,7 @@ public class ObserversTest {
             }
         };
         Consumer<Throwable> throwAction = Functions.emptyConsumer();
-        Observers.create(action, throwAction, Functions.emptyRunnable()).onNext(1);
+        Observers.create(action, throwAction, Functions.EMPTY_RUNNABLE).onNext(1);
         
         assertEquals(1, value.get());
     }
@@ -171,7 +173,7 @@ public class ObserversTest {
             }
         };
         TestException exception = new TestException();
-        Observers.create(Functions.emptyConsumer(), action, Functions.emptyRunnable()).onError(exception);
+        Observers.create(Functions.emptyConsumer(), action, Functions.EMPTY_RUNNABLE).onError(exception);
         
         assertEquals(exception, value.get());
     }

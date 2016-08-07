@@ -170,7 +170,7 @@ public class SingleNullTests {
     
     @Test(expected = NullPointerException.class)
     public void fromFutureReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.emptyRunnable(), null);
+        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Single.fromFuture(f).get();
     }
@@ -202,7 +202,7 @@ public class SingleNullTests {
     
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.emptyRunnable(), null);
+        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Single.fromFuture(f, 1, TimeUnit.SECONDS).get();
     }

@@ -50,17 +50,17 @@ public final class Observers {
     }
     
     public static <T> DefaultObserver<T> create(Consumer<? super T> onNext) {
-        return create(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
+        return create(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     public static <T> DefaultObserver<T> create(Consumer<? super T> onNext, 
             Consumer<? super Throwable> onError) {
-        return create(onNext, onError, Functions.emptyRunnable(), Functions.emptyRunnable());
+        return create(onNext, onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     public static <T> DefaultObserver<T> create(Consumer<? super T> onNext, 
             Consumer<? super Throwable> onError, Runnable onComplete) {
-        return create(onNext, onError, onComplete, Functions.emptyRunnable());
+        return create(onNext, onError, onComplete, Functions.EMPTY_RUNNABLE);
     }
 
     public static <T> DefaultObserver<T> create(
@@ -140,17 +140,17 @@ public final class Observers {
     }
     
     public static <T> AsyncObserver<T> createAsync(Consumer<? super T> onNext) {
-        return createAsync(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
+        return createAsync(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     public static <T> AsyncObserver<T> createAsync(Consumer<? super T> onNext, 
             Consumer<? super Throwable> onError) {
-        return createAsync(onNext, onError, Functions.emptyRunnable(), Functions.emptyRunnable());
+        return createAsync(onNext, onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     public static <T> AsyncObserver<T> createAsync(Consumer<? super T> onNext, 
             Consumer<? super Throwable> onError, Runnable onComplete) {
-        return createAsync(onNext, onError, onComplete, Functions.emptyRunnable());
+        return createAsync(onNext, onError, onComplete, Functions.EMPTY_RUNNABLE);
     }
     
     public static <T> AsyncObserver<T> createAsync(
@@ -250,14 +250,14 @@ public final class Observers {
     public static <T> DisposableObserver<T> createDisposable(
             Consumer<? super T> onNext
     ) {
-        return createDisposable(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
+        return createDisposable(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     public static <T> DisposableObserver<T> createDisposable(
             Consumer<? super T> onNext,
             Consumer<? super Throwable> onError
     ) {
-        return createDisposable(onNext, onError, Functions.emptyRunnable(), Functions.emptyRunnable());
+        return createDisposable(onNext, onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     public static <T> DisposableObserver<T> createDisposable(
@@ -265,7 +265,7 @@ public final class Observers {
             Consumer<? super Throwable> onError,
             Runnable onComplete
     ) {
-        return createDisposable(onNext, onError, onComplete, Functions.emptyRunnable());
+        return createDisposable(onNext, onError, onComplete, Functions.EMPTY_RUNNABLE);
     }
     
     public static <T> DisposableObserver<T> createDisposable(

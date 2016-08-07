@@ -274,7 +274,7 @@ public class FlowableNullTests {
     
     @Test
     public void fromFutureReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.emptyRunnable(), null);
+        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
@@ -291,24 +291,24 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedUnitNull() {
-        Flowable.fromFuture(new FutureTask<Object>(Functions.emptyRunnable(), null), 1, null);
+        Flowable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, null);
     }
     
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedSchedulerNull() {
-        Flowable.fromFuture(new FutureTask<Object>(Functions.emptyRunnable(), null), 1, TimeUnit.SECONDS, null);
+        Flowable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
     }
     
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.emptyRunnable(), null);
+      FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Flowable.fromFuture(f, 1, TimeUnit.SECONDS).toBlocking().lastOption();
     }
     
     @Test(expected = NullPointerException.class)
     public void fromFutureSchedulerNull() {
-        Flowable.fromFuture(new FutureTask<Object>(Functions.emptyRunnable(), null), null);
+        Flowable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), null);
     }
     
     @Test(expected = NullPointerException.class)
@@ -2187,7 +2187,7 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void subscribeOnSubscribeNull() {
-        just1.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.emptyRunnable(), null);
+        just1.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.EMPTY_RUNNABLE, null);
     }
     
     @Test(expected = NullPointerException.class)

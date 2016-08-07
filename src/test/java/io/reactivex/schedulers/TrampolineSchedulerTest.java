@@ -13,20 +13,25 @@
 
 package io.reactivex.schedulers;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Test;
-import org.reactivestreams.*;
-
-import io.reactivex.*;
+import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
 import io.reactivex.Scheduler.Worker;
-import io.reactivex.disposables.*;
-import io.reactivex.functions.*;
+import io.reactivex.TestHelper;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.subscribers.TestSubscriber;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
@@ -118,7 +123,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
                                 .map(new Function<Long, Disposable>() {
                                     @Override
                                     public Disposable apply(Long ount1) {
-                                        return trampolineWorker.schedule(Functions.emptyRunnable());
+                                        return trampolineWorker.schedule(Functions.EMPTY_RUNNABLE);
                                     }
                                 }).take(100);
                     }
