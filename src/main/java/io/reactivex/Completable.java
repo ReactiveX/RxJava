@@ -32,12 +32,6 @@ import io.reactivex.schedulers.Schedulers;
  * The class follows a similar event pattern as Reactive-Streams: onSubscribe (onError|onComplete)?
  */
 public abstract class Completable implements CompletableSource {
-    /** Single instance of a complete Completable. */
-    static final Completable COMPLETE = new CompletableEmpty();
-    
-    /** Single instance of a never Completable. */
-    static final Completable NEVER = new CompletableNever();
-
     /**
      * Wraps the given CompletableSource into a Completable
      * if not already Completable.
@@ -93,7 +87,7 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable complete() {
-        return COMPLETE;
+        return CompletableEmpty.INSTANCE;
     }
     
     /**
@@ -432,7 +426,7 @@ public abstract class Completable implements CompletableSource {
      * @return the singleton instance that never calls onError or onComplete
      */
     public static Completable never() {
-        return NEVER;
+        return CompletableNever.INSTANCE;
     }
     
     /**

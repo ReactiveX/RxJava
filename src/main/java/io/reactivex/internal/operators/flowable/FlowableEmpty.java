@@ -24,11 +24,9 @@ import io.reactivex.internal.subscriptions.EmptySubscription;
  */
 public final class FlowableEmpty extends Flowable<Object> implements ScalarCallable<Object> {
     
-    static final Flowable<Object> INSTANCE = new FlowableEmpty();
+    public static final Flowable<Object> INSTANCE = new FlowableEmpty();
     
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> empty() {
-        return (Flowable<T>)INSTANCE;
+    private FlowableEmpty() {
     }
     
     @Override

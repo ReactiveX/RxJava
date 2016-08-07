@@ -31,7 +31,6 @@ import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.flowable.FlowableConcatMap.ErrorMode;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscribers.flowable.*;
-import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.internal.util.ArrayListSupplier;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
@@ -44,14 +43,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     static {
         BUFFER_SIZE = Math.max(16, Integer.getInteger("rx2.buffer-size", 128));
     }
-
-    /** A never observable instance as there is no need to instantiate this more than once. */
-    static final Flowable<Object> NEVER = new Flowable<Object>() { // FIXME factor out
-        @Override
-        public void subscribeActual(Subscriber<? super Object> s) {
-            s.onSubscribe(EmptySubscription.INSTANCE);
-        }
-    };
 
     public static <T> Flowable<T> amb(Iterable<? extends Publisher<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
@@ -479,8 +470,9 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @SuppressWarnings("unchecked")
     public static <T> Flowable<T> empty() {
-        return FlowableEmpty.empty();
+        return (Flowable<T>) FlowableEmpty.INSTANCE;
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -1013,7 +1005,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> never() {
-        return (Flowable<T>)NEVER;
+        return (Flowable<T>) FlowableNever.INSTANCE;
     }
 
     @BackpressureSupport(BackpressureKind.FULL)

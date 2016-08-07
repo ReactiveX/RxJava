@@ -15,8 +15,9 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.fuseable.ScalarCallable;
 
-public final class ObservableEmpty extends Observable<Object> {
+public final class ObservableEmpty extends Observable<Object> implements ScalarCallable<Object> {
     public static final Observable<Object> INSTANCE = new ObservableEmpty();
 
     private ObservableEmpty() {
@@ -26,5 +27,10 @@ public final class ObservableEmpty extends Observable<Object> {
     protected void subscribeActual(Observer<? super Object> o) {
         o.onSubscribe(EmptyDisposable.INSTANCE);
         o.onComplete();
+    }
+
+    @Override
+    public Object call() {
+        return null; // null scalar is interpreted as being empty
     }
 }
