@@ -862,7 +862,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Observable<Integer> range(final int start, final int count) {
         if (count < 0) {
-            throw new IllegalArgumentException("count >= required but it was " + count);
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
         } else
         if (count == 0) {
             return empty();
