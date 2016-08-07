@@ -51,14 +51,14 @@ public final class Subscribers {
     public static <T> DisposableSubscriber<T> createDisposable(
             Consumer<? super T> onNext
     ) {
-        return createDisposable(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
+        return createDisposable(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     public static <T> DisposableSubscriber<T> createDisposable(
             Consumer<? super T> onNext,
             Consumer<? super Throwable> onError
     ) {
-        return createDisposable(onNext, onError, Functions.emptyRunnable(), Functions.emptyRunnable());
+        return createDisposable(onNext, onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     public static <T> DisposableSubscriber<T> createDisposable(
@@ -66,7 +66,7 @@ public final class Subscribers {
             Consumer<? super Throwable> onError,
             Runnable onComplete
     ) {
-        return createDisposable(onNext, onError, onComplete, Functions.emptyRunnable());
+        return createDisposable(onNext, onError, onComplete, Functions.EMPTY_RUNNABLE);
     }
     
     public static <T> DisposableSubscriber<T> createDisposable(
@@ -156,14 +156,14 @@ public final class Subscribers {
     public static <T> Subscriber<T> create(
             Consumer<? super T> onNext
     ) {
-        return create(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), REQUEST_ALL);
+        return create(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, REQUEST_ALL);
     }
 
     public static <T> Subscriber<T> create(
             Consumer<? super T> onNext,
             Consumer<? super Throwable> onError
     ) {
-        return create(onNext, onError, Functions.emptyRunnable(), REQUEST_ALL);
+        return create(onNext, onError, Functions.EMPTY_RUNNABLE, REQUEST_ALL);
     }
 
     public static <T> Subscriber<T> create(
@@ -351,17 +351,17 @@ public final class Subscribers {
     }
     
     public static <T> AsyncSubscriber<T> createAsync(Consumer<? super T> onNext) {
-        return createAsync(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
+        return createAsync(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     public static <T> AsyncSubscriber<T> createAsync(Consumer<? super T> onNext, 
             Consumer<? super Throwable> onError) {
-        return createAsync(onNext, onError, Functions.emptyRunnable(), Functions.emptyRunnable());
+        return createAsync(onNext, onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     public static <T> AsyncSubscriber<T> createAsync(Consumer<? super T> onNext, 
             Consumer<? super Throwable> onError, Runnable onComplete) {
-        return createAsync(onNext, onError, onComplete, Functions.emptyRunnable());
+        return createAsync(onNext, onError, onComplete, Functions.EMPTY_RUNNABLE);
     }
     
     public static <T> AsyncSubscriber<T> createAsync(

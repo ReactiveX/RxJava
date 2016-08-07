@@ -3046,8 +3046,8 @@ public class CompletableTest {
         Completable c = Completable.amb(c1, c2);
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
-        
-        c.subscribe(Functions.emptyRunnable(), new Consumer<Throwable>() {
+
+        c.subscribe(Functions.EMPTY_RUNNABLE, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable v) {
                 complete.set(v);
@@ -3108,8 +3108,8 @@ public class CompletableTest {
         Completable c = Completable.amb(c1, c2);
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
-        
-        c.subscribe(Functions.emptyRunnable(), new Consumer<Throwable>() {
+
+        c.subscribe(Functions.EMPTY_RUNNABLE, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable v) {
                 complete.set(v);
@@ -3271,8 +3271,8 @@ public class CompletableTest {
         Completable c = c1.ambWith(c2);
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
-        
-        c.subscribe(Functions.emptyRunnable(), new Consumer<Throwable>() {
+
+        c.subscribe(Functions.EMPTY_RUNNABLE, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable v) {
                 complete.set(v);
@@ -3333,8 +3333,8 @@ public class CompletableTest {
         Completable c = c1.ambWith(c2);
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
-        
-        c.subscribe(Functions.emptyRunnable(), new Consumer<Throwable>() {
+
+        c.subscribe(Functions.EMPTY_RUNNABLE, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable v) {
                 complete.set(v);
@@ -4547,7 +4547,7 @@ public class CompletableTest {
         Completable completable = stringSubject.toCompletable();
         
         final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
-        Disposable completableSubscription = completable.subscribe(Functions.emptyRunnable(), 
+        Disposable completableSubscription = completable.subscribe(Functions.EMPTY_RUNNABLE,
         new Consumer<Throwable>() {
             @Override
             public void accept(Throwable e) {

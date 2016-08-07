@@ -1844,13 +1844,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnCancel(Runnable onCancel) {
-        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyLongConsumer(), onCancel);
+        return doOnLifecycle(Functions.emptyConsumer(), Functions.EMPTY_LONGCONSUMER, onCancel);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnComplete(Runnable onComplete) {
-        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete, Functions.emptyRunnable());
+        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete, Functions.EMPTY_RUNNABLE);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -1891,7 +1891,7 @@ public abstract class Flowable<T> implements Publisher<T> {
                         }
                     }
                 },
-                Functions.emptyRunnable()
+                Functions.EMPTY_RUNNABLE
                 );
     }
 
@@ -1914,13 +1914,13 @@ public abstract class Flowable<T> implements Publisher<T> {
             public void run() {
                 observer.onComplete();
             }
-        }, Functions.emptyRunnable());
+        }, Functions.EMPTY_RUNNABLE);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnError(Consumer<? super Throwable> onError) {
-        return doOnEach(Functions.emptyConsumer(), onError, Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnEach(Functions.emptyConsumer(), onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -1940,19 +1940,19 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnNext(Consumer<? super T> onNext) {
-        return doOnEach(onNext, Functions.emptyConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnEach(onNext, Functions.emptyConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnRequest(LongConsumer onRequest) {
-        return doOnLifecycle(Functions.emptyConsumer(), onRequest, Functions.emptyRunnable());
+        return doOnLifecycle(Functions.emptyConsumer(), onRequest, Functions.EMPTY_RUNNABLE);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnSubscribe(Consumer<? super Subscription> onSubscribe) {
-        return doOnLifecycle(onSubscribe, Functions.emptyLongConsumer(), Functions.emptyRunnable());
+        return doOnLifecycle(onSubscribe, Functions.EMPTY_LONGCONSUMER, Functions.EMPTY_RUNNABLE);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -1963,7 +1963,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             public void accept(Throwable e) {
                 onTerminate.run();
             }
-        }, onTerminate, Functions.emptyRunnable());
+        }, onTerminate, Functions.EMPTY_RUNNABLE);
     }
 
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -2030,7 +2030,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doAfterTerminate(Runnable onFinally) {
-        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.emptyRunnable(), onFinally);
+        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.EMPTY_RUNNABLE, onFinally);
     }
 
     @BackpressureSupport(BackpressureKind.SPECIAL) // take may trigger UNBOUNDED_IN
@@ -2206,13 +2206,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext) {
-        return forEachWhile(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable());
+        return forEachWhile(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE);
     }
 
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext, Consumer<? super Throwable> onError) {
-        return forEachWhile(onNext, onError, Functions.emptyRunnable());
+        return forEachWhile(onNext, onError, Functions.EMPTY_RUNNABLE);
     }
 
     @BackpressureSupport(BackpressureKind.NONE)
@@ -2428,7 +2428,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(int bufferSize, boolean delayError, boolean unbounded) {
         validateBufferSize(bufferSize, "bufferSize");
-        return new FlowableOnBackpressureBuffer<T>(this, bufferSize, unbounded, delayError, Functions.emptyRunnable());
+        return new FlowableOnBackpressureBuffer<T>(this, bufferSize, unbounded, delayError, Functions.EMPTY_RUNNABLE);
     }
 
     @BackpressureSupport(BackpressureKind.SPECIAL)
@@ -3070,7 +3070,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
-        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), new Consumer<Subscription>() {
+        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, new Consumer<Subscription>() {
             @Override
             public void accept(Subscription s) {
                 s.request(Long.MAX_VALUE);
@@ -3081,7 +3081,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
-        return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), new Consumer<Subscription>() {
+        return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, new Consumer<Subscription>() {
             @Override
             public void accept(Subscription s) {
                 s.request(Long.MAX_VALUE);
@@ -3092,7 +3092,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
-        return subscribe(onNext, onError, Functions.emptyRunnable(), new Consumer<Subscription>() {
+        return subscribe(onNext, onError, Functions.EMPTY_RUNNABLE, new Consumer<Subscription>() {
             @Override
             public void accept(Subscription s) {
                 s.request(Long.MAX_VALUE);

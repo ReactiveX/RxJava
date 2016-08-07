@@ -13,19 +13,27 @@
 
 package io.reactivex.schedulers;
 
-import static org.junit.Assert.*;
-
-import java.lang.management.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.*;
-
 import io.reactivex.Scheduler;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.schedulers.*;
+import io.reactivex.internal.schedulers.RxThreadFactory;
+import io.reactivex.internal.schedulers.SchedulerPoolFactory;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -86,7 +94,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
                 if (i % 50000 == 0) {
                     System.out.println("  -> still scheduling: " + i);
                 }
-                w.schedule(Functions.emptyRunnable(), 1, TimeUnit.DAYS);
+                w.schedule(Functions.EMPTY_RUNNABLE, 1, TimeUnit.DAYS);
             }
         }
         

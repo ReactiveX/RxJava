@@ -157,19 +157,11 @@ public enum Functions {
         return (Function<T, T>)IDENTITY;
     }
     
-    static final Runnable EMPTY = new Runnable() {
+    public static final Runnable EMPTY_RUNNABLE = new Runnable() {
         @Override
         public void run() { }
     };
-    
-    /**
-     * Returns an empty runnable that does nothing.
-     * @return an empty runnable that does nothing
-     */
-    public static Runnable emptyRunnable() {
-        return EMPTY;
-    }
-    
+
     static final Consumer<Object> EMPTY_CONSUMER = new Consumer<Object>() {
         @Override
         public void accept(Object v) { }
@@ -185,19 +177,11 @@ public enum Functions {
         return (Consumer<T>)EMPTY_CONSUMER;
     }
     
-    static final LongConsumer EMPTY_LONGCONSUMER = new LongConsumer() {
+    public static final LongConsumer EMPTY_LONGCONSUMER = new LongConsumer() {
         @Override
         public void accept(long v) { }
     };
-    
-    /**
-     * Returns an empty long consumer that does nothing.
-     * @return an empty long consumer that does nothing.
-     */
-    public static LongConsumer emptyLongConsumer() {
-        return EMPTY_LONGCONSUMER;
-    }
-    
+
     static final Predicate<Object> ALWAYS_TRUE = new Predicate<Object>() {
         @Override
         public boolean test(Object o) {

@@ -426,7 +426,7 @@ public final class BlockingObservable<T> implements Iterable<T> {
      * @param onNext the callback action for each source value
      */
     public void subscribe(final Consumer<? super T> onNext) {
-        subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable());
+        subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE);
     }
     
     /**
@@ -435,7 +435,7 @@ public final class BlockingObservable<T> implements Iterable<T> {
      * @param onError the callback action for an error event
      */
     public void subscribe(final Consumer<? super T> onNext, final Consumer<? super Throwable> onError) {
-        subscribe(onNext, onError, Functions.emptyRunnable());
+        subscribe(onNext, onError, Functions.EMPTY_RUNNABLE);
     }
     
     /**

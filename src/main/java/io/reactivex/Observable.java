@@ -1545,7 +1545,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> doOnComplete(Runnable onComplete) {
-        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete, Functions.emptyRunnable());
+        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete, Functions.EMPTY_RUNNABLE);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1585,7 +1585,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
                         }
                     }
                 },
-                Functions.emptyRunnable()
+                Functions.EMPTY_RUNNABLE
                 );
     }
 
@@ -1607,12 +1607,12 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
             public void run() {
                 observer.onComplete();
             }
-        }, Functions.emptyRunnable());
+        }, Functions.EMPTY_RUNNABLE);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> doOnError(Consumer<? super Throwable> onError) {
-        return doOnEach(Functions.emptyConsumer(), onError, Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnEach(Functions.emptyConsumer(), onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1629,12 +1629,12 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> doOnNext(Consumer<? super T> onNext) {
-        return doOnEach(onNext, Functions.emptyConsumer(), Functions.emptyRunnable(), Functions.emptyRunnable());
+        return doOnEach(onNext, Functions.emptyConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> doOnSubscribe(Consumer<? super Disposable> onSubscribe) {
-        return doOnLifecycle(onSubscribe, Functions.emptyRunnable());
+        return doOnLifecycle(onSubscribe, Functions.EMPTY_RUNNABLE);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1644,7 +1644,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
             public void accept(Throwable e) {
                 onTerminate.run();
             }
-        }, onTerminate, Functions.emptyRunnable());
+        }, onTerminate, Functions.EMPTY_RUNNABLE);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1702,7 +1702,7 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> finallyDo(Runnable onFinally) {
-        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.emptyRunnable(), onFinally);
+        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.EMPTY_RUNNABLE, onFinally);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1849,12 +1849,12 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext) {
-        return forEachWhile(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable());
+        return forEachWhile(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext, Consumer<? super Throwable> onError) {
-        return forEachWhile(onNext, onError, Functions.emptyRunnable());
+        return forEachWhile(onNext, onError, Functions.EMPTY_RUNNABLE);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2586,17 +2586,17 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
-        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyConsumer());
+        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.emptyConsumer());
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
-        return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.emptyRunnable(), Functions.emptyConsumer());
+        return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.emptyConsumer());
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
-        return subscribe(onNext, onError, Functions.emptyRunnable(), Functions.emptyConsumer());
+        return subscribe(onNext, onError, Functions.EMPTY_RUNNABLE, Functions.emptyConsumer());
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
