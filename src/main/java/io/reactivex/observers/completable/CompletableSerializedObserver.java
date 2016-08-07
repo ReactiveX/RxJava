@@ -11,19 +11,20 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.subscribers.single;
+package io.reactivex.observers.completable;
 
-import io.reactivex.SingleObserver;
-import io.reactivex.disposables.Disposable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public final class SingleSerializedObserver implements SingleObserver {
+import io.reactivex.CompletableObserver;
+import io.reactivex.disposables.Disposable;
 
-    final SingleObserver actual;
+public final class CompletableSerializedObserver implements CompletableObserver {
 
+    final CompletableObserver actual;
+    
     final AtomicBoolean once = new AtomicBoolean();
-
-    public SingleSerializedObserver(SingleObserver actual) {
+    
+    public CompletableSerializedObserver(CompletableObserver actual) {
         this.actual = actual;
     }
     
@@ -33,16 +34,16 @@ public final class SingleSerializedObserver implements SingleObserver {
     }
 
     @Override
-    public void onSuccess(Object value) {
+    public void onError(Throwable e) {
         if (once.compareAndSet(false, true)) {
-            actual.onSuccess(value);
+            actual.onError(e);
         }
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onComplete() {
         if (once.compareAndSet(false, true)) {
-            actual.onError(e);
+            actual.onComplete();
         }
     }
 
