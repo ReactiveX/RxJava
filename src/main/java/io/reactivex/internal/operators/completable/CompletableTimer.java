@@ -33,7 +33,7 @@ public final class CompletableTimer extends Completable {
 
 
     @Override
-    protected void subscribeActual(final CompletableSubscriber s) {
+    protected void subscribeActual(final CompletableObserver s) {
         SerialDisposable sd = new SerialDisposable();
         s.onSubscribe(sd);
         if (!sd.isDisposed()) {

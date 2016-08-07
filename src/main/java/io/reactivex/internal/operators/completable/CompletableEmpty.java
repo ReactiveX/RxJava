@@ -18,7 +18,7 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class CompletableEmpty extends Completable {
     @Override
-    public void subscribeActual(CompletableSubscriber s) {
+    public void subscribeActual(CompletableObserver s) {
         s.onSubscribe(EmptyDisposable.INSTANCE);
         s.onComplete();
     }

@@ -19,16 +19,16 @@ import io.reactivex.internal.disposables.ArrayCompositeDisposable;
 
 public final class CompletableObserveOn extends Completable {
 
-    final CompletableConsumable source;
+    final CompletableSource source;
     
     final Scheduler scheduler;
-    public CompletableObserveOn(CompletableConsumable source, Scheduler scheduler) {
+    public CompletableObserveOn(CompletableSource source, Scheduler scheduler) {
         this.source = source;
         this.scheduler = scheduler;
     }
 
     @Override
-    protected void subscribeActual(final CompletableSubscriber s) {
+    protected void subscribeActual(final CompletableObserver s) {
 
         final ArrayCompositeDisposable ad = new ArrayCompositeDisposable(2);
         final Scheduler.Worker w = scheduler.createWorker();
@@ -36,7 +36,7 @@ public final class CompletableObserveOn extends Completable {
         
         s.onSubscribe(ad);
         
-        source.subscribe(new CompletableSubscriber() {
+        source.subscribe(new CompletableObserver() {
 
             @Override
             public void onComplete() {

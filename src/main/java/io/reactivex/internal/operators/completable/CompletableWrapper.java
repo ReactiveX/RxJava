@@ -17,14 +17,14 @@ import io.reactivex.*;
 
 public final class CompletableWrapper extends Completable {
 
-    final CompletableConsumable onSubscribe;
+    final CompletableSource onSubscribe;
 
-    public CompletableWrapper(CompletableConsumable onSubscribe) {
+    public CompletableWrapper(CompletableSource onSubscribe) {
         this.onSubscribe = onSubscribe;
     }
     
     @Override
-    protected void subscribeActual(CompletableSubscriber s) {
+    protected void subscribeActual(CompletableObserver s) {
         onSubscribe.subscribe(s);
     }
 }

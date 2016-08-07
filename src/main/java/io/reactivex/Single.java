@@ -633,7 +633,7 @@ public abstract class Single<T> implements SingleSource<T> {
         return new SingleDelay<T>(this, time, unit, scheduler);
     }
 
-    public final Single<T> delaySubscription(CompletableConsumable other) {
+    public final Single<T> delaySubscription(CompletableSource other) {
         return new SingleDelayWithCompletable<T>(this, other);
     }
 

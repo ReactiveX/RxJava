@@ -20,15 +20,15 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class CompletableDefer extends Completable {
 
-    final Callable<? extends CompletableConsumable> completableSupplier;
+    final Callable<? extends CompletableSource> completableSupplier;
     
-    public CompletableDefer(Callable<? extends CompletableConsumable> completableSupplier) {
+    public CompletableDefer(Callable<? extends CompletableSource> completableSupplier) {
         this.completableSupplier = completableSupplier;
     }
 
     @Override
-    protected void subscribeActual(CompletableSubscriber s) {
-        CompletableConsumable c;
+    protected void subscribeActual(CompletableObserver s) {
+        CompletableSource c;
         
         try {
             c = completableSupplier.call();

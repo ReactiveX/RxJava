@@ -20,19 +20,19 @@ import io.reactivex.functions.Predicate;
 
 public final class CompletableOnErrorComplete extends Completable {
 
-    final CompletableConsumable source;
+    final CompletableSource source;
     
     final Predicate<? super Throwable> predicate;
     
-    public CompletableOnErrorComplete(CompletableConsumable source, Predicate<? super Throwable> predicate) {
+    public CompletableOnErrorComplete(CompletableSource source, Predicate<? super Throwable> predicate) {
         this.source = source;
         this.predicate = predicate;
     }
 
     @Override
-    protected void subscribeActual(final CompletableSubscriber s) {
+    protected void subscribeActual(final CompletableObserver s) {
 
-        source.subscribe(new CompletableSubscriber() {
+        source.subscribe(new CompletableObserver() {
 
             @Override
             public void onComplete() {

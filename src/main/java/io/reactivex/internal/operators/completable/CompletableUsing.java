@@ -27,13 +27,13 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class CompletableUsing<R> extends Completable {
 
     final Callable<R> resourceSupplier;
-    final Function<? super R, ? extends CompletableConsumable> completableFunction;
+    final Function<? super R, ? extends CompletableSource> completableFunction;
     final Consumer<? super R> disposer;
     final boolean eager;
     
     public CompletableUsing(Callable<R> resourceSupplier,
-            Function<? super R, ? extends CompletableConsumable> completableFunction, Consumer<? super R> disposer,
-            boolean eager) {
+                            Function<? super R, ? extends CompletableSource> completableFunction, Consumer<? super R> disposer,
+                            boolean eager) {
         this.resourceSupplier = resourceSupplier;
         this.completableFunction = completableFunction;
         this.disposer = disposer;
@@ -43,7 +43,7 @@ public final class CompletableUsing<R> extends Completable {
 
 
     @Override
-    protected void subscribeActual(final CompletableSubscriber s) {
+    protected void subscribeActual(final CompletableObserver s) {
         final R resource; // NOPMD
         
         try {
@@ -54,7 +54,7 @@ public final class CompletableUsing<R> extends Completable {
             return;
         }
         
-        CompletableConsumable cs;
+        CompletableSource cs;
         
         try {
             cs = Objects.requireNonNull(completableFunction.apply(resource), "The completableFunction returned a null Completable");
@@ -72,7 +72,7 @@ public final class CompletableUsing<R> extends Completable {
         
         final AtomicBoolean once = new AtomicBoolean();
         
-        cs.subscribe(new CompletableSubscriber() {
+        cs.subscribe(new CompletableObserver() {
             Disposable d;
             void disposeThis() {
                 d.dispose();

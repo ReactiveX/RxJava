@@ -15,15 +15,15 @@ package io.reactivex.internal.subscribers.completable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.CompletableSubscriber;
+import io.reactivex.CompletableObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class CallbackCompletableSubscriber 
-extends AtomicReference<Disposable> implements CompletableSubscriber, Disposable {
+public final class CallbackCompletableObserver
+extends AtomicReference<Disposable> implements CompletableObserver, Disposable {
 
     /** */
     private static final long serialVersionUID = -4361286194466301354L;
@@ -38,12 +38,12 @@ extends AtomicReference<Disposable> implements CompletableSubscriber, Disposable
         }
     };
 
-    public CallbackCompletableSubscriber(Runnable onComplete) {
+    public CallbackCompletableObserver(Runnable onComplete) {
         this.onError = DEFAULT_ON_ERROR;
         this.onComplete = onComplete;
     }
 
-    public CallbackCompletableSubscriber(Consumer<? super Throwable> onError, Runnable onComplete) {
+    public CallbackCompletableObserver(Consumer<? super Throwable> onError, Runnable onComplete) {
         this.onError = onError;
         this.onComplete = onComplete;
     }

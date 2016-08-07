@@ -20,21 +20,21 @@ import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableMergeArray extends Completable {
-    final CompletableConsumable[] sources;
+    final CompletableSource[] sources;
     
-    public CompletableMergeArray(CompletableConsumable[] sources) {
+    public CompletableMergeArray(CompletableSource[] sources) {
         this.sources = sources;
     }
     
     @Override
-    public void subscribeActual(final CompletableSubscriber s) {
+    public void subscribeActual(final CompletableObserver s) {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicInteger wip = new AtomicInteger(sources.length + 1);
         final AtomicBoolean once = new AtomicBoolean();
         
         s.onSubscribe(set);
         
-        for (CompletableConsumable c : sources) {
+        for (CompletableSource c : sources) {
             if (set.isDisposed()) {
                 return;
             }
@@ -50,7 +50,7 @@ public final class CompletableMergeArray extends Completable {
                 }
             }
             
-            c.subscribe(new CompletableSubscriber() {
+            c.subscribe(new CompletableObserver() {
                 @Override
                 public void onSubscribe(Disposable d) {
                     set.add(d);

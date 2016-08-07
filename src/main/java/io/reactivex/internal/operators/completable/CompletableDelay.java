@@ -20,7 +20,7 @@ import io.reactivex.disposables.*;
 
 public final class CompletableDelay extends Completable {
 
-    final CompletableConsumable source;
+    final CompletableSource source;
     
     final long delay;
     
@@ -30,7 +30,7 @@ public final class CompletableDelay extends Completable {
     
     final boolean delayError;
     
-    public CompletableDelay(CompletableConsumable source, long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
+    public CompletableDelay(CompletableSource source, long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
         this.source = source;
         this.delay = delay;
         this.unit = unit;
@@ -39,10 +39,10 @@ public final class CompletableDelay extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableSubscriber s) {
+    protected void subscribeActual(final CompletableObserver s) {
         final CompositeDisposable set = new CompositeDisposable();
         
-        source.subscribe(new CompletableSubscriber() {
+        source.subscribe(new CompletableObserver() {
 
             
             @Override

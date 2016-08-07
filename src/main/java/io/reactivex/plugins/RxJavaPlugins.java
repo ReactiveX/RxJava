@@ -65,7 +65,7 @@ public final class RxJavaPlugins {
     @SuppressWarnings("rawtypes")
     static volatile BiFunction<Single, SingleObserver, SingleObserver> onSingleSubscribe;
 
-    static volatile BiFunction<Completable, CompletableSubscriber, CompletableSubscriber> onCompletableSubscribe;
+    static volatile BiFunction<Completable, CompletableObserver, CompletableObserver> onCompletableSubscribe;
 
     /** Prevents changing the plugins. */
     private static volatile boolean lockdown;
@@ -344,7 +344,7 @@ public final class RxJavaPlugins {
         return onCompletableAssembly;
     }
     
-    public static BiFunction<Completable, CompletableSubscriber, CompletableSubscriber> getOnCompletableSubscribe() {
+    public static BiFunction<Completable, CompletableObserver, CompletableObserver> getOnCompletableSubscribe() {
         return onCompletableSubscribe;
     }
     
@@ -386,7 +386,7 @@ public final class RxJavaPlugins {
     }
     
     public static void setOnCompletableSubscribe(
-            BiFunction<Completable, CompletableSubscriber, CompletableSubscriber> onCompletableSubscribe) {
+            BiFunction<Completable, CompletableObserver, CompletableObserver> onCompletableSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -469,8 +469,8 @@ public final class RxJavaPlugins {
         return subscriber;
     }
 
-    public static CompletableSubscriber onSubscribe(Completable source, CompletableSubscriber subscriber) {
-        BiFunction<Completable, CompletableSubscriber, CompletableSubscriber> f = onCompletableSubscribe;
+    public static CompletableObserver onSubscribe(Completable source, CompletableObserver subscriber) {
+        BiFunction<Completable, CompletableObserver, CompletableObserver> f = onCompletableSubscribe;
         if (f != null) {
             return apply(f, source, subscriber);
         }

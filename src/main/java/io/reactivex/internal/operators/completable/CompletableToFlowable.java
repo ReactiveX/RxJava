@@ -16,19 +16,19 @@ package io.reactivex.internal.operators.completable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.internal.subscribers.completable.SubscriberCompletableSubscriber;
+import io.reactivex.internal.subscribers.completable.SubscriberCompletableObserver;
 
 public class CompletableToFlowable<T> extends Flowable<T> {
 
-    final CompletableConsumable source;
+    final CompletableSource source;
     
-    public CompletableToFlowable(CompletableConsumable source) {
+    public CompletableToFlowable(CompletableSource source) {
         this.source = source;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        SubscriberCompletableSubscriber<T> os = new SubscriberCompletableSubscriber<T>(s);
+        SubscriberCompletableObserver<T> os = new SubscriberCompletableObserver<T>(s);
         source.subscribe(os);
     }
 }

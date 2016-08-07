@@ -18,18 +18,18 @@ import io.reactivex.disposables.*;
 
 public final class CompletableUnsubscribeOn extends Completable {
 
-    final CompletableConsumable source;
+    final CompletableSource source;
     
     final Scheduler scheduler;
     
-    public CompletableUnsubscribeOn(CompletableConsumable source, Scheduler scheduler) {
+    public CompletableUnsubscribeOn(CompletableSource source, Scheduler scheduler) {
         this.source = source;
         this.scheduler = scheduler;
     }
 
     @Override
-    protected void subscribeActual(final CompletableSubscriber s) {
-        source.subscribe(new CompletableSubscriber() {
+    protected void subscribeActual(final CompletableObserver s) {
+        source.subscribe(new CompletableObserver() {
 
             @Override
             public void onComplete() {

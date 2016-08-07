@@ -16,11 +16,11 @@ package io.reactivex.internal.operators.completable;
 import io.reactivex.*;
 
 public final class CompletableSubscribeOn extends Completable {
-    final CompletableConsumable source;
+    final CompletableSource source;
     
     final Scheduler scheduler;
     
-    public CompletableSubscribeOn(CompletableConsumable source, Scheduler scheduler) {
+    public CompletableSubscribeOn(CompletableSource source, Scheduler scheduler) {
         this.source = source;
         this.scheduler = scheduler;
     }
@@ -28,7 +28,7 @@ public final class CompletableSubscribeOn extends Completable {
 
 
     @Override
-    protected void subscribeActual(final CompletableSubscriber s) {
+    protected void subscribeActual(final CompletableObserver s) {
      // FIXME cancellation of this schedule
         scheduler.scheduleDirect(new Runnable() {
             @Override

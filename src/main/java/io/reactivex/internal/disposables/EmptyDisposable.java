@@ -40,12 +40,12 @@ public enum EmptyDisposable implements Disposable {
         s.onError(e);
     }
 
-    public static void complete(CompletableSubscriber s) {
+    public static void complete(CompletableObserver s) {
         s.onSubscribe(INSTANCE);
         s.onComplete();
     }
     
-    public static void error(Throwable e, CompletableSubscriber s) {
+    public static void error(Throwable e, CompletableObserver s) {
         s.onSubscribe(INSTANCE);
         s.onError(e);
     }

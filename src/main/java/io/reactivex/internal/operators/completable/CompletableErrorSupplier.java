@@ -27,7 +27,7 @@ public final class CompletableErrorSupplier extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableSubscriber s) {
+    protected void subscribeActual(CompletableObserver s) {
         s.onSubscribe(EmptyDisposable.INSTANCE);
         Throwable error;
         

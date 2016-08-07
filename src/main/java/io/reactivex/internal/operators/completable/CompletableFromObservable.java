@@ -25,7 +25,7 @@ public final class CompletableFromObservable<T> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableSubscriber s) {
+    protected void subscribeActual(final CompletableObserver s) {
         observable.subscribe(new Observer<T>() {
 
             @Override

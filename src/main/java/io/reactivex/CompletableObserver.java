@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 /**
  * Represents the subscription API callbacks when subscribing to a Completable instance.
  */
-public interface CompletableSubscriber {
+public interface CompletableObserver {
     /**
      * Called once the deferred computation completes normally.
      */

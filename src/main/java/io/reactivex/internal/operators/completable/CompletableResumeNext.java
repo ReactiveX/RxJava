@@ -20,12 +20,12 @@ import io.reactivex.functions.Function;
 
 public final class CompletableResumeNext extends Completable {
 
-    final CompletableConsumable source;
+    final CompletableSource source;
     
-    final Function<? super Throwable, ? extends CompletableConsumable> errorMapper;
+    final Function<? super Throwable, ? extends CompletableSource> errorMapper;
     
-    public CompletableResumeNext(CompletableConsumable source,
-            Function<? super Throwable, ? extends CompletableConsumable> errorMapper) {
+    public CompletableResumeNext(CompletableSource source,
+            Function<? super Throwable, ? extends CompletableSource> errorMapper) {
         this.source = source;
         this.errorMapper = errorMapper;
     }
@@ -33,10 +33,10 @@ public final class CompletableResumeNext extends Completable {
 
 
     @Override
-    protected void subscribeActual(final CompletableSubscriber s) {
+    protected void subscribeActual(final CompletableObserver s) {
 
         final SerialDisposable sd = new SerialDisposable();
-        source.subscribe(new CompletableSubscriber() {
+        source.subscribe(new CompletableObserver() {
 
             @Override
             public void onComplete() {
@@ -45,7 +45,7 @@ public final class CompletableResumeNext extends Completable {
 
             @Override
             public void onError(Throwable e) {
-                CompletableConsumable c;
+                CompletableSource c;
                 
                 try {
                     c = errorMapper.apply(e);
@@ -61,7 +61,7 @@ public final class CompletableResumeNext extends Completable {
                     return;
                 }
                 
-                c.subscribe(new CompletableSubscriber() {
+                c.subscribe(new CompletableObserver() {
 
                     @Override
                     public void onComplete() {

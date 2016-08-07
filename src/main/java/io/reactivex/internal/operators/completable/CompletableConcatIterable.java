@@ -21,16 +21,16 @@ import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class CompletableConcatIterable extends Completable {
-    final Iterable<? extends CompletableConsumable> sources;
+    final Iterable<? extends CompletableSource> sources;
     
-    public CompletableConcatIterable(Iterable<? extends CompletableConsumable> sources) {
+    public CompletableConcatIterable(Iterable<? extends CompletableSource> sources) {
         this.sources = sources;
     }
     
     @Override
-    public void subscribeActual(CompletableSubscriber s) {
+    public void subscribeActual(CompletableObserver s) {
         
-        Iterator<? extends CompletableConsumable> it;
+        Iterator<? extends CompletableSource> it;
         
         try {
             it = sources.iterator();
@@ -46,23 +46,23 @@ public final class CompletableConcatIterable extends Completable {
             return;
         }
         
-        ConcatInnerSubscriber inner = new ConcatInnerSubscriber(s, it);
+        ConcatInnerObserver inner = new ConcatInnerObserver(s, it);
         s.onSubscribe(inner.sd);
         inner.next();
     }
     
-    static final class ConcatInnerSubscriber extends AtomicInteger implements CompletableSubscriber {
+    static final class ConcatInnerObserver extends AtomicInteger implements CompletableObserver {
         /** */
         private static final long serialVersionUID = -7965400327305809232L;
 
-        final CompletableSubscriber actual;
-        final Iterator<? extends CompletableConsumable> sources;
+        final CompletableObserver actual;
+        final Iterator<? extends CompletableSource> sources;
         
         int index;
         
         final SerialDisposable sd;
         
-        public ConcatInnerSubscriber(CompletableSubscriber actual, Iterator<? extends CompletableConsumable> sources) {
+        public ConcatInnerObserver(CompletableObserver actual, Iterator<? extends CompletableSource> sources) {
             this.actual = actual;
             this.sources = sources;
             this.sd = new SerialDisposable();
@@ -92,7 +92,7 @@ public final class CompletableConcatIterable extends Completable {
                 return;
             }
 
-            Iterator<? extends CompletableConsumable> a = sources;
+            Iterator<? extends CompletableSource> a = sources;
             do {
                 if (sd.isDisposed()) {
                     return;
@@ -111,7 +111,7 @@ public final class CompletableConcatIterable extends Completable {
                     return;
                 }
                 
-                CompletableConsumable c;
+                CompletableSource c;
                 
                 try {
                     c = a.next();

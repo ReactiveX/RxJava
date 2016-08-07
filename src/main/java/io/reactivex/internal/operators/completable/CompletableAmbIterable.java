@@ -22,18 +22,18 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableAmbIterable extends Completable {
 
-    final Iterable<? extends CompletableConsumable> sources;
+    final Iterable<? extends CompletableSource> sources;
     
-    public CompletableAmbIterable(Iterable<? extends CompletableConsumable> sources) {
+    public CompletableAmbIterable(Iterable<? extends CompletableSource> sources) {
         this.sources = sources;
     }
     
     @Override
-    protected void subscribeActual(final CompletableSubscriber s) {
+    protected void subscribeActual(final CompletableObserver s) {
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
 
-        Iterator<? extends CompletableConsumable> it;
+        Iterator<? extends CompletableSource> it;
         
         try {
             it = sources.iterator();
@@ -51,7 +51,7 @@ public final class CompletableAmbIterable extends Completable {
 
         final AtomicBoolean once = new AtomicBoolean();
         
-        CompletableSubscriber inner = new CompletableSubscriber() {
+        CompletableObserver inner = new CompletableObserver() {
             @Override
             public void onComplete() {
                 if (once.compareAndSet(false, true)) {
@@ -109,7 +109,7 @@ public final class CompletableAmbIterable extends Completable {
                 return;
             }
 
-            CompletableConsumable c;
+            CompletableSource c;
             
             try {
                 c = it.next();
