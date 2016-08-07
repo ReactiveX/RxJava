@@ -21,7 +21,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.Flowable.Operator;
+import io.reactivex.FlowableOperator;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.operators.flowable.*;
@@ -55,7 +55,7 @@ public class FlowableConversionTest {
             onSubscribe.subscribe(subscriber);
         }
 
-        public <R> CylonDetectorObservable<R> lift(Operator<? extends R, ? super T> operator) {
+        public <R> CylonDetectorObservable<R> lift(FlowableOperator<? extends R, ? super T> operator) {
             return x(new RobotConversionFunc<T, R>(operator));
         }
         
@@ -105,9 +105,9 @@ public class FlowableConversionTest {
     }
     
     public static class RobotConversionFunc<T, R> implements Function<Publisher<T>, CylonDetectorObservable<R>> {
-        private Operator<? extends R, ? super T> operator;
+        private FlowableOperator<? extends R, ? super T> operator;
 
-        public RobotConversionFunc(Operator<? extends R, ? super T> operator) {
+        public RobotConversionFunc(FlowableOperator<? extends R, ? super T> operator) {
             this.operator = operator;
         }
 

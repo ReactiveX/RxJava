@@ -23,7 +23,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.Flowable.Operator;
+import io.reactivex.FlowableOperator;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.subscribers.*;
 
@@ -79,7 +79,7 @@ public class FlowableSubscriberTest {
     @Test
     public void testRequestFromChainedOperator() throws Exception {
         TestSubscriber<String> s = new TestSubscriber<String>();
-        Operator<String, String> o = new Operator<String, String>() {
+        FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
             @Override
             public Subscriber<? super String> apply(final Subscriber<? super String> s1) {
                 return new Subscriber<String>() {
@@ -132,7 +132,7 @@ public class FlowableSubscriberTest {
     @Test
     public void testRequestFromDecoupledOperator() throws Exception {
         TestSubscriber<String> s = new TestSubscriber<String>(0L);
-        Operator<String, String> o = new Operator<String, String>() {
+        FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
             @Override
             public Subscriber<? super String> apply(final Subscriber<? super String> s1) {
                 return new Subscriber<String>() {
@@ -186,7 +186,7 @@ public class FlowableSubscriberTest {
     public void testRequestFromDecoupledOperatorThatRequestsN() throws Exception {
         TestSubscriber<String> s = new TestSubscriber<String>();
         final AtomicLong innerR = new AtomicLong();
-        Operator<String, String> o = new Operator<String, String>() {
+        FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
             @Override
             public Subscriber<? super String> apply(Subscriber<? super String> child) {
                 // we want to decouple the chain so set our own Producer on the child instead of it coming from the parent
@@ -424,7 +424,7 @@ public class FlowableSubscriberTest {
     @Test
     public void testOnStartCalledOnceViaLift() {
         final AtomicInteger c = new AtomicInteger();
-        Flowable.just(1, 2, 3, 4).lift(new Operator<Integer, Integer>() {
+        Flowable.just(1, 2, 3, 4).lift(new FlowableOperator<Integer, Integer>() {
 
             @Override
             public Subscriber<? super Integer> apply(final Subscriber<? super Integer> child) {

@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.FlowableOperator;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
@@ -98,7 +99,7 @@ public class FlowableSwitchIfEmptyTest {
 
         Flowable.<Long>empty()
                 .switchIfEmpty(withProducer)
-                .lift(new Flowable.Operator<Long, Long>() {
+                .lift(new FlowableOperator<Long, Long>() {
             @Override
             public Subscriber<? super Long> apply(final Subscriber<? super Long> child) {
                 return new DefaultSubscriber<Long>() {

@@ -44,26 +44,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     static {
         BUFFER_SIZE = Math.max(16, Integer.getInteger("rx2.buffer-size", 128));
     }
-    
-    /**
-     * Interface to map/wrap a downstream subscriber to an upstream subscriber.
-     *
-     * @param <Downstream> the value type of the downstream
-     * @param <Upstream> the value type of the upstream
-     */
-    public interface Operator<Downstream, Upstream> extends Function<Subscriber<? super Downstream>, Subscriber<? super Upstream>> {
-
-    }
-    
-    /**
-     * Interface to compose observables.
-     *
-     * @param <T> the upstream value type
-     * @param <R> the downstream value type
-     */
-    public interface Transformer<T, R> extends Function<Flowable<T>, Publisher<? extends R>> {
-        
-    }
 
     /** A never observable instance as there is no need to instantiate this more than once. */
     static final Flowable<Object> NEVER = new Flowable<Object>() { // FIXME factor out
@@ -1525,7 +1505,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     // TODO generics
-    public final <R> Flowable<R> compose(Transformer<T, R> composer) {
+    public final <R> Flowable<R> compose(FlowableTransformer<T, R> composer) {
         return fromPublisher(to(composer));
     }
 
@@ -1929,7 +1909,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         Objects.requireNonNull(onRequest, "onRequest is null");
         Objects.requireNonNull(onCancel, "onCancel is null");
-        return lift(new Operator<T, T>() {
+        return lift(new FlowableOperator<T, T>() {
             @Override
             public Subscriber<? super T> apply(Subscriber<? super T> s) {
                 return new SubscriptionLambdaSubscriber<T>(s, onSubscribe, onRequest, onCancel);
@@ -2335,7 +2315,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Flowable<R> lift(Operator<? extends R, ? super T> lifter) {
+    public final <R> Flowable<R> lift(FlowableOperator<? extends R, ? super T> lifter) {
         Objects.requireNonNull(lifter, "lifter is null");
         // using onSubscribe so the fusing has access to the underlying raw Publisher
         return new FlowableLift<R, T>(this, lifter);
@@ -2918,7 +2898,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> serialize() {
-        return lift(new Operator<T, T>() {
+        return lift(new FlowableOperator<T, T>() {
             @Override
             public Subscriber<? super T> apply(Subscriber<? super T> s) {
                 return new SerializedSubscriber<T>(s);

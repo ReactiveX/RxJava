@@ -21,7 +21,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable.Operator;
+import io.reactivex.FlowableOperator;
 import io.reactivex.Optional;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
@@ -1642,7 +1642,7 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void liftReturnsNull() {
-        just1.lift(new Operator<Object, Integer>() {
+        just1.lift(new FlowableOperator<Object, Integer>() {
             @Override
             public Subscriber<? super Integer> apply(Subscriber<? super Object> s) {
                 return null;
