@@ -20,7 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
 
-public final class ObservableSampleWithObservable<T> extends ObservableSource<T, T> {
+public final class ObservableSampleWithObservable<T> extends ObservableWithUpstream<T, T> {
     final ObservableConsumable<?> other;
     
     public ObservableSampleWithObservable(ObservableConsumable<T> source, ObservableConsumable<?> other) {

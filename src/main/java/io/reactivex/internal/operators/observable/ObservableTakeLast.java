@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableTakeLast<T> extends ObservableSource<T, T> {
+public final class ObservableTakeLast<T> extends ObservableWithUpstream<T, T> {
     final int count;
     
     public ObservableTakeLast(ObservableConsumable<T> source, int count) {

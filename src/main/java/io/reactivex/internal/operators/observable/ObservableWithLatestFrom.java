@@ -22,7 +22,7 @@ import io.reactivex.internal.disposables.*;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableWithLatestFrom<T, U, R> extends ObservableSource<T, R> {
+public final class ObservableWithLatestFrom<T, U, R> extends ObservableWithUpstream<T, R> {
     final BiFunction<? super T, ? super U, ? extends R> combiner;
     final ObservableConsumable<? extends U> other;
     public ObservableWithLatestFrom(ObservableConsumable<T> source, 

@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableScan<T> extends ObservableSource<T, T> {
+public final class ObservableScan<T> extends ObservableWithUpstream<T, T> {
     final BiFunction<T, T, T> accumulator;
     public ObservableScan(ObservableConsumable<T> source, BiFunction<T, T, T> accumulator) {
         super(source);

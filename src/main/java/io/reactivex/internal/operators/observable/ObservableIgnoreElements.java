@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 
-public final class ObservableIgnoreElements<T> extends ObservableSource<T, T> {
+public final class ObservableIgnoreElements<T> extends ObservableWithUpstream<T, T> {
 
     public ObservableIgnoreElements(ObservableConsumable<T> source) {
         super(source);

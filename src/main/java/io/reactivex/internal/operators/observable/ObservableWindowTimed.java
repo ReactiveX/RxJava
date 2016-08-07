@@ -32,7 +32,7 @@ import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.subjects.UnicastSubject;
 
-public final class ObservableWindowTimed<T> extends ObservableSource<T, Observable<T>> {
+public final class ObservableWindowTimed<T> extends ObservableWithUpstream<T, Observable<T>> {
     final long timespan;
     final long timeskip;
     final TimeUnit unit;

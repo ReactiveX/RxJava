@@ -20,7 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.schedulers.Timed;
 
-public final class ObservableTimeInterval<T> extends ObservableSource<T, Timed<T>> {
+public final class ObservableTimeInterval<T> extends ObservableWithUpstream<T, Timed<T>> {
     final Scheduler scheduler;
     final TimeUnit unit;
     

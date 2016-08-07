@@ -22,7 +22,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 
 public final class ObservableToList<T, U extends Collection<? super T>> 
-extends ObservableSource<T, U> {
+extends ObservableWithUpstream<T, U> {
     
     final Callable<U> collectionSupplier;
     

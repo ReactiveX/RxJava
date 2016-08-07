@@ -23,7 +23,7 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.schedulers.TrampolineScheduler;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableObserveOn<T> extends ObservableSource<T, T> {
+public final class ObservableObserveOn<T> extends ObservableWithUpstream<T, T> {
     final Scheduler scheduler;
     final boolean delayError;
     final int bufferSize;

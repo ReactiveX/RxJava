@@ -24,7 +24,7 @@ import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableTimeout<T, U, V> extends ObservableSource<T, T> {
+public final class ObservableTimeout<T, U, V> extends ObservableWithUpstream<T, T> {
     final Callable<? extends ObservableConsumable<U>> firstTimeoutSelector; 
     final Function<? super T, ? extends ObservableConsumable<V>> timeoutSelector; 
     final ObservableConsumable<? extends T> other;

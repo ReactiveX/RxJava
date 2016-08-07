@@ -23,7 +23,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableThrottleFirstTimed<T> extends ObservableSource<T, T> {
+public final class ObservableThrottleFirstTimed<T> extends ObservableWithUpstream<T, T> {
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
