@@ -39,7 +39,7 @@ public abstract class Completable implements CompletableSource {
     static final Completable NEVER = new CompletableNever();
 
     /**
-     * Wraps the given CompletableConsumable into a Completable
+     * Wraps the given CompletableSource into a Completable
      * if not already Completable.
      * @param source the source to wrap
      * @return the source or its wrapper Completable
@@ -50,7 +50,7 @@ public abstract class Completable implements CompletableSource {
         if (source instanceof Completable) {
             return (Completable)source;
         }
-        return new CompletableWrapper(source);
+        return new CompletableFromSource(source);
     }
     
     /**
@@ -155,22 +155,22 @@ public abstract class Completable implements CompletableSource {
     }
     
     /**
-     * Constructs a Completable instance by wrapping the given onSubscribe callback.
-     * @param onSubscribe the callback which will receive the CompletableSubscriber instances
+     * Constructs a Completable instance by wrapping the given source callback.
+     * @param source the callback which will receive the CompletableObserver instances
      * when the Completable is subscribed to.
      * @return the created Completable instance
-     * @throws NullPointerException if onSubscribe is null
+     * @throws NullPointerException if source is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable create(CompletableSource onSubscribe) {
-        Objects.requireNonNull(onSubscribe, "onSubscribe is null");
-        if (onSubscribe instanceof Completable) {
+    public static Completable create(CompletableSource source) {
+        Objects.requireNonNull(source, "source is null");
+        if (source instanceof Completable) {
             throw new IllegalArgumentException("Use of create(Completable)!");
         }
         try {
-            // TODO plugin wrapping onSubscribe
+            // TODO plugin wrapping source
             
-            return RxJavaPlugins.onAssembly(new CompletableWrapper(onSubscribe));
+            return RxJavaPlugins.onAssembly(new CompletableFromSource(source));
         } catch (NullPointerException ex) { // NOPMD
             throw ex;
         } catch (Throwable ex) {

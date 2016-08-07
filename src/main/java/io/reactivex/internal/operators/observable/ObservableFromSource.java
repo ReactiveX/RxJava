@@ -11,21 +11,19 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.flowable;
+package io.reactivex.internal.operators.observable;
 
-import org.reactivestreams.*;
+import io.reactivex.*;
 
-import io.reactivex.Flowable;
+public final class ObservableFromSource<T> extends Observable<T> {
+    final ObservableSource<T> source;
 
-public final class FlowableWrapper<T> extends Flowable<T> {
-    final Publisher<? extends T> publisher;
-
-    public FlowableWrapper(Publisher<? extends T> publisher) {
-        this.publisher = publisher;
+    public ObservableFromSource(ObservableSource<T> source) {
+        this.source = source;
     }
     
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
-        publisher.subscribe(s);
+    protected void subscribeActual(Observer<? super T> observer) {
+        source.subscribe(observer);
     }
 }

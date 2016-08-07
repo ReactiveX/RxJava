@@ -11,20 +11,21 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.completable;
+package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.*;
+import org.reactivestreams.*;
 
-public final class CompletableWrapper extends Completable {
+import io.reactivex.Flowable;
 
-    final CompletableSource onSubscribe;
+public final class FlowableFromPublisher<T> extends Flowable<T> {
+    final Publisher<? extends T> publisher;
 
-    public CompletableWrapper(CompletableSource onSubscribe) {
-        this.onSubscribe = onSubscribe;
+    public FlowableFromPublisher(Publisher<? extends T> publisher) {
+        this.publisher = publisher;
     }
     
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        onSubscribe.subscribe(s);
+    protected void subscribeActual(Subscriber<? super T> s) {
+        publisher.subscribe(s);
     }
 }
