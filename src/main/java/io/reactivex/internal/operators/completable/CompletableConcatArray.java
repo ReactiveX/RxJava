@@ -19,31 +19,31 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 
 public final class CompletableConcatArray extends Completable {
-    final CompletableConsumable[] sources;
+    final CompletableSource[] sources;
     
-    public CompletableConcatArray(CompletableConsumable[] sources) {
+    public CompletableConcatArray(CompletableSource[] sources) {
         this.sources = sources;
     }
     
     @Override
-    public void subscribeActual(CompletableSubscriber s) {
-        ConcatInnerSubscriber inner = new ConcatInnerSubscriber(s, sources);
+    public void subscribeActual(CompletableObserver s) {
+        ConcatInnerObserver inner = new ConcatInnerObserver(s, sources);
         s.onSubscribe(inner.sd);
         inner.next();
     }
     
-    static final class ConcatInnerSubscriber extends AtomicInteger implements CompletableSubscriber {
+    static final class ConcatInnerObserver extends AtomicInteger implements CompletableObserver {
         /** */
         private static final long serialVersionUID = -7965400327305809232L;
 
-        final CompletableSubscriber actual;
-        final CompletableConsumable[] sources;
+        final CompletableObserver actual;
+        final CompletableSource[] sources;
         
         int index;
         
         final SerialDisposable sd;
         
-        public ConcatInnerSubscriber(CompletableSubscriber actual, CompletableConsumable[] sources) {
+        public ConcatInnerObserver(CompletableObserver actual, CompletableSource[] sources) {
             this.actual = actual;
             this.sources = sources;
             this.sd = new SerialDisposable();
@@ -73,7 +73,7 @@ public final class CompletableConcatArray extends Completable {
                 return;
             }
 
-            CompletableConsumable[] a = sources;
+            CompletableSource[] a = sources;
             do {
                 if (sd.isDisposed()) {
                     return;

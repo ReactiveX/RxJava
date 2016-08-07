@@ -21,20 +21,20 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableAmbArray extends Completable {
     
-    final CompletableConsumable[] sources;
+    final CompletableSource[] sources;
     
-    public CompletableAmbArray(CompletableConsumable[] sources) {
+    public CompletableAmbArray(CompletableSource[] sources) {
         this.sources = sources;
     }
     
     @Override
-    public void subscribeActual(final CompletableSubscriber s) {
+    public void subscribeActual(final CompletableObserver s) {
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
 
         final AtomicBoolean once = new AtomicBoolean();
         
-        CompletableSubscriber inner = new CompletableSubscriber() {
+        CompletableObserver inner = new CompletableObserver() {
             @Override
             public void onComplete() {
                 if (once.compareAndSet(false, true)) {
@@ -60,7 +60,7 @@ public final class CompletableAmbArray extends Completable {
             
         };
         
-        for (CompletableConsumable c : sources) {
+        for (CompletableSource c : sources) {
             if (set.isDisposed()) {
                 return;
             }

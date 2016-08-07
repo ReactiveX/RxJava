@@ -25,7 +25,6 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Completable.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
@@ -104,9 +103,9 @@ public class CompletableTest {
         /** */
         private static final long serialVersionUID = 7192337844700923752L;
         
-        public final Completable completable = Completable.create(new CompletableConsumable() {
+        public final Completable completable = Completable.create(new CompletableSource() {
             @Override
-            public void subscribe(CompletableSubscriber s) {
+            public void subscribe(CompletableObserver s) {
                 getAndIncrement();
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onComplete();
@@ -130,9 +129,9 @@ public class CompletableTest {
         /** */
         private static final long serialVersionUID = 7192337844700923752L;
         
-        public final Completable completable = Completable.create(new CompletableConsumable() {
+        public final Completable completable = Completable.create(new CompletableSource() {
             @Override
-            public void subscribe(CompletableSubscriber s) {
+            public void subscribe(CompletableObserver s) {
                 getAndIncrement();
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onError(new TestException());
@@ -380,9 +379,9 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = NullPointerException.class)
     public void createOnSubscribeThrowsNPE() {
-        Completable c = Completable.create(new CompletableConsumable() {
+        Completable c = Completable.create(new CompletableSource() {
             @Override
-            public void subscribe(CompletableSubscriber s) { throw new NullPointerException(); }
+            public void subscribe(CompletableObserver s) { throw new NullPointerException(); }
         });
         
         c.await();
@@ -391,9 +390,9 @@ public class CompletableTest {
     @Test(timeout = 1000)
     public void createOnSubscribeThrowsRuntimeException() {
         try {
-            Completable c = Completable.create(new CompletableConsumable() {
+            Completable c = Completable.create(new CompletableSource() {
                 @Override
-                public void subscribe(CompletableSubscriber s) {
+                public void subscribe(CompletableObserver s) {
                     throw new TestException();
                 }
             });
@@ -1103,7 +1102,7 @@ public class CompletableTest {
     public void never() {
         final AtomicBoolean onSubscribeCalled = new AtomicBoolean();
         final AtomicInteger calls = new AtomicInteger();
-        Completable.never().subscribe(new CompletableSubscriber() {
+        Completable.never().subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 onSubscribeCalled.set(true);
@@ -1146,7 +1145,7 @@ public class CompletableTest {
         
         final AtomicInteger calls = new AtomicInteger();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 
@@ -1179,7 +1178,7 @@ public class CompletableTest {
         final SerialDisposable sd = new SerialDisposable();
         final AtomicInteger calls = new AtomicInteger();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 sd.replace(d);
@@ -1239,7 +1238,7 @@ public class CompletableTest {
         final AtomicBoolean disposedFirst = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 
@@ -1285,7 +1284,7 @@ public class CompletableTest {
         final AtomicBoolean disposedFirst = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 
@@ -1331,7 +1330,7 @@ public class CompletableTest {
         final AtomicBoolean disposedFirst = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 
@@ -1377,7 +1376,7 @@ public class CompletableTest {
         final AtomicBoolean disposedFirst = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 
@@ -1574,7 +1573,7 @@ public class CompletableTest {
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 
@@ -1609,7 +1608,7 @@ public class CompletableTest {
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 
@@ -1643,7 +1642,7 @@ public class CompletableTest {
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 
@@ -1770,7 +1769,7 @@ public class CompletableTest {
             }
         });
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 d.dispose();
@@ -1802,7 +1801,7 @@ public class CompletableTest {
             public void run() { throw new TestException(); }
         });
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 d.dispose();
@@ -1963,7 +1962,7 @@ public class CompletableTest {
             }
         });
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 
@@ -2050,7 +2049,7 @@ public class CompletableTest {
     public void liftReturnsNull() {
         Completable c = normal.completable.lift(new CompletableOperator() {
             @Override
-            public CompletableSubscriber apply(CompletableSubscriber v) {
+            public CompletableObserver apply(CompletableObserver v) {
                 return null;
             }
         });
@@ -2060,8 +2059,8 @@ public class CompletableTest {
 
     final static class CompletableOperatorSwap implements CompletableOperator {
         @Override
-        public CompletableSubscriber apply(final CompletableSubscriber v) {
-            return new CompletableSubscriber() {
+        public CompletableObserver apply(final CompletableObserver v) {
+            return new CompletableObserver() {
 
                 @Override
                 public void onComplete() {
@@ -2122,7 +2121,7 @@ public class CompletableTest {
         
         Completable c = normal.completable.observeOn(Schedulers.computation());
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 
@@ -2155,7 +2154,7 @@ public class CompletableTest {
         
         Completable c = error.completable.observeOn(Schedulers.computation());
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 
@@ -2284,7 +2283,7 @@ public class CompletableTest {
             }
         }).repeat();
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(final Disposable d) {
                 Schedulers.single().scheduleDirect(new Runnable() {
@@ -2719,7 +2718,7 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void subscribeCompletableSubscriberNull() {
-        normal.completable.subscribe((CompletableSubscriber)null);
+        normal.completable.subscribe((CompletableObserver)null);
     }
 
     @Test(timeout = 1000)
@@ -2753,9 +2752,9 @@ public class CompletableTest {
     public void subscribeOnNormal() {
         final AtomicReference<String> name = new  AtomicReference<String>();
         
-        Completable c = Completable.create(new CompletableConsumable() {
+        Completable c = Completable.create(new CompletableSource() {
             @Override
-            public void subscribe(CompletableSubscriber s) { 
+            public void subscribe(CompletableObserver s) {
                 name.set(Thread.currentThread().getName());
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onComplete();
@@ -2771,9 +2770,9 @@ public class CompletableTest {
     public void subscribeOnError() {
         final AtomicReference<String> name = new  AtomicReference<String>();
         
-        Completable c = Completable.create(new CompletableConsumable() {
+        Completable c = Completable.create(new CompletableSource() {
             @Override
-            public void subscribe(CompletableSubscriber s) { 
+            public void subscribe(CompletableObserver s) {
                 name.set(Thread.currentThread().getName());
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onError(new TestException());
@@ -2950,7 +2949,7 @@ public class CompletableTest {
             }
         })
         .unsubscribeOn(Schedulers.computation())
-        .subscribe(new CompletableSubscriber() {
+        .subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(final Disposable d) {
                 Schedulers.single().scheduleDirect(new Runnable() {
@@ -3937,7 +3936,7 @@ public class CompletableTest {
 
     private Function<Completable, Completable> onCreate;
     
-    private BiFunction<Completable, CompletableSubscriber, CompletableSubscriber> onStart;
+    private BiFunction<Completable, CompletableObserver, CompletableObserver> onStart;
 
     @Before
     public void setUp() throws Exception {
@@ -3950,9 +3949,9 @@ public class CompletableTest {
         
         RxJavaPlugins.setOnCompletableAssembly(onCreate);
         
-        onStart = spy(new BiFunction<Completable, CompletableSubscriber, CompletableSubscriber>() {
+        onStart = spy(new BiFunction<Completable, CompletableObserver, CompletableObserver>() {
             @Override
-            public CompletableSubscriber apply(Completable t1, CompletableSubscriber t2) {
+            public CompletableObserver apply(Completable t1, CompletableObserver t2) {
                 return t2;
             }
         });
@@ -3967,7 +3966,7 @@ public class CompletableTest {
     
     @Test
     public void testHookCreate() throws Exception {
-        CompletableConsumable subscriber = mock(CompletableConsumable.class);
+        CompletableSource subscriber = mock(CompletableSource.class);
         Completable create = Completable.create(subscriber);
 
         verify(onCreate, times(1)).apply(create);
@@ -4037,7 +4036,7 @@ public class CompletableTest {
             }
         });
         
-        c.subscribe(new CompletableSubscriber() {
+        c.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
                 
@@ -4432,14 +4431,14 @@ public class CompletableTest {
     public void testHookSubscribeStart() throws Exception {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
-        Completable completable = Completable.create(new CompletableConsumable() {
-            @Override public void subscribe(CompletableSubscriber s) {
+        Completable completable = Completable.create(new CompletableSource() {
+            @Override public void subscribe(CompletableObserver s) {
                 s.onComplete();
             }
         });
         completable.subscribe(ts);
 
-        verify(onStart, times(1)).apply(eq(completable), any(CompletableSubscriber.class));
+        verify(onStart, times(1)).apply(eq(completable), any(CompletableObserver.class));
     }
 
     @Ignore("No unsafeSubscribe")
@@ -4667,9 +4666,9 @@ public class CompletableTest {
         TestSubscriber<String> ts = new TestSubscriber<String>(0);
         final AtomicBoolean hasRun = new AtomicBoolean(false);
         final Exception e = new Exception();
-        Completable.create(new CompletableConsumable() {
+        Completable.create(new CompletableSource() {
                 @Override
-                public void subscribe(CompletableSubscriber cs) {
+                public void subscribe(CompletableObserver cs) {
                     cs.onError(e);
                 }
             })

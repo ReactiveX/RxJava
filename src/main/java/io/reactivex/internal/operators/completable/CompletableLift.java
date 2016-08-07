@@ -19,21 +19,21 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableLift extends Completable {
 
-    final CompletableConsumable source;
+    final CompletableSource source;
     
     final CompletableOperator onLift;
     
-    public CompletableLift(CompletableConsumable source, CompletableOperator onLift) {
+    public CompletableLift(CompletableSource source, CompletableOperator onLift) {
         this.source = source;
         this.onLift = onLift;
     }
 
     @Override
-    protected void subscribeActual(CompletableSubscriber s) {
+    protected void subscribeActual(CompletableObserver s) {
         try {
             // TODO plugin wrapping
 
-            CompletableSubscriber sw = onLift.apply(s);
+            CompletableObserver sw = onLift.apply(s);
             
             source.subscribe(sw);
         } catch (NullPointerException ex) { // NOPMD

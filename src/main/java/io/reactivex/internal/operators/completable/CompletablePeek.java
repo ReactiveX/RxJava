@@ -22,7 +22,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletablePeek extends Completable {
 
-    final CompletableConsumable source;
+    final CompletableSource source;
     final Consumer<? super Disposable> onSubscribe; 
     final Consumer<? super Throwable> onError;
     final Runnable onComplete;
@@ -30,12 +30,12 @@ public final class CompletablePeek extends Completable {
     final Runnable onAfterTerminate;
     final Runnable onDisposed;
     
-    public CompletablePeek(CompletableConsumable source, Consumer<? super Disposable> onSubscribe,
-            Consumer<? super Throwable> onError, 
-            Runnable onComplete, 
-            Runnable onTerminate, 
-            Runnable onAfterTerminate, 
-            Runnable onDisposed) {
+    public CompletablePeek(CompletableSource source, Consumer<? super Disposable> onSubscribe,
+                           Consumer<? super Throwable> onError,
+                           Runnable onComplete,
+                           Runnable onTerminate,
+                           Runnable onAfterTerminate,
+                           Runnable onDisposed) {
         this.source = source;
         this.onSubscribe = onSubscribe;
         this.onError = onError;
@@ -46,9 +46,9 @@ public final class CompletablePeek extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableSubscriber s) {
+    protected void subscribeActual(final CompletableObserver s) {
 
-        source.subscribe(new CompletableSubscriber() {
+        source.subscribe(new CompletableObserver() {
 
             @Override
             public void onComplete() {

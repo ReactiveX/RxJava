@@ -19,13 +19,13 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 
 public final class CompletableToSingle<T> extends Single<T> {
-    final CompletableConsumable source;
+    final CompletableSource source;
     
     final Callable<? extends T> completionValueSupplier;
     
     final T completionValue;
     
-    public CompletableToSingle(CompletableConsumable source, 
+    public CompletableToSingle(CompletableSource source,
             Callable<? extends T> completionValueSupplier, T completionValue) {
         this.source = source;
         this.completionValue = completionValue;
@@ -34,7 +34,7 @@ public final class CompletableToSingle<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
-        source.subscribe(new CompletableSubscriber() {
+        source.subscribe(new CompletableObserver() {
 
             @Override
             public void onComplete() {

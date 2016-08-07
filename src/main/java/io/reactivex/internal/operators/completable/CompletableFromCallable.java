@@ -27,7 +27,7 @@ public final class CompletableFromCallable extends Completable {
     }
     
     @Override
-    protected void subscribeActual(CompletableSubscriber s) {
+    protected void subscribeActual(CompletableObserver s) {
         Disposable d = Disposables.empty();
         s.onSubscribe(d);
         try {

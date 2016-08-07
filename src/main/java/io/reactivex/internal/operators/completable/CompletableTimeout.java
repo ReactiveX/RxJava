@@ -22,14 +22,14 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableTimeout extends Completable {
     
-    final CompletableConsumable source;
+    final CompletableSource source;
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
-    final CompletableConsumable other;
+    final CompletableSource other;
 
-    public CompletableTimeout(CompletableConsumable source, long timeout, 
-            TimeUnit unit, Scheduler scheduler, CompletableConsumable other) {
+    public CompletableTimeout(CompletableSource source, long timeout,
+                              TimeUnit unit, Scheduler scheduler, CompletableSource other) {
         this.source = source;
         this.timeout = timeout;
         this.unit = unit;
@@ -38,7 +38,7 @@ public final class CompletableTimeout extends Completable {
     }
 
     @Override
-    public void subscribeActual(final CompletableSubscriber s) {
+    public void subscribeActual(final CompletableObserver s) {
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
         
@@ -52,7 +52,7 @@ public final class CompletableTimeout extends Completable {
                     if (other == null) {
                         s.onError(new TimeoutException());
                     } else {
-                        other.subscribe(new CompletableSubscriber() {
+                        other.subscribe(new CompletableObserver() {
    
                             @Override
                             public void onSubscribe(Disposable d) {
@@ -79,7 +79,7 @@ public final class CompletableTimeout extends Completable {
         
         set.add(timer);
         
-        source.subscribe(new CompletableSubscriber() {
+        source.subscribe(new CompletableObserver() {
 
             @Override
             public void onSubscribe(Disposable d) {

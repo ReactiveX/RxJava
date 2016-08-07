@@ -23,21 +23,21 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
 
     final SingleSource<T> source;
     
-    final CompletableConsumable other;
+    final CompletableSource other;
     
-    public SingleDelayWithCompletable(SingleSource<T> source, CompletableConsumable other) {
+    public SingleDelayWithCompletable(SingleSource<T> source, CompletableSource other) {
         this.source = source;
         this.other = other;
     }
     
     @Override
     protected void subscribeActual(SingleObserver<? super T> subscriber) {
-        other.subscribe(new OtherSubscriber<T>(subscriber, source));
+        other.subscribe(new OtherObserver<T>(subscriber, source));
     }
     
-    static final class OtherSubscriber<T> 
+    static final class OtherObserver<T>
     extends AtomicReference<Disposable>
-    implements CompletableSubscriber, Disposable {
+    implements CompletableObserver, Disposable {
         
         /** */
         private static final long serialVersionUID = -8565274649390031272L;
@@ -46,7 +46,7 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
         
         final SingleSource<T> source;
 
-        public OtherSubscriber(SingleObserver<? super T> actual, SingleSource<T> source) {
+        public OtherObserver(SingleObserver<? super T> actual, SingleSource<T> source) {
             this.actual = actual;
             this.source = source;
         }

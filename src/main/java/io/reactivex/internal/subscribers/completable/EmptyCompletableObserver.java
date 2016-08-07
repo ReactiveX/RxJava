@@ -13,47 +13,45 @@
 
 package io.reactivex.internal.subscribers.completable;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.CompletableSubscriber;
+import io.reactivex.CompletableObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
-public final class SubscriberCompletableSubscriber<T> implements CompletableSubscriber, Subscription {
-    final Subscriber<? super T> subscriber;
+public final class EmptyCompletableObserver
+extends AtomicReference<Disposable>
+implements CompletableObserver, Disposable {
 
-    Disposable d;
-    
-    public SubscriberCompletableSubscriber(Subscriber<? super T> observer) {
-        this.subscriber = observer;
+    /** */
+    private static final long serialVersionUID = -7545121636549663526L;
+
+    @Override
+    public void dispose() {
+        DisposableHelper.dispose(this);
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return get() == DisposableHelper.DISPOSED;
     }
 
     @Override
     public void onComplete() {
-        subscriber.onComplete();
+        // no-op
+        lazySet(DisposableHelper.DISPOSED);
     }
 
     @Override
     public void onError(Throwable e) {
-        subscriber.onError(e);
+        lazySet(DisposableHelper.DISPOSED);
+        RxJavaPlugins.onError(e);
     }
 
     @Override
     public void onSubscribe(Disposable d) {
-        if (DisposableHelper.validate(this.d, d)) {
-            this.d = d;
-            
-            subscriber.onSubscribe(this);
-        }
+        DisposableHelper.setOnce(this, d);
     }
 
-    @Override
-    public void request(long n) {
-        // ingored, no values emitted anyway
-    }
-
-    @Override
-    public void cancel() {
-        d.dispose();
-    }
 }

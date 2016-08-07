@@ -23,11 +23,11 @@ import io.reactivex.internal.functions.Objects;
 public enum CompletableAwait {
     ;
 
-    public static void await(CompletableConsumable cc) {
+    public static void await(CompletableSource cc) {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
         
-        cc.subscribe(new CompletableSubscriber() {
+        cc.subscribe(new CompletableObserver() {
 
             @Override
             public void onComplete() {
@@ -63,13 +63,13 @@ public enum CompletableAwait {
         }
     }
     
-    public static boolean await(CompletableConsumable cc, long timeout, TimeUnit unit) {
+    public static boolean await(CompletableSource cc, long timeout, TimeUnit unit) {
         Objects.requireNonNull(unit, "unit is null");
         
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
         
-        cc.subscribe(new CompletableSubscriber() {
+        cc.subscribe(new CompletableObserver() {
 
             @Override
             public void onComplete() {
@@ -109,11 +109,11 @@ public enum CompletableAwait {
         return b;
     }
     
-    public static Throwable get(CompletableConsumable cc) {
+    public static Throwable get(CompletableSource cc) {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
         
-        cc.subscribe(new CompletableSubscriber() {
+        cc.subscribe(new CompletableObserver() {
 
             @Override
             public void onComplete() {
@@ -144,13 +144,13 @@ public enum CompletableAwait {
         return err[0];
     }
     
-    public static Throwable get(CompletableConsumable cc, long timeout, TimeUnit unit) {
+    public static Throwable get(CompletableSource cc, long timeout, TimeUnit unit) {
         Objects.requireNonNull(unit, "unit is null");
         
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
         
-        cc.subscribe(new CompletableSubscriber() {
+        cc.subscribe(new CompletableObserver() {
 
             @Override
             public void onComplete() {

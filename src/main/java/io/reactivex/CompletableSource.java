@@ -10,23 +10,18 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+package io.reactivex;
 
-package io.reactivex.internal.operators.completable;
-
-import io.reactivex.*;
-import io.reactivex.internal.subscribers.completable.ObserverCompletableObserver;
-
-public class CompletableToObservable<T> extends Observable<T> {
-
-    final CompletableSource source;
+/**
+ * Represents a basic {@link Completable} source base interface,
+ * consumable via an {@link CompletableObserver}.
+ * <p>
+ * This class also serves the base type for custom operators wrapped into
+ * Completable via {@link Completable#create(CompletableSource)}.
+ * 
+ * @since 2.0
+ */
+public interface CompletableSource {
     
-    public CompletableToObservable(CompletableSource source) {
-        this.source = source;
-    }
-
-    @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        ObserverCompletableObserver<T> os = new ObserverCompletableObserver<T>(s);
-        source.subscribe(os);
-    }
+    void subscribe(CompletableObserver cs);
 }

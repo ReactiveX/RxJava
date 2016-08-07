@@ -21,14 +21,14 @@ import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 
 public final class CompletableMergeDelayErrorArray extends Completable {
-    final CompletableConsumable[] sources;
+    final CompletableSource[] sources;
     
-    public CompletableMergeDelayErrorArray(CompletableConsumable[] sources) {
+    public CompletableMergeDelayErrorArray(CompletableSource[] sources) {
         this.sources = sources;
     }
     
     @Override
-    public void subscribeActual(final CompletableSubscriber s) {
+    public void subscribeActual(final CompletableObserver s) {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicInteger wip = new AtomicInteger(sources.length + 1);
         
@@ -36,7 +36,7 @@ public final class CompletableMergeDelayErrorArray extends Completable {
         
         s.onSubscribe(set);
         
-        for (CompletableConsumable c : sources) {
+        for (CompletableSource c : sources) {
             if (set.isDisposed()) {
                 return;
             }
@@ -47,7 +47,7 @@ public final class CompletableMergeDelayErrorArray extends Completable {
                 continue;
             }
             
-            c.subscribe(new CompletableSubscriber() {
+            c.subscribe(new CompletableObserver() {
                 @Override
                 public void onSubscribe(Disposable d) {
                     set.add(d);

@@ -25,30 +25,30 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableConcat extends Completable {
-    final Publisher<? extends CompletableConsumable> sources;
+    final Publisher<? extends CompletableSource> sources;
     final int prefetch;
     
-    public CompletableConcat(Publisher<? extends CompletableConsumable> sources, int prefetch) {
+    public CompletableConcat(Publisher<? extends CompletableSource> sources, int prefetch) {
         this.sources = sources;
         this.prefetch = prefetch;
     }
     
     @Override
-    public void subscribeActual(CompletableSubscriber s) {
+    public void subscribeActual(CompletableObserver s) {
         CompletableConcatSubscriber parent = new CompletableConcatSubscriber(s, prefetch);
         sources.subscribe(parent);
     }
     
     static final class CompletableConcatSubscriber
     extends AtomicInteger
-    implements Subscriber<CompletableConsumable>, Disposable {
+    implements Subscriber<CompletableSource>, Disposable {
         /** */
         private static final long serialVersionUID = 7412667182931235013L;
-        final CompletableSubscriber actual;
+        final CompletableObserver actual;
         final int prefetch;
         final SerialDisposable sd;
         
-        final SpscArrayQueue<CompletableConsumable> queue;
+        final SpscArrayQueue<CompletableSource> queue;
         
         Subscription s;
         
@@ -56,14 +56,14 @@ public final class CompletableConcat extends Completable {
 
         final AtomicBoolean once = new AtomicBoolean();
         
-        final ConcatInnerSubscriber inner;
+        final ConcatInnerObserver inner;
         
-        public CompletableConcatSubscriber(CompletableSubscriber actual, int prefetch) {
+        public CompletableConcatSubscriber(CompletableObserver actual, int prefetch) {
             this.actual = actual;
             this.prefetch = prefetch;
-            this.queue = new SpscArrayQueue<CompletableConsumable>(prefetch);
+            this.queue = new SpscArrayQueue<CompletableSource>(prefetch);
             this.sd = new SerialDisposable();
-            this.inner = new ConcatInnerSubscriber();
+            this.inner = new ConcatInnerObserver();
         }
         
         @Override
@@ -76,7 +76,7 @@ public final class CompletableConcat extends Completable {
         }
         
         @Override
-        public void onNext(CompletableConsumable t) {
+        public void onNext(CompletableSource t) {
             if (!queue.offer(t)) {
                 onError(new MissingBackpressureException());
                 return;
@@ -133,7 +133,7 @@ public final class CompletableConcat extends Completable {
 
         void next() {
             boolean d = done;
-            CompletableConsumable c = queue.poll();
+            CompletableSource c = queue.poll();
             if (c == null) {
                 if (d) {
                     if (once.compareAndSet(false, true)) {
@@ -148,7 +148,7 @@ public final class CompletableConcat extends Completable {
             c.subscribe(inner);
         }
         
-        final class ConcatInnerSubscriber implements CompletableSubscriber {
+        final class ConcatInnerObserver implements CompletableObserver {
             @Override
             public void onSubscribe(Disposable d) {
                 sd.set(d);

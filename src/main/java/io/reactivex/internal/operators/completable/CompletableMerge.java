@@ -26,29 +26,29 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableMerge extends Completable {
-    final Publisher<? extends CompletableConsumable> source;
+    final Publisher<? extends CompletableSource> source;
     final int maxConcurrency;
     final boolean delayErrors;
     
-    public CompletableMerge(Publisher<? extends CompletableConsumable> source, int maxConcurrency, boolean delayErrors) {
+    public CompletableMerge(Publisher<? extends CompletableSource> source, int maxConcurrency, boolean delayErrors) {
         this.source = source;
         this.maxConcurrency = maxConcurrency;
         this.delayErrors = delayErrors;
     }
     
     @Override
-    public void subscribeActual(CompletableSubscriber s) {
+    public void subscribeActual(CompletableObserver s) {
         CompletableMergeSubscriber parent = new CompletableMergeSubscriber(s, maxConcurrency, delayErrors);
         source.subscribe(parent);
     }
     
     static final class CompletableMergeSubscriber
     extends AtomicInteger
-    implements Subscriber<CompletableConsumable>, Disposable {
+    implements Subscriber<CompletableSource>, Disposable {
         /** */
         private static final long serialVersionUID = -2108443387387077490L;
         
-        final CompletableSubscriber actual;
+        final CompletableObserver actual;
         final CompositeDisposable set;
         final int maxConcurrency;
         final boolean delayErrors;
@@ -61,7 +61,7 @@ public final class CompletableMerge extends Completable {
         
         final AtomicBoolean once = new AtomicBoolean();
         
-        public CompletableMergeSubscriber(CompletableSubscriber actual, int maxConcurrency, boolean delayErrors) {
+        public CompletableMergeSubscriber(CompletableObserver actual, int maxConcurrency, boolean delayErrors) {
             this.actual = actual;
             this.maxConcurrency = maxConcurrency;
             this.delayErrors = delayErrors;
@@ -109,14 +109,14 @@ public final class CompletableMerge extends Completable {
         }
 
         @Override
-        public void onNext(CompletableConsumable t) {
+        public void onNext(CompletableSource t) {
             if (done) {
                 return;
             }
 
             getAndIncrement();
             
-            t.subscribe(new CompletableSubscriber() {
+            t.subscribe(new CompletableObserver() {
                 Disposable d;
                 boolean innerDone;
                 @Override
