@@ -20,13 +20,13 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 
 public final class SingleOnErrorReturn<T> extends Single<T> {
-    final SingleConsumable<? extends T> source;
+    final SingleSource<? extends T> source;
 
     final Callable<? extends T> valueSupplier;
     
     final T value;
     
-    public SingleOnErrorReturn(SingleConsumable<? extends T> source, Callable<? extends T> valueSupplier, T value) {
+    public SingleOnErrorReturn(SingleSource<? extends T> source, Callable<? extends T> valueSupplier, T value) {
         this.source = source;
         this.valueSupplier = valueSupplier;
         this.value = value;
@@ -35,9 +35,9 @@ public final class SingleOnErrorReturn<T> extends Single<T> {
 
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
 
-        source.subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleObserver<T>() {
 
             @Override
             public void onError(Throwable e) {

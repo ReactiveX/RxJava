@@ -40,7 +40,7 @@ public class SingleTest {
     @Test
     public void testHelloWorld2() {
         final AtomicReference<String> v = new AtomicReference<String>();
-        Single.just("Hello World!").subscribe(new SingleSubscriber<String>() {
+        Single.just("Hello World!").subscribe(new SingleObserver<String>() {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -127,9 +127,9 @@ public class SingleTest {
     public void testCreateSuccess() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         
-        Single.create(new SingleConsumable<Object>() {
+        Single.create(new SingleSource<Object>() {
             @Override
-            public void subscribe(SingleSubscriber<? super Object> s) {
+            public void subscribe(SingleObserver<? super Object> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onSuccess("Hello");
             }
@@ -141,9 +141,9 @@ public class SingleTest {
     @Test
     public void testCreateError() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
-        Single.create(new SingleConsumable<Object>() {
+        Single.create(new SingleSource<Object>() {
             @Override
-            public void subscribe(SingleSubscriber<? super Object> s) {
+            public void subscribe(SingleObserver<? super Object> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onError(new RuntimeException("fail"));
             }
@@ -198,9 +198,9 @@ public class SingleTest {
     @Test
     public void testTimeout() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Single<String> s1 = Single.<String>create(new SingleConsumable<String>() {
+        Single<String> s1 = Single.<String>create(new SingleSource<String>() {
             @Override
-            public void subscribe(SingleSubscriber<? super String> s) {
+            public void subscribe(SingleObserver<? super String> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 try {
                     Thread.sleep(5000);
@@ -220,9 +220,9 @@ public class SingleTest {
     @Test
     public void testTimeoutWithFallback() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Single<String> s1 = Single.<String>create(new SingleConsumable<String>() {
+        Single<String> s1 = Single.<String>create(new SingleSource<String>() {
             @Override
-            public void subscribe(SingleSubscriber<? super String> s) {
+            public void subscribe(SingleObserver<? super String> s) {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                     try {
                         Thread.sleep(5000);
@@ -247,9 +247,9 @@ public class SingleTest {
         final AtomicBoolean interrupted = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(2);
 
-        Single<String> s1 = Single.<String>create(new SingleConsumable<String>() {
+        Single<String> s1 = Single.<String>create(new SingleSource<String>() {
             @Override
-            public void subscribe(final SingleSubscriber<? super String> s) {
+            public void subscribe(final SingleObserver<? super String> s) {
                 SerialDisposable sd = new SerialDisposable();
                 s.onSubscribe(sd);
                 final Thread t = new Thread(new Runnable() {
@@ -299,7 +299,7 @@ public class SingleTest {
     @Test
     public void testUnsubscribe2() throws InterruptedException {
         final SerialDisposable sd = new SerialDisposable();
-        SingleSubscriber<String> ts = new SingleSubscriber<String>() {
+        SingleObserver<String> ts = new SingleObserver<String>() {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -321,9 +321,9 @@ public class SingleTest {
         final AtomicBoolean interrupted = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(2);
 
-        Single<String> s1 = Single.create(new SingleConsumable<String>() {
+        Single<String> s1 = Single.create(new SingleSource<String>() {
             @Override
-            public void subscribe(final SingleSubscriber<? super String> s) {
+            public void subscribe(final SingleObserver<? super String> s) {
                 SerialDisposable sd = new SerialDisposable();
                 s.onSubscribe(sd);
                 final Thread t = new Thread(new Runnable() {
@@ -377,9 +377,9 @@ public class SingleTest {
         final AtomicBoolean interrupted = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(2);
 
-        Single<String> s1 = Single.create(new SingleConsumable<String>() {
+        Single<String> s1 = Single.create(new SingleSource<String>() {
             @Override
-            public void subscribe(final SingleSubscriber<? super String> s) {
+            public void subscribe(final SingleObserver<? super String> s) {
                 SerialDisposable sd = new SerialDisposable();
                 s.onSubscribe(sd);
                 final Thread t = new Thread(new Runnable() {
@@ -425,9 +425,9 @@ public class SingleTest {
     
     @Test
     public void testBackpressureAsObservable() {
-        Single<String> s = Single.create(new SingleConsumable<String>() {
+        Single<String> s = Single.create(new SingleSource<String>() {
             @Override
-            public void subscribe(SingleSubscriber<? super String> t) {
+            public void subscribe(SingleObserver<? super String> t) {
                 t.onSubscribe(EmptyDisposable.INSTANCE);
                 t.onSuccess("hello");
             }

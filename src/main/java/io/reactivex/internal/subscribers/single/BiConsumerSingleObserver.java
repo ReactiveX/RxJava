@@ -15,36 +15,32 @@ package io.reactivex.internal.subscribers.single;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.SingleSubscriber;
+import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
-import io.reactivex.functions.Consumer;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.BiConsumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ConsumerSingleSubscriber<T>
+public final class BiConsumerSingleObserver<T>
 extends AtomicReference<Disposable>
-implements SingleSubscriber<T>, Disposable {
+implements SingleObserver<T>, Disposable {
 
     /** */
-    private static final long serialVersionUID = -7012088219455310787L;
+    private static final long serialVersionUID = 4943102778943297569L;
+    final BiConsumer<? super T, ? super Throwable> onCallback;
 
-    final Consumer<? super T> onSuccess;
-    
-    final Consumer<? super Throwable> onError;
-
-    public ConsumerSingleSubscriber(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError) {
-        this.onSuccess = onSuccess;
-        this.onError = onError;
+    public BiConsumerSingleObserver(BiConsumer<? super T, ? super Throwable> onCallback) {
+        this.onCallback = onCallback;
     }
-
+    
     @Override
     public void onError(Throwable e) {
         try {
-            onError.accept(e);
+            onCallback.accept(null, e);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            RxJavaPlugins.onError(new CompositeException(e, ex));
+            RxJavaPlugins.onError(ex);
         }
     }
     
@@ -56,13 +52,13 @@ implements SingleSubscriber<T>, Disposable {
     @Override
     public void onSuccess(T value) {
         try {
-            onSuccess.accept(value);
+            onCallback.accept(value, null);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaPlugins.onError(ex);
         }
     }
-    
+
     @Override
     public void dispose() {
         DisposableHelper.dispose(this);

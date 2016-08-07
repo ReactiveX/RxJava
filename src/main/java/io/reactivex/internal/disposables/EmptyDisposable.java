@@ -50,7 +50,7 @@ public enum EmptyDisposable implements Disposable {
         s.onError(e);
     }
 
-    public static void error(Throwable e, SingleSubscriber<?> s) {
+    public static void error(Throwable e, SingleObserver<?> s) {
         s.onSubscribe(INSTANCE);
         s.onError(e);
     }

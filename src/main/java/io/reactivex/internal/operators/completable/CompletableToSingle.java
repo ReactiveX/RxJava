@@ -33,7 +33,7 @@ public final class CompletableToSingle<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
         source.subscribe(new CompletableSubscriber() {
 
             @Override

@@ -19,7 +19,7 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import io.reactivex.disposables.Disposable;
 
-public final class LatchedSingleObserver<T> implements SingleSubscriber<T> {
+public final class LatchedSingleObserver<T> implements SingleObserver<T> {
     final CountDownLatch cdl;
     final Blackhole bh;
     public LatchedSingleObserver(Blackhole bh) {

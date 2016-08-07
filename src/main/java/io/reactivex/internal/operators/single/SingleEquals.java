@@ -22,16 +22,16 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleEquals<T> extends Single<Boolean> {
 
-    final SingleConsumable<? extends T> first;
-    final SingleConsumable<? extends T> second;
+    final SingleSource<? extends T> first;
+    final SingleSource<? extends T> second;
     
-    public SingleEquals(SingleConsumable<? extends T> first, SingleConsumable<? extends T> second) {
+    public SingleEquals(SingleSource<? extends T> first, SingleSource<? extends T> second) {
         this.first = first;
         this.second = second;
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super Boolean> s) {
+    protected void subscribeActual(final SingleObserver<? super Boolean> s) {
 
         final AtomicInteger count = new AtomicInteger();
         final Object[] values = { null, null };
@@ -39,9 +39,9 @@ public final class SingleEquals<T> extends Single<Boolean> {
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
         
-        class InnerSubscriber implements SingleSubscriber<T> {
+        class InnerObserver implements SingleObserver<T> {
             final int index;
-            public InnerSubscriber(int index) {
+            public InnerObserver(int index) {
                 this.index = index;
             }
             @Override
@@ -75,8 +75,8 @@ public final class SingleEquals<T> extends Single<Boolean> {
             
         }
         
-        first.subscribe(new InnerSubscriber(0));
-        second.subscribe(new InnerSubscriber(1));
+        first.subscribe(new InnerObserver(0));
+        second.subscribe(new InnerObserver(1));
     }
 
 }

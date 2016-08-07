@@ -20,19 +20,19 @@ import io.reactivex.functions.Consumer;
 
 public final class SingleDoOnError<T> extends Single<T> {
 
-    final SingleConsumable<T> source;
+    final SingleSource<T> source;
     
     final Consumer<? super Throwable> onError;
     
-    public SingleDoOnError(SingleConsumable<T> source, Consumer<? super Throwable> onError) {
+    public SingleDoOnError(SingleSource<T> source, Consumer<? super Throwable> onError) {
         this.source = source;
         this.onError = onError;
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
 
-        source.subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleObserver<T>() {
             @Override
             public void onSubscribe(Disposable d) {
                 s.onSubscribe(d);

@@ -20,15 +20,15 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class SingleDefer<T> extends Single<T> {
 
-    final Callable<? extends SingleConsumable<? extends T>> singleSupplier;
+    final Callable<? extends SingleSource<? extends T>> singleSupplier;
     
-    public SingleDefer(Callable<? extends SingleConsumable<? extends T>> singleSupplier) {
+    public SingleDefer(Callable<? extends SingleSource<? extends T>> singleSupplier) {
         this.singleSupplier = singleSupplier;
     }
 
     @Override
-    protected void subscribeActual(SingleSubscriber<? super T> s) {
-        SingleConsumable<? extends T> next;
+    protected void subscribeActual(SingleObserver<? super T> s) {
+        SingleSource<? extends T> next;
         
         try {
             next = singleSupplier.call();

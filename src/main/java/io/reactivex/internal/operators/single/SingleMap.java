@@ -18,18 +18,18 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 
 public final class SingleMap<T, R> extends Single<R> {
-    final SingleConsumable<? extends T> source;
+    final SingleSource<? extends T> source;
     
     final Function<? super T, ? extends R> mapper;
 
-    public SingleMap(SingleConsumable<? extends T> source, Function<? super T, ? extends R> mapper) {
+    public SingleMap(SingleSource<? extends T> source, Function<? super T, ? extends R> mapper) {
         this.source = source;
         this.mapper = mapper;
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super R> t) {
-        source.subscribe(new SingleSubscriber<T>() {
+    protected void subscribeActual(final SingleObserver<? super R> t) {
+        source.subscribe(new SingleObserver<T>() {
             @Override
             public void onSubscribe(Disposable d) {
                 t.onSubscribe(d);

@@ -21,12 +21,12 @@ import io.reactivex.disposables.*;
 public final class SingleDelay<T> extends Single<T> {
 
     
-    final SingleConsumable<? extends T> source;
+    final SingleSource<? extends T> source;
     final long time;
     final TimeUnit unit;
     final Scheduler scheduler;
     
-    public SingleDelay(SingleConsumable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+    public SingleDelay(SingleSource<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
         this.source = source;
         this.time = time;
         this.unit = unit;
@@ -34,11 +34,11 @@ public final class SingleDelay<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
 
         final SerialDisposable sd = new SerialDisposable();
         s.onSubscribe(sd);
-        source.subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleObserver<T>() {
             @Override
             public void onSubscribe(Disposable d) {
                 sd.replace(d);

@@ -19,19 +19,19 @@ import io.reactivex.functions.Consumer;
 
 public class SingleDoOnSuccess<T> extends Single<T> {
 
-    final SingleConsumable<T> source;
+    final SingleSource<T> source;
     
     final Consumer<? super T> onSuccess;
     
-    public SingleDoOnSuccess(SingleConsumable<T> source, Consumer<? super T> onSuccess) {
+    public SingleDoOnSuccess(SingleSource<T> source, Consumer<? super T> onSuccess) {
         this.source = source;
         this.onSuccess = onSuccess;
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
 
-        source.subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleObserver<T>() {
             @Override
             public void onSubscribe(Disposable d) {
                 s.onSubscribe(d);

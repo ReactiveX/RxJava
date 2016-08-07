@@ -10,24 +10,19 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+package io.reactivex;
 
-package io.reactivex.internal.operators.single;
+/**
+ * Represents a basic {@link Single} source base interface,
+ * consumable via an {@link SingleObserver}.
+ * <p>
+ * This class also serves the base type for custom operators wrapped into
+ * Single via {@link Single#create(SingleSource)}.
+ * 
+ * @param <T> the element type
+ * @since 2.0
+ */
+public interface SingleSource<T> {
 
-import io.reactivex.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
-
-public final class SingleJust<T> extends Single<T> {
-
-    final T value;
-    
-    public SingleJust(T value) {
-        this.value = value;
-    }
-
-    @Override
-    protected void subscribeActual(SingleObserver<? super T> s) {
-        s.onSubscribe(EmptyDisposable.INSTANCE);
-        s.onSuccess(value);
-    }
-
+    void subscribe(SingleObserver<? super T> s);
 }

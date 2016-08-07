@@ -26,26 +26,26 @@ import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
  */
 public final class SingleToFlowable<T> extends Flowable<T> {
     
-    final SingleConsumable<? extends T> source;
+    final SingleSource<? extends T> source;
     
-    public SingleToFlowable(SingleConsumable<? extends T> source) {
+    public SingleToFlowable(SingleSource<? extends T> source) {
         this.source = source;
     }
     
     @Override
     public void subscribeActual(final Subscriber<? super T> s) {
-        source.subscribe(new SingleToFlowableSubscriber<T>(s));
+        source.subscribe(new SingleToFlowableObserver<T>(s));
     }
     
-    static final class SingleToFlowableSubscriber<T> extends DeferredScalarSubscription<T> 
-    implements SingleSubscriber<T> {
+    static final class SingleToFlowableObserver<T> extends DeferredScalarSubscription<T>
+    implements SingleObserver<T> {
 
         /** */
         private static final long serialVersionUID = 187782011903685568L;
         
         Disposable d;
         
-        public SingleToFlowableSubscriber(Subscriber<? super T> actual) {
+        public SingleToFlowableObserver(Subscriber<? super T> actual) {
             super(actual);
         }
 

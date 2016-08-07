@@ -27,7 +27,7 @@ public final class SingleFromCallable<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleSubscriber<? super T> s) {
+    protected void subscribeActual(SingleObserver<? super T> s) {
 
         s.onSubscribe(EmptyDisposable.INSTANCE);
         try {

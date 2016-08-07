@@ -63,7 +63,7 @@ public final class RxJavaPlugins {
     static volatile BiFunction<Observable, Observer, Observer> onObservableSubscribe;
 
     @SuppressWarnings("rawtypes")
-    static volatile BiFunction<Single, SingleSubscriber, SingleSubscriber> onSingleSubscribe;
+    static volatile BiFunction<Single, SingleObserver, SingleObserver> onSingleSubscribe;
 
     static volatile BiFunction<Completable, CompletableSubscriber, CompletableSubscriber> onCompletableSubscribe;
 
@@ -364,7 +364,7 @@ public final class RxJavaPlugins {
     }
     
     @SuppressWarnings("rawtypes")
-    public static BiFunction<Single, SingleSubscriber, SingleSubscriber> getOnSingleSubscribe() {
+    public static BiFunction<Single, SingleObserver, SingleObserver> getOnSingleSubscribe() {
         return onSingleSubscribe;
     }
     
@@ -435,7 +435,7 @@ public final class RxJavaPlugins {
     }
     
     @SuppressWarnings("rawtypes")
-    public static void setOnSingleSubscribe(BiFunction<Single, SingleSubscriber, SingleSubscriber> onSingleSubscribe) {
+    public static void setOnSingleSubscribe(BiFunction<Single, SingleObserver, SingleObserver> onSingleSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -461,8 +461,8 @@ public final class RxJavaPlugins {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> SingleSubscriber<? super T> onSubscribe(Single<T> source, SingleSubscriber<? super T> subscriber) {
-        BiFunction<Single, SingleSubscriber, SingleSubscriber> f = onSingleSubscribe;
+    public static <T> SingleObserver<? super T> onSubscribe(Single<T> source, SingleObserver<? super T> subscriber) {
+        BiFunction<Single, SingleObserver, SingleObserver> f = onSingleSubscribe;
         if (f != null) {
             return apply(f, source, subscriber);
         }

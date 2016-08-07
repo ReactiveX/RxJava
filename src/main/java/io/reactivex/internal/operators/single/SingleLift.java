@@ -18,19 +18,19 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleLift<T, R> extends Single<R> {
 
-    final SingleConsumable<T> source;
+    final SingleSource<T> source;
     
     final SingleOperator<? extends R, ? super T> onLift;
     
-    public SingleLift(SingleConsumable<T> source, SingleOperator<? extends R, ? super T> onLift) {
+    public SingleLift(SingleSource<T> source, SingleOperator<? extends R, ? super T> onLift) {
         this.source = source;
         this.onLift = onLift;
     }
 
     @Override
-    protected void subscribeActual(SingleSubscriber<? super R> s) {
+    protected void subscribeActual(SingleObserver<? super R> s) {
         try {
-            SingleSubscriber<? super T> sr = onLift.apply(s);
+            SingleObserver<? super T> sr = onLift.apply(s);
             
             if (sr == null) {
                 throw new NullPointerException("The onLift returned a null subscriber");

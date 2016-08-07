@@ -15,7 +15,7 @@ package io.reactivex;
 
 import io.reactivex.disposables.Disposable;
 
-public interface SingleSubscriber<T> {
+public interface SingleObserver<T> {
     
     void onSubscribe(Disposable d);
     

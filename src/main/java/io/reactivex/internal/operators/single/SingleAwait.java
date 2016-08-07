@@ -23,12 +23,12 @@ import io.reactivex.exceptions.Exceptions;
 public enum SingleAwait {
     ;
     
-    public static <T> T get(SingleConsumable<T> source) {
+    public static <T> T get(SingleSource<T> source) {
         final AtomicReference<T> valueRef = new AtomicReference<T>();
         final AtomicReference<Throwable> errorRef = new AtomicReference<Throwable>();
         final CountDownLatch cdl = new CountDownLatch(1);
         
-        source.subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleObserver<T>() {
             @Override
             public void onError(Throwable e) {
                 errorRef.lazySet(e);

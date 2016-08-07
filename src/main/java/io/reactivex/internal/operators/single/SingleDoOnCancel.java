@@ -17,19 +17,19 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 
 public final class SingleDoOnCancel<T> extends Single<T> {
-    final SingleConsumable<T> source;
+    final SingleSource<T> source;
 
     final Runnable onCancel;
 
-    public SingleDoOnCancel(SingleConsumable<T> source, Runnable onCancel) {
+    public SingleDoOnCancel(SingleSource<T> source, Runnable onCancel) {
         this.source = source;
         this.onCancel = onCancel;
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
 
-        source.subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleObserver<T>() {
             @Override
             public void onSubscribe(Disposable d) {
                 CompositeDisposable set = new CompositeDisposable();

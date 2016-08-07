@@ -31,7 +31,7 @@ public final class SingleTimer extends Single<Long> {
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super Long> s) {
+    protected void subscribeActual(final SingleObserver<? super Long> s) {
         SerialDisposable sd = new SerialDisposable();
         
         s.onSubscribe(sd);

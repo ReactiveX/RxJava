@@ -19,24 +19,24 @@ import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class SingleHide<T> extends Single<T> {
 
-    final SingleConsumable<? extends T> source;
+    final SingleSource<? extends T> source;
     
-    public SingleHide(SingleConsumable<? extends T> source) {
+    public SingleHide(SingleSource<? extends T> source) {
         this.source = source;
     }
 
     @Override
-    protected void subscribeActual(SingleSubscriber<? super T> subscriber) {
-        source.subscribe(new HideSingleSubscriber<T>(subscriber));
+    protected void subscribeActual(SingleObserver<? super T> subscriber) {
+        source.subscribe(new HideSingleObserver<T>(subscriber));
     }
     
-    static final class HideSingleSubscriber<T> implements SingleSubscriber<T>, Disposable {
+    static final class HideSingleObserver<T> implements SingleObserver<T>, Disposable {
 
-        final SingleSubscriber<? super T> actual;
+        final SingleObserver<? super T> actual;
         
         Disposable d;
         
-        public HideSingleSubscriber(SingleSubscriber<? super T> actual) {
+        public HideSingleObserver(SingleObserver<? super T> actual) {
             this.actual = actual;
         }
 

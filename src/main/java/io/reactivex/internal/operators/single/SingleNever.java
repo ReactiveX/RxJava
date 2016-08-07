@@ -19,7 +19,7 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 public final class SingleNever<T> extends Single<T> {
 
     @Override
-    protected void subscribeActual(SingleSubscriber<? super T> s) {
+    protected void subscribeActual(SingleObserver<? super T> s) {
         s.onSubscribe(EmptyDisposable.INSTANCE);
     }
 
