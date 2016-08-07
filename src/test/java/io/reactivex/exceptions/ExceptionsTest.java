@@ -362,12 +362,12 @@ public class ExceptionsTest {
     @Ignore("v2 components should not throw")
     @Test(expected = OnErrorFailedException.class)
     public void testOnErrorExceptionIsThrownFromSingleSubscribe() {
-        Single.create(new SingleConsumable<Integer>() {
+        Single.create(new SingleSource<Integer>() {
                           @Override
-                          public void subscribe(SingleSubscriber<? super Integer> s1) {
-                              Single.create(new SingleConsumable<Integer>() {
+                          public void subscribe(SingleObserver<? super Integer> s1) {
+                              Single.create(new SingleSource<Integer>() {
                                   @Override
-                                  public void subscribe(SingleSubscriber<? super Integer> s2) {
+                                  public void subscribe(SingleObserver<? super Integer> s2) {
                                       throw new IllegalArgumentException("original exception");
                                   }
                               }).subscribe(s1);
@@ -379,12 +379,12 @@ public class ExceptionsTest {
     @Ignore("v2 components should not throw")
     @Test(expected = OnErrorFailedException.class)
     public void testOnErrorExceptionIsThrownFromSingleUnsafeSubscribe() {
-        Single.create(new SingleConsumable<Integer>() {
+        Single.create(new SingleSource<Integer>() {
                           @Override
-                          public void subscribe(final SingleSubscriber<? super Integer> s1) {
-                              Single.create(new SingleConsumable<Integer>() {
+                          public void subscribe(final SingleObserver<? super Integer> s1) {
+                              Single.create(new SingleSource<Integer>() {
                                   @Override
-                                  public void subscribe(SingleSubscriber<? super Integer> s2) {
+                                  public void subscribe(SingleObserver<? super Integer> s2) {
                                       throw new IllegalArgumentException("original exception");
                                   }
                               }).subscribe(new Subscriber<Integer>() {

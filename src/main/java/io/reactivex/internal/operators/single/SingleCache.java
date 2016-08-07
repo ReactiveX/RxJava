@@ -23,21 +23,21 @@ import io.reactivex.internal.util.NotificationLite;
 
 public final class SingleCache<T> extends Single<T> {
 
-    final SingleConsumable<? extends T> source;
+    final SingleSource<? extends T> source;
     
     final AtomicInteger wip;
     final AtomicReference<Object> notification;
-    final List<SingleSubscriber<? super T>> subscribers;
+    final List<SingleObserver<? super T>> subscribers;
 
-    public SingleCache(SingleConsumable<? extends T> source) {
+    public SingleCache(SingleSource<? extends T> source) {
         this.source = source;
         this.wip = new AtomicInteger();
         this.notification = new AtomicReference<Object>();
-        this.subscribers = new ArrayList<SingleSubscriber<? super T>>();
+        this.subscribers = new ArrayList<SingleObserver<? super T>>();
     }
 
     @Override
-    protected void subscribeActual(SingleSubscriber<? super T> s) {
+    protected void subscribeActual(SingleObserver<? super T> s) {
 
         Object o = notification.get();
         if (o != null) {
@@ -70,7 +70,7 @@ public final class SingleCache<T> extends Single<T> {
             return;
         }
         
-        source.subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleObserver<T>() {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -80,12 +80,12 @@ public final class SingleCache<T> extends Single<T> {
             @Override
             public void onSuccess(T value) {
                 notification.set(NotificationLite.next(value));
-                List<SingleSubscriber<? super T>> list;
+                List<SingleObserver<? super T>> list;
                 synchronized (subscribers) {
-                    list = new ArrayList<SingleSubscriber<? super T>>(subscribers);
+                    list = new ArrayList<SingleObserver<? super T>>(subscribers);
                     subscribers.clear();
                 }
-                for (SingleSubscriber<? super T> s1 : list) {
+                for (SingleObserver<? super T> s1 : list) {
                     s1.onSuccess(value);
                 }
             }
@@ -93,12 +93,12 @@ public final class SingleCache<T> extends Single<T> {
             @Override
             public void onError(Throwable e) {
                 notification.set(NotificationLite.error(e));
-                List<SingleSubscriber<? super T>> list;
+                List<SingleObserver<? super T>> list;
                 synchronized (subscribers) {
-                    list = new ArrayList<SingleSubscriber<? super T>>(subscribers);
+                    list = new ArrayList<SingleObserver<? super T>>(subscribers);
                     subscribers.clear();
                 }
-                for (SingleSubscriber<? super T> s1 : list) {
+                for (SingleObserver<? super T> s1 : list) {
                     s1.onError(e);
                 }
             }

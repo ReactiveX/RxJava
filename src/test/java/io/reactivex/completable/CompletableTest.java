@@ -3869,7 +3869,7 @@ public class CompletableTest {
         Completable.error(e)
             .andThen(Single.<String>create(new Single<String>() {
                 @Override
-                public void subscribeActual(SingleSubscriber<? super String> s) {
+                public void subscribeActual(SingleObserver<? super String> s) {
                     hasRun.set(true);
                     s.onSuccess("foo");
                 }

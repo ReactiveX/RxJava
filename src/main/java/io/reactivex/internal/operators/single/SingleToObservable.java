@@ -23,9 +23,9 @@ import io.reactivex.internal.disposables.DisposableHelper;
  */
 public final class SingleToObservable<T> extends Observable<T> {
     
-    final SingleConsumable<? extends T> source;
+    final SingleSource<? extends T> source;
     
-    public SingleToObservable(SingleConsumable<? extends T> source) {
+    public SingleToObservable(SingleSource<? extends T> source) {
         this.source = source;
     }
     
@@ -35,7 +35,7 @@ public final class SingleToObservable<T> extends Observable<T> {
     }
     
     static final class SingleToObservableObserver<T> 
-    implements SingleSubscriber<T>, Disposable {
+    implements SingleObserver<T>, Disposable {
 
         final Observer<? super T> actual;
         

@@ -18,22 +18,22 @@ import io.reactivex.disposables.*;
 
 public final class SingleObserveOn<T> extends Single<T> {
 
-    final SingleConsumable<T> source;
+    final SingleSource<T> source;
 
     final Scheduler scheduler;
     
-    public SingleObserveOn(SingleConsumable<T> source, Scheduler scheduler) {
+    public SingleObserveOn(SingleSource<T> source, Scheduler scheduler) {
         this.source = source;
         this.scheduler = scheduler;
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
 
         final CompositeDisposable mad = new CompositeDisposable();
         s.onSubscribe(mad);
         
-        source.subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleObserver<T>() {
 
             @Override
             public void onError(final Throwable e) {

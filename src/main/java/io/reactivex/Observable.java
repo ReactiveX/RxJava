@@ -3152,9 +3152,9 @@ public abstract class Observable<T> implements ObservableConsumable<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> toSingle() {
-        return Single.create(new SingleConsumable<T>() {
+        return Single.create(new SingleSource<T>() {
             @Override
-            public void subscribe(final SingleSubscriber<? super T> s) {
+            public void subscribe(final SingleObserver<? super T> s) {
                 Observable.this.subscribe(new Observer<T>() {
                     T last;
                     @Override

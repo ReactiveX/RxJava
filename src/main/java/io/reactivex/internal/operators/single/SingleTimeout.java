@@ -21,7 +21,7 @@ import io.reactivex.disposables.*;
 
 public final class SingleTimeout<T> extends Single<T> {
 
-    final SingleConsumable<T> source;
+    final SingleSource<T> source;
     
     final long timeout;
     
@@ -29,10 +29,10 @@ public final class SingleTimeout<T> extends Single<T> {
     
     final Scheduler scheduler;
     
-    final SingleConsumable<? extends T> other;
+    final SingleSource<? extends T> other;
     
-    public SingleTimeout(SingleConsumable<T> source, long timeout, TimeUnit unit, Scheduler scheduler,
-            SingleConsumable<? extends T> other) {
+    public SingleTimeout(SingleSource<T> source, long timeout, TimeUnit unit, Scheduler scheduler,
+                         SingleSource<? extends T> other) {
         this.source = source;
         this.timeout = timeout;
         this.unit = unit;
@@ -41,7 +41,7 @@ public final class SingleTimeout<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
 
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
@@ -54,7 +54,7 @@ public final class SingleTimeout<T> extends Single<T> {
                 if (once.compareAndSet(false, true)) {
                     if (other != null) {
                         set.clear();
-                        other.subscribe(new SingleSubscriber<T>() {
+                        other.subscribe(new SingleObserver<T>() {
 
                             @Override
                             public void onError(Throwable e) {
@@ -84,7 +84,7 @@ public final class SingleTimeout<T> extends Single<T> {
         
         set.add(timer);
         
-        source.subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleObserver<T>() {
 
             @Override
             public void onError(Throwable e) {

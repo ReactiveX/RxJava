@@ -18,30 +18,30 @@ import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
 
 public final class SingleFlatMap<T, R> extends Single<R> {
-    final SingleConsumable<? extends T> source;
+    final SingleSource<? extends T> source;
     
-    final Function<? super T, ? extends SingleConsumable<? extends R>> mapper;
+    final Function<? super T, ? extends SingleSource<? extends R>> mapper;
 
-    public SingleFlatMap(SingleConsumable<? extends T> source, Function<? super T, ? extends SingleConsumable<? extends R>> mapper) {
+    public SingleFlatMap(SingleSource<? extends T> source, Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         this.mapper = mapper;
         this.source = source;
     }
     
     @Override
-    protected void subscribeActual(SingleSubscriber<? super R> subscriber) {
+    protected void subscribeActual(SingleObserver<? super R> subscriber) {
         SingleFlatMapCallback<T, R> parent = new SingleFlatMapCallback<T, R>(subscriber, mapper);
         subscriber.onSubscribe(parent.sd);
         source.subscribe(parent);
     }
     
-    static final class SingleFlatMapCallback<T, R> implements SingleSubscriber<T> {
-        final SingleSubscriber<? super R> actual;
-        final Function<? super T, ? extends SingleConsumable<? extends R>> mapper;
+    static final class SingleFlatMapCallback<T, R> implements SingleObserver<T> {
+        final SingleObserver<? super R> actual;
+        final Function<? super T, ? extends SingleSource<? extends R>> mapper;
         
         final SerialDisposable sd;
 
-        public SingleFlatMapCallback(SingleSubscriber<? super R> actual,
-                Function<? super T, ? extends SingleConsumable<? extends R>> mapper) {
+        public SingleFlatMapCallback(SingleObserver<? super R> actual,
+                Function<? super T, ? extends SingleSource<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
             this.sd = new SerialDisposable();
@@ -54,7 +54,7 @@ public final class SingleFlatMap<T, R> extends Single<R> {
         
         @Override
         public void onSuccess(T value) {
-            SingleConsumable<? extends R> o;
+            SingleSource<? extends R> o;
             
             try {
                 o = mapper.apply(value);
@@ -72,7 +72,7 @@ public final class SingleFlatMap<T, R> extends Single<R> {
                 return;
             }
             
-            o.subscribe(new SingleSubscriber<R>() {
+            o.subscribe(new SingleObserver<R>() {
                 @Override
                 public void onSubscribe(Disposable d) {
                     sd.replace(d);

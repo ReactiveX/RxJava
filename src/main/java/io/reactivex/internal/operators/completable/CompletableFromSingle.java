@@ -18,15 +18,15 @@ import io.reactivex.disposables.Disposable;
 
 public final class CompletableFromSingle<T> extends Completable {
 
-    final SingleConsumable<T> single;
+    final SingleSource<T> single;
     
-    public CompletableFromSingle(SingleConsumable<T> single) {
+    public CompletableFromSingle(SingleSource<T> single) {
         this.single = single;
     }
 
     @Override
     protected void subscribeActual(final CompletableSubscriber s) {
-        single.subscribe(new SingleSubscriber<T>() {
+        single.subscribe(new SingleObserver<T>() {
 
             @Override
             public void onError(Throwable e) {

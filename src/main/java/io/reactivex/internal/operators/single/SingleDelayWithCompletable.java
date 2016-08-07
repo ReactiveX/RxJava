@@ -21,17 +21,17 @@ import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class SingleDelayWithCompletable<T> extends Single<T> {
 
-    final SingleConsumable<T> source;
+    final SingleSource<T> source;
     
     final CompletableConsumable other;
     
-    public SingleDelayWithCompletable(SingleConsumable<T> source, CompletableConsumable other) {
+    public SingleDelayWithCompletable(SingleSource<T> source, CompletableConsumable other) {
         this.source = source;
         this.other = other;
     }
     
     @Override
-    protected void subscribeActual(SingleSubscriber<? super T> subscriber) {
+    protected void subscribeActual(SingleObserver<? super T> subscriber) {
         other.subscribe(new OtherSubscriber<T>(subscriber, source));
     }
     
@@ -42,11 +42,11 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
         /** */
         private static final long serialVersionUID = -8565274649390031272L;
 
-        final SingleSubscriber<? super T> actual;
+        final SingleObserver<? super T> actual;
         
-        final SingleConsumable<T> source;
+        final SingleSource<T> source;
 
-        public OtherSubscriber(SingleSubscriber<? super T> actual, SingleConsumable<T> source) {
+        public OtherSubscriber(SingleObserver<? super T> actual, SingleSource<T> source) {
             this.actual = actual;
             this.source = source;
         }
@@ -66,7 +66,7 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
         
         @Override
         public void onComplete() {
-            source.subscribe(new DelayWithMainSubscriber<T>(this, actual));
+            source.subscribe(new DelayWithMainObserver<T>(this, actual));
         }
         
         @Override
@@ -80,13 +80,13 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
         }
     }
     
-    static final class DelayWithMainSubscriber<T> implements SingleSubscriber<T> {
+    static final class DelayWithMainObserver<T> implements SingleObserver<T> {
         
         final AtomicReference<Disposable> parent;
         
-        final SingleSubscriber<? super T> actual;
+        final SingleObserver<? super T> actual;
 
-        public DelayWithMainSubscriber(AtomicReference<Disposable> parent, SingleSubscriber<? super T> actual) {
+        public DelayWithMainObserver(AtomicReference<Disposable> parent, SingleObserver<? super T> actual) {
             this.parent = parent;
             this.actual = actual;
         }

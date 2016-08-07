@@ -25,13 +25,13 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class SingleUsing<T, U> extends Single<T> {
 
     final Callable<U> resourceSupplier;
-    final Function<? super U, ? extends SingleConsumable<? extends T>> singleFunction; 
+    final Function<? super U, ? extends SingleSource<? extends T>> singleFunction;
     final Consumer<? super U> disposer; 
     final boolean eager;
     
     public SingleUsing(Callable<U> resourceSupplier,
-            Function<? super U, ? extends SingleConsumable<? extends T>> singleFunction, Consumer<? super U> disposer,
-            boolean eager) {
+                       Function<? super U, ? extends SingleSource<? extends T>> singleFunction, Consumer<? super U> disposer,
+                       boolean eager) {
         this.resourceSupplier = resourceSupplier;
         this.singleFunction = singleFunction;
         this.disposer = disposer;
@@ -41,7 +41,7 @@ public final class SingleUsing<T, U> extends Single<T> {
 
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
 
         final U resource; // NOPMD
         
@@ -53,7 +53,7 @@ public final class SingleUsing<T, U> extends Single<T> {
             return;
         }
         
-        SingleConsumable<? extends T> s1;
+        SingleSource<? extends T> s1;
         
         try {
             s1 = singleFunction.apply(resource);
@@ -69,7 +69,7 @@ public final class SingleUsing<T, U> extends Single<T> {
             return;
         }
         
-        s1.subscribe(new SingleSubscriber<T>() {
+        s1.subscribe(new SingleObserver<T>() {
 
             @Override
             public void onSubscribe(Disposable d) {

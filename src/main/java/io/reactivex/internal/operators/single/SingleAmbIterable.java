@@ -22,18 +22,18 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleAmbIterable<T> extends Single<T> {
 
-    final Iterable<? extends SingleConsumable<? extends T>> sources;
+    final Iterable<? extends SingleSource<? extends T>> sources;
     
-    public SingleAmbIterable(Iterable<? extends SingleConsumable<? extends T>> sources) {
+    public SingleAmbIterable(Iterable<? extends SingleSource<? extends T>> sources) {
         this.sources = sources;
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
         
-        Iterator<? extends SingleConsumable<? extends T>> iterator;
+        Iterator<? extends SingleSource<? extends T>> iterator;
         
         try {
             iterator = sources.iterator();
@@ -76,7 +76,7 @@ public final class SingleAmbIterable<T> extends Single<T> {
                 return;
             }
 
-            SingleConsumable<? extends T> s1;
+            SingleSource<? extends T> s1;
 
             try {
                 s1 = iterator.next();
@@ -92,7 +92,7 @@ public final class SingleAmbIterable<T> extends Single<T> {
                 return;
             }
             
-            s1.subscribe(new SingleSubscriber<T>() {
+            s1.subscribe(new SingleObserver<T>() {
 
                 @Override
                 public void onSubscribe(Disposable d) {

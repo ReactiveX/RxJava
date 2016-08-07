@@ -21,19 +21,19 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleDoOnSubscribe<T> extends Single<T> {
 
-    final SingleConsumable<T> source;
+    final SingleSource<T> source;
     
     final Consumer<? super Disposable> onSubscribe;
     
-    public SingleDoOnSubscribe(SingleConsumable<T> source, Consumer<? super Disposable> onSubscribe) {
+    public SingleDoOnSubscribe(SingleSource<T> source, Consumer<? super Disposable> onSubscribe) {
         this.source = source;
         this.onSubscribe = onSubscribe;
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
 
-        source.subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleObserver<T>() {
             boolean done;
             @Override
             public void onSubscribe(Disposable d) {

@@ -19,23 +19,23 @@ import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Function;
 
 public final class SingleResumeNext<T> extends Single<T> {
-    final SingleConsumable<? extends T> source;
+    final SingleSource<? extends T> source;
     
-    final Function<? super Throwable, ? extends SingleConsumable<? extends T>> nextFunction;
+    final Function<? super Throwable, ? extends SingleSource<? extends T>> nextFunction;
     
-    public SingleResumeNext(SingleConsumable<? extends T> source,
-            Function<? super Throwable, ? extends SingleConsumable<? extends T>> nextFunction) {
+    public SingleResumeNext(SingleSource<? extends T> source,
+            Function<? super Throwable, ? extends SingleSource<? extends T>> nextFunction) {
         this.source = source;
         this.nextFunction = nextFunction;
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
 
         final SerialDisposable sd = new SerialDisposable();
         s.onSubscribe(sd);
         
-        source.subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleObserver<T>() {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -49,7 +49,7 @@ public final class SingleResumeNext<T> extends Single<T> {
 
             @Override
             public void onError(Throwable e) {
-                SingleConsumable<? extends T> next;
+                SingleSource<? extends T> next;
                 
                 try {
                     next = nextFunction.apply(e);
@@ -65,7 +65,7 @@ public final class SingleResumeNext<T> extends Single<T> {
                     return;
                 }
                 
-                next.subscribe(new SingleSubscriber<T>() {
+                next.subscribe(new SingleObserver<T>() {
 
                     @Override
                     public void onSubscribe(Disposable d) {

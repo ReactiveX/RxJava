@@ -16,17 +16,17 @@ package io.reactivex.internal.operators.single;
 import io.reactivex.*;
 
 public final class SingleSubscribeOn<T> extends Single<T> {
-    final SingleConsumable<? extends T> source;
+    final SingleSource<? extends T> source;
 
     final Scheduler scheduler;
     
-    public SingleSubscribeOn(SingleConsumable<? extends T> source, Scheduler scheduler) {
+    public SingleSubscribeOn(SingleSource<? extends T> source, Scheduler scheduler) {
         this.source = source;
         this.scheduler = scheduler;
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> s) {
 
         // FIXME cancel schedule
         scheduler.scheduleDirect(new Runnable() {

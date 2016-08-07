@@ -18,36 +18,36 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.operators.single.SingleDelayWithCompletable.DelayWithMainSubscriber;
+import io.reactivex.internal.operators.single.SingleDelayWithCompletable.DelayWithMainObserver;
 
 public final class SingleDelayWithSingle<T, U> extends Single<T> {
 
-    final SingleConsumable<T> source;
+    final SingleSource<T> source;
     
-    final SingleConsumable<U> other;
+    final SingleSource<U> other;
     
-    public SingleDelayWithSingle(SingleConsumable<T> source, SingleConsumable<U> other) {
+    public SingleDelayWithSingle(SingleSource<T> source, SingleSource<U> other) {
         this.source = source;
         this.other = other;
     }
     
     @Override
-    protected void subscribeActual(SingleSubscriber<? super T> subscriber) {
-        other.subscribe(new OtherSubscriber<T, U>(subscriber, source));
+    protected void subscribeActual(SingleObserver<? super T> subscriber) {
+        other.subscribe(new OtherObserver<T, U>(subscriber, source));
     }
     
-    static final class OtherSubscriber<T, U> 
+    static final class OtherObserver<T, U>
     extends AtomicReference<Disposable>
-    implements SingleSubscriber<U>, Disposable {
+    implements SingleObserver<U>, Disposable {
         
         /** */
         private static final long serialVersionUID = -8565274649390031272L;
 
-        final SingleSubscriber<? super T> actual;
+        final SingleObserver<? super T> actual;
         
-        final SingleConsumable<T> source;
+        final SingleSource<T> source;
 
-        public OtherSubscriber(SingleSubscriber<? super T> actual, SingleConsumable<T> source) {
+        public OtherObserver(SingleObserver<? super T> actual, SingleSource<T> source) {
             this.actual = actual;
             this.source = source;
         }
@@ -62,7 +62,7 @@ public final class SingleDelayWithSingle<T, U> extends Single<T> {
         
         @Override
         public void onSuccess(U value) {
-            source.subscribe(new DelayWithMainSubscriber<T>(this, actual));
+            source.subscribe(new DelayWithMainObserver<T>(this, actual));
         }
         
         @Override

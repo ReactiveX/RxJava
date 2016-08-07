@@ -13,17 +13,17 @@
 
 package io.reactivex.subscribers.single;
 
-import io.reactivex.SingleSubscriber;
+import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public final class SingleSerializedSubscriber implements SingleSubscriber {
+public final class SingleSerializedObserver implements SingleObserver {
 
-    final SingleSubscriber actual;
+    final SingleObserver actual;
 
     final AtomicBoolean once = new AtomicBoolean();
 
-    public SingleSerializedSubscriber(SingleSubscriber actual) {
+    public SingleSerializedObserver(SingleObserver actual) {
         this.actual = actual;
     }
     

@@ -20,23 +20,23 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.operators.single.SingleDelayWithCompletable.DelayWithMainSubscriber;
+import io.reactivex.internal.operators.single.SingleDelayWithCompletable.DelayWithMainObserver;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleDelayWithPublisher<T, U> extends Single<T> {
 
-    final SingleConsumable<T> source;
+    final SingleSource<T> source;
     
     final Publisher<U> other;
     
-    public SingleDelayWithPublisher(SingleConsumable<T> source, Publisher<U> other) {
+    public SingleDelayWithPublisher(SingleSource<T> source, Publisher<U> other) {
         this.source = source;
         this.other = other;
     }
     
     @Override
-    protected void subscribeActual(SingleSubscriber<? super T> subscriber) {
+    protected void subscribeActual(SingleObserver<? super T> subscriber) {
         other.subscribe(new OtherSubscriber<T, U>(subscriber, source));
     }
     
@@ -47,15 +47,15 @@ public final class SingleDelayWithPublisher<T, U> extends Single<T> {
         /** */
         private static final long serialVersionUID = -8565274649390031272L;
 
-        final SingleSubscriber<? super T> actual;
+        final SingleObserver<? super T> actual;
         
-        final SingleConsumable<T> source;
+        final SingleSource<T> source;
 
         boolean done;
         
         Subscription s;
         
-        public OtherSubscriber(SingleSubscriber<? super T> actual, SingleConsumable<T> source) {
+        public OtherSubscriber(SingleObserver<? super T> actual, SingleSource<T> source) {
             this.actual = actual;
             this.source = source;
         }
@@ -93,7 +93,7 @@ public final class SingleDelayWithPublisher<T, U> extends Single<T> {
                 return;
             }
             done = true;
-            source.subscribe(new DelayWithMainSubscriber<T>(this, actual));
+            source.subscribe(new DelayWithMainObserver<T>(this, actual));
         }
         
         @Override

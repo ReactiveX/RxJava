@@ -310,7 +310,7 @@ public abstract class Completable implements CompletableConsumable {
      * @throws NullPointerException if single is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Completable fromSingle(final SingleConsumable<T> single) {
+    public static <T> Completable fromSingle(final SingleSource<T> single) {
         Objects.requireNonNull(single, "single is null");
         return new CompletableFromSingle<T>(single);
     }

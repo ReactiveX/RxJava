@@ -20,22 +20,22 @@ import io.reactivex.functions.BiPredicate;
 
 public final class SingleContains<T> extends Single<Boolean> {
 
-    final SingleConsumable<T> source;
+    final SingleSource<T> source;
     
     final Object value;
     
     final BiPredicate<Object, Object> comparer;
     
-    public SingleContains(SingleConsumable<T> source, Object value, BiPredicate<Object, Object> comparer) {
+    public SingleContains(SingleSource<T> source, Object value, BiPredicate<Object, Object> comparer) {
         this.source = source;
         this.value = value;
         this.comparer = comparer;
     }
 
     @Override
-    protected void subscribeActual(final SingleSubscriber<? super Boolean> s) {
+    protected void subscribeActual(final SingleObserver<? super Boolean> s) {
 
-        source.subscribe(new SingleSubscriber<T>() {
+        source.subscribe(new SingleObserver<T>() {
 
             @Override
             public void onSubscribe(Disposable d) {

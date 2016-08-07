@@ -21,7 +21,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Single.SingleOperator;
+import io.reactivex.SingleOperator;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -98,7 +98,7 @@ public class SingleNullTests {
         for (int argCount = 2; argCount < 10; argCount++) {
             for (int argNull = 1; argNull <= argCount; argNull++) {
                 Class<?>[] params = new Class[argCount];
-                Arrays.fill(params, SingleConsumable.class);
+                Arrays.fill(params, SingleSource.class);
 
                 Object[] values = new Object[argCount];
                 Arrays.fill(values, just1);
@@ -260,7 +260,7 @@ public class SingleNullTests {
         for (int argCount = 2; argCount < 10; argCount++) {
             for (int argNull = 1; argNull <= argCount; argNull++) {
                 Class<?>[] params = new Class[argCount];
-                Arrays.fill(params, SingleConsumable.class);
+                Arrays.fill(params, SingleSource.class);
 
                 Object[] values = new Object[argCount];
                 Arrays.fill(values, just1);
@@ -411,7 +411,7 @@ public class SingleNullTests {
         for (int argCount = 3; argCount < 10; argCount++) {
             for (int argNull = 1; argNull <= argCount; argNull++) {
                 Class<?>[] params = new Class[argCount + 1];
-                Arrays.fill(params, SingleConsumable.class);
+                Arrays.fill(params, SingleSource.class);
                 Class<?> fniClass = Class.forName("io.reactivex.functions.Function" + argCount);
                 params[argCount] = fniClass;
 
@@ -454,7 +454,7 @@ public class SingleNullTests {
             }
             
             Class<?>[] params = new Class[argCount + 1];
-            Arrays.fill(params, SingleConsumable.class);
+            Arrays.fill(params, SingleSource.class);
             Class<?> fniClass = Class.forName("io.reactivex.functions.Function" + argCount);
             params[argCount] = fniClass;
 
@@ -641,7 +641,7 @@ public class SingleNullTests {
     public void liftFunctionReturnsNull() {
         just1.lift(new SingleOperator<Object, Integer>() {
             @Override
-            public SingleSubscriber<? super Integer> apply(SingleSubscriber<? super Object> s) {
+            public SingleObserver<? super Integer> apply(SingleObserver<? super Object> s) {
                 return null;
             }
         }).get();
@@ -759,7 +759,7 @@ public class SingleNullTests {
     
     @Test(expected = NullPointerException.class)
     public void subscribeSingeSubscriberNull() {
-        just1.subscribe((SingleSubscriber<Integer>)null);
+        just1.subscribe((SingleObserver<Integer>)null);
     }
     
     @Test(expected = NullPointerException.class)
