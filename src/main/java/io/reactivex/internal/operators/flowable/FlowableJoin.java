@@ -29,7 +29,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends FlowableSource<TLeft, R> {
+public class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends FlowableWithUpstream<TLeft, R> {
 
     final Publisher<? extends TRight> other;
     

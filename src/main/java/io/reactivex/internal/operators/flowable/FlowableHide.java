@@ -23,7 +23,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  * 
  * @since 2.0
  */
-public class FlowableHide<T> extends FlowableSource<T, T> {
+public class FlowableHide<T> extends FlowableWithUpstream<T, T> {
     
     public FlowableHide(Publisher<T> source) {
         super(source);

@@ -25,7 +25,7 @@ import io.reactivex.internal.functions.Objects;
  * @param <T> the upstream value type
  * @param <R> the output value type
  */
-public abstract class FlowableSource<T, R> extends Flowable<R> {
+public abstract class FlowableWithUpstream<T, R> extends Flowable<R> {
     
     /**
      * The upstream source Publisher.
@@ -37,7 +37,7 @@ public abstract class FlowableSource<T, R> extends Flowable<R> {
      * source Publisher.
      * @param source the source (upstream) Publisher instance, not null (verified)
      */
-    public FlowableSource(Publisher<T> source) {
+    public FlowableWithUpstream(Publisher<T> source) {
         this.source = Objects.requireNonNull(source, "source is null");
     }
     

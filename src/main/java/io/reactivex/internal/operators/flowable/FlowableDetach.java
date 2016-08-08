@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.internal.subscribers.flowable.EmptyComponent;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class FlowableDetach<T> extends FlowableSource<T, T> {
+public final class FlowableDetach<T> extends FlowableWithUpstream<T, T> {
 
     public FlowableDetach(Publisher<T> source) {
         super(source);

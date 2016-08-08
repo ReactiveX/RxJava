@@ -19,7 +19,7 @@ import io.reactivex.internal.subscribers.flowable.SubscriptionLambdaSubscriber;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-public final class FlowableDoOnLifecycle<T> extends FlowableSource<T, T> {
+public final class FlowableDoOnLifecycle<T> extends FlowableWithUpstream<T, T> {
     private final Consumer<? super Subscription> onSubscribe;
     private final LongConsumer onRequest;
     private final Runnable onCancel;

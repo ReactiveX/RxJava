@@ -28,7 +28,7 @@ import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableFlattenIterable<T, R> extends FlowableSource<T, R> {
+public final class FlowableFlattenIterable<T, R> extends FlowableWithUpstream<T, R> {
 
     final Function<? super T, ? extends Iterable<? extends R>> mapper;
 
