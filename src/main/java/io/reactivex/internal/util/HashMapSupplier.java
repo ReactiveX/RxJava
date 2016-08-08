@@ -13,30 +13,19 @@
 
 package io.reactivex.internal.util;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
-import io.reactivex.functions.Function;
-
-public enum ArrayListSupplier implements Callable<List<Object>>, Function<Object, List<Object>> {
+public enum HashMapSupplier implements Callable<Map<Object, Object>> {
     INSTANCE;
-  
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Callable<List<T>> asCallable() {
+    public static <K, V> Callable<Map<K, V>> asCallable() {
         return (Callable)INSTANCE;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T, O> Function<O, List<T>> asFunction() {
-        return (Function)INSTANCE;
-    }
-
-    @Override
-    public List<Object> call() throws Exception {
-        return new ArrayList<Object>();
-    }
-
-    @Override public List<Object> apply(Object o) throws Exception {
-        return new ArrayList<Object>();
+    @Override public Map<Object, Object> call() throws Exception {
+        return new HashMap<Object, Object>();
     }
 }
