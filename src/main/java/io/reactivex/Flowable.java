@@ -1909,12 +1909,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         Objects.requireNonNull(onRequest, "onRequest is null");
         Objects.requireNonNull(onCancel, "onCancel is null");
-        return lift(new FlowableOperator<T, T>() {
-            @Override
-            public Subscriber<? super T> apply(Subscriber<? super T> s) {
-                return new SubscriptionLambdaSubscriber<T>(s, onSubscribe, onRequest, onCancel);
-            }
-        });
+        return new FlowableDoOnLifecycle<T>(this, onSubscribe, onRequest, onCancel);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -2898,12 +2893,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> serialize() {
-        return lift(new FlowableOperator<T, T>() {
-            @Override
-            public Subscriber<? super T> apply(Subscriber<? super T> s) {
-                return new SerializedSubscriber<T>(s);
-            }
-        });
+        return new FlowableSerialized<T>(this);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -3983,5 +3973,4 @@ public abstract class Flowable<T> implements Publisher<T> {
         subscribe(ts);
         return ts;
     }
-    
 }

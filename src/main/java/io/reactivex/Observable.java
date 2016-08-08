@@ -1611,12 +1611,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> doOnLifecycle(final Consumer<? super Disposable> onSubscribe, final Runnable onCancel) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         Objects.requireNonNull(onCancel, "onCancel is null");
-        return lift(new ObservableOperator<T, T>() {
-            @Override
-            public Observer<? super T> apply(Observer<? super T> s) {
-                return new SubscriptionLambdaObserver<T>(s, onSubscribe, onCancel);
-            }
-        });
+        return new ObservableDoOnLifecycle<T>(this, onSubscribe, onCancel);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2451,12 +2446,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> serialize() {
-        return lift(new ObservableOperator<T, T>() {
-            @Override
-            public Observer<? super T> apply(Observer<? super T> s) {
-                return new SerializedObserver<T>(s);
-            }
-        });
+        return new ObservableSerialized<T>(this);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
