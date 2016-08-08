@@ -26,6 +26,8 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.operators.flowable.FlowableFromObservable;
+import io.reactivex.internal.operators.single.SingleFromObservable;
 import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.ArrayListSupplier;
@@ -3089,46 +3091,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
     
     public final Flowable<T> toFlowable(BackpressureStrategy strategy) {
-        Flowable<T> o = Flowable.create(new Publisher<T>() {
-            @Override
-            public void subscribe(final Subscriber<? super T> s) {
-                Observable.this.subscribe(new Observer<T>() {
-
-                    @Override
-                    public void onComplete() {
-                        s.onComplete();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-
-                    @Override
-                    public void onNext(T value) {
-                        s.onNext(value);
-                    }
-
-                    @Override
-                    public void onSubscribe(final Disposable d) {
-                        s.onSubscribe(new Subscription() {
-
-                            @Override
-                            public void cancel() {
-                                d.dispose();
-                            }
-
-                            @Override
-                            public void request(long n) {
-                                // no backpressure so nothing we can do about this
-                            }
-                            
-                        });
-                    }
-                    
-                });
-            }
-        });
+        Flowable<T> o = new FlowableFromObservable<T>(this);
         
         switch (strategy) {
         case BUFFER:
@@ -3144,38 +3107,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> toSingle() {
-        return Single.create(new SingleSource<T>() {
-            @Override
-            public void subscribe(final SingleObserver<? super T> s) {
-                Observable.this.subscribe(new Observer<T>() {
-                    T last;
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        s.onSubscribe(d);
-                    }
-                    @Override
-                    public void onNext(T value) {
-                        last = value;
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-                    @Override
-                    public void onComplete() {
-                        T v = last;
-                        last = null;
-                        if (v != null) {
-                            s.onSuccess(v);
-                        } else {
-                            s.onError(new NoSuchElementException());
-                        }
-                    }
-                    
-                    
-                });
-            }
-        });
+        return new SingleFromObservable<T>(this);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
