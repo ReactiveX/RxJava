@@ -67,7 +67,7 @@ public class FlowableDoOnSubscribeTest {
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();
         final AtomicReference<Subscriber<? super Integer>> sref = new AtomicReference<Subscriber<? super Integer>>();
-        Flowable<Integer> o = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> o = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {

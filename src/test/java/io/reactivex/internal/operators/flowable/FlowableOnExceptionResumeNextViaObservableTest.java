@@ -33,7 +33,7 @@ public class FlowableOnExceptionResumeNextViaObservableTest {
     public void testResumeNextWithException() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "EXCEPTION", "two", "three");
-        Flowable<String> w = Flowable.create(f);
+        Flowable<String> w = Flowable.unsafeCreate(f);
         Flowable<String> resume = Flowable.just("twoResume", "threeResume");
         Flowable<String> observable = w.onExceptionResumeNext(resume);
 
@@ -61,7 +61,7 @@ public class FlowableOnExceptionResumeNextViaObservableTest {
     public void testResumeNextWithRuntimeException() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "RUNTIMEEXCEPTION", "two", "three");
-        Flowable<String> w = Flowable.create(f);
+        Flowable<String> w = Flowable.unsafeCreate(f);
         Flowable<String> resume = Flowable.just("twoResume", "threeResume");
         Flowable<String> observable = w.onExceptionResumeNext(resume);
 
@@ -89,7 +89,7 @@ public class FlowableOnExceptionResumeNextViaObservableTest {
     public void testThrowablePassesThru() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "THROWABLE", "two", "three");
-        Flowable<String> w = Flowable.create(f);
+        Flowable<String> w = Flowable.unsafeCreate(f);
         Flowable<String> resume = Flowable.just("twoResume", "threeResume");
         Flowable<String> observable = w.onExceptionResumeNext(resume);
 
@@ -117,7 +117,7 @@ public class FlowableOnExceptionResumeNextViaObservableTest {
     public void testErrorPassesThru() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "ERROR", "two", "three");
-        Flowable<String> w = Flowable.create(f);
+        Flowable<String> w = Flowable.unsafeCreate(f);
         Flowable<String> resume = Flowable.just("twoResume", "threeResume");
         Flowable<String> observable = w.onExceptionResumeNext(resume);
 
@@ -147,7 +147,7 @@ public class FlowableOnExceptionResumeNextViaObservableTest {
         Flowable<String> w = Flowable.just("one", "fail", "two", "three", "fail");
         // Resume Observable is async
         TestObservable f = new TestObservable("twoResume", "threeResume");
-        Flowable<String> resume = Flowable.create(f);
+        Flowable<String> resume = Flowable.unsafeCreate(f);
 
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)

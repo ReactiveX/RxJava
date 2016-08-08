@@ -18,11 +18,10 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Consumer;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
 
-public class FlowableFromAsyncTest {
+public class FlowableFromSourceTest {
 
     PublishAsyncEmitter source;
 
@@ -39,7 +38,7 @@ public class FlowableFromAsyncTest {
     
     @Test
     public void normalBuffered() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
         
         source.onNext(1);
         source.onNext(2);
@@ -60,7 +59,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void normalDrop() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.DROP).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.DROP).subscribe(ts);
         
         source.onNext(1);
 
@@ -78,7 +77,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void normalLatest() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
         
         source.onNext(1);
 
@@ -96,7 +95,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void normalNone() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.NONE).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.NONE).subscribe(ts);
         
         source.onNext(1);
         source.onNext(2);
@@ -109,7 +108,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void normalNoneRequested() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.NONE).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.NONE).subscribe(ts);
         ts.request(2);
         
         source.onNext(1);
@@ -124,7 +123,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void normalError() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.ERROR).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.ERROR).subscribe(ts);
         
         source.onNext(1);
         source.onNext(2);
@@ -134,12 +133,12 @@ public class FlowableFromAsyncTest {
         ts.assertError(MissingBackpressureException.class);
         ts.assertNotComplete();
         
-        Assert.assertEquals("fromAsync: could not emit value due to lack of requests", ts.errors().get(0).getMessage());
+        Assert.assertEquals("create: could not emit value due to lack of requests", ts.errors().get(0).getMessage());
     }
 
     @Test
     public void errorBuffered() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
         
         source.onNext(1);
         source.onNext(2);
@@ -158,7 +157,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void errorLatest() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
         
         source.onNext(1);
         source.onNext(2);
@@ -175,7 +174,7 @@ public class FlowableFromAsyncTest {
     
     @Test
     public void errorNone() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.NONE).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.NONE).subscribe(ts);
         
         source.onNext(1);
         source.onNext(2);
@@ -190,7 +189,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void unsubscribedBuffer() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
         ts.cancel();
         
         source.onNext(1);
@@ -206,7 +205,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void unsubscribedLatest() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
         ts.cancel();
         
         source.onNext(1);
@@ -222,7 +221,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void unsubscribedError() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.ERROR).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.ERROR).subscribe(ts);
         ts.cancel();
         
         source.onNext(1);
@@ -238,7 +237,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void unsubscribedDrop() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.DROP).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.DROP).subscribe(ts);
         ts.cancel();
         
         source.onNext(1);
@@ -254,7 +253,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void unsubscribedNone() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.NONE).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.NONE).subscribe(ts);
         ts.cancel();
         
         source.onNext(1);
@@ -270,7 +269,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void unsubscribedNoCancelBuffer() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
         ts.cancel();
         
         sourceNoCancel.onNext(1);
@@ -286,7 +285,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void unsubscribedNoCancelLatest() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
         ts.cancel();
         
         sourceNoCancel.onNext(1);
@@ -302,7 +301,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void unsubscribedNoCancelError() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.ERROR).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.ERROR).subscribe(ts);
         ts.cancel();
         
         sourceNoCancel.onNext(1);
@@ -318,7 +317,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void unsubscribedNoCancelDrop() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.DROP).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.DROP).subscribe(ts);
         ts.cancel();
         
         sourceNoCancel.onNext(1);
@@ -334,7 +333,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void unsubscribedNoCancelNone() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.NONE).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.NONE).subscribe(ts);
         ts.cancel();
         
         sourceNoCancel.onNext(1);
@@ -350,7 +349,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void deferredRequest() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
         
         source.onNext(1);
         source.onNext(2);
@@ -365,7 +364,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void take() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.BUFFER).take(2).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).take(2).subscribe(ts);
         
         source.onNext(1);
         source.onNext(2);
@@ -380,7 +379,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void takeOne() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.BUFFER).take(1).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).take(1).subscribe(ts);
         ts.request(2);
         
         source.onNext(1);
@@ -394,7 +393,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void requestExact() {
-        Flowable.fromAsync(source, AsyncEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
         ts.request(2);
         
         source.onNext(1);
@@ -408,7 +407,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void takeNoCancel() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.BUFFER).take(2).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).take(2).subscribe(ts);
         
         sourceNoCancel.onNext(1);
         sourceNoCancel.onNext(2);
@@ -423,7 +422,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void takeOneNoCancel() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.BUFFER).take(1).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).take(1).subscribe(ts);
         ts.request(2);
         
         sourceNoCancel.onNext(1);
@@ -437,7 +436,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void unsubscribeNoCancel() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
         ts.request(2);
         
         sourceNoCancel.onNext(1);
@@ -462,7 +461,7 @@ public class FlowableFromAsyncTest {
             }
         };
         
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.BUFFER).subscribe(ts1);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts1);
         
         sourceNoCancel.onNext(1);
         
@@ -473,7 +472,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void completeInline() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
         
         sourceNoCancel.onNext(1);
         sourceNoCancel.onComplete();
@@ -487,7 +486,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void errorInline() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
         
         sourceNoCancel.onNext(1);
         sourceNoCancel.onError(new TestException());
@@ -509,7 +508,7 @@ public class FlowableFromAsyncTest {
             }
         };
         
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.BUFFER).subscribe(ts1);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts1);
         
         sourceNoCancel.onNext(1);
         sourceNoCancel.onNext(2);
@@ -529,7 +528,7 @@ public class FlowableFromAsyncTest {
             }
         };
         
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.LATEST).subscribe(ts1);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts1);
         
         sourceNoCancel.onNext(1);
         
@@ -548,7 +547,7 @@ public class FlowableFromAsyncTest {
             }
         };
         
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.LATEST).subscribe(ts1);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts1);
         
         sourceNoCancel.onNext(1);
         
@@ -559,7 +558,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void completeInlineLatest() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
         
         sourceNoCancel.onNext(1);
         sourceNoCancel.onComplete();
@@ -573,7 +572,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void completeInlineExactLatest() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
         
         sourceNoCancel.onNext(1);
         sourceNoCancel.onComplete();
@@ -587,7 +586,7 @@ public class FlowableFromAsyncTest {
 
     @Test
     public void errorInlineLatest() {
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
         
         sourceNoCancel.onNext(1);
         sourceNoCancel.onError(new TestException());
@@ -609,7 +608,7 @@ public class FlowableFromAsyncTest {
             }
         };
         
-        Flowable.fromAsync(sourceNoCancel, AsyncEmitter.BackpressureMode.LATEST).subscribe(ts1);
+        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts1);
         
         sourceNoCancel.onNext(1);
         sourceNoCancel.onNext(2);
@@ -619,11 +618,11 @@ public class FlowableFromAsyncTest {
         ts1.assertNotComplete();
     }
     
-    static final class PublishAsyncEmitter implements Consumer<AsyncEmitter<Integer>>, Subscriber<Integer> {
+    static final class PublishAsyncEmitter implements FlowableSource<Integer>, Subscriber<Integer> {
         
         final PublishProcessor<Integer> subject;
         
-        AsyncEmitter<Integer> current;
+        FlowableEmitter<Integer> current;
         
         public PublishAsyncEmitter() {
             this.subject = PublishProcessor.create();
@@ -634,7 +633,7 @@ public class FlowableFromAsyncTest {
         }
         
         @Override
-        public void accept(final AsyncEmitter<Integer> t) {
+        public void subscribe(final FlowableEmitter<Integer> t) {
 
             this.current = t;
             
@@ -659,7 +658,7 @@ public class FlowableFromAsyncTest {
             
             subject.subscribe(as);
             
-            t.setCancellation(new AsyncEmitter.Cancellable() {
+            t.setCancellation(new FlowableEmitter.Cancellable() {
                 @Override
                 public void cancel() throws Exception {
                     as.dispose();
@@ -688,7 +687,7 @@ public class FlowableFromAsyncTest {
         }
     }
     
-    static final class PublishAsyncEmitterNoCancel implements Consumer<AsyncEmitter<Integer>>, Subscriber<Integer> {
+    static final class PublishAsyncEmitterNoCancel implements FlowableSource<Integer>, Subscriber<Integer> {
         
         final PublishProcessor<Integer> subject;
         
@@ -697,7 +696,7 @@ public class FlowableFromAsyncTest {
         }
         
         @Override
-        public void accept(final AsyncEmitter<Integer> t) {
+        public void subscribe(final FlowableEmitter<Integer> t) {
 
             subject.subscribe(new Subscriber<Integer>() {
 

@@ -675,7 +675,7 @@ public class FlowableBackpressureTests {
     }
 
     private static Flowable<Integer> incrementingIntegers(final AtomicInteger counter, final ConcurrentLinkedQueue<Thread> threadsSeen) {
-        return Flowable.create(new Publisher<Integer>() {
+        return Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(final Subscriber<? super Integer> s) {
@@ -724,7 +724,7 @@ public class FlowableBackpressureTests {
      * @return
      */
     private static Flowable<Integer> firehose(final AtomicInteger counter) {
-        return Flowable.create(new Publisher<Integer>() {
+        return Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
                 Subscription s2 = new FirehoseNoBackpressure(counter, s);

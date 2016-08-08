@@ -332,6 +332,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
         Objects.requireNonNull(source, "source is null");
         return new ObservableFromSource<T>(source);
     }
+
+    public static <T> Observable<T> unsafeCreate(ObservableSource<T> source) {
+        Objects.requireNonNull(source, "source is null");
+        return new ObservableFromUnsafeSource<T>(source);
+    }
     
     public static <T> Observable<T> wrap(ObservableSource<T> source) {
         Objects.requireNonNull(source, "source is null");
@@ -339,7 +344,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (source instanceof Observable) {
             return (Observable<T>)source;
         }
-        return new ObservableFromSource<T>(source);
+        return new ObservableFromUnsafeSource<T>(source);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1051,7 +1056,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> asObservable() {
-        return new ObservableFromSource<T>(this);
+        return new ObservableFromUnsafeSource<T>(this);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)

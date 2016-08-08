@@ -33,7 +33,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         Disposable s = mock(Disposable.class);
         // Trigger failure on second element
         TestObservable f = new TestObservable(s, "one", "fail", "two", "three");
-        Observable<String> w = Observable.create(f);
+        Observable<String> w = Observable.unsafeCreate(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> NbpObservable = w.onErrorResumeNext(resume);
 
@@ -62,7 +62,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
         // Resume NbpObservable is async
         TestObservable f = new TestObservable(sr, "twoResume", "threeResume");
-        Observable<String> resume = Observable.create(f);
+        Observable<String> resume = Observable.unsafeCreate(f);
 
         // Introduce map function that fails intermittently (Map does not prevent this when the NbpObserver is a
         //  rx.operator incl onErrorResumeNextViaObservable)
@@ -100,7 +100,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribe() {
-        Observable<String> testObservable = Observable.create(new ObservableSource<String>() {
+        Observable<String> testObservable = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> t1) {
@@ -122,7 +122,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribeAsync() {
-        Observable<String> testObservable = Observable.create(new ObservableSource<String>() {
+        Observable<String> testObservable = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> t1) {

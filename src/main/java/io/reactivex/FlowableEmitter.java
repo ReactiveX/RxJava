@@ -26,7 +26,7 @@ import io.reactivex.disposables.Disposable;
  *
  * @param <T> the value type to emit
  */
-public interface AsyncEmitter<T> {
+public interface FlowableEmitter<T> {
 
     /**
      * Signal a value.

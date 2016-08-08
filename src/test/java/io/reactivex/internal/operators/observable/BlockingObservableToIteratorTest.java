@@ -46,7 +46,7 @@ public class BlockingObservableToIteratorTest {
 
     @Test(expected = TestException.class)
     public void testToIteratorWithException() {
-        Observable<String> obs = Observable.create(new ObservableSource<String>() {
+        Observable<String> obs = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
@@ -68,7 +68,7 @@ public class BlockingObservableToIteratorTest {
     @Ignore("subscribe() should not throw")
     @Test(expected = TestException.class)
     public void testExceptionThrownFromOnSubscribe() {
-        Iterable<String> strings = Observable.create(new ObservableSource<String>() {
+        Iterable<String> strings = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpSubscriber) {
                 throw new TestException("intentional");

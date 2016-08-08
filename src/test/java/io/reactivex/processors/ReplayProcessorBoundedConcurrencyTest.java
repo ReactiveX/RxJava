@@ -36,7 +36,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
 
             @Override
             public void run() {
-                Flowable.create(new Publisher<Long>() {
+                Flowable.unsafeCreate(new Publisher<Long>() {
 
                     @Override
                     public void subscribe(Subscriber<? super Long> o) {
@@ -145,7 +145,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
 
             @Override
             public void run() {
-                Flowable.create(new Publisher<Long>() {
+                Flowable.unsafeCreate(new Publisher<Long>() {
 
                     @Override
                     public void subscribe(Subscriber<? super Long> o) {

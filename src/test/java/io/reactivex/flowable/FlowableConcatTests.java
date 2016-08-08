@@ -144,7 +144,7 @@ public class FlowableConcatTests {
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
         
-        Flowable<Movie> o1 = Flowable.create(new Publisher<Movie>() {
+        Flowable<Movie> o1 = Flowable.unsafeCreate(new Publisher<Movie>() {
             @Override
             public void subscribe(Subscriber<? super Movie> o) {
                     o.onNext(horrorMovie1);

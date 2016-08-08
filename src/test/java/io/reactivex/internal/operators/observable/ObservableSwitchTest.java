@@ -46,11 +46,11 @@ public class ObservableSwitchTest {
 
     @Test
     public void testSwitchWhenOuterCompleteBeforeInner() {
-        Observable<Observable<String>> source = Observable.create(new ObservableSource<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 50, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -75,11 +75,11 @@ public class ObservableSwitchTest {
 
     @Test
     public void testSwitchWhenInnerCompleteBeforeOuter() {
-        Observable<Observable<String>> source = Observable.create(new ObservableSource<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 10, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 10, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -89,7 +89,7 @@ public class ObservableSwitchTest {
                     }
                 }));
 
-                publishNext(NbpObserver, 100, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 100, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -121,11 +121,11 @@ public class ObservableSwitchTest {
 
     @Test
     public void testSwitchWithComplete() {
-        Observable<Observable<String>> source = Observable.create(new ObservableSource<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 50, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(final Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -134,7 +134,7 @@ public class ObservableSwitchTest {
                     }
                 }));
 
-                publishNext(NbpObserver, 200, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 200, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(final Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -180,11 +180,11 @@ public class ObservableSwitchTest {
 
     @Test
     public void testSwitchWithError() {
-        Observable<Observable<String>> source = Observable.create(new ObservableSource<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 50, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(final Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -193,7 +193,7 @@ public class ObservableSwitchTest {
                     }
                 }));
 
-                publishNext(NbpObserver, 200, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 200, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -239,11 +239,11 @@ public class ObservableSwitchTest {
 
     @Test
     public void testSwitchWithSubsequenceComplete() {
-        Observable<Observable<String>> source = Observable.create(new ObservableSource<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 50, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -252,7 +252,7 @@ public class ObservableSwitchTest {
                     }
                 }));
 
-                publishNext(NbpObserver, 130, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 130, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -260,7 +260,7 @@ public class ObservableSwitchTest {
                     }
                 }));
 
-                publishNext(NbpObserver, 150, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 150, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -293,11 +293,11 @@ public class ObservableSwitchTest {
 
     @Test
     public void testSwitchWithSubsequenceError() {
-        Observable<Observable<String>> source = Observable.create(new ObservableSource<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 50, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -306,7 +306,7 @@ public class ObservableSwitchTest {
                     }
                 }));
 
-                publishNext(NbpObserver, 130, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 130, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -314,7 +314,7 @@ public class ObservableSwitchTest {
                     }
                 }));
 
-                publishNext(NbpObserver, 150, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 150, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -376,11 +376,11 @@ public class ObservableSwitchTest {
     @Test
     public void testSwitchIssue737() {
         // https://github.com/ReactiveX/RxJava/issues/737
-        Observable<Observable<String>> source = Observable.create(new ObservableSource<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-                publishNext(NbpObserver, 0, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 0, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -391,7 +391,7 @@ public class ObservableSwitchTest {
                         publishCompleted(NbpObserver, 40);
                     }
                 }));
-                publishNext(NbpObserver, 25, Observable.create(new ObservableSource<String>() {
+                publishNext(NbpObserver, 25, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -424,7 +424,7 @@ public class ObservableSwitchTest {
     public void testUnsubscribe() {
         final AtomicBoolean isUnsubscribed = new AtomicBoolean();
         Observable.switchOnNext(
-                Observable.create(new ObservableSource<Observable<Integer>>() {
+                Observable.unsafeCreate(new ObservableSource<Observable<Integer>>() {
                     @Override
                     public void subscribe(final Observer<? super Observable<Integer>> NbpSubscriber) {
                         Disposable bs = Disposables.empty();

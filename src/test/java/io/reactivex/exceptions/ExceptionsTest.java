@@ -15,21 +15,29 @@
  */
 package io.reactivex.exceptions;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.*;
-import org.reactivestreams.*;
-
-import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.SingleSource;
+import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.GroupedObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ExceptionsTest {
     
@@ -315,10 +323,10 @@ public class ExceptionsTest {
     @Ignore("v2 components should not throw")
     @Test(expected = RuntimeException.class)
     public void testOnErrorExceptionIsThrownFromSubscribe() {
-        Observable.create(new ObservableSource<Integer>() {
+        Observable.unsafeCreate(new ObservableSource<Integer>() {
                               @Override
                               public void subscribe(Observer<? super Integer> s1) {
-                                  Observable.create(new ObservableSource<Integer>() {
+                                  Observable.unsafeCreate(new ObservableSource<Integer>() {
                                       @Override
                                       public void subscribe(Observer<? super Integer> s2) {
                                           throw new IllegalArgumentException("original exception");
@@ -332,10 +340,10 @@ public class ExceptionsTest {
     @Ignore("v2 components should not throw")
     @Test(expected = RuntimeException.class)
     public void testOnErrorExceptionIsThrownFromUnsafeSubscribe() {
-        Observable.create(new ObservableSource<Integer>() {
+        Observable.unsafeCreate(new ObservableSource<Integer>() {
                               @Override
                               public void subscribe(Observer<? super Integer> s1) {
-                                  Observable.create(new ObservableSource<Integer>() {
+                                  Observable.unsafeCreate(new ObservableSource<Integer>() {
                                       @Override
                                       public void subscribe(Observer<? super Integer> s2) {
                                           throw new IllegalArgumentException("original exception");
@@ -362,10 +370,10 @@ public class ExceptionsTest {
     @Ignore("v2 components should not throw")
     @Test(expected = RuntimeException.class)
     public void testOnErrorExceptionIsThrownFromSingleSubscribe() {
-        Single.create(new SingleSource<Integer>() {
+        Single.unsafeCreate(new SingleSource<Integer>() {
                           @Override
                           public void subscribe(SingleObserver<? super Integer> s1) {
-                              Single.create(new SingleSource<Integer>() {
+                              Single.unsafeCreate(new SingleSource<Integer>() {
                                   @Override
                                   public void subscribe(SingleObserver<? super Integer> s2) {
                                       throw new IllegalArgumentException("original exception");
@@ -379,10 +387,10 @@ public class ExceptionsTest {
     @Ignore("v2 components should not throw")
     @Test(expected = RuntimeException.class)
     public void testOnErrorExceptionIsThrownFromSingleUnsafeSubscribe() {
-        Single.create(new SingleSource<Integer>() {
+        Single.unsafeCreate(new SingleSource<Integer>() {
                           @Override
                           public void subscribe(final SingleObserver<? super Integer> s1) {
-                              Single.create(new SingleSource<Integer>() {
+                              Single.unsafeCreate(new SingleSource<Integer>() {
                                   @Override
                                   public void subscribe(SingleObserver<? super Integer> s2) {
                                       throw new IllegalArgumentException("original exception");

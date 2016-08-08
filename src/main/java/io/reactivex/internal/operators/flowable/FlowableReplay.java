@@ -60,7 +60,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> {
     public static <U, R> Flowable<R> multicastSelector(
             final Callable<? extends ConnectableFlowable<U>> connectableFactory,
             final Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
-        return Flowable.create(new Publisher<R>() {
+        return Flowable.unsafeCreate(new Publisher<R>() {
             @Override
             public void subscribe(Subscriber<? super R> child) {
                 ConnectableFlowable<U> co;

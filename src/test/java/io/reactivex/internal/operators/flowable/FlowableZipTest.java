@@ -90,8 +90,8 @@ public class FlowableZipTest {
         TestObservable w3 = new TestObservable();
 
         Flowable<String> zipW = Flowable.zip(
-                Flowable.create(w1), Flowable.create(w2), 
-                Flowable.create(w3), getConcat3StringsZipr());
+                Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2),
+                Flowable.unsafeCreate(w3), getConcat3StringsZipr());
         zipW.subscribe(w);
 
         /* simulate sending data */
@@ -124,7 +124,7 @@ public class FlowableZipTest {
         TestObservable w2 = new TestObservable();
         TestObservable w3 = new TestObservable();
 
-        Flowable<String> zipW = Flowable.zip(Flowable.create(w1), Flowable.create(w2), Flowable.create(w3), getConcat3StringsZipr());
+        Flowable<String> zipW = Flowable.zip(Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2), Flowable.unsafeCreate(w3), getConcat3StringsZipr());
         zipW.subscribe(w);
 
         /* simulate sending data */
@@ -1147,7 +1147,7 @@ public class FlowableZipTest {
     Flowable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
 
     Flowable<Integer> OBSERVABLE_OF_5_INTEGERS(final AtomicInteger numEmitted) {
-        return Flowable.create(new Publisher<Integer>() {
+        return Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(final Subscriber<? super Integer> o) {
@@ -1168,7 +1168,7 @@ public class FlowableZipTest {
     }
 
     Flowable<Integer> ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(final CountDownLatch latch) {
-        return Flowable.create(new Publisher<Integer>() {
+        return Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(final Subscriber<? super Integer> o) {

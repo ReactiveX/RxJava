@@ -325,7 +325,7 @@ public class FlowableTimeoutWithSelectorTest {
             public Flowable<Integer> apply(Integer t1) {
                 if (t1 == 1) {
                     // Force "unsubscribe" run on another thread
-                    return Flowable.create(new Publisher<Integer>() {
+                    return Flowable.unsafeCreate(new Publisher<Integer>() {
                         @Override
                         public void subscribe(Subscriber<? super Integer> subscriber) {
                             subscriber.onSubscribe(new BooleanSubscription());

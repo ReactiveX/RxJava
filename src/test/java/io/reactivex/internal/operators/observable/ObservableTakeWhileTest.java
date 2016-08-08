@@ -100,7 +100,7 @@ public class ObservableTakeWhileTest {
 
     @Test
     public void testTakeWhileDoesntLeakErrors() {
-        Observable<String> source = Observable.create(new ObservableSource<String>() {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -123,7 +123,7 @@ public class ObservableTakeWhileTest {
         final RuntimeException testException = new RuntimeException("test exception");
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
-        Observable<String> take = Observable.create(source)
+        Observable<String> take = Observable.unsafeCreate(source)
                 .takeWhile(new Predicate<String>() {
             @Override
             public boolean test(String s) {
@@ -150,7 +150,7 @@ public class ObservableTakeWhileTest {
         TestObservable w = new TestObservable(s, "one", "two", "three");
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
-        Observable<String> take = Observable.create(w)
+        Observable<String> take = Observable.unsafeCreate(w)
                 .takeWhile(new Predicate<String>() {
             int index = 0;
 

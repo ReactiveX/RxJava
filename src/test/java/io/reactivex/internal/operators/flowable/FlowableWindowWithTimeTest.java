@@ -45,7 +45,7 @@ public class FlowableWindowWithTimeTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -79,7 +79,7 @@ public class FlowableWindowWithTimeTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());

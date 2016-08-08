@@ -38,7 +38,7 @@ public class ObservableSerializeTest {
     @Test
     public void testSingleThreadedBasic() {
         TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable("one", "two", "three");
-        Observable<String> w = Observable.create(onSubscribe);
+        Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
         w.serialize().subscribe(NbpObserver);
         onSubscribe.waitToFinish();
@@ -56,7 +56,7 @@ public class ObservableSerializeTest {
     @Test
     public void testMultiThreadedBasic() {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three");
-        Observable<String> w = Observable.create(onSubscribe);
+        Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
         BusyObserver busyobserver = new BusyObserver();
 
@@ -79,7 +79,7 @@ public class ObservableSerializeTest {
     @Test
     public void testMultiThreadedWithNPE() {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null);
-        Observable<String> w = Observable.create(onSubscribe);
+        Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
         BusyObserver busyobserver = new BusyObserver();
 
@@ -110,7 +110,7 @@ public class ObservableSerializeTest {
         boolean lessThan9 = false;
         for (int i = 0; i < 3; i++) {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
-            Observable<String> w = Observable.create(onSubscribe);
+            Observable<String> w = Observable.unsafeCreate(onSubscribe);
     
             BusyObserver busyobserver = new BusyObserver();
     

@@ -204,7 +204,7 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void createNull() {
-        Flowable.create(null);
+        Flowable.unsafeCreate(null);
     }
     
     @Test(expected = NullPointerException.class)

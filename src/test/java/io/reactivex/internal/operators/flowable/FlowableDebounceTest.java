@@ -45,7 +45,7 @@ public class FlowableDebounceTest {
 
     @Test
     public void testDebounceWithCompleted() {
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -71,7 +71,7 @@ public class FlowableDebounceTest {
 
     @Test
     public void testDebounceNeverEmits() {
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -101,7 +101,7 @@ public class FlowableDebounceTest {
 
     @Test
     public void testDebounceWithError() {
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());

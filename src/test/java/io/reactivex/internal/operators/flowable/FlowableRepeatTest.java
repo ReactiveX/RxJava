@@ -37,7 +37,7 @@ public class FlowableRepeatTest {
     public void testRepetition() {
         int NUM = 10;
         final AtomicInteger count = new AtomicInteger();
-        int value = Flowable.create(new Publisher<Integer>() {
+        int value = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(final Subscriber<? super Integer> o) {
@@ -66,7 +66,7 @@ public class FlowableRepeatTest {
     public void testRepeatTakeWithSubscribeOn() throws InterruptedException {
 
         final AtomicInteger counter = new AtomicInteger();
-        Flowable<Integer> oi = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> oi = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {

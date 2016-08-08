@@ -283,7 +283,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch completionLatch = new CountDownLatch(1);
         final Worker inner = getScheduler().createWorker();
         try {
-            Flowable<Integer> obs = Flowable.create(new Publisher<Integer>() {
+            Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() {
                 @Override
                 public void subscribe(final Subscriber<? super Integer> observer) {
                     inner.schedule(new Runnable() {

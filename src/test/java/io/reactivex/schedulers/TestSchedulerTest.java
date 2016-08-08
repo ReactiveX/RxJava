@@ -189,7 +189,7 @@ public class TestSchedulerTest {
             final Runnable calledOp = mock(Runnable.class);
     
             Flowable<Object> poller;
-            poller = Flowable.create(new Publisher<Object>() {
+            poller = Flowable.unsafeCreate(new Publisher<Object>() {
                 @Override
                 public void subscribe(final Subscriber<? super Object> aSubscriber) {
                     final BooleanSubscription bs = new BooleanSubscription();

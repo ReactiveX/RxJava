@@ -109,7 +109,7 @@ public class FlowableTakeTest {
 
     @Test
     public void testTakeDoesntLeakErrors() {
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -135,7 +135,7 @@ public class FlowableTakeTest {
     public void testTakeZeroDoesntLeakError() {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final BooleanSubscription bs = new BooleanSubscription();
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 subscribed.set(true);
@@ -160,7 +160,7 @@ public class FlowableTakeTest {
     @Test
     public void testUnsubscribeAfterTake() {
         TestObservableFunc f = new TestObservableFunc("one", "two", "three");
-        Flowable<String> w = Flowable.create(f);
+        Flowable<String> w = Flowable.unsafeCreate(f);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         
@@ -203,7 +203,7 @@ public class FlowableTakeTest {
     @Test(timeout = 2000)
     public void testMultiTake() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
@@ -265,7 +265,7 @@ public class FlowableTakeTest {
         }
     }
 
-    private static Flowable<Long> INFINITE_OBSERVABLE = Flowable.create(new Publisher<Long>() {
+    private static Flowable<Long> INFINITE_OBSERVABLE = Flowable.unsafeCreate(new Publisher<Long>() {
 
         @Override
         public void subscribe(Subscriber<? super Long> op) {
@@ -301,7 +301,7 @@ public class FlowableTakeTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
@@ -329,7 +329,7 @@ public class FlowableTakeTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {

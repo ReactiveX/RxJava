@@ -253,7 +253,7 @@ public class ObservableUsingTest {
         Function<Disposable, Observable<Integer>> observableFactory = new Function<Disposable, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Disposable subscription) {
-                return Observable.create(new ObservableSource<Integer>() {
+                return Observable.unsafeCreate(new ObservableSource<Integer>() {
                     @Override
                     public void subscribe(Observer<? super Integer> t1) {
                         throw new TestException();

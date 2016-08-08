@@ -451,15 +451,20 @@ public abstract class Flowable<T> implements Publisher<T> {
         return fromPublisher(sources).concatMapDelayError((Function)Functions.identity(), prefetch, tillTheEnd);
     }
 
-    
+    @BackpressureSupport(BackpressureKind.SPECIAL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> create(FlowableSource<T> source, FlowableEmitter.BackpressureMode mode) {
+        return new FlowableFromSource<T>(source, mode);
+    }
+
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> create(Publisher<T> onSubscribe) {
+    public static <T> Flowable<T> unsafeCreate(Publisher<T> onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         if (onSubscribe instanceof Flowable) {
-            throw new IllegalArgumentException("create(Flowable) should be upgraded");
+            throw new IllegalArgumentException("unsafeCreate(Flowable) should be upgraded");
         }
-        return fromPublisher(onSubscribe);
+        return new FlowableFromPublisher<T>(onSubscribe);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -506,12 +511,6 @@ public abstract class Flowable<T> implements Publisher<T> {
                 return just(values[0]);
             }
         return new FlowableFromArray<T>(values);
-    }
-    
-    @BackpressureSupport(BackpressureKind.SPECIAL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> fromAsync(Consumer<AsyncEmitter<T>> asyncEmitter, AsyncEmitter.BackpressureMode mode) {
-        return new FlowableFromAsync<T>(asyncEmitter, mode);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1276,7 +1275,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> asObservable() {
-        return create(new Publisher<T>() {
+        return unsafeCreate(new Publisher<T>() {
             @Override
             public void subscribe(Subscriber<? super T> s) {
                 Flowable.this.subscribe(s);

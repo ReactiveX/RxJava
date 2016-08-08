@@ -73,10 +73,10 @@ public class FlowableMergeTest {
 
     @Test
     public void testMergeFlowableOfFlowables() {
-        final Flowable<String> o1 = Flowable.create(new TestSynchronousFlowable());
-        final Flowable<String> o2 = Flowable.create(new TestSynchronousFlowable());
+        final Flowable<String> o1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
+        final Flowable<String> o2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
-        Flowable<Flowable<String>> FlowableOfFlowables = Flowable.create(new Publisher<Flowable<String>>() {
+        Flowable<Flowable<String>> FlowableOfFlowables = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
 
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
@@ -98,8 +98,8 @@ public class FlowableMergeTest {
 
     @Test
     public void testMergeArray() {
-        final Flowable<String> o1 = Flowable.create(new TestSynchronousFlowable());
-        final Flowable<String> o2 = Flowable.create(new TestSynchronousFlowable());
+        final Flowable<String> o1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
+        final Flowable<String> o2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
         Flowable<String> m = Flowable.merge(o1, o2);
         m.subscribe(stringObserver);
@@ -111,8 +111,8 @@ public class FlowableMergeTest {
 
     @Test
     public void testMergeList() {
-        final Flowable<String> o1 = Flowable.create(new TestSynchronousFlowable());
-        final Flowable<String> o2 = Flowable.create(new TestSynchronousFlowable());
+        final Flowable<String> o1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
+        final Flowable<String> o2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         List<Flowable<String>> listOfFlowables = new ArrayList<Flowable<String>>();
         listOfFlowables.add(o1);
         listOfFlowables.add(o2);
@@ -131,7 +131,7 @@ public class FlowableMergeTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Flowable<Flowable<Long>> source = Flowable.create(new Publisher<Flowable<Long>>() {
+        Flowable<Flowable<Long>> source = Flowable.unsafeCreate(new Publisher<Flowable<Long>>() {
 
             @Override
             public void subscribe(final Subscriber<? super Flowable<Long>> observer) {
@@ -198,7 +198,7 @@ public class FlowableMergeTest {
         final TestASynchronousFlowable o1 = new TestASynchronousFlowable();
         final TestASynchronousFlowable o2 = new TestASynchronousFlowable();
 
-        Flowable<String> m = Flowable.merge(Flowable.create(o1), Flowable.create(o2));
+        Flowable<String> m = Flowable.merge(Flowable.unsafeCreate(o1), Flowable.unsafeCreate(o2));
         TestSubscriber<String> ts = new TestSubscriber<String>(stringObserver);
         m.subscribe(ts);
 
@@ -229,7 +229,7 @@ public class FlowableMergeTest {
         final AtomicInteger concurrentCounter = new AtomicInteger();
         final AtomicInteger totalCounter = new AtomicInteger();
 
-        Flowable<String> m = Flowable.merge(Flowable.create(o1), Flowable.create(o2));
+        Flowable<String> m = Flowable.merge(Flowable.unsafeCreate(o1), Flowable.unsafeCreate(o2));
         m.subscribe(new DefaultSubscriber<String>() {
 
             @Override
@@ -303,8 +303,8 @@ public class FlowableMergeTest {
     @Test
     public void testError1() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
-        final Flowable<String> o1 = Flowable.create(new TestErrorFlowable("four", null, "six")); // we expect to lose "six"
-        final Flowable<String> o2 = Flowable.create(new TestErrorFlowable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
+        final Flowable<String> o1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six"
+        final Flowable<String> o2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
 
         Flowable<String> m = Flowable.merge(o1, o2);
         m.subscribe(stringObserver);
@@ -325,10 +325,10 @@ public class FlowableMergeTest {
     @Test
     public void testError2() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
-        final Flowable<String> o1 = Flowable.create(new TestErrorFlowable("one", "two", "three"));
-        final Flowable<String> o2 = Flowable.create(new TestErrorFlowable("four", null, "six")); // we expect to lose "six"
-        final Flowable<String> o3 = Flowable.create(new TestErrorFlowable("seven", "eight", null));// we expect to lose all of these since o2 is done first and fails
-        final Flowable<String> o4 = Flowable.create(new TestErrorFlowable("nine"));// we expect to lose all of these since o2 is done first and fails
+        final Flowable<String> o1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
+        final Flowable<String> o2 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six"
+        final Flowable<String> o3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null));// we expect to lose all of these since o2 is done first and fails
+        final Flowable<String> o4 = Flowable.unsafeCreate(new TestErrorFlowable("nine"));// we expect to lose all of these since o2 is done first and fails
 
         Flowable<String> m = Flowable.merge(o1, o2, o3, o4);
         m.subscribe(stringObserver);
@@ -350,7 +350,7 @@ public class FlowableMergeTest {
     @Ignore("Subscribe should not throw")
     public void testThrownErrorHandling() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable<String> o1 = Flowable.create(new Publisher<String>() {
+        Flowable<String> o1 = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> s) {
@@ -504,7 +504,7 @@ public class FlowableMergeTest {
     }
 
     private Flowable<Long> createFlowableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(final Scheduler scheduler, final AtomicBoolean unsubscribed) {
-        return Flowable.create(new Publisher<Long>() {
+        return Flowable.unsafeCreate(new Publisher<Long>() {
 
             @Override
             public void subscribe(final Subscriber<? super Long> child) {
@@ -571,7 +571,7 @@ public class FlowableMergeTest {
     @Test
     public void testConcurrencyWithSleeping() {
 
-        Flowable<Integer> o = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> o = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(final Subscriber<? super Integer> s) {
@@ -621,7 +621,7 @@ public class FlowableMergeTest {
 
     @Test
     public void testConcurrencyWithBrokenOnCompleteContract() {
-        Flowable<Integer> o = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> o = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(final Subscriber<? super Integer> s) {
@@ -890,7 +890,7 @@ public class FlowableMergeTest {
     public void mergeWithTerminalEventAfterUnsubscribe() {
         System.out.println("mergeWithTerminalEventAfterUnsubscribe");
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable<String> bad = Flowable.create(new Publisher<String>() {
+        Flowable<String> bad = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> s) {
@@ -1073,7 +1073,7 @@ public class FlowableMergeTest {
 
             @Override
             public Flowable<Integer> apply(final Integer i) {
-                return Flowable.create(new Publisher<Integer>() {
+                return Flowable.unsafeCreate(new Publisher<Integer>() {
 
                     @Override
                     public void subscribe(Subscriber<? super Integer> s) {

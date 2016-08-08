@@ -39,7 +39,7 @@ public abstract class InputWithIncrementingInteger {
         final int size = getSize();
         observable = Flowable.range(0, size);
 
-        firehose = Flowable.create(new Publisher<Integer>() {
+        firehose = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {

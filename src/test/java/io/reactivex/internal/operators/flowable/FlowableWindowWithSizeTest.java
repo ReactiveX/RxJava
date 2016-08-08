@@ -244,7 +244,7 @@ public class FlowableWindowWithSizeTest {
     }
 
     public static Flowable<Integer> hotStream() {
-        return Flowable.create(new Publisher<Integer>() {
+        return Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
                 BooleanSubscription bs = new BooleanSubscription();

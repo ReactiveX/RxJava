@@ -33,8 +33,8 @@ public class FlowableTakeUntilTest {
         TestObservable other = new TestObservable(sOther);
 
         Subscriber<String> result = TestHelper.mockSubscriber();
-        Flowable<String> stringObservable = Flowable.create(source)
-                .takeUntil(Flowable.create(other));
+        Flowable<String> stringObservable = Flowable.unsafeCreate(source)
+                .takeUntil(Flowable.unsafeCreate(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
@@ -60,7 +60,7 @@ public class FlowableTakeUntilTest {
         TestObservable other = new TestObservable(sOther);
 
         Subscriber<String> result = TestHelper.mockSubscriber();
-        Flowable<String> stringObservable = Flowable.create(source).takeUntil(Flowable.create(other));
+        Flowable<String> stringObservable = Flowable.unsafeCreate(source).takeUntil(Flowable.unsafeCreate(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
@@ -82,7 +82,7 @@ public class FlowableTakeUntilTest {
         Throwable error = new Throwable();
 
         Subscriber<String> result = TestHelper.mockSubscriber();
-        Flowable<String> stringObservable = Flowable.create(source).takeUntil(Flowable.create(other));
+        Flowable<String> stringObservable = Flowable.unsafeCreate(source).takeUntil(Flowable.unsafeCreate(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
@@ -107,7 +107,7 @@ public class FlowableTakeUntilTest {
         Throwable error = new Throwable();
 
         Subscriber<String> result = TestHelper.mockSubscriber();
-        Flowable<String> stringObservable = Flowable.create(source).takeUntil(Flowable.create(other));
+        Flowable<String> stringObservable = Flowable.unsafeCreate(source).takeUntil(Flowable.unsafeCreate(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
@@ -135,7 +135,7 @@ public class FlowableTakeUntilTest {
         TestObservable other = new TestObservable(sOther);
 
         Subscriber<String> result = TestHelper.mockSubscriber();
-        Flowable<String> stringObservable = Flowable.create(source).takeUntil(Flowable.create(other));
+        Flowable<String> stringObservable = Flowable.unsafeCreate(source).takeUntil(Flowable.unsafeCreate(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");

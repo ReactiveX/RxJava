@@ -92,8 +92,8 @@ public class ObservableZipTest {
         TestObservable w3 = new TestObservable();
 
         Observable<String> zipW = Observable.zip(
-                Observable.create(w1), Observable.create(w2), 
-                Observable.create(w3), getConcat3StringsZipr());
+                Observable.unsafeCreate(w1), Observable.unsafeCreate(w2),
+                Observable.unsafeCreate(w3), getConcat3StringsZipr());
         zipW.subscribe(w);
 
         /* simulate sending data */
@@ -126,7 +126,7 @@ public class ObservableZipTest {
         TestObservable w2 = new TestObservable();
         TestObservable w3 = new TestObservable();
 
-        Observable<String> zipW = Observable.zip(Observable.create(w1), Observable.create(w2), Observable.create(w3), getConcat3StringsZipr());
+        Observable<String> zipW = Observable.zip(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2), Observable.unsafeCreate(w3), getConcat3StringsZipr());
         zipW.subscribe(w);
 
         /* simulate sending data */
@@ -1051,7 +1051,7 @@ public class ObservableZipTest {
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
 
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS(final AtomicInteger numEmitted) {
-        return Observable.create(new ObservableSource<Integer>() {
+        return Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(final Observer<? super Integer> o) {
@@ -1072,7 +1072,7 @@ public class ObservableZipTest {
     }
 
     Observable<Integer> ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(final CountDownLatch latch) {
-        return Observable.create(new ObservableSource<Integer>() {
+        return Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(final Observer<? super Integer> o) {

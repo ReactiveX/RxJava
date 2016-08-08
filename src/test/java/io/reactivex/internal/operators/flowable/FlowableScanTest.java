@@ -294,7 +294,7 @@ public class FlowableScanTest {
     @Test
     public void testScanShouldNotRequestZero() {
         final AtomicReference<Subscription> producer = new AtomicReference<Subscription>();
-        Flowable<Integer> o = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> o = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(final Subscriber<? super Integer> subscriber) {
                 Subscription p = spy(new Subscription() {

@@ -30,7 +30,7 @@ public class SafeSubscriberTest {
     @Test
     public void testOnNextAfterOnError() {
         TestObservable t = new TestObservable();
-        Flowable<String> st = Flowable.create(t);
+        Flowable<String> st = Flowable.unsafeCreate(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
         st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
@@ -50,7 +50,7 @@ public class SafeSubscriberTest {
     @Test
     public void testOnCompletedAfterOnError() {
         TestObservable t = new TestObservable();
-        Flowable<String> st = Flowable.create(t);
+        Flowable<String> st = Flowable.unsafeCreate(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
         
@@ -71,7 +71,7 @@ public class SafeSubscriberTest {
     @Test
     public void testOnNextAfterOnCompleted() {
         TestObservable t = new TestObservable();
-        Flowable<String> st = Flowable.create(t);
+        Flowable<String> st = Flowable.unsafeCreate(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
         st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
@@ -92,7 +92,7 @@ public class SafeSubscriberTest {
     @Test
     public void testOnErrorAfterOnCompleted() {
         TestObservable t = new TestObservable();
-        Flowable<String> st = Flowable.create(t);
+        Flowable<String> st = Flowable.unsafeCreate(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
         st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));

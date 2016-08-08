@@ -33,7 +33,7 @@ public class ObservableOnErrorReturnTest {
     @Test
     public void testResumeNext() {
         TestObservable f = new TestObservable("one");
-        Observable<String> w = Observable.create(f);
+        Observable<String> w = Observable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
         Observable<String> NbpObservable = w.onErrorReturn(new Function<Throwable, String>() {
@@ -69,7 +69,7 @@ public class ObservableOnErrorReturnTest {
     @Test
     public void testFunctionThrowsError() {
         TestObservable f = new TestObservable("one");
-        Observable<String> w = Observable.create(f);
+        Observable<String> w = Observable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
         Observable<String> NbpObservable = w.onErrorReturn(new Function<Throwable, String>() {

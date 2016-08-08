@@ -46,7 +46,7 @@ public class ObservableWindowWithTimeTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new ObservableSource<String>() {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -80,7 +80,7 @@ public class ObservableWindowWithTimeTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new ObservableSource<String>() {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);

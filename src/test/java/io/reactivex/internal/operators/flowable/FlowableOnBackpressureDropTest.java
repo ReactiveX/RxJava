@@ -118,7 +118,7 @@ public class FlowableOnBackpressureDropTest {
         assertEquals(n, count.get());
     }
 
-    static final Flowable<Long> infinite = Flowable.create(new Publisher<Long>() {
+    static final Flowable<Long> infinite = Flowable.unsafeCreate(new Publisher<Long>() {
 
         @Override
         public void subscribe(Subscriber<? super Long> s) {
@@ -133,7 +133,7 @@ public class FlowableOnBackpressureDropTest {
     });
     
     private static final Flowable<Long> range(final long n) {
-        return Flowable.create(new Publisher<Long>() {
+        return Flowable.unsafeCreate(new Publisher<Long>() {
 
             @Override
             public void subscribe(Subscriber<? super Long> s) {

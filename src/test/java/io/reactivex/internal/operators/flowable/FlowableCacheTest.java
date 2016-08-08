@@ -83,7 +83,7 @@ public class FlowableCacheTest {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Flowable<String> o = Flowable.create(new Publisher<String>() {
+        Flowable<String> o = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
@@ -217,7 +217,7 @@ public class FlowableCacheTest {
     @Test
     public void testNoMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
-        Flowable<Integer> firehose = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> firehose = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> t) {
                 t.onSubscribe(new BooleanSubscription());

@@ -80,7 +80,7 @@ public class ObservableConcatTest {
         final Observable<String> odds = Observable.fromArray(o);
         final Observable<String> even = Observable.fromArray(e);
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableSource<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
@@ -109,7 +109,7 @@ public class ObservableConcatTest {
         TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
         TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
 
-        Observable.concat(Observable.create(o1), Observable.create(o2)).subscribe(NbpObserver);
+        Observable.concat(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2)).subscribe(NbpObserver);
 
         try {
             // wait for async observables to complete
@@ -156,7 +156,7 @@ public class ObservableConcatTest {
         final CountDownLatch parentHasFinished = new CountDownLatch(1);
         
         
-        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableSource<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
 
             @Override
             public void subscribe(final Observer<? super Observable<String>> NbpObserver) {
@@ -170,12 +170,12 @@ public class ObservableConcatTest {
                             // emit first
                             if (!d.isDisposed()) {
                                 System.out.println("Emit o1");
-                                NbpObserver.onNext(Observable.create(o1));
+                                NbpObserver.onNext(Observable.unsafeCreate(o1));
                             }
                             // emit second
                             if (!d.isDisposed()) {
                                 System.out.println("Emit o2");
-                                NbpObserver.onNext(Observable.create(o2));
+                                NbpObserver.onNext(Observable.unsafeCreate(o2));
                             }
 
                             // wait until sometime later and emit third
@@ -186,7 +186,7 @@ public class ObservableConcatTest {
                             }
                             if (!d.isDisposed()) {
                                 System.out.println("Emit o3");
-                                NbpObserver.onNext(Observable.create(o3));
+                                NbpObserver.onNext(Observable.unsafeCreate(o3));
                             }
 
                         } catch (Throwable e) {
@@ -272,7 +272,7 @@ public class ObservableConcatTest {
         final CountDownLatch okToContinue = new CountDownLatch(1);
         @SuppressWarnings("unchecked")
         TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(callOnce, okToContinue, odds, even);
-        Observable<String> concatF = Observable.concat(Observable.create(observableOfObservables));
+        Observable<String> concatF = Observable.concat(Observable.unsafeCreate(observableOfObservables));
         concatF.subscribe(NbpObserver);
         try {
             //Block main thread to allow observables to serve up o1.
@@ -310,8 +310,8 @@ public class ObservableConcatTest {
         Observer<String> NbpObserver = TestHelper.mockObserver();
         
         @SuppressWarnings("unchecked")
-        TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.create(w1), Observable.create(w2));
-        Observable<String> concatF = Observable.concat(Observable.create(observableOfObservables));
+        TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2));
+        Observable<String> concatF = Observable.concat(Observable.unsafeCreate(observableOfObservables));
 
         concatF.take(50).subscribe(NbpObserver);
 
@@ -343,14 +343,14 @@ public class ObservableConcatTest {
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
         
-        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableSource<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
                 // simulate what would happen in an NbpObservable
-                NbpObserver.onNext(Observable.create(w1));
-                NbpObserver.onNext(Observable.create(w2));
+                NbpObserver.onNext(Observable.unsafeCreate(w1));
+                NbpObserver.onNext(Observable.unsafeCreate(w2));
                 NbpObserver.onComplete();
             }
 
@@ -395,7 +395,7 @@ public class ObservableConcatTest {
         Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
 
-        final Observable<String> concat = Observable.concat(Observable.create(w1), Observable.create(w2));
+        final Observable<String> concat = Observable.concat(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2));
 
         try {
             // Subscribe
@@ -438,8 +438,8 @@ public class ObservableConcatTest {
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         
         @SuppressWarnings("unchecked")
-        TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.create(w1), Observable.create(w2));
-        Observable<String> concatF = Observable.concat(Observable.create(observableOfObservables));
+        TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2));
+        Observable<String> concatF = Observable.concat(Observable.unsafeCreate(observableOfObservables));
 
         concatF.subscribe(ts);
 
@@ -658,7 +658,7 @@ public class ObservableConcatTest {
     // https://github.com/ReactiveX/RxJava/issues/1818
     @Test
     public void testConcatWithNonCompliantSourceDoubleOnComplete() {
-        Observable<String> o = Observable.create(new ObservableSource<String>() {
+        Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> s) {

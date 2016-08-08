@@ -38,7 +38,7 @@ public class FlowableMaterializeTest {
                 "three");
 
         TestObserver observer = new TestObserver();
-        Flowable<Try<Optional<String>>> m = Flowable.create(o1).materialize();
+        Flowable<Try<Optional<String>>> m = Flowable.unsafeCreate(o1).materialize();
         m.subscribe(observer);
 
         try {
@@ -63,7 +63,7 @@ public class FlowableMaterializeTest {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
         TestObserver Observer = new TestObserver();
-        Flowable<Try<Optional<String>>> m = Flowable.create(o1).materialize();
+        Flowable<Try<Optional<String>>> m = Flowable.unsafeCreate(o1).materialize();
         m.subscribe(Observer);
 
         try {
@@ -88,7 +88,7 @@ public class FlowableMaterializeTest {
     public void testMultipleSubscribes() throws InterruptedException, ExecutionException {
         final TestAsyncErrorObservable o = new TestAsyncErrorObservable("one", "two", null, "three");
 
-        Flowable<Try<Optional<String>>> m = Flowable.create(o).materialize();
+        Flowable<Try<Optional<String>>> m = Flowable.unsafeCreate(o).materialize();
 
         assertEquals(3, m.toList().toBlocking().toFuture().get().size());
         assertEquals(3, m.toList().toBlocking().toFuture().get().size());

@@ -320,7 +320,7 @@ public abstract class AbstractSchedulerTests {
 
     @Test
     public final void testRecursiveSchedulerInObservable() {
-        Flowable<Integer> obs = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(final Subscriber<? super Integer> observer) {
                 final Scheduler.Worker inner = getScheduler().createWorker();
@@ -368,7 +368,7 @@ public abstract class AbstractSchedulerTests {
     public final void testConcurrentOnNextFailsValidation() throws InterruptedException {
         final int count = 10;
         final CountDownLatch latch = new CountDownLatch(count);
-        Flowable<String> o = Flowable.create(new Publisher<String>() {
+        Flowable<String> o = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
@@ -430,7 +430,7 @@ public abstract class AbstractSchedulerTests {
 
                     @Override
                     public Flowable<String> apply(final String v) {
-                        return Flowable.create(new Publisher<String>() {
+                        return Flowable.unsafeCreate(new Publisher<String>() {
 
                             @Override
                             public void subscribe(Subscriber<? super String> observer) {

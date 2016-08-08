@@ -59,7 +59,7 @@ public class FlowableSwitchIfEmptyTest {
     @Test
     public void testSwitchWithProducer() throws Exception {
         final AtomicBoolean emitted = new AtomicBoolean(false);
-        Flowable<Long> withProducer = Flowable.create(new Publisher<Long>() {
+        Flowable<Long> withProducer = Flowable.unsafeCreate(new Publisher<Long>() {
             @Override
             public void subscribe(final Subscriber<? super Long> subscriber) {
                 subscriber.onSubscribe(new Subscription() {
@@ -89,7 +89,7 @@ public class FlowableSwitchIfEmptyTest {
 
         final BooleanSubscription bs = new BooleanSubscription();
         
-        Flowable<Long> withProducer = Flowable.create(new Publisher<Long>() {
+        Flowable<Long> withProducer = Flowable.unsafeCreate(new Publisher<Long>() {
             @Override
             public void subscribe(final Subscriber<? super Long> subscriber) {
                 subscriber.onSubscribe(bs);
@@ -132,7 +132,7 @@ public class FlowableSwitchIfEmptyTest {
     public void testSwitchShouldTriggerUnsubscribe() {
         final BooleanSubscription bs = new BooleanSubscription();
         
-        Flowable.create(new Publisher<Long>() {
+        Flowable.unsafeCreate(new Publisher<Long>() {
             @Override
             public void subscribe(final Subscriber<? super Long> subscriber) {
                 subscriber.onSubscribe(bs);
@@ -176,7 +176,7 @@ public class FlowableSwitchIfEmptyTest {
     @Test(timeout = 10000)
     public void testRequestsNotLost() throws InterruptedException {
         final TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
-        Flowable.create(new Publisher<Long>() {
+        Flowable.unsafeCreate(new Publisher<Long>() {
 
             @Override
             public void subscribe(final Subscriber<? super Long> subscriber) {

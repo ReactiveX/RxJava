@@ -70,7 +70,7 @@ public class FlowableRetryWithPredicateTest {
     }
     @Test
     public void testRetryTwice() {
-        Flowable<Integer> source = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
             int count;
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
@@ -106,7 +106,7 @@ public class FlowableRetryWithPredicateTest {
     }
     @Test
     public void testRetryTwiceAndGiveUp() {
-        Flowable<Integer> source = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
                 t1.onSubscribe(new BooleanSubscription());
@@ -134,7 +134,7 @@ public class FlowableRetryWithPredicateTest {
     }
     @Test
     public void testRetryOnSpecificException() {
-        Flowable<Integer> source = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
             int count;
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
@@ -171,7 +171,7 @@ public class FlowableRetryWithPredicateTest {
     public void testRetryOnSpecificExceptionAndNotOther() {
         final IOException ioe = new IOException();
         final TestException te = new TestException();
-        Flowable<Integer> source = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
             int count;
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
@@ -230,7 +230,7 @@ public class FlowableRetryWithPredicateTest {
         // Observable that always fails after 100ms
         FlowableRetryTest.SlowObservable so = new FlowableRetryTest.SlowObservable(100, 0);
         Flowable<Long> o = Flowable
-                .create(so)
+                .unsafeCreate(so)
                 .retry(retry5);
 
         FlowableRetryTest.AsyncObserver<Long> async = new FlowableRetryTest.AsyncObserver<Long>(observer);
@@ -256,7 +256,7 @@ public class FlowableRetryWithPredicateTest {
         // Observable that sends every 100ms (timeout fails instead)
         FlowableRetryTest.SlowObservable so = new FlowableRetryTest.SlowObservable(100, 10);
         Flowable<Long> o = Flowable
-                .create(so)
+                .unsafeCreate(so)
                 .timeout(80, TimeUnit.MILLISECONDS)
                 .retry(retry5);
 

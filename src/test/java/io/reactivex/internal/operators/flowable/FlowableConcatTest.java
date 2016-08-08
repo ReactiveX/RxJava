@@ -82,7 +82,7 @@ public class FlowableConcatTest {
         final Flowable<String> odds = Flowable.fromArray(o);
         final Flowable<String> even = Flowable.fromArray(e);
 
-        Flowable<Flowable<String>> observableOfObservables = Flowable.create(new Publisher<Flowable<String>>() {
+        Flowable<Flowable<String>> observableOfObservables = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
 
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
@@ -111,7 +111,7 @@ public class FlowableConcatTest {
         TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
         TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
 
-        Flowable.concat(Flowable.create(o1), Flowable.create(o2)).subscribe(observer);
+        Flowable.concat(Flowable.unsafeCreate(o1), Flowable.unsafeCreate(o2)).subscribe(observer);
 
         try {
             // wait for async observables to complete
@@ -158,7 +158,7 @@ public class FlowableConcatTest {
         final CountDownLatch parentHasFinished = new CountDownLatch(1);
         
         
-        Flowable<Flowable<String>> observableOfObservables = Flowable.create(new Publisher<Flowable<String>>() {
+        Flowable<Flowable<String>> observableOfObservables = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
 
             @Override
             public void subscribe(final Subscriber<? super Flowable<String>> observer) {
@@ -181,12 +181,12 @@ public class FlowableConcatTest {
                             // emit first
                             if (!d.isDisposed()) {
                                 System.out.println("Emit o1");
-                                observer.onNext(Flowable.create(o1));
+                                observer.onNext(Flowable.unsafeCreate(o1));
                             }
                             // emit second
                             if (!d.isDisposed()) {
                                 System.out.println("Emit o2");
-                                observer.onNext(Flowable.create(o2));
+                                observer.onNext(Flowable.unsafeCreate(o2));
                             }
 
                             // wait until sometime later and emit third
@@ -197,7 +197,7 @@ public class FlowableConcatTest {
                             }
                             if (!d.isDisposed()) {
                                 System.out.println("Emit o3");
-                                observer.onNext(Flowable.create(o3));
+                                observer.onNext(Flowable.unsafeCreate(o3));
                             }
 
                         } catch (Throwable e) {
@@ -283,7 +283,7 @@ public class FlowableConcatTest {
         final CountDownLatch okToContinue = new CountDownLatch(1);
         @SuppressWarnings("unchecked")
         TestObservable<Flowable<String>> observableOfObservables = new TestObservable<Flowable<String>>(callOnce, okToContinue, odds, even);
-        Flowable<String> concatF = Flowable.concat(Flowable.create(observableOfObservables));
+        Flowable<String> concatF = Flowable.concat(Flowable.unsafeCreate(observableOfObservables));
         concatF.subscribe(observer);
         try {
             //Block main thread to allow observables to serve up o1.
@@ -321,8 +321,8 @@ public class FlowableConcatTest {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         
         @SuppressWarnings("unchecked")
-        TestObservable<Flowable<String>> observableOfObservables = new TestObservable<Flowable<String>>(Flowable.create(w1), Flowable.create(w2));
-        Flowable<String> concatF = Flowable.concat(Flowable.create(observableOfObservables));
+        TestObservable<Flowable<String>> observableOfObservables = new TestObservable<Flowable<String>>(Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2));
+        Flowable<String> concatF = Flowable.concat(Flowable.unsafeCreate(observableOfObservables));
 
         concatF.take(50).subscribe(observer);
 
@@ -354,14 +354,14 @@ public class FlowableConcatTest {
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         
-        Flowable<Flowable<String>> observableOfObservables = Flowable.create(new Publisher<Flowable<String>>() {
+        Flowable<Flowable<String>> observableOfObservables = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
 
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
                 observer.onSubscribe(new BooleanSubscription());
                 // simulate what would happen in an observable
-                observer.onNext(Flowable.create(w1));
-                observer.onNext(Flowable.create(w2));
+                observer.onNext(Flowable.unsafeCreate(w1));
+                observer.onNext(Flowable.unsafeCreate(w2));
                 observer.onComplete();
             }
 
@@ -406,7 +406,7 @@ public class FlowableConcatTest {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         TestSubscriber<String> ts = new TestSubscriber<String>(observer, 0L);
 
-        final Flowable<String> concat = Flowable.concat(Flowable.create(w1), Flowable.create(w2));
+        final Flowable<String> concat = Flowable.concat(Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2));
 
         try {
             // Subscribe
@@ -449,8 +449,8 @@ public class FlowableConcatTest {
         TestSubscriber<String> ts = new TestSubscriber<String>(observer, 0L);
         
         @SuppressWarnings("unchecked")
-        TestObservable<Flowable<String>> observableOfObservables = new TestObservable<Flowable<String>>(Flowable.create(w1), Flowable.create(w2));
-        Flowable<String> concatF = Flowable.concat(Flowable.create(observableOfObservables));
+        TestObservable<Flowable<String>> observableOfObservables = new TestObservable<Flowable<String>>(Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2));
+        Flowable<String> concatF = Flowable.concat(Flowable.unsafeCreate(observableOfObservables));
 
         concatF.subscribe(ts);
 
@@ -702,7 +702,7 @@ public class FlowableConcatTest {
     // https://github.com/ReactiveX/RxJava/issues/1818
     @Test
     public void testConcatWithNonCompliantSourceDoubleOnComplete() {
-        Flowable<String> o = Flowable.create(new Publisher<String>() {
+        Flowable<String> o = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> s) {

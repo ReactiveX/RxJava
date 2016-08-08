@@ -33,7 +33,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
         Subscription s = mock(Subscription.class);
         // Trigger failure on second element
         TestObservable f = new TestObservable(s, "one", "fail", "two", "three");
-        Flowable<String> w = Flowable.create(f);
+        Flowable<String> w = Flowable.unsafeCreate(f);
         Flowable<String> resume = Flowable.just("twoResume", "threeResume");
         Flowable<String> observable = w.onErrorResumeNext(resume);
 
@@ -62,7 +62,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
         Flowable<String> w = Flowable.just("one", "fail", "two", "three", "fail");
         // Resume Observable is async
         TestObservable f = new TestObservable(sr, "twoResume", "threeResume");
-        Flowable<String> resume = Flowable.create(f);
+        Flowable<String> resume = Flowable.unsafeCreate(f);
 
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
@@ -100,7 +100,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribe() {
-        Flowable<String> testObservable = Flowable.create(new Publisher<String>() {
+        Flowable<String> testObservable = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> t1) {
@@ -122,7 +122,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribeAsync() {
-        Flowable<String> testObservable = Flowable.create(new Publisher<String>() {
+        Flowable<String> testObservable = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> t1) {

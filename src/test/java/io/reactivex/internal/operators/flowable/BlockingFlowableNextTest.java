@@ -233,7 +233,7 @@ public class BlockingFlowableNextTest {
         final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
         final AtomicBoolean running = new AtomicBoolean(true);
         final AtomicInteger count = new AtomicInteger(0);
-        final Flowable<Integer> obs = Flowable.create(new Publisher<Integer>() {
+        final Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(final Subscriber<? super Integer> o) {

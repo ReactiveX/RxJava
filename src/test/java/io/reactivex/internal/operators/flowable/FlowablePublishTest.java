@@ -35,7 +35,7 @@ public class FlowablePublishTest {
     @Test
     public void testPublish() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableFlowable<String> o = Flowable.create(new Publisher<String>() {
+        ConnectableFlowable<String> o = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
@@ -367,7 +367,7 @@ public class FlowablePublishTest {
     @Test
     public void testConnectIsIdempotent() {
         final AtomicInteger calls = new AtomicInteger();
-        Flowable<Integer> source = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> t) {
                 t.onSubscribe(new BooleanSubscription());

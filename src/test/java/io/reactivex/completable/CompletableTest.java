@@ -103,7 +103,7 @@ public class CompletableTest {
         /** */
         private static final long serialVersionUID = 7192337844700923752L;
         
-        public final Completable completable = Completable.create(new CompletableSource() {
+        public final Completable completable = Completable.unsafeCreate(new CompletableSource() {
             @Override
             public void subscribe(CompletableObserver s) {
                 getAndIncrement();
@@ -129,7 +129,7 @@ public class CompletableTest {
         /** */
         private static final long serialVersionUID = 7192337844700923752L;
         
-        public final Completable completable = Completable.create(new CompletableSource() {
+        public final Completable completable = Completable.unsafeCreate(new CompletableSource() {
             @Override
             public void subscribe(CompletableObserver s) {
                 getAndIncrement();
@@ -374,12 +374,12 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void createNull() {
-        Completable.create(null);
+        Completable.unsafeCreate(null);
     }
     
     @Test(timeout = 1000, expected = NullPointerException.class)
     public void createOnSubscribeThrowsNPE() {
-        Completable c = Completable.create(new CompletableSource() {
+        Completable c = Completable.unsafeCreate(new CompletableSource() {
             @Override
             public void subscribe(CompletableObserver s) { throw new NullPointerException(); }
         });
@@ -390,7 +390,7 @@ public class CompletableTest {
     @Test(timeout = 1000)
     public void createOnSubscribeThrowsRuntimeException() {
         try {
-            Completable c = Completable.create(new CompletableSource() {
+            Completable c = Completable.unsafeCreate(new CompletableSource() {
                 @Override
                 public void subscribe(CompletableObserver s) {
                     throw new TestException();
@@ -2752,7 +2752,7 @@ public class CompletableTest {
     public void subscribeOnNormal() {
         final AtomicReference<String> name = new  AtomicReference<String>();
         
-        Completable c = Completable.create(new CompletableSource() {
+        Completable c = Completable.unsafeCreate(new CompletableSource() {
             @Override
             public void subscribe(CompletableObserver s) {
                 name.set(Thread.currentThread().getName());
@@ -2770,7 +2770,7 @@ public class CompletableTest {
     public void subscribeOnError() {
         final AtomicReference<String> name = new  AtomicReference<String>();
         
-        Completable c = Completable.create(new CompletableSource() {
+        Completable c = Completable.unsafeCreate(new CompletableSource() {
             @Override
             public void subscribe(CompletableObserver s) {
                 name.set(Thread.currentThread().getName());
@@ -3866,7 +3866,7 @@ public class CompletableTest {
         final AtomicBoolean hasRun = new AtomicBoolean(false);
         final Exception e = new Exception();
         Completable.error(e)
-            .andThen(Single.<String>create(new Single<String>() {
+            .andThen(Single.<String>unsafeCreate(new Single<String>() {
                 @Override
                 public void subscribeActual(SingleObserver<? super String> s) {
                     hasRun.set(true);
@@ -3967,7 +3967,7 @@ public class CompletableTest {
     @Test
     public void testHookCreate() throws Exception {
         CompletableSource subscriber = mock(CompletableSource.class);
-        Completable create = Completable.create(subscriber);
+        Completable create = Completable.unsafeCreate(subscriber);
 
         verify(onCreate, times(1)).apply(create);
     }
@@ -4431,7 +4431,7 @@ public class CompletableTest {
     public void testHookSubscribeStart() throws Exception {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
-        Completable completable = Completable.create(new CompletableSource() {
+        Completable completable = Completable.unsafeCreate(new CompletableSource() {
             @Override public void subscribe(CompletableObserver s) {
                 s.onComplete();
             }
@@ -4666,13 +4666,13 @@ public class CompletableTest {
         TestSubscriber<String> ts = new TestSubscriber<String>(0);
         final AtomicBoolean hasRun = new AtomicBoolean(false);
         final Exception e = new Exception();
-        Completable.create(new CompletableSource() {
+        Completable.unsafeCreate(new CompletableSource() {
                 @Override
                 public void subscribe(CompletableObserver cs) {
                     cs.onError(e);
                 }
             })
-            .andThen(Flowable.<String>create(new Publisher<String>() {
+            .andThen(Flowable.<String>unsafeCreate(new Publisher<String>() {
                 @Override
                 public void subscribe(Subscriber<? super String> s) {
                     hasRun.set(true);

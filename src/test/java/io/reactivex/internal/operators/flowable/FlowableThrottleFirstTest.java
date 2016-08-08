@@ -43,7 +43,7 @@ public class FlowableThrottleFirstTest {
 
     @Test
     public void testThrottlingWithCompleted() {
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -71,7 +71,7 @@ public class FlowableThrottleFirstTest {
 
     @Test
     public void testThrottlingWithError() {
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());

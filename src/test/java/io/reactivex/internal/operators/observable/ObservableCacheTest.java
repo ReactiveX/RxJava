@@ -58,7 +58,7 @@ public class ObservableCacheTest {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.create(new ObservableSource<String>() {
+        Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(final Observer<? super String> NbpObserver) {
@@ -192,7 +192,7 @@ public class ObservableCacheTest {
     @Test
     public void testNoMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
-        Observable<Integer> firehose = Observable.create(new ObservableSource<Integer>() {
+        Observable<Integer> firehose = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t) {
                 t.onSubscribe(EmptyDisposable.INSTANCE);

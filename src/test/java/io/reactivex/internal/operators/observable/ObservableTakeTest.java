@@ -109,7 +109,7 @@ public class ObservableTakeTest {
 
     @Test
     public void testTakeDoesntLeakErrors() {
-        Observable<String> source = Observable.create(new ObservableSource<String>() {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -135,7 +135,7 @@ public class ObservableTakeTest {
     public void testTakeZeroDoesntLeakError() {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final Disposable bs = Disposables.empty();
-        Observable<String> source = Observable.create(new ObservableSource<String>() {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 subscribed.set(true);
@@ -160,7 +160,7 @@ public class ObservableTakeTest {
     @Test
     public void testUnsubscribeAfterTake() {
         TestObservableFunc f = new TestObservableFunc("one", "two", "three");
-        Observable<String> w = Observable.create(f);
+        Observable<String> w = Observable.unsafeCreate(f);
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
         
@@ -203,7 +203,7 @@ public class ObservableTakeTest {
     @Test(timeout = 2000)
     public void testMultiTake() {
         final AtomicInteger count = new AtomicInteger();
-        Observable.create(new ObservableSource<Integer>() {
+        Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(Observer<? super Integer> s) {
@@ -265,7 +265,7 @@ public class ObservableTakeTest {
         }
     }
 
-    private static Observable<Long> INFINITE_OBSERVABLE = Observable.create(new ObservableSource<Long>() {
+    private static Observable<Long> INFINITE_OBSERVABLE = Observable.unsafeCreate(new ObservableSource<Long>() {
 
         @Override
         public void subscribe(Observer<? super Long> op) {
