@@ -1007,4 +1007,11 @@ public class FlowableConcatTest {
             ts.assertComplete();
         }
     }
+    
+    @Test
+    public void veryLongTake() {
+        Flowable.range(1, 1000000000).concatWith(Flowable.<Integer>empty()).take(10)
+        .test()
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
 }

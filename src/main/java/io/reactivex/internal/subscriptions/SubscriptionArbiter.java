@@ -96,15 +96,14 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
             actual = s;
             
             long r = requested;
+            
+            if (decrementAndGet() != 0) {
+                drainLoop();
+            }
+
             if (r != 0L) {
                 s.request(r);
             }
-            
-            if (decrementAndGet() == 0) {
-                return;
-            }
-
-            drainLoop();
 
             return;
         }
@@ -133,15 +132,14 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
                     }
                 }
                 Subscription a = actual;
+
+                if (decrementAndGet() != 0) {
+                    drainLoop();
+                }
+
                 if (a != null) {
                     a.request(n);
                 }
-
-                if (decrementAndGet() == 0) {
-                    return;
-                }
-
-                drainLoop();
 
                 return;
             }
@@ -235,6 +233,9 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
     final void drainLoop() {
         int missed = 1;
 
+        long requestAmount = 0L;
+        Subscription requestTarget = null;
+        
         for (; ; ) {
 
             Subscription ms = missedSubscription.get();
@@ -287,15 +288,20 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
                     }
                     actual = ms;
                     if (r != 0L) {
-                        ms.request(r);
+                        requestAmount = BackpressureHelper.addCap(requestAmount, r);
+                        requestTarget = ms;
                     }
-                } else if (mr != 0L && a != null) {
-                    a.request(mr);
+                } else if (a != null && mr != 0L) {
+                    requestAmount = BackpressureHelper.addCap(requestAmount, mr);
+                    requestTarget = a;
                 }
             }
 
             missed = addAndGet(-missed);
             if (missed == 0) {
+                if (requestAmount != 0L) {
+                    requestTarget.request(requestAmount);
+                }
                 return;
             }
         }

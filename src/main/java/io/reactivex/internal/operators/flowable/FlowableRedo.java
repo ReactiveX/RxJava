@@ -22,7 +22,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscribers.flowable.ToNotificationSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
-import io.reactivex.processors.BehaviorProcessor;
+import io.reactivex.processors.*;
 
 // FIXME split and update to the Rsc version
 public final class FlowableRedo<T> extends Flowable<T> {
@@ -39,7 +39,7 @@ public final class FlowableRedo<T> extends Flowable<T> {
     public void subscribeActual(Subscriber<? super T> s) {
         
         // FIXE use BehaviorSubject? (once available)
-        BehaviorProcessor<Try<Optional<Object>>> subject = BehaviorProcessor.create();
+        FlowProcessor<Try<Optional<Object>>> subject = BehaviorProcessor.<Try<Optional<Object>>>create().toSerialized();
         
         final RedoSubscriber<T> parent = new RedoSubscriber<T>(s, subject, source);
 
@@ -70,13 +70,13 @@ public final class FlowableRedo<T> extends Flowable<T> {
         /** */
         private static final long serialVersionUID = -1151903143112844287L;
         final Subscriber<? super T> actual;
-        final BehaviorProcessor<Try<Optional<Object>>> subject;
+        final FlowProcessor<Try<Optional<Object>>> subject;
         final Publisher<? extends T> source;
         final SubscriptionArbiter arbiter;
         
         final AtomicInteger wip = new AtomicInteger();
         
-        public RedoSubscriber(Subscriber<? super T> actual, BehaviorProcessor<Try<Optional<Object>>> subject, Publisher<? extends T> source) {
+        public RedoSubscriber(Subscriber<? super T> actual, FlowProcessor<Try<Optional<Object>>> subject, Publisher<? extends T> source) {
             this.actual = actual;
             this.subject = subject;
             this.source = source;
