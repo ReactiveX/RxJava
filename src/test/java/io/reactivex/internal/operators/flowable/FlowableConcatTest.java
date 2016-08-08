@@ -1008,10 +1008,34 @@ public class FlowableConcatTest {
         }
     }
     
-    @Test
+    static final class InfiniteIterator implements Iterator<Integer>, Iterable<Integer> {
+
+        int count;
+        
+        @Override
+        public boolean hasNext() {
+            return true;
+        }
+
+        @Override
+        public Integer next() {
+            return count++;
+        }
+        
+        @Override
+        public void remove() {
+        }
+        
+        @Override
+        public Iterator<Integer> iterator() {
+            return this;
+        }
+    }
+    
+    @Test(timeout = 5000)
     public void veryLongTake() {
-        Flowable.range(1, 1000000000).concatWith(Flowable.<Integer>empty()).take(10)
+        Flowable.fromIterable(new InfiniteIterator()).concatWith(Flowable.<Integer>empty()).take(10)
         .test()
-        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        .assertResult(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
     }
 }
