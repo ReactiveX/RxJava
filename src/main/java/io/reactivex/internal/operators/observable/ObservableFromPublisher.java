@@ -36,6 +36,9 @@ public final class ObservableFromPublisher<T> extends Observable<T> {
     extends AtomicBoolean
     implements Subscriber<T>, Disposable {
 
+        /** */
+        private static final long serialVersionUID = -7306579371159152354L;
+        
         private final Observer<? super T> o;
         private Subscription inner;
 

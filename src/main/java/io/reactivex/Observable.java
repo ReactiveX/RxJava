@@ -1050,7 +1050,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> asObservable() {
-        return new ObservableWrapper<T>(this);
+        return new ObservableFromSource<T>(this);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)

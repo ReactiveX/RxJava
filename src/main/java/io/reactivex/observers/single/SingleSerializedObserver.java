@@ -17,13 +17,13 @@ import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public final class SingleSerializedObserver implements SingleObserver {
+public final class SingleSerializedObserver<T> implements SingleObserver<T> {
 
-    final SingleObserver actual;
+    final SingleObserver<? super T> actual;
 
     final AtomicBoolean once = new AtomicBoolean();
 
-    public SingleSerializedObserver(SingleObserver actual) {
+    public SingleSerializedObserver(SingleObserver<? super T> actual) {
         this.actual = actual;
     }
     
@@ -33,7 +33,7 @@ public final class SingleSerializedObserver implements SingleObserver {
     }
 
     @Override
-    public void onSuccess(Object value) {
+    public void onSuccess(T value) {
         if (once.compareAndSet(false, true)) {
             actual.onSuccess(value);
         }
