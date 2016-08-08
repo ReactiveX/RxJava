@@ -111,7 +111,7 @@ public class SafeObserverTest {
             new SafeSubscriber<String>(OBSERVER_ONERROR_NOTIMPLEMENTED()).onError(new SafeObserverTestException("error!"));
             fail("expects exception to be thrown");
         } catch (Exception e) {
-            assertTrue(e instanceof OnErrorNotImplementedException);
+//            assertTrue(e instanceof OnErrorNotImplementedException);
             assertTrue(e.getCause() instanceof SafeObserverTestException);
             assertEquals("error!", e.getCause().getMessage());
         }
@@ -180,7 +180,7 @@ public class SafeObserverTest {
 
             // FIXME no longer assertable
 //            assertTrue(o.isUnsubscribed());
-            assertTrue(e instanceof UnsubscribeFailedException);
+//            assertTrue(e instanceof UnsubscribeFailedException);
             assertTrue(e.getCause() instanceof SafeObserverTestException);
             assertEquals("failure from unsubscribe", e.getMessage());
             // expected since onError fails so SafeObserver can't help
@@ -220,7 +220,7 @@ public class SafeObserverTest {
             assertEquals("failed", onError.get().getMessage());
 
             // now assert the exception that was thrown
-            OnErrorFailedException onErrorFailedException = (OnErrorFailedException) e;
+            RuntimeException onErrorFailedException = (RuntimeException) e;
             assertTrue(onErrorFailedException.getCause() instanceof SafeObserverTestException);
             assertEquals("failure from unsubscribe", e.getMessage());
         }
@@ -435,7 +435,8 @@ public class SafeObserverTest {
 
             @Override
             public void onError(Throwable e) {
-                throw new OnErrorNotImplementedException(e);
+                throw new RuntimeException(e);
+//                throw new OnErrorNotImplementedException(e);
             }
 
             @Override
@@ -496,7 +497,7 @@ public class SafeObserverTest {
         try {
             s.onComplete();
             Assert.fail();
-        } catch (OnCompleteFailedException e) {
+        } catch (RuntimeException e) {
            assertNull(error.get());
         }
     }
