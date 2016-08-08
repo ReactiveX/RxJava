@@ -33,6 +33,7 @@ import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.internal.util.ArrayListSupplier;
+import io.reactivex.internal.util.HashMapSupplier;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
@@ -1316,7 +1317,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> buffer(int count, int skip) {
-        return buffer(count, skip, ArrayListSupplier.<T>instance());
+        return buffer(count, skip, ArrayListSupplier.<T>asCallable());
     }
 
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1334,13 +1335,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<List<T>> buffer(long timespan, long timeskip, TimeUnit unit) {
-        return buffer(timespan, timeskip, unit, Schedulers.computation(), ArrayListSupplier.<T>instance());
+        return buffer(timespan, timeskip, unit, Schedulers.computation(), ArrayListSupplier.<T>asCallable());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<List<T>> buffer(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler) {
-        return buffer(timespan, timeskip, unit, scheduler, ArrayListSupplier.<T>instance());
+        return buffer(timespan, timeskip, unit, scheduler, ArrayListSupplier.<T>asCallable());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
@@ -1367,7 +1368,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<List<T>> buffer(long timespan, TimeUnit unit, int count, Scheduler scheduler) {
-        return buffer(timespan, unit, count, scheduler, ArrayListSupplier.<T>instance(), false);
+        return buffer(timespan, unit, count, scheduler, ArrayListSupplier.<T>asCallable(), false);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
@@ -1389,7 +1390,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler) {
-        return buffer(timespan, unit, Integer.MAX_VALUE, scheduler, ArrayListSupplier.<T>instance(), false);
+        return buffer(timespan, unit, Integer.MAX_VALUE, scheduler, ArrayListSupplier.<T>asCallable(), false);
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
@@ -1397,7 +1398,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <TOpening, TClosing> Flowable<List<T>> buffer(
             Flowable<? extends TOpening> bufferOpenings, 
             Function<? super TOpening, ? extends Publisher<? extends TClosing>> bufferClosingSelector) {
-        return buffer(bufferOpenings, bufferClosingSelector, ArrayListSupplier.<T>instance());
+        return buffer(bufferOpenings, bufferClosingSelector, ArrayListSupplier.<T>asCallable());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
@@ -1418,7 +1419,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         /*
          * XXX: javac complains if this is not manually cast, Eclipse is fine
          */
-        return buffer(boundary, ArrayListSupplier.<T>instance());
+        return buffer(boundary, ArrayListSupplier.<T>asCallable());
     }
 
     @BackpressureSupport(BackpressureKind.ERROR)
@@ -1443,7 +1444,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<List<T>> buffer(Callable<? extends Publisher<B>> boundarySupplier) {
-        return buffer(boundarySupplier, ArrayListSupplier.<T>instance());
+        return buffer(boundarySupplier, ArrayListSupplier.<T>asCallable());
         
     }
 
@@ -3538,12 +3539,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
-        return collect(new Callable<Map<K, T>>() {
-            @Override
-            public Map<K, T> call() {
-                return new HashMap<K, T>();
-            }
-        }, new BiConsumer<Map<K, T>, T>() {
+        return collect(HashMapSupplier.<K, T>asCallable(), new BiConsumer<Map<K, T>, T>() {
             @Override
             public void accept(Map<K, T> m, T t) throws Exception {
                 K key = keySelector.apply(t);
@@ -3557,12 +3553,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <K, V> Flowable<Map<K, V>> toMap(final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(valueSelector, "valueSelector is null");
-        return collect(new Callable<Map<K, V>>() {
-            @Override
-            public Map<K, V> call() {
-                return new HashMap<K, V>();
-            }
-        }, new BiConsumer<Map<K, V>, T>() {
+        return collect(HashMapSupplier.<K, V>asCallable(), new BiConsumer<Map<K, V>, T>() {
             @Override
             public void accept(Map<K, V> m, T t) throws Exception {
                 K key = keySelector.apply(t);
@@ -3593,36 +3584,16 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
         Function<? super T, ? extends T> valueSelector = Functions.identity();
-        Callable<Map<K, Collection<T>>> mapSupplier = new Callable<Map<K, Collection<T>>>() {
-            @Override
-            public Map<K, Collection<T>> call() {
-                return new HashMap<K, Collection<T>>();
-            }
-        };
-        Function<K, Collection<T>> collectionFactory = new Function<K, Collection<T>>() {
-            @Override
-            public Collection<T> apply(K k) {
-                return new ArrayList<T>();
-            }
-        };
+        Callable<Map<K, Collection<T>>> mapSupplier = HashMapSupplier.asCallable();
+        Function<K, List<T>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
-        Callable<Map<K, Collection<V>>> mapSupplier = new Callable<Map<K, Collection<V>>>() {
-            @Override
-            public Map<K, Collection<V>> call() {
-                return new HashMap<K, Collection<V>>();
-            }
-        };
-        Function<K, Collection<V>> collectionFactory = new Function<K, Collection<V>>() {
-            @Override
-            public Collection<V> apply(K k) {
-                return new ArrayList<V>();
-            }
-        };
+        Callable<Map<K, Collection<V>>> mapSupplier = HashMapSupplier.asCallable();
+        Function<K, List<V>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
     }
     
@@ -3663,12 +3634,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Function<? super T, ? extends V> valueSelector,
             Callable<Map<K, Collection<V>>> mapSupplier
             ) {
-        return toMultimap(keySelector, valueSelector, mapSupplier, new Function<K, Collection<V>>() {
-            @Override
-            public Collection<V> apply(K k) {
-                return new ArrayList<V>();
-            }
-        });
+        return toMultimap(keySelector, valueSelector, mapSupplier, ArrayListSupplier.<V, K>asFunction());
     }
     
     @BackpressureSupport(BackpressureKind.NONE)

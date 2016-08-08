@@ -30,7 +30,7 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Fl
     @SuppressWarnings("unchecked")
     public FlowableToList(Publisher<T> source) {
         this.source = source;
-        this.collectionSupplier = (Callable<U>)ArrayListSupplier.instance();
+        this.collectionSupplier = (Callable<U>)ArrayListSupplier.asCallable();
     }
 
     public FlowableToList(Publisher<T> source, Callable<U> collectionSupplier) {
