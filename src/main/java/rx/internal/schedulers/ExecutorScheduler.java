@@ -64,6 +64,9 @@ public final class ExecutorScheduler extends Scheduler {
             if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
+            
+            action = RxJavaHooks.onScheduledAction(action);
+            
             ScheduledAction ea = new ScheduledAction(action, tasks);
             tasks.add(ea);
             queue.offer(ea);
@@ -111,13 +114,15 @@ public final class ExecutorScheduler extends Scheduler {
         }
         
         @Override
-        public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
+        public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             if (delayTime <= 0) {
                 return schedule(action);
             }
             if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
+            
+            final Action0 decorated = RxJavaHooks.onScheduledAction(action);
             
             final MultipleAssignmentSubscription first = new MultipleAssignmentSubscription();
             final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
@@ -137,7 +142,7 @@ public final class ExecutorScheduler extends Scheduler {
                         return;
                     }
                     // schedule the real action untimed
-                    Subscription s2 = schedule(action);
+                    Subscription s2 = schedule(decorated);
                     mas.set(s2);
                     // unless the worker is unsubscribed, we should get a new ScheduledAction
                     if (s2.getClass() == ScheduledAction.class) {

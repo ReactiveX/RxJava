@@ -19,15 +19,16 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Test;
+
+import org.junit.*;
+
 import rx.*;
 import rx.Scheduler.Worker;
 import rx.functions.*;
 import rx.internal.schedulers.ExecutorScheduler.ExecutorSchedulerWorker;
 import rx.internal.util.RxThreadFactory;
-import rx.schedulers.AbstractSchedulerConcurrencyTests;
-import rx.schedulers.SchedulerTests;
-import rx.schedulers.Schedulers;
+import rx.plugins.RxJavaHooks;
+import rx.schedulers.*;
 
 public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -207,5 +208,45 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         s.unsubscribe();
         
         assertFalse(w.tasks.hasSubscriptions());
+    }
+    
+    @Test
+    public void actionHookCalled() throws Exception {
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        try {
+            final int[] call = { 0 };
+            
+            RxJavaHooks.setOnScheduleAction(new Func1<Action0, Action0>() {
+                @Override
+                public Action0 call(Action0 t) {
+                    call[0]++;
+                    return t;
+                }
+            });
+            
+            Scheduler s = Schedulers.from(exec);
+            
+            Worker w = s.createWorker();
+            
+            final CountDownLatch cdl = new CountDownLatch(1);
+            
+            try {
+                w.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        cdl.countDown();
+                    }
+                });
+                
+                Assert.assertTrue("Action timed out", cdl.await(5, TimeUnit.SECONDS));
+            } finally {
+                w.unsubscribe();
+            }
+            
+            Assert.assertEquals("Hook not called!", 1, call[0]);
+        } finally {
+            RxJavaHooks.reset();
+            exec.shutdown();
+        }
     }
 }
