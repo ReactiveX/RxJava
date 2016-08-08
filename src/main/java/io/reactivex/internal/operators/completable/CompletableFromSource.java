@@ -11,19 +11,20 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.observable;
+package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
 
-public final class ObservableWrapper<T> extends Observable<T> {
-    final ObservableSource<T> onSubscribe;
+public final class CompletableFromSource extends Completable {
 
-    public ObservableWrapper(ObservableSource<T> onSubscribe) {
-        this.onSubscribe = onSubscribe;
+    final CompletableSource source;
+
+    public CompletableFromSource(CompletableSource source) {
+        this.source = source;
     }
     
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
-        onSubscribe.subscribe(observer);
+    protected void subscribeActual(CompletableObserver observer) {
+        source.subscribe(observer);
     }
 }

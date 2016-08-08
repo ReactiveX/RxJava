@@ -582,7 +582,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         }
         Objects.requireNonNull(publisher, "publisher is null");
 
-        return new FlowableWrapper<T>(publisher);
+        return new FlowableFromPublisher<T>(publisher);
     }
 
     @BackpressureSupport(BackpressureKind.FULL)

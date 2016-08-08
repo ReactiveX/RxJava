@@ -42,7 +42,7 @@ public abstract class Single<T> implements SingleSource<T> {
         if (source instanceof Single) {
             return (Single<T>)source;
         }
-        return new SingleWrapper<T>(source);
+        return new SingleFromSource<T>(source);
     }
     
     public static <T> Single<T> amb(final Iterable<? extends SingleSource<? extends T>> sources) {
@@ -195,10 +195,10 @@ public abstract class Single<T> implements SingleSource<T> {
         return concat(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
     }
     
-    public static <T> Single<T> create(SingleSource<T> onSubscribe) {
-        Objects.requireNonNull(onSubscribe, "onSubscribe is null");
+    public static <T> Single<T> create(SingleSource<T> source) {
+        Objects.requireNonNull(source, "source is null");
         // TODO plugin wrapper
-        return new SingleWrapper<T>(onSubscribe);
+        return new SingleFromSource<T>(source);
     }
     
     public static <T> Single<T> defer(final Callable<? extends SingleSource<? extends T>> singleSupplier) {

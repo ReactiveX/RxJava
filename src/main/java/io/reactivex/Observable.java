@@ -327,18 +327,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return fromArray(sources).concatMap((Function)Functions.identity());
     }
 
-    public static <T> Observable<T> create(ObservableSource<T> onSubscribe) {
-        Objects.requireNonNull(onSubscribe, "onSubscribe is null");
-        return new ObservableWrapper<T>(onSubscribe);
+    public static <T> Observable<T> create(ObservableSource<T> source) {
+        Objects.requireNonNull(source, "source is null");
+        return new ObservableFromSource<T>(source);
     }
     
-    public static <T> Observable<T> wrap(ObservableSource<T> onSubscribe) {
-        Objects.requireNonNull(onSubscribe, "onSubscribe is null");
+    public static <T> Observable<T> wrap(ObservableSource<T> source) {
+        Objects.requireNonNull(source, "source is null");
         // TODO plugin wrapper?
-        if (onSubscribe instanceof Observable) {
-            return (Observable<T>)onSubscribe;
+        if (source instanceof Observable) {
+            return (Observable<T>)source;
         }
-        return new ObservableWrapper<T>(onSubscribe);
+        return new ObservableFromSource<T>(source);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)

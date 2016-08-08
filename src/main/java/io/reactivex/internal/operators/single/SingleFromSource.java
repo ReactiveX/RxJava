@@ -15,15 +15,15 @@ package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
 
-public final class SingleWrapper<T> extends Single<T> {
-    final SingleSource<T> onSubscribe;
+public final class SingleFromSource<T> extends Single<T> {
+    final SingleSource<T> source;
 
-    public SingleWrapper(SingleSource<T> onSubscribe) {
-        this.onSubscribe = onSubscribe;
+    public SingleFromSource(SingleSource<T> source) {
+        this.source = source;
     }
     
     @Override
-    protected void subscribeActual(SingleObserver<? super T> subscriber) {
-        onSubscribe.subscribe(subscriber);
+    protected void subscribeActual(SingleObserver<? super T> observer) {
+        source.subscribe(observer);
     }
 }
