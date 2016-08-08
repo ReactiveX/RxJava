@@ -60,7 +60,7 @@ public class ExceptionsTest {
      * https://github.com/ReactiveX/RxJava/issues/3885
      */
     @Ignore("v2 components should not throw")
-    @Test(expected = OnCompleteFailedException.class)
+    @Test(expected = RuntimeException.class)
     public void testOnCompletedExceptionIsThrown() {
         Observable.empty()
             .subscribe(new Observer<Object>() {
@@ -227,7 +227,7 @@ public class ExceptionsTest {
                 }
             });
             fail("expecting an exception to be thrown");
-        } catch (OnErrorFailedException t) {
+        } catch (RuntimeException t) {
             CompositeException cause = (CompositeException) t.getCause();
             assertTrue(cause.getExceptions().get(0) instanceof IllegalArgumentException);
             assertTrue(cause.getExceptions().get(1) instanceof IllegalStateException);
@@ -239,7 +239,7 @@ public class ExceptionsTest {
      * @throws Exception on arbitrary errors
      */
     @Ignore("v2 components should not throw")
-    @Test(expected = OnErrorFailedException.class)
+    @Test(expected = RuntimeException.class)
     public void testOnErrorExceptionIsThrownFromGroupBy() throws Exception {
         Observable
             .just(1)
@@ -278,7 +278,7 @@ public class ExceptionsTest {
      * @throws Exception on arbitrary errors
      */
     @Ignore("v2 components should not throw")
-    @Test(expected = OnErrorFailedException.class)
+    @Test(expected = RuntimeException.class)
     public void testOnErrorExceptionIsThrownFromOnNext() throws Exception {
         Observable
             .just(1)
@@ -313,7 +313,7 @@ public class ExceptionsTest {
     }
 
     @Ignore("v2 components should not throw")
-    @Test(expected = OnErrorFailedException.class)
+    @Test(expected = RuntimeException.class)
     public void testOnErrorExceptionIsThrownFromSubscribe() {
         Observable.create(new ObservableSource<Integer>() {
                               @Override
@@ -330,7 +330,7 @@ public class ExceptionsTest {
     }
 
     @Ignore("v2 components should not throw")
-    @Test(expected = OnErrorFailedException.class)
+    @Test(expected = RuntimeException.class)
     public void testOnErrorExceptionIsThrownFromUnsafeSubscribe() {
         Observable.create(new ObservableSource<Integer>() {
                               @Override
@@ -347,7 +347,7 @@ public class ExceptionsTest {
     }
 
     @Ignore("v2 components should not throw")
-    @Test(expected = OnErrorFailedException.class)
+    @Test(expected = RuntimeException.class)
     public void testOnErrorExceptionIsThrownFromSingleDoOnSuccess() throws Exception {
         Single.just(1)
                 .doOnSuccess(new Consumer<Integer>() {
@@ -360,7 +360,7 @@ public class ExceptionsTest {
     }
 
     @Ignore("v2 components should not throw")
-    @Test(expected = OnErrorFailedException.class)
+    @Test(expected = RuntimeException.class)
     public void testOnErrorExceptionIsThrownFromSingleSubscribe() {
         Single.create(new SingleSource<Integer>() {
                           @Override
@@ -377,7 +377,7 @@ public class ExceptionsTest {
     }
 
     @Ignore("v2 components should not throw")
-    @Test(expected = OnErrorFailedException.class)
+    @Test(expected = RuntimeException.class)
     public void testOnErrorExceptionIsThrownFromSingleUnsafeSubscribe() {
         Single.create(new SingleSource<Integer>() {
                           @Override

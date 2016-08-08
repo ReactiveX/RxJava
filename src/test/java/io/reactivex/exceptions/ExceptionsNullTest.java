@@ -22,39 +22,44 @@ import org.junit.*;
  */
 public class ExceptionsNullTest {
 
+    @Ignore("OnCompleteFailedException will likely not be ported")
     @Test
     public void testOnCompleteFailedExceptionNull() {
-        Throwable t = new OnCompleteFailedException(null);
-        
-        Assert.assertTrue(t.getCause() instanceof NullPointerException);
-    }
-    
-    @Test
-    public void testOnCompleteFailedExceptionMessageAndNull() {
-        Throwable t = new OnCompleteFailedException("Message", null);
-        
-        Assert.assertTrue(t.getCause() instanceof NullPointerException);
+//        Throwable t = new OnCompleteFailedException(null);
+//
+//        Assert.assertTrue(t.getCause() instanceof NullPointerException);
     }
 
+    @Ignore("OnCompleteFailedException will likely not be ported")
+    @Test
+    public void testOnCompleteFailedExceptionMessageAndNull() {
+//        Throwable t = new OnCompleteFailedException("Message", null);
+//
+//        Assert.assertTrue(t.getCause() instanceof NullPointerException);
+    }
+
+    @Ignore("OnErrorFailedException will likely not be ported")
     @Test
     public void testOnErrorFailedExceptionNull() {
-        Throwable t = new OnErrorFailedException(null);
-        
-        Assert.assertTrue(t.getCause() instanceof NullPointerException);
+//        Throwable t = new OnErrorFailedException(null);
+//
+//        Assert.assertTrue(t.getCause() instanceof NullPointerException);
     }
-    
+
+    @Ignore("OnErrorFailedException will likely not be ported")
     @Test
     public void testOnErrorFailedExceptionMessageAndNull() {
-        Throwable t = new OnErrorFailedException("Message", null);
-        
-        Assert.assertTrue(t.getCause() instanceof NullPointerException);
+//        Throwable t = new OnErrorFailedException("Message", null);
+//
+//        Assert.assertTrue(t.getCause() instanceof NullPointerException);
     }
-    
+
+    @Ignore("UnsubscribeFailedException will likely not be ported")
     @Test
     public void testUnsubscribeFailedExceptionNull() {
-        Throwable t = new UnsubscribeFailedException(null);
-        
-        Assert.assertTrue(t.getCause() instanceof NullPointerException);
+//        Throwable t = new UnsubscribeFailedException(null);
+//
+//        Assert.assertTrue(t.getCause() instanceof NullPointerException);
     }
     
     @Ignore("UnsubscribeFailedException will likely not be ported")
@@ -65,18 +70,20 @@ public class ExceptionsNullTest {
 //        Assert.assertTrue(t.getCause() instanceof NullPointerException);
     }
 
+    @Ignore("OnErrorNotImplementedException will likely not be ported")
     @Test
     public void testOnErrorNotImplementedExceptionNull() {
-        Throwable t = new OnErrorNotImplementedException(null);
-        
-        Assert.assertTrue(t.getCause() instanceof NullPointerException);
+//        Throwable t = new OnErrorNotImplementedException(null);
+//
+//        Assert.assertTrue(t.getCause() instanceof NullPointerException);
     }
-    
+
+    @Ignore("OnErrorNotImplementedException will likely not be ported")
     @Test
     public void testOnErrorNotImplementedExceptionMessageAndNull() {
-        Throwable t = new OnErrorNotImplementedException("Message", null);
-        
-        Assert.assertTrue(t.getCause() instanceof NullPointerException);
+//        Throwable t = new OnErrorNotImplementedException("Message", null);
+//
+//        Assert.assertTrue(t.getCause() instanceof NullPointerException);
     }
     
     @Ignore("OnErrorThrowable may be ported later")
