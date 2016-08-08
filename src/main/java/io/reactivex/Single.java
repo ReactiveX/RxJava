@@ -34,9 +34,6 @@ import io.reactivex.schedulers.Schedulers;
  * @param <T> the value type
  */
 public abstract class Single<T> implements SingleSource<T> {
-
-    static final Single<Object> NEVER = new SingleNever<Object>();
-
     static <T> Single<T> wrap(SingleSource<T> source) {
         Objects.requireNonNull(source, "source is null");
         if (source instanceof Single) {
@@ -389,7 +386,7 @@ public abstract class Single<T> implements SingleSource<T> {
     
     @SuppressWarnings("unchecked")
     public static <T> Single<T> never() {
-        return (Single<T>)NEVER; 
+        return (Single<T>) SingleNever.INSTANCE;
     }
     
     public static Single<Long> timer(long delay, TimeUnit unit) {
