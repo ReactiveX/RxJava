@@ -34,8 +34,12 @@ import io.reactivex.internal.operators.flowable.*;
  * @param <T>
  *          the type of items emitted by the {@code ConnectableObservable}
  */
-public abstract class ConnectableFlowable<T> extends Flowable<T> {
-    
+public abstract class ConnectableFlowable<T> extends FlowableWithUpstream<T, T> {
+
+    protected ConnectableFlowable(Publisher<T> source) {
+        super(source);
+    }
+
     /**
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
      * {@link Flowable} to its {@link Subscriber}s.
