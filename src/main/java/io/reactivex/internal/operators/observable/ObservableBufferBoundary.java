@@ -17,7 +17,6 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
@@ -31,15 +30,14 @@ import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableBufferBoundary<T, U extends Collection<? super T>, Open, Close> 
-extends Observable<U> {
-    final ObservableSource<T> source;
+extends ObservableWithUpstream<T, U> {
     final Callable<U> bufferSupplier;
     final ObservableSource<? extends Open> bufferOpen;
     final Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose;
 
     public ObservableBufferBoundary(ObservableSource<T> source, ObservableSource<? extends Open> bufferOpen,
                                     Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose, Callable<U> bufferSupplier) {
-        this.source = source;
+        super(source);
         this.bufferOpen = bufferOpen;
         this.bufferClose = bufferClose;
         this.bufferSupplier = bufferSupplier;

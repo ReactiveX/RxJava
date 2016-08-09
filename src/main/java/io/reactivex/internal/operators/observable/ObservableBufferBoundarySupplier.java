@@ -27,13 +27,12 @@ import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableBufferBoundarySupplier<T, U extends Collection<? super T>, B> 
-extends Observable<U> {
-    final ObservableSource<T> source;
+extends ObservableWithUpstream<T, U> {
     final Callable<? extends ObservableSource<B>> boundarySupplier;
     final Callable<U> bufferSupplier;
     
     public ObservableBufferBoundarySupplier(ObservableSource<T> source, Callable<? extends ObservableSource<B>> boundarySupplier, Callable<U> bufferSupplier) {
-        this.source = source;
+        super(source);
         this.boundarySupplier = boundarySupplier;
         this.bufferSupplier = bufferSupplier;
     }

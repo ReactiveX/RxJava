@@ -18,11 +18,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 
-public final class ObservableRepeat<T> extends Observable<T> {
-    final Observable<? extends T> source;
+public final class ObservableRepeat<T> extends ObservableWithUpstream<T, T> {
     final long count;
-    public ObservableRepeat(Observable<? extends T> source, long count) {
-        this.source = source;
+    public ObservableRepeat(Observable<T> source, long count) {
+        super(source);
         this.count = count;
     }
     
@@ -41,9 +40,9 @@ public final class ObservableRepeat<T> extends Observable<T> {
         
         final Observer<? super T> actual;
         final SerialDisposable sd;
-        final Observable<? extends T> source;
+        final ObservableSource<? extends T> source;
         long remaining;
-        public RepeatSubscriber(Observer<? super T> actual, long count, SerialDisposable sd, Observable<? extends T> source) {
+        public RepeatSubscriber(Observer<? super T> actual, long count, SerialDisposable sd, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sd = sd;
             this.source = source;

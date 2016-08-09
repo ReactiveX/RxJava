@@ -29,7 +29,7 @@ import io.reactivex.observables.ConnectableObservable;
  * @param <T>
  *            the value type
  */
-public final class ObservableRefCount<T> extends Observable<T> {
+public final class ObservableRefCount<T> extends ObservableWithUpstream<T, T> {
 
     final ConnectableObservable<? extends T> source;
     
@@ -48,7 +48,8 @@ public final class ObservableRefCount<T> extends Observable<T> {
      * @param source
      *            observable to apply ref count to
      */
-    public ObservableRefCount(ConnectableObservable<? extends T> source) {
+    public ObservableRefCount(ConnectableObservable<T> source) {
+        super(source);
         this.source = source;
     }
 

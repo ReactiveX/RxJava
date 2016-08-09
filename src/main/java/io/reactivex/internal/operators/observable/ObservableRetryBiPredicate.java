@@ -20,13 +20,12 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.BiPredicate;
 
-public final class ObservableRetryBiPredicate<T> extends Observable<T> {
-    final Observable<? extends T> source;
+public final class ObservableRetryBiPredicate<T> extends ObservableWithUpstream<T, T> {
     final BiPredicate<? super Integer, ? super Throwable> predicate;
     public ObservableRetryBiPredicate(
-            Observable<? extends T> source, 
+            Observable<T> source,
             BiPredicate<? super Integer, ? super Throwable> predicate) {
-        this.source = source;
+        super(source);
         this.predicate = predicate;
     }
     
@@ -45,11 +44,11 @@ public final class ObservableRetryBiPredicate<T> extends Observable<T> {
         
         final Observer<? super T> actual;
         final SerialDisposable sa;
-        final Observable<? extends T> source;
+        final ObservableSource<? extends T> source;
         final BiPredicate<? super Integer, ? super Throwable> predicate;
         int retries;
         public RetryBiSubscriber(Observer<? super T> actual, 
-                BiPredicate<? super Integer, ? super Throwable> predicate, SerialDisposable sa, Observable<? extends T> source) {
+                BiPredicate<? super Integer, ? super Throwable> predicate, SerialDisposable sa, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
             this.source = source;

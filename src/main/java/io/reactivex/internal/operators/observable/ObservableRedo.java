@@ -22,13 +22,12 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.subscribers.observable.ToNotificationObserver;
 import io.reactivex.subjects.BehaviorSubject;
 
-public final class ObservableRedo<T> extends Observable<T> {
-    final ObservableSource<? extends T> source;
+public final class ObservableRedo<T> extends ObservableWithUpstream<T, T> {
     final Function<? super Observable<Try<Optional<Object>>>, ? extends ObservableSource<?>> manager;
 
-    public ObservableRedo(ObservableSource<? extends T> source,
+    public ObservableRedo(ObservableSource<T> source,
             Function<? super Observable<Try<Optional<Object>>>, ? extends ObservableSource<?>> manager) {
-        this.source = source;
+        super(source);
         this.manager = manager;
     }
     
