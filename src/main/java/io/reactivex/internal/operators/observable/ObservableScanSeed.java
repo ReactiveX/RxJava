@@ -20,7 +20,7 @@ import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableScanSeed<T, R> extends ObservableWithUpstream<T, R> {
+public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstream<T, R> {
     final BiFunction<R, ? super T, R> accumulator;
     final Callable<R> seedSupplier;
 

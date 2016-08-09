@@ -23,7 +23,7 @@ import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableOnBackpressureBuffer<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithUpstream<T, T> {
     final int bufferSize;
     final boolean unbounded;
     final boolean delayError;

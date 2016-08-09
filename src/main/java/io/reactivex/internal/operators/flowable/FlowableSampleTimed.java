@@ -25,7 +25,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableSampleTimed<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T, T> {
     final long period;
     final TimeUnit unit;
     final Scheduler scheduler;

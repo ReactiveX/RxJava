@@ -20,7 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableMapNotification<T, R> extends ObservableWithUpstream<T, ObservableSource<? extends R>> {
+public final class ObservableMapNotification<T, R> extends AbstractObservableWithUpstream<T, ObservableSource<? extends R>> {
 
     final Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper;
     final Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper;

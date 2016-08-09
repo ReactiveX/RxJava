@@ -17,7 +17,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableCount<T> extends FlowableWithUpstream<T, Long> {
+public final class FlowableCount<T> extends AbstractFlowableWithUpstream<T, Long> {
 
     public FlowableCount(Publisher<T> source) {
         super(source);

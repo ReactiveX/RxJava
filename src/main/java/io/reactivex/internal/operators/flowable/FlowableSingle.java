@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableSingle<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> {
     
     final T defaultValue;
     

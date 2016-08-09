@@ -25,7 +25,7 @@ import io.reactivex.internal.util.*;
  *
  * @param <T> the source element type
  */
-public final class ObservableCache<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, T> {
     /** The cache and replay state. */
     final CacheState<T> state;
     

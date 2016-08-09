@@ -19,7 +19,7 @@ import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscribers.flowable.*;
 
-public final class FlowableDistinctUntilChanged<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithUpstream<T, T> {
 
     final BiPredicate<? super T, ? super T> comparer;
 

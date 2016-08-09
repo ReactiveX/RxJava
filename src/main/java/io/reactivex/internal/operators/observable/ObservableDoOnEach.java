@@ -20,7 +20,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableDoOnEach<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<T, T> {
     final Consumer<? super T> onNext;
     final Consumer<? super Throwable> onError;
     final Runnable onComplete;

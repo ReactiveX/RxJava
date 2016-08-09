@@ -31,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.*;
 
-public final class FlowableWindowBoundarySupplier<T, B> extends FlowableWithUpstream<T, Flowable<T>> {
+public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowableWithUpstream<T, Flowable<T>> {
     final Callable<? extends Publisher<B>> other;
     final int bufferSize;
     

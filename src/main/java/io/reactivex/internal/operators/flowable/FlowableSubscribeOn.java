@@ -21,7 +21,7 @@ import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableSubscribeOn<T> extends FlowableWithUpstream<T , T> {
+public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T , T> {
     final Scheduler scheduler;
     
     public FlowableSubscribeOn(Publisher<T> source, Scheduler scheduler) {

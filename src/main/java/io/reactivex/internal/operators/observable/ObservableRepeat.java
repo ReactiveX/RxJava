@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 
-public final class ObservableRepeat<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T, T> {
     final long count;
     public ObservableRepeat(Observable<T> source, long count) {
         super(source);

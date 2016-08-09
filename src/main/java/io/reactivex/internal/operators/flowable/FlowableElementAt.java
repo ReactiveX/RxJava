@@ -17,7 +17,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableElementAt<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, T> {
     final long index;
     final T defaultValue;
     public FlowableElementAt(Publisher<T> source, long index, T defaultValue) {

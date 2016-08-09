@@ -26,7 +26,7 @@ import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.*;
 
-public final class FlowableTimeout<T, U, V> extends FlowableWithUpstream<T, T> {
+public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream<T, T> {
     final Callable<? extends Publisher<U>> firstTimeoutSelector;
     final Function<? super T, ? extends Publisher<V>> timeoutSelector; 
     final Publisher<? extends T> other;

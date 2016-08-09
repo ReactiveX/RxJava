@@ -23,7 +23,7 @@ import io.reactivex.internal.subscribers.observable.DisposableObserver;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableDebounce<T, U> extends ObservableWithUpstream<T, T> {
+public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstream<T, T> {
     final Function<? super T, ? extends ObservableSource<U>> debounceSelector;
 
     public ObservableDebounce(ObservableSource<T> source, Function<? super T, ? extends ObservableSource<U>> debounceSelector) {

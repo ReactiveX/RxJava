@@ -25,7 +25,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.*;
 
-public final class ObservableFlatMap<T, U> extends ObservableWithUpstream<T, U> {
+public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstream<T, U> {
     final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
     final boolean delayErrors;
     final int maxConcurrency;

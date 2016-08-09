@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
 
-public final class ObservableSampleTimed<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstream<T, T> {
     final long period;
     final TimeUnit unit;
     final Scheduler scheduler;

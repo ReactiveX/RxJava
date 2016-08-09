@@ -24,7 +24,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableSwitchMap<T, R> extends ObservableWithUpstream<T, R> {
+public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstream<T, R> {
     final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
     final int bufferSize;
 

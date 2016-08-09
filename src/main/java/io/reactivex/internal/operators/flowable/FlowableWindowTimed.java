@@ -32,7 +32,7 @@ import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableWindowTimed<T> extends FlowableWithUpstream<T, Flowable<T>> {
+public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T, Flowable<T>> {
     final long timespan;
     final long timeskip;
     final TimeUnit unit;

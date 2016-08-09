@@ -20,7 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.observers.SerializedObserver;
 
-public final class ObservableTakeUntil<T, U> extends ObservableWithUpstream<T, T> {
+public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstream<T, T> {
     final ObservableSource<? extends U> other;
     public ObservableTakeUntil(ObservableSource<T> source, ObservableSource<? extends U> other) {
         super(source);

@@ -20,7 +20,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableOnErrorNext<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
     final boolean allowFatal;
     

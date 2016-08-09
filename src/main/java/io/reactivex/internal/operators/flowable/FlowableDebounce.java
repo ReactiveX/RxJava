@@ -25,7 +25,7 @@ import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.*;
 
-public final class FlowableDebounce<T, U> extends FlowableWithUpstream<T, T> {
+public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super T, ? extends Publisher<U>> debounceSelector;
 
     public FlowableDebounce(Publisher<T> source, Function<? super T, ? extends Publisher<U>> debounceSelector) {

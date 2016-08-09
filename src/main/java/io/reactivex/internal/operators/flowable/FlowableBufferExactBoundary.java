@@ -26,7 +26,7 @@ import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.subscribers.*;
 
 public final class FlowableBufferExactBoundary<T, U extends Collection<? super T>, B> 
-extends FlowableWithUpstream<T, U> {
+extends AbstractFlowableWithUpstream<T, U> {
     final Publisher<B> boundary;
     final Callable<U> bufferSupplier;
     

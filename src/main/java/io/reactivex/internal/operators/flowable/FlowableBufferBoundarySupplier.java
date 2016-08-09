@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.*;
 
 public final class FlowableBufferBoundarySupplier<T, U extends Collection<? super T>, B> 
-extends FlowableWithUpstream<T, U> {
+extends AbstractFlowableWithUpstream<T, U> {
     final Callable<? extends Publisher<B>> boundarySupplier;
     final Callable<U> bufferSupplier;
     

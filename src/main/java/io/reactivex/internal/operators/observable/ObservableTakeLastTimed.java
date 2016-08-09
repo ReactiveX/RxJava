@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 
-public final class ObservableTakeLastTimed<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpstream<T, T> {
     final long count;
     final long time;
     final TimeUnit unit;

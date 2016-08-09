@@ -18,7 +18,7 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableAll<T> extends FlowableWithUpstream<T, Boolean> {
+public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolean> {
     
     final Predicate<? super T> predicate;
     

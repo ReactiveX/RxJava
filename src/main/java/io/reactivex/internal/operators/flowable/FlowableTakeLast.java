@@ -21,7 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableTakeLast<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableTakeLast<T> extends AbstractFlowableWithUpstream<T, T> {
     final int count;
     
     public FlowableTakeLast(Publisher<T> source, int count) {

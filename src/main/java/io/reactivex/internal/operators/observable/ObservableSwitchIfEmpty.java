@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 
-public final class ObservableSwitchIfEmpty<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableSwitchIfEmpty<T> extends AbstractObservableWithUpstream<T, T> {
     final ObservableSource<? extends T> other;
     public ObservableSwitchIfEmpty(ObservableSource<T> source, ObservableSource<? extends T> other) {
         super(source);

@@ -28,7 +28,7 @@ import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableGroupBy<T, K, V> extends FlowableWithUpstream<T, GroupedFlowable<K, V>> {
+public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream<T, GroupedFlowable<K, V>> {
     final Function<? super T, ? extends K> keySelector;
     final Function<? super T, ? extends V> valueSelector;
     final int bufferSize;

@@ -24,7 +24,7 @@ import io.reactivex.internal.subscribers.observable.FullArbiterObserver;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableTimeoutTimed<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstream<T, T> {
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;

@@ -21,7 +21,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableOnBackpressureDrop<T> extends FlowableWithUpstream<T, T> implements Consumer<T> {
+public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUpstream<T, T> implements Consumer<T> {
 
     final Consumer<? super T> onDrop;
 

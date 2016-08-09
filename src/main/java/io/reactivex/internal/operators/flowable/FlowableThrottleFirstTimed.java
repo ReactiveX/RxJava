@@ -27,7 +27,7 @@ import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableThrottleFirstTimed<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUpstream<T, T> {
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;

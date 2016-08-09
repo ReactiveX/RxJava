@@ -19,7 +19,7 @@ import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableOnErrorNext<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstream<T, T> {
     final Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier;
     final boolean allowFatal;
     

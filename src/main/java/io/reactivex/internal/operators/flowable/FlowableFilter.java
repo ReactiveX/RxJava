@@ -19,7 +19,7 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscribers.flowable.*;
 
-public final class FlowableFilter<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
     public FlowableFilter(Publisher<T> source, Predicate<? super T> predicate) {
         super(source);

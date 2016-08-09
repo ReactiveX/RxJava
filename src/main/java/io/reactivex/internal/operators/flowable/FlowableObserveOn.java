@@ -26,7 +26,7 @@ import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableObserveOn<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableObserveOn<T> extends AbstractFlowableWithUpstream<T, T> {
 final Scheduler scheduler;
     
     final boolean delayError;

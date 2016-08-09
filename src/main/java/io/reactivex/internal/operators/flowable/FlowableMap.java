@@ -20,7 +20,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscribers.flowable.*;
 
-public final class FlowableMap<T, U> extends FlowableWithUpstream<T, U> {
+public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> {
     final Function<? super T, ? extends U> mapper;
     public FlowableMap(Publisher<T> source, Function<? super T, ? extends U> mapper) {
         super(source);

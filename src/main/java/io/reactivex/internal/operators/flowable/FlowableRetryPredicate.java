@@ -21,7 +21,7 @@ import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
-public final class FlowableRetryPredicate<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstream<T, T> {
     final Predicate<? super Throwable> predicate;
     final long count;
     public FlowableRetryPredicate(Publisher<T> source,

@@ -27,7 +27,7 @@ import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableBufferBoundarySupplier<T, U extends Collection<? super T>, B> 
-extends ObservableWithUpstream<T, U> {
+extends AbstractObservableWithUpstream<T, U> {
     final Callable<? extends ObservableSource<B>> boundarySupplier;
     final Callable<U> bufferSupplier;
     

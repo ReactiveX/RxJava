@@ -22,7 +22,7 @@ import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableWithLatestFrom<T, U, R> extends FlowableWithUpstream<T, R> {
+public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithUpstream<T, R> {
     final BiFunction<? super T, ? super U, ? extends R> combiner;
     final Publisher<? extends U> other;
     public FlowableWithLatestFrom(Publisher<T> source, BiFunction<? super T, ? super U, ? extends R> combiner, Publisher<? extends U> other) {

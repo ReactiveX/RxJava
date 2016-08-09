@@ -30,7 +30,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.*;
 
 public final class FlowableBufferBoundary<T, U extends Collection<? super T>, Open, Close> 
-extends FlowableWithUpstream<T, U> {
+extends AbstractFlowableWithUpstream<T, U> {
     final Callable<U> bufferSupplier;
     final Publisher<? extends Open> bufferOpen;
     final Function<? super Open, ? extends Publisher<? extends Close>> bufferClose;

@@ -23,7 +23,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.*;
 
-public final class ObservableDistinct<T, K> extends ObservableWithUpstream<T, T> {
+public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstream<T, T> {
     final Function<? super T, K> keySelector;
     final Callable<? extends Predicate<? super K>> predicateSupplier;
 

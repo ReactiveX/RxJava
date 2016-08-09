@@ -17,7 +17,7 @@ import org.reactivestreams.*;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableAny<T> extends FlowableWithUpstream<T, Boolean> {
+public final class FlowableAny<T> extends AbstractFlowableWithUpstream<T, Boolean> {
     final Predicate<? super T> predicate;
     public FlowableAny(Publisher<T> source, Predicate<? super T> predicate) {
         super(source);

@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
-public final class FlowableRepeat<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> {
     final long count;
     public FlowableRepeat(Publisher<T> source, long count) {
         super(source);

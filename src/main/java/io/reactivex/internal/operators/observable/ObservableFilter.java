@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableFilter<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
     public ObservableFilter(ObservableSource<T> source, Predicate<? super T> predicate) {
         super(source);

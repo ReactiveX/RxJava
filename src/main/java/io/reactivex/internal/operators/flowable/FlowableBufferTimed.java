@@ -29,7 +29,7 @@ import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableBufferTimed<T, U extends Collection<? super T>> extends FlowableWithUpstream<T, U> {
+public final class FlowableBufferTimed<T, U extends Collection<? super T>> extends AbstractFlowableWithUpstream<T, U> {
 
     final long timespan;
     final long timeskip;

@@ -28,7 +28,7 @@ import io.reactivex.internal.util.*;
  *
  * @param <T> the source element type
  */
-public final class FlowableCache<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     /** The cache and replay state. */
     final CacheState<T> state;
 

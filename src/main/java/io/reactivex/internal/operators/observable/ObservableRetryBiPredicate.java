@@ -20,7 +20,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.BiPredicate;
 
-public final class ObservableRetryBiPredicate<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithUpstream<T, T> {
     final BiPredicate<? super Integer, ? super Throwable> predicate;
     public ObservableRetryBiPredicate(
             Observable<T> source,

@@ -18,7 +18,7 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableAll<T> extends ObservableWithUpstream<T, Boolean> {
+public final class ObservableAll<T> extends AbstractObservableWithUpstream<T, Boolean> {
     final Predicate<? super T> predicate;
     public ObservableAll(ObservableSource<T> source, Predicate<? super T> predicate) {
         super(source);
