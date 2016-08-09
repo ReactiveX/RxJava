@@ -27,8 +27,11 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.operators.completable.CompletableFromPublisher;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.flowable.FlowableConcatMap.ErrorMode;
+import io.reactivex.internal.operators.observable.ObservableFromPublisher;
+import io.reactivex.internal.operators.single.SingleFromPublisher;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.util.ArrayListSupplier;
@@ -3496,7 +3499,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable toCompletable() {
-        return Completable.fromFlowable(this);
+        return new CompletableFromPublisher<T>(this);
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -3631,13 +3634,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> toObservable() {
-        return Observable.fromPublisher(this);
+        return new ObservableFromPublisher<T>(this);
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> toSingle() {
-        return Single.fromPublisher(this);
+        return new SingleFromPublisher<T>(this);
     }
     
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)

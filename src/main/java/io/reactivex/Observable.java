@@ -25,6 +25,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.operators.completable.CompletableFromObservable;
 import io.reactivex.internal.operators.flowable.FlowableFromObservable;
 import io.reactivex.internal.operators.single.SingleFromObservable;
 import io.reactivex.internal.operators.observable.*;
@@ -2867,7 +2868,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable toCompletable() {
-        return Completable.fromObservable(this);
+        return new CompletableFromObservable<T>(this);
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)

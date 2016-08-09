@@ -547,12 +547,12 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void fromFlowableNull() {
-        Completable.fromFlowable(null);
+        Completable.fromPublisher(null);
     }
     
     @Test(timeout = 1000)
     public void fromFlowableEmpty() {
-        Completable c = Completable.fromFlowable(Flowable.empty());
+        Completable c = Completable.fromPublisher(Flowable.empty());
         
         c.await();
     }
@@ -560,7 +560,7 @@ public class CompletableTest {
     @Test(timeout = 5000)
     public void fromFlowableSome() {
         for (int n = 1; n < 10000; n *= 10) {
-            Completable c = Completable.fromFlowable(Flowable.range(1, n));
+            Completable c = Completable.fromPublisher(Flowable.range(1, n));
             
             c.await();
         }
@@ -568,7 +568,7 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void fromFlowableError() {
-        Completable c = Completable.fromFlowable(Flowable.error(new Callable<Throwable>() {
+        Completable c = Completable.fromPublisher(Flowable.error(new Callable<Throwable>() {
             @Override
             public Throwable call() {
                 return new TestException();
@@ -3007,9 +3007,9 @@ public class CompletableTest {
         PublishProcessor<Object> ps1 = PublishProcessor.create();
         PublishProcessor<Object> ps2 = PublishProcessor.create();
         
-        Completable c1 = Completable.fromFlowable(ps1);
+        Completable c1 = Completable.fromPublisher(ps1);
 
-        Completable c2 = Completable.fromFlowable(ps2);
+        Completable c2 = Completable.fromPublisher(ps2);
         
         Completable c = Completable.amb(c1, c2);
         
@@ -3038,9 +3038,9 @@ public class CompletableTest {
         PublishProcessor<Object> ps1 = PublishProcessor.create();
         PublishProcessor<Object> ps2 = PublishProcessor.create();
         
-        Completable c1 = Completable.fromFlowable(ps1);
+        Completable c1 = Completable.fromPublisher(ps1);
 
-        Completable c2 = Completable.fromFlowable(ps2);
+        Completable c2 = Completable.fromPublisher(ps2);
         
         Completable c = Completable.amb(c1, c2);
         
@@ -3069,9 +3069,9 @@ public class CompletableTest {
         PublishProcessor<Object> ps1 = PublishProcessor.create();
         PublishProcessor<Object> ps2 = PublishProcessor.create();
         
-        Completable c1 = Completable.fromFlowable(ps1);
+        Completable c1 = Completable.fromPublisher(ps1);
 
-        Completable c2 = Completable.fromFlowable(ps2);
+        Completable c2 = Completable.fromPublisher(ps2);
         
         Completable c = Completable.amb(c1, c2);
         
@@ -3100,9 +3100,9 @@ public class CompletableTest {
         PublishProcessor<Object> ps1 = PublishProcessor.create();
         PublishProcessor<Object> ps2 = PublishProcessor.create();
         
-        Completable c1 = Completable.fromFlowable(ps1);
+        Completable c1 = Completable.fromPublisher(ps1);
 
-        Completable c2 = Completable.fromFlowable(ps2);
+        Completable c2 = Completable.fromPublisher(ps2);
         
         Completable c = Completable.amb(c1, c2);
         
@@ -3232,9 +3232,9 @@ public class CompletableTest {
         PublishProcessor<Object> ps1 = PublishProcessor.create();
         PublishProcessor<Object> ps2 = PublishProcessor.create();
         
-        Completable c1 = Completable.fromFlowable(ps1);
+        Completable c1 = Completable.fromPublisher(ps1);
 
-        Completable c2 = Completable.fromFlowable(ps2);
+        Completable c2 = Completable.fromPublisher(ps2);
         
         Completable c = c1.ambWith(c2);
         
@@ -3263,9 +3263,9 @@ public class CompletableTest {
         PublishProcessor<Object> ps1 = PublishProcessor.create();
         PublishProcessor<Object> ps2 = PublishProcessor.create();
         
-        Completable c1 = Completable.fromFlowable(ps1);
+        Completable c1 = Completable.fromPublisher(ps1);
 
-        Completable c2 = Completable.fromFlowable(ps2);
+        Completable c2 = Completable.fromPublisher(ps2);
         
         Completable c = c1.ambWith(c2);
         
@@ -3294,9 +3294,9 @@ public class CompletableTest {
         PublishProcessor<Object> ps1 = PublishProcessor.create();
         PublishProcessor<Object> ps2 = PublishProcessor.create();
         
-        Completable c1 = Completable.fromFlowable(ps1);
+        Completable c1 = Completable.fromPublisher(ps1);
 
-        Completable c2 = Completable.fromFlowable(ps2);
+        Completable c2 = Completable.fromPublisher(ps2);
         
         Completable c = c1.ambWith(c2);
         
@@ -3325,9 +3325,9 @@ public class CompletableTest {
         PublishProcessor<Object> ps1 = PublishProcessor.create();
         PublishProcessor<Object> ps2 = PublishProcessor.create();
         
-        Completable c1 = Completable.fromFlowable(ps1);
+        Completable c1 = Completable.fromPublisher(ps1);
 
-        Completable c2 = Completable.fromFlowable(ps2);
+        Completable c2 = Completable.fromPublisher(ps2);
         
         Completable c = c1.ambWith(c2);
         

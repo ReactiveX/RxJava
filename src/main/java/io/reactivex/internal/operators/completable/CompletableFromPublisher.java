@@ -18,11 +18,11 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
 
-public final class CompletableFromFlowable<T> extends Completable {
+public final class CompletableFromPublisher<T> extends Completable {
 
     final Publisher<T> flowable;
     
-    public CompletableFromFlowable(Publisher<T> flowable) {
+    public CompletableFromPublisher(Publisher<T> flowable) {
         this.flowable = flowable;
     }
 
