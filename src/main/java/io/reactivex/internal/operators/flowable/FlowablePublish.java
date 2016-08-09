@@ -123,7 +123,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
 
     public static <T, R> Flowable<R> create(final Flowable<? extends T> source, 
             final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize) {
-        return create(new Publisher<R>() {
+        return unsafeCreate(new Publisher<R>() {
             @Override
             public void subscribe(Subscriber<? super R> sr) {
                 ConnectableFlowable<T> op = create(source, bufferSize);

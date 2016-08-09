@@ -60,7 +60,7 @@ public class ObservableBufferTest {
 
     @Test
     public void testSkipAndCountOverlappingBuffers() {
-        Observable<String> source = Observable.create(new ObservableSource<String>() {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -116,7 +116,7 @@ public class ObservableBufferTest {
 
     @Test
     public void testTimedAndCount() {
-        Observable<String> source = Observable.create(new ObservableSource<String>() {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -148,7 +148,7 @@ public class ObservableBufferTest {
 
     @Test
     public void testTimed() {
-        Observable<String> source = Observable.create(new ObservableSource<String>() {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -182,7 +182,7 @@ public class ObservableBufferTest {
 
     @Test
     public void testObservableBasedOpenerAndCloser() {
-        Observable<String> source = Observable.create(new ObservableSource<String>() {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -195,7 +195,7 @@ public class ObservableBufferTest {
             }
         });
 
-        Observable<Object> openings = Observable.create(new ObservableSource<Object>() {
+        Observable<Object> openings = Observable.unsafeCreate(new ObservableSource<Object>() {
             @Override
             public void subscribe(Observer<Object> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -208,7 +208,7 @@ public class ObservableBufferTest {
         Function<Object, Observable<Object>> closer = new Function<Object, Observable<Object>>() {
             @Override
             public Observable<Object> apply(Object opening) {
-                return Observable.create(new ObservableSource<Object>() {
+                return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -233,7 +233,7 @@ public class ObservableBufferTest {
 
     @Test
     public void testObservableBasedCloser() {
-        Observable<String> source = Observable.create(new ObservableSource<String>() {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
                 NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
@@ -249,7 +249,7 @@ public class ObservableBufferTest {
         Callable<Observable<Object>> closer = new Callable<Observable<Object>>() {
             @Override
             public Observable<Object> call() {
-                return Observable.create(new ObservableSource<Object>() {
+                return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> NbpObserver) {
                         NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);

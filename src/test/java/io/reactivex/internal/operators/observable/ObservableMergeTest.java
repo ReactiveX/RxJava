@@ -70,10 +70,10 @@ public class ObservableMergeTest {
 
     @Test
     public void testMergeObservableOfObservables() {
-        final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
-        final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
+        final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
+        final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new ObservableSource<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
@@ -95,8 +95,8 @@ public class ObservableMergeTest {
 
     @Test
     public void testMergeArray() {
-        final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
-        final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
+        final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
+        final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
 
         Observable<String> m = Observable.merge(o1, o2);
         m.subscribe(stringObserver);
@@ -108,8 +108,8 @@ public class ObservableMergeTest {
 
     @Test
     public void testMergeList() {
-        final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
-        final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
+        final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
+        final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
         List<Observable<String>> listOfObservables = new ArrayList<Observable<String>>();
         listOfObservables.add(o1);
         listOfObservables.add(o2);
@@ -128,7 +128,7 @@ public class ObservableMergeTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Observable<Observable<Long>> source = Observable.create(new ObservableSource<Observable<Long>>() {
+        Observable<Observable<Long>> source = Observable.unsafeCreate(new ObservableSource<Observable<Long>>() {
 
             @Override
             public void subscribe(final Observer<? super Observable<Long>> NbpObserver) {
@@ -188,7 +188,7 @@ public class ObservableMergeTest {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
-        Observable<String> m = Observable.merge(Observable.create(o1), Observable.create(o2));
+        Observable<String> m = Observable.merge(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2));
         TestObserver<String> ts = new TestObserver<String>(stringObserver);
         m.subscribe(ts);
 
@@ -219,7 +219,7 @@ public class ObservableMergeTest {
         final AtomicInteger concurrentCounter = new AtomicInteger();
         final AtomicInteger totalCounter = new AtomicInteger();
 
-        Observable<String> m = Observable.merge(Observable.create(o1), Observable.create(o2));
+        Observable<String> m = Observable.merge(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2));
         m.subscribe(new DefaultObserver<String>() {
 
             @Override
@@ -293,8 +293,8 @@ public class ObservableMergeTest {
     @Test
     public void testError1() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
-        final Observable<String> o1 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
-        final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
+        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
+        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
 
         Observable<String> m = Observable.merge(o1, o2);
         m.subscribe(stringObserver);
@@ -315,10 +315,10 @@ public class ObservableMergeTest {
     @Test
     public void testError2() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
-        final Observable<String> o1 = Observable.create(new TestErrorObservable("one", "two", "three"));
-        final Observable<String> o2 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
-        final Observable<String> o3 = Observable.create(new TestErrorObservable("seven", "eight", null));// we expect to lose all of these since o2 is done first and fails
-        final Observable<String> o4 = Observable.create(new TestErrorObservable("nine"));// we expect to lose all of these since o2 is done first and fails
+        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three"));
+        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
+        final Observable<String> o3 = Observable.unsafeCreate(new TestErrorObservable("seven", "eight", null));// we expect to lose all of these since o2 is done first and fails
+        final Observable<String> o4 = Observable.unsafeCreate(new TestErrorObservable("nine"));// we expect to lose all of these since o2 is done first and fails
 
         Observable<String> m = Observable.merge(o1, o2, o3, o4);
         m.subscribe(stringObserver);
@@ -340,7 +340,7 @@ public class ObservableMergeTest {
     @Ignore("Subscribe should not throw")
     public void testThrownErrorHandling() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable<String> o1 = Observable.create(new ObservableSource<String>() {
+        Observable<String> o1 = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> s) {
@@ -494,7 +494,7 @@ public class ObservableMergeTest {
     }
 
     private Observable<Long> createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(final Scheduler scheduler, final AtomicBoolean unsubscribed) {
-        return Observable.create(new ObservableSource<Long>() {
+        return Observable.unsafeCreate(new ObservableSource<Long>() {
 
             @Override
             public void subscribe(final Observer<? super Long> child) {
@@ -556,7 +556,7 @@ public class ObservableMergeTest {
     @Test
     public void testConcurrencyWithSleeping() {
 
-        Observable<Integer> o = Observable.create(new ObservableSource<Integer>() {
+        Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(final Observer<? super Integer> s) {
@@ -606,7 +606,7 @@ public class ObservableMergeTest {
 
     @Test
     public void testConcurrencyWithBrokenOnCompleteContract() {
-        Observable<Integer> o = Observable.create(new ObservableSource<Integer>() {
+        Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(final Observer<? super Integer> s) {
@@ -835,7 +835,7 @@ public class ObservableMergeTest {
     public void mergeWithTerminalEventAfterUnsubscribe() {
         System.out.println("mergeWithTerminalEventAfterUnsubscribe");
         TestObserver<String> ts = new TestObserver<String>();
-        Observable<String> bad = Observable.create(new ObservableSource<String>() {
+        Observable<String> bad = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> s) {
@@ -1018,7 +1018,7 @@ public class ObservableMergeTest {
 
             @Override
             public Observable<Integer> apply(final Integer i) {
-                return Observable.create(new ObservableSource<Integer>() {
+                return Observable.unsafeCreate(new ObservableSource<Integer>() {
 
                     @Override
                     public void subscribe(Observer<? super Integer> s) {

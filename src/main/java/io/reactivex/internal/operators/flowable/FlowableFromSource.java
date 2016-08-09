@@ -20,31 +20,30 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Consumer;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 
-public final class FlowableFromAsync<T> extends Flowable<T> {
+public final class FlowableFromSource<T> extends Flowable<T> {
 
-    final Consumer<AsyncEmitter<T>> asyncEmitter;
+    final FlowableSource<T> source;
     
-    final AsyncEmitter.BackpressureMode backpressure;
+    final FlowableEmitter.BackpressureMode backpressure;
     
-    public FlowableFromAsync(Consumer<AsyncEmitter<T>> asyncEmitter, AsyncEmitter.BackpressureMode backpressure) {
-        this.asyncEmitter = asyncEmitter;
+    public FlowableFromSource(FlowableSource<T> source, FlowableEmitter.BackpressureMode backpressure) {
+        this.source = source;
         this.backpressure = backpressure;
     }
     
     @Override
     public void subscribeActual(Subscriber<? super T> t) {
-        BaseAsyncEmitter<T> emitter;
+        BaseEmitter<T> emitter;
         
         switch (backpressure) {
         case NONE: {
-            emitter = new NoneAsyncEmitter<T>(t);
+            emitter = new NoneEmitter<T>(t);
             break;
         }
         case ERROR: {
@@ -67,7 +66,7 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
 
         t.onSubscribe(emitter);
         try {
-            asyncEmitter.accept(emitter);
+            source.subscribe(emitter);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             emitter.onError(ex);
@@ -75,13 +74,13 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
     }
     
     static final class CancellableSubscription 
-    extends AtomicReference<AsyncEmitter.Cancellable>
+    extends AtomicReference<FlowableEmitter.Cancellable>
     implements Disposable {
         
         /** */
         private static final long serialVersionUID = 5718521705281392066L;
 
-        public CancellableSubscription(AsyncEmitter.Cancellable cancellable) {
+        public CancellableSubscription(FlowableEmitter.Cancellable cancellable) {
             super(cancellable);
         }
         
@@ -93,7 +92,7 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
         @Override
         public void dispose() {
             if (get() != null) {
-                AsyncEmitter.Cancellable c = getAndSet(null);
+                FlowableEmitter.Cancellable c = getAndSet(null);
                 if (c != null) {
                     try {
                         c.cancel();
@@ -106,9 +105,9 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
         }
     }
     
-    static abstract class BaseAsyncEmitter<T> 
+    static abstract class BaseEmitter<T>
     extends AtomicLong
-    implements AsyncEmitter<T>, Subscription {
+    implements FlowableEmitter<T>, Subscription {
         /** */
         private static final long serialVersionUID = 7326289992464377023L;
 
@@ -116,7 +115,7 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
         
         final SerialDisposable serial;
 
-        public BaseAsyncEmitter(Subscriber<? super T> actual) {
+        public BaseEmitter(Subscriber<? super T> actual) {
             this.actual = actual;
             this.serial = new SerialDisposable();
         }
@@ -178,7 +177,7 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
         }
 
         @Override
-        public final void setCancellation(AsyncEmitter.Cancellable c) {
+        public final void setCancellation(FlowableEmitter.Cancellable c) {
             setDisposable(new CancellableSubscription(c));
         }
 
@@ -188,12 +187,12 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
         }
     }
     
-    static final class NoneAsyncEmitter<T> extends BaseAsyncEmitter<T> {
+    static final class NoneEmitter<T> extends BaseEmitter<T> {
 
         /** */
         private static final long serialVersionUID = 3776720187248809713L;
 
-        public NoneAsyncEmitter(Subscriber<? super T> actual) {
+        public NoneEmitter(Subscriber<? super T> actual) {
             super(actual);
         }
 
@@ -215,7 +214,7 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
 
     }
     
-    static abstract class NoOverflowBaseAsyncEmitter<T> extends BaseAsyncEmitter<T> {
+    static abstract class NoOverflowBaseAsyncEmitter<T> extends BaseEmitter<T> {
 
         /** */
         private static final long serialVersionUID = 4127754106204442833L;
@@ -268,12 +267,12 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
 
         @Override
         void onOverflow() {
-            onError(new MissingBackpressureException("fromAsync: could not emit value due to lack of requests"));
+            onError(new MissingBackpressureException("create: could not emit value due to lack of requests"));
         }
         
     }
     
-    static final class BufferAsyncEmitter<T> extends BaseAsyncEmitter<T> {
+    static final class BufferAsyncEmitter<T> extends BaseEmitter<T> {
 
         /** */
         private static final long serialVersionUID = 2427151001689639875L;
@@ -399,7 +398,7 @@ public final class FlowableFromAsync<T> extends Flowable<T> {
         }
     }
 
-    static final class LatestAsyncEmitter<T> extends BaseAsyncEmitter<T> {
+    static final class LatestAsyncEmitter<T> extends BaseEmitter<T> {
 
         /** */
         private static final long serialVersionUID = 4023437720691792495L;

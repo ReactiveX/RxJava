@@ -34,7 +34,7 @@ public class FlowableOnErrorReturnTest {
     @Test
     public void testResumeNext() {
         TestObservable f = new TestObservable("one");
-        Flowable<String> w = Flowable.create(f);
+        Flowable<String> w = Flowable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
         Flowable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
@@ -70,7 +70,7 @@ public class FlowableOnErrorReturnTest {
     @Test
     public void testFunctionThrowsError() {
         TestObservable f = new TestObservable("one");
-        Flowable<String> w = Flowable.create(f);
+        Flowable<String> w = Flowable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
         Flowable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {

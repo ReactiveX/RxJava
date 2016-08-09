@@ -145,7 +145,7 @@ public class FlowableOnBackpressureBufferTest {
 //        assertTrue(s.isUnsubscribed());
     }
 
-    static final Flowable<Long> infinite = Flowable.create(new Publisher<Long>() {
+    static final Flowable<Long> infinite = Flowable.unsafeCreate(new Publisher<Long>() {
 
         @Override
         public void subscribe(Subscriber<? super Long> s) {

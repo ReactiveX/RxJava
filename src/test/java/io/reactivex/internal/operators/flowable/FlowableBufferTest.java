@@ -61,7 +61,7 @@ public class FlowableBufferTest {
 
     @Test
     public void testSkipAndCountOverlappingBuffers() {
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -117,7 +117,7 @@ public class FlowableBufferTest {
 
     @Test
     public void testTimedAndCount() {
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -149,7 +149,7 @@ public class FlowableBufferTest {
 
     @Test
     public void testTimed() {
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -183,7 +183,7 @@ public class FlowableBufferTest {
 
     @Test
     public void testObservableBasedOpenerAndCloser() {
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -196,7 +196,7 @@ public class FlowableBufferTest {
             }
         });
 
-        Flowable<Object> openings = Flowable.create(new Publisher<Object>() {
+        Flowable<Object> openings = Flowable.unsafeCreate(new Publisher<Object>() {
             @Override
             public void subscribe(Subscriber<Object> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -209,7 +209,7 @@ public class FlowableBufferTest {
         Function<Object, Flowable<Object>> closer = new Function<Object, Flowable<Object>>() {
             @Override
             public Flowable<Object> apply(Object opening) {
-                return Flowable.create(new Publisher<Object>() {
+                return Flowable.unsafeCreate(new Publisher<Object>() {
                     @Override
                     public void subscribe(Subscriber<? super Object> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -234,7 +234,7 @@ public class FlowableBufferTest {
 
     @Test
     public void testObservableBasedCloser() {
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -250,7 +250,7 @@ public class FlowableBufferTest {
         Callable<Flowable<Object>> closer = new Callable<Flowable<Object>>() {
             @Override
             public Flowable<Object> call() {
-                return Flowable.create(new Publisher<Object>() {
+                return Flowable.unsafeCreate(new Publisher<Object>() {
                     @Override
                     public void subscribe(Subscriber<? super Object> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -764,7 +764,7 @@ public class FlowableBufferTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(3L);
         
         final AtomicLong requested = new AtomicLong();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
@@ -795,7 +795,7 @@ public class FlowableBufferTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
         final AtomicLong requested = new AtomicLong();
         
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
@@ -822,7 +822,7 @@ public class FlowableBufferTest {
     public void testProducerRequestThroughBufferWithSize3() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(3L);
         final AtomicLong requested = new AtomicLong();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
@@ -851,7 +851,7 @@ public class FlowableBufferTest {
     public void testProducerRequestThroughBufferWithSize4() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
         final AtomicLong requested = new AtomicLong();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
@@ -881,7 +881,7 @@ public class FlowableBufferTest {
 
         final AtomicLong requested = new AtomicLong();
         
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
@@ -910,7 +910,7 @@ public class FlowableBufferTest {
 
         final AtomicLong requested = new AtomicLong();
         
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
@@ -936,7 +936,7 @@ public class FlowableBufferTest {
     @Test
     public void testProducerRequestOverflowThroughBufferWithSize3() {
         final AtomicLong requested = new AtomicLong();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(final Subscriber<? super Integer> s) {

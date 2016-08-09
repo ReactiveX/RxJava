@@ -48,11 +48,11 @@ public class FlowableSwitchTest {
 
     @Test
     public void testSwitchWhenOuterCompleteBeforeInner() {
-        Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
                 observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 50, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 50, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -77,11 +77,11 @@ public class FlowableSwitchTest {
 
     @Test
     public void testSwitchWhenInnerCompleteBeforeOuter() {
-        Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
                 observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 10, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 10, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -91,7 +91,7 @@ public class FlowableSwitchTest {
                     }
                 }));
 
-                publishNext(observer, 100, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 100, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -123,11 +123,11 @@ public class FlowableSwitchTest {
 
     @Test
     public void testSwitchWithComplete() {
-        Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
                 observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 50, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 50, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(final Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -136,7 +136,7 @@ public class FlowableSwitchTest {
                     }
                 }));
 
-                publishNext(observer, 200, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 200, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(final Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -182,11 +182,11 @@ public class FlowableSwitchTest {
 
     @Test
     public void testSwitchWithError() {
-        Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
                 observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 50, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 50, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(final Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -195,7 +195,7 @@ public class FlowableSwitchTest {
                     }
                 }));
 
-                publishNext(observer, 200, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 200, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -241,11 +241,11 @@ public class FlowableSwitchTest {
 
     @Test
     public void testSwitchWithSubsequenceComplete() {
-        Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
                 observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 50, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 50, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -254,7 +254,7 @@ public class FlowableSwitchTest {
                     }
                 }));
 
-                publishNext(observer, 130, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 130, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -262,7 +262,7 @@ public class FlowableSwitchTest {
                     }
                 }));
 
-                publishNext(observer, 150, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 150, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -295,11 +295,11 @@ public class FlowableSwitchTest {
 
     @Test
     public void testSwitchWithSubsequenceError() {
-        Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
                 observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 50, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 50, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -308,7 +308,7 @@ public class FlowableSwitchTest {
                     }
                 }));
 
-                publishNext(observer, 130, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 130, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -316,7 +316,7 @@ public class FlowableSwitchTest {
                     }
                 }));
 
-                publishNext(observer, 150, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 150, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -378,11 +378,11 @@ public class FlowableSwitchTest {
     @Test
     public void testSwitchIssue737() {
         // https://github.com/ReactiveX/RxJava/issues/737
-        Flowable<Flowable<String>> source = Flowable.create(new Publisher<Flowable<String>>() {
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
                 observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 0, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 0, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -393,7 +393,7 @@ public class FlowableSwitchTest {
                         publishCompleted(observer, 40);
                     }
                 }));
-                publishNext(observer, 25, Flowable.create(new Publisher<String>() {
+                publishNext(observer, 25, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
                     public void subscribe(Subscriber<? super String> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -489,7 +489,7 @@ public class FlowableSwitchTest {
     public void testUnsubscribe() {
         final AtomicBoolean isUnsubscribed = new AtomicBoolean();
         Flowable.switchOnNext(
-                Flowable.create(new Publisher<Flowable<Integer>>() {
+                Flowable.unsafeCreate(new Publisher<Flowable<Integer>>() {
                     @Override
                     public void subscribe(final Subscriber<? super Flowable<Integer>> subscriber) {
                         BooleanSubscription bs = new BooleanSubscription();

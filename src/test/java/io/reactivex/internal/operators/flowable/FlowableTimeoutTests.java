@@ -238,7 +238,7 @@ public class FlowableTimeoutTests {
 
             @Override
             public void run() {
-                Flowable.create(new Publisher<String>() {
+                Flowable.unsafeCreate(new Publisher<String>() {
 
                     @Override
                     public void subscribe(Subscriber<? super String> subscriber) {
@@ -273,7 +273,7 @@ public class FlowableTimeoutTests {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Subscription s = mock(Subscription.class);
 
-        Flowable<String> never = Flowable.create(new Publisher<String>() {
+        Flowable<String> never = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
                 subscriber.onSubscribe(s);
@@ -302,7 +302,7 @@ public class FlowableTimeoutTests {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Subscription s = mock(Subscription.class);
 
-        Flowable<String> immediatelyComplete = Flowable.create(new Publisher<String>() {
+        Flowable<String> immediatelyComplete = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
                 subscriber.onSubscribe(s);
@@ -333,7 +333,7 @@ public class FlowableTimeoutTests {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Subscription s = mock(Subscription.class);
 
-        Flowable<String> immediatelyError = Flowable.create(new Publisher<String>() {
+        Flowable<String> immediatelyError = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
                 subscriber.onSubscribe(s);

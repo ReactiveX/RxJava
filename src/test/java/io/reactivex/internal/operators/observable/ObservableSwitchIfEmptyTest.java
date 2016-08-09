@@ -57,7 +57,7 @@ public class ObservableSwitchIfEmptyTest {
 
         final Disposable d = Disposables.empty();
         
-        Observable<Long> withProducer = Observable.create(new ObservableSource<Long>() {
+        Observable<Long> withProducer = Observable.unsafeCreate(new ObservableSource<Long>() {
             @Override
             public void subscribe(final Observer<? super Long> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(d);
@@ -100,7 +100,7 @@ public class ObservableSwitchIfEmptyTest {
     public void testSwitchShouldTriggerUnsubscribe() {
         final Disposable d = Disposables.empty();
         
-        Observable.create(new ObservableSource<Long>() {
+        Observable.unsafeCreate(new ObservableSource<Long>() {
             @Override
             public void subscribe(final Observer<? super Long> NbpSubscriber) {
                 NbpSubscriber.onSubscribe(d);

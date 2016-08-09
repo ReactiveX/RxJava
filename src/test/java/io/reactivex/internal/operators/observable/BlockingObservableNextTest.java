@@ -235,7 +235,7 @@ public class BlockingObservableNextTest {
         final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
         final AtomicBoolean running = new AtomicBoolean(true);
         final AtomicInteger count = new AtomicInteger(0);
-        final Observable<Integer> obs = Observable.create(new ObservableSource<Integer>() {
+        final Observable<Integer> obs = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(final Observer<? super Integer> o) {

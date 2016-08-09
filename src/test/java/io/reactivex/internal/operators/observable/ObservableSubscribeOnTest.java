@@ -38,7 +38,7 @@ public class ObservableSubscribeOnTest {
         TestObserver<Integer> NbpObserver = new TestObserver<Integer>();
 
         Observable
-        .create(new ObservableSource<Integer>() {
+        .unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(
                     final Observer<? super Integer> NbpSubscriber) {
@@ -75,7 +75,7 @@ public class ObservableSubscribeOnTest {
     @Ignore("ObservableConsumable.subscribe can't throw")
     public void testThrownErrorHandling() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable.create(new ObservableSource<String>() {
+        Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> s) {
@@ -90,7 +90,7 @@ public class ObservableSubscribeOnTest {
     @Test
     public void testOnError() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable.create(new ObservableSource<String>() {
+        Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> s) {
@@ -161,7 +161,7 @@ public class ObservableSubscribeOnTest {
     public void testUnsubscribeInfiniteStream() throws InterruptedException {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         final AtomicInteger count = new AtomicInteger();
-        Observable.create(new ObservableSource<Integer>() {
+        Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {

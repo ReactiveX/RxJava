@@ -198,7 +198,7 @@ public class ObservableWindowWithSizeTest {
     
 
     public static Observable<Integer> hotStream() {
-        return Observable.create(new ObservableSource<Integer>() {
+        return Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> s) {
                 Disposable d = Disposables.empty();

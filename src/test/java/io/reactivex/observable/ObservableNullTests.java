@@ -205,7 +205,7 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void createNull() {
-        Observable.create(null);
+        Observable.unsafeCreate(null);
     }
     
     @Test(expected = NullPointerException.class)

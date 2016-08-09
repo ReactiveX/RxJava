@@ -68,7 +68,7 @@ public class FlowableMergeMaxConcurrentTest {
             for (int i = 0; i < observableCount; i++) {
                 SubscriptionCheckObservable sco = new SubscriptionCheckObservable(subscriptionCount, maxConcurrent);
                 scos.add(sco);
-                os.add(Flowable.create(sco));
+                os.add(Flowable.unsafeCreate(sco));
             }
 
             Iterator<String> iter = Flowable.merge(os, maxConcurrent).toBlocking().iterator();

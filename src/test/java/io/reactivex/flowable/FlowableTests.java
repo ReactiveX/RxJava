@@ -269,13 +269,13 @@ public class FlowableTests {
         verify(w).onNext(60);
     }
 
-    @Ignore("Throwing is not allowed from the create?!")
+    @Ignore("Throwing is not allowed from the unsafeCreate?!")
     @Test // FIXME throwing is not allowed from the create?!
     public void testOnSubscribeFails() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
 
         final RuntimeException re = new RuntimeException("bad impl");
-        Flowable<String> o = Flowable.create(new Publisher<String>() {
+        Flowable<String> o = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> s) { throw re; }
         });
@@ -442,7 +442,7 @@ public class FlowableTests {
     @Test
     public void testPublishLast() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
-        ConnectableFlowable<String> connectable = Flowable.<String>create(new Publisher<String>() {
+        ConnectableFlowable<String> connectable = Flowable.<String>unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -480,7 +480,7 @@ public class FlowableTests {
     @Test
     public void testReplay() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableFlowable<String> o = Flowable.<String>create(new Publisher<String>() {
+        ConnectableFlowable<String> o = Flowable.<String>unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
                     observer.onSubscribe(new BooleanSubscription());
@@ -533,7 +533,7 @@ public class FlowableTests {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Flowable<String> o = Flowable.<String>create(new Publisher<String>() {
+        Flowable<String> o = Flowable.<String>unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
                     observer.onSubscribe(new BooleanSubscription());
@@ -578,7 +578,7 @@ public class FlowableTests {
     @Test
     public void testCacheWithCapacity() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Flowable<String> o = Flowable.<String>create(new Publisher<String>() {
+        Flowable<String> o = Flowable.<String>unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(final Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -657,7 +657,7 @@ public class FlowableTests {
     public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        Flowable.create(new Publisher<Object>() {
+        Flowable.unsafeCreate(new Publisher<Object>() {
             @Override
             public void subscribe(final Subscriber<? super Object> observer) {
                 observer.onSubscribe(new BooleanSubscription());

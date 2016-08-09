@@ -100,7 +100,7 @@ public class FlowableTakeWhileTest {
 
     @Test
     public void testTakeWhileDoesntLeakErrors() {
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -123,7 +123,7 @@ public class FlowableTakeWhileTest {
         final RuntimeException testException = new RuntimeException("test exception");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        Flowable<String> take = Flowable.create(source)
+        Flowable<String> take = Flowable.unsafeCreate(source)
                 .takeWhile(new Predicate<String>() {
             @Override
             public boolean test(String s) {
@@ -150,7 +150,7 @@ public class FlowableTakeWhileTest {
         TestObservable w = new TestObservable(s, "one", "two", "three");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        Flowable<String> take = Flowable.create(w)
+        Flowable<String> take = Flowable.unsafeCreate(w)
                 .takeWhile(new Predicate<String>() {
             int index = 0;
 

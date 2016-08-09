@@ -536,7 +536,7 @@ public class FlowableObserveOnTest {
     @Test
     public void testQueueFullEmitsError() {
         final CountDownLatch latch = new CountDownLatch(1);
-        Flowable<Integer> flowable = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> flowable = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> o) {

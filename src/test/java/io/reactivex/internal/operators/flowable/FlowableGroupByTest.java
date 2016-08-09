@@ -182,7 +182,7 @@ public class FlowableGroupByTest {
         final int count = 100;
         final int groupCount = 2;
 
-        Flowable<Event> es = Flowable.create(new Publisher<Event>() {
+        Flowable<Event> es = Flowable.unsafeCreate(new Publisher<Event>() {
 
             @Override
             public void subscribe(final Subscriber<? super Event> observer) {
@@ -594,7 +594,7 @@ public class FlowableGroupByTest {
     public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsAndThenComplete() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {
@@ -673,7 +673,7 @@ public class FlowableGroupByTest {
         System.err.println("----------------------------------------------------------------------------------------------");
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {
@@ -765,7 +765,7 @@ public class FlowableGroupByTest {
     public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenObservesOnAndDelaysAndThenCompletes() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {
@@ -842,7 +842,7 @@ public class FlowableGroupByTest {
     @Test
     public void testGroupsWithNestedSubscribeOn() throws InterruptedException {
         final ArrayList<String> results = new ArrayList<String>();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {
@@ -899,7 +899,7 @@ public class FlowableGroupByTest {
     @Test
     public void testGroupsWithNestedObserveOn() throws InterruptedException {
         final ArrayList<String> results = new ArrayList<String>();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {
@@ -960,7 +960,7 @@ public class FlowableGroupByTest {
     };
 
     Flowable<Event> SYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
-        return Flowable.create(new Publisher<Event>() {
+        return Flowable.unsafeCreate(new Publisher<Event>() {
 
             @Override
             public void subscribe(final Subscriber<? super Event> op) {
@@ -1380,7 +1380,7 @@ public class FlowableGroupByTest {
     @Test
     public void testGroupByUnsubscribe() {
         final Subscription s = mock(Subscription.class);
-        Flowable<Integer> o = Flowable.create(
+        Flowable<Integer> o = Flowable.unsafeCreate(
                 new Publisher<Integer>() {
                     @Override
                     public void subscribe(Subscriber<? super Integer> subscriber) {
@@ -1429,7 +1429,7 @@ public class FlowableGroupByTest {
                 }
             }
         });
-        Flowable.create(
+        Flowable.unsafeCreate(
                 new Publisher<Integer>() {
                     @Override
                     public void subscribe(Subscriber<? super Integer> subscriber) {

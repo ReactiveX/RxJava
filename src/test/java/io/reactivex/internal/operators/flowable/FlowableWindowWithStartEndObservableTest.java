@@ -44,7 +44,7 @@ public class FlowableWindowWithStartEndObservableTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -57,7 +57,7 @@ public class FlowableWindowWithStartEndObservableTest {
             }
         });
 
-        Flowable<Object> openings = Flowable.create(new Publisher<Object>() {
+        Flowable<Object> openings = Flowable.unsafeCreate(new Publisher<Object>() {
             @Override
             public void subscribe(Subscriber<? super Object> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -70,7 +70,7 @@ public class FlowableWindowWithStartEndObservableTest {
         Function<Object, Flowable<Object>> closer = new Function<Object, Flowable<Object>>() {
             @Override
             public Flowable<Object> apply(Object opening) {
-                return Flowable.create(new Publisher<Object>() {
+                return Flowable.unsafeCreate(new Publisher<Object>() {
                     @Override
                     public void subscribe(Subscriber<? super Object> observer) {
                         observer.onSubscribe(new BooleanSubscription());
@@ -95,7 +95,7 @@ public class FlowableWindowWithStartEndObservableTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Flowable<String> source = Flowable.create(new Publisher<String>() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
                 observer.onSubscribe(new BooleanSubscription());
@@ -112,7 +112,7 @@ public class FlowableWindowWithStartEndObservableTest {
             int calls;
             @Override
             public Flowable<Object> call() {
-                return Flowable.create(new Publisher<Object>() {
+                return Flowable.unsafeCreate(new Publisher<Object>() {
                     @Override
                     public void subscribe(Subscriber<? super Object> observer) {
                         observer.onSubscribe(new BooleanSubscription());

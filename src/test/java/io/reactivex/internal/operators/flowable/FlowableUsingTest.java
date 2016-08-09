@@ -254,7 +254,7 @@ public class FlowableUsingTest {
         Function<Disposable, Flowable<Integer>> observableFactory = new Function<Disposable, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Disposable subscription) {
-                return Flowable.create(new Publisher<Integer>() {
+                return Flowable.unsafeCreate(new Publisher<Integer>() {
                     @Override
                     public void subscribe(Subscriber<? super Integer> t1) {
                         throw new TestException();

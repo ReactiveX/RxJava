@@ -33,7 +33,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
     public void testResumeNextWithException() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "EXCEPTION", "two", "three");
-        Observable<String> w = Observable.create(f);
+        Observable<String> w = Observable.unsafeCreate(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
 
@@ -61,7 +61,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
     public void testResumeNextWithRuntimeException() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "RUNTIMEEXCEPTION", "two", "three");
-        Observable<String> w = Observable.create(f);
+        Observable<String> w = Observable.unsafeCreate(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
 
@@ -89,7 +89,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
     public void testThrowablePassesThru() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "THROWABLE", "two", "three");
-        Observable<String> w = Observable.create(f);
+        Observable<String> w = Observable.unsafeCreate(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
 
@@ -117,7 +117,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
     public void testErrorPassesThru() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "ERROR", "two", "three");
-        Observable<String> w = Observable.create(f);
+        Observable<String> w = Observable.unsafeCreate(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
 
@@ -147,7 +147,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
         // Resume NbpObservable is async
         TestObservable f = new TestObservable("twoResume", "threeResume");
-        Observable<String> resume = Observable.create(f);
+        Observable<String> resume = Observable.unsafeCreate(f);
 
         // Introduce map function that fails intermittently (Map does not prevent this when the NbpObserver is a
         //  rx.operator incl onErrorResumeNextViaObservable)

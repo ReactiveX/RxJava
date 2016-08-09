@@ -44,7 +44,7 @@ public class FlowableSampleTest {
 
     @Test
     public void testSample() {
-        Flowable<Long> source = Flowable.create(new Publisher<Long>() {
+        Flowable<Long> source = Flowable.unsafeCreate(new Publisher<Long>() {
             @Override
             public void subscribe(final Subscriber<? super Long> observer1) {
                 observer1.onSubscribe(new BooleanSubscription());
@@ -265,7 +265,7 @@ public class FlowableSampleTest {
     @Test
     public void testSampleUnsubscribe() {
         final Subscription s = mock(Subscription.class);
-        Flowable<Integer> o = Flowable.create(
+        Flowable<Integer> o = Flowable.unsafeCreate(
                 new Publisher<Integer>() {
                     @Override
                     public void subscribe(Subscriber<? super Integer> subscriber) {

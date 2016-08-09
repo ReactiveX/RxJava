@@ -260,7 +260,7 @@ public class FlowableSubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.<Integer>create(new Publisher<Integer>() {
+        Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
                 s.onSubscribe(new Subscription() {
@@ -285,7 +285,7 @@ public class FlowableSubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.<Integer>create(new Publisher<Integer>() {
+        Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
                 s.onSubscribe(new Subscription() {
@@ -310,7 +310,7 @@ public class FlowableSubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.<Integer>create(new Publisher<Integer>() {
+        Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
                 s.onSubscribe(new Subscription() {
@@ -338,7 +338,7 @@ public class FlowableSubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.<Integer>create(new Publisher<Integer>() {
+        Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
                 s.onSubscribe(new Subscription() {

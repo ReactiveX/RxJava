@@ -40,7 +40,7 @@ public class FlowableRetryTest {
     public void iterativeBackoff() {
         Subscriber<String> consumer = TestHelper.mockSubscriber();
         
-        Flowable<String> producer = Flowable.create(new Publisher<String>() {
+        Flowable<String> producer = Flowable.unsafeCreate(new Publisher<String>() {
 
             private AtomicInteger count = new AtomicInteger(4);
             long last = System.currentTimeMillis();
@@ -112,7 +112,7 @@ public class FlowableRetryTest {
     public void testRetryIndefinitely() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         int NUM_RETRIES = 20;
-        Flowable<String> origin = Flowable.create(new FuncWithErrors(NUM_RETRIES));
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
         origin.retry().unsafeSubscribe(new TestSubscriber<String>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -131,7 +131,7 @@ public class FlowableRetryTest {
     public void testSchedulingNotificationHandler() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         int NUM_RETRIES = 2;
-        Flowable<String> origin = Flowable.create(new FuncWithErrors(NUM_RETRIES));
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
         TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
         origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
             @Override
@@ -169,7 +169,7 @@ public class FlowableRetryTest {
     public void testOnNextFromNotificationHandler() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         int NUM_RETRIES = 2;
-        Flowable<String> origin = Flowable.create(new FuncWithErrors(NUM_RETRIES));
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
         origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
             @Override
             public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
@@ -198,7 +198,7 @@ public class FlowableRetryTest {
     @Test
     public void testOnCompletedFromNotificationHandler() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        Flowable<String> origin = Flowable.create(new FuncWithErrors(1));
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(1));
         TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
         origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
             @Override
@@ -219,7 +219,7 @@ public class FlowableRetryTest {
     @Test
     public void testOnErrorFromNotificationHandler() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        Flowable<String> origin = Flowable.create(new FuncWithErrors(2));
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(2));
         origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
             @Override
             public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
@@ -249,7 +249,7 @@ public class FlowableRetryTest {
             }
         };
 
-        int first = Flowable.create(onSubscribe)
+        int first = Flowable.unsafeCreate(onSubscribe)
                 .retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
                     @Override
                     public Flowable<Object> apply(Flowable<? extends Throwable> attempt) {
@@ -271,7 +271,7 @@ public class FlowableRetryTest {
     @Test
     public void testOriginFails() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        Flowable<String> origin = Flowable.create(new FuncWithErrors(1));
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(1));
         origin.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -286,7 +286,7 @@ public class FlowableRetryTest {
         int NUM_RETRIES = 1;
         int NUM_FAILURES = 2;
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        Flowable<String> origin = Flowable.create(new FuncWithErrors(NUM_FAILURES));
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_FAILURES));
         origin.retry(NUM_RETRIES).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -304,7 +304,7 @@ public class FlowableRetryTest {
     public void testRetrySuccess() {
         int NUM_FAILURES = 1;
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        Flowable<String> origin = Flowable.create(new FuncWithErrors(NUM_FAILURES));
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_FAILURES));
         origin.retry(3).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -323,7 +323,7 @@ public class FlowableRetryTest {
     public void testInfiniteRetry() {
         int NUM_FAILURES = 20;
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        Flowable<String> origin = Flowable.create(new FuncWithErrors(NUM_FAILURES));
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_FAILURES));
         origin.retry().subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -480,7 +480,7 @@ public class FlowableRetryTest {
                 
             }
         };
-        Flowable<String> stream = Flowable.create(onSubscribe);
+        Flowable<String> stream = Flowable.unsafeCreate(onSubscribe);
         Flowable<String> streamWithRetry = stream.retry();
         Disposable sub = streamWithRetry.subscribe();
         assertEquals(1, subsCount.get());
@@ -517,7 +517,7 @@ public class FlowableRetryTest {
             }
         };
 
-        Flowable.create(onSubscribe).retry(3).subscribe(ts);
+        Flowable.unsafeCreate(onSubscribe).retry(3).subscribe(ts);
         assertEquals(4, subsCount.get()); // 1 + 3 retries
     }
 
@@ -536,7 +536,7 @@ public class FlowableRetryTest {
             }
         };
 
-        Flowable.create(onSubscribe).retry(1).subscribe(ts);
+        Flowable.unsafeCreate(onSubscribe).retry(1).subscribe(ts);
         assertEquals(2, subsCount.get());
     }
 
@@ -555,7 +555,7 @@ public class FlowableRetryTest {
             }
         };
 
-        Flowable.create(onSubscribe).retry(0).subscribe(ts);
+        Flowable.unsafeCreate(onSubscribe).retry(0).subscribe(ts);
         assertEquals(1, subsCount.get());
     }
 
@@ -664,7 +664,7 @@ public class FlowableRetryTest {
 
         // Observable that always fails after 100ms
         SlowObservable so = new SlowObservable(100, 0);
-        Flowable<Long> o = Flowable.create(so).retry(5);
+        Flowable<Long> o = Flowable.unsafeCreate(so).retry(5);
 
         AsyncObserver<Long> async = new AsyncObserver<Long>(observer);
 
@@ -689,7 +689,7 @@ public class FlowableRetryTest {
 
         // Observable that sends every 100ms (timeout fails instead)
         SlowObservable so = new SlowObservable(100, 10);
-        Flowable<Long> o = Flowable.create(so).timeout(80, TimeUnit.MILLISECONDS).retry(5);
+        Flowable<Long> o = Flowable.unsafeCreate(so).timeout(80, TimeUnit.MILLISECONDS).retry(5);
 
         AsyncObserver<Long> async = new AsyncObserver<Long>(observer);
 
@@ -712,7 +712,7 @@ public class FlowableRetryTest {
             final int NUM_RETRIES = Flowable.bufferSize() * 2;
             for (int i = 0; i < 400; i++) {
                 Subscriber<String> observer = TestHelper.mockSubscriber();
-                Flowable<String> origin = Flowable.create(new FuncWithErrors(NUM_RETRIES));
+                Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
                 TestSubscriber<String> ts = new TestSubscriber<String>(observer);
                 origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
                 ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
@@ -755,7 +755,7 @@ public class FlowableRetryTest {
                         public void run() {
                             final AtomicInteger nexts = new AtomicInteger();
                             try {
-                                Flowable<String> origin = Flowable.create(new FuncWithErrors(NUM_RETRIES));
+                                Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
                                 TestSubscriber<String> ts = new TestSubscriber<String>();
                                 origin.retry()
                                 .observeOn(Schedulers.computation()).unsafeSubscribe(ts);
@@ -876,7 +876,7 @@ public class FlowableRetryTest {
         final int NUM_MSG = 1034;
         final AtomicInteger count = new AtomicInteger();
 
-        Flowable<String> origin = Flowable.create(new Publisher<String>() {
+        Flowable<String> origin = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> o) {

@@ -47,7 +47,7 @@ public class FlowableAmbTest {
 
     private Flowable<String> createFlowable(final String[] values,
             final long interval, final Throwable e) {
-        return Flowable.create(new Publisher<String>() {
+        return Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(final Subscriber<? super String> subscriber) {
@@ -178,7 +178,7 @@ public class FlowableAmbTest {
         ts.request(3);
         final AtomicLong requested1 = new AtomicLong();
         final AtomicLong requested2 = new AtomicLong();
-        Flowable<Integer> o1 = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> o1 = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
@@ -198,7 +198,7 @@ public class FlowableAmbTest {
             }
 
         });
-        Flowable<Integer> o2 = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> o2 = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {

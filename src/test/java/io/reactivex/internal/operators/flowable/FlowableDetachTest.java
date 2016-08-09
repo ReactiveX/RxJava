@@ -139,7 +139,7 @@ public class FlowableDetachTest {
         
         TestSubscriber<Object> ts = new TestSubscriber<Object>(0);
         
-        Flowable.create(new Publisher<Object>() {
+        Flowable.unsafeCreate(new Publisher<Object>() {
             @Override
             public void subscribe(Subscriber<? super Object> t) {
                 subscriber.set(t);

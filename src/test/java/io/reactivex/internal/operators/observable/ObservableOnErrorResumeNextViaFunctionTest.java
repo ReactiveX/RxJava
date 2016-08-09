@@ -36,7 +36,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     @Test
     public void testResumeNextWithSynchronousExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
-        Observable<String> w = Observable.create(new ObservableSource<String>() {
+        Observable<String> w = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
@@ -87,7 +87,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
             }
 
         };
-        Observable<String> o = Observable.create(w).onErrorResumeNext(resume);
+        Observable<String> o = Observable.unsafeCreate(w).onErrorResumeNext(resume);
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
 
@@ -124,7 +124,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
             }
 
         };
-        Observable<String> o = Observable.create(w).onErrorResumeNext(resume);
+        Observable<String> o = Observable.unsafeCreate(w).onErrorResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         DefaultObserver<String> NbpObserver = mock(DefaultObserver.class);

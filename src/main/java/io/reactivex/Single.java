@@ -39,7 +39,7 @@ public abstract class Single<T> implements SingleSource<T> {
         if (source instanceof Single) {
             return (Single<T>)source;
         }
-        return new SingleFromSource<T>(source);
+        return new SingleFromUnsafeSource<T>(source);
     }
     
     public static <T> Single<T> amb(final Iterable<? extends SingleSource<? extends T>> sources) {
@@ -191,11 +191,17 @@ public abstract class Single<T> implements SingleSource<T> {
         Objects.requireNonNull(s9, "s9 is null");
         return concat(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
     }
-    
+
     public static <T> Single<T> create(SingleSource<T> source) {
         Objects.requireNonNull(source, "source is null");
         // TODO plugin wrapper
         return new SingleFromSource<T>(source);
+    }
+
+    public static <T> Single<T> unsafeCreate(SingleSource<T> source) {
+        Objects.requireNonNull(source, "source is null");
+        // TODO plugin wrapper
+        return new SingleFromUnsafeSource<T>(source);
     }
     
     public static <T> Single<T> defer(final Callable<? extends SingleSource<? extends T>> singleSupplier) {

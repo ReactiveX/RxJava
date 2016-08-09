@@ -35,7 +35,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     @Test
     public void testResumeNextWithSynchronousExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
-        Flowable<String> w = Flowable.create(new Publisher<String>() {
+        Flowable<String> w = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> observer) {
@@ -86,7 +86,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
             }
 
         };
-        Flowable<String> observable = Flowable.create(w).onErrorResumeNext(resume);
+        Flowable<String> observable = Flowable.unsafeCreate(w).onErrorResumeNext(resume);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
 
@@ -123,7 +123,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
             }
 
         };
-        Flowable<String> observable = Flowable.create(w).onErrorResumeNext(resume);
+        Flowable<String> observable = Flowable.unsafeCreate(w).onErrorResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);

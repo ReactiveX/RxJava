@@ -33,7 +33,7 @@ public class FlowableUnsubscribeOnTest {
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
-            Flowable<Integer> w = Flowable.create(new Publisher<Integer>() {
+            Flowable<Integer> w = Flowable.unsafeCreate(new Publisher<Integer>() {
 
                 @Override
                 public void subscribe(Subscriber<? super Integer> t1) {
@@ -77,7 +77,7 @@ public class FlowableUnsubscribeOnTest {
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
-            Flowable<Integer> w = Flowable.create(new Publisher<Integer>() {
+            Flowable<Integer> w = Flowable.unsafeCreate(new Publisher<Integer>() {
 
                 @Override
                 public void subscribe(Subscriber<? super Integer> t1) {

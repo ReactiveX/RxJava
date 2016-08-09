@@ -43,7 +43,7 @@ public class ObservableAmbTest {
 
     private Observable<String> createObservable(final String[] values,
             final long interval, final Throwable e) {
-        return Observable.create(new ObservableSource<String>() {
+        return Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(final Observer<? super String> NbpSubscriber) {

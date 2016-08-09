@@ -120,7 +120,7 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void createNull() {
-        Single.create(null);
+        Single.unsafeCreate(null);
     }
     
     @Test(expected = NullPointerException.class)

@@ -289,7 +289,7 @@ public class FlowableRefCountTest {
     }
 
     private Flowable<Long> synchronousInterval() {
-        return Flowable.create(new Publisher<Long>() {
+        return Flowable.unsafeCreate(new Publisher<Long>() {
             @Override
             public void subscribe(Subscriber<? super Long> subscriber) {
                 final AtomicBoolean cancel = new AtomicBoolean();
@@ -323,7 +323,7 @@ public class FlowableRefCountTest {
     public void onlyFirstShouldSubscribeAndLastUnsubscribe() {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         final AtomicInteger unsubscriptionCount = new AtomicInteger();
-        Flowable<Integer> observable = Flowable.create(new Publisher<Integer>() {
+        Flowable<Integer> observable = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> observer) {
                 subscriptionCount.incrementAndGet();

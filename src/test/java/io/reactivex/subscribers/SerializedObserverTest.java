@@ -45,7 +45,7 @@ public class SerializedObserverTest {
     @Test
     public void testSingleThreadedBasic() {
         TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable("one", "two", "three");
-        Flowable<String> w = Flowable.create(onSubscribe);
+        Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
         Subscriber<String> aw = serializedSubscriber(observer);
 
@@ -65,7 +65,7 @@ public class SerializedObserverTest {
     @Test
     public void testMultiThreadedBasic() {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three");
-        Flowable<String> w = Flowable.create(onSubscribe);
+        Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
         BusySubscriber busySubscriber = new BusySubscriber();
         Subscriber<String> aw = serializedSubscriber(busySubscriber);
@@ -89,7 +89,7 @@ public class SerializedObserverTest {
     @Test(timeout = 1000)
     public void testMultiThreadedWithNPE() throws InterruptedException {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null);
-        Flowable<String> w = Flowable.create(onSubscribe);
+        Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
         BusySubscriber busySubscriber = new BusySubscriber();
         Subscriber<String> aw = serializedSubscriber(busySubscriber);
@@ -123,7 +123,7 @@ public class SerializedObserverTest {
         for (int i = 0; i < n; i++) {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null, 
                     "four", "five", "six", "seven", "eight", "nine");
-            Flowable<String> w = Flowable.create(onSubscribe);
+            Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
             BusySubscriber busySubscriber = new BusySubscriber();
             Subscriber<String> aw = serializedSubscriber(busySubscriber);
@@ -412,7 +412,7 @@ public class SerializedObserverTest {
     }
 
     private static Flowable<String> infinite(final AtomicInteger produced) {
-        return Flowable.create(new Publisher<String>() {
+        return Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> s) {

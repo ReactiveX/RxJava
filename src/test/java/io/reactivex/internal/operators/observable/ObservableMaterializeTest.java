@@ -38,7 +38,7 @@ public class ObservableMaterializeTest {
                 "three");
 
         TestLocalObserver NbpObserver = new TestLocalObserver();
-        Observable<Try<Optional<String>>> m = Observable.create(o1).materialize();
+        Observable<Try<Optional<String>>> m = Observable.unsafeCreate(o1).materialize();
         m.subscribe(NbpObserver);
 
         try {
@@ -63,7 +63,7 @@ public class ObservableMaterializeTest {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
         TestLocalObserver NbpObserver = new TestLocalObserver();
-        Observable<Try<Optional<String>>> m = Observable.create(o1).materialize();
+        Observable<Try<Optional<String>>> m = Observable.unsafeCreate(o1).materialize();
         m.subscribe(NbpObserver);
 
         try {
@@ -88,7 +88,7 @@ public class ObservableMaterializeTest {
     public void testMultipleSubscribes() throws InterruptedException, ExecutionException {
         final TestAsyncErrorObservable o = new TestAsyncErrorObservable("one", "two", null, "three");
 
-        Observable<Try<Optional<String>>> m = Observable.create(o).materialize();
+        Observable<Try<Optional<String>>> m = Observable.unsafeCreate(o).materialize();
 
         assertEquals(3, m.toList().toBlocking().toFuture().get().size());
         assertEquals(3, m.toList().toBlocking().toFuture().get().size());

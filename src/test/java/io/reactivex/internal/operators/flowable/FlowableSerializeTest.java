@@ -39,7 +39,7 @@ public class FlowableSerializeTest {
     @Test
     public void testSingleThreadedBasic() {
         TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable("one", "two", "three");
-        Flowable<String> w = Flowable.create(onSubscribe);
+        Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
         w.serialize().subscribe(observer);
         onSubscribe.waitToFinish();
@@ -57,7 +57,7 @@ public class FlowableSerializeTest {
     @Test
     public void testMultiThreadedBasic() {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three");
-        Flowable<String> w = Flowable.create(onSubscribe);
+        Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
         BusyObserver busyobserver = new BusyObserver();
 
@@ -80,7 +80,7 @@ public class FlowableSerializeTest {
     @Test
     public void testMultiThreadedWithNPE() {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null);
-        Flowable<String> w = Flowable.create(onSubscribe);
+        Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
         BusyObserver busyobserver = new BusyObserver();
 
@@ -111,7 +111,7 @@ public class FlowableSerializeTest {
         boolean lessThan9 = false;
         for (int i = 0; i < 3; i++) {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
-            Flowable<String> w = Flowable.create(onSubscribe);
+            Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
     
             BusyObserver busyobserver = new BusyObserver();
     

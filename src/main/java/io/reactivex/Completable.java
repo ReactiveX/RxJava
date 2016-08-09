@@ -44,7 +44,7 @@ public abstract class Completable implements CompletableSource {
         if (source instanceof Completable) {
             return (Completable)source;
         }
-        return new CompletableFromSource(source);
+        return new CompletableFromUnsafeSource(source);
     }
     
     /**
@@ -147,7 +147,7 @@ public abstract class Completable implements CompletableSource {
         }
         return new CompletableConcat(sources, prefetch);
     }
-    
+
     /**
      * Constructs a Completable instance by wrapping the given source callback.
      * @param source the callback which will receive the CompletableObserver instances
@@ -163,8 +163,33 @@ public abstract class Completable implements CompletableSource {
         }
         try {
             // TODO plugin wrapping source
-            
+
             return RxJavaPlugins.onAssembly(new CompletableFromSource(source));
+        } catch (NullPointerException ex) { // NOPMD
+            throw ex;
+        } catch (Throwable ex) {
+            RxJavaPlugins.onError(ex);
+            throw toNpe(ex);
+        }
+    }
+    
+    /**
+     * Constructs a Completable instance by wrapping the given source callback.
+     * @param source the callback which will receive the CompletableObserver instances
+     * when the Completable is subscribed to.
+     * @return the created Completable instance
+     * @throws NullPointerException if source is null
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Completable unsafeCreate(CompletableSource source) {
+        Objects.requireNonNull(source, "source is null");
+        if (source instanceof Completable) {
+            throw new IllegalArgumentException("Use of unsafeCreate(Completable)!");
+        }
+        try {
+            // TODO plugin wrapping source
+            
+            return RxJavaPlugins.onAssembly(new CompletableFromUnsafeSource(source));
         } catch (NullPointerException ex) { // NOPMD
             throw ex;
         } catch (Throwable ex) {

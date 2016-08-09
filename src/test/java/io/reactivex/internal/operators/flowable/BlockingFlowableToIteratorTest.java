@@ -47,7 +47,7 @@ public class BlockingFlowableToIteratorTest {
 
     @Test(expected = TestException.class)
     public void testToIteratorWithException() {
-        Flowable<String> obs = Flowable.create(new Publisher<String>() {
+        Flowable<String> obs = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> observer) {
@@ -69,7 +69,7 @@ public class BlockingFlowableToIteratorTest {
     @Ignore("subscribe() should not throw")
     @Test(expected = TestException.class)
     public void testExceptionThrownFromOnSubscribe() {
-        Iterable<String> strings = Flowable.create(new Publisher<String>() {
+        Iterable<String> strings = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
                 throw new TestException("intentional");

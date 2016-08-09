@@ -13,18 +13,69 @@
 
 package io.reactivex.internal.operators.completable;
 
-import io.reactivex.*;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableSource;
+import io.reactivex.disposables.Disposable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class CompletableFromSource extends Completable {
-
-    final CompletableSource source;
+    private final CompletableSource source;
 
     public CompletableFromSource(CompletableSource source) {
         this.source = source;
     }
-    
-    @Override
-    protected void subscribeActual(CompletableObserver observer) {
-        source.subscribe(observer);
+
+    @Override protected void subscribeActual(CompletableObserver observer) {
+        source.subscribe(new DisposeAwareCompletableObserver(observer));
+    }
+
+    /**
+     * An observer which does not send downstream notifications once disposed. Used to guard against
+     * naive implementations of {@link CompletableSource} which do not check for this.
+     */
+    static final class DisposeAwareCompletableObserver
+    extends AtomicBoolean
+    implements CompletableObserver, Disposable {
+
+        private final CompletableObserver o;
+        private Disposable d;
+
+        DisposeAwareCompletableObserver(CompletableObserver o) {
+            this.o = o;
+        }
+
+        @Override
+        public void onComplete() {
+            if (!get()) {
+                o.onComplete();
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (!get()) {
+                o.onError(e);
+            }
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            this.d = d;
+            o.onSubscribe(this);
+        }
+
+        @Override
+        public void dispose() {
+            if (compareAndSet(false, true)) {
+                d.dispose();
+                d = null;
+            }
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return get();
+        }
     }
 }

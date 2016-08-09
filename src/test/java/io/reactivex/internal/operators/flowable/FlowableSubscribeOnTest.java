@@ -40,7 +40,7 @@ public class FlowableSubscribeOnTest {
         TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
 
         Flowable
-        .create(new Publisher<Integer>() {
+        .unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(
                     final Subscriber<? super Integer> subscriber) {
@@ -77,7 +77,7 @@ public class FlowableSubscribeOnTest {
     @Ignore("Publisher.subscribe can't throw")
     public void testThrownErrorHandling() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.create(new Publisher<String>() {
+        Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> s) {
@@ -92,7 +92,7 @@ public class FlowableSubscribeOnTest {
     @Test
     public void testOnError() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.create(new Publisher<String>() {
+        Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> s) {
@@ -163,7 +163,7 @@ public class FlowableSubscribeOnTest {
     public void testUnsubscribeInfiniteStream() throws InterruptedException {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
-        Flowable.create(new Publisher<Integer>() {
+        Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {

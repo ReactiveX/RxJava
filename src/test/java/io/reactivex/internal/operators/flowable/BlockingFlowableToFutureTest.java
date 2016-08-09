@@ -69,7 +69,7 @@ public class BlockingFlowableToFutureTest {
 
     @Test
     public void testToFutureWithException() {
-        Flowable<String> obs = Flowable.create(new Publisher<String>() {
+        Flowable<String> obs = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
             public void subscribe(Subscriber<? super String> observer) {
