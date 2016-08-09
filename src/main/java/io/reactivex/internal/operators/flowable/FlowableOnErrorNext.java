@@ -15,20 +15,18 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableOnErrorNext<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableOnErrorNext<T> extends FlowableWithUpstream<T, T> {
     final Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
     final boolean allowFatal;
     
     public FlowableOnErrorNext(Publisher<T> source,
             Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier, boolean allowFatal) {
-        this.source = source;
+        super(source);
         this.nextSupplier = nextSupplier;
         this.allowFatal = allowFatal;
     }

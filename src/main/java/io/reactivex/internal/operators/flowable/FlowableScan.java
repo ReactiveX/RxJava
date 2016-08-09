@@ -15,15 +15,13 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class FlowableScan<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableScan<T> extends FlowableWithUpstream<T, T> {
     final BiFunction<T, T, T> accumulator;
     public FlowableScan(Publisher<T> source, BiFunction<T, T, T> accumulator) {
-        this.source = source;
+        super(source);
         this.accumulator = accumulator;
     }
     

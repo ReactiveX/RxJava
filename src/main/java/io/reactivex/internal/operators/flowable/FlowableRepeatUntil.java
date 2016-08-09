@@ -17,15 +17,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.BooleanSupplier;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
-public final class FlowableRepeatUntil<T> extends Flowable<T> {
-    final Publisher<? extends T> source;
+public final class FlowableRepeatUntil<T> extends FlowableWithUpstream<T, T> {
     final BooleanSupplier until;
-    public FlowableRepeatUntil(Publisher<? extends T> source, BooleanSupplier until) {
-        this.source = source;
+    public FlowableRepeatUntil(Publisher<T> source, BooleanSupplier until) {
+        super(source);
         this.until = until;
     }
     

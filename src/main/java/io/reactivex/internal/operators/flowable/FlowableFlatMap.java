@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
@@ -27,8 +26,7 @@ import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableFlatMap<T, U> extends Flowable<U> {
-    final Publisher<T> source;
+public final class FlowableFlatMap<T, U> extends FlowableWithUpstream<T, U> {
     final Function<? super T, ? extends Publisher<? extends U>> mapper;
     final boolean delayErrors;
     final int maxConcurrency;
@@ -37,7 +35,7 @@ public final class FlowableFlatMap<T, U> extends Flowable<U> {
     public FlowableFlatMap(Publisher<T> source, 
             Function<? super T, ? extends Publisher<? extends U>> mapper,
             boolean delayErrors, int maxConcurrency, int bufferSize) {
-        this.source = source;
+        super(source);
         this.mapper = mapper;
         this.delayErrors = delayErrors;
         this.maxConcurrency = maxConcurrency;

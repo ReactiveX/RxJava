@@ -18,23 +18,19 @@ import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.ArrayListSupplier;
 
-public final class FlowableToList<T, U extends Collection<? super T>> extends Flowable<U> {
-    final Publisher<T> source;
-    
+public final class FlowableToList<T, U extends Collection<? super T>> extends FlowableWithUpstream<T, U> {
     final Callable<U> collectionSupplier;
 
     @SuppressWarnings("unchecked")
     public FlowableToList(Publisher<T> source) {
-        this.source = source;
-        this.collectionSupplier = (Callable<U>)ArrayListSupplier.asCallable();
+        this(source, (Callable<U>)ArrayListSupplier.asCallable());
     }
 
     public FlowableToList(Publisher<T> source, Callable<U> collectionSupplier) {
-        this.source = source;
+        super(source);
         this.collectionSupplier = collectionSupplier;
     }
     

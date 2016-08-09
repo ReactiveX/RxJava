@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.SimpleQueue;
@@ -31,15 +30,14 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.*;
 
 public final class FlowableBufferBoundary<T, U extends Collection<? super T>, Open, Close> 
-extends Flowable<U> {
-    final Publisher<T> source;
+extends FlowableWithUpstream<T, U> {
     final Callable<U> bufferSupplier;
     final Publisher<? extends Open> bufferOpen;
     final Function<? super Open, ? extends Publisher<? extends Close>> bufferClose;
 
     public FlowableBufferBoundary(Publisher<T> source, Publisher<? extends Open> bufferOpen,
             Function<? super Open, ? extends Publisher<? extends Close>> bufferClose, Callable<U> bufferSupplier) {
-        this.source = source;
+        super(source);
         this.bufferOpen = bufferOpen;
         this.bufferClose = bufferClose;
         this.bufferSupplier = bufferSupplier;

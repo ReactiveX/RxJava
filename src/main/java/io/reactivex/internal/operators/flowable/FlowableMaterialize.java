@@ -21,12 +21,10 @@ import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableMaterialize<T> extends Flowable<Try<Optional<T>>> {
+public final class FlowableMaterialize<T> extends FlowableWithUpstream<T, Try<Optional<T>>> {
 
-    final Publisher<T> source;
-    
     public FlowableMaterialize(Publisher<T> source) {
-        this.source = source;
+        super(source);
     }
 
     @Override

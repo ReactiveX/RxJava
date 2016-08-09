@@ -15,15 +15,12 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableCount<T> extends Flowable<Long> {
-
-    final Publisher<T> source;
+public final class FlowableCount<T> extends FlowableWithUpstream<T, Long> {
 
     public FlowableCount(Publisher<T> source) {
-        this.source = source;
+        super(source);
     }
 
     @Override

@@ -25,13 +25,12 @@ import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 import io.reactivex.processors.*;
 
 // FIXME split and update to the Rsc version
-public final class FlowableRedo<T> extends Flowable<T> {
-    final Publisher<? extends T> source;
+public final class FlowableRedo<T> extends FlowableWithUpstream<T, T> {
     final Function<? super Flowable<Try<Optional<Object>>>, ? extends Publisher<?>> manager;
 
-    public FlowableRedo(Publisher<? extends T> source,
+    public FlowableRedo(Publisher<T> source,
             Function<? super Flowable<Try<Optional<Object>>>, ? extends Publisher<?>> manager) {
-        this.source = source;
+        super(source);
         this.manager = manager;
     }
     

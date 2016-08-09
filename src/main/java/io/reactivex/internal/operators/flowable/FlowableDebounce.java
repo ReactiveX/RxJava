@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
@@ -26,12 +25,11 @@ import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.*;
 
-public final class FlowableDebounce<T, U> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableDebounce<T, U> extends FlowableWithUpstream<T, T> {
     final Function<? super T, ? extends Publisher<U>> debounceSelector;
 
     public FlowableDebounce(Publisher<T> source, Function<? super T, ? extends Publisher<U>> debounceSelector) {
-        this.source = source;
+        super(source);
         this.debounceSelector = debounceSelector;
     }
     

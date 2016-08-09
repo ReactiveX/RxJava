@@ -18,15 +18,12 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableMapNotification<T, R> extends Flowable<R> {
+public final class FlowableMapNotification<T, R> extends FlowableWithUpstream<T, R> {
 
-    final Publisher<T> source;
-    
     final Function<? super T, ? extends R> onNextMapper;
     final Function<? super Throwable, ? extends R> onErrorMapper;
     final Callable<? extends R> onCompleteSupplier;
@@ -36,7 +33,7 @@ public final class FlowableMapNotification<T, R> extends Flowable<R> {
             Function<? super T, ? extends R> onNextMapper, 
             Function<? super Throwable, ? extends R> onErrorMapper, 
             Callable<? extends R> onCompleteSupplier) {
-        this.source = source;
+        super(source);
         this.onNextMapper = onNextMapper;
         this.onErrorMapper = onErrorMapper;
         this.onCompleteSupplier = onCompleteSupplier;

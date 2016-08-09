@@ -27,14 +27,13 @@ import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableDebounceTimed<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableDebounceTimed<T> extends FlowableWithUpstream<T, T> {
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
 
     public FlowableDebounceTimed(Publisher<T> source, long timeout, TimeUnit unit, Scheduler scheduler) {
-        this.source = source;
+        super(source);
         this.timeout = timeout;
         this.unit = unit;
         this.scheduler = scheduler;

@@ -15,16 +15,13 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class FlowableIgnoreElements<T> extends Flowable<T> {
+public final class FlowableIgnoreElements<T> extends FlowableWithUpstream<T, T> {
 
-    final Publisher<T> source;
-    
     public FlowableIgnoreElements(Publisher<T> source) {
-        this.source = source;
+        super(source);
     }
 
     @Override

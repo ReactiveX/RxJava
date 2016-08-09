@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
@@ -27,9 +26,8 @@ import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.*;
 
-public final class FlowableTimeout<T, U, V> extends Flowable<T> {
-    final Publisher<T> source;
-    final Callable<? extends Publisher<U>> firstTimeoutSelector; 
+public final class FlowableTimeout<T, U, V> extends FlowableWithUpstream<T, T> {
+    final Callable<? extends Publisher<U>> firstTimeoutSelector;
     final Function<? super T, ? extends Publisher<V>> timeoutSelector; 
     final Publisher<? extends T> other;
 
@@ -38,7 +36,7 @@ public final class FlowableTimeout<T, U, V> extends Flowable<T> {
             Callable<? extends Publisher<U>> firstTimeoutSelector,
             Function<? super T, ? extends Publisher<V>> timeoutSelector, 
             Publisher<? extends T> other) {
-        this.source = source;
+        super(source);
         this.firstTimeoutSelector = firstTimeoutSelector;
         this.timeoutSelector = timeoutSelector;
         this.other = other;

@@ -17,21 +17,19 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableSwitchMap<T, R> extends Flowable<R> {
-    final Publisher<T> source;
+public final class FlowableSwitchMap<T, R> extends FlowableWithUpstream<T, R> {
     final Function<? super T, ? extends Publisher<? extends R>> mapper;
     final int bufferSize;
 
     public FlowableSwitchMap(Publisher<T> source, 
             Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize) {
-        this.source = source;
+        super(source);
         this.mapper = mapper;
         this.bufferSize = bufferSize;
     }

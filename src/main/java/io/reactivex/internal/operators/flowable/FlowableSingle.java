@@ -17,17 +17,14 @@ import java.util.NoSuchElementException;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableSingle<T> extends Flowable<T> {
-    
-    final Publisher<T> source;
+public final class FlowableSingle<T> extends FlowableWithUpstream<T, T> {
     
     final T defaultValue;
     
     public FlowableSingle(Publisher<T> source, T defaultValue) {
-        this.source = source;
+        super(source);
         this.defaultValue = defaultValue;
     }
     

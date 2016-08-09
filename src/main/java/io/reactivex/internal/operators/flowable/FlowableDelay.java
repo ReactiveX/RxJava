@@ -22,15 +22,14 @@ import io.reactivex.Scheduler.Worker;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableDelay<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableDelay<T> extends FlowableWithUpstream<T, T> {
     final long delay;
     final TimeUnit unit;
     final Scheduler scheduler;
     final boolean delayError;
     
     public FlowableDelay(Publisher<T> source, long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
-        this.source = source;
+        super(source);
         this.delay = delay;
         this.unit = unit;
         this.scheduler = scheduler;

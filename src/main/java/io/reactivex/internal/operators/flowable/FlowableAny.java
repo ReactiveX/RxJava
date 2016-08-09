@@ -14,15 +14,13 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableAny<T> extends Flowable<Boolean> {
-    final Publisher<T> source;
+public final class FlowableAny<T> extends FlowableWithUpstream<T, Boolean> {
     final Predicate<? super T> predicate;
     public FlowableAny(Publisher<T> source, Predicate<? super T> predicate) {
-        this.source = source;
+        super(source);
         this.predicate = predicate;
     }
     

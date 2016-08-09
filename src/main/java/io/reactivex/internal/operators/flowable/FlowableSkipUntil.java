@@ -17,15 +17,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableSkipUntil<T, U> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableSkipUntil<T, U> extends FlowableWithUpstream<T, T> {
     final Publisher<U> other;
     public FlowableSkipUntil(Publisher<T> source, Publisher<U> other) {
-        this.source = source;
+        super(source);
         this.other = other;
     }
     

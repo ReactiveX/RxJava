@@ -23,8 +23,7 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableTakeLastTimed<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableTakeLastTimed<T> extends FlowableWithUpstream<T, T> {
     final long count;
     final long time;
     final TimeUnit unit;
@@ -35,7 +34,7 @@ public final class FlowableTakeLastTimed<T> extends Flowable<T> {
     public FlowableTakeLastTimed(Publisher<T> source,
             long count, long time, TimeUnit unit, Scheduler scheduler, 
             int bufferSize, boolean delayError) {
-        this.source = source;
+        super(source);
         this.count = count;
         this.time = time;
         this.unit = unit;

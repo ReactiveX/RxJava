@@ -15,15 +15,13 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableElementAt<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableElementAt<T> extends FlowableWithUpstream<T, T> {
     final long index;
     final T defaultValue;
     public FlowableElementAt(Publisher<T> source, long index, T defaultValue) {
-        this.source = source;
+        super(source);
         this.index = index;
         this.defaultValue = defaultValue;
     }

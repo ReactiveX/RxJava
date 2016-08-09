@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.Function;
@@ -29,15 +28,14 @@ import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableGroupBy<T, K, V> extends Flowable<GroupedFlowable<K, V>> {
-    final Publisher<T> source;
+public final class FlowableGroupBy<T, K, V> extends FlowableWithUpstream<T, GroupedFlowable<K, V>> {
     final Function<? super T, ? extends K> keySelector;
     final Function<? super T, ? extends V> valueSelector;
     final int bufferSize;
     final boolean delayError;
     
     public FlowableGroupBy(Publisher<T> source, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
-        this.source = source;
+        super(source);
         this.keySelector = keySelector;
         this.valueSelector = valueSelector;
         this.bufferSize = bufferSize;

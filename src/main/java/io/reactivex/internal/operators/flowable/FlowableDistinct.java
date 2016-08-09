@@ -18,19 +18,17 @@ import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableDistinct<T, K> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableDistinct<T, K> extends FlowableWithUpstream<T, T> {
     final Function<? super T, K> keySelector;
     final Callable<? extends Predicate<? super K>> predicateSupplier;
     
     public FlowableDistinct(Publisher<T> source, Function<? super T, K> keySelector, Callable<? extends Predicate<? super K>> predicateSupplier) {
-        this.source = source;
+        super(source);
         this.predicateSupplier = predicateSupplier;
         this.keySelector = keySelector;
     }

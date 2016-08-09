@@ -28,7 +28,7 @@ import io.reactivex.internal.util.*;
  *
  * @param <T> the source element type
  */
-public final class FlowableCache<T> extends Flowable<T> {
+public final class FlowableCache<T> extends FlowableWithUpstream<T, T> {
     /** The cache and replay state. */
     final CacheState<T> state;
 
@@ -39,7 +39,7 @@ public final class FlowableCache<T> extends Flowable<T> {
      * @param source the source Observable to cache
      * @return the CachedObservable instance
      */
-    public static <T> FlowableCache<T> from(Flowable<? extends T> source) {
+    public static <T> FlowableCache<T> from(Flowable<T> source) {
         return from(source, 16);
     }
     
@@ -50,12 +50,12 @@ public final class FlowableCache<T> extends Flowable<T> {
      * @param capacityHint the hint for the internal buffer size
      * @return the CachedObservable instance
      */
-    public static <T> FlowableCache<T> from(Flowable<? extends T> source, int capacityHint) {
+    public static <T> FlowableCache<T> from(Flowable<T> source, int capacityHint) {
         if (capacityHint < 1) {
             throw new IllegalArgumentException("capacityHint > 0 required");
         }
         CacheState<T> state = new CacheState<T>(source, capacityHint);
-        return new FlowableCache<T>(state);
+        return new FlowableCache<T>(source, state);
     }
     
     /**
@@ -63,7 +63,8 @@ public final class FlowableCache<T> extends Flowable<T> {
      * the onSubscribe function.
      * @param state
      */
-    private FlowableCache(CacheState<T> state) {
+    private FlowableCache(Flowable<T> source, CacheState<T> state) {
+        super(source);
         this.state = state;
         this.once = new AtomicBoolean();
     }

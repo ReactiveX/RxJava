@@ -17,18 +17,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
-public final class FlowableRetryBiPredicate<T> extends Flowable<T> {
-    final Publisher<? extends T> source;
+public final class FlowableRetryBiPredicate<T> extends FlowableWithUpstream<T, T> {
     final BiPredicate<? super Integer, ? super Throwable> predicate;
     public FlowableRetryBiPredicate(
-            Publisher<? extends T> source, 
+            Publisher<T> source,
             BiPredicate<? super Integer, ? super Throwable> predicate) {
-        this.source = source;
+        super(source);
         this.predicate = predicate;
     }
     

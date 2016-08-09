@@ -15,15 +15,13 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class FlowableTakeUntilPredicate<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableTakeUntilPredicate<T> extends FlowableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
     public FlowableTakeUntilPredicate(Publisher<T> source, Predicate<? super T> predicate) {
-        this.source = source;
+        super(source);
         this.predicate = predicate;
     }
     

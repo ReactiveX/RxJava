@@ -17,15 +17,13 @@ import java.util.ArrayDeque;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class FlowableSkipLast<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableSkipLast<T> extends FlowableWithUpstream<T, T> {
     final int skip;
     
     public FlowableSkipLast(Publisher<T> source, int skip) {
-        this.source = source;
+        super(source);
         this.skip = skip;
     }
 

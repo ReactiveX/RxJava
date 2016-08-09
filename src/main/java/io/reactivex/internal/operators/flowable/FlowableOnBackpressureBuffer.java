@@ -17,22 +17,20 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableOnBackpressureBuffer<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableOnBackpressureBuffer<T> extends FlowableWithUpstream<T, T> {
     final int bufferSize;
     final boolean unbounded;
     final boolean delayError;
     final Runnable onOverflow;
     
     public FlowableOnBackpressureBuffer(Publisher<T> source, int bufferSize, boolean unbounded, boolean delayError, Runnable onOverflow) {
-        this.source = source;
+        super(source);
         this.bufferSize = bufferSize;
         this.unbounded = unbounded;
         this.delayError = delayError;
