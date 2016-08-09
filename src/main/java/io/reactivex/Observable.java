@@ -2738,22 +2738,22 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return debounce(timeout, unit, scheduler);
     }
 
-    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.NONE) // Trampoline scheduler is only used for creating timestamps.
     public final Observable<Timed<T>> timeInterval() {
         return timeInterval(TimeUnit.MILLISECONDS, Schedulers.trampoline());
     }
 
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
     public final Observable<Timed<T>> timeInterval(Scheduler scheduler) {
         return timeInterval(TimeUnit.MILLISECONDS, scheduler);
     }
 
-    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.NONE) // Trampoline scheduler is only used for creating timestamps.
     public final Observable<Timed<T>> timeInterval(TimeUnit unit) {
         return timeInterval(unit, Schedulers.trampoline());
     }
 
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
     public final Observable<Timed<T>> timeInterval(TimeUnit unit, Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -2824,22 +2824,22 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return new ObservableTimeout<T, U, V>(this, firstTimeoutSelector, timeoutSelector, other);
     }
 
-    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.NONE) // Trampoline scheduler is only used for creating timestamps.
     public final Observable<Timed<T>> timestamp() {
         return timestamp(TimeUnit.MILLISECONDS, Schedulers.trampoline());
     }
 
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
     public final Observable<Timed<T>> timestamp(Scheduler scheduler) {
         return timestamp(TimeUnit.MILLISECONDS, scheduler);
     }
 
-    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.NONE) // Trampoline scheduler is only used for creating timestamps.
     public final Observable<Timed<T>> timestamp(TimeUnit unit) {
         return timestamp(unit, Schedulers.trampoline());
     }
 
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
     public final Observable<Timed<T>> timestamp(final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");

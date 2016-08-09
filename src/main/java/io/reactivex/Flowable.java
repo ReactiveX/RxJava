@@ -3349,25 +3349,25 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.NONE) // Trampoline scheduler is only used for creating timestamps.
     public final Flowable<Timed<T>> timeInterval() {
         return timeInterval(TimeUnit.MILLISECONDS, Schedulers.trampoline());
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
     public final Flowable<Timed<T>> timeInterval(Scheduler scheduler) {
         return timeInterval(TimeUnit.MILLISECONDS, scheduler);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.NONE) // Trampoline scheduler is only used for creating timestamps.
     public final Flowable<Timed<T>> timeInterval(TimeUnit unit) {
         return timeInterval(unit, Schedulers.trampoline());
     }
     
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
     public final Flowable<Timed<T>> timeInterval(TimeUnit unit, Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -3446,25 +3446,25 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.NONE) // Trampoline scheduler is only used for creating timestamps.
     public final Flowable<Timed<T>> timestamp() {
         return timestamp(TimeUnit.MILLISECONDS, Schedulers.trampoline());
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
     public final Flowable<Timed<T>> timestamp(Scheduler scheduler) {
         return timestamp(TimeUnit.MILLISECONDS, scheduler);
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.TRAMPOLINE)
+    @SchedulerSupport(SchedulerSupport.NONE) // Trampoline scheduler is only used for creating timestamps.
     public final Flowable<Timed<T>> timestamp(TimeUnit unit) {
         return timestamp(unit, Schedulers.trampoline());
     }
 
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
     public final Flowable<Timed<T>> timestamp(final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
