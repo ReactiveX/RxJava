@@ -18,7 +18,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
-import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
@@ -29,9 +28,8 @@ import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class ObservableBufferTimed<T, U extends Collection<? super T>> 
-extends Observable<U> {
+extends ObservableWithUpstream<T, U> {
 
-    final ObservableSource<T> source;
     final long timespan;
     final long timeskip;
     final TimeUnit unit;
@@ -42,7 +40,7 @@ extends Observable<U> {
     
     public ObservableBufferTimed(ObservableSource<T> source, long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Callable<U> bufferSupplier, int maxSize,
                                  boolean restartTimerOnMaxSize) {
-        this.source = source;
+        super(source);
         this.timespan = timespan;
         this.timeskip = timeskip;
         this.unit = unit;

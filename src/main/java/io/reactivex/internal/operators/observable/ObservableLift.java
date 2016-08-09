@@ -25,14 +25,12 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the upstream value type
  * @param <R> the downstream parameter type
  */
-public final class ObservableLift<R, T> extends Observable<R> {
+public final class ObservableLift<R, T> extends ObservableWithUpstream<T, R> {
     /** The actual operator. */
     final ObservableOperator<? extends R, ? super T> operator;
-    /** The source publisher. */
-    final ObservableSource<? extends T> source;
-    
-    public ObservableLift(ObservableSource<? extends T> source, ObservableOperator<? extends R, ? super T> operator) {
-        this.source = source;
+
+    public ObservableLift(ObservableSource<T> source, ObservableOperator<? extends R, ? super T> operator) {
+        super(source);
         this.operator = operator;
     }
     
@@ -42,14 +40,6 @@ public final class ObservableLift<R, T> extends Observable<R> {
      */
     public ObservableOperator<? extends R, ? super T> operator() {
         return operator;
-    }
-    
-    /**
-     * Returns the source of this lift publisher.
-     * @return the source of this lift publisher
-     */
-    public ObservableSource<? extends T> source() {
-        return source;
     }
     
     @Override

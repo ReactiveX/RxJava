@@ -19,11 +19,10 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.BooleanSupplier;
 
-public final class ObservableRepeatUntil<T> extends Observable<T> {
-    final Observable<? extends T> source;
+public final class ObservableRepeatUntil<T> extends ObservableWithUpstream<T, T> {
     final BooleanSupplier until;
-    public ObservableRepeatUntil(Observable<? extends T> source, BooleanSupplier until) {
-        this.source = source;
+    public ObservableRepeatUntil(Observable<T> source, BooleanSupplier until) {
+        super(source);
         this.until = until;
     }
     
@@ -42,9 +41,9 @@ public final class ObservableRepeatUntil<T> extends Observable<T> {
         
         final Observer<? super T> actual;
         final SerialDisposable sd;
-        final Observable<? extends T> source;
+        final ObservableSource<? extends T> source;
         final BooleanSupplier stop;
-        public RepeatSubscriber(Observer<? super T> actual, BooleanSupplier until, SerialDisposable sd, Observable<? extends T> source) {
+        public RepeatSubscriber(Observer<? super T> actual, BooleanSupplier until, SerialDisposable sd, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sd = sd;
             this.source = source;

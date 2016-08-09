@@ -20,14 +20,13 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Predicate;
 
-public final class ObservableRetryPredicate<T> extends Observable<T> {
-    final Observable<? extends T> source;
+public final class ObservableRetryPredicate<T> extends ObservableWithUpstream<T, T> {
     final Predicate<? super Throwable> predicate;
     final long count;
-    public ObservableRetryPredicate(Observable<? extends T> source, 
+    public ObservableRetryPredicate(Observable<T> source,
             long count,
             Predicate<? super Throwable> predicate) {
-        this.source = source;
+        super(source);
         this.predicate = predicate;
         this.count = count;
     }
@@ -47,11 +46,11 @@ public final class ObservableRetryPredicate<T> extends Observable<T> {
         
         final Observer<? super T> actual;
         final SerialDisposable sa;
-        final Observable<? extends T> source;
+        final ObservableSource<? extends T> source;
         final Predicate<? super Throwable> predicate;
         long remaining;
         public RepeatSubscriber(Observer<? super T> actual, long count, 
-                Predicate<? super Throwable> predicate, SerialDisposable sa, Observable<? extends T> source) {
+                Predicate<? super Throwable> predicate, SerialDisposable sa, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
             this.source = source;

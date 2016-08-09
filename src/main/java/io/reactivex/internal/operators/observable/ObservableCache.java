@@ -25,7 +25,7 @@ import io.reactivex.internal.util.*;
  *
  * @param <T> the source element type
  */
-public final class ObservableCache<T> extends Observable<T> {
+public final class ObservableCache<T> extends ObservableWithUpstream<T, T> {
     /** The cache and replay state. */
     final CacheState<T> state;
     
@@ -37,7 +37,7 @@ public final class ObservableCache<T> extends Observable<T> {
      * @param source the source Observable to cache
      * @return the CachedObservable instance
      */
-    public static <T> ObservableCache<T> from(Observable<? extends T> source) {
+    public static <T> ObservableCache<T> from(Observable<T> source) {
         return from(source, 16);
     }
     
@@ -48,12 +48,12 @@ public final class ObservableCache<T> extends Observable<T> {
      * @param capacityHint the hint for the internal buffer size
      * @return the CachedObservable instance
      */
-    public static <T> ObservableCache<T> from(Observable<? extends T> source, int capacityHint) {
+    public static <T> ObservableCache<T> from(Observable<T> source, int capacityHint) {
         if (capacityHint < 1) {
             throw new IllegalArgumentException("capacityHint > 0 required");
         }
         CacheState<T> state = new CacheState<T>(source, capacityHint);
-        return new ObservableCache<T>(state);
+        return new ObservableCache<T>(source, state);
     }
     
     /**
@@ -62,7 +62,8 @@ public final class ObservableCache<T> extends Observable<T> {
      * @param onSubscribe
      * @param state
      */
-    private ObservableCache(CacheState<T> state) {
+    private ObservableCache(Observable<T> source, CacheState<T> state) {
+        super(source);
         this.state = state;
         this.once = new AtomicBoolean();
     }

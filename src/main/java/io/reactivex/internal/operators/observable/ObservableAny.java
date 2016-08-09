@@ -17,11 +17,10 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableAny<T> extends Observable<Boolean> {
-    final ObservableSource<T> source;
+public final class ObservableAny<T> extends ObservableWithUpstream<T, Boolean> {
     final Predicate<? super T> predicate;
     public ObservableAny(ObservableSource<T> source, Predicate<? super T> predicate) {
-        this.source = source;
+        super(source);
         this.predicate = predicate;
     }
     

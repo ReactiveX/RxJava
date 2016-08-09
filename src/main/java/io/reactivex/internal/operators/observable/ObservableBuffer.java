@@ -17,20 +17,18 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 
-public final class ObservableBuffer<T, U extends Collection<? super T>> extends Observable<U> {
-    final ObservableSource<T> source;
+public final class ObservableBuffer<T, U extends Collection<? super T>> extends ObservableWithUpstream<T, U> {
     final int count;
     final int skip;
     final Callable<U> bufferSupplier;
     
     public ObservableBuffer(ObservableSource<T> source, int count, int skip, Callable<U> bufferSupplier) {
-        this.source = source;
+        super(source);
         this.count = count;
         this.skip = skip;
         this.bufferSupplier = bufferSupplier;
