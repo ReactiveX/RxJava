@@ -29,8 +29,6 @@ import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.schedulers.Timed;
 
 public final class ObservableReplay<T> extends ConnectableObservable<T> {
-    /** The source observable. */
-    final Observable<? extends T> source;
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
     final AtomicReference<ReplaySubscriber<T>> current;
     /** A factory that creates the appropriate buffer for the ReplaySubscriber. */
@@ -95,7 +93,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
      */
     public static <T> ConnectableObservable<T> observeOn(final ConnectableObservable<T> co, final Scheduler scheduler) {
         final Observable<T> observable = co.observeOn(scheduler);
-        return new ConnectableObservable<T>() {
+        return new ConnectableObservable<T>(co.source) {
             @Override
             public void connect(Consumer<? super Disposable> connection) {
                 co.connect(connection);
@@ -126,7 +124,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
      * @param bufferSize
      * @return the new NbpConnectableObservable instance
      */
-    public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
+    public static <T> ConnectableObservable<T> create(Observable<T> source,
             final int bufferSize) {
         if (bufferSize == Integer.MAX_VALUE) {
             return createFrom(source);
@@ -148,7 +146,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
      * @param scheduler
      * @return the new NbpConnectableObservable instance
      */
-    public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
+    public static <T> ConnectableObservable<T> create(Observable<T> source,
             long maxAge, TimeUnit unit, Scheduler scheduler) {
         return create(source, maxAge, unit, scheduler, Integer.MAX_VALUE);
     }
@@ -163,7 +161,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
      * @param bufferSize
      * @return the new NbpConnectableObservable instance
      */
-    public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
+    public static <T> ConnectableObservable<T> create(Observable<T> source,
             final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize) {
         return create(source, new Callable<ReplayBuffer<T>>() {
             @Override
@@ -179,7 +177,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
      * @param bufferFactory the factory to instantiate the appropriate buffer when the observable becomes active
      * @return the connectable observable
      */
-    static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
+    static <T> ConnectableObservable<T> create(Observable<T> source,
             final Callable<? extends ReplayBuffer<T>> bufferFactory) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<ReplaySubscriber<T>> curr = new AtomicReference<ReplaySubscriber<T>>();
@@ -236,11 +234,11 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> {
         return new ObservableReplay<T>(onSubscribe, source, curr, bufferFactory);
     }
     
-    private ObservableReplay(ObservableSource<T> onSubscribe, Observable<? extends T> source,
+    private ObservableReplay(ObservableSource<T> onSubscribe, Observable<T> source,
                              final AtomicReference<ReplaySubscriber<T>> current,
                              final Callable<? extends ReplayBuffer<T>> bufferFactory) {
+        super(source);
         this.onSubscribe = onSubscribe;
-        this.source = source;
         this.current = current;
         this.bufferFactory = bufferFactory;
     }
