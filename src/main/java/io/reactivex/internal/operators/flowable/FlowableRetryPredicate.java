@@ -17,19 +17,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
-public final class FlowableRetryPredicate<T> extends Flowable<T> {
-    final Publisher<? extends T> source;
+public final class FlowableRetryPredicate<T> extends FlowableWithUpstream<T, T> {
     final Predicate<? super Throwable> predicate;
     final long count;
-    public FlowableRetryPredicate(Publisher<? extends T> source, 
+    public FlowableRetryPredicate(Publisher<T> source,
             long count,
             Predicate<? super Throwable> predicate) {
-        this.source = source;
+        super(source);
         this.predicate = predicate;
         this.count = count;
     }

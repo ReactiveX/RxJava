@@ -27,8 +27,7 @@ import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableTimeoutTimed<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableTimeoutTimed<T> extends FlowableWithUpstream<T, T> {
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
@@ -36,7 +35,7 @@ public final class FlowableTimeoutTimed<T> extends Flowable<T> {
     
     public FlowableTimeoutTimed(Publisher<T> source, 
             long timeout, TimeUnit unit, Scheduler scheduler, Publisher<? extends T> other) {
-        this.source = source;
+        super(source);
         this.timeout = timeout;
         this.unit = unit;
         this.scheduler = scheduler;

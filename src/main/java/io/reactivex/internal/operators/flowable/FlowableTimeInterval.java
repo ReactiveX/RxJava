@@ -21,13 +21,12 @@ import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.schedulers.Timed;
 
-public final class FlowableTimeInterval<T> extends Flowable<Timed<T>> {
-    final Publisher<T> source;
+public final class FlowableTimeInterval<T> extends FlowableWithUpstream<T, Timed<T>> {
     final Scheduler scheduler;
     final TimeUnit unit;
     
     public FlowableTimeInterval(Publisher<T> source, TimeUnit unit, Scheduler scheduler) {
-        this.source = source;
+        super(source);
         this.scheduler = scheduler;
         this.unit = unit;
     }

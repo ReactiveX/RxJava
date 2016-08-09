@@ -17,14 +17,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
-public final class FlowableRepeat<T> extends Flowable<T> {
-    final Publisher<? extends T> source;
+public final class FlowableRepeat<T> extends FlowableWithUpstream<T, T> {
     final long count;
-    public FlowableRepeat(Publisher<? extends T> source, long count) {
-        this.source = source;
+    public FlowableRepeat(Publisher<T> source, long count) {
+        super(source);
         this.count = count;
     }
     

@@ -17,18 +17,16 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableWithLatestFrom<T, U, R> extends Flowable<R> {
-    final Publisher<T> source;
+public final class FlowableWithLatestFrom<T, U, R> extends FlowableWithUpstream<T, R> {
     final BiFunction<? super T, ? super U, ? extends R> combiner;
     final Publisher<? extends U> other;
     public FlowableWithLatestFrom(Publisher<T> source, BiFunction<? super T, ? super U, ? extends R> combiner, Publisher<? extends U> other) {
-        this.source = source;
+        super(source);
         this.combiner = combiner;
         this.other = other;
     }

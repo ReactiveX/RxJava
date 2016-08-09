@@ -18,7 +18,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.Consumer;
@@ -31,7 +30,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  * @param <T>
  *            the value type
  */
-public final class FlowableRefCount<T> extends Flowable<T> {
+public final class FlowableRefCount<T> extends FlowableWithUpstream<T, T> {
     final ConnectableFlowable<? extends T> source;
     volatile CompositeDisposable baseSubscription = new CompositeDisposable();
     final AtomicInteger subscriptionCount = new AtomicInteger(0);
@@ -113,7 +112,8 @@ public final class FlowableRefCount<T> extends Flowable<T> {
      * @param source
      *            observable to apply ref count to
      */
-    public FlowableRefCount(ConnectableFlowable<? extends T> source) {
+    public FlowableRefCount(ConnectableFlowable<T> source) {
+        super(source);
         this.source = source;
     }
 

@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
@@ -30,13 +29,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.*;
 
 public final class FlowableBufferBoundarySupplier<T, U extends Collection<? super T>, B> 
-extends Flowable<U> {
-    final Publisher<T> source;
+extends FlowableWithUpstream<T, U> {
     final Callable<? extends Publisher<B>> boundarySupplier;
     final Callable<U> bufferSupplier;
     
     public FlowableBufferBoundarySupplier(Publisher<T> source, Callable<? extends Publisher<B>> boundarySupplier, Callable<U> bufferSupplier) {
-        this.source = source;
+        super(source);
         this.boundarySupplier = boundarySupplier;
         this.bufferSupplier = bufferSupplier;
     }

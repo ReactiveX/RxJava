@@ -23,8 +23,7 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableSkipLastTimed<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableSkipLastTimed<T> extends FlowableWithUpstream<T, T> {
     final long time;
     final TimeUnit unit;
     final Scheduler scheduler;
@@ -32,7 +31,7 @@ public final class FlowableSkipLastTimed<T> extends Flowable<T> {
     final boolean delayError;
 
     public FlowableSkipLastTimed(Publisher<T> source, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
-        this.source = source;
+        super(source);
         this.time = time;
         this.unit = unit;
         this.scheduler = scheduler;

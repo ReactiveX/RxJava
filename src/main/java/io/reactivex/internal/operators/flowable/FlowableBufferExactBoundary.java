@@ -18,7 +18,6 @@ import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.QueueDrainSubscriber;
@@ -27,13 +26,12 @@ import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.subscribers.*;
 
 public final class FlowableBufferExactBoundary<T, U extends Collection<? super T>, B> 
-extends Flowable<U> {
-    final Publisher<T> source;
+extends FlowableWithUpstream<T, U> {
     final Publisher<B> boundary;
     final Callable<U> bufferSupplier;
     
     public FlowableBufferExactBoundary(Publisher<T> source, Publisher<B> boundary, Callable<U> bufferSupplier) {
-        this.source = source;
+        super(source);
         this.boundary = boundary;
         this.bufferSupplier = bufferSupplier;
     }

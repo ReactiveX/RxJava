@@ -16,16 +16,14 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscribers.flowable.*;
 
-public final class FlowableMap<T, U> extends Flowable<U> {
-    final Publisher<T> source;
+public final class FlowableMap<T, U> extends FlowableWithUpstream<T, U> {
     final Function<? super T, ? extends U> mapper;
     public FlowableMap(Publisher<T> source, Function<? super T, ? extends U> mapper) {
-        this.source = source;
+        super(source);
         this.mapper = mapper;
     }
     

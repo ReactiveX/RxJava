@@ -14,15 +14,12 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableTakeLastOne<T> extends Flowable<T> {
+public final class FlowableTakeLastOne<T> extends FlowableWithUpstream<T, T> {
 
-    final Publisher<T> source;
-    
     public FlowableTakeLastOne(Publisher<T> source) {
-        this.source = source;
+        super(source);
     }
 
     @Override

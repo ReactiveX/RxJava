@@ -15,14 +15,12 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class FlowableSkip<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableSkip<T> extends FlowableWithUpstream<T, T> {
     final long n;
     public FlowableSkip(Publisher<T> source, long n) {
-        this.source = source;
+        super(source);
         this.n = n;
     }
 

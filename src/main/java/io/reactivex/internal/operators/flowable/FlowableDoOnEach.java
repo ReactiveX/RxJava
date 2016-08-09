@@ -15,15 +15,13 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableDoOnEach<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableDoOnEach<T> extends FlowableWithUpstream<T, T> {
     final Consumer<? super T> onNext;
     final Consumer<? super Throwable> onError;
     final Runnable onComplete;
@@ -33,7 +31,7 @@ public final class FlowableDoOnEach<T> extends Flowable<T> {
             Consumer<? super Throwable> onError, 
             Runnable onComplete,
             Runnable onAfterTerminate) {
-        this.source = source;
+        super(source);
         this.onNext = onNext;
         this.onError = onError;
         this.onComplete = onComplete;

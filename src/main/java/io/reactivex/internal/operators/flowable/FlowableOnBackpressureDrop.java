@@ -17,24 +17,21 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableOnBackpressureDrop<T> extends Flowable<T> implements Consumer<T> {
+public final class FlowableOnBackpressureDrop<T> extends FlowableWithUpstream<T, T> implements Consumer<T> {
 
-    final Publisher<T> source;
-    
     final Consumer<? super T> onDrop;
 
     public FlowableOnBackpressureDrop(Publisher<T> source) {
-        this.source = source;
+        super(source);
         this.onDrop = this;
     }
     
     public FlowableOnBackpressureDrop(Publisher<T> source, Consumer<? super T> onDrop) {
-        this.source = source;
+        super(source);
         this.onDrop = onDrop;
     }
     

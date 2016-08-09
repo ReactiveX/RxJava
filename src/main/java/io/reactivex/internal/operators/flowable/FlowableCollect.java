@@ -16,19 +16,17 @@ import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableCollect<T, U> extends Flowable<U> {
+public final class FlowableCollect<T, U> extends FlowableWithUpstream<T, U> {
     
-    final Publisher<T> source;
     final Callable<? extends U> initialSupplier;
     final BiConsumer<? super U, ? super T> collector;
     
     public FlowableCollect(Publisher<T> source, Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
-        this.source = source;
+        super(source);
         this.initialSupplier = initialSupplier;
         this.collector = collector;
     }

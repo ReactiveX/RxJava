@@ -17,17 +17,15 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableOnErrorReturn<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableOnErrorReturn<T> extends FlowableWithUpstream<T, T> {
     final Function<? super Throwable, ? extends T> valueSupplier;
     public FlowableOnErrorReturn(Publisher<T> source, Function<? super Throwable, ? extends T> valueSupplier) {
-        this.source = source;
+        super(source);
         this.valueSupplier = valueSupplier;
     }
 

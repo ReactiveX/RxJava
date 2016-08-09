@@ -15,14 +15,12 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
-public final class FlowableSwitchIfEmpty<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableSwitchIfEmpty<T> extends FlowableWithUpstream<T, T> {
     final Publisher<? extends T> other;
     public FlowableSwitchIfEmpty(Publisher<T> source, Publisher<? extends T> other) {
-        this.source = source;
+        super(source);
         this.other = other;
     }
     

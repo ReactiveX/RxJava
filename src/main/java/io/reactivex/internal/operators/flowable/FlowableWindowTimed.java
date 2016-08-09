@@ -32,8 +32,7 @@ import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
-    final Publisher<T> source;
+public final class FlowableWindowTimed<T> extends FlowableWithUpstream<T, Flowable<T>> {
     final long timespan;
     final long timeskip;
     final TimeUnit unit;
@@ -45,7 +44,7 @@ public final class FlowableWindowTimed<T> extends Flowable<Flowable<T>> {
     public FlowableWindowTimed(Publisher<T> source, 
             long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, long maxSize,
             int bufferSize, boolean restartTimerOnMaxSize) {
-        this.source = source;
+        super(source);
         this.timespan = timespan;
         this.timeskip = timeskip;
         this.unit = unit;

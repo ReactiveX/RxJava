@@ -20,11 +20,10 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class FlowableUnsubscribeOn<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableUnsubscribeOn<T> extends FlowableWithUpstream<T, T> {
     final Scheduler scheduler;
     public FlowableUnsubscribeOn(Publisher<T> source, Scheduler scheduler) {
-        this.source = source;
+        super(source);
         this.scheduler = scheduler;
     }
     

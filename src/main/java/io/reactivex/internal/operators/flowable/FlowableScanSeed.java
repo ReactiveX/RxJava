@@ -16,20 +16,18 @@ import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscribers.flowable.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableScanSeed<T, R> extends Flowable<R> {
-    final Publisher<T> source;
+public final class FlowableScanSeed<T, R> extends FlowableWithUpstream<T, R> {
     final BiFunction<R, ? super T, R> accumulator;
     final Callable<R> seedSupplier;
 
     public FlowableScanSeed(Publisher<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
-        this.source = source;
+        super(source);
         this.accumulator = accumulator;
         this.seedSupplier = seedSupplier;
     }

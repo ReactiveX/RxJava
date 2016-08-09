@@ -15,7 +15,6 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.FlowableOperator;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -28,14 +27,12 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the upstream value type
  * @param <R> the downstream parameter type
  */
-public final class FlowableLift<R, T> extends Flowable<R> {
+public final class FlowableLift<R, T> extends FlowableWithUpstream<T, R> {
     /** The actual operator. */
     final FlowableOperator<? extends R, ? super T> operator;
-    /** The source publisher. */
-    final Publisher<? extends T> source;
-    
-    public FlowableLift(Publisher<? extends T> source, FlowableOperator<? extends R, ? super T> operator) {
-        this.source = source;
+
+    public FlowableLift(Publisher<T> source, FlowableOperator<? extends R, ? super T> operator) {
+        super(source);
         this.operator = operator;
     }
     
@@ -45,14 +42,6 @@ public final class FlowableLift<R, T> extends Flowable<R> {
      */
     public FlowableOperator<? extends R, ? super T> operator() {
         return operator;
-    }
-    
-    /**
-     * Returns the source of this lift publisher.
-     * @return the source of this lift publisher
-     */
-    public Publisher<? extends T> source() {
-        return source;
     }
     
     @Override

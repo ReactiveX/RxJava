@@ -29,9 +29,8 @@ import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableBufferTimed<T, U extends Collection<? super T>> extends Flowable<U> {
+public final class FlowableBufferTimed<T, U extends Collection<? super T>> extends FlowableWithUpstream<T, U> {
 
-    final Publisher<T> source;
     final long timespan;
     final long timeskip;
     final TimeUnit unit;
@@ -42,7 +41,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
     
     public FlowableBufferTimed(Publisher<T> source, long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Callable<U> bufferSupplier, int maxSize,
             boolean restartTimerOnMaxSize) {
-        this.source = source;
+        super(source);
         this.timespan = timespan;
         this.timeskip = timeskip;
         this.unit = unit;

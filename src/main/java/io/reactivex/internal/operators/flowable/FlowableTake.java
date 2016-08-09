@@ -17,15 +17,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableTake<T> extends Flowable<T> {
-    final Publisher<T> source;
+public final class FlowableTake<T> extends FlowableWithUpstream<T, T> {
     final long limit;
     public FlowableTake(Publisher<T> source, long limit) {
-        this.source = source;
+        super(source);
         this.limit = limit;
     }
     
