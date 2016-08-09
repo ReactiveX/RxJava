@@ -772,4 +772,47 @@ public class TestSubscriberTest {
         Assert.assertFalse(ts.awaitValueCount(5, 1, TimeUnit.SECONDS));
         
     }
+    
+    @Test
+    public void assertAndConsume() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        ts.assertNoValues();
+        
+        ts.onNext(1);
+        
+        ts.assertAndConsume(1);
+        
+        ts.assertNoValues();
+        
+        ts.onNext(2);
+        ts.onNext(3);
+        
+        ts.assertValueCount(2);
+        
+        ts.assertAndConsume(2, 3);
+        
+        ts.onNext(4);
+        ts.onNext(5);
+        
+        try {
+            ts.assertAndConsume(4);
+            Assert.fail("Should have thrown AssertionError");
+        } catch (AssertionError ex) {
+            // expected
+        }
+        
+        ts.assertValueCount(2);
+        
+        try {
+            ts.assertAndConsume(4, 5, 6);
+            Assert.fail("Should have thrown AssertionError");
+        } catch (AssertionError ex) {
+            // expected
+        }
+        
+        ts.assertAndConsume(4, 5);
+        
+        ts.assertNoValues();
+    }
 }
