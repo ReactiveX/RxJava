@@ -33,9 +33,9 @@ import io.reactivex.plugins.RxJavaPlugins;
  * manner. 
  * @param <T> the value type
  */
-public final class FlowablePublish<T> extends ConnectableFlowable<T> {
+public final class FlowablePublish<T> extends ConnectableFlowable<T> implements FlowableWithUpstream<T> {
     /** The source observable. */
-    final Publisher<? extends T> source;
+    final Publisher<T> source;
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
     final AtomicReference<PublishSubscriber<T>> current;
     
@@ -51,7 +51,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
      * @param bufferSize the size of the prefetch buffer
      * @return the connectable observable
      */
-    public static <T> ConnectableFlowable<T> create(Flowable<? extends T> source, final int bufferSize) {
+    public static <T> ConnectableFlowable<T> create(Flowable<T> source, final int bufferSize) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<PublishSubscriber<T>> curr = new AtomicReference<PublishSubscriber<T>>();
         Publisher<T> onSubscribe = new Publisher<T>() {
@@ -121,7 +121,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
         return new FlowablePublish<T>(onSubscribe, source, curr, bufferSize);
     }
 
-    public static <T, R> Flowable<R> create(final Flowable<? extends T> source, 
+    public static <T, R> Flowable<R> create(final Flowable<T> source,
             final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize) {
         return unsafeCreate(new Publisher<R>() {
             @Override
@@ -151,12 +151,17 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> {
         });
     }
 
-    private FlowablePublish(Publisher<T> onSubscribe, Publisher<? extends T> source, 
+    private FlowablePublish(Publisher<T> onSubscribe, Publisher<T> source,
             final AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
         this.onSubscribe = onSubscribe;
         this.source = source;
         this.current = current;
         this.bufferSize = bufferSize;
+    }
+
+    @Override
+    public Publisher<T> source() {
+        return source;
     }
 
     @Override
