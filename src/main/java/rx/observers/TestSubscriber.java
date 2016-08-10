@@ -693,7 +693,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @param expectedFirstValue the expected first value
      * @param expectedRestValues the optional rest values
      */
-    public final void assertAndConsume(T expectedFirstValue, T... expectedRestValues) {
+    public final void assertValuesAndClear(T expectedFirstValue, T... expectedRestValues) {
         int n = 1 + expectedRestValues.length;
         assertValueCount(n);
         assertItem(expectedFirstValue, 0);

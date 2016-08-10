@@ -781,7 +781,7 @@ public class TestSubscriberTest {
         
         ts.onNext(1);
         
-        ts.assertAndConsume(1);
+        ts.assertValuesAndClear(1);
         
         ts.assertNoValues();
         
@@ -790,13 +790,13 @@ public class TestSubscriberTest {
         
         ts.assertValueCount(2);
         
-        ts.assertAndConsume(2, 3);
+        ts.assertValuesAndClear(2, 3);
         
         ts.onNext(4);
         ts.onNext(5);
         
         try {
-            ts.assertAndConsume(4);
+            ts.assertValuesAndClear(4);
             Assert.fail("Should have thrown AssertionError");
         } catch (AssertionError ex) {
             // expected
@@ -805,13 +805,13 @@ public class TestSubscriberTest {
         ts.assertValueCount(2);
         
         try {
-            ts.assertAndConsume(4, 5, 6);
+            ts.assertValuesAndClear(4, 5, 6);
             Assert.fail("Should have thrown AssertionError");
         } catch (AssertionError ex) {
             // expected
         }
         
-        ts.assertAndConsume(4, 5);
+        ts.assertValuesAndClear(4, 5);
         
         ts.assertNoValues();
     }
