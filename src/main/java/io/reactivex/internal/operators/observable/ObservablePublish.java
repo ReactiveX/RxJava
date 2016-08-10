@@ -29,9 +29,9 @@ import io.reactivex.observables.ConnectableObservable;
  * manner. 
  * @param <T> the value type
  */
-public final class ObservablePublish<T> extends ConnectableObservable<T> {
+public final class ObservablePublish<T> extends ConnectableObservable<T> implements ObservableWithUpstream<T> {
     /** The source observable. */
-    final ObservableSource<? extends T> source;
+    final ObservableSource<T> source;
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
     final AtomicReference<PublishSubscriber<T>> current;
     
@@ -47,7 +47,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> {
      * @param bufferSize the size of the prefetch buffer
      * @return the connectable observable
      */
-    public static <T> ConnectableObservable<T> create(ObservableSource<? extends T> source, final int bufferSize) {
+    public static <T> ConnectableObservable<T> create(ObservableSource<T> source, final int bufferSize) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<PublishSubscriber<T>> curr = new AtomicReference<PublishSubscriber<T>>();
         ObservableSource<T> onSubscribe = new ObservableSource<T>() {
@@ -117,7 +117,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> {
         return new ObservablePublish<T>(onSubscribe, source, curr, bufferSize);
     }
 
-    public static <T, R> Observable<R> create(final ObservableSource<? extends T> source,
+    public static <T, R> Observable<R> create(final ObservableSource<T> source,
                                               final Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final int bufferSize) {
         return new Observable<R>() {
             @Override
@@ -148,14 +148,19 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> {
         };
     }
 
-    private ObservablePublish(ObservableSource<T> onSubscribe, ObservableSource<? extends T> source,
+    private ObservablePublish(ObservableSource<T> onSubscribe, ObservableSource<T> source,
                               final AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
         this.onSubscribe = onSubscribe;
         this.source = source;
         this.current = current;
         this.bufferSize = bufferSize;
     }
-    
+
+    @Override
+    public ObservableSource<T> source() {
+        return source;
+    }
+
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
         onSubscribe.subscribe(observer);
