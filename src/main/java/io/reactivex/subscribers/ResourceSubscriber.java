@@ -23,7 +23,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
 /**
- * An abstract Subscriber implementation that allows asynchronous cancellation of its
+ * An abstract Subscriber that allows asynchronous cancellation of its
  * subscription.
  * 
  * <p>This implementation let's you chose if the AsyncObserver manages resources or not,
@@ -33,63 +33,26 @@ import io.reactivex.internal.util.BackpressureHelper;
  * 
  * @param <T> the value type
  */
-public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
+public abstract class ResourceSubscriber<T> implements Subscriber<T>, Disposable {
     /** The active subscription. */
-    private final AtomicReference<Subscription> s;
+    private final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
 
     /** The resource composite, can be null. */
-    private final CompositeDisposable resources;
+    private final CompositeDisposable resources = new CompositeDisposable();
     
     /** Remembers the request(n) counts until a subscription arrives. */
-    private final AtomicLong missedRequested;
-
-    /**
-     * Constructs an AsyncObserver with resource support.
-     */
-    public AsyncSubscriber() {
-        this(true);
-    }
-
-    /**
-     * Constructs an AsyncObserver and allows specifying if it should support resources or not.
-     * @param withResources true if resource support should be on.
-     */
-    public AsyncSubscriber(boolean withResources) {
-        this.resources = withResources ? new CompositeDisposable() : null;
-        this.missedRequested = new AtomicLong();
-        this.s = new AtomicReference<Subscription>();
-    }
+    private final AtomicLong missedRequested = new AtomicLong();
 
     /**
      * Adds a resource to this AsyncObserver.
      * 
-     * <p>Note that if the AsyncObserver doesn't manage resources, this method will
-     * throw an IllegalStateException. Use {@link #supportsResources()} to determine if
-     * this AsyncObserver manages resources or not.
-     * 
      * @param resource the resource to add
      * 
      * @throws NullPointerException if resource is null
-     * @throws IllegalStateException if this AsyncObserver doesn't manage resources
-     * @see #supportsResources()
      */
     public final void add(Disposable resource) {
         Objects.requireNonNull(resource, "resource is null");
-        if (resources != null) {
-            add(resource);
-        } else {
-            resource.dispose();
-            throw new IllegalStateException("This AsyncObserver doesn't manage additional resources");
-        }
-    }
-    
-    /**
-     * Returns true if this AsyncObserver supports resources added via the add() method. 
-     * @return true if this AsyncObserver supports resources added via the add() method
-     * @see #add(Disposable)
-     */
-    public final boolean supportsResources() {
-        return resources != null;
+        resources.add(resource);
     }
     
     @Override
@@ -148,7 +111,7 @@ public abstract class AsyncSubscriber<T> implements Subscriber<T>, Disposable {
      * case the Subscription will be immediately cancelled.
      */
     protected final void cancel() {
-        if (SubscriptionHelper.dispose(s) && resources != null) {
+        if (SubscriptionHelper.dispose(s)) {
             resources.dispose();
         }
     }

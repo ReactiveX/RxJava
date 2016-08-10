@@ -21,68 +21,29 @@ import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.Objects;
 
 /**
- * An abstract Subscriber implementation that allows asynchronous cancellation of its
- * subscription.
- * 
- * <p>This implementation let's you chose if the AsyncObserver manages resources or not,
- * thus saving memory on cases where there is no need for that.
+ * An abstract Observer that allows asynchronous cancellation of its subscription and associated resources.
  * 
  * <p>All pre-implemented final methods are thread-safe.
  * 
  * @param <T> the value type
  */
-public abstract class AsyncObserver<T> implements Observer<T>, Disposable {
+public abstract class ResourceObserver<T> implements Observer<T>, Disposable {
     /** The active subscription. */
     private final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
     /** The resource composite, can be null. */
-    private final ListCompositeDisposable resources;
+    private final ListCompositeDisposable resources = new ListCompositeDisposable();
     
     /**
-     * Constructs an AsyncObserver with resource support.
-     */
-    public AsyncObserver() {
-        this(true);
-    }
-
-    /**
-     * Constructs an AsyncObserver and allows specifying if it should support resources or not.
-     * @param withResources true if resource support should be on.
-     */
-    public AsyncObserver(boolean withResources) {
-        this.resources = withResources ? new ListCompositeDisposable() : null;
-    }
-
-    /**
-     * Adds a resource to this AsyncObserver.
-     * 
-     * <p>Note that if the AsyncObserver doesn't manage resources, this method will
-     * throw an IllegalStateException. Use {@link #supportsResources()} to determine if
-     * this AsyncObserver manages resources or not.
+     * Adds a resource to this ResourceObserver.
      * 
      * @param resource the resource to add
      * 
      * @throws NullPointerException if resource is null
-     * @throws IllegalStateException if this AsyncObserver doesn't manage resources
-     * @see #supportsResources()
      */
     public final void add(Disposable resource) {
         Objects.requireNonNull(resource, "resource is null");
-        if (resources != null) {
-            add(resource);
-        } else {
-            resource.dispose();
-            throw new IllegalStateException("This AsyncObserver doesn't manage additional resources");
-        }
-    }
-    
-    /**
-     * Returns true if this AsyncObserver supports resources added via the add() method. 
-     * @return true if this AsyncObserver supports resources added via the add() method
-     * @see #add(Disposable)
-     */
-    public final boolean supportsResources() {
-        return resources != null;
+        resources.add(resource);
     }
     
     @Override
@@ -93,7 +54,7 @@ public abstract class AsyncObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Called once the upstream sets a Subscription on this AsyncObserver.
+     * Called once the upstream sets a Subscription on this ResourceObserver.
      * 
      * <p>You can perform initialization at this moment. The default
      * implementation does nothing.
@@ -103,13 +64,13 @@ public abstract class AsyncObserver<T> implements Observer<T>, Disposable {
     
     /**
      * Cancels the main disposable (if any) and disposes the resources associated with
-     * this AsyncObserver (if any).
+     * this ResourceObserver (if any).
      * 
      * <p>This method can be called before the upstream calls onSubscribe at which
      * case the main Disposable will be immediately disposed.
      */
     protected final void cancel() {
-        if (DisposableHelper.dispose(s) && resources != null) {
+        if (DisposableHelper.dispose(s)) {
             resources.dispose();
         }
     }
@@ -120,8 +81,8 @@ public abstract class AsyncObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Returns true if this AsyncObserver has been disposed/cancelled.
-     * @return true if this AsyncObserver has been disposed/cancelled
+     * Returns true if this ResourceObserver has been disposed/cancelled.
+     * @return true if this ResourceObserver has been disposed/cancelled
      */
     @Override
     public final boolean isDisposed() {

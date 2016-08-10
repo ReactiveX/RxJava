@@ -317,7 +317,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     
             final AtomicInteger count = new AtomicInteger();
             final AtomicBoolean completed = new AtomicBoolean(false);
-            AsyncSubscriber<Integer> s = new AsyncSubscriber<Integer>() {
+            ResourceSubscriber<Integer> s = new ResourceSubscriber<Integer>() {
                 @Override
                 public void onComplete() {
                     System.out.println("Completed");

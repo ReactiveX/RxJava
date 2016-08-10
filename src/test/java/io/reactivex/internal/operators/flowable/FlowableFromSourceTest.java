@@ -637,7 +637,7 @@ public class FlowableFromSourceTest {
 
             this.current = t;
             
-            final AsyncSubscriber<Integer> as = new AsyncSubscriber<Integer>() {
+            final ResourceSubscriber<Integer> as = new ResourceSubscriber<Integer>() {
 
                 @Override
                 public void onComplete() {

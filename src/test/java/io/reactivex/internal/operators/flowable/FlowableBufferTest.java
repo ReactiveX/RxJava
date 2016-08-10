@@ -989,7 +989,7 @@ public class FlowableBufferTest {
         final Subscriber<Object> o = TestHelper.mockSubscriber();
         
         final CountDownLatch cdl = new CountDownLatch(1);
-        AsyncSubscriber<Object> s = new AsyncSubscriber<Object>() {
+        ResourceSubscriber<Object> s = new ResourceSubscriber<Object>() {
             @Override
             public void onNext(Object t) {
                 o.onNext(t);

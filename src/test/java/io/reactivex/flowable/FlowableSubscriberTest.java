@@ -204,7 +204,7 @@ public class FlowableSubscriberTest {
 
                 });
 
-                AsyncSubscriber<String> as = new AsyncSubscriber<String>() {
+                ResourceSubscriber<String> as = new ResourceSubscriber<String>() {
                     
                     @Override
                     protected void onStart() {
