@@ -15,91 +15,48 @@
  */
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import rx.Subscription;
+import rx.internal.subscriptions.SequentialSubscription;
 
 /**
  * Represents a subscription whose underlying subscription can be swapped for another subscription which causes
  * the previous underlying subscription to be unsubscribed.
  */
 public final class SerialSubscription implements Subscription {
-    final AtomicReference<State> state = new AtomicReference<State>(new State(false, Subscriptions.empty()));
-
-    static final class State {
-        final boolean isUnsubscribed;
-        final Subscription subscription;
-
-        State(boolean u, Subscription s) {
-            this.isUnsubscribed = u;
-            this.subscription = s;
-        }
-
-        State unsubscribe() {
-            return new State(true, subscription);
-        }
-
-        State set(Subscription s) {
-            return new State(isUnsubscribed, s);
-        }
-
-    }
-
+    
+    final SequentialSubscription state = new SequentialSubscription();
+    
     @Override
     public boolean isUnsubscribed() {
-        return state.get().isUnsubscribed;
+        return state.isUnsubscribed();
     }
 
     @Override
     public void unsubscribe() {
-        State oldState;
-        State newState;
-        final AtomicReference<State> localState = this.state;
-        do {
-            oldState = localState.get();
-            if (oldState.isUnsubscribed) {
-                return;
-            } else {
-                newState = oldState.unsubscribe();
-            }
-        } while (!localState.compareAndSet(oldState, newState));
-        oldState.subscription.unsubscribe();
+        state.unsubscribe();
     }
 
     /**
-     * Swaps out the old {@link Subscription} for the specified {@code Subscription}.
+     * Sets the underlying subscription. If the {@code MultipleAssignmentSubscription} is already unsubscribed,
+     * setting a new subscription causes the new subscription to also be immediately unsubscribed.
      *
-     * @param s
-     *          the new {@code Subscription} to swap in
-     * @throws IllegalArgumentException
-     *          if {@code s} is {@code null}
+     * @param s the {@link Subscription} to set
+     * @throws IllegalArgumentException if {@code s} is {@code null}
      */
     public void set(Subscription s) {
         if (s == null) {
             throw new IllegalArgumentException("Subscription can not be null");
         }
-        State oldState;
-        State newState;
-        final AtomicReference<State> localState = this.state;
-        do {
-            oldState = localState.get();
-            if (oldState.isUnsubscribed) {
-                s.unsubscribe();
-                return;
-            } else {
-                newState = oldState.set(s);
-            }
-        } while (!localState.compareAndSet(oldState, newState));
-        oldState.subscription.unsubscribe();
+        state.update(s);
     }
 
     /**
-     * Retrieves the current {@link Subscription} that is being represented by this {@code SerialSubscription}.
-     * 
-     * @return the current {@link Subscription} that is being represented by this {@code SerialSubscription}
+     * Gets the underlying subscription.
+     *
+     * @return the {@link Subscription} that underlies the {@code MultipleAssignmentSubscription}
      */
     public Subscription get() {
-        return state.get().subscription;
+        return state.current();
     }
 
 }
