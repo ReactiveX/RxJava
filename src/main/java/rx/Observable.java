@@ -1102,6 +1102,32 @@ public class Observable<T> {
     }
 
     /**
+     * Flattens an Iterable of Observables into one Observable, one after the other, without
+     * interleaving them.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream. The {@code Observable}
+     *  sources are expected to honor backpressure as well.
+     *  If any of the source {@code Observable}s violate this, it <em>may</em> throw an
+     *  {@code IllegalStateException} when the source {@code Observable} completes.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common element base type
+     * @param sequences
+     *            the Iterable of Observables
+     * @return an Observable that emits items that are the result of flattening the items emitted by the
+     *         Observables in the Iterable, one after the other, without interleaving them
+     * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
+     */
+    public static <T> Observable<T> concat(Iterable<? extends Observable<? extends T>> sequences) {
+        return concat(from(sequences));
+    }
+
+    /**
      * Returns an Observable that emits the items emitted by each of the Observables emitted by the source
      * Observable, one after the other, without interleaving them.
      * <p>
