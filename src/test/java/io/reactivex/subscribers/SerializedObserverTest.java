@@ -375,13 +375,13 @@ public class SerializedObserverTest {
         AtomicInteger p2 = new AtomicInteger();
 
         o.onSubscribe(EmptySubscription.INSTANCE);
-        AsyncSubscriber<String> as1 = Subscribers.createAsync(new Consumer<String>() {
+        ResourceSubscriber<String> as1 = Subscribers.createResource(new Consumer<String>() {
             @Override
             public void accept(String v) {
                 o.onNext(v);
             }
         });
-        AsyncSubscriber<String> as2 = Subscribers.createAsync(new Consumer<String>() {
+        ResourceSubscriber<String> as2 = Subscribers.createResource(new Consumer<String>() {
             @Override
             public void accept(String v) {
                 o.onNext(v);

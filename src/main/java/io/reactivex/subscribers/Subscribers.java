@@ -255,8 +255,8 @@ public final class Subscribers {
             }
         };
     }
-    public static <T> AsyncSubscriber<T> emptyAsync() {
-        return new AsyncSubscriber<T>() {
+    public static <T> ResourceSubscriber<T> emptyResource() {
+        return new ResourceSubscriber<T>() {
             @Override
             public void onNext(T t) {
                 
@@ -350,21 +350,21 @@ public final class Subscribers {
         };
     }
     
-    public static <T> AsyncSubscriber<T> createAsync(Consumer<? super T> onNext) {
-        return createAsync(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+    public static <T> ResourceSubscriber<T> createResource(Consumer<? super T> onNext) {
+        return createResource(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
-    public static <T> AsyncSubscriber<T> createAsync(Consumer<? super T> onNext, 
+    public static <T> ResourceSubscriber<T> createResource(Consumer<? super T> onNext,
             Consumer<? super Throwable> onError) {
-        return createAsync(onNext, onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+        return createResource(onNext, onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
-    public static <T> AsyncSubscriber<T> createAsync(Consumer<? super T> onNext, 
+    public static <T> ResourceSubscriber<T> createResource(Consumer<? super T> onNext,
             Consumer<? super Throwable> onError, Runnable onComplete) {
-        return createAsync(onNext, onError, onComplete, Functions.EMPTY_RUNNABLE);
+        return createResource(onNext, onError, onComplete, Functions.EMPTY_RUNNABLE);
     }
     
-    public static <T> AsyncSubscriber<T> createAsync(
+    public static <T> ResourceSubscriber<T> createResource(
             final Consumer<? super T> onNext, 
             final Consumer<? super Throwable> onError, 
             final Runnable onComplete, 
@@ -373,7 +373,7 @@ public final class Subscribers {
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
         Objects.requireNonNull(onStart, "onStart is null");
-        return new AsyncSubscriber<T>() {
+        return new ResourceSubscriber<T>() {
             boolean done;
             @Override
             protected void onStart() {

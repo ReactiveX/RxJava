@@ -763,7 +763,7 @@ public class ObservableBufferTest {
         final Observer<Object> o = TestHelper.mockObserver();
         
         final CountDownLatch cdl = new CountDownLatch(1);
-        AsyncObserver<Object> s = new AsyncObserver<Object>() {
+        ResourceObserver<Object> s = new ResourceObserver<Object>() {
             @Override
             public void onNext(Object t) {
                 o.onNext(t);

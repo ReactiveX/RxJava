@@ -29,8 +29,8 @@ public final class Observers {
         throw new IllegalStateException("No instances!");
     }
     
-    public static <T> AsyncObserver<T> emptyAsync() {
-        return new AsyncObserver<T>() {
+    public static <T> ResourceObserver<T> emptyResource() {
+        return new ResourceObserver<T>() {
             @Override
             public void onNext(T t) {
                 
@@ -138,21 +138,21 @@ public final class Observers {
         };
     }
     
-    public static <T> AsyncObserver<T> createAsync(Consumer<? super T> onNext) {
-        return createAsync(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+    public static <T> ResourceObserver<T> createResource(Consumer<? super T> onNext) {
+        return createResource(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
-    public static <T> AsyncObserver<T> createAsync(Consumer<? super T> onNext, 
+    public static <T> ResourceObserver<T> createResource(Consumer<? super T> onNext,
             Consumer<? super Throwable> onError) {
-        return createAsync(onNext, onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+        return createResource(onNext, onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
     }
 
-    public static <T> AsyncObserver<T> createAsync(Consumer<? super T> onNext, 
+    public static <T> ResourceObserver<T> createResource(Consumer<? super T> onNext,
             Consumer<? super Throwable> onError, Runnable onComplete) {
-        return createAsync(onNext, onError, onComplete, Functions.EMPTY_RUNNABLE);
+        return createResource(onNext, onError, onComplete, Functions.EMPTY_RUNNABLE);
     }
     
-    public static <T> AsyncObserver<T> createAsync(
+    public static <T> ResourceObserver<T> createResource(
             final Consumer<? super T> onNext, 
             final Consumer<? super Throwable> onError, 
             final Runnable onComplete, 
@@ -161,7 +161,7 @@ public final class Observers {
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
         Objects.requireNonNull(onStart, "onStart is null");
-        return new AsyncObserver<T>() {
+        return new ResourceObserver<T>() {
             boolean done;
             @Override
             protected void onStart() {

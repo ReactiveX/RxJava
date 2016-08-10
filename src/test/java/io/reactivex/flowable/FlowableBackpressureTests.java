@@ -386,7 +386,7 @@ public class FlowableBackpressureTests {
         final AtomicInteger totalReceived = new AtomicInteger();
         final AtomicInteger batches = new AtomicInteger();
         final AtomicInteger received = new AtomicInteger();
-        incrementingIntegers(c).subscribe(new AsyncSubscriber<Integer>() {
+        incrementingIntegers(c).subscribe(new ResourceSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -433,7 +433,7 @@ public class FlowableBackpressureTests {
         final AtomicInteger batches = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
         incrementingIntegers(c).subscribeOn(Schedulers.newThread()).subscribe(
-                new AsyncSubscriber<Integer>() {
+                new ResourceSubscriber<Integer>() {
 
             @Override
             public void onStart() {
