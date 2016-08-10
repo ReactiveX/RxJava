@@ -18,7 +18,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.*;
-import io.reactivex.internal.subscribers.observable.DisposableObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**

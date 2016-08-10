@@ -22,7 +22,7 @@ import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.QueueDrainHelper;
-import io.reactivex.observers.SerializedObserver;
+import io.reactivex.observers.*;
 
 public final class ObservableBufferExactBoundary<T, U extends Collection<? super T>, B> 
 extends AbstractObservableWithUpstream<T, U> {

@@ -21,7 +21,7 @@ import io.reactivex.Observable;
 import io.reactivex.Optional;
 import io.reactivex.Try;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.subscribers.observable.DisposableObserver;
+import io.reactivex.observers.DisposableObserver;
 
 /**
  * Returns an Iterable that blocks until the Observable emits another item, then returns that item.

@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.subscribers.observable;
+package io.reactivex.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -20,9 +20,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
- * An abstract subscription that allows asynchronous cancellation.
+ * An abstract Observer that allows asynchronous cancellation by implementing Disposable.
  * 
- * @param <T>
+ * @param <T> the received value type
  */
 public abstract class DisposableObserver<T> implements Observer<T>, Disposable {
     final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
@@ -34,6 +34,9 @@ public abstract class DisposableObserver<T> implements Observer<T>, Disposable {
         }
     }
     
+    /**
+     * Called once the single upstream Disposable is set via onSubscribe.
+     */
     protected void onStart() {
     }
     

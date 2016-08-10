@@ -26,7 +26,7 @@ import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.QueueDrainHelper;
-import io.reactivex.observers.SerializedObserver;
+import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableBufferBoundary<T, U extends Collection<? super T>, Open, Close> 
