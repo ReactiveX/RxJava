@@ -13,7 +13,7 @@
 
 package io.reactivex.subscribers;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -55,7 +55,7 @@ public class SafeSubscriberWithPluginTest {
         SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
         try {
             safe.onComplete();
-            Assert.fail();
+            fail();
         } catch (RuntimeException e) {
             // FIXME no longer assertable
             // assertTrue(safe.isUnsubscribed());

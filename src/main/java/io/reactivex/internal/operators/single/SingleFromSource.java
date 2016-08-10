@@ -36,6 +36,8 @@ public final class SingleFromSource<T> extends Single<T> {
     static final class DisposeAwareSingleObserver<T>
     extends AtomicBoolean
     implements SingleObserver<T>, Disposable {
+        /** */
+        private static final long serialVersionUID = -166991076349162358L;
         private final SingleObserver<? super T> o;
         private Disposable d;
 

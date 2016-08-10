@@ -38,6 +38,8 @@ public final class CompletableFromSource extends Completable {
     extends AtomicBoolean
     implements CompletableObserver, Disposable {
 
+        /** */
+        private static final long serialVersionUID = -1520879094105684863L;
         private final CompletableObserver o;
         private Disposable d;
 

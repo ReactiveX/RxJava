@@ -38,6 +38,8 @@ public final class ObservableFromSource<T> extends Observable<T> {
     extends AtomicBoolean
     implements Observer<T>, Disposable {
 
+        /** */
+        private static final long serialVersionUID = -7920748056724379224L;
         private final Observer<? super T> o;
         private Disposable d;
 
