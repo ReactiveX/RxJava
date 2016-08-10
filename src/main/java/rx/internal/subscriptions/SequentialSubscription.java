@@ -61,7 +61,7 @@ public final class SequentialSubscription extends AtomicReference<Subscription> 
     
     /**
      * Atomically sets the contained Subscription to the provided next value and unsubscribes
-     * the previous value.
+     * the previous value or unsubscribes the next value if this container is unsubscribed.
      * <p>(Remark: named as such because set() is final).
      * @param next the next Subscription to contain, may be null
      * @return true if the update succeded, false if the container was unsubscribed
@@ -88,7 +88,8 @@ public final class SequentialSubscription extends AtomicReference<Subscription> 
 
     /**
      * Atomically replaces the contained Subscription to the provided next value but
-     * does not unsubscribe the previous value.
+     * does not unsubscribe the previous value or unsubscribes the next value if this 
+     * container is unsubscribed.
      * @param next the next Subscription to contain, may be null
      * @return true if the update succeded, false if the container was unsubscribed
      */
@@ -111,7 +112,7 @@ public final class SequentialSubscription extends AtomicReference<Subscription> 
     
     /**
      * Atomically tries to set the contained Subscription to the provided next value and unsubscribes
-     * the previous value; but in case of a concurrent update there is no retry.
+     * the previous value or unsubscribes the next value if this container is unsubscribed.
      * <p>
      * Unlike {@link #update(Subscription)}, this doesn't retry if the replace failed
      * because a concurrent operation changed the underlying contained object.
@@ -140,7 +141,8 @@ public final class SequentialSubscription extends AtomicReference<Subscription> 
     
     /**
      * Atomically tries to replace the contained Subscription to the provided next value but
-     * does not unsubscribe the previous value.
+     * does not unsubscribe the previous value or unsubscribes the next value if this container 
+     * is unsubscribed.
      * <p>
      * Unlike {@link #replace(Subscription)}, this doesn't retry if the replace failed
      * because a concurrent operation changed the underlying contained object.
