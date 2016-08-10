@@ -683,12 +683,12 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * 
      * ts.onNext(1);
      * 
-     * ts.assertAndConsume(1);
+     * ts.assertValuesAndClear(1);
      * 
      * ts.onNext(2);
      * ts.onNext(3);
      * 
-     * ts.assertAndConsume(2, 3); // no mention of 1
+     * ts.assertValuesAndClear(2, 3); // no mention of 1
      * </pre></code>
      * @param expectedFirstValue the expected first value
      * @param expectedRestValues the optional rest values
