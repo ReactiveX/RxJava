@@ -231,7 +231,7 @@ public final class RxJavaPlugins {
     }
 
     /**
-     * Removes all handlers and resets the default behavior.
+     * Removes all handlers and resets to default behavior.
      */
     public static void reset() {
         setErrorHandler(null);
