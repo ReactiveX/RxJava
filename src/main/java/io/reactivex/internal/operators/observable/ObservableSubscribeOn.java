@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableSubscribeOn<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableSubscribeOn<T> extends AbstractObservableWithUpstream<T, T> {
     final Scheduler scheduler;
     
     public ObservableSubscribeOn(Observable<T> source, Scheduler scheduler) {

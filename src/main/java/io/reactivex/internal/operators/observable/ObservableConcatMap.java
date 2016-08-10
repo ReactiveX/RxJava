@@ -25,7 +25,7 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableConcatMap<T, U> extends ObservableWithUpstream<T, U> {
+public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstream<T, U> {
     final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
     final int bufferSize;
     public ObservableConcatMap(ObservableSource<T> source, Function<? super T, ? extends ObservableSource<? extends U>> mapper, int bufferSize) {

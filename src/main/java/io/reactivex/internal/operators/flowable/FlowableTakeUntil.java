@@ -20,7 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableTakeUntil<T, U> extends FlowableWithUpstream<T, T> {
+public final class FlowableTakeUntil<T, U> extends AbstractFlowableWithUpstream<T, T> {
     final Publisher<? extends U> other;
     public FlowableTakeUntil(Publisher<T> source, Publisher<? extends U> other) {
         super(source);

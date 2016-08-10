@@ -16,7 +16,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableTakeLastOne<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableTakeLastOne<T> extends AbstractFlowableWithUpstream<T, T> {
 
     public FlowableTakeLastOne(Publisher<T> source) {
         super(source);

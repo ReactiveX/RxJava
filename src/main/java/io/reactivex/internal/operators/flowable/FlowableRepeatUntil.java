@@ -20,7 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.functions.BooleanSupplier;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
-public final class FlowableRepeatUntil<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableRepeatUntil<T> extends AbstractFlowableWithUpstream<T, T> {
     final BooleanSupplier until;
     public FlowableRepeatUntil(Publisher<T> source, BooleanSupplier until) {
         super(source);

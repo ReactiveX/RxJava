@@ -20,7 +20,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Predicate;
 
-public final class ObservableRetryPredicate<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableRetryPredicate<T> extends AbstractObservableWithUpstream<T, T> {
     final Predicate<? super Throwable> predicate;
     final long count;
     public ObservableRetryPredicate(Observable<T> source,

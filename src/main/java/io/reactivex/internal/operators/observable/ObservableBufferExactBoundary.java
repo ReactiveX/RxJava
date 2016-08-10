@@ -25,7 +25,7 @@ import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class ObservableBufferExactBoundary<T, U extends Collection<? super T>, B> 
-extends ObservableWithUpstream<T, U> {
+extends AbstractObservableWithUpstream<T, U> {
     final ObservableSource<B> boundary;
     final Callable<U> bufferSupplier;
     

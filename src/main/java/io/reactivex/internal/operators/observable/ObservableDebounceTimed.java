@@ -23,7 +23,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableDebounceTimed<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpstream<T, T> {
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;

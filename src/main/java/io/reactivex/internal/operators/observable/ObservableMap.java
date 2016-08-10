@@ -20,7 +20,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableMap<T, U> extends ObservableWithUpstream<T, U> {
+public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T, U> {
     final Function<? super T, ? extends U> function;
     
     public ObservableMap(ObservableSource<T> source, Function<? super T, ? extends U> function) {

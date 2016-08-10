@@ -20,7 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.observers.SerializedObserver;
 
-public final class ObservableSkipUntil<T, U> extends ObservableWithUpstream<T, T> {
+public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstream<T, T> {
     final ObservableSource<U> other;
     public ObservableSkipUntil(ObservableSource<T> source, ObservableSource<U> other) {
         super(source);

@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class FlowableScan<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
     final BiFunction<T, T, T> accumulator;
     public FlowableScan(Publisher<T> source, BiFunction<T, T, T> accumulator) {
         super(source);

@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableSkipLast<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableSkipLast<T> extends AbstractObservableWithUpstream<T, T> {
     final int skip;
     
     public ObservableSkipLast(ObservableSource<T> source, int skip) {

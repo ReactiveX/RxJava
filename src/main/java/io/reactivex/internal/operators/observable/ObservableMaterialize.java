@@ -17,7 +17,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableMaterialize<T> extends ObservableWithUpstream<T, Try<Optional<T>>> {
+public final class ObservableMaterialize<T> extends AbstractObservableWithUpstream<T, Try<Optional<T>>> {
     
     
     public ObservableMaterialize(ObservableSource<T> source) {

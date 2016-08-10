@@ -16,7 +16,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.observers.SerializedObserver;
 
-public final class ObservableSerialized<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableSerialized<T> extends AbstractObservableWithUpstream<T, T> {
     public ObservableSerialized(Observable<T> upstream) {
         super(upstream);
     }

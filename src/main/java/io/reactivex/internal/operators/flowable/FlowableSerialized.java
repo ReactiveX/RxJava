@@ -16,7 +16,7 @@ import io.reactivex.Flowable;
 import io.reactivex.subscribers.SerializedSubscriber;
 import org.reactivestreams.Subscriber;
 
-public final class FlowableSerialized<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableSerialized<T> extends AbstractFlowableWithUpstream<T, T> {
     public FlowableSerialized(Flowable<T> source) {
         super(source);
     }

@@ -26,7 +26,7 @@ import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableFlatMap<T, U> extends FlowableWithUpstream<T, U> {
+public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T, U> {
     final Function<? super T, ? extends Publisher<? extends U>> mapper;
     final boolean delayErrors;
     final int maxConcurrency;

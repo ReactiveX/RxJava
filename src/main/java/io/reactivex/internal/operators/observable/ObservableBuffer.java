@@ -22,7 +22,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 
-public final class ObservableBuffer<T, U extends Collection<? super T>> extends ObservableWithUpstream<T, U> {
+public final class ObservableBuffer<T, U extends Collection<? super T>> extends AbstractObservableWithUpstream<T, U> {
     final int count;
     final int skip;
     final Callable<U> bufferSupplier;

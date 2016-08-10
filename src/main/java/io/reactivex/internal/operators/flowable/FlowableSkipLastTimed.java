@@ -23,7 +23,7 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableSkipLastTimed<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream<T, T> {
     final long time;
     final TimeUnit unit;
     final Scheduler scheduler;

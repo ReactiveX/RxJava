@@ -26,7 +26,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableBuffer<T, C extends Collection<? super T>> extends FlowableWithUpstream<T, C> {
+public final class FlowableBuffer<T, C extends Collection<? super T>> extends AbstractFlowableWithUpstream<T, C> {
     final int size;
 
     final int skip;

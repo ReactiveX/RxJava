@@ -22,7 +22,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableOnErrorReturn<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super Throwable, ? extends T> valueSupplier;
     public FlowableOnErrorReturn(Publisher<T> source, Function<? super Throwable, ? extends T> valueSupplier) {
         super(source);

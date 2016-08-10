@@ -30,7 +30,7 @@ import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableBufferBoundary<T, U extends Collection<? super T>, Open, Close> 
-extends ObservableWithUpstream<T, U> {
+extends AbstractObservableWithUpstream<T, U> {
     final Callable<U> bufferSupplier;
     final ObservableSource<? extends Open> bufferOpen;
     final Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose;

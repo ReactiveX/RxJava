@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class FlowableTakeUntilPredicate<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableTakeUntilPredicate<T> extends AbstractFlowableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
     public FlowableTakeUntilPredicate(Publisher<T> source, Predicate<? super T> predicate) {
         super(source);

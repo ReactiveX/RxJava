@@ -22,7 +22,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableMapNotification<T, R> extends FlowableWithUpstream<T, R> {
+public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
     final Function<? super T, ? extends R> onNextMapper;
     final Function<? super Throwable, ? extends R> onErrorMapper;

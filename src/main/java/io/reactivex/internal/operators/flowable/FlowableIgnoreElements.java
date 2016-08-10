@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class FlowableIgnoreElements<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstream<T, T> {
 
     public FlowableIgnoreElements(Publisher<T> source) {
         super(source);

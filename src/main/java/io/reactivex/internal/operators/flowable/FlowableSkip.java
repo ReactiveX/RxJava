@@ -17,7 +17,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
-public final class FlowableSkip<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableSkip<T> extends AbstractFlowableWithUpstream<T, T> {
     final long n;
     public FlowableSkip(Publisher<T> source, long n) {
         super(source);

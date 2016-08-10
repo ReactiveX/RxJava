@@ -17,7 +17,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
-public final class FlowableSwitchIfEmpty<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableSwitchIfEmpty<T> extends AbstractFlowableWithUpstream<T, T> {
     final Publisher<? extends T> other;
     public FlowableSwitchIfEmpty(Publisher<T> source, Publisher<? extends T> other) {
         super(source);

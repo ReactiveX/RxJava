@@ -25,7 +25,7 @@ import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.UnicastProcessor;
 
-public final class FlowableWindow<T> extends FlowableWithUpstream<T, Flowable<T>> {
+public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flowable<T>> {
     final long size;
     
     final long skip;

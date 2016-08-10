@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.BooleanSupplier;
 
-public final class ObservableRepeatUntil<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstream<T, T> {
     final BooleanSupplier until;
     public ObservableRepeatUntil(Observable<T> source, BooleanSupplier until) {
         super(source);

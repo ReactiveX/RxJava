@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 
-public final class ObservableSkip<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableSkip<T> extends AbstractObservableWithUpstream<T, T> {
     final long n;
     public ObservableSkip(ObservableSource<T> source, long n) {
         super(source);

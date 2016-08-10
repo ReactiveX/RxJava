@@ -28,7 +28,7 @@ import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class ObservableBufferTimed<T, U extends Collection<? super T>> 
-extends ObservableWithUpstream<T, U> {
+extends AbstractObservableWithUpstream<T, U> {
 
     final long timespan;
     final long timeskip;

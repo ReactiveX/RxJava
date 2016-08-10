@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscribers.observable.SubscriptionLambdaObserver;
 
-public final class ObservableDoOnLifecycle<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableDoOnLifecycle<T> extends AbstractObservableWithUpstream<T, T> {
     private final Consumer<? super Disposable> onSubscribe;
     private final Runnable onCancel;
 

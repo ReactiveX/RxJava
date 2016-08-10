@@ -20,7 +20,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableCollect<T, U> extends FlowableWithUpstream<T, U> {
+public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T, U> {
     
     final Callable<? extends U> initialSupplier;
     final BiConsumer<? super U, ? super T> collector;

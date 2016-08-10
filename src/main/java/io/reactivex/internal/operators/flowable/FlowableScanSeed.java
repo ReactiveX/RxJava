@@ -22,7 +22,7 @@ import io.reactivex.internal.subscribers.flowable.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableScanSeed<T, R> extends FlowableWithUpstream<T, R> {
+public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T, R> {
     final BiFunction<R, ? super T, R> accumulator;
     final Callable<R> seedSupplier;
 

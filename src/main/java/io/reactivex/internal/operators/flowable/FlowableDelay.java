@@ -22,7 +22,7 @@ import io.reactivex.Scheduler.Worker;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class FlowableDelay<T> extends FlowableWithUpstream<T, T> {
+public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
     final long delay;
     final TimeUnit unit;
     final Scheduler scheduler;

@@ -23,7 +23,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.subscriptions.*;
 
-public final class FlowableDistinct<T, K> extends FlowableWithUpstream<T, T> {
+public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super T, K> keySelector;
     final Callable<? extends Predicate<? super K>> predicateSupplier;
     

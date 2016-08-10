@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableDematerialize<T> extends FlowableWithUpstream<Try<Optional<T>>, T> {
+public final class FlowableDematerialize<T> extends AbstractFlowableWithUpstream<Try<Optional<T>>, T> {
 
     public FlowableDematerialize(Publisher<Try<Optional<T>>> source) {
         super(source);

@@ -27,7 +27,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the upstream value type
  * @param <R> the downstream parameter type
  */
-public final class FlowableLift<R, T> extends FlowableWithUpstream<T, R> {
+public final class FlowableLift<R, T> extends AbstractFlowableWithUpstream<T, R> {
     /** The actual operator. */
     final FlowableOperator<? extends R, ? super T> operator;
 

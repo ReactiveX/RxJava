@@ -25,7 +25,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the upstream value type
  * @param <R> the downstream parameter type
  */
-public final class ObservableLift<R, T> extends ObservableWithUpstream<T, R> {
+public final class ObservableLift<R, T> extends AbstractObservableWithUpstream<T, R> {
     /** The actual operator. */
     final ObservableOperator<? extends R, ? super T> operator;
 

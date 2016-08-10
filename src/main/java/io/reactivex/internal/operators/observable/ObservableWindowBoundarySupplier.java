@@ -27,7 +27,7 @@ import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
-public final class ObservableWindowBoundarySupplier<T, B> extends ObservableWithUpstream<T, Observable<T>> {
+public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObservableWithUpstream<T, Observable<T>> {
     final Callable<? extends ObservableSource<B>> other;
     final int bufferSize;
     

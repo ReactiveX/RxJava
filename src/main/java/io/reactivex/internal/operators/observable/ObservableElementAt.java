@@ -17,7 +17,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableElementAt<T> extends ObservableWithUpstream<T, T> {
+public final class ObservableElementAt<T> extends AbstractObservableWithUpstream<T, T> {
     final long index;
     final T defaultValue;
     public ObservableElementAt(ObservableSource<T> source, long index, T defaultValue) {

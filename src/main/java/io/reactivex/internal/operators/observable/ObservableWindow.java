@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.subjects.UnicastSubject;
 
-public final class ObservableWindow<T> extends ObservableWithUpstream<T, Observable<T>> {
+public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T, Observable<T>> {
     final long count;
     final long skip;
     final int capacityHint;
