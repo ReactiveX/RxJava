@@ -21,9 +21,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 /**
- * An abstract subscription that allows asynchronous cancellation.
+ * An abstract Subscriber that allows asynchronous cancellation by implementing Disposable.
  * 
- * @param <T>
+ * @param <T> the received value type.
  */
 public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposable {
     final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
@@ -35,18 +35,38 @@ public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposab
         }
     }
     
+    /**
+     * Returns the current Subscription sent to this Subscriber via onSubscribe().
+     * @return the current Subscription, may be null
+     */
     protected final Subscription subscription() {
         return s.get();
     }
     
+    /**
+     * Called once the single upstream Subscription is set via onSubscribe.
+     */
     protected void onStart() {
         s.get().request(Long.MAX_VALUE);
     }
     
+    /**
+     * Requests the specified amount from the upstream if its Subscription is set via
+     * onSubscribe already.
+     * <p>Note that calling this method before a Subscription is set via onSubscribe
+     * leads to NullPointerException and meant to be called from inside onStart or
+     * onNext.
+     * @param n the request amount, positive
+     */
     protected final void request(long n) {
         s.get().request(n);
     }
     
+    /**
+     * Cancels the Subscription set via onSubscribe or makes sure a
+     * Subscription set asynchronously (later) is cancelled immediately.
+     * <p>This method is thread-safe and can be exposed as a public API.
+     */
     protected final void cancel() {
         dispose();
     }

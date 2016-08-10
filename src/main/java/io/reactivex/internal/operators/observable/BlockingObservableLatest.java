@@ -21,7 +21,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Optional;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.subscribers.observable.DisposableObserver;
+import io.reactivex.observers.DisposableObserver;
 
 /**
  * Wait for and iterate over the latest values of the source observable. If the source works faster than the

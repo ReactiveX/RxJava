@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.subscribers.observable.*;
-import io.reactivex.observers.SerializedObserver;
+import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpstream<T, T> {
