@@ -394,7 +394,7 @@ public class FlowableMapTest {
             public Integer apply(Integer v) { 
                 throw new TestException(); 
             }
-        }).unsafeSubscribe(ts);
+        }).subscribe(ts);
         
         Assert.assertTrue("Not subscribed?", ps.hasSubscribers());
         

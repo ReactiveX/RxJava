@@ -850,7 +850,7 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <T> Flowable<T> endWith(Publisher<T> next) {
-        return this.<T>toFlowable().endWith(next);
+        return this.<T>toFlowable().concatWith(next);
     }
 
     /**

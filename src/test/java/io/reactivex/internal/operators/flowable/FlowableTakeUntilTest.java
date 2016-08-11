@@ -189,7 +189,7 @@ public class FlowableTakeUntilTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        source.takeUntil(until).unsafeSubscribe(ts);
+        source.takeUntil(until).subscribe(ts);
 
         assertTrue(source.hasSubscribers());
         assertTrue(until.hasSubscribers());
@@ -214,7 +214,7 @@ public class FlowableTakeUntilTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        source.takeUntil(until).unsafeSubscribe(ts);
+        source.takeUntil(until).subscribe(ts);
 
         assertTrue(source.hasSubscribers());
         assertTrue(until.hasSubscribers());
@@ -237,7 +237,7 @@ public class FlowableTakeUntilTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        source.takeUntil(until).take(1).unsafeSubscribe(ts);
+        source.takeUntil(until).take(1).subscribe(ts);
 
         assertTrue(source.hasSubscribers());
         assertTrue(until.hasSubscribers());
@@ -257,7 +257,7 @@ public class FlowableTakeUntilTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         
-        Flowable.range(1, 10).takeUntil(until).unsafeSubscribe(ts);
+        Flowable.range(1, 10).takeUntil(until).subscribe(ts);
 
         assertTrue(until.hasSubscribers());
 

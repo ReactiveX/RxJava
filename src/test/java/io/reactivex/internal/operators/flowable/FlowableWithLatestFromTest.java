@@ -246,7 +246,7 @@ public class FlowableWithLatestFromTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        result.unsafeSubscribe(ts);
+        result.subscribe(ts);
         
         source.onComplete();
         

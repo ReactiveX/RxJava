@@ -60,7 +60,7 @@ public class FlowableCastTest {
         
         TestSubscriber<String> ts = TestSubscriber.create();
         
-        ps.cast(String.class).unsafeSubscribe(ts);
+        ps.cast(String.class).subscribe(ts);
         
         Assert.assertTrue("Not subscribed?", ps.hasSubscribers());
         

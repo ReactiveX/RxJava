@@ -185,7 +185,7 @@ public class FlowableFilterTest {
             public boolean test(Integer v) { 
                 throw new TestException(); 
             }
-        }).unsafeSubscribe(ts);
+        }).subscribe(ts);
         
         Assert.assertTrue("Not subscribed?", ps.hasSubscribers());
         
@@ -200,7 +200,7 @@ public class FlowableFilterTest {
     public void doesntRequestOnItsOwn() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
         
-        Flowable.range(1, 10).filter(Functions.alwaysTrue()).unsafeSubscribe(ts);
+        Flowable.range(1, 10).filter(Functions.alwaysTrue()).subscribe(ts);
         
         ts.assertNoValues();
         

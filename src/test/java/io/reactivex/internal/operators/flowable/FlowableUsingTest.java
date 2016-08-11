@@ -461,7 +461,7 @@ public class FlowableUsingTest {
                     }
                 }
         )
-        .unsafeSubscribe(ts);
+        .subscribe(ts);
         
         ts.assertError(TestException.class);
         
@@ -495,7 +495,7 @@ public class FlowableUsingTest {
                     }
                 }, false
         )
-        .unsafeSubscribe(ts);
+        .subscribe(ts);
         
         ts.assertValue(1);
         ts.assertNoErrors();

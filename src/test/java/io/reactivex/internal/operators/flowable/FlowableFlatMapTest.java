@@ -668,7 +668,7 @@ public class FlowableFlatMapTest {
             public Integer apply(Integer t1, Integer t2) {
                 return t1;
             }
-        }).unsafeSubscribe(ts);
+        }).subscribe(ts);
         
         Assert.assertTrue("Not subscribed?", ps.hasSubscribers());
         

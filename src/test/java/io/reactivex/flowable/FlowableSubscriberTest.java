@@ -393,7 +393,7 @@ public class FlowableSubscriberTest {
     @Test
     public void testOnStartCalledOnceViaUnsafeSubscribe() {
         final AtomicInteger c = new AtomicInteger();
-        Flowable.just(1, 2, 3, 4).take(2).unsafeSubscribe(new DefaultSubscriber<Integer>() {
+        Flowable.just(1, 2, 3, 4).take(2).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {

@@ -458,7 +458,7 @@ public class FlowableMergeDelayErrorTest {
         final Subscriber<Integer> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
         
-        result.unsafeSubscribe(new DefaultSubscriber<Integer>() {
+        result.subscribe(new DefaultSubscriber<Integer>() {
             int calls;
             @Override
             public void onNext(Integer t) {

@@ -393,7 +393,7 @@ public class FlowableFlattenIterableTest {
                 return it;
             }
         })
-        .unsafeSubscribe(ts);
+        .subscribe(ts);
         
         ps.onNext(1);
         
@@ -497,7 +497,7 @@ public class FlowableFlattenIterableTest {
             }
         })
         .take(1)
-        .unsafeSubscribe(ts);
+        .subscribe(ts);
         
         ps.onNext(1);
         

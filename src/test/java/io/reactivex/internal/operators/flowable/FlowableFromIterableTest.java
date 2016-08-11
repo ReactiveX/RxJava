@@ -329,7 +329,7 @@ public class FlowableFromIterableTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        Flowable.fromIterable(it).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertError(TestException.class);
@@ -362,7 +362,7 @@ public class FlowableFromIterableTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        Flowable.fromIterable(it).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertError(TestException.class);
@@ -399,7 +399,7 @@ public class FlowableFromIterableTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        Flowable.fromIterable(it).subscribe(ts);
         
         ts.assertValues(1);
         ts.assertError(TestException.class);
@@ -436,7 +436,7 @@ public class FlowableFromIterableTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5);
         
-        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        Flowable.fromIterable(it).subscribe(ts);
         
         ts.assertValues(1);
         ts.assertError(TestException.class);
@@ -469,7 +469,7 @@ public class FlowableFromIterableTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        Flowable.fromIterable(it).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertError(TestException.class);
@@ -502,7 +502,7 @@ public class FlowableFromIterableTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5);
         
-        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        Flowable.fromIterable(it).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertError(TestException.class);
@@ -536,7 +536,7 @@ public class FlowableFromIterableTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5);
         ts.cancel();
         
-        Flowable.fromIterable(it).unsafeSubscribe(ts);
+        Flowable.fromIterable(it).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNoErrors();

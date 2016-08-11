@@ -113,7 +113,7 @@ public class FlowableRetryTest {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         int NUM_RETRIES = 20;
         Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
-        origin.retry().unsafeSubscribe(new TestSubscriber<String>(observer));
+        origin.retry().subscribe(new TestSubscriber<String>(observer));
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -714,7 +714,7 @@ public class FlowableRetryTest {
                 Subscriber<String> observer = TestHelper.mockSubscriber();
                 Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
                 TestSubscriber<String> ts = new TestSubscriber<String>(observer);
-                origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
+                origin.retry().observeOn(Schedulers.computation()).subscribe(ts);
                 ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
                 
                 InOrder inOrder = inOrder(observer);
@@ -758,7 +758,7 @@ public class FlowableRetryTest {
                                 Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
                                 TestSubscriber<String> ts = new TestSubscriber<String>();
                                 origin.retry()
-                                .observeOn(Schedulers.computation()).unsafeSubscribe(ts);
+                                .observeOn(Schedulers.computation()).subscribe(ts);
                                 ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
                                 List<String> onNextEvents = new ArrayList<String>(ts.values());
                                 if (onNextEvents.size() != NUM_RETRIES + 2) {
@@ -857,7 +857,7 @@ public class FlowableRetryTest {
                 return t1.take(1);
             }
         })
-        .unsafeSubscribe(new TestSubscriber<String>(observer));
+        .subscribe(new TestSubscriber<String>(observer));
         
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -901,7 +901,7 @@ public class FlowableRetryTest {
                 return t1.take(1);
             }
         })
-        .unsafeSubscribe(new TestSubscriber<String>(observer));
+        .subscribe(new TestSubscriber<String>(observer));
         
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
